@@ -5,6 +5,8 @@
 -endif.
 -compile(export_all).
 
+-include("gui.hrl").
+
 -record(state,
   { actives  = []
   , blocks   = []
@@ -638,10 +640,19 @@ print(false,_,_) ->
   ok;
 
 print(_,S,Xs) ->
-  case ?MODULE of
-    scheduler -> io:format(S,Xs);
-    _         -> io:format("  (~p) " ++ S,[?MODULE|Xs])
-  end.
+    case whereis(loop) of
+	undefined ->
+	    case ?MODULE of
+		scheduler -> io:format(S,Xs);
+		_         -> io:format("  (~p) " ++ S,[?MODULE|Xs])
+	    end;
+	Pid ->
+	    case ?MODULE of
+		scheduler -> Pid ! #gui{type = log, msg = io_lib:format(S,Xs)};
+		_         -> Pid ! #gui{type = log, msg = io_lib:format("  (~p) " ++ S,[?MODULE|Xs])}
+	    end
+    end.  
+
 
 % ----------------------------------------------------------------
 % instrumentation information

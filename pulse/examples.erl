@@ -165,7 +165,7 @@ write_race() ->
 killing_time() ->
   Witness  = spawn(fun receiving/0),
   Victim   = spawn(fun () -> Witness ! a, Witness ! b end),
-  Murderer = spawn(fun () -> exit(Victim,die_die_die) end).
+  Murderer = spawn(fun () -> exit(Victim, die_die_die) end).
 
 receiving() ->
   receive

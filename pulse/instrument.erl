@@ -54,6 +54,9 @@ instrument_module(Atom) ->
 instrument_module(Atom, Scheduler) ->
     instrument_module(Atom, Scheduler, all).
 
+instrument_module(FileName, Scheduler, Functions) when is_list(FileName) ->
+    Term = open(FileName, Scheduler),
+    {FileName, instrument(Term, Scheduler, Functions, [])};
 instrument_module(Atom, Scheduler, Functions) ->
     FileName = atom_to_list(Atom) ++ ".erl",
     Term = open(FileName, Scheduler),
@@ -66,6 +69,11 @@ c(Atom) ->
 c(Atom, Scheduler) ->
     c(Atom, Scheduler, all).
 
+%% c([], _Scheduler, _Functions) ->
+%%     ok;
+%% c([Atom | Rest], Scheduler, Functions) ->
+%%     c(Atom, Scheduler, Functions),
+%%     c(Rest, Scheduler, Functions);
 c(Atom, Scheduler, Functions) ->
     {FileName, Instrumented} = instrument_module(Atom, Scheduler, Functions),
     {ok, Module, Binary} = compile(Instrumented),

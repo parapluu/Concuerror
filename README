@@ -1,0 +1,8 @@
+Howto
+------
+
+  Compile: make
+
+  Clean:   make clean
+
+  Run GUI: run.sh

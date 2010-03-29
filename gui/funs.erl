@@ -1,0 +1,63 @@
+-module(funs).
+-export([tupleList/1, stringList/1]).
+
+tupleList(Module) ->
+    {ok, Form} = epp_dodger:quick_parse_file(Module),
+    getFuns(Form, []).
+
+stringList(Module) ->
+    Funs = tupleList(Module),
+    stringList(Funs, []).
+
+stringList([], Strings) ->
+    Strings;
+stringList([{Name, Arity} | Rest], Strings) ->
+    stringList(Rest, [lists:concat([Name, "/", Arity]) | Strings]).
+
+getFuns([], Funs) ->
+    Funs;
+getFuns([Node | Rest], Funs) ->
+    case erl_syntax:type(Node) of
+	attribute ->
+	    Name = erl_syntax:atom_name(erl_syntax:attribute_name(Node)),
+	    case Name of
+		"export" ->
+		    [List] = erl_syntax:attribute_arguments(Node),
+		    Args = erl_syntax:list_elements(List),
+		    NewFuns = getExports(Args, []),
+		    getFuns(Rest, NewFuns);
+		_Other ->
+		    getFuns(Rest, Funs)
+	    end;
+	
+	function ->
+	    case Funs of
+		[] ->
+		    getAllFuns([Node | Rest], []);
+		_Other ->
+		    Funs
+	    end;
+	
+	_Other ->
+	    getFuns(Rest, Funs)
+    end.
+
+getExports([], Exp) ->
+    Exp;
+getExports([Fun | Rest], Exp) ->
+    Name = erl_syntax:atom_name(erl_syntax:arity_qualifier_body(Fun)),
+    Arity = erl_syntax:integer_value(erl_syntax:arity_qualifier_argument(Fun)),
+    getExports(Rest, [{list_to_atom(Name), Arity} | Exp]).
+
+getAllFuns([], Funs) ->
+    Funs;
+getAllFuns([Node | Rest], Funs) ->
+    case erl_syntax:type(Node) of
+	function ->
+	    Name = erl_syntax:atom_name(erl_syntax:function_name(Node)),
+	    Arity = erl_syntax:function_arity(Node),
+	    getAllFuns(Rest, [{list_to_atom(Name), Arity} | Funs]);
+	
+	_Other ->
+	    getAllFuns(Rest, Funs)
+    end.

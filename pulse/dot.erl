@@ -189,7 +189,7 @@ cluster(Name,Color) ->
   ++ "color=" ++ Color ++ ";"
   ).
 
-start(S) -> "shape=triangle,label=\"\"". % " ++ S ++ "\"".
+start(_S) -> "shape=triangle,label=\"\"". % " ++ S ++ "\"".
 small()  -> "width=0.2,height=0.2,style=filled,label=\"\"".
 stop(S)  -> "shape=invtriangle,label=\"" ++ S ++ "\"".
 
