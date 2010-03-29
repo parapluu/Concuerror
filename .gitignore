@@ -1,0 +1,6 @@
+*~
+*.beam
+*.dot
+/pulse/*.png
+/gui/*.png
+clean.sh
