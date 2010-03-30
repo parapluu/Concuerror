@@ -43,10 +43,11 @@ http://www.protest-project.eu/
 ").
 
 %% File paths
--define(SCHEDULER_PATH, "bin/scheduler").
--define(INSTRUMENT_PATH, "bin/instrument").
--define(DRIVER_PATH, "bin/driver").
--define(DOT_PATH, "bin/dot").
+-define(EBIN, "ebin/").
+-define(SCHEDULER_PATH, ?EBIN ++ "scheduler").
+-define(INSTRUMENT_PATH, ?EBIN ++"instrument").
+-define(DRIVER_PATH, ?EBIN ++ "driver").
+-define(DOT_PATH, ?EBIN ++"dot").
 
 -define(ICON_PATH, "img/icon.png").
 
