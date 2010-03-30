@@ -79,7 +79,7 @@ run.sh:
 # Dependencies
 # ----------------------------------------------------
 
-$(EBIN)/driver.beam : gui.hrl
-$(EBIN)/gui.beam: gui.hrl
-$(EBIN)/refServer.beam: gui.hrl
-$(EBIN)/scheduler.beam: gui.hrl
+driver.beam : gui.hrl
+gui.beam: gui.hrl
+refServer.beam: gui.hrl
+scheduler.beam: gui.hrl
