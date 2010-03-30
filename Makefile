@@ -9,9 +9,9 @@
 # Orientation information
 # ----------------------------------------------------
 
-TOP = 	~/Chess
+TOP = 	  $(PWD)
 
-EBIN = 	$(TOP)/ebin
+EBIN = 	  $(TOP)/ebin
 
 INCLUDE = $(TOP)/include
 
