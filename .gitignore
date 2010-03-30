@@ -4,3 +4,4 @@
 *.png
 !/img/*.png
 clean.sh
+run.sh

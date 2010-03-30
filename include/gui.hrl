@@ -42,13 +42,10 @@ http://www.protest-project.eu/
 ------------------------------------------------------------------
 ").
 
-%% File paths
--define(EBIN, "ebin/").
--define(SCHEDULER_PATH, ?EBIN ++ "scheduler").
--define(INSTRUMENT_PATH, ?EBIN ++"instrument").
--define(DRIVER_PATH, ?EBIN ++ "driver").
--define(DOT_PATH, ?EBIN ++"dot").
+%% Scheduler module name
+-define(SCHEDULER, scheduler).
 
+%% File paths
 -define(ICON_PATH, "img/icon.png").
 
 %% Local ID definitions

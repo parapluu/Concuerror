@@ -11,10 +11,7 @@ start() ->
     refServer:start(true),
 
     %% Load PULSE modules
-    code:load_abs(?SCHEDULER_PATH),
-    code:load_abs(?INSTRUMENT_PATH),
-    code:load_abs(?DRIVER_PATH),
-    code:load_abs(?DOT_PATH),
+    code:load_file(?SCHEDULER),
 
     Frame = setupFrame(),
 
@@ -23,10 +20,7 @@ start() ->
     loop(),
 
     %% purge PULSE modules
-    code:purge(scheduler),
-    code:purge(instrument),
-    code:purge(driver),
-    code:purge(dot),
+    code:purge(?SCHEDULER),
 
     refServer:stop(),
     unregister(loop),
@@ -373,7 +367,6 @@ loop() ->
 	     	Module =/= '', Function =/= '' ->
 		    LogText = refServer:lookup(?LOG_TEXT),
 		    wxTextCtrl:clear(LogText),
-		    
 		    instrumentAll(?MODULE_LIST),
 		    case Arity of
 			0 ->

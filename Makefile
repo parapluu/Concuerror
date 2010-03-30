@@ -67,8 +67,8 @@ wx:	run.sh
 
 run.sh:
 	printf "#%c/bin/bash\n \
-	      erl -noshell -pa $(TOP) \
-	      $(EBIN) -s gui start -s init stop" ! \
+	      erl -noshell -pa $(EBIN) \
+	      -s gui start -s init stop" ! \
 	      > run.sh
 	chmod +x run.sh
 
