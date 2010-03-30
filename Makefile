@@ -66,9 +66,9 @@ pulse: 	$(PULSE_MODULES:%=%.beam)
 wx:	run.sh
 
 run.sh:
-	echo "#!/bin/bash\n \
+	printf "#%c/bin/bash\n \
 	      erl -noshell -pa $(TOP) \
-	      $(EBIN) -s gui start -s init stop" \
+	      $(EBIN) -s gui start -s init stop" ! \
 	      > run.sh
 	chmod +x run.sh
 
