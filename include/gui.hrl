@@ -1,28 +1,24 @@
-%% Internal message format
--record(gui, {type, msg}).
+%%%----------------------------------------------------------------------
+%%% File    : gui.hrl
+%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Description : 
+%%%
+%%% Created : 31 Mar 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%----------------------------------------------------------------------
+
+%%%----------------------------------------------------------------------
+%%% Definitions
+%%%----------------------------------------------------------------------
 
 %% Menu specification:
 %%    [{MenuName1, [MenuItem11, MenuItem12, ...]}, ...]
--define(MENU_SPEC,
-	[
-	 {"&File",
-	  [
-	   [{id, ?ADD}, {text, "&Add...\tCtrl-A"},  {help, "Add an existing erlang module."}],
-	   [{id, ?SEPARATOR}, {kind, ?wxITEM_SEPARATOR}],
-	   [{id, ?EXIT}, {help, "Quit PULSE."}]
-	  ]
-	 },
-	 {"&Run",
-	  [
-	   [{id, ?ANALYZE}, {text, "Ana&lyze\tCtrl-L"}, {help, "Analyze current module."}]
-	  ]
-	 }, 
-	 {"&Help",
-	  [
-	   [{id, ?ABOUT}, {help, "Show project info."}]
-	  ]
-	 }
-	]).
+-define(MENU_SPEC, [{"&File", [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
+                                {help, "Add an existing erlang module."}],
+                               [{id, ?SEPARATOR}, {kind, ?wxITEM_SEPARATOR}],
+                               [{id, ?EXIT}, {help, "Quit PULSE."}]]},
+                    {"&Run", [[{id, ?ANALYZE}, {text, "Ana&lyze\tCtrl-L"},
+                               {help, "Analyze current module."}]]}, 
+                    {"&Help", [[{id, ?ABOUT}, {help, "Show project info."}]]}]).
 
 %% 'About' message
 -define(INFO_MSG,
@@ -70,3 +66,37 @@ http://www.protest-project.eu/
 %% Color definitions
 -define(BASE_COLOR, {2, 63, 90}).
 -define(COMP_COLOR, {125, 140, 0}).
+
+
+%%%----------------------------------------------------------------------
+%%% Types
+%%%----------------------------------------------------------------------
+
+-type id()  :: ?FRAME
+             | ?FUNCTION_LIST
+             | ?LOG_TEXT
+             | ?MODULE_LIST
+             | ?NOTEBOOK
+             | ?SCR_GRAPH
+             | ?STATIC_BMP.
+
+-type ref() :: any(). %% XXX: should be imported from wx
+%%                wxFrame:wxFrame()
+%%              | wxListBox:wxListBox()
+%%              | wxNotebook:wxNotebook()
+%%              | wxTextCtrl:wxTextCtrl()
+%%              | wxScrolledWindow:wxScrolledWindow()
+%%              | wxStaticBitmap:wxStaticBitmap().
+
+-type gui_type() :: 'ref_add' | 'ref_lookup' | 'ref_ok' | 'ref_stop'
+                  | 'dot' | 'log'.
+
+-type gui_msg()  ::'ok' | string() | id() | {id(), ref()}.
+
+%%%----------------------------------------------------------------------
+%%% Records
+%%%----------------------------------------------------------------------
+
+%% Internal message format
+-record(gui, {type :: gui_type(),
+              msg  :: gui_msg()}).
