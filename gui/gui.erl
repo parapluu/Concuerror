@@ -239,11 +239,10 @@ getFunction() ->
 	nomatch -> {'', 0}
     end.
 
-%% TODO
 argDialog(Parent, Argnum) ->
     Dialog = wxDialog:new(Parent, ?wxID_ANY, "Function arguments"),
     TopSizer = wxBoxSizer:new(?wxVERTICAL),
-    addArgs(Dialog, TopSizer, Argnum),
+    Refs = addArgs(Dialog, TopSizer, 0, Argnum, []),
     ButtonSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_OK),
 		[{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
@@ -253,18 +252,54 @@ argDialog(Parent, Argnum) ->
                 [{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
     wxWindow:setSizer(Dialog, TopSizer),
     wxSizer:fit(TopSizer, Dialog),
-    %% TODO: Don't forget to destroy!!!
     case wxDialog:showModal(Dialog) of
-	?wxID_OK -> ok;
-	_Other -> continue
+	?wxID_OK ->
+	    LogText = refServer:lookup(?LOG_TEXT),
+	    wxTextCtrl:clear(LogText),
+	    ValResult = validateArgs(0, Refs, [], LogText),
+	    wxDialog:destroy(Dialog),
+	    case ValResult of
+		{ok, Args} -> {ok, Args};
+		_Other -> continue
+	    end;
+	_Other ->
+	    wxDialog:destroy(Dialog),
+	    continue
     end.
 
-addArgs(_Parent, _Sizer, 0) ->
-    ok;
-addArgs(Parent, Sizer, Count) ->
-    wxSizer:add(Sizer, wxTextCtrl:new(Parent, ?wxID_ANY),
-		[{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
-    addArgs(Parent, Sizer, Count - 1).
+addArgs(_Parent, _Sizer, Max, Max, Refs) ->
+    lists:reverse(Refs);
+addArgs(Parent, Sizer, I, Max, Refs) ->
+    Ref =  wxTextCtrl:new(Parent, ?wxID_ANY),
+    HorizSizer = wxBoxSizer:new(?wxHORIZONTAL),
+    wxSizer:add(HorizSizer,
+		wxStaticText:new(Parent, ?wxID_ANY, io_lib:format("Arg~p: ", [I + 1])),
+		[{proportion, 0},
+		 {flag, ?wxALL bor ?wxALIGN_CENTER}, {border, 10}]),
+    wxSizer:add(HorizSizer,
+		Ref,
+		[{proportion, 1}, {flag, ?wxALL bor ?wxALIGN_CENTER}, {border, 10}]),
+    wxSizer:add(Sizer,
+		HorizSizer,
+		[{proportion, 0}, {flag, ?wxALL bor ?wxEXPAND}, {border, 10}]),
+    addArgs(Parent, Sizer, I + 1, Max, [Ref|Refs]).
+
+validateArgs(_I, [], Args, _RefError) ->
+    {ok, lists:reverse(Args)};
+validateArgs(I, [Ref|Refs], Args, RefError) ->
+    String = wxTextCtrl:getValue(Ref) ++ ".",
+    case erl_scan:string(String) of
+	{ok, T, _} ->
+	    case erl_parse:parse_term(T) of
+		{ok, Arg} -> validateArgs(I + 1, Refs, [Arg|Args], RefError);
+		{error, {_, _, Info}} ->
+		    wxTextCtrl:appendText(RefError, Info ++ "\n"),
+		    error
+	    end;
+	{error, {_, _, Info}, _} ->
+	    wxTextCtrl:appendText(RefError, Info ++ "\n"),
+	    error
+    end.
 
 
 %% Main event loop
@@ -309,11 +344,11 @@ loop() ->
 	    Self = self(),
 	    if
 	     	Module =/= '', Function =/= '' ->
-		    LogText = refServer:lookup(?LOG_TEXT),
-		    wxTextCtrl:clear(LogText),
 		    instrumentAll(?MODULE_LIST),
 		    case Arity of
 			0 ->
+			    LogText = refServer:lookup(?LOG_TEXT),
+			    wxTextCtrl:clear(LogText),
 			    spawn(fun() ->
                                           driver:drive(
                                             fun() -> Module:Function() end,
@@ -322,7 +357,9 @@ loop() ->
 			Count ->
 			    Frame = refServer:lookup(?FRAME),
 			    case argDialog(Frame, Count) of
-				{?wxID_OK, Args} ->
+				{ok, Args} ->
+				    LogText = refServer:lookup(?LOG_TEXT),
+				    wxTextCtrl:clear(LogText),
 				    spawn(fun() ->
 						  driver:drive(
 						    fun() ->

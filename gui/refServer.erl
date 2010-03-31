@@ -52,6 +52,7 @@ reg() ->
     register(refServer, self()),
     loop([]).
 
+%% TODO: change list to dict
 loop(Dict) ->
     receive
 	{Pid, #gui{type = ref_add, msg = {Id, Ref}}} ->

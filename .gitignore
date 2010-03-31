@@ -2,6 +2,7 @@
 *.beam
 *.dot
 *.png
+*.dump
 !/img/*.png
 clean.sh
 run.sh
