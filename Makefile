@@ -19,7 +19,7 @@ INCLUDE = $(TOP)/include
 # Flags
 # ----------------------------------------------------
 
-ERL_COMPILE_FLAGS += +warn_exported_vars +warn_unused_import +warn_untyped_record +warn_missing_spec
+ERL_COMPILE_FLAGS += +warn_exported_vars +warn_unused_import +warn_untyped_record +warn_missing_spec +debug_info
 
 # ----------------------------------------------------
 # Targets
