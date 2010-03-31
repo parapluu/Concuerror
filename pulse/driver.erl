@@ -49,7 +49,7 @@ noEvents(Result) ->
 
 diff(X,X) -> X;
 
-diff(X,Y) when is_tuple(X), is_tuple(Y), size(X) == size(Y) ->
+diff(X,Y) when tuple_size(X) =:= tuple_size(Y) ->
     list_to_tuple(diff(tuple_to_list(X), tuple_to_list(Y)));
 
 diff([X|Xs],[Y|Ys]) ->

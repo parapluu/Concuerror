@@ -384,18 +384,20 @@ bound_vars(Term) ->
 %% Find the variables that are bound in all clauses of a receive,
 %% including the 'after' clause.
 bound_vars_in_receive(Term) ->
-    Annotated = annotate_bindings(Term, []),
-    Terms = receive_expr_clauses(Annotated) ++
+    Annotated = erl_syntax_lib:annotate_bindings(Term, []),
+    Terms = erl_syntax:receive_expr_clauses(Annotated) ++
         case timeout(Term) of
             infinity ->
                 [];
             _ ->
-                [annotate_bindings(block_expr(receive_expr_action(Term)), [])]
+                [erl_syntax_lib:annotate_bindings(
+                   erl_syntax:block_expr(erl_syntax:receive_expr_action(Term)),
+                   [])]
         end,
     case Terms of
         [] -> [];
         _ ->
-            ordsets:intersection(lists:map(fun bound_vars/1, Terms))
+            ordsets:intersection([bound_vars(V) || V <- Terms])
     end.
 
 %% Instrument a call. The main aim is to replace calls to Erlang BIFs,

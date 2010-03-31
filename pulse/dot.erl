@@ -279,17 +279,17 @@ link(Name,N,Name2,N2) ->
   ++ "\" [color=grey,style=bold,label=link];".
 
 argument_list(X) ->
-  "(" ++ intersperse(",",lists:map(fun struct_to_list/1,X)) ++ ")".
+  "(" ++ intersperse(",",[struct_to_list(V) || V <- X]) ++ ")".
 
 struct_to_list(X) when is_tuple(X) ->
-  "{" ++ intersperse(",",lists:map(fun short/1,tuple_to_list(X))) ++ "}";
+  "{" ++ intersperse(",",[short(V) || V <- tuple_to_list(X)]) ++ "}";
 
 struct_to_list(X) when is_list(X) ->
   case lists:all(fun(Char) -> Char>=33 andalso Char=<126 end, X) of
       true ->
 	  "\\\""++X++"\\\"";
       false ->
-	  "[" ++ intersperse(",",lists:map(fun short/1,X)) ++ "]"
+	  "[" ++ intersperse(",",[short(V) || V <- X]) ++ "]"
   end;
 
 struct_to_list(X) when is_integer(X) -> integer_to_list(X);

@@ -371,9 +371,9 @@ loop() ->
 		    case Arity of
 			0 ->
 			    spawn(fun() -> driver:drive(
-					     fun() -> apply(Module, Function, []) end,
-					     Self
-					    ) end);
+					     fun() -> Module:Function() end,
+					     Self)
+                                  end);
 			Count ->
 			    Frame = refServer:lookup(?FRAME),
 			    case argDialog(Frame, Count) of
