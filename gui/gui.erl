@@ -89,11 +89,15 @@ setupPanel(Parent) ->
     refServer:add({?NOTEBOOK, Notebook}),
     LogPanel = wxPanel:new(Notebook),
     GraphPanel = wxPanel:new(Notebook),
+    SourcePanel = wxPanel:new(Notebook),
     LogText = wxTextCtrl:new(LogPanel, ?LOG_TEXT, [{size, {400, 400}},
      			      {style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
     refServer:add({?LOG_TEXT, LogText}),
     ScrGraph = wxScrolledWindow:new(GraphPanel),
     refServer:add({?SCR_GRAPH, ScrGraph}),
+    SourceText = wxHtmlWindow:new(SourcePanel),
+    refServer:add({?SOURCE_TEXT, SourceText}),
+
     LogPanelSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(LogPanelSizer, LogText,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
@@ -102,8 +106,14 @@ setupPanel(Parent) ->
     wxSizer:add(GraphPanelSizer, ScrGraph,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
     wxWindow:setSizer(GraphPanel, GraphPanelSizer),
+    SourcePanelSizer = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(SourcePanelSizer, SourceText,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+    wxWindow:setSizer(SourcePanel, SourcePanelSizer),
+
     wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
     wxNotebook:addPage(Notebook, GraphPanel, "Graph", [{bSelect, false}]),
+    wxNotebook:addPage(Notebook, SourcePanel, "Source", [{bSelect, false}]),
     RightColumnSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(RightColumnSizer, Notebook,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
@@ -239,6 +249,7 @@ getFunction() ->
 	nomatch -> {'', 0}
     end.
 
+%% Dialog for inserting function arguments (terms)
 argDialog(Parent, Argnum) ->
     Dialog = wxDialog:new(Parent, ?wxID_ANY, "Function arguments"),
     TopSizer = wxBoxSizer:new(?wxVERTICAL),
@@ -383,8 +394,12 @@ loop() ->
 		?wxNOT_FOUND -> continue;
 		_Other ->
 		    Module = wxListBox:getStringSelection(ModuleList),
+		    %% Update module functions
 		    Funs = funs:stringList(Module),
-		    setListItems(?FUNCTION_LIST, Funs)
+		    setListItems(?FUNCTION_LIST, Funs),
+		    %% Update module source
+		    SourceText = refServer:lookup(?SOURCE_TEXT),
+		    wxHtmlWindow:loadFile(SourceText, Module)
 	    end,
 	    loop();
 	#wx{id = ?FUNCTION_LIST,
@@ -408,6 +423,7 @@ loop() ->
 	    ScrGraph = refServer:lookup(?SCR_GRAPH),
 	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20,
                                            W div 20, H div 20),
+	    %% NOTE: Static bitmap for large pics ok?
 	    case refServer:lookup(?STATIC_BMP) of
 		false ->
 		    StaticBmp = wxStaticBitmap:new(ScrGraph, ?wxID_ANY, Image),

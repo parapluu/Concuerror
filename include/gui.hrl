@@ -62,6 +62,7 @@ http://www.protest-project.eu/
 -define(GRAPH_PANEL, 507).
 -define(SCR_GRAPH, 508).
 -define(STATIC_BMP, 509).
+-define(SOURCE_TEXT, 510).
 
 %% Color definitions
 -define(BASE_COLOR, {2, 63, 90}).
@@ -78,7 +79,8 @@ http://www.protest-project.eu/
              | ?MODULE_LIST
              | ?NOTEBOOK
              | ?SCR_GRAPH
-             | ?STATIC_BMP.
+             | ?STATIC_BMP
+             | ?SOURCE_TEXT.
 
 -type ref() :: any(). %% XXX: should be imported from wx
 %%                wxFrame:wxFrame()
@@ -86,7 +88,8 @@ http://www.protest-project.eu/
 %%              | wxNotebook:wxNotebook()
 %%              | wxTextCtrl:wxTextCtrl()
 %%              | wxScrolledWindow:wxScrolledWindow()
-%%              | wxStaticBitmap:wxStaticBitmap().
+%%              | wxStaticBitmap:wxStaticBitmap()
+%%              | wxHtmlWindow:wxHtmlWindow().
 
 -type gui_type() :: 'ref_add' | 'ref_lookup' | 'ref_ok' | 'ref_stop'
                   | 'dot' | 'log'.
