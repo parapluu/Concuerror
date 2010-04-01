@@ -62,11 +62,31 @@ http://www.protest-project.eu/
 -define(GRAPH_PANEL, 507).
 -define(SCR_GRAPH, 508).
 -define(STATIC_BMP, 509).
+-define(SOURCE_TEXT, 510).
 
 %% Color definitions
 -define(BASE_COLOR, {2, 63, 90}).
 -define(COMP_COLOR, {125, 140, 0}).
 
+%% Erlang keywords
+-define(KEYWORDS, "after begin case try cond catch andalso orelse end fun if let of query receive when bnot not div rem band and bor bxor bsl bsr or xor").
+
+%% Source viewer styles
+-define(SOURCE_STYLES, [{?wxSTC_ERLANG_ATOM,          {0, 0, 0},       normal},
+			{?wxSTC_ERLANG_CHARACTER,     {236, 155, 172}, normal},
+			{?wxSTC_ERLANG_COMMENT,       {160, 53, 35},   normal},
+			{?wxSTC_ERLANG_DEFAULT,       {0, 0, 0},       normal},
+			{?wxSTC_ERLANG_FUNCTION_NAME, {64, 102, 244},  normal},
+			{?wxSTC_ERLANG_KEYWORD,       {130, 40, 172},  bold},
+			{?wxSTC_ERLANG_MACRO,         {40, 144, 170},  normal},
+			{?wxSTC_ERLANG_NODE_NAME,     {0, 0, 0},       normal},
+			{?wxSTC_ERLANG_NUMBER,        {5, 5, 100},     normal},
+			{?wxSTC_ERLANG_OPERATOR,      {30, 0, 0},      normal},
+			{?wxSTC_ERLANG_RECORD,        {40, 100, 20},   normal},
+			{?wxSTC_ERLANG_SEPARATOR,     {0, 0, 0},       normal},
+			{?wxSTC_ERLANG_STRING,        {170, 45, 132},  normal},
+			{?wxSTC_ERLANG_VARIABLE,      {150, 100, 40},  bold},
+			{?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},     normal}]).
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -78,7 +98,8 @@ http://www.protest-project.eu/
              | ?MODULE_LIST
              | ?NOTEBOOK
              | ?SCR_GRAPH
-             | ?STATIC_BMP.
+             | ?STATIC_BMP
+             | ?SOURCE_TEXT.
 
 -type ref() :: any(). %% XXX: should be imported from wx
 %%                wxFrame:wxFrame()
@@ -86,7 +107,8 @@ http://www.protest-project.eu/
 %%              | wxNotebook:wxNotebook()
 %%              | wxTextCtrl:wxTextCtrl()
 %%              | wxScrolledWindow:wxScrolledWindow()
-%%              | wxStaticBitmap:wxStaticBitmap().
+%%              | wxStaticBitmap:wxStaticBitmap()
+%%              | wxHtmlWindow:wxHtmlWindow().
 
 -type gui_type() :: 'ref_add' | 'ref_lookup' | 'ref_ok' | 'ref_stop'
                   | 'dot' | 'log'.

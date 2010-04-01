@@ -90,11 +90,16 @@ setupPanel(Parent) ->
     refServer:add({?NOTEBOOK, Notebook}),
     LogPanel = wxPanel:new(Notebook),
     GraphPanel = wxPanel:new(Notebook),
+    SourcePanel = wxPanel:new(Notebook),
     LogText = wxTextCtrl:new(LogPanel, ?LOG_TEXT, [{size, {400, 400}},
      			      {style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
     refServer:add({?LOG_TEXT, LogText}),
     ScrGraph = wxScrolledWindow:new(GraphPanel),
     refServer:add({?SCR_GRAPH, ScrGraph}),
+    SourceText = wxStyledTextCtrl:new(SourcePanel),
+    refServer:add({?SOURCE_TEXT, SourceText}),
+    setupSourceText(SourceText),
+
     LogPanelSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(LogPanelSizer, LogText,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
@@ -103,8 +108,14 @@ setupPanel(Parent) ->
     wxSizer:add(GraphPanelSizer, ScrGraph,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
     wxWindow:setSizer(GraphPanel, GraphPanelSizer),
+    SourcePanelSizer = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(SourcePanelSizer, SourceText,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+    wxWindow:setSizer(SourcePanel, SourcePanelSizer),
+
     wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
     wxNotebook:addPage(Notebook, GraphPanel, "Graph", [{bSelect, false}]),
+    wxNotebook:addPage(Notebook, SourcePanel, "Source", [{bSelect, false}]),
     RightColumnSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(RightColumnSizer, Notebook,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
@@ -118,7 +129,7 @@ setupPanel(Parent) ->
     wxSizer:fit(TopSizer, Panel),
     wxSizer:setSizeHints(TopSizer, Parent),
     Panel.
-    
+
 %% Menu constructor according to specification (gui.hrl)
 setupMenu(MenuBar, [{Title, Items}|Rest]) ->
     setupMenu(MenuBar, [{Title, Items, []}|Rest]);
@@ -136,6 +147,34 @@ setupMenuItems(Menu, [Options|Rest]) ->
     Item = wxMenuItem:new(Options),
     wxMenu:append(Menu, Item),
     setupMenuItems(Menu, Rest).
+
+%% Setup source viewer
+setupSourceText(Ref) ->
+    NormalFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL, ?wxNORMAL,[]),
+    BoldFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL, ?wxBOLD,[]),
+    ItalicFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxITALIC, ?wxBOLD,[]),
+    wxStyledTextCtrl:styleClearAll(Ref),
+    wxStyledTextCtrl:styleSetFont(Ref, ?wxSTC_STYLE_DEFAULT, NormalFont),
+    wxStyledTextCtrl:setLexer(Ref, ?wxSTC_LEX_ERLANG),
+    wxStyledTextCtrl:setMarginType(Ref, 0, ?wxSTC_MARGIN_NUMBER),
+    Width = wxStyledTextCtrl:textWidth(Ref, ?wxSTC_STYLE_LINENUMBER, "99999"),
+    wxStyledTextCtrl:setMarginWidth(Ref, 0, Width),
+    wxStyledTextCtrl:setMarginWidth(Ref, 1, 0),
+    wxStyledTextCtrl:setSelectionMode(Ref, ?wxSTC_SEL_LINES),
+    wxStyledTextCtrl:setReadOnly(Ref, true),
+    SetStyles = fun({Style, Color, Option}) ->
+			case Option of
+			    bold ->
+				wxStyledTextCtrl:styleSetFont(Ref, Style, BoldFont);
+			    italic ->
+				wxStyledTextCtrl:styleSetFont(Ref, Style, ItalicFont);
+			    _Other ->
+				wxStyledTextCtrl:styleSetFont(Ref, Style, NormalFont)
+			end,
+			wxStyledTextCtrl:styleSetForeground(Ref, Style, Color)
+		end,
+    [SetStyles(Style) || Style <- ?SOURCE_STYLES],
+    wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
 %% Module-adding dialog
 addDialog(Parent) ->
@@ -240,6 +279,7 @@ getFunction() ->
 	nomatch -> {'', 0}
     end.
 
+%% Dialog for inserting function arguments (terms)
 argDialog(Parent, Argnum) ->
     Dialog = wxDialog:new(Parent, ?wxID_ANY, "Function arguments"),
     TopSizer = wxBoxSizer:new(?wxVERTICAL),
@@ -384,8 +424,14 @@ loop() ->
 		?wxNOT_FOUND -> continue;
 		_Other ->
 		    Module = wxListBox:getStringSelection(ModuleList),
+		    %% Update module functions
 		    Funs = funs:stringList(Module),
-		    setListItems(?FUNCTION_LIST, Funs)
+		    setListItems(?FUNCTION_LIST, Funs),
+		    %% Update module source
+		    SourceText = refServer:lookup(?SOURCE_TEXT),
+		    wxStyledTextCtrl:setReadOnly(SourceText, false),
+		    wxStyledTextCtrl:loadFile(SourceText, Module),
+		    wxStyledTextCtrl:setReadOnly(SourceText, true)
 	    end,
 	    loop();
 	#wx{id = ?FUNCTION_LIST,
@@ -409,6 +455,7 @@ loop() ->
 	    ScrGraph = refServer:lookup(?SCR_GRAPH),
 	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20,
                                            W div 20, H div 20),
+	    %% NOTE: Static bitmap for large pics ok?
 	    case refServer:lookup(?STATIC_BMP) of
 		false ->
 		    StaticBmp = wxStaticBitmap:new(ScrGraph, ?wxID_ANY, Image),
