@@ -71,22 +71,44 @@ http://www.protest-project.eu/
 %% Erlang keywords
 -define(KEYWORDS, "after begin case try cond catch andalso orelse end fun if let of query receive when bnot not div rem band and bor bxor bsl bsr or xor").
 
+%% Source viewer theme (dark | light)
+-define(SOURCE_THEME, light).
+
 %% Source viewer styles
--define(SOURCE_STYLES, [{?wxSTC_ERLANG_ATOM,          {0, 0, 0},       normal},
-			{?wxSTC_ERLANG_CHARACTER,     {236, 155, 172}, normal},
-			{?wxSTC_ERLANG_COMMENT,       {160, 53, 35},   normal},
-			{?wxSTC_ERLANG_DEFAULT,       {0, 0, 0},       normal},
-			{?wxSTC_ERLANG_FUNCTION_NAME, {64, 102, 244},  normal},
-			{?wxSTC_ERLANG_KEYWORD,       {130, 40, 172},  bold},
-			{?wxSTC_ERLANG_MACRO,         {40, 144, 170},  normal},
-			{?wxSTC_ERLANG_NODE_NAME,     {0, 0, 0},       normal},
-			{?wxSTC_ERLANG_NUMBER,        {5, 5, 100},     normal},
-			{?wxSTC_ERLANG_OPERATOR,      {30, 0, 0},      normal},
-			{?wxSTC_ERLANG_RECORD,        {40, 100, 20},   normal},
-			{?wxSTC_ERLANG_SEPARATOR,     {0, 0, 0},       normal},
-			{?wxSTC_ERLANG_STRING,        {170, 45, 132},  normal},
-			{?wxSTC_ERLANG_VARIABLE,      {150, 100, 40},  bold},
-			{?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},     normal}]).
+-define(SOURCE_BG_DARK, {60, 60, 60}).
+-define(SOURCE_FG_DARK, {240, 240, 240}).
+-define(SOURCE_STYLES_DARK,  [{?wxSTC_ERLANG_ATOM,          ?SOURCE_FG_DARK,  normal},
+			      {?wxSTC_ERLANG_CHARACTER,     {120, 190, 120},  normal},
+			      {?wxSTC_ERLANG_COMMENT,       {170, 170, 170},  normal},
+			      {?wxSTC_ERLANG_DEFAULT,       ?SOURCE_FG_DARK,  normal},
+			      {?wxSTC_ERLANG_FUNCTION_NAME, ?SOURCE_FG_DARK,  normal},
+			      {?wxSTC_ERLANG_KEYWORD,       {210, 140, 80},   bold},
+			      {?wxSTC_ERLANG_MACRO,         {220, 80, 80},    normal},
+			      {?wxSTC_ERLANG_NODE_NAME,     ?SOURCE_FG_DARK,  normal},
+			      {?wxSTC_ERLANG_NUMBER,        ?SOURCE_FG_DARK,  normal},
+			      {?wxSTC_ERLANG_OPERATOR,      {210, 210, 210},  normal},
+			      {?wxSTC_ERLANG_RECORD,        {100, 180, 180},  normal},
+			      {?wxSTC_ERLANG_SEPARATOR,     ?SOURCE_FG_DARK,  normal},
+			      {?wxSTC_ERLANG_STRING,        {120, 190, 120},  normal},
+			      {?wxSTC_ERLANG_VARIABLE,      {100, 170, 210},  bold},
+			      {?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},      normal}]).
+-define(SOURCE_BG_LIGHT, {255, 255, 255}).
+-define(SOURCE_FG_LIGHT, {30, 30, 30}).
+-define(SOURCE_STYLES_LIGHT, [{?wxSTC_ERLANG_ATOM,          ?SOURCE_FG_LIGHT, normal},
+			      {?wxSTC_ERLANG_CHARACTER,     {120, 190, 120},  normal},
+			      {?wxSTC_ERLANG_COMMENT,       {20, 140, 20},    normal},
+			      {?wxSTC_ERLANG_DEFAULT,       ?SOURCE_FG_LIGHT, normal},
+			      {?wxSTC_ERLANG_FUNCTION_NAME, ?SOURCE_FG_LIGHT, normal},
+			      {?wxSTC_ERLANG_KEYWORD,       {140, 40, 170},   bold},
+			      {?wxSTC_ERLANG_MACRO,         {180, 40, 40},    normal},
+			      {?wxSTC_ERLANG_NODE_NAME,     ?SOURCE_FG_LIGHT, normal},
+			      {?wxSTC_ERLANG_NUMBER,        ?SOURCE_FG_LIGHT, normal},
+			      {?wxSTC_ERLANG_OPERATOR,      {70, 70, 70},     normal},
+			      {?wxSTC_ERLANG_RECORD,        {150, 140, 40},   normal},
+			      {?wxSTC_ERLANG_SEPARATOR,     ?SOURCE_FG_LIGHT, normal},
+			      {?wxSTC_ERLANG_STRING,        {50, 50, 200},    normal},
+			      {?wxSTC_ERLANG_VARIABLE,      {20, 120, 140},   bold},
+			      {?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},      normal}]).
 
 %%%----------------------------------------------------------------------
 %%% Types

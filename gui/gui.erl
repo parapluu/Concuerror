@@ -153,13 +153,23 @@ setupSourceText(Ref) ->
     NormalFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL, ?wxNORMAL,[]),
     BoldFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL, ?wxBOLD,[]),
     ItalicFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxITALIC, ?wxBOLD,[]),
+    case ?SOURCE_THEME of
+	dark ->
+	    Styles = ?SOURCE_STYLES_DARK,
+	    BgColor = ?SOURCE_BG_DARK;
+	light ->
+	    Styles = ?SOURCE_STYLES_LIGHT,
+	    BgColor = ?SOURCE_BG_LIGHT
+    end,
     wxStyledTextCtrl:styleClearAll(Ref),
     wxStyledTextCtrl:styleSetFont(Ref, ?wxSTC_STYLE_DEFAULT, NormalFont),
+    wxStyledTextCtrl:styleSetBackground(Ref, ?wxSTC_STYLE_DEFAULT, BgColor),
     wxStyledTextCtrl:setLexer(Ref, ?wxSTC_LEX_ERLANG),
     wxStyledTextCtrl:setMarginType(Ref, 0, ?wxSTC_MARGIN_NUMBER),
     Width = wxStyledTextCtrl:textWidth(Ref, ?wxSTC_STYLE_LINENUMBER, "99999"),
     wxStyledTextCtrl:setMarginWidth(Ref, 0, Width),
     wxStyledTextCtrl:setMarginWidth(Ref, 1, 0),
+    wxStyledTextCtrl:setScrollWidth(Ref, 1000),
     wxStyledTextCtrl:setSelectionMode(Ref, ?wxSTC_SEL_LINES),
     wxStyledTextCtrl:setReadOnly(Ref, true),
     SetStyles = fun({Style, Color, Option}) ->
@@ -171,9 +181,10 @@ setupSourceText(Ref) ->
 			    _Other ->
 				wxStyledTextCtrl:styleSetFont(Ref, Style, NormalFont)
 			end,
-			wxStyledTextCtrl:styleSetForeground(Ref, Style, Color)
+			wxStyledTextCtrl:styleSetForeground(Ref, Style, Color),
+			wxStyledTextCtrl:styleSetBackground(Ref, Style, BgColor)
 		end,
-    [SetStyles(Style) || Style <- ?SOURCE_STYLES],
+    [SetStyles(Style) || Style <- Styles],
     wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
 %% Module-adding dialog
