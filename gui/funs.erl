@@ -37,7 +37,7 @@ getFuns([Node|Rest], Funs) ->
 		    [List] = erl_syntax:attribute_arguments(Node),
 		    Args = erl_syntax:list_elements(List),
 		    NewFuns = getExports(Args, []),
-		    getFuns(Rest, NewFuns);
+		    getFuns(Rest, NewFuns ++ Funs);
 		_Other -> getFuns(Rest, Funs)
 	    end;	
 	function ->
