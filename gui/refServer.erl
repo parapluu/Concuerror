@@ -9,7 +9,7 @@
 -module(refServer).
 -export([start/1, stop/0, add/1, lookup/1]).
 
--include("gui.hrl").
+-include("../include/gui.hrl").
 
 %% Start server linked to calling process
 

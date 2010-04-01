@@ -11,7 +11,8 @@
 -export([start/0]).
 
 -include_lib("wx/include/wx.hrl").
--include("gui.hrl").
+-include("../include/gui.hrl").
+
 
 -spec start() -> 'ok'.
 

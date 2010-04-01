@@ -5,7 +5,7 @@
 -endif.
 -compile(export_all).
 
--include("gui.hrl").
+-include("../include/gui.hrl").
 
 -record(state,
   { actives  = []
