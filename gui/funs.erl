@@ -9,13 +9,13 @@
 -module(funs).
 -export([stringList/1, tupleList/1]).
 
--spec tupleList(module()) -> [{atom(), arity()}].
+-spec tupleList(string()) -> [{atom(), arity()}].
                        
 tupleList(Module) ->
     {ok, Form} = epp_dodger:quick_parse_file(Module),
     getFuns(Form, []).
 
--spec stringList(module()) -> [string()].
+-spec stringList(string()) -> [string()].
 
 stringList(Module) ->
     Funs = tupleList(Module),
