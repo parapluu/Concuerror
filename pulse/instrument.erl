@@ -384,8 +384,8 @@ timeout(Term) ->
 %% Find the variables that are assigned in a term, which must have
 %% been annotated with erl_syntax_lib:annotate_bindings beforehand.
 bound_vars(Term) ->
-    case lists:keysearch(bound, 1, get_ann(Term)) of
-        {value, {bound, X}} -> X;
+    case lists:keyfind(bound, 1, get_ann(Term)) of
+        {bound, X} -> X;
         false -> []
     end.
 
@@ -448,10 +448,10 @@ instrument_direct_call(Module, Atom, Arguments, Name) ->
             Inner
     end.
 
-module_value({}) ->
-    {};
+module_value({} = T) ->
+    T;
 module_value(Module) ->
-    atom_value(Module).
+    erl_syntax:atom_value(Module).
 
 qualified_function({}, Atom) ->
     Atom;
@@ -567,12 +567,12 @@ function_parts_from(Module, Fun, Arity) ->
 %% where NeedName indicates whether the instrumented function expects
 %% to be passed an extra Name parameter and NeedYield indicates whether
 %% you should call ?SCHEDULER:yield() before the instrumented function.
-look_up_function(Sched, {}, Fun, Arity) when is_atom(Fun) ->
+look_up_function(Sched, {} = T, Fun, Arity) when is_atom(Fun) ->
     case erl_internal:bif(Fun, Arity) of
         true ->
             look_up_function_2(Sched, Sched:instrumented(), erlang, Fun);
         false ->
-            look_up_function_2(Sched, Sched:instrumented(), {}, Fun)
+            look_up_function_2(Sched, Sched:instrumented(), T, Fun)
     end;
 look_up_function(Sched, Module, Fun, _Arity) ->
     look_up_function_2(Sched, Sched:instrumented(), Module, Fun).

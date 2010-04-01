@@ -208,24 +208,24 @@ start(Fun) ->
 start(Config,Fun) ->
     erlang:process_flag(trap_exit, true),
     % seed
-    case lists:keysearch(seed, 1, Config) of
-        {value, {seed, {A, B, C}}} -> random:seed(A, B, C);
-        _                          -> ok
+    case lists:keyfind(seed, 1, Config) of
+        {seed, {A, B, C}} -> random:seed(A, B, C);
+        _                 -> ok
     end,
     % schedule
-    case lists:keysearch(schedule, 1, Config) of
-        {value, {schedule, Sched}} -> ok;
-        _                          -> Sched = random
+    case lists:keyfind(schedule, 1, Config) of
+        {schedule, Sched} -> ok;
+        _                 -> Sched = random
     end,
     % verbose
-   case lists:keysearch(verbose, 1, Config) of
-       {value, {verbose, Verbose}} -> ok;
-       _                           -> Verbose = true
+   case lists:keyfind(verbose, 1, Config) of
+       {verbose, Verbose} -> ok;
+       _                  -> Verbose = true
    end,
     % event logging
     Events =
-        case lists:keysearch(eventLog, 1, Config) of
-            {value, {eventLog, false}} -> noEventLogging;
+        case lists:keyfind(eventLog, 1, Config) of
+            {eventLog, false} -> noEventLogging;
             _ -> erlang:spawn_link(fun() -> collectEvents(Verbose,[]) end)
         end,
     register(?MODULE, self()),
@@ -251,7 +251,8 @@ start(Config,Fun) ->
 % implementation of the scheduler
 
 % the main scheduler
-schedule(#state{actives = Actives, queues = Queues, after0s = After0s,
+schedule(#state{actives = Actives, after0s = After0s, blocks = Blocks,
+                events = StEvents, log = StLog, queues = Queues,
                 yields = Yields} = State) ->
     case {Actives, Queues, After0s, Yields} of
         % run a process
@@ -260,9 +261,9 @@ schedule(#state{actives = Actives, queues = Queues, after0s = After0s,
             runProcess(Pid, State#state{actives = Pids});
         % all processes are blocked; there are no messages to deliver
         {[],[],[],[]} ->
-            [{schedule, lists:reverse(State#state.log)},
+            [{schedule, lists:reverse(StLog)},
              {live,     State#state.blocks}] ++
-                case State#state.events of
+                case StEvents of
                     noEventLogging -> [];
                     Events         -> Events ! {done, self()},
                                       receive
@@ -282,7 +283,7 @@ schedule(#state{actives = Actives, queues = Queues, after0s = After0s,
                                    end, After0s),
                     State1 = State#state{after0s = [{Pid1, TO-Timeout}
                                                     || {Pid1, TO} <- AfterXs],
-                                         blocks = State#state.blocks -- [Pid],
+                                         blocks = Blocks -- [Pid],
                                          actives = [Pid]},
                     event(State,{continue, name(State1, Pid)}),
                     Pid ! {?MODULE, afterX},
@@ -296,13 +297,15 @@ schedule(#state{actives = Actives, queues = Queues, after0s = After0s,
 % runs all active processes
 runProcess(Pid, #state{actives = Actives, after0s = After0s,
                        blocks = Blocks, links = Links,
-                       monitors = Monitors, queues = Queues} = State) ->
+                       monitors = Monitors, names = Names,
+                       queues = Queues, trapping = Trapping,
+                       yields = Yields} = State) ->
     receive
         % fork a new process with a given name
         {fork, NameHint, Pid2} ->
-            Name = createName(State#state.names, NameHint, Pid2),
+            Name = createName(Names, NameHint, Pid2),
             State1 = State#state{actives = [Pid2|Actives],
-                                 names = [{Pid2,Name}|State#state.names]},
+                                 names = [{Pid2,Name}|Names]},
             event(State, {fork, name(State1, Pid), name(State1, Pid2), Pid2}),
             erlang:link(Pid2),
             runProcess(Pid, State1);
@@ -346,7 +349,7 @@ runProcess(Pid, #state{actives = Actives, after0s = After0s,
         {trap_exit, Value} ->
             event(State, {trap, name(State, Pid), Value}),
             runProcess(Pid, State#state{trapping = unitIf(Pid, Value) ++
-                                            (State#state.trapping -- [Pid])});
+                                            (Trapping -- [Pid])});
         % send a message
         {send, To, Msg} ->
             event(State, {send, name(State, Pid), Msg, name(State, To)}),
@@ -364,7 +367,7 @@ runProcess(Pid, #state{actives = Actives, after0s = After0s,
         % yield
         {yield} ->
             event(State, {yield, name(State, Pid)}),
-            schedule(State#state{yields = [Pid|State#state.yields],
+            schedule(State#state{yields = [Pid|Yields],
                                  blocks = [Pid|Blocks]});
         % consuming a message
         {consumed, Who, What} ->
@@ -379,7 +382,7 @@ runProcess(Pid, #state{actives = Actives, after0s = After0s,
             runProcess(Pid, State);
         {unblock, Pid2} ->
             case {lists:member(Pid2, Blocks),
-                  lists:member(Pid2, State#state.yields),
+                  lists:member(Pid2, Yields),
                   lists:member(Pid2, After0s)} of
                 {true, false, false} ->
                     NewState = State#state{blocks = Blocks -- [Pid2],
@@ -389,7 +392,7 @@ runProcess(Pid, #state{actives = Actives, after0s = After0s,
             Pid ! {?MODULE, go},
             runProcess(Pid, NewState);
         % finish
-        {'EXIT', Pid, Reason} ->
+        {'EXIT', Pid, Reason} = Exit ->
             event(State, {exit, name(State, Pid), Reason}),
             LinksToSend = lists:usort([{exit, Pid1}
                                        || {Pid1, Pid2} <- Links,
@@ -400,7 +403,7 @@ runProcess(Pid, #state{actives = Actives, after0s = After0s,
             MonitorsToSend = lists:usort([{mon, Pid1, Ref}
                                           || {Pid1, Pid2, Ref} <- Monitors, 
                                              Pid2 =:= Pid]),
-            schedule(State#state{links = [{Pid1, Pid2} || {Pid1, Pid2} <- Links,
+            schedule(State#state{links = [PidT || {Pid1, Pid2} = PidT<- Links,
                                                           Pid =/= Pid1,
                                                           Pid =/= Pid2],
                                  queues = lists:foldl(
@@ -408,8 +411,7 @@ runProcess(Pid, #state{actives = Actives, after0s = After0s,
                                                     event(State, {send,
                                                                   name(State, 
                                                                        Pid),
-                                                                  {'EXIT', Pid,
-                                                                   Reason},
+                                                                  Exit,
                                                                   name(State,
                                                                        Pid1)}),
                                                     sendOff(Pid, Pid1,
@@ -419,15 +421,14 @@ runProcess(Pid, #state{actives = Actives, after0s = After0s,
                                                     event(State, {send,
                                                                   name(State,
                                                                        Pid),
-                                                                  {'DOWN', Ref,
-                                                                   process,
-                                                                   Pid, Reason},
+                                                                  D = {'DOWN',
+                                                                       Ref,
+                                                                       process,
+                                                                       Pid,
+                                                                       Reason},
                                                                   name(State,
                                                                        Pid1)}),
-                                                    sendOff(Pid, Pid1,
-                                                            {msg, {'DOWN', Ref,
-                                                                   process, Pid,
-                                                                   Reason}},
+                                                    sendOff(Pid, Pid1, {msg, D},
                                                             Qs)
                                             end,
                                             [Queue
@@ -443,12 +444,11 @@ runProcess(Pid, #state{actives = Actives, after0s = After0s,
 
 % adding a message to a queue
 sendOff(From, To, Msg, Queues) ->
-    case lists:keysearch({From, To}, 1, Queues) of
-        {value, {_, Queue}} ->
-            lists:keyreplace({From, To}, 1, Queues, {{From, To},
-                                                     Queue ++ [Msg]});
+    case lists:keyfind(FromTo = {From, To}, 1, Queues) of
+        {_, Queue} ->
+            lists:keyreplace(FromTo, 1, Queues, {FromTo, Queue ++ [Msg]});
         false ->
-            [{{From, To}, [Msg]}|Queues]
+            [{FromTo, [Msg]}|Queues]
     end.
 
 % unblock a process
@@ -480,8 +480,8 @@ unblockProcess(Pid, State) ->
     case Action of
         % deliver a message from a queue
         {deliver, From} ->
-            {value, {_, [Msg|Queue]}} =
-                lists:keysearch({From, Pid}, 1, State2#state.queues),
+            {_, [Msg|Queue]} =
+                lists:keyfind(FromPid = {From, Pid}, 1, State2#state.queues),
             case Msg of
                 {exit, Who, Reason} ->
                     Msg1 = {'EXIT', Who, Reason},
@@ -502,10 +502,10 @@ unblockProcess(Pid, State) ->
             end,
             Queues =
                 case Queue of
-                    [] -> lists:keydelete({From, Pid}, 1, State2#state.queues);
+                    [] -> lists:keydelete(FromPid, 1, State2#state.queues);
                     _ ->
-                        lists:keyreplace({From, Pid}, 1, State2#state.queues,
-                                         {{From, Pid}, Queue})
+                        lists:keyreplace(FromPid, 1, State2#state.queues,
+                                         {FromPid, Queue})
                 end,
             schedule(State2#state{queues = Queues});
         % trigger the "after 0"
@@ -558,14 +558,14 @@ chooseAction(State, Actions) ->
     end.
 
 name(State, Pid) ->
-    case lists:keysearch(Pid, 1, State#state.names) of
-        {value, {_, Name}} -> Name;
-        _                -> Pid
+    case lists:keyfind(Pid, 1, State#state.names) of
+        {_, Name} -> Name;
+        _         -> Pid
     end.
 
 pid(State, Name) ->
-    case lists:keysearch(Name, 2, State#state.names) of
-        {value, {Pid, _}} -> Pid;
+    case lists:keyfind(Name, 2, State#state.names) of
+        {Pid, _} -> Pid;
         _               -> erlang:exit({bad_name, Name})
     end.
 
@@ -630,7 +630,7 @@ event(State, Event) ->
         Events         -> Events ! Event
     end.
 
-collectEvents(Verbose,Events) ->
+collectEvents(Verbose, Events) ->
     receive
         {done, Pid} -> Pid ! {events, lists:reverse(Events)};
         Event       -> collectEvents(Verbose, [cleanup(Event)|Events])

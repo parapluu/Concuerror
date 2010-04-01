@@ -28,7 +28,7 @@ stringList([{Name, Arity}|Rest], Strings) ->
 
 getFuns([], Funs) ->
     Funs;
-getFuns([Node|Rest], Funs) ->
+getFuns([Node|Rest] = L, Funs) ->
     case erl_syntax:type(Node) of
 	attribute ->
 	    Name = erl_syntax:atom_name(erl_syntax:attribute_name(Node)),
@@ -42,7 +42,7 @@ getFuns([Node|Rest], Funs) ->
 	    end;	
 	function ->
 	    case Funs of
-		[] -> getAllFuns([Node|Rest], []);
+		[] -> getAllFuns(L, []);
 		_Other -> Funs
 	    end;
 	_Other -> getFuns(Rest, Funs)

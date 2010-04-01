@@ -33,8 +33,8 @@ stop() ->
 
 -spec add({id(), ref()}) -> 'ok'.
 
-add({Id, Ref}) ->
-    refServer ! {self(), #gui{type = ref_add, msg = {Id, Ref}}},
+add({_Id, _Ref} = T) ->
+    refServer ! {self(), #gui{type = ref_add, msg = T}},
     receive
 	#gui{type = ref_ok} -> ok
     end.
@@ -55,9 +55,9 @@ reg() ->
 %% TODO: change list to dict
 loop(Dict) ->
     receive
-	{Pid, #gui{type = ref_add, msg = {Id, Ref}}} ->
+	{Pid, #gui{type = ref_add, msg = {_Id, _Ref} = T}} ->
 	    Pid ! #gui{type = ref_ok},
-	    loop([{Id, Ref}|Dict]);
+	    loop([T|Dict]);
 	{Pid, #gui{type = ref_lookup, msg = Id}} ->
 	    Result = lists:keyfind(Id, 1, Dict),
 	    Pid ! #gui{type = ref_ok, msg = Result},
