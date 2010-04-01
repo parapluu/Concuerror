@@ -1,25 +1,25 @@
 -module(instrument).
--compile(export_all).
+-export([c/1, instrument/1, instrument_module/1, open/1, write/2, view/1]).
 
 -import(erl_syntax,
-    [abstract/1, application/2, application_arguments/1,
-	 application_operator/1, arity_qualifier/2,
-	 arity_qualifier_argument/1, arity_qualifier_body/1, atom/1,
-	 atom_value/1, block_expr/1, case_expr/2, clause/2, clause/3,
-	 clause_body/1, clause_guard/1, clause_patterns/1,
-	 form_list_elements/1, fun_expr/1, function_arity/1,
-	 function_name/1, get_ann/1, get_pos/1, implicit_fun/1,
-	 implicit_fun_name/1, infix_expr_left/1, infix_expr_operator/1,
-	 infix_expr_right/1, integer/1, integer_value/1, list/1,
-	 match_expr/2, match_expr_pattern/1, module_qualifier/2,
-	 module_qualifier_argument/1, module_qualifier_body/1, operator/1,
-	 operator_name/1, receive_expr/3, receive_expr_action/1,
-	 receive_expr_clauses/1, receive_expr_timeout/1, revert/1,
-	 string/1, tuple/1, type/1, variable/1, underscore/0,
-	 variable_name/1]).
+        [abstract/1, application/2, application_arguments/1,
+         application_operator/1, arity_qualifier/2,
+         arity_qualifier_argument/1, arity_qualifier_body/1, atom/1,
+         atom_value/1, block_expr/1, case_expr/2, clause/3,
+         clause_body/1, clause_guard/1, clause_patterns/1,
+         form_list_elements/1, fun_expr/1, function_arity/1,
+         function_name/1, get_ann/1, implicit_fun/1, implicit_fun_name/1,
+         infix_expr_left/1, infix_expr_operator/1, infix_expr_right/1,
+         integer/1, integer_value/1, list/1, match_expr/2,
+         match_expr_pattern/1, module_qualifier/2,
+         module_qualifier_argument/1, module_qualifier_body/1,
+         operator_name/1, receive_expr/3, receive_expr_action/1,
+         receive_expr_clauses/1, receive_expr_timeout/1, revert/1,
+         tuple/1, type/1, variable/1, underscore/0,
+         variable_name/1]).
 
 -import(erl_syntax_lib,
-	[annotate_bindings/2, map_subtrees/2, new_variable_name/1,
+	[map_subtrees/2, new_variable_name/1,
          strip_comments/1, variables/1]).
 
 %%
@@ -152,7 +152,8 @@ instrument_toplevel(Term, Name) ->
         true ->
             case name_is_member(Term, get(functions)) of
                 true ->
-                    instrument_term(Term, [atom_value(function_name(Term))|Name]);
+                    instrument_term(Term,
+                                    [atom_value(function_name(Term))|Name]);
                 false ->
                     put(skip, [Term|get(skip)]),
                     Term
@@ -315,7 +316,6 @@ instrument_receive(Term) ->
                 NewCP = match_expr(Var,CP),
                 NewBody = [scheduler(consumed, [Var]) |
                            TransformBody(clause_body(Clause))], 
-                %% 		io:format("~p ==> ~p\n~p\n",[CP, NewCP, NewBody]),
                 clause([NewCP],
                        clause_guard(Clause),
                        NewBody)
@@ -505,11 +505,12 @@ instrument_indirect_call(Module, Atom, Arguments, Name) ->
 instrument_implicit_fun(Term, Name) ->
     {Module, Atom, Arity} = function_parts(implicit_fun_name(Term)),
     {IModule, IAtom, NeedName, NeedYield} =
-        look_up_function(scheduler(),
-                         module_value(Module), atom_value(Atom), integer_value(Arity)),
+        look_up_function(scheduler(), module_value(Module), atom_value(Atom),
+                         integer_value(Arity)),
     case {NeedName, NeedYield} of
         {false, false} ->
-            Fun = qualified_function(IModule, arity_qualifier(atom(IAtom), Arity)),
+            Fun = qualified_function(IModule,
+                                     arity_qualifier(atom(IAtom), Arity)),
             implicit_fun(Fun);
         _ ->
             Vars = [ new_var() || _ <- seq(1, integer_value(Arity)) ],
