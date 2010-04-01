@@ -134,10 +134,11 @@ http://www.protest-project.eu/
 %%              | wxStaticBitmap:wxStaticBitmap()
 %%              | wxHtmlWindow:wxHtmlWindow().
 
--type gui_type() :: 'ref_add' | 'ref_error' | 'ref_lookup' | 'ref_ok' |
-                    'ref_stop' | 'dot' | 'log'.
+-type gui_type() :: 'ref_add' | 'ref_error' | 'ref_lookup' | 'ref_ok'
+                  | 'ref_stop' | 'dot' | 'log'.
 
--type gui_msg()  ::'ok' | string() | id() | {id(), ref()}.
+-type gui_msg()  :: 'ok' | 'not_found' | string() | id() | ref()
+                  | {id(), ref()}.
 
 %%%----------------------------------------------------------------------
 %%% Records
