@@ -201,8 +201,7 @@ addDialog(Parent) ->
                                                ?wxFD_FILE_MUST_EXIST bor
                                                ?wxFD_MULTIPLE}]),
     case wxDialog:showModal(Dialog) of
-	?wxID_OK ->
-	    addListItems(?MODULE_LIST, wxFileDialog:getPaths(Dialog));
+	?wxID_OK -> addListItems(?MODULE_LIST, wxFileDialog:getPaths(Dialog));
 	_Other -> continue
     end,
     wxDialog:destroy(Dialog).
@@ -468,7 +467,7 @@ loop() ->
                                            W div 20, H div 20),
 	    %% NOTE: Static bitmap for large pics ok?
 	    case refServer:lookup(?STATIC_BMP) of
-		false ->
+		not_found ->
 		    StaticBmp = wxStaticBitmap:new(ScrGraph, ?wxID_ANY, Image),
 		    refServer:add({?STATIC_BMP, StaticBmp});
 		Result ->

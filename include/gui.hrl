@@ -77,38 +77,40 @@ http://www.protest-project.eu/
 %% Source viewer styles
 -define(SOURCE_BG_DARK, {60, 60, 60}).
 -define(SOURCE_FG_DARK, {240, 240, 240}).
--define(SOURCE_STYLES_DARK,  [{?wxSTC_ERLANG_ATOM,          ?SOURCE_FG_DARK,  normal},
-			      {?wxSTC_ERLANG_CHARACTER,     {120, 190, 120},  normal},
-			      {?wxSTC_ERLANG_COMMENT,       {170, 170, 170},  normal},
-			      {?wxSTC_ERLANG_DEFAULT,       ?SOURCE_FG_DARK,  normal},
-			      {?wxSTC_ERLANG_FUNCTION_NAME, ?SOURCE_FG_DARK,  normal},
-			      {?wxSTC_ERLANG_KEYWORD,       {210, 140, 80},   bold},
-			      {?wxSTC_ERLANG_MACRO,         {220, 80, 80},    normal},
-			      {?wxSTC_ERLANG_NODE_NAME,     ?SOURCE_FG_DARK,  normal},
-			      {?wxSTC_ERLANG_NUMBER,        ?SOURCE_FG_DARK,  normal},
-			      {?wxSTC_ERLANG_OPERATOR,      {210, 210, 210},  normal},
-			      {?wxSTC_ERLANG_RECORD,        {100, 180, 180},  normal},
-			      {?wxSTC_ERLANG_SEPARATOR,     ?SOURCE_FG_DARK,  normal},
-			      {?wxSTC_ERLANG_STRING,        {120, 190, 120},  normal},
-			      {?wxSTC_ERLANG_VARIABLE,      {100, 170, 210},  bold},
-			      {?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},      normal}]).
+-define(SOURCE_STYLES_DARK, 
+	[{?wxSTC_ERLANG_ATOM,          ?SOURCE_FG_DARK,  normal},
+	 {?wxSTC_ERLANG_CHARACTER,     {120, 190, 120},  normal},
+	 {?wxSTC_ERLANG_COMMENT,       {170, 170, 170},  normal},
+	 {?wxSTC_ERLANG_DEFAULT,       ?SOURCE_FG_DARK,  normal},
+	 {?wxSTC_ERLANG_FUNCTION_NAME, ?SOURCE_FG_DARK,  normal},
+	 {?wxSTC_ERLANG_KEYWORD,       {210, 140, 80},   bold},
+	 {?wxSTC_ERLANG_MACRO,         {220, 80, 80},    normal},
+	 {?wxSTC_ERLANG_NODE_NAME,     ?SOURCE_FG_DARK,  normal},
+	 {?wxSTC_ERLANG_NUMBER,        ?SOURCE_FG_DARK,  normal},
+	 {?wxSTC_ERLANG_OPERATOR,      {210, 210, 210},  normal},
+	 {?wxSTC_ERLANG_RECORD,        {100, 180, 180},  normal},
+	 {?wxSTC_ERLANG_SEPARATOR,     ?SOURCE_FG_DARK,  normal},
+	 {?wxSTC_ERLANG_STRING,        {120, 190, 120},  normal},
+	 {?wxSTC_ERLANG_VARIABLE,      {100, 170, 210},  bold},
+	 {?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},      normal}]).
 -define(SOURCE_BG_LIGHT, {255, 255, 255}).
 -define(SOURCE_FG_LIGHT, {30, 30, 30}).
--define(SOURCE_STYLES_LIGHT, [{?wxSTC_ERLANG_ATOM,          ?SOURCE_FG_LIGHT, normal},
-			      {?wxSTC_ERLANG_CHARACTER,     {120, 190, 120},  normal},
-			      {?wxSTC_ERLANG_COMMENT,       {20, 140, 20},    normal},
-			      {?wxSTC_ERLANG_DEFAULT,       ?SOURCE_FG_LIGHT, normal},
-			      {?wxSTC_ERLANG_FUNCTION_NAME, ?SOURCE_FG_LIGHT, normal},
-			      {?wxSTC_ERLANG_KEYWORD,       {140, 40, 170},   bold},
-			      {?wxSTC_ERLANG_MACRO,         {180, 40, 40},    normal},
-			      {?wxSTC_ERLANG_NODE_NAME,     ?SOURCE_FG_LIGHT, normal},
-			      {?wxSTC_ERLANG_NUMBER,        ?SOURCE_FG_LIGHT, normal},
-			      {?wxSTC_ERLANG_OPERATOR,      {70, 70, 70},     normal},
-			      {?wxSTC_ERLANG_RECORD,        {150, 140, 40},   normal},
-			      {?wxSTC_ERLANG_SEPARATOR,     ?SOURCE_FG_LIGHT, normal},
-			      {?wxSTC_ERLANG_STRING,        {50, 50, 200},    normal},
-			      {?wxSTC_ERLANG_VARIABLE,      {20, 120, 140},   bold},
-			      {?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},      normal}]).
+-define(SOURCE_STYLES_LIGHT,
+	[{?wxSTC_ERLANG_ATOM,          ?SOURCE_FG_LIGHT, normal},
+	 {?wxSTC_ERLANG_CHARACTER,     {120, 190, 120},  normal},
+	 {?wxSTC_ERLANG_COMMENT,       {20, 140, 20},    normal},
+	 {?wxSTC_ERLANG_DEFAULT,       ?SOURCE_FG_LIGHT, normal},
+	 {?wxSTC_ERLANG_FUNCTION_NAME, ?SOURCE_FG_LIGHT, normal},
+	 {?wxSTC_ERLANG_KEYWORD,       {140, 40, 170},   bold},
+	 {?wxSTC_ERLANG_MACRO,         {180, 40, 40},    normal},
+	 {?wxSTC_ERLANG_NODE_NAME,     ?SOURCE_FG_LIGHT, normal},
+	 {?wxSTC_ERLANG_NUMBER,        ?SOURCE_FG_LIGHT, normal},
+	 {?wxSTC_ERLANG_OPERATOR,      {70, 70, 70},     normal},
+	 {?wxSTC_ERLANG_RECORD,        {150, 140, 40},   normal},
+	 {?wxSTC_ERLANG_SEPARATOR,     ?SOURCE_FG_LIGHT, normal},
+	 {?wxSTC_ERLANG_STRING,        {50, 50, 200},    normal},
+	 {?wxSTC_ERLANG_VARIABLE,      {20, 120, 140},   bold},
+	 {?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},      normal}]).
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -132,8 +134,8 @@ http://www.protest-project.eu/
 %%              | wxStaticBitmap:wxStaticBitmap()
 %%              | wxHtmlWindow:wxHtmlWindow().
 
--type gui_type() :: 'ref_add' | 'ref_lookup' | 'ref_ok' | 'ref_stop'
-                  | 'dot' | 'log'.
+-type gui_type() :: 'ref_add' | 'ref_error' | 'ref_lookup' | 'ref_ok' |
+                    'ref_stop' | 'dot' | 'log'.
 
 -type gui_msg()  ::'ok' | string() | id() | {id(), ref()}.
 

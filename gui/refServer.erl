@@ -39,28 +39,34 @@ add({_Id, _Ref} = T) ->
 	#gui{type = ref_ok} -> ok
     end.
 	
--spec lookup(id()) -> ref().
+-spec lookup(id()) -> ref() | not_found.
 
 lookup(Id) ->
     refServer ! {self(), #gui{type = ref_lookup, msg = Id}},
     receive
-	#gui{type = ref_ok, msg = {_, Ref}} -> Ref;
-	#gui{type = ref_ok, msg = Other} -> Other
+	#gui{type = ref_ok, msg = Value} -> Value;
+	#gui{type = ref_error, msg = not_found} -> not_found;
+	#gui{type = ref_error, msg = Msg} ->
+	    io:format("Internal refServer:lookup error - ~s~n", [Msg]),
+	    exit(error)
     end.
 
 reg() ->
     register(refServer, self()),
-    loop([]).
+    loop(dict:new()).
 
-%% TODO: change list to dict
 loop(Dict) ->
     receive
-	{Pid, #gui{type = ref_add, msg = {_Id, _Ref} = T}} ->
+	{Pid, #gui{type = ref_add, msg = {Id, Ref}}} ->
+	    NewDict = dict:append(Id, Ref, Dict),
 	    Pid ! #gui{type = ref_ok},
-	    loop([T|Dict]);
+	    loop(NewDict);
 	{Pid, #gui{type = ref_lookup, msg = Id}} ->
-	    Result = lists:keyfind(Id, 1, Dict),
-	    Pid ! #gui{type = ref_ok, msg = Result},
+	    case dict:find(Id, Dict) of
+		{ok, [Value]} -> Pid ! #gui{type = ref_ok, msg = Value};
+		{ok, _Value} -> Pid ! #gui{type = ref_error, msg = "Found more than one"};
+		error -> Pid ! #gui{type = ref_error, msg = not_found}
+	    end,
 	    loop(Dict);
 	{Pid, #gui{type = ref_stop}} ->
 	    Pid ! #gui{type = ref_ok};
