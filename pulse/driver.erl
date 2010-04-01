@@ -21,8 +21,8 @@
 drive(Fun, Caller) ->
     Result = scheduler:start([{seed, now()}], Fun),
     io:format("~p~n", [noEvents(Result)]),
-    case lists:keysearch(events, 1, Result) of
-	{value, {events, Events}} ->
+    case lists:keyfind(events, 1, Result) of
+	{events, Events} ->
 	    io:format("(generating file schedule.dot ...)~n"),
 	    dot:dot("schedule.dot", Events),
 	    Caller ! #gui{type = dot, msg = ok};
@@ -35,8 +35,8 @@ drive(Fun, Caller) ->
 drive(Fun) ->
     Result = scheduler:start([{seed, now()}], Fun),
     io:format("~p~n", [noEvents(Result)]),
-    case lists:keysearch(events,1,Result) of
-	{value, {events, Events}} ->
+    case lists:keyfind(events, 1, Result) of
+	{events, Events} ->
 	    io:format("(generating file schedule.dot ...)~n"),
 	    dot:dot("schedule.dot", Events);
 	_ -> ok
@@ -54,9 +54,9 @@ drive0(Fun) ->
 drive2(Fun) ->
     io:format("=== RUN 1 ===~n"),
     Result1 = drive(Fun),
-    Sched1  = case lists:keysearch(schedule, 1, Result1) of
-		  {value, {schedule, Sched}} -> Sched;
-		  _                          -> exit("no schedule")
+    Sched1  = case lists:keyfind(schedule, 1, Result1) of
+		  {schedule, Sched} -> Sched;
+		  _                 -> exit("no schedule")
 	      end,
     io:format("=== RUN 2 ===~n"),
     Result2 = scheduler:start([{schedule, Sched1}], fun() -> Fun() end),
