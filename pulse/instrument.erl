@@ -1,3 +1,11 @@
+%%%----------------------------------------------------------------------
+%%% File : instrument.erl
+%%% Modified by : Maria Christakis <christakismaria@gmail.com>
+%%% Description : 
+%%%
+%%% Created : 1 Apr 2010 by Maria Christakis <christakismaria@gmail.com>
+%%%----------------------------------------------------------------------
+
 -module(instrument).
 -export([c/1, instrument/1, instrument_module/1, open/1, write/2, view/1]).
 
