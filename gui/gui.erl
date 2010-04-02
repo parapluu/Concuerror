@@ -13,6 +13,9 @@
 -include_lib("wx/include/wx.hrl").
 -include("../include/gui.hrl").
 
+%%%----------------------------------------------------------------------
+%%% Exported functions
+%%%----------------------------------------------------------------------
 
 -spec start() -> 'ok'.
 
@@ -31,6 +34,10 @@ start() ->
     unregister(loop),
     os:cmd("rm -f *.dot *.png"),
     wx:destroy().
+
+%%%----------------------------------------------------------------------
+%%% Setup functions
+%%%----------------------------------------------------------------------
 
 setupFrame() ->
     Frame = wxFrame:new(wx:null(), ?FRAME, "PULSE"),
@@ -187,6 +194,27 @@ setupSourceText(Ref) ->
     [SetStyles(Style) || Style <- Styles],
     wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
+%%%----------------------------------------------------------------------
+%%% Helper functions
+%%%----------------------------------------------------------------------
+
+addArgs(_Parent, _Sizer, Max, Max, Refs) ->
+    lists:reverse(Refs);
+addArgs(Parent, Sizer, I, Max, Refs) ->
+    Ref =  wxTextCtrl:new(Parent, ?wxID_ANY),
+    HorizSizer = wxBoxSizer:new(?wxHORIZONTAL),
+    wxSizer:add(HorizSizer,
+		wxStaticText:new(Parent, ?wxID_ANY, io_lib:format("Arg~p: ", [I + 1])),
+		[{proportion, 0},
+		 {flag, ?wxALL bor ?wxALIGN_CENTER}, {border, 10}]),
+    wxSizer:add(HorizSizer,
+		Ref,
+		[{proportion, 1}, {flag, ?wxALL bor ?wxALIGN_CENTER}, {border, 10}]),
+    wxSizer:add(Sizer,
+		HorizSizer,
+		[{proportion, 0}, {flag, ?wxALL bor ?wxEXPAND}, {border, 10}]),
+    addArgs(Parent, Sizer, I + 1, Max, [Ref|Refs]).
+
 %% Module-adding dialog
 addDialog(Parent) ->
     Caption = "Open erlang module",
@@ -227,66 +255,41 @@ addListItems(Id, Items) ->
 	false -> continue
     end.
 
-%% Set ListBox (Id) items (remove existing)
-setListItems(Id, Items) ->
+analyze() ->
+    Module = getModule(),
+    {Function, Arity} = getFunction(),
+    Self = self(),
     if
-	Items =/= [], Items =/= [[]] ->
-	    List = refServer:lookup(Id),
-	    wxListBox:set(List, Items),
-	    wxControlWithItems:setSelection(List, 0),
-	    %% XXX: hack (send event message to self)
-	    self() ! #wx{id = Id,
-                         event = #wxCommand{type = command_listbox_selected}};
-	true ->
-	    continue
-    end.
-
-%% wxControlWithItems:getStrings (function missing from wxErlang lib)
-getStrings(Ref) ->
-    Count = wxControlWithItems:getCount(Ref),
-    if
-	Count > 0 ->
-	    getStrings(Ref, 0, Count, []);
-	true ->
-	    []
-    end.
-
-getStrings(_Ref, Count, Count, Strings) ->
-    Strings;
-getStrings(Ref, N, Count, Strings) ->
-    String = wxControlWithItems:getString(Ref, N),
-    getStrings(Ref, N + 1, Count, [String|Strings]).
-
-%% Instrument all modules in ModuleList
-instrumentAll(Id) ->
-    ModuleList = refServer:lookup(Id),
-    instrumentList(getStrings(ModuleList)).
-
-instrumentList([]) ->
-    ok;
-instrumentList([String|Strings]) ->
-    instrument:c(String),
-    instrumentList(Strings).
-
-getModule() ->
-    ModuleList = refServer:lookup(?MODULE_LIST),
-    Path = wxControlWithItems:getStringSelection(ModuleList),
-    Match =  re:run(Path, ".*/(?<MODULE>.*?)\.erl\$",
-                    [dotall, {capture, ['MODULE'], list}]),
-    case Match of
-	{match, [Module]} -> list_to_atom(Module);
-	nomatch -> ''
-    end.
-
-getFunction() ->
-    FunctionList = refServer:lookup(?FUNCTION_LIST),
-    Expr = wxControlWithItems:getStringSelection(FunctionList),
-    Match = re:run(Expr, "(?<FUN>.*)/(?<ARITY>.*)\$",
-                   [dotall, {capture, ['FUN', 'ARITY'], list}]),
-    case Match of
-	{match, [Fun, Arity]} ->
-	    {list_to_atom(Fun), list_to_integer(Arity)};
-	nomatch -> {'', 0}
+	Module =/= '', Function =/= '' ->
+	    instrumentAll(?MODULE_LIST),
+	    case Arity of
+		0 ->
+		    LogText = refServer:lookup(?LOG_TEXT),
+		    wxTextCtrl:clear(LogText),
+		    spawn(fun() ->
+				  driver:drive(
+				    fun() -> Module:Function() end,
+				    Self)
+			  end);
+		Count ->
+		    Frame = refServer:lookup(?FRAME),
+		    case argDialog(Frame, Count) of
+			{ok, Args} ->
+			    LogText = refServer:lookup(?LOG_TEXT),
+			    wxTextCtrl:clear(LogText),
+			    spawn(fun() ->
+					  driver:drive(
+					    fun() ->
+						    apply(Module,
+							  Function,
+							  Args)
+					    end,
+					    Self)
+				  end);
+			_Other -> continue
+		    end
+	    end;
+	true -> continue
     end.
 
 %% Dialog for inserting function arguments (terms)
@@ -318,22 +321,67 @@ argDialog(Parent, Argnum) ->
 	    continue
     end.
 
-addArgs(_Parent, _Sizer, Max, Max, Refs) ->
-    lists:reverse(Refs);
-addArgs(Parent, Sizer, I, Max, Refs) ->
-    Ref =  wxTextCtrl:new(Parent, ?wxID_ANY),
-    HorizSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(HorizSizer,
-		wxStaticText:new(Parent, ?wxID_ANY, io_lib:format("Arg~p: ", [I + 1])),
-		[{proportion, 0},
-		 {flag, ?wxALL bor ?wxALIGN_CENTER}, {border, 10}]),
-    wxSizer:add(HorizSizer,
-		Ref,
-		[{proportion, 1}, {flag, ?wxALL bor ?wxALIGN_CENTER}, {border, 10}]),
-    wxSizer:add(Sizer,
-		HorizSizer,
-		[{proportion, 0}, {flag, ?wxALL bor ?wxEXPAND}, {border, 10}]),
-    addArgs(Parent, Sizer, I + 1, Max, [Ref|Refs]).
+getFunction() ->
+    FunctionList = refServer:lookup(?FUNCTION_LIST),
+    Expr = wxControlWithItems:getStringSelection(FunctionList),
+    Match = re:run(Expr, "(?<FUN>.*)/(?<ARITY>.*)\$",
+                   [dotall, {capture, ['FUN', 'ARITY'], list}]),
+    case Match of
+	{match, [Fun, Arity]} ->
+	    {list_to_atom(Fun), list_to_integer(Arity)};
+	nomatch -> {'', 0}
+    end.
+
+getModule() ->
+    ModuleList = refServer:lookup(?MODULE_LIST),
+    Path = wxControlWithItems:getStringSelection(ModuleList),
+    Match =  re:run(Path, ".*/(?<MODULE>.*?)\.erl\$",
+                    [dotall, {capture, ['MODULE'], list}]),
+    case Match of
+	{match, [Module]} -> list_to_atom(Module);
+	nomatch -> ''
+    end.
+
+%% wxControlWithItems:getStrings (function missing from wxErlang lib)
+getStrings(Ref) ->
+    Count = wxControlWithItems:getCount(Ref),
+    if
+	Count > 0 ->
+	    getStrings(Ref, 0, Count, []);
+	true ->
+	    []
+    end.
+
+getStrings(_Ref, Count, Count, Strings) ->
+    Strings;
+getStrings(Ref, N, Count, Strings) ->
+    String = wxControlWithItems:getString(Ref, N),
+    getStrings(Ref, N + 1, Count, [String|Strings]).
+
+%% Instrument all modules in ModuleList
+instrumentAll(Id) ->
+    ModuleList = refServer:lookup(Id),
+    instrumentList(getStrings(ModuleList)).
+
+instrumentList([]) ->
+    ok;
+instrumentList([String|Strings]) ->
+    instrument:c(String),
+    instrumentList(Strings).
+
+%% Set ListBox (Id) items (remove existing)
+setListItems(Id, Items) ->
+    if
+	Items =/= [], Items =/= [[]] ->
+	    List = refServer:lookup(Id),
+	    wxListBox:set(List, Items),
+	    wxControlWithItems:setSelection(List, 0),
+	    %% XXX: hack (send event message to self)
+	    self() ! #wx{id = Id,
+                         event = #wxCommand{type = command_listbox_selected}};
+	true ->
+	    continue
+    end.
 
 validateArgs(_I, [], Args, _RefError) ->
     {ok, lists:reverse(Args)};
@@ -352,14 +400,25 @@ validateArgs(I, [Ref|Refs], Args, RefError) ->
 	    error
     end.
 
+%%%----------------------------------------------------------------------
+%%% Main event loop
+%%%----------------------------------------------------------------------
 
-%% Main event loop
 loop() ->
     receive
 	%% -------------------- Button handlers -------------------- %%
 	#wx{id = ?ADD, event = #wxCommand{type = command_button_clicked}} ->
 	    Frame = refServer:lookup(?FRAME),
 	    addDialog(Frame),
+	    loop();
+	#wx{id = ?ANALYZE, event = #wxCommand{type = command_button_clicked}} ->
+	    analyze(),
+	    loop();
+	#wx{id = ?CLEAR, event = #wxCommand{type = command_button_clicked}} ->
+	    ModuleList = refServer:lookup(?MODULE_LIST),
+	    FunctionList = refServer:lookup(?FUNCTION_LIST),
+	    wxControlWithItems:clear(ModuleList),
+	    wxControlWithItems:clear(FunctionList),
 	    loop();
 	#wx{id = ?REMOVE, event = #wxCommand{type = command_button_clicked}} ->
 	    ModuleList = refServer:lookup(?MODULE_LIST),
@@ -383,50 +442,10 @@ loop() ->
 		    end
 	    end,
 	    loop();
-	#wx{id = ?CLEAR, event = #wxCommand{type = command_button_clicked}} ->
-	    ModuleList = refServer:lookup(?MODULE_LIST),
-	    FunctionList = refServer:lookup(?FUNCTION_LIST),
-	    wxControlWithItems:clear(ModuleList),
-	    wxControlWithItems:clear(FunctionList),
-	    loop();
-	#wx{id = ?ANALYZE, event = #wxCommand{type = command_button_clicked}} ->
-	    Module = getModule(),
-	    {Function, Arity} = getFunction(),
-	    Self = self(),
-	    if
-	     	Module =/= '', Function =/= '' ->
-		    instrumentAll(?MODULE_LIST),
-		    case Arity of
-			0 ->
-			    LogText = refServer:lookup(?LOG_TEXT),
-			    wxTextCtrl:clear(LogText),
-			    spawn(fun() ->
-                                          driver:drive(
-                                            fun() -> Module:Function() end,
-                                            Self)
-                                  end);
-			Count ->
-			    Frame = refServer:lookup(?FRAME),
-			    case argDialog(Frame, Count) of
-				{ok, Args} ->
-				    LogText = refServer:lookup(?LOG_TEXT),
-				    wxTextCtrl:clear(LogText),
-				    spawn(fun() ->
-						  driver:drive(
-						    fun() ->
-                                                            apply(Module,
-                                                                  Function,
-                                                                  Args)
-                                                    end,
-						    Self)
-                                          end);
-				_Other -> continue
-			    end
-		    end;
-		true -> continue
-	    end,
-	    loop();
 	%% -------------------- Listbox handlers --------------------- %%
+	#wx{id = ?FUNCTION_LIST,
+            event = #wxCommand{type = command_listbox_selected}} ->
+	    loop();
 	#wx{id = ?MODULE_LIST,
             event = #wxCommand{type = command_listbox_selected}} ->
 	    ModuleList = refServer:lookup(?MODULE_LIST),
@@ -444,17 +463,7 @@ loop() ->
 		    wxStyledTextCtrl:setReadOnly(SourceText, true)
 	    end,
 	    loop();
-	#wx{id = ?FUNCTION_LIST,
-            event = #wxCommand{type = command_listbox_selected}} ->
-	    loop();
 	%% -------------------- Misc handlers -------------------- %%
-	#wx{event = #wxClose{type = close_window}} ->
-	    close;
-	#gui{type = log, msg = String} ->
-	    LogText = refServer:lookup(?LOG_TEXT),
-	    wxTextCtrl:appendText(LogText, String),
-	    loop();
-	%% TODO
 	#gui{type = dot, msg = ok} ->
 	    os:cmd("dot -Tpng < schedule.dot > schedule.png"),
 	    Image= wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
@@ -474,9 +483,13 @@ loop() ->
 		    wxStaticBitmap:setBitmap(Result, Image)
 	    end,
 	    loop();
+	#gui{type = log, msg = String} ->
+	    LogText = refServer:lookup(?LOG_TEXT),
+	    wxTextCtrl:appendText(LogText, String),
+	    loop();
+	#wx{event = #wxClose{type = close_window}} ->
+	    ok;
 	%% -------------------- Menu handlers -------------------- %%
-	#wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
-	    close;
 	#wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
 	    Caption = "About PULSE",
 	    Frame = refServer:lookup(?FRAME),
@@ -489,8 +502,13 @@ loop() ->
 	    Frame = refServer:lookup(?FRAME),
 	    addDialog(Frame),
 	    loop();
+	#wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
+	    analyze(),
+	    loop();
+	#wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
+	    ok;
 	%% -------------------- Catchall -------------------- %%
 	Other ->
-	    io:format("loop unimplemented: ~p~n", [Other]),
+	    io:format("main loop unimplemented: ~p~n", [Other]),
 	    loop()
     end.
