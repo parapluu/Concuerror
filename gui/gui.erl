@@ -239,26 +239,18 @@ addDialog(Parent) ->
     end,
     wxDialog:destroy(Dialog).
 
-%% Add items to ListBox (Id)
+%% Add items to ListBox (Id) and select first of newly added modules
 addListItems(Id, Items) ->
     List = refServer:lookup(Id),
-    MyCount = wxControlWithItems:getCount(List),
-    if
-	MyCount =:= 0 ->
-	    Flag = true;
-	true ->
-	    Flag = false
-    end,
-    Count = wxListBox:getCount(List),
+    Count = wxControlWithItems:getCount(List),
     wxListBox:insertItems(List, Items, Count),
-    case Flag of
-	true ->
-	    wxControlWithItems:setSelection(List, 0),
-	    %% XXX: hack (send event message to self)
-	    self() ! #wx{id = Id,
-                         event = #wxCommand{type = command_listbox_selected}};
-	false -> continue
-    end.
+    case Count of
+	0 -> wxControlWithItems:setSelection(List, 0);
+	_Other -> wxControlWithItems:setSelection(List, Count)
+    end,
+    %% XXX: hack (send event message to self)
+    self() ! #wx{id = Id,
+		 event = #wxCommand{type = command_listbox_selected}}.
 
 analyze() ->
     Module = getModule(),
