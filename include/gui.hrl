@@ -69,7 +69,9 @@ http://www.protest-project.eu/
 -define(COMP_COLOR, {125, 140, 0}).
 
 %% Erlang keywords
--define(KEYWORDS, "after begin case try cond catch andalso orelse end fun if let of query receive when bnot not div rem band and bor bxor bsl bsr or xor").
+-define(KEYWORDS, "after begin case try cond catch andalso orelse end fun "
+                  "if let of query receive when bnot not div rem band and "
+                  "bor bxor bsl bsr or xor").
 
 %% Source viewer theme (dark | light)
 -define(SOURCE_THEME, light).

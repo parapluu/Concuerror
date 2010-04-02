@@ -12,7 +12,8 @@
 -include("../include/gui.hrl").
 
 %% Message format
--type ref_type() :: 'ref_add' | 'ref_error' | 'ref_lookup' | 'ref_ok' | 'ref_stop'.
+-type ref_type() :: 'ref_add' | 'ref_error' | 'ref_lookup' | 'ref_ok'
+                  | 'ref_stop'.
 -type ref_msg()  :: 'more_found' | 'not_found' | id() | ref() | {id(), ref()}.
 
 -record(ref, {type :: ref_type(),

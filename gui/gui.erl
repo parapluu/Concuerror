@@ -157,9 +157,12 @@ setupMenuItems(Menu, [Options|Rest]) ->
 
 %% Setup source viewer
 setupSourceText(Ref) ->
-    NormalFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL, ?wxNORMAL,[]),
-    BoldFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL, ?wxBOLD,[]),
-    ItalicFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxITALIC, ?wxBOLD,[]),
+    NormalFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL,
+                            ?wxNORMAL, []),
+    BoldFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL,
+                          ?wxBOLD, []),
+    ItalicFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxITALIC,
+                            ?wxBOLD, []),
     case ?SOURCE_THEME of
 	dark ->
 	    Styles = ?SOURCE_STYLES_DARK,
@@ -179,18 +182,19 @@ setupSourceText(Ref) ->
     wxStyledTextCtrl:setScrollWidth(Ref, 1000),
     wxStyledTextCtrl:setSelectionMode(Ref, ?wxSTC_SEL_LINES),
     wxStyledTextCtrl:setReadOnly(Ref, true),
-    SetStyles = fun({Style, Color, Option}) ->
-			case Option of
-			    bold ->
-				wxStyledTextCtrl:styleSetFont(Ref, Style, BoldFont);
-			    italic ->
-				wxStyledTextCtrl:styleSetFont(Ref, Style, ItalicFont);
-			    _Other ->
-				wxStyledTextCtrl:styleSetFont(Ref, Style, NormalFont)
-			end,
-			wxStyledTextCtrl:styleSetForeground(Ref, Style, Color),
-			wxStyledTextCtrl:styleSetBackground(Ref, Style, BgColor)
-		end,
+    SetStyles =
+        fun({Style, Color, Option}) ->
+                case Option of
+                    bold ->
+                        wxStyledTextCtrl:styleSetFont(Ref, Style, BoldFont);
+                    italic ->
+                        wxStyledTextCtrl:styleSetFont(Ref, Style, ItalicFont);
+                    _Other ->
+                        wxStyledTextCtrl:styleSetFont(Ref, Style, NormalFont)
+                end,
+                wxStyledTextCtrl:styleSetForeground(Ref, Style, Color),
+                wxStyledTextCtrl:styleSetBackground(Ref, Style, BgColor)
+        end,
     [SetStyles(Style) || Style <- Styles],
     wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
@@ -204,15 +208,16 @@ addArgs(Parent, Sizer, I, Max, Refs) ->
     Ref =  wxTextCtrl:new(Parent, ?wxID_ANY),
     HorizSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(HorizSizer,
-		wxStaticText:new(Parent, ?wxID_ANY, io_lib:format("Arg~p: ", [I + 1])),
-		[{proportion, 0},
-		 {flag, ?wxALL bor ?wxALIGN_CENTER}, {border, 10}]),
-    wxSizer:add(HorizSizer,
-		Ref,
-		[{proportion, 1}, {flag, ?wxALL bor ?wxALIGN_CENTER}, {border, 10}]),
-    wxSizer:add(Sizer,
-		HorizSizer,
-		[{proportion, 0}, {flag, ?wxALL bor ?wxEXPAND}, {border, 10}]),
+                wxStaticText:new(Parent, ?wxID_ANY,
+                                 io_lib:format("Arg~p: ", [I + 1])),
+		[{proportion, 0}, {flag, ?wxALL bor ?wxALIGN_CENTER},
+                 {border, 10}]),
+    wxSizer:add(HorizSizer, Ref, [{proportion, 1},
+                                  {flag, ?wxALL bor ?wxALIGN_CENTER},
+                                  {border, 10}]),
+    wxSizer:add(Sizer, HorizSizer, [{proportion, 0},
+                                    {flag, ?wxALL bor ?wxEXPAND},
+                                    {border, 10}]),
     addArgs(Parent, Sizer, I + 1, Max, [Ref|Refs]).
 
 %% Module-adding dialog
