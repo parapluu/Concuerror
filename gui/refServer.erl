@@ -11,6 +11,13 @@
 
 -include("../include/gui.hrl").
 
+%% Message format
+-type ref_type() :: 'ref_add' | 'ref_error' | 'ref_lookup' | 'ref_ok' | 'ref_stop'.
+-type ref_msg()  :: 'more_found' | 'not_found' | id() | ref() | {id(), ref()}.
+
+-record(ref, {type :: ref_type(),
+	      msg  :: ref_msg()}).
+
 %% Start server linked to calling process
 
 -spec start(boolean()) -> pid().
@@ -26,28 +33,28 @@ start(Link) ->
 stop() ->
     Pid = whereis(refServer),
     unregister(refServer),
-    Pid ! {self(), #gui{type = ref_stop}},
+    Pid ! {self(), #ref{type = ref_stop}},
     receive
-	#gui{type = ref_ok} -> ok
+	#ref{type = ref_ok} -> ok
     end.
 
 -spec add({id(), ref()}) -> 'ok'.
 
 add({_Id, _Ref} = T) ->
-    refServer ! {self(), #gui{type = ref_add, msg = T}},
+    refServer ! {self(), #ref{type = ref_add, msg = T}},
     receive
-	#gui{type = ref_ok} -> ok
+	#ref{type = ref_ok} -> ok
     end.
 	
 -spec lookup(id()) -> ref() | not_found.
 
 lookup(Id) ->
-    refServer ! {self(), #gui{type = ref_lookup, msg = Id}},
+    refServer ! {self(), #ref{type = ref_lookup, msg = Id}},
     receive
-	#gui{type = ref_ok, msg = Value} -> Value;
-	#gui{type = ref_error, msg = not_found} -> not_found;
-	#gui{type = ref_error, msg = Msg} ->
-	    io:format("Internal refServer:lookup error - ~s~n", [Msg]),
+	#ref{type = ref_ok, msg = not_found} -> not_found;
+	#ref{type = ref_ok, msg = Value} -> Value;
+	#ref{type = ref_error, msg = Msg} ->
+	    io:format("refServer - lookup error: ~p~n", [Msg]),
 	    exit(error)
     end.
 
@@ -57,19 +64,19 @@ reg() ->
 
 loop(Dict) ->
     receive
-	{Pid, #gui{type = ref_add, msg = {Id, Ref}}} ->
+	{Pid, #ref{type = ref_add, msg = {Id, Ref}}} ->
 	    NewDict = dict:append(Id, Ref, Dict),
-	    Pid ! #gui{type = ref_ok},
+	    Pid ! #ref{type = ref_ok},
 	    loop(NewDict);
-	{Pid, #gui{type = ref_lookup, msg = Id}} ->
+	{Pid, #ref{type = ref_lookup, msg = Id}} ->
 	    case dict:find(Id, Dict) of
-		{ok, [Value]} -> Pid ! #gui{type = ref_ok, msg = Value};
-		{ok, _Value} -> Pid ! #gui{type = ref_error, msg = "Found more than one"};
-		error -> Pid ! #gui{type = ref_error, msg = not_found}
+		{ok, [Value]} -> Pid ! #ref{type = ref_ok, msg = Value};
+		{ok, _Value} -> Pid ! #ref{type = ref_error, msg = more_found};
+		error -> Pid ! #ref{type = ref_ok, msg = not_found}
 	    end,
 	    loop(Dict);
-	{Pid, #gui{type = ref_stop}} ->
-	    Pid ! #gui{type = ref_ok};
+	{Pid, #ref{type = ref_stop}} ->
+	    Pid ! #ref{type = ref_ok};
 	Other ->
 	    io:format("refServer - unexpected message: ~p~n", [Other]),
 	    loop(Dict)
