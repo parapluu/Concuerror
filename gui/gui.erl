@@ -67,10 +67,10 @@ setupPanel(Parent) ->
     refServer:add({?MODULE_LIST, ModuleList}),
     FunctionList = wxListBox:new(Panel, ?FUNCTION_LIST, [{style, ?wxLB_SORT}]),
     refServer:add({?FUNCTION_LIST, FunctionList}),
-    AddButton = wxButton:new(Panel, ?ADD, [{label, "Add..."}]),
+    AddButton = wxButton:new(Panel, ?ADD, [{label, "&Add..."}]),
     RemButton = wxButton:new(Panel, ?REMOVE),
     ClearButton = wxButton:new(Panel, ?CLEAR),
-    AnalyzeButton = wxButton:new(Panel, ?ANALYZE, [{label, "Analyze"}]),
+    AnalyzeButton = wxButton:new(Panel, ?ANALYZE, [{label, "Ana&lyze"}]),
     AddRemSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(AddRemSizer, AddButton,
 		[{proportion, 0}, {flag, ?wxRIGHT}, {border, 5}]),
@@ -119,7 +119,7 @@ setupPanel(Parent) ->
     refServer:add({?SCR_GRAPH, ScrGraph}),
     SourceText = wxStyledTextCtrl:new(SourcePanel),
     refServer:add({?SOURCE_TEXT, SourceText}),
-    setupSourceText(SourceText),
+    setupSourceText(SourceText, light),
 
     LogPanelSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(LogPanelSizer, LogText,
@@ -165,19 +165,29 @@ setupMenu(MenuBar, [{Title, Items, Options}|Rest]) ->
 setupMenuItems(_Menu, []) ->
     ok;
 setupMenuItems(Menu, [Options|Rest]) ->
-    Item = wxMenuItem:new(Options),
-    wxMenu:append(Menu, Item),
-    setupMenuItems(Menu, Rest).
+    case lists:keytake(sub, 1, Options) of
+	{value, {_, SubItems}, NewOptions} ->
+	    Submenu = wxMenu:new(),
+	    setupMenuItems(Submenu, SubItems),
+	    Item = wxMenuItem:new(NewOptions),
+	    wxMenuItem:setSubMenu(Item, Submenu),
+	    wxMenu:append(Menu, Item),
+	    setupMenuItems(Menu, Rest);
+	false ->
+	    Item = wxMenuItem:new(Options),
+	    wxMenu:append(Menu, Item),
+	    setupMenuItems(Menu, Rest)
+    end.
 
 %% Setup source viewer
-setupSourceText(Ref) ->
+setupSourceText(Ref, Theme) ->
     NormalFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL,
                             ?wxNORMAL, []),
     BoldFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL,
                           ?wxBOLD, []),
     ItalicFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxITALIC,
                             ?wxBOLD, []),
-    case ?SOURCE_THEME of
+    case Theme of
 	dark ->
 	    Styles = ?SOURCE_STYLES_DARK,
 	    BgColor = ?SOURCE_BG_DARK;
@@ -194,7 +204,7 @@ setupSourceText(Ref) ->
     wxStyledTextCtrl:setMarginWidth(Ref, 0, Width),
     wxStyledTextCtrl:setMarginWidth(Ref, 1, 0),
     %% wxStyledTextCtrl:setScrollWidth(Ref, 1000),
-    wxStyledTextCtrl:setSelectionMode(Ref, ?wxSTC_SEL_LINES),
+    %% wxStyledTextCtrl:setSelectionMode(Ref, ?wxSTC_SEL_LINES),
     wxStyledTextCtrl:setReadOnly(Ref, true),
     wxStyledTextCtrl:setWrapMode(Ref, ?wxSTC_WRAP_WORD),
     SetStyles =
@@ -268,6 +278,7 @@ addListItems(Id, Items) ->
     self() ! #wx{id = Id,
 		 event = #wxCommand{type = command_listbox_selected}}.
 
+%% Analyze selected function
 analyze() ->
     Module = getModule(),
     {Function, Arity} = getFunction(),
@@ -343,6 +354,17 @@ argDialog(Parent, Argnum) ->
 	    continue
     end.
 
+%% Clear module list
+clear() ->
+    ModuleList = refServer:lookup(?MODULE_LIST),
+    FunctionList = refServer:lookup(?FUNCTION_LIST),
+    SourceText = refServer:lookup(?SOURCE_TEXT),
+    wxControlWithItems:clear(ModuleList),
+    wxControlWithItems:clear(FunctionList),
+    wxStyledTextCtrl:setReadOnly(SourceText, false),
+    wxStyledTextCtrl:clearAll(SourceText),
+    wxStyledTextCtrl:setReadOnly(SourceText, true).
+
 getFunction() ->
     FunctionList = refServer:lookup(?FUNCTION_LIST),
     Expr = wxControlWithItems:getStringSelection(FunctionList),
@@ -390,6 +412,33 @@ instrumentList([]) ->
 instrumentList([String|Strings]) ->
     instrument:c(String),
     instrumentList(Strings).
+
+%% Remove selected module from module list
+remove() ->
+    ModuleList = refServer:lookup(?MODULE_LIST),
+    Selection = wxListBox:getSelection(ModuleList),
+    FunctionList = refServer:lookup(?FUNCTION_LIST),
+    SourceText = refServer:lookup(?SOURCE_TEXT),
+    if
+	Selection =:= ?wxNOT_FOUND ->
+	    continue;
+	true ->
+	    wxControlWithItems:delete(ModuleList, Selection),
+	    Count = wxControlWithItems:getCount(ModuleList),
+	    if
+		Count =:= 0 ->
+		    wxControlWithItems:clear(FunctionList),
+		    wxStyledTextCtrl:setReadOnly(SourceText, false),
+		    wxStyledTextCtrl:clearAll(SourceText),
+		    wxStyledTextCtrl:setReadOnly(SourceText, true);
+		Selection =:= Count ->
+		    wxControlWithItems:setSelection(ModuleList,
+						    Selection - 1);
+		true ->
+		    wxControlWithItems:setSelection(ModuleList,
+						    Selection)
+	    end
+    end.
 
 %% Set ListBox (Id) items (remove existing)
 setListItems(Id, Items) ->
@@ -439,32 +488,10 @@ loop() ->
 	    analyze(),
 	    loop();
 	#wx{id = ?CLEAR, event = #wxCommand{type = command_button_clicked}} ->
-	    ModuleList = refServer:lookup(?MODULE_LIST),
-	    FunctionList = refServer:lookup(?FUNCTION_LIST),
-	    wxControlWithItems:clear(ModuleList),
-	    wxControlWithItems:clear(FunctionList),
+	    clear(),
 	    loop();
 	#wx{id = ?REMOVE, event = #wxCommand{type = command_button_clicked}} ->
-	    ModuleList = refServer:lookup(?MODULE_LIST),
-	    Selection = wxListBox:getSelection(ModuleList),
-	    FunctionList = refServer:lookup(?FUNCTION_LIST),
-	    if
-		Selection =:= ?wxNOT_FOUND ->
-		    continue;
-		true ->
-		    wxControlWithItems:delete(ModuleList, Selection),
-		    Count = wxControlWithItems:getCount(ModuleList),
-		    if
-			Count =:= 0 ->
-			    wxControlWithItems:clear(FunctionList);
-			Selection =:= Count ->
-			    wxControlWithItems:setSelection(ModuleList,
-                                                            Selection - 1);
-			true ->
-			    wxControlWithItems:setSelection(ModuleList,
-                                                            Selection)
-		    end
-	    end,
+	    remove(),
 	    loop();
 	%% -------------------- Listbox handlers --------------------- %%
 	#wx{id = ?FUNCTION_LIST,
@@ -496,6 +523,38 @@ loop() ->
 		    wxStyledTextCtrl:setReadOnly(SourceText, true)
 	    end,
 	    loop();
+	%% -------------------- Menu handlers -------------------- %%
+	#wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
+	    Caption = "About PULSE",
+	    Frame = refServer:lookup(?FRAME),
+	    Dialog = wxMessageDialog:new(Frame, ?INFO_MSG,
+                                         [{style, ?wxOK}, {caption, Caption}]),
+	    wxDialog:showModal(Dialog),
+	    wxWindow:destroy(Dialog),
+	    loop();
+	#wx{id = ?ADD, event = #wxCommand{type = command_menu_selected}} ->
+	    Frame = refServer:lookup(?FRAME),
+	    addDialog(Frame),
+	    loop();
+	#wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
+	    analyze(),
+	    loop();
+	#wx{id = ?CLEAR, event = #wxCommand{type = command_menu_selected}} ->
+	    clear(),
+	    loop();
+	#wx{id = ?THEME_LIGHT, event = #wxCommand{type = command_menu_selected}} ->
+	    SourceText = refServer:lookup(?SOURCE_TEXT),
+	    setupSourceText(SourceText, light),
+	    loop();
+	#wx{id = ?THEME_DARK, event = #wxCommand{type = command_menu_selected}} ->
+	    SourceText = refServer:lookup(?SOURCE_TEXT),
+	    setupSourceText(SourceText, dark),
+	    loop();
+	#wx{id = ?REMOVE, event = #wxCommand{type = command_menu_selected}} ->
+	    remove(),
+	    loop();
+	#wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
+	    ok;
 	%% -------------------- Misc handlers -------------------- %%
 	#gui{type = dot, msg = ok} ->
 	    os:cmd("dot -Tpng < schedule.dot > schedule.png"),
@@ -521,24 +580,6 @@ loop() ->
 	    wxTextCtrl:appendText(LogText, String),
 	    loop();
 	#wx{event = #wxClose{type = close_window}} ->
-	    ok;
-	%% -------------------- Menu handlers -------------------- %%
-	#wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
-	    Caption = "About PULSE",
-	    Frame = refServer:lookup(?FRAME),
-	    Dialog = wxMessageDialog:new(Frame, ?INFO_MSG,
-                                         [{style, ?wxOK}, {caption, Caption}]),
-	    wxDialog:showModal(Dialog),
-	    wxWindow:destroy(Dialog),
-	    loop();
-	#wx{id = ?ADD, event = #wxCommand{type = command_menu_selected}} ->
-	    Frame = refServer:lookup(?FRAME),
-	    addDialog(Frame),
-	    loop();
-	#wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
-	    analyze(),
-	    loop();
-	#wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
 	    ok;
 	%% -------------------- Catchall -------------------- %%
 	Other ->

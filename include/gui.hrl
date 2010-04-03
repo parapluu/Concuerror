@@ -12,13 +12,27 @@
 
 %% Menu specification:
 %%    [{MenuName1, [MenuItem11, MenuItem12, ...]}, ...]
--define(MENU_SPEC, [{"&File", [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
-                                {help, "Add an existing erlang module."}],
-                               [{id, ?SEPARATOR}, {kind, ?wxITEM_SEPARATOR}],
-                               [{id, ?EXIT}, {help, "Quit PULSE."}]]},
-                    {"&Run", [[{id, ?ANALYZE}, {text, "Ana&lyze\tCtrl-L"},
-                               {help, "Analyze current module."}]]}, 
-                    {"&Help", [[{id, ?ABOUT}, {help, "Show project info."}]]}]).
+-define(MENU_SPEC,
+	[{"&File", [[{id, ?EXIT}, {help, "Quit PULSE."}]]},
+	 {"&Module", [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
+		       {help, "Add an existing erlang module."}],
+		      [{id, ?CLEAR}, {text, "&Clear\tCtrl-C"},
+		       {help, "Clear module list."}],
+		      [{id, ?REMOVE}, {text, "&Remove\tCtrl-R"},
+		       {help, "Remove selected module."}]]},
+	 {"&Run", [[{id, ?ANALYZE}, {text, "Ana&lyze\tCtrl-L"},
+		    {help, "Analyze selected function."}]]},
+	 {"&View", [[{id, ?wxID_ANY}, {text, "Source viewer color theme"},
+		    {help, "Select a color theme for the source viewer."},
+		    {sub,
+		     [[{id, ?THEME_LIGHT}, {text, "Light theme"},
+		       {kind, ?wxITEM_RADIO}],
+		      [{id, ?THEME_DARK}, {text, "Dark theme"},
+		       {kind, ?wxITEM_RADIO}]]}
+		    ]]}, 
+	 {"&Help", [[{id, ?ABOUT}, {text, "&About"},
+		     {help, "Show project info."}]]}
+	]).
 
 %% 'About' message
 -define(INFO_MSG,
@@ -45,55 +59,51 @@ http://www.protest-project.eu/
 -define(ICON_PATH, "img/icon.png").
 
 %% Local ID definitions
+-define(ABOUT, ?wxID_ABOUT).
 -define(ADD, ?wxID_ADD).
--define(REMOVE, ?wxID_REMOVE).
 -define(CLEAR, ?wxID_CLEAR).
 -define(OPEN, ?wxID_OPEN).
--define(EXIT, ?wxID_EXIT).
--define(ABOUT, ?wxID_ABOUT).
+-define(REMOVE, ?wxID_REMOVE).
 -define(SEPARATOR, ?wxID_SEPARATOR).
--define(FRAME, 500).
--define(ANALYZE, 501).
--define(STATUS_BAR, 502).
--define(MODULE_LIST, 503).
+-define(EXIT, ?wxID_EXIT).
+-define(ANALYZE, 500).
+-define(FRAME, 501).
+-define(FUNCTION_LIST, 502).
+-define(GRAPH_PANEL, 503).
 -define(LOG_TEXT, 504).
--define(FUNCTION_LIST, 505).
+-define(MODULE_LIST, 505).
 -define(NOTEBOOK, 506).
--define(GRAPH_PANEL, 507).
--define(SCR_GRAPH, 508).
+-define(SCR_GRAPH, 507).
+-define(SOURCE_TEXT, 508).
 -define(STATIC_BMP, 509).
--define(SOURCE_TEXT, 510).
-
-%% Color definitions
--define(BASE_COLOR, {2, 63, 90}).
--define(COMP_COLOR, {125, 140, 0}).
+-define(STATUS_BAR, 510).
+-define(THEME_LIGHT, 511).
+-define(THEME_DARK, 512).
 
 %% Erlang keywords
 -define(KEYWORDS, "after begin case try cond catch andalso orelse end fun "
                   "if let of query receive when bnot not div rem band and "
                   "bor bxor bsl bsr or xor").
 
-%% Source viewer theme (dark | light)
--define(SOURCE_THEME, light).
-
 %% Source viewer styles
--define(SOURCE_BG_DARK, {60, 60, 60}).
--define(SOURCE_FG_DARK, {240, 240, 240}).
+-define(SOURCE_BG_DARK, {63, 63, 63}).
+-define(SOURCE_FG_DARK, {220, 220, 204}).
+%% -define(SOURCE_FG_DARK, {204, 220, 220}).
 -define(SOURCE_STYLES_DARK, 
 	[{?wxSTC_ERLANG_ATOM,          ?SOURCE_FG_DARK,  normal},
-	 {?wxSTC_ERLANG_CHARACTER,     {120, 190, 120},  normal},
-	 {?wxSTC_ERLANG_COMMENT,       {170, 170, 170},  normal},
+	 {?wxSTC_ERLANG_CHARACTER,     {204, 147, 147},  normal},
+	 {?wxSTC_ERLANG_COMMENT,       {127, 159, 127},  normal},
 	 {?wxSTC_ERLANG_DEFAULT,       ?SOURCE_FG_DARK,  normal},
 	 {?wxSTC_ERLANG_FUNCTION_NAME, ?SOURCE_FG_DARK,  normal},
-	 {?wxSTC_ERLANG_KEYWORD,       {210, 140, 80},   bold},
-	 {?wxSTC_ERLANG_MACRO,         {220, 80, 80},    normal},
+	 {?wxSTC_ERLANG_KEYWORD,       {240, 223, 175},  bold},
+	 {?wxSTC_ERLANG_MACRO,         {255, 207, 175},  normal},
 	 {?wxSTC_ERLANG_NODE_NAME,     ?SOURCE_FG_DARK,  normal},
-	 {?wxSTC_ERLANG_NUMBER,        ?SOURCE_FG_DARK,  normal},
-	 {?wxSTC_ERLANG_OPERATOR,      {210, 210, 210},  normal},
-	 {?wxSTC_ERLANG_RECORD,        {100, 180, 180},  normal},
+	 {?wxSTC_ERLANG_NUMBER,        {140, 208, 211},  normal},
+	 {?wxSTC_ERLANG_OPERATOR,      ?SOURCE_FG_DARK,  normal},
+	 {?wxSTC_ERLANG_RECORD,        {232, 147, 147},  normal},
 	 {?wxSTC_ERLANG_SEPARATOR,     ?SOURCE_FG_DARK,  normal},
-	 {?wxSTC_ERLANG_STRING,        {120, 190, 120},  normal},
-	 {?wxSTC_ERLANG_VARIABLE,      {100, 170, 210},  bold},
+	 {?wxSTC_ERLANG_STRING,        {204, 147, 147},  normal},
+	 {?wxSTC_ERLANG_VARIABLE,      {239, 239, 175},  bold},
 	 {?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},      normal}]).
 -define(SOURCE_BG_LIGHT, {255, 255, 255}).
 -define(SOURCE_FG_LIGHT, {30, 30, 30}).
