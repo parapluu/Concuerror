@@ -51,18 +51,21 @@ setupFrame() ->
     wxEvtHandler:connect(Frame, command_menu_selected),
     wxEvtHandler:connect(Frame, command_button_clicked),
     wxEvtHandler:connect(Frame, command_listbox_selected),
+    wxEvtHandler:connect(Frame, command_listbox_doubleclicked),
     setupPanel(Frame),
-    wxWindow:fit(Frame),
+    wxWindow:setSize(Frame, {1024, 768}),
+    %% wxWindow:fit(Frame),
     wxFrame:center(Frame),
     Frame.
 
 setupPanel(Parent) ->
     Panel = wxPanel:new(Parent),
     %% -------------------- Left Column -------------------- %%
-    ModuleList = wxListBox:new(Panel, ?MODULE_LIST, [{size, {300, 200}}]),
+    ModuleBox = wxStaticBox:new(Panel, ?wxID_ANY, "Modules"),
+    FunctionBox = wxStaticBox:new(Panel, ?wxID_ANY, "Functions"),
+    ModuleList = wxListBox:new(Panel, ?MODULE_LIST),
     refServer:add({?MODULE_LIST, ModuleList}),
-    FunctionList = wxListBox:new(Panel, ?FUNCTION_LIST,
-     				 [{size, {300, 200}}, {style, ?wxLB_SORT}]),
+    FunctionList = wxListBox:new(Panel, ?FUNCTION_LIST, [{style, ?wxLB_SORT}]),
     refServer:add({?FUNCTION_LIST, FunctionList}),
     AddButton = wxButton:new(Panel, ?ADD, [{label, "Add..."}]),
     RemButton = wxButton:new(Panel, ?REMOVE),
@@ -70,38 +73,49 @@ setupPanel(Parent) ->
     AnalyzeButton = wxButton:new(Panel, ?ANALYZE, [{label, "Analyze"}]),
     AddRemSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(AddRemSizer, AddButton,
-		[{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
+		[{proportion, 0}, {flag, ?wxRIGHT}, {border, 5}]),
     wxSizer:add(AddRemSizer, RemButton,
-		[{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
+		[{proportion, 0}, {flag, ?wxRIGHT bor ?wxLEFT},
+		 {border, 5}]),
     wxSizer:add(AddRemSizer, ClearButton,
-		[{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
-    LeftColumnSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(LeftColumnSizer,
-		wxStaticText:new(Panel, ?wxID_ANY, "Modules"),
-		[{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
-    wxSizer:add(LeftColumnSizer, ModuleList,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
-    wxSizer:add(LeftColumnSizer, AddRemSizer,
-		[{proportion, 0}, {flag, ?wxALL bor ?wxALIGN_CENTER},
+		[{proportion, 0}, {flag, ?wxLEFT}, {border, 5}]),
+    ModuleSizer = wxStaticBoxSizer:new(ModuleBox, ?wxVERTICAL),
+    wxSizer:add(ModuleSizer, ModuleList,
+		[{proportion, 1},
+		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
+		 {border, 10}]),
+    wxSizer:add(ModuleSizer, AddRemSizer,
+		[{proportion, 0},
+		 {flag, ?wxALIGN_CENTER bor ?wxALL},
                  {border, 10}]),
-    wxSizer:add(LeftColumnSizer,
-		wxStaticText:new(Panel, ?wxID_ANY, "Functions"),
-		[{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
-    wxSizer:add(LeftColumnSizer, FunctionList,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
-    wxSizer:add(LeftColumnSizer, AnalyzeButton,
-		[{proportion, 0}, {flag, ?wxALL bor ?wxALIGN_CENTER},
-                 {border, 0}]),
+    FunctionSizer = wxStaticBoxSizer:new(FunctionBox, ?wxVERTICAL),
+    wxSizer:add(FunctionSizer, FunctionList,
+		[{proportion, 1},
+		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
+		 {border, 10}]),
+    wxSizer:add(FunctionSizer, AnalyzeButton,
+		[{proportion, 0},
+		 {flag, ?wxALIGN_CENTER bor ?wxALL},
+                 {border, 10}]),
+    LeftColumnSizer = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(LeftColumnSizer, ModuleSizer,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+		 {border, 10}]),
+    wxSizer:add(LeftColumnSizer, FunctionSizer,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
+		 {border, 10}]),
     %% -------------------- Right Column -------------------- %%
-    Notebook = wxNotebook:new(Panel, ?NOTEBOOK, [{size, {500, 400}}]),
+    Notebook = wxNotebook:new(Panel, ?NOTEBOOK, [{style, ?wxNB_NOPAGETHEME}]),
     refServer:add({?NOTEBOOK, Notebook}),
     LogPanel = wxPanel:new(Notebook),
     GraphPanel = wxPanel:new(Notebook),
     SourcePanel = wxPanel:new(Notebook),
-    LogText = wxTextCtrl:new(LogPanel, ?LOG_TEXT, [{size, {400, 400}},
-     			      {style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
+    LogText = wxTextCtrl:new(LogPanel, ?LOG_TEXT,
+			     [{style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
     refServer:add({?LOG_TEXT, LogText}),
     ScrGraph = wxScrolledWindow:new(GraphPanel),
+    wxWindow:setOwnBackgroundColour(ScrGraph, {255, 255, 255}),
+    wxWindow:clearBackground(ScrGraph),
     refServer:add({?SCR_GRAPH, ScrGraph}),
     SourceText = wxStyledTextCtrl:new(SourcePanel),
     refServer:add({?SOURCE_TEXT, SourceText}),
@@ -125,7 +139,7 @@ setupPanel(Parent) ->
     wxNotebook:addPage(Notebook, SourcePanel, "Source", [{bSelect, false}]),
     RightColumnSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(RightColumnSizer, Notebook,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 0}]),
     %% -------------------- Two-column top level layout -------------------- %%
     TopSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(TopSizer, LeftColumnSizer,
@@ -134,7 +148,7 @@ setupPanel(Parent) ->
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
     wxWindow:setSizer(Panel, TopSizer),
     wxSizer:fit(TopSizer, Panel),
-    wxSizer:setSizeHints(TopSizer, Parent),
+    %% wxSizer:setSizeHints(TopSizer, Parent),
     Panel.
 
 %% Menu constructor according to specification (gui.hrl)
@@ -179,9 +193,10 @@ setupSourceText(Ref) ->
     Width = wxStyledTextCtrl:textWidth(Ref, ?wxSTC_STYLE_LINENUMBER, "99999"),
     wxStyledTextCtrl:setMarginWidth(Ref, 0, Width),
     wxStyledTextCtrl:setMarginWidth(Ref, 1, 0),
-    wxStyledTextCtrl:setScrollWidth(Ref, 1000),
+    %% wxStyledTextCtrl:setScrollWidth(Ref, 1000),
     wxStyledTextCtrl:setSelectionMode(Ref, ?wxSTC_SEL_LINES),
     wxStyledTextCtrl:setReadOnly(Ref, true),
+    wxStyledTextCtrl:setWrapMode(Ref, ?wxSTC_WRAP_WORD),
     SetStyles =
         fun({Style, Color, Option}) ->
                 case Option of
@@ -205,18 +220,19 @@ setupSourceText(Ref) ->
 addArgs(_Parent, _Sizer, Max, Max, Refs) ->
     lists:reverse(Refs);
 addArgs(Parent, Sizer, I, Max, Refs) ->
-    Ref =  wxTextCtrl:new(Parent, ?wxID_ANY),
+    %% XXX: semi-hack, custom width, default heightq
+    Ref =  wxTextCtrl:new(Parent, ?wxID_ANY, [{size, {130, -1}}]),
     HorizSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(HorizSizer,
                 wxStaticText:new(Parent, ?wxID_ANY,
                                  io_lib:format("Arg~p: ", [I + 1])),
-		[{proportion, 0}, {flag, ?wxALL bor ?wxALIGN_CENTER},
-                 {border, 10}]),
+		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxRIGHT},
+                 {border, 5}]),
     wxSizer:add(HorizSizer, Ref, [{proportion, 1},
-                                  {flag, ?wxALL bor ?wxALIGN_CENTER},
-                                  {border, 10}]),
+                                  {flag, ?wxALIGN_CENTER bor ?wxALL},
+                                  {border, 0}]),
     wxSizer:add(Sizer, HorizSizer, [{proportion, 0},
-                                    {flag, ?wxALL bor ?wxEXPAND},
+                                    {flag, ?wxEXPAND bor ?wxALL},
                                     {border, 10}]),
     addArgs(Parent, Sizer, I + 1, Max, [Ref|Refs]).
 
@@ -258,9 +274,9 @@ analyze() ->
     Self = self(),
     if
 	Module =/= '', Function =/= '' ->
-	    instrumentAll(?MODULE_LIST),
 	    case Arity of
 		0 ->
+		    instrumentAll(?MODULE_LIST),
 		    LogText = refServer:lookup(?LOG_TEXT),
 		    wxTextCtrl:clear(LogText),
 		    spawn(fun() ->
@@ -272,6 +288,7 @@ analyze() ->
 		    Frame = refServer:lookup(?FRAME),
 		    case argDialog(Frame, Count) of
 			{ok, Args} ->
+			    instrumentAll(?MODULE_LIST),
 			    LogText = refServer:lookup(?LOG_TEXT),
 			    wxTextCtrl:clear(LogText),
 			    spawn(fun() ->
@@ -291,16 +308,24 @@ analyze() ->
 
 %% Dialog for inserting function arguments (terms)
 argDialog(Parent, Argnum) ->
-    Dialog = wxDialog:new(Parent, ?wxID_ANY, "Function arguments"),
+    Dialog = wxDialog:new(Parent, ?wxID_ANY, "Enter arguments"),
     TopSizer = wxBoxSizer:new(?wxVERTICAL),
-    Refs = addArgs(Dialog, TopSizer, 0, Argnum, []),
+    Box = wxStaticBox:new(Dialog, ?wxID_ANY, "Arguments"),
+    InSizer = wxStaticBoxSizer:new(Box, ?wxVERTICAL),
+    Refs = addArgs(Dialog, InSizer, 0, Argnum, []),
     ButtonSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_OK),
-		[{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
+		[{proportion, 0}, {flag, ?wxRIGHT}, {border, 5}]),
     wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_CANCEL),
-		[{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
+		[{proportion, 0}, {flag, ?wxLEFT}, {border, 5}]),
+    wxSizer:add(TopSizer, InSizer,
+		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
     wxSizer:add(TopSizer, ButtonSizer,
-                [{proportion, 0}, {flag, ?wxALL}, {border, 10}]),
+                [{proportion, 0},
+		 {flag, ?wxALIGN_CENTER bor
+		        ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
+		 {border, 10}]),
     wxWindow:setSizer(Dialog, TopSizer),
     wxSizer:fit(TopSizer, Dialog),
     case wxDialog:showModal(Dialog) of
@@ -389,7 +414,9 @@ validateArgs(I, [Ref|Refs], Args, RefError) ->
 	    case erl_parse:parse_term(T) of
 		{ok, Arg} -> validateArgs(I + 1, Refs, [Arg|Args], RefError);
 		{error, {_, _, Info}} ->
-		    wxTextCtrl:appendText(RefError, Info ++ "\n"),
+		    wxTextCtrl:appendText(RefError,
+					  io_lib:format("Arg ~p - ~s~n",
+							[I + 1, Info])),
 		    error
 	    end;
 	{error, {_, _, Info}, _} ->
@@ -441,7 +468,16 @@ loop() ->
 	    loop();
 	%% -------------------- Listbox handlers --------------------- %%
 	#wx{id = ?FUNCTION_LIST,
-            event = #wxCommand{type = command_listbox_selected}} ->
+	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
+	    analyze(),
+	    loop();
+	#wx{id = ?FUNCTION_LIST,
+	    event = #wxCommand{type = command_listbox_selected}} ->
+	    %% do nothing
+	    loop();
+	#wx{id = ?MODULE_LIST,
+	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
+	    %% do nothing
 	    loop();
 	#wx{id = ?MODULE_LIST,
             event = #wxCommand{type = command_listbox_selected}} ->
