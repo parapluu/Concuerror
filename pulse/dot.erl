@@ -22,6 +22,13 @@
 -spec dot(file:name(), [any()]) -> 'ok' | {'error', file:posix()}.
 %% XXX: Replace any() by events()
 
+globals() ->
+    "fontname = \"Helvetica\";" ++
+    "fontsize = \"10\"" ++
+    "graph[fontname = \"Helvetica\", fontsize = \"10\"]" ++
+    "edge[fontname = \"Helvetica\", fontsize = \"10\"]" ++ 
+    "node[fontname = \"Helvetica\", fontsize = \"10\"]".
+
 dot(FileName, Events) ->
     file:write_file(FileName, unlines(graph(Events))).
 
@@ -29,7 +36,7 @@ unlines([])     -> "";
 unlines([X|Xs]) -> X ++ "\n" ++ unlines(Xs).
 
 graph(Events) ->
-     ["digraph {", cluster(root, "red"),
+     ["digraph {", globals(), cluster(root, "red"),
       node(start("root") ++ ",rank=source", root, 0, "red")] ++
         events(#state{processes = [{root, {0, "red", []}}]}, Events) ++
         ["}"].
@@ -193,9 +200,10 @@ cluster(Name, Color) ->
                    Color ++
                    ";").
 
-start(_S) -> "shape=triangle,label=\"\"".
-small()  -> "width=0.2,height=0.2,style=filled,label=\"\"".
-stop(S)  -> "shape=invtriangle,label=\"" ++ S ++ "\"".
+start(_S) -> "shape=triangle,label=\"\", width=\"0.2\", height=\"0.2\"".
+small()  -> "width=0.1,height=0.1,style=filled,label=\"\"".
+stop(S)  -> "shape=invtriangle,label=\"" ++ S ++ "\"," ++
+            "width=\"0.2\", height=\"0.2\"".
 
 node(Attr, Name, N, Color) ->
     in_cluster(Name,Color,

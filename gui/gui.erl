@@ -114,9 +114,12 @@ setupPanel(Parent) ->
 			     [{style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
     refServer:add({?LOG_TEXT, LogText}),
     ScrGraph = wxScrolledWindow:new(GraphPanel),
+    refServer:add({?SCR_GRAPH, ScrGraph}),
     wxWindow:setOwnBackgroundColour(ScrGraph, {255, 255, 255}),
     wxWindow:clearBackground(ScrGraph),
-    refServer:add({?SCR_GRAPH, ScrGraph}),
+    Bmp = wxBitmap:new(),
+    StaticBmp = wxStaticBitmap:new(ScrGraph, ?STATIC_BMP, Bmp),
+    refServer:add({?STATIC_BMP, StaticBmp}),
     SourceText = wxStyledTextCtrl:new(SourcePanel),
     refServer:add({?SOURCE_TEXT, SourceText}),
     setupSourceText(SourceText, light),
@@ -560,20 +563,11 @@ loop() ->
 	    os:cmd("dot -Tpng < schedule.dot > schedule.png"),
 	    Image= wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
 	    {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
-%%             wxScrolledWindow:doPrepareDC(ScrGraph, Dc),
-%%             wxDC:drawBitmap(Dc, Image, {0, 0}, [{useMask, false}]),
-%%             wxClientDC:destroy(Dc),
 	    ScrGraph = refServer:lookup(?SCR_GRAPH),
 	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20,
                                            W div 20, H div 20),
-	    %% NOTE: Static bitmap for large pics ok?
-	    case refServer:lookup(?STATIC_BMP) of
-		not_found ->
-		    StaticBmp = wxStaticBitmap:new(ScrGraph, ?wxID_ANY, Image),
-		    refServer:add({?STATIC_BMP, StaticBmp});
-		Result ->
-		    wxStaticBitmap:setBitmap(Result, Image)
-	    end,
+	    StaticBmp = refServer:lookup(?STATIC_BMP),
+	    wxStaticBitmap:setBitmap(StaticBmp, Image),
 	    loop();
 	#gui{type = log, msg = String} ->
 	    LogText = refServer:lookup(?LOG_TEXT),
