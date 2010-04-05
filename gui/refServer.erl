@@ -14,7 +14,7 @@
 %% Message format
 -type ref_type() :: 'ref_add' | 'ref_error' | 'ref_lookup' | 'ref_ok'
                   | 'ref_stop'.
--type ref_msg()  :: 'more_found' | 'not_found' | id() | ref() | {id(), ref()}.
+-type ref_msg()  :: 'not_found' | id() | ref() | {id(), ref()}.
 
 -record(ref, {type :: ref_type(),
 	      msg  :: ref_msg()}).
@@ -53,10 +53,7 @@ lookup(Id) ->
     refServer ! {self(), #ref{type = ref_lookup, msg = Id}},
     receive
 	#ref{type = ref_ok, msg = not_found} -> not_found;
-	#ref{type = ref_ok, msg = Value} -> Value;
-	#ref{type = ref_error, msg = Msg} ->
-	    io:format("refServer - lookup error: ~p~n", [Msg]),
-	    exit(error)
+	#ref{type = ref_ok, msg = Value} -> Value
     end.
 
 reg() ->
@@ -66,13 +63,12 @@ reg() ->
 loop(Dict) ->
     receive
 	{Pid, #ref{type = ref_add, msg = {Id, Ref}}} ->
-	    NewDict = dict:append(Id, Ref, Dict),
+	    NewDict = dict:store(Id, Ref, Dict),
 	    Pid ! #ref{type = ref_ok},
 	    loop(NewDict);
 	{Pid, #ref{type = ref_lookup, msg = Id}} ->
 	    case dict:find(Id, Dict) of
-		{ok, [Value]} -> Pid ! #ref{type = ref_ok, msg = Value};
-		{ok, _Value} -> Pid ! #ref{type = ref_error, msg = more_found};
+		{ok, Value} -> Pid ! #ref{type = ref_ok, msg = Value};
 		error -> Pid ! #ref{type = ref_ok, msg = not_found}
 	    end,
 	    loop(Dict);
