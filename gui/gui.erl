@@ -560,14 +560,15 @@ loop() ->
 	    ok;
 	%% -------------------- Misc handlers -------------------- %%
 	#gui{type = dot, msg = ok} ->
-	    os:cmd("dot -Tpng < schedule.dot > schedule.png"),
-	    Image= wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
-	    {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
-	    ScrGraph = refServer:lookup(?SCR_GRAPH),
-	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20,
-                                           W div 20, H div 20),
 	    StaticBmp = refServer:lookup(?STATIC_BMP),
+	    ScrGraph = refServer:lookup(?SCR_GRAPH),
+	    os:cmd("dot -Tpng < schedule.dot > schedule.png"),
+	    Image = wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
+	    {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
+	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20, W div 20, H div 20),
 	    wxStaticBitmap:setBitmap(StaticBmp, Image),
+	    %% NOTE: Important, memory leak if left out!
+	    wxBitmap:destroy(Image),
 	    loop();
 	#gui{type = log, msg = String} ->
 	    LogText = refServer:lookup(?LOG_TEXT),
