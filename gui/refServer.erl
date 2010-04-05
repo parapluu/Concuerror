@@ -7,7 +7,7 @@
 %%%----------------------------------------------------------------------
 
 -module(refServer).
--export([start/1, stop/0, add/1, lookup/1]).
+-export([add/1, lookup/1, start/1, stop/0]).
 
 -include("../include/gui.hrl").
 
@@ -43,9 +43,7 @@ stop() ->
 
 add({_Id, _Ref} = T) ->
     refServer ! {self(), #ref{type = ref_add, msg = T}},
-    receive
-	#ref{type = ref_ok} -> ok
-    end.
+    receive #ref{type = ref_ok} -> ok end.
 	
 -spec lookup(id()) -> ref() | not_found.
 
