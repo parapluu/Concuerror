@@ -130,7 +130,7 @@ events(#state{nodes_after = NodesAfter, processes = Procs,
           {Name1, {N1, Color1, Q1}} = state(State, Name1),
           Entry = {_, N, _} =
               case [Entrya || Entrya = {mymailbox, _, Msga} <- Q1,
-                              Msg =:= Msga ] of
+                              Msg =:= Msga] of
                   [Entryb|_] -> Entryb;
                   _ -> 
                       io:format("WARNING: no message '~p' in mailbox ~p "

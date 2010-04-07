@@ -50,18 +50,18 @@ getFuns([Node | Rest] = L, Funs) ->
 
 getExports([], Exp) ->
     Exp;
-getExports([Fun | Rest], Exp) ->
+getExports([Fun|Rest], Exp) ->
     Name = erl_syntax:atom_name(erl_syntax:arity_qualifier_body(Fun)),
     Arity = erl_syntax:integer_value(erl_syntax:arity_qualifier_argument(Fun)),
-    getExports(Rest, [{list_to_atom(Name), Arity} | Exp]).
+    getExports(Rest, [{list_to_atom(Name), Arity}|Exp]).
 
 getAllFuns([], Funs) ->
     Funs;
-getAllFuns([Node | Rest], Funs) ->
+getAllFuns([Node|Rest], Funs) ->
     case erl_syntax:type(Node) of
 	function ->
 	    Name = erl_syntax:atom_name(erl_syntax:function_name(Node)),
 	    Arity = erl_syntax:function_arity(Node),
-	    getAllFuns(Rest, [{list_to_atom(Name), Arity} | Funs]);
+	    getAllFuns(Rest, [{list_to_atom(Name), Arity}|Funs]);
 	_Other -> getAllFuns(Rest, Funs)
     end.

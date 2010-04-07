@@ -79,7 +79,7 @@ c(Atom, Scheduler) ->
 
 %% c([], _Scheduler, _Functions) ->
 %%     ok;
-%% c([Atom | Rest], Scheduler, Functions) ->
+%% c([Atom|Rest], Scheduler, Functions) ->
 %%     c(Atom, Scheduler, Functions),
 %%     c(Rest, Scheduler, Functions);
 c(Atom, Scheduler, Functions) ->
@@ -297,7 +297,7 @@ instrument_send(Term) ->
 instrument_receive(Term) ->
     Retry = new_var(),
     Result = new_var(),
-    Bound = [ variable(X) || X <- bound_vars_in_receive(Term) ],
+    Bound = [variable(X) || X <- bound_vars_in_receive(Term)],
     Tuple = tuple([Result|Bound]),
 
     %% Add the variable capture stuff to a clause body.
@@ -521,16 +521,16 @@ instrument_implicit_fun(Term, Name) ->
                                      arity_qualifier(atom(IAtom), Arity)),
             implicit_fun(Fun);
         _ ->
-            Vars = [ new_var() || _ <- seq(1, integer_value(Arity)) ],
+            Vars = [new_var() || _ <- seq(1, integer_value(Arity))],
             Fun = qualified_function(IModule, atom(IAtom)),
             Args = case NeedName of
-                       true -> [atom(choose_name(Name)) | Vars];
+                       true -> [atom(choose_name(Name))|Vars];
                        false -> Vars
                    end,
             Body = [application(Fun, Args)],
             fun_expr([clause(Vars, none,
                              case NeedYield of
-                                 true -> [scheduler(yield, []) | Body];
+                                 true -> [scheduler(yield, [])|Body];
                                  false -> Body
                              end)])
     end.

@@ -160,11 +160,11 @@ setupPanel(Parent) ->
     Panel.
 
 %% Menu constructor according to specification (gui.hrl)
-setupMenu(MenuBar, [{Title, Items} | Rest]) ->
-    setupMenu(MenuBar, [{Title, Items, []} | Rest]);
+setupMenu(MenuBar, [{Title, Items}|Rest]) ->
+    setupMenu(MenuBar, [{Title, Items, []}|Rest]);
 setupMenu(_MenuBar, []) ->
     ok;
-setupMenu(MenuBar, [{Title, Items, Options} | Rest]) ->
+setupMenu(MenuBar, [{Title, Items, Options}|Rest]) ->
     Menu = wxMenu:new(Options),
     setupMenuItems(Menu, Items),
     wxMenuBar:append(MenuBar, Menu, Title),
@@ -172,7 +172,7 @@ setupMenu(MenuBar, [{Title, Items, Options} | Rest]) ->
 
 setupMenuItems(_Menu, []) ->
     ok;
-setupMenuItems(Menu, [Options | Rest]) ->
+setupMenuItems(Menu, [Options|Rest]) ->
     case lists:keytake(sub, 1, Options) of
 	{value, {_, SubItems}, NewOptions} ->
 	    Submenu = wxMenu:new(),
@@ -398,7 +398,7 @@ getStrings(_Ref, Count, Count, Strings) ->
     Strings;
 getStrings(Ref, N, Count, Strings) ->
     String = wxControlWithItems:getString(Ref, N),
-    getStrings(Ref, N + 1, Count, [String | Strings]).
+    getStrings(Ref, N + 1, Count, [String|Strings]).
 
 %% Instrument all modules in ModuleList
 instrumentAll(Id) ->
@@ -407,7 +407,7 @@ instrumentAll(Id) ->
 
 instrumentList([]) ->
     ok;
-instrumentList([String | Strings]) ->
+instrumentList([String|Strings]) ->
     instrument:c(String),
     instrumentList(Strings).
 
@@ -448,12 +448,12 @@ setListItems(Id, Items) ->
 
 validateArgs(_I, [], Args, _RefError) ->
     {ok, lists:reverse(Args)};
-validateArgs(I, [Ref | Refs], Args, RefError) ->
+validateArgs(I, [Ref|Refs], Args, RefError) ->
     String = wxTextCtrl:getValue(Ref) ++ ".",
     case erl_scan:string(String) of
 	{ok, T, _} ->
 	    case erl_parse:parse_term(T) of
-		{ok, Arg} -> validateArgs(I + 1, Refs, [Arg | Args], RefError);
+		{ok, Arg} -> validateArgs(I + 1, Refs, [Arg|Args], RefError);
 		{error, {_, _, Info}} ->
 		    wxTextCtrl:appendText(RefError,
 					  io_lib:format("Arg ~p - ~s~n",

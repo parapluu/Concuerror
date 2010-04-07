@@ -396,7 +396,7 @@ runProcess(Pid, #state{actives = Actives, after0s = After0s,
             event(State, {exit, name(State, Pid), Reason}),
             LinksToSend = lists:usort([{exit, Pid1}
                                        || {Pid1, Pid2} <- Links,
-                                          Pid2 =:= Pid ] ++
+                                          Pid2 =:= Pid] ++
                                           [{exit, Pid2}
                                            || {Pid1, Pid2} <- Links,
                                               Pid1 =:= Pid]),
