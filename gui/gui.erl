@@ -94,8 +94,7 @@ setupPanel(Parent) ->
 		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
 		 {border, 10}]),
     wxSizer:add(FunctionSizer, AnalyzeButton,
-		[{proportion, 0},
-		 {flag, ?wxALIGN_CENTER bor ?wxALL},
+		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
                  {border, 10}]),
     LeftColumnSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(LeftColumnSizer, ModuleSizer,
@@ -114,24 +113,30 @@ setupPanel(Parent) ->
 			     [{style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
     refServer:add({?LOG_TEXT, LogText}),
     ScrGraph = wxScrolledWindow:new(GraphPanel),
+    refServer:add({?SCR_GRAPH, ScrGraph}),
     wxWindow:setOwnBackgroundColour(ScrGraph, {255, 255, 255}),
     wxWindow:clearBackground(ScrGraph),
-    refServer:add({?SCR_GRAPH, ScrGraph}),
+    Bmp = wxBitmap:new(),
+    StaticBmp = wxStaticBitmap:new(ScrGraph, ?STATIC_BMP, Bmp),
+    refServer:add({?STATIC_BMP, StaticBmp}),
     SourceText = wxStyledTextCtrl:new(SourcePanel),
     refServer:add({?SOURCE_TEXT, SourceText}),
     setupSourceText(SourceText, light),
 
     LogPanelSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(LogPanelSizer, LogText,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
     wxWindow:setSizer(LogPanel, LogPanelSizer),
     GraphPanelSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(GraphPanelSizer, ScrGraph,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
     wxWindow:setSizer(GraphPanel, GraphPanelSizer),
     SourcePanelSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(SourcePanelSizer, SourceText,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
     wxWindow:setSizer(SourcePanel, SourcePanelSizer),
 
     wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
@@ -139,24 +144,27 @@ setupPanel(Parent) ->
     wxNotebook:addPage(Notebook, SourcePanel, "Source", [{bSelect, false}]),
     RightColumnSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(RightColumnSizer, Notebook,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 0}]),
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 0}]),
     %% -------------------- Two-column top level layout -------------------- %%
     TopSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(TopSizer, LeftColumnSizer,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
     wxSizer:add(TopSizer, RightColumnSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
     wxWindow:setSizer(Panel, TopSizer),
     wxSizer:fit(TopSizer, Panel),
     %% wxSizer:setSizeHints(TopSizer, Parent),
     Panel.
 
 %% Menu constructor according to specification (gui.hrl)
-setupMenu(MenuBar, [{Title, Items}|Rest]) ->
-    setupMenu(MenuBar, [{Title, Items, []}|Rest]);
+setupMenu(MenuBar, [{Title, Items} | Rest]) ->
+    setupMenu(MenuBar, [{Title, Items, []} | Rest]);
 setupMenu(_MenuBar, []) ->
     ok;
-setupMenu(MenuBar, [{Title, Items, Options}|Rest]) ->
+setupMenu(MenuBar, [{Title, Items, Options} | Rest]) ->
     Menu = wxMenu:new(Options),
     setupMenuItems(Menu, Items),
     wxMenuBar:append(MenuBar, Menu, Title),
@@ -164,7 +172,7 @@ setupMenu(MenuBar, [{Title, Items, Options}|Rest]) ->
 
 setupMenuItems(_Menu, []) ->
     ok;
-setupMenuItems(Menu, [Options|Rest]) ->
+setupMenuItems(Menu, [Options | Rest]) ->
     case lists:keytake(sub, 1, Options) of
 	{value, {_, SubItems}, NewOptions} ->
 	    Submenu = wxMenu:new(),
@@ -207,19 +215,18 @@ setupSourceText(Ref, Theme) ->
     %% wxStyledTextCtrl:setSelectionMode(Ref, ?wxSTC_SEL_LINES),
     wxStyledTextCtrl:setReadOnly(Ref, true),
     wxStyledTextCtrl:setWrapMode(Ref, ?wxSTC_WRAP_WORD),
-    SetStyles =
-        fun({Style, Color, Option}) ->
-                case Option of
-                    bold ->
-                        wxStyledTextCtrl:styleSetFont(Ref, Style, BoldFont);
-                    italic ->
-                        wxStyledTextCtrl:styleSetFont(Ref, Style, ItalicFont);
-                    _Other ->
-                        wxStyledTextCtrl:styleSetFont(Ref, Style, NormalFont)
-                end,
-                wxStyledTextCtrl:styleSetForeground(Ref, Style, Color),
-                wxStyledTextCtrl:styleSetBackground(Ref, Style, BgColor)
-        end,
+    SetStyles = fun({Style, Color, Option}) ->
+		  case Option of
+		      bold ->
+			  wxStyledTextCtrl:styleSetFont(Ref, Style, BoldFont);
+		      italic ->
+			  wxStyledTextCtrl:styleSetFont(Ref, Style, ItalicFont);
+		      _Other ->
+			  wxStyledTextCtrl:styleSetFont(Ref, Style, NormalFont)
+		  end,
+		  wxStyledTextCtrl:styleSetForeground(Ref, Style, Color),
+		  wxStyledTextCtrl:styleSetBackground(Ref, Style, BgColor)
+		end,
     [SetStyles(Style) || Style <- Styles],
     wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
@@ -283,17 +290,16 @@ analyze() ->
     Module = getModule(),
     {Function, Arity} = getFunction(),
     Self = self(),
-    if
-	Module =/= '', Function =/= '' ->
+    if Module =/= '', Function =/= '' ->
 	    case Arity of
 		0 ->
 		    instrumentAll(?MODULE_LIST),
 		    LogText = refServer:lookup(?LOG_TEXT),
 		    wxTextCtrl:clear(LogText),
 		    spawn(fun() ->
-				  driver:drive(
-				    fun() -> Module:Function() end,
-				    Self)
+			    driver:drive(
+			      fun() -> Module:Function() end,
+			      Self)
 			  end);
 		Count ->
 		    Frame = refServer:lookup(?FRAME),
@@ -303,18 +309,15 @@ analyze() ->
 			    LogText = refServer:lookup(?LOG_TEXT),
 			    wxTextCtrl:clear(LogText),
 			    spawn(fun() ->
-					  driver:drive(
-					    fun() ->
-						    apply(Module,
-							  Function,
-							  Args)
-					    end,
-					    Self)
+				    driver:drive(fun() ->
+						   apply(Module, Function, Args)
+						 end,
+						 Self)
 				  end);
 			_Other -> continue
 		    end
 	    end;
-	true -> continue
+       true -> continue
     end.
 
 %% Dialog for inserting function arguments (terms)
@@ -349,9 +352,7 @@ argDialog(Parent, Argnum) ->
 		{ok, Args} -> {ok, Args};
 		_Other -> continue
 	    end;
-	_Other ->
-	    wxDialog:destroy(Dialog),
-	    continue
+	_Other -> wxDialog:destroy(Dialog), continue
     end.
 
 %% Clear module list
@@ -389,18 +390,15 @@ getModule() ->
 %% wxControlWithItems:getStrings (function missing from wxErlang lib)
 getStrings(Ref) ->
     Count = wxControlWithItems:getCount(Ref),
-    if
-	Count > 0 ->
-	    getStrings(Ref, 0, Count, []);
-	true ->
-	    []
+    if Count > 0 -> getStrings(Ref, 0, Count, []);
+       true -> []
     end.
 
 getStrings(_Ref, Count, Count, Strings) ->
     Strings;
 getStrings(Ref, N, Count, Strings) ->
     String = wxControlWithItems:getString(Ref, N),
-    getStrings(Ref, N + 1, Count, [String|Strings]).
+    getStrings(Ref, N + 1, Count, [String | Strings]).
 
 %% Instrument all modules in ModuleList
 instrumentAll(Id) ->
@@ -409,7 +407,7 @@ instrumentAll(Id) ->
 
 instrumentList([]) ->
     ok;
-instrumentList([String|Strings]) ->
+instrumentList([String | Strings]) ->
     instrument:c(String),
     instrumentList(Strings).
 
@@ -419,49 +417,43 @@ remove() ->
     Selection = wxListBox:getSelection(ModuleList),
     FunctionList = refServer:lookup(?FUNCTION_LIST),
     SourceText = refServer:lookup(?SOURCE_TEXT),
-    if
-	Selection =:= ?wxNOT_FOUND ->
+    if Selection =:= ?wxNOT_FOUND ->
 	    continue;
-	true ->
+       true ->
 	    wxControlWithItems:delete(ModuleList, Selection),
 	    Count = wxControlWithItems:getCount(ModuleList),
-	    if
-		Count =:= 0 ->
+	    if Count =:= 0 ->
 		    wxControlWithItems:clear(FunctionList),
 		    wxStyledTextCtrl:setReadOnly(SourceText, false),
 		    wxStyledTextCtrl:clearAll(SourceText),
 		    wxStyledTextCtrl:setReadOnly(SourceText, true);
-		Selection =:= Count ->
-		    wxControlWithItems:setSelection(ModuleList,
-						    Selection - 1);
-		true ->
-		    wxControlWithItems:setSelection(ModuleList,
-						    Selection)
+	       Selection =:= Count ->
+		    wxControlWithItems:setSelection(ModuleList, Selection - 1);
+	       true ->
+		    wxControlWithItems:setSelection(ModuleList, Selection)
 	    end
     end.
 
 %% Set ListBox (Id) items (remove existing)
 setListItems(Id, Items) ->
-    if
-	Items =/= [], Items =/= [[]] ->
+    if Items =/= [], Items =/= [[]] ->
 	    List = refServer:lookup(Id),
 	    wxListBox:set(List, Items),
 	    wxControlWithItems:setSelection(List, 0),
 	    %% XXX: hack (send event message to self)
 	    self() ! #wx{id = Id,
                          event = #wxCommand{type = command_listbox_selected}};
-	true ->
-	    continue
+       true -> continue
     end.
 
 validateArgs(_I, [], Args, _RefError) ->
     {ok, lists:reverse(Args)};
-validateArgs(I, [Ref|Refs], Args, RefError) ->
+validateArgs(I, [Ref | Refs], Args, RefError) ->
     String = wxTextCtrl:getValue(Ref) ++ ".",
     case erl_scan:string(String) of
 	{ok, T, _} ->
 	    case erl_parse:parse_term(T) of
-		{ok, Arg} -> validateArgs(I + 1, Refs, [Arg|Args], RefError);
+		{ok, Arg} -> validateArgs(I + 1, Refs, [Arg | Args], RefError);
 		{error, {_, _, Info}} ->
 		    wxTextCtrl:appendText(RefError,
 					  io_lib:format("Arg ~p - ~s~n",
@@ -559,23 +551,15 @@ loop() ->
 	    ok;
 	%% -------------------- Misc handlers -------------------- %%
 	#gui{type = dot, msg = ok} ->
-	    os:cmd("dot -Tpng < schedule.dot > schedule.png"),
-	    Image= wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
-	    {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
-%%             wxScrolledWindow:doPrepareDC(ScrGraph, Dc),
-%%             wxDC:drawBitmap(Dc, Image, {0, 0}, [{useMask, false}]),
-%%             wxClientDC:destroy(Dc),
+	    StaticBmp = refServer:lookup(?STATIC_BMP),
 	    ScrGraph = refServer:lookup(?SCR_GRAPH),
-	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20,
-                                           W div 20, H div 20),
-	    %% NOTE: Static bitmap for large pics ok?
-	    case refServer:lookup(?STATIC_BMP) of
-		not_found ->
-		    StaticBmp = wxStaticBitmap:new(ScrGraph, ?wxID_ANY, Image),
-		    refServer:add({?STATIC_BMP, StaticBmp});
-		Result ->
-		    wxStaticBitmap:setBitmap(Result, Image)
-	    end,
+	    os:cmd("dot -Tpng < schedule.dot > schedule.png"),
+	    Image = wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
+	    {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
+	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20, W div 20, H div 20),
+	    wxStaticBitmap:setBitmap(StaticBmp, Image),
+	    %% NOTE: Important, memory leak if left out!
+	    wxBitmap:destroy(Image),
 	    loop();
 	#gui{type = log, msg = String} ->
 	    LogText = refServer:lookup(?LOG_TEXT),
