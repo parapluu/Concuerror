@@ -7,11 +7,8 @@
 %%% Created : 1 Apr 2010 by Maria Christakis <christakismaria@gmail.com>
 %%%----------------------------------------------------------------------
 
--ifndef(SCHEDULER).
 -module(scheduler).
--else.
--module(scheduler_instr).
--endif.
+
 -export(['after'/0, consumed/1, event/1, exit/1, exit/2, instrumented/0,
          link/1, monitor/2, process_flag/2, receiving/1, receivingAfterX/3,
          send/2, side_effect/3, sleep/1, spawn/1, spawn/2, spawn_link/1,
@@ -645,19 +642,9 @@ print(false,_,_) -> ok;
 
 print(_, S, Xs) ->
     case whereis(loop) of
-	undefined ->
-	    case ?MODULE of
-		scheduler -> io:format(S,Xs);
-		_         -> io:format("  (~p) " ++ S,[?MODULE|Xs])
-	    end;
+	undefined -> io:format(S, Xs);
 	Pid ->
-	    case ?MODULE of
-		scheduler -> Pid ! #gui{type = log,
-                                        msg = io_lib:format(S,Xs)};
-		_         -> Pid ! #gui{type = log,
-                                        msg = io_lib:format("  (~p) " ++ S,
-                                                            [?MODULE|Xs])}
-	    end
+            Pid ! #gui{type = log, msg = io_lib:format(S, Xs)}
     end.
 
 % ----------------------------------------------------------------

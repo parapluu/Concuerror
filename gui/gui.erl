@@ -193,8 +193,8 @@ setupSourceText(Ref, Theme) ->
                             ?wxNORMAL, []),
     BoldFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL,
                           ?wxBOLD, []),
-    ItalicFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxITALIC,
-                            ?wxBOLD, []),
+%%     ItalicFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxITALIC,
+%%                             ?wxBOLD, []),
     case Theme of
 	dark ->
 	    Styles = ?SOURCE_STYLES_DARK,
@@ -219,8 +219,8 @@ setupSourceText(Ref, Theme) ->
 		  case Option of
 		      bold ->
 			  wxStyledTextCtrl:styleSetFont(Ref, Style, BoldFont);
-		      italic ->
-			  wxStyledTextCtrl:styleSetFont(Ref, Style, ItalicFont);
+%% 		      italic ->
+%% 			  wxStyledTextCtrl:styleSetFont(Ref, Style, ItalicFont);
 		      _Other ->
 			  wxStyledTextCtrl:styleSetFont(Ref, Style, NormalFont)
 		  end,
