@@ -23,16 +23,13 @@
 	 {"&Run", [[{id, ?ANALYZE}, {text, "Ana&lyze\tCtrl-L"},
 		    {help, "Analyze selected function."}]]},
 	 {"&View", [[{id, ?wxID_ANY}, {text, "Source viewer color theme"},
-		    {help, "Select a color theme for the source viewer."},
-		    {sub,
-		     [[{id, ?THEME_LIGHT}, {text, "Light theme"},
-		       {kind, ?wxITEM_RADIO}],
-		      [{id, ?THEME_DARK}, {text, "Dark theme"},
-		       {kind, ?wxITEM_RADIO}]]}
-		    ]]}, 
+                     {help, "Select a color theme for the source viewer."},
+                     {sub, [[{id, ?THEME_LIGHT}, {text, "Light theme"},
+                             {kind, ?wxITEM_RADIO}],
+                            [{id, ?THEME_DARK}, {text, "Dark theme"},
+                             {kind, ?wxITEM_RADIO}]]}]]}, 
 	 {"&Help", [[{id, ?ABOUT}, {text, "&About"},
-		     {help, "Show project info."}]]}
-	]).
+		     {help, "Show project info."}]]}]).
 
 %% 'About' message
 -define(INFO_MSG,

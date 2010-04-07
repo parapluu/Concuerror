@@ -47,7 +47,7 @@ add({_Id, _Ref} = T) ->
 	#ref{type = ref_ok} -> ok
     end.
 	
--spec lookup(id()) -> ref() | not_found.
+-spec lookup(id()) -> ref() | 'not_found'.
 
 lookup(Id) ->
     refServer ! {self(), #ref{type = ref_lookup, msg = Id}},

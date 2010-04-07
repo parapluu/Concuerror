@@ -542,11 +542,13 @@ loop() ->
 	#wx{id = ?CLEAR, event = #wxCommand{type = command_menu_selected}} ->
 	    clear(),
 	    loop();
-	#wx{id = ?THEME_LIGHT, event = #wxCommand{type = command_menu_selected}} ->
+	#wx{id = ?THEME_LIGHT,
+            event = #wxCommand{type = command_menu_selected}} ->
 	    SourceText = refServer:lookup(?SOURCE_TEXT),
 	    setupSourceText(SourceText, light),
 	    loop();
-	#wx{id = ?THEME_DARK, event = #wxCommand{type = command_menu_selected}} ->
+	#wx{id = ?THEME_DARK,
+            event = #wxCommand{type = command_menu_selected}} ->
 	    SourceText = refServer:lookup(?SOURCE_TEXT),
 	    setupSourceText(SourceText, dark),
 	    loop();
