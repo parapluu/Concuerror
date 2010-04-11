@@ -24,9 +24,13 @@
 -spec start(boolean()) -> pid().
 
 start(Link) ->
+    Self = self(),
     case Link of
-	true -> spawn_link(fun reg/0);
-	false -> spawn(fun reg/0)
+	true -> spawn_link(fun() -> reg(Self) end);
+	false -> spawn(fun() -> reg(Self) end)
+    end,
+    receive
+	#ref{type = ref_ok} -> ok
     end.
 
 -spec stop() -> 'ok'.
@@ -54,8 +58,9 @@ lookup(Id) ->
 	#ref{type = ref_ok, msg = Value} -> Value
     end.
 
-reg() ->
+reg(Self) ->
     register(refServer, self()),
+    Self ! #ref{type = ref_ok},
     loop(dict:new()).
 
 loop(Dict) ->
