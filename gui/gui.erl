@@ -23,6 +23,8 @@ start() ->
     wx:new(),
     register(loop, self()),
     refServer:start(true),
+    %% Set initial file load path (for the add module dialog)
+    refServer:add({?FILE_PATH, ""}),
     %% Load PULSE modules
     code:load_file(?SCHEDULER),
     Frame = setupFrame(),
@@ -276,7 +278,7 @@ addArgs(Parent, Sizer, I, Max, Refs) ->
 addDialog(Parent) ->
     Caption = "Open erlang module",
     Wildcard = "Erlang source|*.erl;*.hrl| All files|*",
-    DefaultDir = ".",
+    DefaultDir = refServer:lookup(?FILE_PATH),
     DefaultFile = "",
     Dialog = wxFileDialog:new(Parent, [{message, Caption},
                                        {defaultDir, DefaultDir},
@@ -286,7 +288,9 @@ addDialog(Parent) ->
                                                ?wxFD_FILE_MUST_EXIST bor
                                                ?wxFD_MULTIPLE}]),
     case wxDialog:showModal(Dialog) of
-	?wxID_OK -> addListItems(?MODULE_LIST, wxFileDialog:getPaths(Dialog));
+	?wxID_OK ->
+	    addListItems(?MODULE_LIST, wxFileDialog:getPaths(Dialog)),
+	    refServer:add({?FILE_PATH, getDirectory()});
 	_Other -> continue
     end,
     wxDialog:destroy(Dialog).
@@ -384,6 +388,17 @@ clear() ->
     wxStyledTextCtrl:setReadOnly(SourceText, false),
     wxStyledTextCtrl:clearAll(SourceText),
     wxStyledTextCtrl:setReadOnly(SourceText, true).
+
+%% Return directory path of selected module
+getDirectory() ->
+    ModuleList = refServer:lookup(?MODULE_LIST),
+    Path = wxControlWithItems:getStringSelection(ModuleList),
+    Match =  re:run(Path, "(?<PATH>.*)/*?\.erl\$",
+                    [dotall, {capture, ['PATH'], list}]),
+    case Match of
+	{match, [Dir]} -> Dir;
+	nomatch -> ""
+    end.
 
 getFunction() ->
     FunctionList = refServer:lookup(?FUNCTION_LIST),

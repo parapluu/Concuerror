@@ -14,14 +14,14 @@
 %% Message format
 -type ref_type() :: 'ref_add' | 'ref_error' | 'ref_lookup' | 'ref_ok'
                   | 'ref_stop'.
--type ref_msg()  :: 'not_found' | id() | ref() | {id(), ref()}.
+-type ref_msg()  :: 'not_found' | id() | ref() | {id(), ref()} | string().
 
 -record(ref, {type :: ref_type(),
 	      msg  :: ref_msg()}).
 
 %% Start server linked to calling process
 
--spec start(boolean()) -> pid().
+-spec start(boolean()) -> ok.
 
 start(Link) ->
     Self = self(),
@@ -49,7 +49,7 @@ add({_Id, _Ref} = T) ->
     refServer ! {self(), #ref{type = ref_add, msg = T}},
     receive #ref{type = ref_ok} -> ok end.
 	
--spec lookup(id()) -> ref() | 'not_found'.
+-spec lookup(id()) -> ref() | string() | not_found.
 
 lookup(Id) ->
     refServer ! {self(), #ref{type = ref_lookup, msg = Id}},

@@ -88,7 +88,7 @@ http://www.protest-project.eu/
 -define(THEME_LIGHT, 511).
 -define(THEME_DARK, 512).
 -define(REFRESH, 513).
--define(REFRESH_ALL, 514).
+-define(FILE_PATH, 514).
 
 %% Erlang keywords
 -define(KEYWORDS, "after begin case try cond catch andalso orelse end fun "
@@ -145,7 +145,8 @@ http://www.protest-project.eu/
              | ?NOTEBOOK
              | ?SCR_GRAPH
              | ?STATIC_BMP
-             | ?SOURCE_TEXT.
+             | ?SOURCE_TEXT
+             | ?FILE_PATH.
 
 -type ref() :: any(). %% XXX: should be imported from wx
 %%                wxFrame:wxFrame()
