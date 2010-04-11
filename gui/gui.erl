@@ -58,9 +58,30 @@ setupFrame() ->
     wxFrame:center(Frame),
     Frame.
 
+%% Setup top-level panel, having a simple two-column horizontal layout.
 setupPanel(Parent) ->
     Panel = wxPanel:new(Parent),
-    %% -------------------- Left Column -------------------- %%
+    LeftColumnSizer = setupLeftColumn(Panel),
+    RightColumnSizer = setupRightColumn(Panel),
+    %% Top-level layout
+    TopSizer = wxBoxSizer:new(?wxHORIZONTAL),
+    wxSizer:add(TopSizer, LeftColumnSizer,
+		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxSizer:add(TopSizer, RightColumnSizer,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxWindow:setSizer(Panel, TopSizer),
+    wxSizer:fit(TopSizer, Panel),
+    %% Uncomment if starting frame size should be the minimum size
+    %% (i.e. frame shouldn't be allowed to shrink below it).
+    %% wxSizer:setSizeHints(TopSizer, Parent),
+    Panel.
+
+%% Setup left column of top-level panel, including module and function
+%% listboxes and several buttons.
+setupLeftColumn(Panel) ->
+    %% Create widgets
     ModuleBox = wxStaticBox:new(Panel, ?wxID_ANY, "Modules"),
     FunctionBox = wxStaticBox:new(Panel, ?wxID_ANY, "Functions"),
     ModuleList = wxListBox:new(Panel, ?MODULE_LIST),
@@ -71,6 +92,7 @@ setupPanel(Parent) ->
     RemButton = wxButton:new(Panel, ?REMOVE),
     ClearButton = wxButton:new(Panel, ?CLEAR),
     AnalyzeButton = wxButton:new(Panel, ?ANALYZE, [{label, "Ana&lyze"}]),
+    %% Setup button sizers
     AddRemSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(AddRemSizer, AddButton,
 		[{proportion, 0}, {flag, ?wxRIGHT}, {border, 5}]),
@@ -79,6 +101,7 @@ setupPanel(Parent) ->
 		 {border, 5}]),
     wxSizer:add(AddRemSizer, ClearButton,
 		[{proportion, 0}, {flag, ?wxLEFT}, {border, 5}]),
+    %% Setup module/function sizers
     ModuleSizer = wxStaticBoxSizer:new(ModuleBox, ?wxVERTICAL),
     wxSizer:add(ModuleSizer, ModuleList,
 		[{proportion, 1},
@@ -96,6 +119,7 @@ setupPanel(Parent) ->
     wxSizer:add(FunctionSizer, AnalyzeButton,
 		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
                  {border, 10}]),
+    %% Setup left column sizer
     LeftColumnSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(LeftColumnSizer, ModuleSizer,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
@@ -103,7 +127,12 @@ setupPanel(Parent) ->
     wxSizer:add(LeftColumnSizer, FunctionSizer,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
 		 {border, 10}]),
-    %% -------------------- Right Column -------------------- %%
+    LeftColumnSizer.
+
+%% Setup right column of top-level panel, including a notebook for displaying
+%% tabbed log, graph and source code panels.
+setupRightColumn(Panel) ->
+    %% Create widgets
     Notebook = wxNotebook:new(Panel, ?NOTEBOOK, [{style, ?wxNB_NOPAGETHEME}]),
     refServer:add({?NOTEBOOK, Notebook}),
     LogPanel = wxPanel:new(Notebook),
@@ -122,7 +151,7 @@ setupPanel(Parent) ->
     SourceText = wxStyledTextCtrl:new(SourcePanel),
     refServer:add({?SOURCE_TEXT, SourceText}),
     setupSourceText(SourceText, light),
-
+    %% Setup tab sizers
     LogPanelSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(LogPanelSizer, LogText,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
@@ -138,26 +167,16 @@ setupPanel(Parent) ->
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
 		 {border, 10}]),
     wxWindow:setSizer(SourcePanel, SourcePanelSizer),
-
+    %% Add tabs to notebook
     wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
     wxNotebook:addPage(Notebook, GraphPanel, "Graph", [{bSelect, false}]),
     wxNotebook:addPage(Notebook, SourcePanel, "Source", [{bSelect, false}]),
+    %% Setup right column sizer
     RightColumnSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(RightColumnSizer, Notebook,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
 		 {border, 0}]),
-    %% -------------------- Two-column top level layout -------------------- %%
-    TopSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(TopSizer, LeftColumnSizer,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxSizer:add(TopSizer, RightColumnSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxWindow:setSizer(Panel, TopSizer),
-    wxSizer:fit(TopSizer, Panel),
-    %% wxSizer:setSizeHints(TopSizer, Parent),
-    Panel.
+    RightColumnSizer.
 
 %% Menu constructor according to specification (gui.hrl)
 setupMenu(MenuBar, [{Title, Items}|Rest]) ->
@@ -237,7 +256,7 @@ setupSourceText(Ref, Theme) ->
 addArgs(_Parent, _Sizer, Max, Max, Refs) ->
     lists:reverse(Refs);
 addArgs(Parent, Sizer, I, Max, Refs) ->
-    %% XXX: semi-hack, custom width, default heightq
+    %% XXX: semi-hack, custom width, default height (-1)
     Ref =  wxTextCtrl:new(Parent, ?wxID_ANY, [{size, {130, -1}}]),
     HorizSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(HorizSizer,
@@ -411,6 +430,26 @@ instrumentList([String|Strings]) ->
     instrument:c(String),
     instrumentList(Strings).
 
+%% Refresh selected module (reload source code from disk).
+%% NOTE: When switching selected modules, no explicit refresh
+%% by the user is required, because the `command_listbox_selected`
+%% event for the module-list uses this function.
+refresh() ->
+    ModuleList = refServer:lookup(?MODULE_LIST),
+    case wxListBox:getSelection(ModuleList) of
+	?wxNOT_FOUND -> continue;
+	_Other ->
+	    Module = wxListBox:getStringSelection(ModuleList),
+	    %% Update module functions
+	    Funs = funs:stringList(Module),
+	    setListItems(?FUNCTION_LIST, Funs),
+	    %% Update module source
+	    SourceText = refServer:lookup(?SOURCE_TEXT),
+	    wxStyledTextCtrl:setReadOnly(SourceText, false),
+	    wxStyledTextCtrl:loadFile(SourceText, Module),
+	    wxStyledTextCtrl:setReadOnly(SourceText, true)
+    end.
+    
 %% Remove selected module from module list
 remove() ->
     ModuleList = refServer:lookup(?MODULE_LIST),
@@ -500,20 +539,7 @@ loop() ->
 	    loop();
 	#wx{id = ?MODULE_LIST,
             event = #wxCommand{type = command_listbox_selected}} ->
-	    ModuleList = refServer:lookup(?MODULE_LIST),
-	    case wxListBox:getSelection(ModuleList) of
-		?wxNOT_FOUND -> continue;
-		_Other ->
-		    Module = wxListBox:getStringSelection(ModuleList),
-		    %% Update module functions
-		    Funs = funs:stringList(Module),
-		    setListItems(?FUNCTION_LIST, Funs),
-		    %% Update module source
-		    SourceText = refServer:lookup(?SOURCE_TEXT),
-		    wxStyledTextCtrl:setReadOnly(SourceText, false),
-		    wxStyledTextCtrl:loadFile(SourceText, Module),
-		    wxStyledTextCtrl:setReadOnly(SourceText, true)
-	    end,
+	    refresh(),
 	    loop();
 	%% -------------------- Menu handlers -------------------- %%
 	#wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
@@ -529,20 +555,24 @@ loop() ->
 	    addDialog(Frame),
 	    loop();
 	#wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
+	    refresh(),
 	    analyze(),
 	    loop();
 	#wx{id = ?CLEAR, event = #wxCommand{type = command_menu_selected}} ->
 	    clear(),
 	    loop();
 	#wx{id = ?THEME_LIGHT,
-            event = #wxCommand{type = command_menu_selected}} ->
+	    event = #wxCommand{type = command_menu_selected}} ->
 	    SourceText = refServer:lookup(?SOURCE_TEXT),
 	    setupSourceText(SourceText, light),
 	    loop();
 	#wx{id = ?THEME_DARK,
-            event = #wxCommand{type = command_menu_selected}} ->
+	    event = #wxCommand{type = command_menu_selected}} ->
 	    SourceText = refServer:lookup(?SOURCE_TEXT),
 	    setupSourceText(SourceText, dark),
+	    loop();
+	#wx{id = ?REFRESH, event = #wxCommand{type = command_menu_selected}} ->
+	    refresh(),
 	    loop();
 	#wx{id = ?REMOVE, event = #wxCommand{type = command_menu_selected}} ->
 	    remove(),

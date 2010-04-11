@@ -13,23 +13,34 @@
 %% Menu specification:
 %%    [{MenuName1, [MenuItem11, MenuItem12, ...]}, ...]
 -define(MENU_SPEC,
-	[{"&File", [[{id, ?EXIT}, {help, "Quit PULSE."}]]},
-	 {"&Module", [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
-		       {help, "Add an existing erlang module."}],
-		      [{id, ?CLEAR}, {text, "&Clear\tCtrl-C"},
-		       {help, "Clear module list."}],
-		      [{id, ?REMOVE}, {text, "&Remove\tCtrl-R"},
-		       {help, "Remove selected module."}]]},
-	 {"&Run", [[{id, ?ANALYZE}, {text, "Ana&lyze\tCtrl-L"},
-		    {help, "Analyze selected function."}]]},
-	 {"&View", [[{id, ?wxID_ANY}, {text, "Source viewer color theme"},
-                     {help, "Select a color theme for the source viewer."},
-                     {sub, [[{id, ?THEME_LIGHT}, {text, "Light theme"},
-                             {kind, ?wxITEM_RADIO}],
-                            [{id, ?THEME_DARK}, {text, "Dark theme"},
-                             {kind, ?wxITEM_RADIO}]]}]]}, 
-	 {"&Help", [[{id, ?ABOUT}, {text, "&About"},
-		     {help, "Show project info."}]]}]).
+	[{"&File",
+	  [[{id, ?EXIT}, {help, "Quit PULSE."}]]},
+	 {"&Module",
+	  [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
+	    {help, "Add an existing erlang module."}],
+	   [{id, ?REMOVE}, {text, "&Remove\tCtrl-R"},
+	    {help, "Remove selected module."}],
+	   [{id, ?wxID_SEPARATOR}, {kind, ?wxITEM_SEPARATOR}],
+	   [{id, ?CLEAR}, {text, "&Clear\tCtrl-C"},
+	    {help, "Clear module list."}],
+	   [{id, ?REFRESH}, {text, "Re&fresh\tF5"},
+	    {help, "Refresh selected module (reload file from disk)."}]]},
+	 {"&Run",
+	  [[{id, ?ANALYZE}, {text, "Ana&lyze\tCtrl-L"},
+	    {help, "Analyze selected function."}]]},
+	 {"&View",
+	  [[{id, ?wxID_ANY}, {text, "Source viewer color theme"},
+	    {help, "Select a color theme for the source viewer."},
+	    {sub,
+	     [[{id, ?THEME_LIGHT}, {text, "Light theme"},
+	       {kind, ?wxITEM_RADIO}],
+	      [{id, ?THEME_DARK}, {text, "Dark theme"},
+	       {kind, ?wxITEM_RADIO}]]}
+	   ]]}, 
+	 {"&Help",
+	  [[{id, ?ABOUT}, {text, "&About"},
+	    {help, "Show project info."}]]}
+	]).
 
 %% 'About' message
 -define(INFO_MSG,
@@ -76,6 +87,8 @@ http://www.protest-project.eu/
 -define(STATUS_BAR, 510).
 -define(THEME_LIGHT, 511).
 -define(THEME_DARK, 512).
+-define(REFRESH, 513).
+-define(REFRESH_ALL, 514).
 
 %% Erlang keywords
 -define(KEYWORDS, "after begin case try cond catch andalso orelse end fun "
