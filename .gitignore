@@ -5,4 +5,4 @@
 *.dump
 !/img/*.png
 clean.sh
-run.sh
+*.sh

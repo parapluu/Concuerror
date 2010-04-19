@@ -1,6 +1,7 @@
 -module(sched).
+%%-export([start/3, test/0, test/1]).
+%%-export([yield/0]).
 -compile(export_all).
-%%-export([start/3, test/0]).
 
 %% Scheduler state
 %%
@@ -81,13 +82,22 @@ driver(#info{active = Active, blocked = Blocked} = Info) ->
     case set_is_empty(Active) of
 	true ->
 	    case set_is_empty(Blocked) of
-		true -> terminate; %% TODO
-		false -> deadlock  %% TODO
+		%% TODO
+		true ->
+		    stop(terminate);
+		false ->
+		    stop(deadlock)
 	    end;
 	false ->
 	    NewInfo = search(Info),
 	    dispatcher(NewInfo)
     end.
+
+stop(X) ->
+    lid_stop(),
+    state_stop(),
+    unregister(sched),
+    X.
 
 run(_Lid) ->
     unimplemented.
@@ -135,13 +145,19 @@ handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
     driver(Info#info{active = NewActive}).
 
 %%%----------------------------------------------------------------------
+%%% Instrumentation interface
+%%%----------------------------------------------------------------------
+
+yield() ->
+    sched ! #sched{msg = yield, pid = self()}.
+
+%%%----------------------------------------------------------------------
 %%% LID interface
 %%%----------------------------------------------------------------------
 
 %% Return the LID of process Pid.
 lid(Pid) ->
-    {Lid, _Pid, _Children} = ets:lookup_element(proc, Pid, 2),
-    Lid.
+    ets:lookup_element(proc, Pid, 1).
 
 %% Initialize LID table.
 %% Must be called before any other call to lid_* functions.
@@ -149,7 +165,14 @@ lid_start() ->
     %% Table for storing process info.
     %% Its elements are of the form {Lid, Pid, Children}, where Children
     %% is the number of processes spawned by it so far.
-    ets:new(proc, [named_table]).
+    %% NOTE: Currently changed key to Pid. If the need arises to search
+    %%       by both Lid and Pid keys, then it would probably be better
+    %%       to create a second table holding {Pid, Lid} pairs.
+    ets:new(proc, [named_table, {keypos, 2}]).
+
+%% Clean up LID table.
+lid_stop() ->
+    ets:delete(proc).
 
 %% "Register" a new process spawned by the process with LID `ParentLID`.
 %% Pid is the new process' erlang pid.
@@ -161,6 +184,8 @@ lid_new(Pid) ->
     ets:insert(proc, {Lid, Pid, 0}),
     Lid.
 
+%% FIXME: Change argument to ParentPID, instead of ParentLID, to avoid
+%%        having to search by LID key?
 lid_new(ParentLID, Pid) ->
     [{_ParentLID, _ParentPid, Children}] = ets:lookup(proc, ParentLID),
     %% Create new process' Lid
@@ -186,15 +211,15 @@ internal(String, Args) ->
 %%% Set interface
 %%%----------------------------------------------------------------------
 
-%% Add element to set and return new set.
+%% Add Element to Set and return new set.
 set_add(Set, Element) ->
     sets:add_element(Element, Set).
 
-%% Return true if the given set is empty, false otherwise.
+%% Return true if Set is empty, false otherwise.
 set_is_empty(Set) ->
     sets:to_list(Set) =:= [].
 
-%% Return a list of the elements in the set.
+%% Return a list of the elements in Set.
 set_list(Set) ->
     sets:to_list(Set).
 
@@ -202,13 +227,14 @@ set_list(Set) ->
 set_new() ->
     sets:new().
 
-%% Remove a "random" element from the set and return that element and the
-%% new set. Crashes if given an empty set.
+%% Remove a "random" element from Set and return that element and the
+%% new set.
+%% Crashes if given an empty set.
 set_pop(Set) ->
     [Head | Tail] = sets:to_list(Set),
     {Head, sets:from_list(Tail)}.
 
-%% Remove given element from set.
+%% Remove Element from Set.
 set_remove(Set, Element) ->
     sets:del_element(Element, Set).
 
@@ -221,6 +247,10 @@ set_remove(Set, Element) ->
 state_start() ->
     %% Table for storing unvisited states (as keys, the values are irrelevant).
     ets:new(state, [named_table]).
+
+%% Clean up state table.
+state_stop() ->
+    ets:delete(state).
 
 %% Return initial (empty) state.
 state_init() ->
@@ -251,13 +281,13 @@ test_all(I, Max) ->
 	test(I),
 	io:format("Passed~n")
     catch
-	_:_ -> io:format("Failed~n")
+	Error:Reason -> io:format("Failed (~p, ~p)~n", [Error, Reason])
     end,
     test_all(I + 1, Max).
 
 %% Run all tests
 test() ->
-    test_all(1, 1).
+    test_all(1, 3).
 
 test(1) ->
     Set1 = set_new(),
@@ -293,7 +323,13 @@ test(1) ->
 		false -> error()
 	    end;
 	false -> error()
-    end.
+    end;
+test(2) ->
+    Result = start(test_instr, test1, []),
+    io:format("Result: ~p~n", [Result]);
+test(3) ->
+    Result = start(test_instr, test2, []),
+    io:format("Result: ~p~n", [Result]).
 
 ok() -> io:format(" ok~n").
 error() -> io:format(" error~n"), throw(error).

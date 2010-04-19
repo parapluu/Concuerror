@@ -28,7 +28,9 @@ ERL_COMPILE_FLAGS += +warn_exported_vars +warn_unused_import +warn_untyped_recor
 TARGETS = \
 	gui \
 	pulse \
-	wx
+	wx \
+	pra1 \
+	utest
 
 GUI_MODULES = \
 	funs \
@@ -41,13 +43,20 @@ PULSE_MODULES = \
 	instrument \
 	scheduler
 
+PRA1_MODULES = \
+	sched \
+	test \
+	test_instr
+
 MODULES = \
 	$(GUI_MODULES) \
-	$(PULSE_MODULES)
+	$(PULSE_MODULES) \
+	$(PRA1_MODULES)
 
 ERL_DIRS = \
 	gui \
-	pulse
+	pulse \
+	pra1
 
 vpath %.hrl include
 vpath %.erl $(ERL_DIRS)
@@ -56,21 +65,32 @@ vpath %.beam ebin
 all: 	$(TARGETS)
 
 clean:
-	rm -f run.sh
+	rm -f *.sh
 	rm -f $(EBIN)/*.beam
 
 gui:   	$(GUI_MODULES:%=%.beam)
 
 pulse: 	$(PULSE_MODULES:%=%.beam)
 
-wx:	run.sh
+pra1:	$(PRA1_MODULES:%=%.beam)
 
-run.sh:
+wx:	pulse_gui.sh
+
+utest:	test.sh
+
+pulse_gui.sh:
 	printf "#%c/bin/bash\n \
 	      erl -noshell -pa $(EBIN) \
 	      -s gui start -s init stop" ! \
-	      > run.sh
-	chmod +x run.sh
+	      > pulse_gui.sh
+	chmod +x pulse_gui.sh
+
+test.sh:
+	printf "#%c/bin/bash\n \
+	      erl -noshell -pa $(EBIN) \
+	      -s sched test -s init stop" ! \
+	      > test.sh
+	chmod +x test.sh
 
 %.beam: %.erl
 	erlc -W $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -o $(EBIN) $<
