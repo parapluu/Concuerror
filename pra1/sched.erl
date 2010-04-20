@@ -21,9 +21,10 @@
 
 %% Internal message format
 %%
-%% msg:    An atom describing the type of the message.
-%% pid:    The sender's pid.
--record(sched, {msg, pid}).
+%% msg:     An atom describing the type of the message.
+%% pid:     The sender's pid.
+%% spawned: The newly spawned process' pid (in case of a `spawn` message).
+-record(sched, {msg, pid, spawned}).
 
 %%%----------------------------------------------------------------------
 %%% Exported functions
@@ -41,15 +42,17 @@ start(Mod, Fun, Args) ->
     %% way, every process that may be spawned in the flow of the program
     %% shall be linked to this (`sched`) process.
     FirstPid = spawn_link(Mod, Fun, Args),
-    FirstLid = lid_new(FirstPid),
-    %% The initial `active` set contains only the first process.
-    ActiveInit = set_new(),
-    Active = set_add(ActiveInit, FirstLid),
-    %% The initial `blocked` set is empty.
+    %% Create the first LID and register it with FirstPid.
+    lid_new(FirstPid),
+    %% The initial `active` and `blocked` sets are empty.
+    Active = set_new(),
     Blocked = set_new(),
     %% Create initial state.
     State = state_init(),
-    driver(#info{active = Active, blocked = Blocked, state = State}).
+    NewState = dispatcher(#info{active = Active,
+				blocked = Blocked,
+				state = State}),
+    driver(NewState).
 
 %%%----------------------------------------------------------------------
 %%% Scheduler core components
@@ -60,7 +63,8 @@ start(Mod, Fun, Args) ->
 dispatcher(Info) ->
     receive
 	#sched{msg = block, pid = Pid} -> handler(block, Pid, Info, []);
-	#sched{msg = spawn, pid = Pid} -> handler(spawn, Pid, Info, []);
+	#sched{msg = spawn, pid = Pid, spawned = ChildPid} ->
+	    handler(spawn, Pid, Info, [ChildPid]);
 	#sched{msg = yield, pid = Pid} -> handler(yield, Pid, Info, []);
 	{'EXIT', Pid, Reason} -> handler(exit, Pid, Info, [Reason]);
 	Other -> internal("Dispatcher received: ~p", [Other])
@@ -74,8 +78,7 @@ dispatcher(Info) ->
 %% expansion and activation of a process. Subsequently the dispatcher is called
 %% to delegate the messages received from the running process (or processes,
 %% when a `spawn` call is executed) to the appropriate handler functions.
-%% The loop is closed by the handler functions calling the driver.
-driver(#info{active = Active, blocked = Blocked} = Info) ->
+driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
     %% Deadlock/Termination check.
     %% If the `active` set is empty and the `blocked` set is non-empty, report
     %% a deadlock, else if both sets are empty, report program termination.
@@ -89,67 +92,102 @@ driver(#info{active = Active, blocked = Blocked} = Info) ->
 		    stop(deadlock)
 	    end;
 	false ->
-	    NewInfo = search(Info),
-	    dispatcher(NewInfo)
+	    %% Run search algorithm to find next process to be run.
+	    Next = search(Info),
+	    %% Remove process Next from the `active` set and run it.
+	    NewActive = set_remove(Active, Next),
+	    log("Running process ~p.~n", [Next]),
+	    run(Next),
+	    %% Create new state.
+	    NewState = state_get_next(State, Next),
+	    %% Call the dispatcher to handle incoming messages from the
+	    %% running process.
+	    NewInfo = dispatcher(Info#info{active = NewActive, state = NewState}),
+	    driver(NewInfo)
     end.
 
-stop(X) ->
+stop(Reason) ->
+    %% Debug: print state table
+    io:format("Unexplored: ~p~n", [ets:match(state, '$1')]), 
     lid_stop(),
     state_stop(),
     unregister(sched),
-    X.
+    Reason.
 
-run(_Lid) ->
-    unimplemented.
+%% Signal process Lid to continue its execution.
+run(Lid) ->
+    Pid = lid_to_pid(Lid),
+    Pid ! #sched{msg = continue}.
 
 %% Implements the search logic.
 %% Given a blocked state (no process running when called), creates all
 %% possible next states, chooses one of them for running and inserts the rest
 %% of them into the `states` table.
-%% Returns the new scheduler state.
-search(#info{active = Active, blocked = Blocked, state = State}) ->
+%% Returns the process to be run next.
+search(#info{active = Active, state = State} = Info) ->
     %% Remove a process from the `actives` set and run it.
     {Next, NewActive} = set_pop(Active),
-    run(Next),
     %% Store all other possible successor states in `states` table for later
     %% exploration.
-    state_store_succ(#info{active = NewActive, state = State}),
-    %% Create new current state.
-    NewState = state_get_next(State, Next),
-    #info{active = NewActive, blocked = Blocked, state = NewState}.
+    state_store_succ(Info#info{active = NewActive, state = State}),
+    Next.
 
 %% Receiving a `block` message means that the process cannot be scheduled
 %% next and must be moved to the blocked set.
 handler(block, Pid, #info{blocked = Blocked} = Info, _Opt) ->
     NewBlocked = set_add(Blocked, lid(Pid)),
-    driver(Info#info{blocked = NewBlocked});
+    Info#info{blocked = NewBlocked};
 
 %% Discard the exited process (don't add to any set).
-handler(exit, _Pid, Info, [_Reason]) ->
-    driver(Info);
+handler(exit, Pid, Info, [Reason]) ->
+    Lid = lid(Pid),
+    log("Process ~p exits (~p).~n", [Lid, Reason]),
+    Info;
 
 %% The newly spawned process runs until it reaches a blocking point or
 %% terminates. The same goes for its parent process, which is running
 %% concurrently. Therefore we have to receive two messages. Either of them
 %% can be a `block`, a `yield` or an `exit` message. This is achieved by two
-%% calls to the dispatcher (FIXME: one here, one at the dispatcher?).
-handler(spawn, Pid, #info{active = Active} = Info, _Opt) ->
-    %% TODO: unimplemented
-    NewActive = set_add(Active, lid(Pid)),
-    driver(Info#info{active = NewActive});
+%% calls to the dispatcher.
+handler(spawn, ParentPid, Info, [ChildPid]) ->
+    ParentLid = lid(ParentPid),
+    ChildLid = lid_new(ParentLid, ChildPid),
+    log("Process ~p spawns process ~p.~n", [ParentLid, ChildLid]),
+    NewInfo = dispatcher(Info),
+    dispatcher(NewInfo);
 
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
 handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
-    NewActive = set_add(Active, lid(Pid)),
-    driver(Info#info{active = NewActive}).
+    Lid = lid(Pid),
+    log("Process ~p yields.~n", [Lid]),
+    NewActive = set_add(Active, Lid),
+    Info#info{active = NewActive}.
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation interface
 %%%----------------------------------------------------------------------
 
-yield() ->
-    sched ! #sched{msg = yield, pid = self()}.
+%% Yield replacement.
+%% The calling process is preempted, but remains in the active set and awaits
+%% a message to continue.
+rep_yield() ->
+    sched ! #sched{msg = yield, pid = self()},
+    receive
+	#sched{msg = continue} -> continue
+    end.
+
+%% Spawn replacement.
+%% The argument provided is a fun executing the original spawn statement,
+%% i.e. Fun = fun() -> spawn(...) end.
+%% First the process yields, using rep_yield. Afterwards it runs Fun, which
+%% actually spawns the new process, informs the scheduler of the spawn and
+%% returns the value returned by the original spawn (Pid).
+rep_spawn(Fun) ->
+    rep_yield(),
+    Pid = Fun(),
+    sched ! #sched{msg = spawn, pid = self(), spawned = Pid},
+    Pid.
 
 %%%----------------------------------------------------------------------
 %%% LID interface
@@ -157,22 +195,7 @@ yield() ->
 
 %% Return the LID of process Pid.
 lid(Pid) ->
-    ets:lookup_element(proc, Pid, 1).
-
-%% Initialize LID table.
-%% Must be called before any other call to lid_* functions.
-lid_start() ->
-    %% Table for storing process info.
-    %% Its elements are of the form {Lid, Pid, Children}, where Children
-    %% is the number of processes spawned by it so far.
-    %% NOTE: Currently changed key to Pid. If the need arises to search
-    %%       by both Lid and Pid keys, then it would probably be better
-    %%       to create a second table holding {Pid, Lid} pairs.
-    ets:new(proc, [named_table, {keypos, 2}]).
-
-%% Clean up LID table.
-lid_stop() ->
-    ets:delete(proc).
+    ets:lookup_element(pid, Pid, 2).
 
 %% "Register" a new process spawned by the process with LID `ParentLID`.
 %% Pid is the new process' erlang pid.
@@ -181,20 +204,40 @@ lid_stop() ->
 lid_new(Pid) ->
     %% The first process has LID = "P1" and has no children spawned at init.
     Lid = "P1",
-    ets:insert(proc, {Lid, Pid, 0}),
+    ets:insert(lid, {Lid, Pid, 0}),
+    ets:insert(pid, {Pid, Lid}),
     Lid.
 
-%% FIXME: Change argument to ParentPID, instead of ParentLID, to avoid
-%%        having to search by LID key?
 lid_new(ParentLID, Pid) ->
-    [{_ParentLID, _ParentPid, Children}] = ets:lookup(proc, ParentLID),
+    [{_ParentLID, _ParentPid, Children}] = ets:lookup(lid, ParentLID),
     %% Create new process' Lid
     Lid = lists:concat([ParentLID, ".", Children + 1]),
     %% Update parent info (increment children counter).
-    ets:update_element(proc, ParentLID, {3, Children + 1}),
+    ets:update_element(lid, ParentLID, {3, Children + 1}),
     %% Insert child info.
-    ets:insert(proc, {Lid, Pid, 0}),
+    ets:insert(lid, {Lid, Pid, 0}),
+    ets:insert(pid, {Pid, Lid}),
     Lid.
+
+%% Initialize LID tables.
+%% Must be called before any other call to lid_* functions.
+lid_start() ->
+    %% Table for storing process info.
+    %% Its elements are of the form {Lid, Pid, Children}, where Children
+    %% is the number of processes spawned by it so far.
+    ets:new(lid, [named_table]),
+    %% Table for reverse lookup (Lid -> Pid) purposes.
+    %% Its elements are of the form {Pid, Lid}.
+    ets:new(pid, [named_table]).
+
+%% Clean up LID tables.
+lid_stop() ->
+    ets:delete(lid),
+    ets:delete(pid).
+
+%% Return the erlang pid of the process Lid.
+lid_to_pid(Lid) ->
+    ets:lookup_element(lid, Lid, 2).
 
 %%%----------------------------------------------------------------------
 %%% Log/Report interface
@@ -205,6 +248,13 @@ internal(String) ->
     internal(String, []).
 
 internal(String, Args) ->
+    io:format(String, Args).
+
+%% Add a message to log (for now just print to stdout).
+log(String) ->
+    io:format(String).
+
+log(String, Args) ->
     io:format(String, Args).
 
 %%%----------------------------------------------------------------------
@@ -266,7 +316,7 @@ state_store_succ(#info{active = Active, state = State}) ->
 
 state_store_succ_aux(_State, []) -> ok;
 state_store_succ_aux(State, [Proc | Procs]) ->
-    ets:insert(states, [Proc | State]),
+    ets:insert(state, {[Proc | State]}),
     state_store_succ_aux(State, Procs).
 
 %%%----------------------------------------------------------------------
@@ -277,19 +327,21 @@ test_all(I, Max) when I > Max ->
     io:format("Unit test completed.~n");
 test_all(I, Max) ->
     io:format("Running test ~p of ~p:~n", [I, Max]),
+    io:format("---------------------~n"),
     try
 	test(I),
-	io:format("Passed~n")
+	io:format("Passed~n~n")
     catch
-	Error:Reason -> io:format("Failed (~p, ~p)~n", [Error, Reason])
+	Error:Reason -> io:format("Failed (~p, ~p)~n~n", [Error, Reason])
     end,
     test_all(I + 1, Max).
 
 %% Run all tests
 test() ->
-    test_all(1, 3).
+    test_all(1, 4).
 
 test(1) ->
+    io:format("Checking set interface:~n"),
     Set1 = set_new(),
     io:format("Initial set empty..."),
     case set_is_empty(Set1) of
@@ -325,9 +377,31 @@ test(1) ->
 	false -> error()
     end;
 test(2) ->
+    io:format("Checking lid interface..."),
+    lid_start(),
+    Pid1 = c:pid(0, 2, 3),
+    Lid1 = lid_new(Pid1),
+    Pid2 = c:pid(0, 2, 4),
+    Lid2 = lid_new(Lid1, Pid2),
+    Pid3 = c:pid(0, 2, 5),
+    Lid3 = lid_new(Lid1, Pid3),
+    P1 = lid_to_pid(Lid1),
+    L1 = lid(Pid1),
+    P2 = lid_to_pid(Lid2),
+    L2 = lid(Pid2),
+    P3 = lid_to_pid(Lid3),
+    L3 = lid(Pid3),
+    lid_stop(),
+    if P1 =:= Pid1, P2 =:= Pid2, P3 =:= Pid3,
+       L1 =:= Lid1, L2 =:= Lid2, L3 =:= Lid3 ->
+	    ok();
+       true ->
+	    error()
+    end;
+test(3) ->
     Result = start(test_instr, test1, []),
     io:format("Result: ~p~n", [Result]);
-test(3) ->
+test(4) ->
     Result = start(test_instr, test2, []),
     io:format("Result: ~p~n", [Result]).
 
