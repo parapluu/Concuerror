@@ -30,29 +30,50 @@
 %%% Exported functions
 %%%----------------------------------------------------------------------
 
-start(Mod, Fun, Args) ->
+interleave(Mod, Fun, Args) ->
     register(sched, self()),
     process_flag(trap_exit, true),
-    %% Start state and lid services.
-    lid_start(),
+    %% Start state service.
     state_start(),
-    %% Create the first process.
-    %% The process is created linked to the scheduler, so that the latter
-    %% can receive the former's exit message when it terminates. In the same
-    %% way, every process that may be spawned in the flow of the program
-    %% shall be linked to this (`sched`) process.
-    FirstPid = spawn_link(Mod, Fun, Args),
-    %% Create the first LID and register it with FirstPid.
-    lid_new(FirstPid),
-    %% The initial `active` and `blocked` sets are empty.
-    Active = set_new(),
-    Blocked = set_new(),
-    %% Create initial state.
-    State = state_init(),
-    NewState = dispatcher(#info{active = Active,
-				blocked = Blocked,
-				state = State}),
-    driver(NewState).
+    %% Insert first state to replay, i.e. "run first process first".
+    %% XXX: Breaks state and lid abstraction.
+    ets:insert(state, {["P1"]}),
+    inter_loop(Mod, Fun, Args, 1),
+    state_stop(),
+    unregister(sched).
+
+inter_loop(Mod, Fun, Args, RunCounter) ->
+    %% Lookup state to replay.
+    case state_pop() of
+ 	no_state -> ok;
+ 	ReplayState ->
+	    log("Interleaving ~p~n", [RunCounter]),
+	    log("----------------~n"),
+ 	    %% Start LID service.
+ 	    lid_start(),
+ 	    %% Create the first process.
+ 	    %% The process is created linked to the scheduler, so that the latter
+ 	    %% can receive the former's exit message when it terminates. In the same
+ 	    %% way, every process that may be spawned in the flow of the program
+ 	    %% shall be linked to this (`sched`) process.
+ 	    FirstPid = spawn_link(Mod, Fun, Args),
+ 	    %% Create the first LID and register it with FirstPid.
+ 	    lid_new(FirstPid),
+ 	    %% The initial `active` and `blocked` sets are empty.
+ 	    Active = set_new(),
+ 	    Blocked = set_new(),
+ 	    %% Create initial state.
+ 	    State = state_init(),
+ 	    %% Receive first message from 
+ 	    NewInfo = dispatcher(#info{active = Active,
+ 				       blocked = Blocked,
+ 				       state = State}),
+ 	    %% Use driver to replay ReplayState.
+ 	    driver(NewInfo, ReplayState),
+ 	    %% Stop LID service (LID tables have to be reset on each run).
+ 	    lid_stop(),
+ 	    inter_loop(Mod, Fun, Args, RunCounter + 1)
+    end.
 
 %%%----------------------------------------------------------------------
 %%% Scheduler core components
@@ -87,7 +108,7 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
 	    case set_is_empty(Blocked) of
 		%% TODO
 		true ->
-		    stop(terminate);
+		    stop(normal);
 		false ->
 		    stop(deadlock)
 	    end;
@@ -106,13 +127,42 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
 	    driver(NewInfo)
     end.
 
+%% Same as above, but instead of searching, the Next process is provided at each
+%% step by the head of the State argument. When the State list becomes empty,
+%% the driver falls back to the standard search behaviour stated above.
+driver(Info, []) -> driver(Info);
+driver(#info{active = Active, blocked = Blocked, state = State} = Info,
+       [Next | Rest]) ->
+    %% Deadlock/Termination check.
+    %% If the `active` set is empty and the `blocked` set is non-empty, report
+    %% a deadlock, else if both sets are empty, report program termination.
+    case set_is_empty(Active) of
+	true ->
+	    case set_is_empty(Blocked) of
+		%% TODO
+		true ->
+		    stop(normal);
+		false ->
+		    stop(deadlock)
+	    end;
+	false ->
+	    %% Remove process Next from the `active` set and run it.
+	    NewActive = set_remove(Active, Next),
+	    log("Running process ~p.~n", [Next]),
+	    run(Next),
+	    %% Create new state.
+	    NewState = state_get_next(State, Next),
+	    %% Call the dispatcher to handle incoming messages from the
+	    %% running process.
+	    NewInfo = dispatcher(Info#info{active = NewActive, state = NewState}),
+	    driver(NewInfo, Rest)
+    end.
+
 stop(Reason) ->
+    log("Run terminated (~p).~n~n", [Reason]),
     %% Debug: print state table
-    io:format("Unexplored: ~p~n", [ets:match(state, '$1')]), 
-    lid_stop(),
-    state_stop(),
-    unregister(sched),
-    Reason.
+    io:format("(Debug) Unexplored: ~p~n~n", [ets:match(state, '$1')]).
+
 
 %% Signal process Lid to continue its execution.
 run(Lid) ->
@@ -292,6 +342,24 @@ set_remove(Set, Element) ->
 %%% State interface
 %%%----------------------------------------------------------------------
 
+%% Given the current state and a process to be run next, return the new state.
+state_get_next(State, Next) ->
+    [Next | State].
+
+%% Return initial (empty) state.
+state_init() ->
+    [].
+
+%% Remove and return a state.
+%% If no states available, return 'no_state'.
+state_pop() ->
+    case ets:first(state) of
+	'$end_of_table' -> no_state;
+	State ->
+	    ets:delete(state, State),
+	    lists:reverse(State)
+    end.
+
 %% Initialize state table.
 %% Must be called before any other call to state_* functions.
 state_start() ->
@@ -301,14 +369,6 @@ state_start() ->
 %% Clean up state table.
 state_stop() ->
     ets:delete(state).
-
-%% Return initial (empty) state.
-state_init() ->
-    [].
-  
-%% Given the current state and a process to be run next, return the new state.
-state_get_next(State, Next) ->
-    [Next | State].
 
 %% Create all possible next states and add them to the `states` table.
 state_store_succ(#info{active = Active, state = State}) ->
@@ -399,11 +459,14 @@ test(2) ->
 	    error()
     end;
 test(3) ->
-    Result = start(test_instr, test1, []),
+    Result = interleave(test_instr, test1, []),
     io:format("Result: ~p~n", [Result]);
 test(4) ->
-    Result = start(test_instr, test2, []),
+    Result = interleave(test_instr, test2, []),
     io:format("Result: ~p~n", [Result]).
+%% test(4) ->
+%%     Result = interleave(test_instr, test3, []),
+%%     io:format("Result: ~p~n", [Result]).
 
 ok() -> io:format(" ok~n").
 error() -> io:format(" error~n"), throw(error).
