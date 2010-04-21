@@ -1,8 +1,10 @@
 Howto
 ------
 
-  Compile: make
+  Build:          make
 
-  Clean:   make clean
+  Cleanup:        make clean
 
-  Run GUI: run.sh
+  Run pulse GUI:  pulse_gui.sh
+  
+  Run unit tests: test.sh

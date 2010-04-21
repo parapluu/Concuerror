@@ -1,7 +1,7 @@
 -module(sched).
-%%-export([start/3, test/0, test/1]).
-%%-export([yield/0]).
--compile(export_all).
+-export([interleave/3, test/0, test/1]).
+-export([rep_spawn/1, rep_yield/0]).
+%%-compile(export_all).
 
 %% Scheduler state
 %%
@@ -17,18 +17,21 @@
 %%          position in the program's "process creation tree" and doesn't change
 %%          between different runs of the same program (as opposed to erlang
 %%          pids).
--record(info, {active, blocked, state}).
+-record(info, {active :: any(), blocked :: any() , state :: any()}).
 
 %% Internal message format
 %%
 %% msg:     An atom describing the type of the message.
 %% pid:     The sender's pid.
 %% spawned: The newly spawned process' pid (in case of a `spawn` message).
--record(sched, {msg, pid, spawned}).
+-record(sched, {msg :: atom(), pid :: pid(), spawned :: pid()}).
 
 %%%----------------------------------------------------------------------
-%%% Exported functions
+%%% User interface
 %%%----------------------------------------------------------------------
+
+%% Produce all possible process interleavings of (Mod, Fun, Args).
+-spec interleave(atom(), atom(), [any()]) -> true.
 
 interleave(Mod, Fun, Args) ->
     register(sched, self()),
@@ -52,10 +55,10 @@ inter_loop(Mod, Fun, Args, RunCounter) ->
  	    %% Start LID service.
  	    lid_start(),
  	    %% Create the first process.
- 	    %% The process is created linked to the scheduler, so that the latter
- 	    %% can receive the former's exit message when it terminates. In the same
- 	    %% way, every process that may be spawned in the flow of the program
- 	    %% shall be linked to this (`sched`) process.
+ 	    %% The process is created linked to the scheduler, so that the
+	    %% latter can receive the former's exit message when it terminates.
+	    %% In the same way, every process that may be spawned in the course
+	    %% of the program shall be linked to this (`sched`) process.
  	    FirstPid = spawn_link(Mod, Fun, Args),
  	    %% Create the first LID and register it with FirstPid.
  	    lid_new(FirstPid),
@@ -64,7 +67,8 @@ inter_loop(Mod, Fun, Args, RunCounter) ->
  	    Blocked = set_new(),
  	    %% Create initial state.
  	    State = state_init(),
- 	    %% Receive first message from 
+ 	    %% Receive the first message from the first process. That is, wait
+	    %% until it yields, blocks or terminates.
  	    NewInfo = dispatcher(#info{active = Active,
  				       blocked = Blocked,
  				       state = State}),
@@ -76,7 +80,7 @@ inter_loop(Mod, Fun, Args, RunCounter) ->
     end.
 
 %%%----------------------------------------------------------------------
-%%% Scheduler core components
+%%% Core components
 %%%----------------------------------------------------------------------
 
 %% Delegates messages sent by instrumented client code to the appropriate
@@ -158,6 +162,7 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info,
 	    driver(NewInfo, Rest)
     end.
 
+%% Single run termination
 stop(Reason) ->
     log("Run terminated (~p).~n~n", [Reason]),
     %% Debug: print state table
@@ -221,10 +226,12 @@ handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
 %% Yield replacement.
 %% The calling process is preempted, but remains in the active set and awaits
 %% a message to continue.
+-spec rep_yield() -> true.
+
 rep_yield() ->
     sched ! #sched{msg = yield, pid = self()},
     receive
-	#sched{msg = continue} -> continue
+	#sched{msg = continue} -> true
     end.
 
 %% Spawn replacement.
@@ -233,6 +240,8 @@ rep_yield() ->
 %% First the process yields, using rep_yield. Afterwards it runs Fun, which
 %% actually spawns the new process, informs the scheduler of the spawn and
 %% returns the value returned by the original spawn (Pid).
+-spec rep_spawn(fun(() -> pid())) -> pid().
+
 rep_spawn(Fun) ->
     rep_yield(),
     Pid = Fun(),
@@ -294,8 +303,8 @@ lid_to_pid(Lid) ->
 %%%----------------------------------------------------------------------
 
 %% Print an internal error message.
-internal(String) ->
-    internal(String, []).
+%% internal(String) ->
+%%     internal(String, []).
 
 internal(String, Args) ->
     io:format(String, Args).
@@ -384,7 +393,8 @@ state_store_succ_aux(State, [Proc | Procs]) ->
 %%%----------------------------------------------------------------------
 
 test_all(I, Max) when I > Max ->
-    io:format("Unit test completed.~n");
+    io:format("Unit test completed.~n"),
+    ok;
 test_all(I, Max) ->
     io:format("Running test ~p of ~p:~n", [I, Max]),
     io:format("---------------------~n"),
@@ -396,9 +406,14 @@ test_all(I, Max) ->
     end,
     test_all(I + 1, Max).
 
-%% Run all tests
+%% Run all unit tests.
+-spec test() -> ok.
+
 test() ->
     test_all(1, 4).
+
+%% Run a specific unit test.
+-spec test(integer()) -> ok.
 
 test(1) ->
     io:format("Checking set interface:~n"),
@@ -459,14 +474,14 @@ test(2) ->
 	    error()
     end;
 test(3) ->
-    Result = interleave(test_instr, test1, []),
-    io:format("Result: ~p~n", [Result]);
+    interleave(test_instr, test1, []),
+    ok;
 test(4) ->
-    Result = interleave(test_instr, test2, []),
-    io:format("Result: ~p~n", [Result]).
-%% test(4) ->
+    interleave(test_instr, test2, []),
+    ok.
+%% test(5) ->
 %%     Result = interleave(test_instr, test3, []),
 %%     io:format("Result: ~p~n", [Result]).
 
-ok() -> io:format(" ok~n").
+ok() -> io:format(" ok~n"), ok.
 error() -> io:format(" error~n"), throw(error).
