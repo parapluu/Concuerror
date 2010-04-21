@@ -45,7 +45,6 @@ PULSE_MODULES = \
 
 PRA1_MODULES = \
 	sched \
-	test \
 	test_instr
 
 MODULES = \
