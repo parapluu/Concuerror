@@ -1,7 +1,17 @@
 -module(sched).
 -export([interleave/3, test/0, test/1]).
--export([rep_spawn/1, rep_yield/0]).
-%%-compile(export_all).
+-export([rep_receive/1, rep_send/2, rep_spawn/1, rep_yield/0]).
+
+%%%----------------------------------------------------------------------
+%%% Macros
+%%%----------------------------------------------------------------------
+
+%% Debug messages (TODO: define externally?).
+-define(DEBUG, false).
+
+%%%----------------------------------------------------------------------
+%%% Records
+%%%----------------------------------------------------------------------
 
 %% Scheduler state
 %%
@@ -23,8 +33,8 @@
 %%
 %% msg:     An atom describing the type of the message.
 %% pid:     The sender's pid.
-%% spawned: The newly spawned process' pid (in case of a `spawn` message).
--record(sched, {msg :: atom(), pid :: pid(), spawned :: pid()}).
+%% misc:    A list of optional arguments, depending on the the message type.
+-record(sched, {msg :: atom(), pid :: pid(), misc :: [any()]}).
 
 %%%----------------------------------------------------------------------
 %%% User interface
@@ -50,8 +60,8 @@ inter_loop(Mod, Fun, Args, RunCounter) ->
     case state_pop() of
  	no_state -> ok;
  	ReplayState ->
-	    log("Interleaving ~p~n", [RunCounter]),
-	    log("----------------~n"),
+	    log("Running interleaving ~p~n", [RunCounter]),
+	    log("----------------------~n"),
  	    %% Start LID service.
  	    lid_start(),
  	    %% Create the first process.
@@ -87,22 +97,30 @@ inter_loop(Mod, Fun, Args, RunCounter) ->
 %% handlers.
 dispatcher(Info) ->
     receive
-	#sched{msg = block, pid = Pid} -> handler(block, Pid, Info, []);
-	#sched{msg = spawn, pid = Pid, spawned = ChildPid} ->
+	#sched{msg = block, pid = Pid} ->
+	    handler(block, Pid, Info, []);
+	#sched{msg = 'receive', pid = Pid, misc = [Msg]} ->
+	    handler('receive', Pid, Info, [Msg]);
+	#sched{msg = send, pid = Pid, misc = [Dest, Msg]} ->
+	    handler(send, Pid, Info, [Dest, Msg]);
+	#sched{msg = spawn, pid = Pid, misc = [ChildPid]} ->
 	    handler(spawn, Pid, Info, [ChildPid]);
 	#sched{msg = yield, pid = Pid} -> handler(yield, Pid, Info, []);
-	{'EXIT', Pid, Reason} -> handler(exit, Pid, Info, [Reason]);
-	Other -> internal("Dispatcher received: ~p", [Other])
+	{'EXIT', Pid, Reason} ->
+	    handler(exit, Pid, Info, [Reason]);
+	Other ->
+	    internal("Dispatcher received: ~p~n", [Other])
     end.
 
 %% Main scheduler component.
 %% Checks for different program states (normal, deadlock, termination, etc.)
-%% and acts appropriately. The argument should be a blocked state, i.e. no
-%% process running, when the driver is called.
-%% In the case of a normal state, the search component is called to handle state
-%% expansion and activation of a process. Subsequently the dispatcher is called
-%% to delegate the messages received from the running process (or processes,
-%% when a `spawn` call is executed) to the appropriate handler functions.
+%% and acts appropriately. The argument should be a blocked scheduler state,
+%% i.e. no process running, when the driver is called.
+%% In the case of a normal (meaning non-terminal) state, the search component
+%% is called to handle state expansion and returns a process for activation.
+%% After activating said process the dispatcher is called to delegate the
+%% messages received from the running process to the appropriate handler
+%% functions.
 driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
     %% Deadlock/Termination check.
     %% If the `active` set is empty and the `blocked` set is non-empty, report
@@ -110,18 +128,15 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
     case set_is_empty(Active) of
 	true ->
 	    case set_is_empty(Blocked) of
-		%% TODO
-		true ->
-		    stop(normal);
-		false ->
-		    stop(deadlock)
+		true -> stop(normal);
+		false -> stop(deadlock)
 	    end;
 	false ->
 	    %% Run search algorithm to find next process to be run.
 	    Next = search(Info),
 	    %% Remove process Next from the `active` set and run it.
 	    NewActive = set_remove(Active, Next),
-	    log("Running process ~p.~n", [Next]),
+	    debug("Running process ~p.~n", [Next]),
 	    run(Next),
 	    %% Create new state.
 	    NewState = state_get_next(State, Next),
@@ -131,9 +146,10 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
 	    driver(NewInfo)
     end.
 
-%% Same as above, but instead of searching, the Next process is provided at each
-%% step by the head of the State argument. When the State list becomes empty,
-%% the driver falls back to the standard search behaviour stated above.
+%% Same as above, but instead of searching, the process to be activated is
+%% provided at each step by the head of the State argument. When the State list
+%% is empty, the driver falls back to the standard search behaviour stated
+%% above.
 driver(Info, []) -> driver(Info);
 driver(#info{active = Active, blocked = Blocked, state = State} = Info,
        [Next | Rest]) ->
@@ -143,16 +159,13 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info,
     case set_is_empty(Active) of
 	true ->
 	    case set_is_empty(Blocked) of
-		%% TODO
-		true ->
-		    stop(normal);
-		false ->
-		    stop(deadlock)
+		true -> stop(normal);
+		false -> stop(deadlock)
 	    end;
 	false ->
 	    %% Remove process Next from the `active` set and run it.
 	    NewActive = set_remove(Active, Next),
-	    log("Running process ~p.~n", [Next]),
+	    debug("Running process ~p.~n", [Next]),
 	    run(Next),
 	    %% Create new state.
 	    NewState = state_get_next(State, Next),
@@ -162,19 +175,8 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info,
 	    driver(NewInfo, Rest)
     end.
 
-%% Single run termination
-stop(Reason) ->
-    log("Run terminated (~p).~n~n", [Reason]),
-    %% Debug: print state table
-    io:format("(Debug) Unexplored: ~p~n~n", [ets:match(state, '$1')]).
-
-
-%% Signal process Lid to continue its execution.
-run(Lid) ->
-    Pid = lid_to_pid(Lid),
-    Pid ! #sched{msg = continue}.
-
-%% Implements the search logic.
+%% Implements the search logic (currently depth-first when looked at combined
+%% with the replay logic).
 %% Given a blocked state (no process running when called), creates all
 %% possible next states, chooses one of them for running and inserts the rest
 %% of them into the `states` table.
@@ -187,18 +189,45 @@ search(#info{active = Active, state = State} = Info) ->
     state_store_succ(Info#info{active = NewActive, state = State}),
     Next.
 
+%% Block message handler.
 %% Receiving a `block` message means that the process cannot be scheduled
 %% next and must be moved to the blocked set.
 handler(block, Pid, #info{blocked = Blocked} = Info, _Opt) ->
-    NewBlocked = set_add(Blocked, lid(Pid)),
+    Lid = lid(Pid),
+    NewBlocked = set_add(Blocked, Lid),
+    debug("Process ~p blocks.~n", [Lid]),
     Info#info{blocked = NewBlocked};
 
+%% Exit message handler.
 %% Discard the exited process (don't add to any set).
 handler(exit, Pid, Info, [Reason]) ->
     Lid = lid(Pid),
     log("Process ~p exits (~p).~n", [Lid, Reason]),
     Info;
 
+%% Receive message handler.
+%% Receive message handler.
+handler('receive', Pid, Info, [_Msg]) ->
+    Lid = lid(Pid),
+    log("Process ~p receives <TODO>.~n", [Lid]),
+    dispatcher(Info);
+
+%% Send message handler.
+%% When a message is sent to a process, the receiving process has to be awaken
+%% if it is blocked on a receive.
+%% XXX: No check for reason of blocking for now. If the process is blocked on
+%%      something else, it will be awaken!
+handler(send, Pid, Info, [DstPid, Msg]) ->
+    Lid = lid(Pid),
+    DstLid = 
+	case lid(DstPid) of
+	    not_found -> NewInfo = Info, unknown;
+	    Found -> NewInfo = wakeup(Found, Info), Found
+	end,
+    log("Process ~p sends message \"~p\" to process ~p.~n", [Lid, Msg, DstLid]),
+    dispatcher(NewInfo);
+
+%% Spawn message handler.
 %% The newly spawned process runs until it reaches a blocking point or
 %% terminates. The same goes for its parent process, which is running
 %% concurrently. Therefore we have to receive two messages. Either of them
@@ -211,21 +240,62 @@ handler(spawn, ParentPid, Info, [ChildPid]) ->
     NewInfo = dispatcher(Info),
     dispatcher(NewInfo);
 
+%% Yield message handler.
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
 handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
     Lid = lid(Pid),
-    log("Process ~p yields.~n", [Lid]),
+    debug("Process ~p yields.~n", [Lid]),
     NewActive = set_add(Active, Lid),
     Info#info{active = NewActive}.
+
+%%%----------------------------------------------------------------------
+%%% Helper functions
+%%%----------------------------------------------------------------------
+
+%% Signal process Lid to continue its execution.
+run(Lid) ->
+    Pid = lid_to_pid(Lid),
+    Pid ! #sched{msg = continue}.
+
+%% Single run termination.
+stop(Reason) ->
+    log("-----------------------~n"),
+    log("Run terminated (~p).~n~n", [Reason]),
+    %% Debug: print unexplored state table.
+    debug("Unexplored: ~p~n~n", [ets:match(state, '$1')]).
+
+%% Wakeup a process.
+%% If process is in `blocked` set, move to `active` set.
+wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
+    debug("Waking up ~p.~n", [Lid]),
+    case set_member(Blocked, Lid) of
+	true ->
+	    NewBlocked = set_remove(Blocked, Lid),
+	    NewActive = set_add(Active, Lid),
+	    Info#info{active = NewActive, blocked = NewBlocked};
+	false ->
+	    Info
+    end.
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation interface
 %%%----------------------------------------------------------------------
 
-%% Yield replacement.
+%% Not actually a replacement function, but used by functions where the process
+%% is required to block, i.e. moved to the `blocked` set and stop being
+%% scheduled, until awaken.
+block() ->
+    sched ! #sched{msg = block, pid = self()},
+    receive
+	#sched{msg = continue} -> true
+    end.
+
+%% Replacement for yield/0.
 %% The calling process is preempted, but remains in the active set and awaits
 %% a message to continue.
+%% NOTE: Besides replacing yield/0, this function is heavily used by the
+%%       instrumenter before other calls (e.g. spawn, send, etc.).
 -spec rep_yield() -> true.
 
 rep_yield() ->
@@ -234,7 +304,36 @@ rep_yield() ->
 	#sched{msg = continue} -> true
     end.
 
-%% Spawn replacement.
+%% Replacement for an erlang `receive` statement (without an `after` clause).
+%% The first time the receive statement is encountered the process yields.
+%% The next time it's scheduled it searches its mailbox. If no matching message
+%% is found, it blocks (i.e. is moved to the blocked set). When a new message
+%% arrives the process is woken up. The check mailbox - block - wakeup loop
+%% is repeated until a matching message arrives.
+-spec rep_receive(fun(() -> any())) -> any().
+
+rep_receive(Fun) ->
+    rep_yield(),
+    Received = rep_receive_aux(Fun),
+    sched ! #sched{msg = 'receive', pid = self(), misc = [Received]},
+    Received.
+
+rep_receive_aux(Fun) ->
+    Fun(fun() -> block(), rep_receive_aux(Fun) end).
+
+%% Replacement for send/2 (equivalent to the ! operator).
+%% Just yield before the send operation.
+-type dest() :: pid() | port() | atom() | {atom(), node()}.
+-spec rep_send(dest(), X) -> X.
+
+rep_send(Dest, Msg) ->
+    rep_yield(),
+    %% MsgSent should be the same as Msg.
+    MsgSent = erlang:send(Dest, Msg),
+    sched ! #sched{msg = send, pid = self(), misc = [Dest, Msg]},
+    MsgSent.
+
+%% Replacement for spawn/1.
 %% The argument provided is a fun executing the original spawn statement,
 %% i.e. Fun = fun() -> spawn(...) end.
 %% First the process yields, using rep_yield. Afterwards it runs Fun, which
@@ -245,16 +344,19 @@ rep_yield() ->
 rep_spawn(Fun) ->
     rep_yield(),
     Pid = Fun(),
-    sched ! #sched{msg = spawn, pid = self(), spawned = Pid},
+    sched ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     Pid.
 
 %%%----------------------------------------------------------------------
 %%% LID interface
 %%%----------------------------------------------------------------------
 
-%% Return the LID of process Pid.
+%% Return the LID of process Pid or 'not_found' if mapping not in table.
 lid(Pid) ->
-    ets:lookup_element(pid, Pid, 2).
+    case ets:lookup(pid, Pid) of
+	[{_Pid, Lid}] -> Lid;
+	[] -> not_found
+    end.
 
 %% "Register" a new process spawned by the process with LID `ParentLID`.
 %% Pid is the new process' erlang pid.
@@ -307,7 +409,7 @@ lid_to_pid(Lid) ->
 %%     internal(String, []).
 
 internal(String, Args) ->
-    io:format(String, Args).
+    io:format("(Internal)" ++ String, Args).
 
 %% Add a message to log (for now just print to stdout).
 log(String) ->
@@ -315,6 +417,16 @@ log(String) ->
 
 log(String, Args) ->
     io:format(String, Args).
+
+%% Display a debug message.
+%% debug(String) ->
+%%     io:format("(Debug)" ++ String).
+
+debug(String, Args) ->
+    case ?DEBUG of
+	true -> io:format("(Debug)" ++ String, Args);
+	false -> ok
+    end.
 
 %%%----------------------------------------------------------------------
 %%% Set interface
@@ -331,6 +443,10 @@ set_is_empty(Set) ->
 %% Return a list of the elements in Set.
 set_list(Set) ->
     sets:to_list(Set).
+
+%% Checks if Element is in Set.
+set_member(Set, Element) ->
+    sets:is_element(Element, Set).
 
 %% Return a new empty set.
 set_new() ->
@@ -389,31 +505,40 @@ state_store_succ_aux(State, [Proc | Procs]) ->
     state_store_succ_aux(State, Procs).
 
 %%%----------------------------------------------------------------------
-%%% Unit tests
+%%% Unit tests (to be moved)
 %%%----------------------------------------------------------------------
 
-test_all(I, Max) when I > Max ->
-    io:format("Unit test completed.~n"),
+test_all(I, Max, Passed) when I > Max ->
+    io:format("Unit test complete.~n"),
+    io:format("Passed ~p out of ~p.~n", [Passed, Max]),
     ok;
-test_all(I, Max) ->
+test_all(I, Max, Passed) ->
     io:format("Running test ~p of ~p:~n", [I, Max]),
     io:format("---------------------~n"),
     try
 	test(I),
-	io:format("Passed~n~n")
+	io:format("Passed~n~n"),
+	test_all(I + 1, Max, Passed + 1)
     catch
-	Error:Reason -> io:format("Failed (~p, ~p)~n~n", [Error, Reason])
-    end,
-    test_all(I + 1, Max).
+	Error:Reason -> io:format("Failed (~p, ~p)~n~n", [Error, Reason]),
+			test_all(I + 1, Max, Passed)
+    end.
 
 %% Run all unit tests.
 -spec test() -> ok.
 
 test() ->
-    test_all(1, 4).
+    io:format("Starting unit test.~n~n"),
+    test_all(1, 5, 0).
 
 %% Run a specific unit test.
--spec test(integer()) -> ok.
+-spec test(integer() | atom() | [atom()]) -> ok.
+
+test([X]) ->
+    test(X);
+
+test(X) when is_atom(X) ->
+    test(list_to_integer(atom_to_list(X)));
 
 test(1) ->
     io:format("Checking set interface:~n"),
@@ -466,9 +591,11 @@ test(2) ->
     L2 = lid(Pid2),
     P3 = lid_to_pid(Lid3),
     L3 = lid(Pid3),
+    L4 = lid(c:pid(0, 2, 6)),
     lid_stop(),
     if P1 =:= Pid1, P2 =:= Pid2, P3 =:= Pid3,
-       L1 =:= Lid1, L2 =:= Lid2, L3 =:= Lid3 ->
+       L1 =:= Lid1, L2 =:= Lid2, L3 =:= Lid3,
+       L4 =:= not_found ->
 	    ok();
        true ->
 	    error()
@@ -478,10 +605,10 @@ test(3) ->
     ok;
 test(4) ->
     interleave(test_instr, test2, []),
+    ok;
+test(5) ->
+    interleave(test_instr, test3, []),
     ok.
-%% test(5) ->
-%%     Result = interleave(test_instr, test3, []),
-%%     io:format("Result: ~p~n", [Result]).
 
 ok() -> io:format(" ok~n"), ok.
 error() -> io:format(" error~n"), throw(error).

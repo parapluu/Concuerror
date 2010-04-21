@@ -1,6 +1,8 @@
 -module(test).
 -export([test1/0, test2/0]).
 
+-spec test1() -> ok.
+
 test1() ->
     Self = self(),
     spawn(fun() -> foo1(Self) end),
@@ -10,6 +12,8 @@ test1() ->
 
 foo1(Pid) ->
     Pid ! msg.
+
+-spec test2() -> ok.
 
 test2() ->
     Self = self(),
