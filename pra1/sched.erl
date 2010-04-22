@@ -10,6 +10,13 @@
 -define(DEBUG, false).
 
 %%%----------------------------------------------------------------------
+%%% Types
+%%%----------------------------------------------------------------------
+
+-type lid()  :: string().
+-type dest() :: pid() | port() | atom() | {atom(), node()}.
+
+%%%----------------------------------------------------------------------
 %%% Records
 %%%----------------------------------------------------------------------
 
@@ -27,21 +34,25 @@
 %%          position in the program's "process creation tree" and doesn't change
 %%          between different runs of the same program (as opposed to erlang
 %%          pids).
--record(info, {active :: any(), blocked :: any() , state :: any()}).
+-record(info, {active  :: set(),
+               blocked :: set(),
+               state   :: [lid()]}).
 
 %% Internal message format
 %%
 %% msg:     An atom describing the type of the message.
 %% pid:     The sender's pid.
 %% misc:    A list of optional arguments, depending on the the message type.
--record(sched, {msg :: atom(), pid :: pid(), misc :: [any()]}).
+-record(sched, {msg  :: atom(),
+                pid  :: pid(),
+                misc :: [_]}).
 
 %%%----------------------------------------------------------------------
 %%% User interface
 %%%----------------------------------------------------------------------
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
--spec interleave(atom(), atom(), [any()]) -> true.
+-spec interleave(atom(), atom(), []) -> 'true'.
 
 interleave(Mod, Fun, Args) ->
     register(sched, self()),
@@ -142,7 +153,8 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
 	    NewState = state_get_next(State, Next),
 	    %% Call the dispatcher to handle incoming messages from the
 	    %% running process.
-	    NewInfo = dispatcher(Info#info{active = NewActive, state = NewState}),
+	    NewInfo = dispatcher(Info#info{active = NewActive,
+                                           state = NewState}),
 	    driver(NewInfo)
     end.
 
@@ -152,7 +164,7 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
 %% above.
 driver(Info, []) -> driver(Info);
 driver(#info{active = Active, blocked = Blocked, state = State} = Info,
-       [Next | Rest]) ->
+       [Next|Rest]) ->
     %% Deadlock/Termination check.
     %% If the `active` set is empty and the `blocked` set is non-empty, report
     %% a deadlock, else if both sets are empty, report program termination.
@@ -171,7 +183,8 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info,
 	    NewState = state_get_next(State, Next),
 	    %% Call the dispatcher to handle incoming messages from the
 	    %% running process.
-	    NewInfo = dispatcher(Info#info{active = NewActive, state = NewState}),
+	    NewInfo = dispatcher(Info#info{active = NewActive,
+                                           state = NewState}),
 	    driver(NewInfo, Rest)
     end.
 
@@ -197,21 +210,17 @@ handler(block, Pid, #info{blocked = Blocked} = Info, _Opt) ->
     NewBlocked = set_add(Blocked, Lid),
     debug("Process ~p blocks.~n", [Lid]),
     Info#info{blocked = NewBlocked};
-
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
 handler(exit, Pid, Info, [Reason]) ->
     Lid = lid(Pid),
     log("Process ~p exits (~p).~n", [Lid, Reason]),
     Info;
-
-%% Receive message handler.
 %% Receive message handler.
 handler('receive', Pid, Info, [_Msg]) ->
     Lid = lid(Pid),
     log("Process ~p receives <TODO>.~n", [Lid]),
     dispatcher(Info);
-
 %% Send message handler.
 %% When a message is sent to a process, the receiving process has to be awaken
 %% if it is blocked on a receive.
@@ -226,7 +235,6 @@ handler(send, Pid, Info, [DstPid, Msg]) ->
 	end,
     log("Process ~p sends message \"~p\" to process ~p.~n", [Lid, Msg, DstLid]),
     dispatcher(NewInfo);
-
 %% Spawn message handler.
 %% The newly spawned process runs until it reaches a blocking point or
 %% terminates. The same goes for its parent process, which is running
@@ -239,7 +247,6 @@ handler(spawn, ParentPid, Info, [ChildPid]) ->
     log("Process ~p spawns process ~p.~n", [ParentLid, ChildLid]),
     NewInfo = dispatcher(Info),
     dispatcher(NewInfo);
-
 %% Yield message handler.
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
@@ -296,7 +303,7 @@ block() ->
 %% a message to continue.
 %% NOTE: Besides replacing yield/0, this function is heavily used by the
 %%       instrumenter before other calls (e.g. spawn, send, etc.).
--spec rep_yield() -> true.
+-spec rep_yield() -> 'true'.
 
 rep_yield() ->
     sched ! #sched{msg = yield, pid = self()},
@@ -310,7 +317,7 @@ rep_yield() ->
 %% is found, it blocks (i.e. is moved to the blocked set). When a new message
 %% arrives the process is woken up. The check mailbox - block - wakeup loop
 %% is repeated until a matching message arrives.
--spec rep_receive(fun(() -> any())) -> any().
+-spec rep_receive(fun((_) -> any())) -> any().
 
 rep_receive(Fun) ->
     rep_yield(),
@@ -323,15 +330,14 @@ rep_receive_aux(Fun) ->
 
 %% Replacement for send/2 (equivalent to the ! operator).
 %% Just yield before the send operation.
--type dest() :: pid() | port() | atom() | {atom(), node()}.
--spec rep_send(dest(), X) -> X.
+-spec rep_send(dest(), any()) -> any().
 
 rep_send(Dest, Msg) ->
     rep_yield(),
     %% MsgSent should be the same as Msg.
-    MsgSent = erlang:send(Dest, Msg),
+    Msg = Dest ! Msg,
     sched ! #sched{msg = send, pid = self(), misc = [Dest, Msg]},
-    MsgSent.
+    Msg.
 
 %% Replacement for spawn/1.
 %% The argument provided is a fun executing the original spawn statement,
@@ -456,7 +462,7 @@ set_new() ->
 %% new set.
 %% Crashes if given an empty set.
 set_pop(Set) ->
-    [Head | Tail] = sets:to_list(Set),
+    [Head|Tail] = sets:to_list(Set),
     {Head, sets:from_list(Tail)}.
 
 %% Remove Element from Set.
@@ -469,7 +475,7 @@ set_remove(Set, Element) ->
 
 %% Given the current state and a process to be run next, return the new state.
 state_get_next(State, Next) ->
-    [Next | State].
+    [Next|State].
 
 %% Return initial (empty) state.
 state_init() ->
@@ -495,13 +501,13 @@ state_start() ->
 state_stop() ->
     ets:delete(state).
 
-%% Create all possible next states and add them to the `states` table.
+%% Create all possible next states and add them to the `state` table.
 state_store_succ(#info{active = Active, state = State}) ->
     state_store_succ_aux(State, set_list(Active)).
 
 state_store_succ_aux(_State, []) -> ok;
-state_store_succ_aux(State, [Proc | Procs]) ->
-    ets:insert(state, {[Proc | State]}),
+state_store_succ_aux(State, [Proc|Procs]) ->
+    ets:insert(state, {[Proc|State]}),
     state_store_succ_aux(State, Procs).
 
 %%%----------------------------------------------------------------------
@@ -525,21 +531,19 @@ test_all(I, Max, Passed) ->
     end.
 
 %% Run all unit tests.
--spec test() -> ok.
+-spec test() -> 'ok'.
 
 test() ->
     io:format("Starting unit test.~n~n"),
-    test_all(1, 5, 0).
+    test_all(1, 7, 0).
 
 %% Run a specific unit test.
--spec test(integer() | atom() | [atom()]) -> ok.
+-spec test(integer() | atom() | [atom()]) -> 'ok'.
 
 test([X]) ->
     test(X);
-
 test(X) when is_atom(X) ->
     test(list_to_integer(atom_to_list(X)));
-
 test(1) ->
     io:format("Checking set interface:~n"),
     Set1 = set_new(),
@@ -608,6 +612,12 @@ test(4) ->
     ok;
 test(5) ->
     interleave(test_instr, test3, []),
+    ok;
+test(6) ->
+    interleave(test_instr, test4, []),
+    ok;
+test(7) ->
+    interleave(test_instr, test5, []),
     ok.
 
 ok() -> io:format(" ok~n"), ok.
