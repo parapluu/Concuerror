@@ -601,7 +601,8 @@ loop() ->
 	    os:cmd("dot -Tpng < schedule.dot > schedule.png"),
 	    Image = wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
 	    {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
-	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20, W div 20, H div 20),
+	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20, W div 20,
+                                           H div 20),
 	    wxStaticBitmap:setBitmap(StaticBmp, Image),
 	    %% NOTE: Important, memory leak if left out!
 	    wxBitmap:destroy(Image),
