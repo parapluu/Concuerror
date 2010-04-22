@@ -208,7 +208,7 @@ search(#info{active = Active, state = State} = Info) ->
 handler(block, Pid, #info{blocked = Blocked} = Info, _Opt) ->
     Lid = lid(Pid),
     NewBlocked = set_add(Blocked, Lid),
-    debug("Process ~p blocks.~n", [Lid]),
+    log("Process ~p blocks.~n", [Lid]),
     Info#info{blocked = NewBlocked};
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
@@ -275,9 +275,9 @@ stop(Reason) ->
 %% Wakeup a process.
 %% If process is in `blocked` set, move to `active` set.
 wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
-    debug("Waking up ~p.~n", [Lid]),
     case set_member(Blocked, Lid) of
 	true ->
+            debug("Waking up ~p.~n", [Lid]),
 	    NewBlocked = set_remove(Blocked, Lid),
 	    NewActive = set_add(Active, Lid),
 	    Info#info{active = NewActive, blocked = NewBlocked};
