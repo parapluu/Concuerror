@@ -334,7 +334,6 @@ rep_receive_aux(Fun) ->
 
 rep_send(Dest, Msg) ->
     rep_yield(),
-    %% MsgSent should be the same as Msg.
     Msg = Dest ! Msg,
     sched ! #sched{msg = send, pid = self(), misc = [Dest, Msg]},
     Msg.
