@@ -310,7 +310,7 @@ rep_yield() ->
 %% is found, it blocks (i.e. is moved to the blocked set). When a new message
 %% arrives the process is woken up. The check mailbox - block - wakeup loop
 %% is repeated until a matching message arrives.
--spec rep_receive(fun(() -> any())) -> any().
+-spec rep_receive(fun((fun()) -> any())) -> any().
 
 rep_receive(Fun) ->
     rep_yield(),
