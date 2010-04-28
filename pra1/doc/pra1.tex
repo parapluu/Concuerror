@@ -40,7 +40,7 @@ overall functionality. Specifically, we shall consider the following Erlang
 
 The current implementation shall accept a single erlang module for analysis
 and output a log, containing all possible process interleavings
-w.r.t. the aforementioned "constructs".
+with respect to the aforementioned "constructs".
 
 \section{Instrumentation}
 To be able to analyze a module we have to use wrapper functions and statements in place of
@@ -88,13 +88,17 @@ Next, we present the code transformations done by the instrumenter for the three
 	\begin{lstlisting}
     sched:rep_receive(
         fun(Aux) -> receive
-                        Pattern1 [when GuardSeq1] -> Body1;
+                        Pattern1 [when GuardSeq1] ->
+                          {Pattern1, Body1};
                     ...;
-                        PatternN [when GuardSeqN] -> BodyN
+                        PatternN [when GuardSeqN] ->
+                          {PatternN, BodyN}
                     after 0 -> Aux()
                     end
         end)
 	\end{lstlisting}
+	For the above to work, patterns containing the anonymous variable (\lstinline+_+) will have to
+	be replaced with equivalent patterns containing only named variables.
 \end{itemize}
 
 \section{Structure}
