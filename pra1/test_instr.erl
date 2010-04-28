@@ -17,7 +17,7 @@ test1() ->
     sched:rep_receive(
       fun(Aux) ->
 	      receive
-		  _Any -> ok
+		  _Any -> {_Any, ok}
 	      after 0 -> Aux()
 	      end
       end).
@@ -83,14 +83,14 @@ test3() ->
     sched:rep_receive(
       fun(Aux) ->
 	      receive
-		  _Any1 -> ok
+		  _Any1 -> {_Any1, ok}
 	      after 0 -> Aux()
 	      end
       end),
     sched:rep_receive(
       fun(Aux) ->
 	      receive
-		  _Any2 -> ok
+		  _Any2 -> {_Any2, ok}
 	      after 0 -> Aux()
 	      end
       end).
@@ -118,7 +118,7 @@ test4() ->
     sched:rep_receive(
       fun(Aux) ->
 	      receive
-		  _Any -> ok
+		  _Any -> {_Any, ok}
 	      after 0 -> Aux()
 	      end
       end).
@@ -128,7 +128,7 @@ foo4() ->
     sched:rep_receive(
       fun(Aux) ->
 	      receive
-		  _Any -> ok
+		  _Any -> {_Any, ok}
 	      after 0 -> Aux()
 	      end
       end).
@@ -149,7 +149,7 @@ test5() ->
     sched:rep_receive(
       fun(Aux) ->
 	      receive
-		  43 -> ok
+		  43 -> {43, ok}
 	      after 0 -> Aux()
 	      end
       end).

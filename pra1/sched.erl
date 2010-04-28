@@ -217,9 +217,9 @@ handler(exit, Pid, Info, [Reason]) ->
     log("Process ~p exits (~p).~n", [Lid, Reason]),
     Info;
 %% Receive message handler.
-handler('receive', Pid, Info, [_Msg]) ->
+handler('receive', Pid, Info, [Msg]) ->
     Lid = lid(Pid),
-    log("Process ~p receives message <TODO> from process <TODO>.~n", [Lid]),
+    log("Process ~p receives message \"~p\".~n", [Lid, Msg]),
     dispatcher(Info);
 %% Send message handler.
 %% When a message is sent to a process, the receiving process has to be awaken
@@ -321,9 +321,9 @@ rep_yield() ->
 
 rep_receive(Fun) ->
     rep_yield(),
-    Received = rep_receive_aux(Fun),
-    sched ! #sched{msg = 'receive', pid = self(), misc = [Received]},
-    Received.
+    {Msg, Result} = rep_receive_aux(Fun),
+    sched ! #sched{msg = 'receive', pid = self(), misc = [Msg]},
+    Result.
 
 rep_receive_aux(Fun) ->
     Fun(fun() -> block(), rep_receive_aux(Fun) end).
