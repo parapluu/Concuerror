@@ -219,7 +219,7 @@ handler(exit, Pid, Info, [Reason]) ->
 %% Receive message handler.
 handler('receive', Pid, Info, [_Msg]) ->
     Lid = lid(Pid),
-    log("Process ~p receives <TODO>.~n", [Lid]),
+    log("Process ~p receives message <TODO> from process <TODO>.~n", [Lid]),
     dispatcher(Info);
 %% Send message handler.
 %% When a message is sent to a process, the receiving process has to be awaken
