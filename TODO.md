@@ -15,3 +15,4 @@ TODO
   όταν τελειώνει με receive που ξέρουμε τι επιστρέφει
 * η internal να πετάει κάποιου είδους exception (erlang:exit) --
   να μην τυπώνει και να συνεχίζεται η εκτέλεση, γιατί κρασάρει.
+* add sender to receive log message
