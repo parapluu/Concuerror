@@ -60,11 +60,7 @@ Next, we present the code transformations done by the instrumenter for the three
 	\end{lstlisting}
 	will become
 	\begin{lstlisting}
-    sched:rep_spawn(
-        fun() -> spawn(fun() -> link(whereis(sched)),
-                                Function
-                       end)
-        end)
+    sched:rep_spawn(Function)
 	\end{lstlisting}
 	
 	\item The statement
