@@ -82,4 +82,4 @@ instrument_spawn(Tree, _Used) ->
     erl_syntax:application(Module, Function, Arguments).
 
 test() ->
-    instrument("/home/alkis/Chess/pra1/test.erl").
+    instrument("../pra1/test.erl").
