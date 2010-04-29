@@ -3,11 +3,21 @@
 -export([rep_receive/1, rep_send/2, rep_spawn/1, rep_yield/0]).
 
 %%%----------------------------------------------------------------------
-%%% Macros
+%%% Definitions
 %%%----------------------------------------------------------------------
 
+-define(RET_NORMAL, 0).
+-define(RET_INTERNAL_ERROR, 1).
+-define(RET_HEISENBUG, 2).
+
 %% Debug messages (TODO: define externally?).
--define(DEBUG, false).
+%%-define(DEBUG, true).
+
+-ifdef(DEBUG).
+-define(debug(S_, L_), io:format("(Debug)" ++ S_, L_)).
+-else.
+-define(debug(S_, L_), ok).
+-endif.
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -62,42 +72,54 @@ interleave(Mod, Fun, Args) ->
     %% Insert first state to replay, i.e. "run first process first".
     %% XXX: Breaks state and lid abstraction.
     ets:insert(state, {["P1"]}),
-    inter_loop(Mod, Fun, Args, 1),
+    {T1, _} = statistics(wall_clock),
+    inter_loop(Mod, Fun, Args),
+    {T2, _} = statistics(wall_clock),
+    report_elapsed_time(T1, T2),
     state_stop(),
     unregister(sched).
 
-inter_loop(Mod, Fun, Args, RunCounter) ->
-    %% Lookup state to replay.
-    case state_pop() of
- 	no_state -> ok;
- 	ReplayState ->
-	    log("Running interleaving ~p~n", [RunCounter]),
-	    log("----------------------~n"),
- 	    %% Start LID service.
- 	    lid_start(),
- 	    %% Create the first process.
- 	    %% The process is created linked to the scheduler, so that the
-	    %% latter can receive the former's exit message when it terminates.
-	    %% In the same way, every process that may be spawned in the course
-	    %% of the program shall be linked to this (`sched`) process.
- 	    FirstPid = spawn_link(Mod, Fun, Args),
- 	    %% Create the first LID and register it with FirstPid.
- 	    lid_new(FirstPid),
- 	    %% The initial `active` and `blocked` sets are empty.
- 	    Active = set_new(),
- 	    Blocked = set_new(),
- 	    %% Create initial state.
- 	    State = state_init(),
- 	    %% Receive the first message from the first process. That is, wait
-	    %% until it yields, blocks or terminates.
- 	    NewInfo = dispatcher(#info{active = Active,
- 				       blocked = Blocked,
- 				       state = State}),
- 	    %% Use driver to replay ReplayState.
- 	    driver(NewInfo, ReplayState),
- 	    %% Stop LID service (LID tables have to be reset on each run).
- 	    lid_stop(),
- 	    inter_loop(Mod, Fun, Args, RunCounter + 1)
+inter_loop(Mod, Fun, Args) ->
+    inter_loop(Mod, Fun, Args, 1, ?RET_NORMAL).
+
+inter_loop(Mod, Fun, Args, RunCounter, Ret) ->
+    case Ret of
+        ?RET_HEISENBUG -> ok;
+        ?RET_NORMAL ->
+            %% Lookup state to replay.
+            case state_pop() of
+                no_state -> ok;
+                ReplayState ->
+                    log("Running interleaving ~p~n", [RunCounter]),
+                    log("----------------------~n"),
+                    %% Start LID service.
+                    lid_start(),
+                    %% Create the first process.
+                    %% The process is created linked to the scheduler, so that
+                    %% the latter can receive the former's exit message when it
+                    %% terminates. In the same way, every process that may be
+                    %% spawned in the course of the program shall be linked to
+                    %% this (`sched`) process.
+                    FirstPid = spawn_link(Mod, Fun, Args),
+                    %% Create the first LID and register it with FirstPid.
+                    lid_new(FirstPid),
+                    %% The initial `active` and `blocked` sets are empty.
+                    Active = set_new(),
+                    Blocked = set_new(),
+                    %% Create initial state.
+                    State = state_init(),
+                    %% Receive the first message from the first process. That
+                    %% is, wait until it yields, blocks or terminates.
+                    NewInfo = dispatcher(#info{active = Active,
+                                               blocked = Blocked,
+                                               state = State}),
+                    %% Use driver to replay ReplayState.
+                    Ret1 = driver(NewInfo, ReplayState),
+                    %% Stop LID service (LID tables have to be reset on each
+                    %% run).
+                    lid_stop(),
+                    inter_loop(Mod, Fun, Args, RunCounter + 1, Ret1)
+            end
     end.
 
 %%%----------------------------------------------------------------------
@@ -147,7 +169,7 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
 	    Next = search(Info),
 	    %% Remove process Next from the `active` set and run it.
 	    NewActive = set_remove(Active, Next),
-	    debug("Running process ~p.~n", [Next]),
+	    ?debug("Running process ~p.~n", [Next]),
 	    run(Next),
 	    %% Create new state.
 	    NewState = state_get_next(State, Next),
@@ -177,7 +199,7 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info,
 	false ->
 	    %% Remove process Next from the `active` set and run it.
 	    NewActive = set_remove(Active, Next),
-	    debug("Running process ~p.~n", [Next]),
+	    ?debug("Running process ~p.~n", [Next]),
 	    run(Next),
 	    %% Create new state.
 	    NewState = state_get_next(State, Next),
@@ -252,7 +274,7 @@ handler(spawn, ParentPid, Info, [ChildPid]) ->
 %% remains in the active set.
 handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
     Lid = lid(Pid),
-    debug("Process ~p yields.~n", [Lid]),
+    ?debug("Process ~p yields.~n", [Lid]),
     NewActive = set_add(Active, Lid),
     Info#info{active = NewActive}.
 
@@ -270,14 +292,18 @@ stop(Reason) ->
     log("-----------------------~n"),
     log("Run terminated (~p).~n~n", [Reason]),
     %% Debug: print unexplored state table.
-    debug("Unexplored: ~p~n~n", [ets:match(state, '$1')]).
+    ?debug("Unexplored: ~p~n~n", [ets:match(state, '$1')]),
+    case Reason of
+        normal -> ?RET_NORMAL;
+        _ -> ?RET_HEISENBUG
+    end.
 
 %% Wakeup a process.
 %% If process is in `blocked` set, move to `active` set.
 wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
     case set_member(Blocked, Lid) of
 	true ->
-            debug("Waking up ~p.~n", [Lid]),
+            ?debug("Waking up ~p.~n", [Lid]),
 	    NewBlocked = set_remove(Blocked, Lid),
 	    NewActive = set_add(Active, Lid),
 	    Info#info{active = NewActive, blocked = NewBlocked};
@@ -414,7 +440,8 @@ lid_to_pid(Lid) ->
 %%     internal(String, []).
 
 internal(String, Args) ->
-    io:format("(Internal)" ++ String, Args).
+    io:format("(Internal)" ++ String, Args),
+    halt(?RET_INTERNAL_ERROR).
 
 %% Add a message to log (for now just print to stdout).
 log(String) ->
@@ -423,15 +450,12 @@ log(String) ->
 log(String, Args) ->
     io:format(String, Args).
 
-%% Display a debug message.
-%% debug(String) ->
-%%     io:format("(Debug)" ++ String).
+report_elapsed_time(T1, T2) ->
+    ElapsedTime = T2 - T1,
+    Mins = ElapsedTime div 60000,
+    Secs = (ElapsedTime rem 60000) / 1000,
+    io:format("Done in ~wm~.2fs\n", [Mins, Secs]).
 
-debug(String, Args) ->
-    case ?DEBUG of
-	true -> io:format("(Debug)" ++ String, Args);
-	false -> ok
-    end.
 
 %%%----------------------------------------------------------------------
 %%% Set interface
