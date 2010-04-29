@@ -348,7 +348,7 @@ rep_send(Dest, Msg) ->
 
 rep_spawn(Fun) ->
     rep_yield(),
-    Pid = Fun(),
+    Pid = spawn(fun() -> link(whereis(sched)), Fun() end),
     sched ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     Pid.
 

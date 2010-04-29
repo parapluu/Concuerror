@@ -6,13 +6,7 @@
 test1() ->
     Self = self(),
     %% spawn(fun() -> foo1(Self) end)
-    sched:rep_spawn(
-      fun() ->
-              spawn(fun() ->
-                            link(whereis(sched)),
-                            foo1(Self)
-                    end)
-      end),
+    sched:rep_spawn(fun() -> foo1(Self) end),
     %% receive _Any -> ok end
     sched:rep_receive(
       fun(Aux) ->
@@ -29,33 +23,15 @@ foo1(Pid) ->
 -spec test2() -> 'ok'.
 
 test2() ->
-    %% spawn(fun() -> foo21 end)
-    sched:rep_spawn(
-      fun() -> 
-              spawn(fun() ->
-                            link(whereis(sched)),
-                            foo21()
-                    end)
-      end),
-    %% spawn(fun() -> foo22 end)
-    sched:rep_spawn(
-      fun() ->
-              spawn(fun() ->
-                            link(whereis(sched)),
-                            foo22()
-                    end)
-      end),
+    %% spawn(fun() -> foo21() end)
+    sched:rep_spawn(fun() -> foo21() end),
+    %% spawn(fun() -> foo22() end)
+    sched:rep_spawn(fun() -> foo22() end),
     ok.
 
 foo21() ->
-    %% spawn(fun() -> foo 22 end)
-    sched:rep_spawn(
-      fun() -> 
-              spawn(fun() ->
-                            link(whereis(sched)),
-                            foo22()
-                    end)
-      end).
+    %% spawn(fun() -> foo22() end)
+    sched:rep_spawn(fun() -> foo22() end).
 
 foo22() ->
     42.
@@ -64,22 +40,10 @@ foo22() ->
 
 test3() ->
     Self = self(),
-    %% spawn(fun() -> foo31 end)
-    sched:rep_spawn(
-      fun() ->
-              spawn(fun() ->
-                            link(whereis(sched)),
-                            foo31(Self)
-                    end)
-      end),
-    %% spawn(fun() -> foo32 end)
-    sched:rep_spawn(
-      fun() ->
-              spawn(fun() ->
-                            link(whereis(sched)),
-                            foo32(Self)
-                    end)
-      end),
+    %% spawn(fun() -> foo31(Self) end)
+    sched:rep_spawn(fun() -> foo31(Self) end),
+    %% spawn(fun() -> foo32(Self) end)
+    sched:rep_spawn(fun() -> foo32(Self) end),
     sched:rep_receive(
       fun(Aux) ->
 	      receive
@@ -106,14 +70,8 @@ foo32(Pid) ->
 -spec test4() -> no_return().
 
 test4() ->
-    %% spawn(fun() -> foo4(Self) end)
-    sched:rep_spawn(
-      fun() ->
-              spawn(fun() ->
-                            link(whereis(sched)),
-                            foo4()
-                    end)
-      end),
+    %% spawn(fun() -> foo4() end)
+    sched:rep_spawn(fun() -> foo4() end),
     %% receive _Any -> ok end
     sched:rep_receive(
       fun(Aux) ->
@@ -138,13 +96,7 @@ foo4() ->
 test5() ->
     Self = self(),
     %% spawn(fun() -> foo1(Self) end)
-    sched:rep_spawn(
-      fun() ->
-              spawn(fun() ->
-                            link(whereis(sched)),
-                            foo1(Self)
-                    end)
-      end),
+    sched:rep_spawn(fun() -> foo1(Self) end),
     %% receive _Any -> ok end
     sched:rep_receive(
       fun(Aux) ->
