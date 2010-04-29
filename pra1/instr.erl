@@ -37,6 +37,19 @@ instrument_subtrees(Tree, Used) ->
 %% Instrument a term.
 instrument_term(Tree, Used) ->
     case erl_syntax:type(Tree) of
+	application ->
+	    Qualifier = erl_syntax:application_operator(Tree),
+	    case erl_syntax:type(Qualifier) of
+		atom ->
+		    Function = erl_syntax:atom_value(Qualifier),
+		    case Function of
+			spawn -> instrument_spawn(
+				   instrument_subtrees(Tree, Used),
+				   Used);
+			_Other -> Tree
+		    end;
+		_Other -> Tree
+	    end;
 	clause -> instrument_subtrees(Tree, Used);
 	infix_expr ->
 	    Operator = erl_syntax:infix_expr_operator(Tree),
@@ -56,6 +69,16 @@ instrument_send(Tree, _Used) ->
     Pid = erl_syntax:infix_expr_left(Tree),
     Msg = erl_syntax:infix_expr_right(Tree),
     Arguments = [Pid, Msg],
+    erl_syntax:application(Module, Function, Arguments).
+
+%% Instrument a spawn expression (only in the form spawn(fun() -> Body end)
+%% for now.
+%% spawn(Fun) is transformed into sched:rep_spawn(Fun).
+instrument_spawn(Tree, _Used) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_spawn),
+    %% Fun expression arguments of the (before instrumentation) spawn call.
+    Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
 test() ->
