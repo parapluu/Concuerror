@@ -637,6 +637,9 @@ test(6) ->
     ok;
 test(7) ->
     interleave(test_instr, test5, []),
+    ok;
+test(8) ->
+    interleave(test_instr, test6, []),
     ok.
 
 ok() -> io:format(" ok~n"), ok.

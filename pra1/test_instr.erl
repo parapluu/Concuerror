@@ -1,5 +1,5 @@
 -module(test_instr).
--export([test1/0, test2/0, test3/0, test4/0, test5/0]).
+-export([test1/0, test2/0, test3/0, test4/0, test5/0, test6/0]).
 
 -spec test1() -> 'ok'.
     
@@ -105,3 +105,38 @@ test5() ->
 	      after 0 -> Aux()
 	      end
       end).
+
+-spec test6() -> ok.
+
+test6() ->
+    sched:rep_yield(),
+    ets:new(table, [named_table, public]),
+    sched:rep_yield(),
+    ets:insert(table, {var, 10}),
+    Pid = sched:rep_spawn(fun() -> a() end),
+    sched:rep_spawn(fun() -> b() end),
+    sched:rep_send(Pid, gazonk),
+    sched:rep_yield(),
+    [{var, N}] = ets:lookup(table, var),
+    sched:rep_yield(),
+    io:format("~p\n", [N]),
+    ok.
+
+a() ->
+    sched:rep_yield(),
+    [{var, N}] = ets:lookup(table, var),
+    sched:rep_yield(),
+    ets:insert(table, {var, N / 2}),
+    sched:rep_receive(
+      fun(Aux) ->
+	      receive
+		  gazonk -> {gazonk, ok}
+	      after 0 -> Aux()
+	      end
+      end).
+
+b() ->
+    sched:rep_yield(),
+    [{var, N}] = ets:lookup(table, var),
+    sched:rep_yield(),
+    ets:insert(table, {var, N + 2}).
