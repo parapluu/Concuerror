@@ -73,52 +73,48 @@ interleave(Mod, Fun, Args) ->
     %% XXX: Breaks state and lid abstraction.
     ets:insert(state, {["P1"]}),
     {T1, _} = statistics(wall_clock),
-    inter_loop(Mod, Fun, Args),
+    inter_loop(Mod, Fun, Args, 1),
     {T2, _} = statistics(wall_clock),
     report_elapsed_time(T1, T2),
     state_stop(),
     unregister(sched).
 
-inter_loop(Mod, Fun, Args) ->
-    inter_loop(Mod, Fun, Args, 1, ?RET_NORMAL).
-
-inter_loop(Mod, Fun, Args, RunCounter, Ret) ->
-    case Ret of
-        ?RET_HEISENBUG -> ok;
-        ?RET_NORMAL ->
-            %% Lookup state to replay.
-            case state_pop() of
-                no_state -> ok;
-                ReplayState ->
-                    log("Running interleaving ~p~n", [RunCounter]),
-                    log("----------------------~n"),
-                    %% Start LID service.
-                    lid_start(),
-                    %% Create the first process.
-                    %% The process is created linked to the scheduler, so that
-                    %% the latter can receive the former's exit message when it
-                    %% terminates. In the same way, every process that may be
-                    %% spawned in the course of the program shall be linked to
-                    %% this (`sched`) process.
-                    FirstPid = spawn_link(Mod, Fun, Args),
-                    %% Create the first LID and register it with FirstPid.
-                    lid_new(FirstPid),
-                    %% The initial `active` and `blocked` sets are empty.
-                    Active = set_new(),
-                    Blocked = set_new(),
-                    %% Create initial state.
-                    State = state_init(),
-                    %% Receive the first message from the first process. That
-                    %% is, wait until it yields, blocks or terminates.
-                    NewInfo = dispatcher(#info{active = Active,
-                                               blocked = Blocked,
-                                               state = State}),
-                    %% Use driver to replay ReplayState.
-                    Ret1 = driver(NewInfo, ReplayState),
-                    %% Stop LID service (LID tables have to be reset on each
-                    %% run).
-                    lid_stop(),
-                    inter_loop(Mod, Fun, Args, RunCounter + 1, Ret1)
+inter_loop(Mod, Fun, Args, RunCounter) ->
+    %% Lookup state to replay.
+    case state_pop() of
+        no_state -> ok;
+        ReplayState ->
+            log("Running interleaving ~p~n", [RunCounter]),
+            log("----------------------~n"),
+            %% Start LID service.
+            lid_start(),
+            %% Create the first process.
+            %% The process is created linked to the scheduler, so that the
+            %% latter can receive the former's exit message when it terminates.
+            %% In the same way, every process that may be spawned in the course
+            %% of the program shall be linked to this (`sched`) process.
+            FirstPid = spawn_link(Mod, Fun, Args),
+            %% Create the first LID and register it with FirstPid.
+            lid_new(FirstPid),
+            %% The initial `active` and `blocked` sets are empty.
+            Active = set_new(),
+            Blocked = set_new(),
+            %% Create initial state.
+            State = state_init(),
+            %% Receive the first message from the first process. That is, wait
+            %% until it yields, blocks or terminates.
+            NewInfo = dispatcher(#info{active = Active,
+                                       blocked = Blocked,
+                                       state = State}),
+            %% Use driver to replay ReplayState.
+            Ret = driver(NewInfo, ReplayState),
+            %% Stop LID service (LID tables have to be reset on each
+            %% run).
+            lid_stop(),
+            case Ret of
+                ?RET_NORMAL ->
+                    inter_loop(Mod, Fun, Args, RunCounter + 1);
+                ?RET_HEISENBUG -> ok
             end
     end.
 
