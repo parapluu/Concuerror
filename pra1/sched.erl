@@ -341,6 +341,7 @@ rep_yield() ->
 rep_receive(Fun) ->
     {Msg, Result} = rep_receive_aux(Fun),
     sched ! #sched{msg = 'receive', pid = self(), misc = [Msg]},
+    rep_yield(),
     Result.
 
 rep_receive_aux(Fun) ->
@@ -353,6 +354,7 @@ rep_receive_aux(Fun) ->
 rep_send(Dest, Msg) ->
     Msg = Dest ! Msg,
     sched ! #sched{msg = send, pid = self(), misc = [Dest, Msg]},
+    rep_yield(),
     Msg.
 
 %% Replacement for spawn/1.
@@ -364,6 +366,7 @@ rep_spawn(Fun) ->
     rep_yield(),
     Pid = spawn(fun() -> rep_yield(), Fun() end),
     sched ! #sched{msg = spawn, pid = self(), misc = [Pid]},
+    rep_yield(),
     Pid.
 
 %%%----------------------------------------------------------------------
