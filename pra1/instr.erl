@@ -71,8 +71,8 @@ instrument_send(Tree, _Used) ->
     Arguments = [Pid, Msg],
     erl_syntax:application(Module, Function, Arguments).
 
-%% Instrument a spawn expression (only in the form spawn(fun() -> Body end)
-%% for now.
+%% Instrument a spawn expression (only in the form spawn(fun() -> Body end
+%% for now).
 %% spawn(Fun) is transformed into sched:rep_spawn(Fun).
 instrument_spawn(Tree, _Used) ->
     Module = erl_syntax:atom(sched),

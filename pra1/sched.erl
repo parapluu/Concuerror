@@ -38,7 +38,7 @@
 %% state:   The current state of the program.
 %%          A state is a list of LIDs showing the (reverse?) interleaving of
 %%          processes up to a point of the program.
-%%          
+%%
 %%          NOTE:
 %%          The logical id (LID) for each process reflects the process' logical
 %%          position in the program's "process creation tree" and doesn't change
@@ -251,12 +251,12 @@ handler(send, Pid, Info, [DstPid, Msg]) ->
     NewInfo = wakeup(DstLid, Info),
     dispatcher(NewInfo);
 %% Spawn message handler.
-%% The newly spawned process runs until it reaches a blocking point or
-%% terminates. The same goes for its parent process, which is running
-%% concurrently. Therefore we have to receive two messages. Either of them
-%% can be a `block`, a `yield` or an `exit` message. This is achieved by two
-%% calls to the dispatcher.
+%% First, link the newly spawned process to the scheduler process.
+%% The new process yields as soon as it gets spawned and the parent process
+%% yields as soon as it spawns. Therefore wait for two `yield` messages using
+%% two calls to the dispatcher.
 handler(spawn, ParentPid, Info, [ChildPid]) ->
+    link(ChildPid),
     ParentLid = lid(ParentPid),
     ChildLid = lid_new(ParentLid, ChildPid),
     log("Process ~p spawns process ~p.~n", [ParentLid, ChildLid]),
@@ -356,15 +356,13 @@ rep_send(Dest, Msg) ->
     Msg.
 
 %% Replacement for spawn/1.
-%% The argument provided is the fun to be executed by the new process.
-%% When spawned, the new process has to yield. When it is scheduled afterwards,
-%% it has to be linked to the sched process (for trapping its exit), before
-%% running the actual fun it is supposed to.
+%% The argument provided is the argument of the original spawn call.
+%% When spawned, the new process has to yield.
 -spec rep_spawn(fun()) -> pid().
 
 rep_spawn(Fun) ->
     rep_yield(),
-    Pid = spawn(fun() -> rep_yield(), link(whereis(sched)), Fun() end),
+    Pid = spawn(fun() -> rep_yield(), Fun() end),
     sched ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     Pid.
 
