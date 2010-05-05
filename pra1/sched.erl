@@ -14,7 +14,7 @@
 %%-define(DEBUG, true).
 
 -ifdef(DEBUG).
--define(debug(S_, L_), io:format("(Debug)" ++ S_, L_)).
+-define(debug(S_, L_), io:format("(Debug) " ++ S_, L_)).
 -else.
 -define(debug(S_, L_), ok).
 -endif.
@@ -246,12 +246,9 @@ handler('receive', Pid, Info, [Msg]) ->
 %%      something else, it will be awaken!
 handler(send, Pid, Info, [DstPid, Msg]) ->
     Lid = lid(Pid),
-    DstLid = 
-	case lid(DstPid) of
-	    not_found -> NewInfo = Info, unknown;
-	    Found -> NewInfo = wakeup(Found, Info), Found
-	end,
+    DstLid = lid(DstPid),
     log("Process ~p sends message \"~p\" to process ~p.~n", [Lid, Msg, DstLid]),
+    NewInfo = wakeup(DstLid, Info),
     dispatcher(NewInfo);
 %% Spawn message handler.
 %% The newly spawned process runs until it reaches a blocking point or
@@ -299,7 +296,7 @@ stop(Reason) ->
 wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
     case set_member(Blocked, Lid) of
 	true ->
-            ?debug("Waking up ~p.~n", [Lid]),
+            ?debug("Process ~p wakes up.~n", [Lid]),
 	    NewBlocked = set_remove(Blocked, Lid),
 	    NewActive = set_add(Active, Lid),
 	    Info#info{active = NewActive, blocked = NewBlocked};
@@ -334,15 +331,14 @@ rep_yield() ->
     end.
 
 %% Replacement for an erlang `receive` statement (without an `after` clause).
-%% The first time the receive statement is encountered the process yields.
-%% The next time it's scheduled it searches its mailbox. If no matching message
-%% is found, it blocks (i.e. is moved to the blocked set). When a new message
-%% arrives the process is woken up. The check mailbox - block - wakeup loop
-%% is repeated until a matching message arrives.
+%% The first time the process is scheduled it searches its mailbox. If no
+%% matching message is found, it blocks (i.e. is moved to the blocked set).
+%% When a new message arrives the process is woken up (see `send` handler).
+%% The check mailbox - block - wakeup loop is repeated until a matching message
+%% arrives.
 -spec rep_receive(fun((fun()) -> any())) -> any().
 
 rep_receive(Fun) ->
-    rep_yield(),
     {Msg, Result} = rep_receive_aux(Fun),
     sched ! #sched{msg = 'receive', pid = self(), misc = [Msg]},
     Result.
@@ -350,27 +346,25 @@ rep_receive(Fun) ->
 rep_receive_aux(Fun) ->
     Fun(fun() -> block(), rep_receive_aux(Fun) end).
 
-%% Replacement for send/2 (equivalent to the ! operator).
-%% Just yield before the send operation.
+%% Replacement for send/2 (and the equivalent ! operator).
+%% Just yield after the send operation.
 -spec rep_send(dest(), any()) -> any().
 
 rep_send(Dest, Msg) ->
-    rep_yield(),
     Msg = Dest ! Msg,
     sched ! #sched{msg = send, pid = self(), misc = [Dest, Msg]},
     Msg.
 
 %% Replacement for spawn/1.
-%% The argument provided is a fun executing the original spawn statement,
-%% i.e. Fun = fun() -> spawn(...) end.
-%% First the process yields, using rep_yield. Afterwards it runs Fun, which
-%% actually spawns the new process, informs the scheduler of the spawn and
-%% returns the value returned by the original spawn (Pid).
--spec rep_spawn(fun(() -> pid())) -> pid().
+%% The argument provided is the fun to be executed by the new process.
+%% When spawned, the new process has to yield. When it is scheduled afterwards,
+%% it has to be linked to the sched process (for trapping its exit), before
+%% running the actual fun it is supposed to.
+-spec rep_spawn(fun()) -> pid().
 
 rep_spawn(Fun) ->
     rep_yield(),
-    Pid = spawn(fun() -> link(whereis(sched)), Fun() end),
+    Pid = spawn(fun() -> rep_yield(), link(whereis(sched)), Fun() end),
     sched ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     Pid.
 
@@ -436,7 +430,7 @@ lid_to_pid(Lid) ->
 %%     internal(String, []).
 
 internal(String, Args) ->
-    io:format("(Internal)" ++ String, Args),
+    io:format("(Internal) " ++ String, Args),
     halt(?RET_INTERNAL_ERROR).
 
 %% Add a message to log (for now just print to stdout).
@@ -637,9 +631,6 @@ test(6) ->
     ok;
 test(7) ->
     interleave(test_instr, test5, []),
-    ok;
-test(8) ->
-    interleave(test_instr, test6, []),
     ok.
 
 ok() -> io:format(" ok~n"), ok.

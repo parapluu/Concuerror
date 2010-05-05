@@ -1,5 +1,5 @@
 -module(test_instr).
--export([test1/0, test2/0, test3/0, test4/0, test5/0, test6/0]).
+-export([test1/0, test2/0, test3/0, test4/0, test5/0]).
 
 -spec test1() -> 'ok'.
     
@@ -7,6 +7,7 @@ test1() ->
     Self = self(),
     %% spawn(fun() -> foo1(Self) end)
     sched:rep_spawn(fun() -> foo1(Self) end),
+    sched:rep_yield(),
     %% receive _Any -> ok end
     sched:rep_receive(
       fun(Aux) ->
@@ -18,20 +19,24 @@ test1() ->
 
 foo1(Pid) ->
     %% Pid ! 42
-    sched:rep_send(Pid, 42).
+    sched:rep_send(Pid, 42),
+    sched:rep_yield().
 
 -spec test2() -> 'ok'.
 
 test2() ->
     %% spawn(fun() -> foo21() end)
     sched:rep_spawn(fun() -> foo21() end),
+    sched:rep_yield(),
     %% spawn(fun() -> foo22() end)
     sched:rep_spawn(fun() -> foo22() end),
+    sched:rep_yield(),
     ok.
 
 foo21() ->
     %% spawn(fun() -> foo22() end)
-    sched:rep_spawn(fun() -> foo22() end).
+    sched:rep_spawn(fun() -> foo22() end),
+    sched:rep_yield().
 
 foo22() ->
     42.
@@ -42,8 +47,10 @@ test3() ->
     Self = self(),
     %% spawn(fun() -> foo31(Self) end)
     sched:rep_spawn(fun() -> foo31(Self) end),
+    sched:rep_yield(),
     %% spawn(fun() -> foo32(Self) end)
     sched:rep_spawn(fun() -> foo32(Self) end),
+    sched:rep_yield(),
     sched:rep_receive(
       fun(Aux) ->
 	      receive
@@ -51,27 +58,32 @@ test3() ->
 	      after 0 -> Aux()
 	      end
       end),
+    sched:rep_yield(),
     sched:rep_receive(
       fun(Aux) ->
 	      receive
 		  _Any2 -> {_Any2, ok}
 	      after 0 -> Aux()
 	      end
-      end).
+      end),
+    sched:rep_yield().
 
 foo31(Pid) ->
     %% Pid ! msg1
-    sched:rep_send(Pid, msg1).
+    sched:rep_send(Pid, msg1),
+    sched:rep_yield().
 
 foo32(Pid) ->
     %% Pid ! msg2
-    sched:rep_send(Pid, msg2).
+    sched:rep_send(Pid, msg2),
+    sched:rep_yield().
 
 -spec test4() -> no_return().
 
 test4() ->
     %% spawn(fun() -> foo4() end)
     sched:rep_spawn(fun() -> foo4() end),
+    sched:rep_yield(),
     %% receive _Any -> ok end
     sched:rep_receive(
       fun(Aux) ->
@@ -79,7 +91,8 @@ test4() ->
 		  _Any -> {_Any, ok}
 	      after 0 -> Aux()
 	      end
-      end).
+      end),
+    sched:rep_yield().
 
 foo4() ->
     %% receive _Any -> ok end
@@ -89,7 +102,8 @@ foo4() ->
 		  _Any -> {_Any, ok}
 	      after 0 -> Aux()
 	      end
-      end).
+      end),
+    sched:rep_yield().
 
 -spec test5() -> no_return().
 
@@ -97,6 +111,7 @@ test5() ->
     Self = self(),
     %% spawn(fun() -> foo1(Self) end)
     sched:rep_spawn(fun() -> foo1(Self) end),
+    sched:rep_yield(),
     %% receive _Any -> ok end
     sched:rep_receive(
       fun(Aux) ->
@@ -104,39 +119,5 @@ test5() ->
 		  43 -> {43, ok}
 	      after 0 -> Aux()
 	      end
-      end).
-
--spec test6() -> ok.
-
-test6() ->
-    sched:rep_yield(),
-    ets:new(table, [named_table, public]),
-    sched:rep_yield(),
-    ets:insert(table, {var, 10}),
-    Pid = sched:rep_spawn(fun() -> a() end),
-    sched:rep_spawn(fun() -> b() end),
-    sched:rep_send(Pid, gazonk),
-    sched:rep_yield(),
-    [{var, N}] = ets:lookup(table, var),
-    sched:rep_yield(),
-    io:format("~p\n", [N]),
-    ok.
-
-a() ->
-    sched:rep_yield(),
-    [{var, N}] = ets:lookup(table, var),
-    sched:rep_yield(),
-    ets:insert(table, {var, N / 2}),
-    sched:rep_receive(
-      fun(Aux) ->
-	      receive
-		  gazonk -> {gazonk, ok}
-	      after 0 -> Aux()
-	      end
-      end).
-
-b() ->
-    sched:rep_yield(),
-    [{var, N}] = ets:lookup(table, var),
-    sched:rep_yield(),
-    ets:insert(table, {var, N + 2}).
+      end),
+    sched:rep_yield().
