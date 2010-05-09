@@ -11,7 +11,7 @@
 -define(RET_HEISENBUG, 2).
 
 %% Debug messages (TODO: define externally?).
-%%-define(DEBUG, true).
+-define(DEBUG, true).
 
 -ifdef(DEBUG).
 -define(debug(S_, L_), io:format("(Debug) " ++ S_, L_)).
@@ -61,11 +61,37 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
+%% Instrument file Path and produce all interleavings of (Mod, Fun, Args).
+-spec analyze(string(), atom(), atom(), [any()]) -> 'true'.
+
+analyze(Path, Mod, Fun, Args) ->
+    log:log("Instrumenting file ~p~n", [Path]),
+    case instr:load(Path) of
+	{ok, Module, Warnings} ->
+	    case Warnings of
+		[] -> continue;
+		_Other -> log:log("Warnings: ~p~n", [Warnings])
+	    end,
+	    log:log("Module ~p loaded.~n", [Module]),
+	    log:log("Instrumentation done.~n"),
+	    interleave(Mod, Fun, Args);
+	{error, Errors, Warnings} ->
+	    case Warnings of
+		[] -> continue;
+		_Other -> log:log("Warnings: ~p~n", [Warnings])
+	    end,
+	    log:log("Errors: ~p~n", [Errors]),
+	    log:log("Instrumentation failed.~n")
+    end.
+
 %% Produce all possible process interleavings of (Mod, Fun, Args).
--spec interleave(atom(), atom(), []) -> 'true'.
+-spec interleave(atom(), atom(), [any()]) -> 'true'.
 
 interleave(Mod, Fun, Args) ->
     register(sched, self()),
+    %% The mailbox is flushed mainly to discard possible `exit` messages
+    %% before enabling the `trap_exit` flag.
+    flush_mailbox(),
     process_flag(trap_exit, true),
     %% Start state service.
     state_start(),
@@ -84,8 +110,8 @@ inter_loop(Mod, Fun, Args, RunCounter) ->
     case state_pop() of
         no_state -> ok;
         ReplayState ->
-            log("Running interleaving ~p~n", [RunCounter]),
-            log("----------------------~n"),
+            log:log("Running interleaving ~p~n", [RunCounter]),
+            log:log("----------------------~n"),
             %% Start LID service.
             lid_start(),
             %% Create the first process.
@@ -138,7 +164,7 @@ dispatcher(Info) ->
 	{'EXIT', Pid, Reason} ->
 	    handler(exit, Pid, Info, [Reason]);
 	Other ->
-	    internal("Dispatcher received: ~p~n", [Other])
+	    log:internal("Dispatcher received: ~p~n", [Other])
     end.
 
 %% Main scheduler component.
@@ -226,18 +252,26 @@ search(#info{active = Active, state = State} = Info) ->
 handler(block, Pid, #info{blocked = Blocked} = Info, _Opt) ->
     Lid = lid(Pid),
     NewBlocked = set_add(Blocked, Lid),
-    log("Process ~p blocks.~n", [Lid]),
+    log:log("Process ~p blocks.~n", [Lid]),
     Info#info{blocked = NewBlocked};
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
+%% If the exited process is irrelevant (i.e. has no LID assigned), recall the
+%% dispatcher.
 handler(exit, Pid, Info, [Reason]) ->
     Lid = lid(Pid),
-    log("Process ~p exits (~p).~n", [Lid, Reason]),
-    Info;
+    case Lid of
+	not_found ->
+	    ?debug("Process ~p (pid = ~p) exits (~p).~n", [Lid, Pid, Reason]),
+	    dispatcher(Info);
+	_Any ->
+	    log:log("Process ~p exits (~p).~n", [Lid, Reason]),
+	    Info
+    end;
 %% Receive message handler.
 handler('receive', Pid, Info, [Msg]) ->
     Lid = lid(Pid),
-    log("Process ~p receives message \"~p\".~n", [Lid, Msg]),
+    log:log("Process ~p receives message \"~p\".~n", [Lid, Msg]),
     dispatcher(Info);
 %% Send message handler.
 %% When a message is sent to a process, the receiving process has to be awaken
@@ -247,7 +281,8 @@ handler('receive', Pid, Info, [Msg]) ->
 handler(send, Pid, Info, [DstPid, Msg]) ->
     Lid = lid(Pid),
     DstLid = lid(DstPid),
-    log("Process ~p sends message \"~p\" to process ~p.~n", [Lid, Msg, DstLid]),
+    log:log("Process ~p sends message \"~p\" to process ~p.~n",
+	    [Lid, Msg, DstLid]),
     NewInfo = wakeup(DstLid, Info),
     dispatcher(NewInfo);
 %% Spawn message handler.
@@ -259,7 +294,7 @@ handler(spawn, ParentPid, Info, [ChildPid]) ->
     link(ChildPid),
     ParentLid = lid(ParentPid),
     ChildLid = lid_new(ParentLid, ChildPid),
-    log("Process ~p spawns process ~p.~n", [ParentLid, ChildLid]),
+    log:log("Process ~p spawns process ~p.~n", [ParentLid, ChildLid]),
     NewInfo = dispatcher(Info),
     dispatcher(NewInfo);
 %% Yield message handler.
@@ -275,6 +310,20 @@ handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
+%% Flush a process' mailbox.
+flush_mailbox() ->
+    receive
+	_Any -> flush_mailbox()
+    after 0 -> ok
+    end.
+
+%% Calculate and print elapsed time between T1 and T2.
+report_elapsed_time(T1, T2) ->
+    ElapsedTime = T2 - T1,
+    Mins = ElapsedTime div 60000,
+    Secs = (ElapsedTime rem 60000) / 1000,
+    io:format("Done in ~wm~.2fs\n", [Mins, Secs]).
+
 %% Signal process Lid to continue its execution.
 run(Lid) ->
     Pid = lid_to_pid(Lid),
@@ -282,10 +331,8 @@ run(Lid) ->
 
 %% Single run termination.
 stop(Reason) ->
-    log("-----------------------~n"),
-    log("Run terminated (~p).~n~n", [Reason]),
-    %% Debug: print unexplored state table.
-    ?debug("Unexplored: ~p~n~n", [ets:match(state, '$1')]),
+    log:log("-----------------------~n"),
+    log:log("Run terminated (~p).~n~n", [Reason]),
     case Reason of
         normal -> ?RET_NORMAL;
         _ -> ?RET_HEISENBUG
@@ -363,7 +410,6 @@ rep_send(Dest, Msg) ->
 -spec rep_spawn(fun()) -> pid().
 
 rep_spawn(Fun) ->
-    rep_yield(),
     Pid = spawn(fun() -> rep_yield(), Fun() end),
     sched ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     rep_yield(),
@@ -421,32 +467,6 @@ lid_stop() ->
 %% Return the erlang pid of the process Lid.
 lid_to_pid(Lid) ->
     ets:lookup_element(lid, Lid, 2).
-
-%%%----------------------------------------------------------------------
-%%% Log/Report interface
-%%%----------------------------------------------------------------------
-
-%% Print an internal error message.
-%% internal(String) ->
-%%     internal(String, []).
-
-internal(String, Args) ->
-    io:format("(Internal) " ++ String, Args),
-    halt(?RET_INTERNAL_ERROR).
-
-%% Add a message to log (for now just print to stdout).
-log(String) ->
-    io:format(String).
-
-log(String, Args) ->
-    io:format(String, Args).
-
-report_elapsed_time(T1, T2) ->
-    ElapsedTime = T2 - T1,
-    Mins = ElapsedTime div 60000,
-    Secs = (ElapsedTime rem 60000) / 1000,
-    io:format("Done in ~wm~.2fs\n", [Mins, Secs]).
-
 
 %%%----------------------------------------------------------------------
 %%% Set interface
@@ -619,19 +639,22 @@ test(2) ->
 	    error()
     end;
 test(3) ->
-    interleave(test_instr, test1, []),
+    analyze("./test/test.erl", test, test1, []),
     ok;
 test(4) ->
-    interleave(test_instr, test2, []),
+    analyze("./test/test.erl", test, test2, []),
     ok;
 test(5) ->
-    interleave(test_instr, test3, []),
+    analyze("./test/test.erl", test, test3, []),
     ok;
 test(6) ->
-    interleave(test_instr, test4, []),
+    analyze("./test/test.erl", test, test4, []),
     ok;
 test(7) ->
-    interleave(test_instr, test5, []),
+    analyze("./test/test.erl", test, test5, []),
+    ok;
+test(8) ->
+    analyze("./test/ring.erl", ring, start, [2, 1, hello]),
     ok.
 
 ok() -> io:format(" ok~n"), ok.

@@ -46,8 +46,7 @@ PULSE_MODULES = \
 PRA1_MODULES = \
 	sched \
 	instr \
-	test_instr \
-	test
+	log
 
 MODULES = \
 	$(GUI_MODULES) \
