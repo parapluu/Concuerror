@@ -5,6 +5,7 @@
 load(File) ->
     %% Instrument given source file.
     Transformed = instrument(File),
+    %% Compile instrumented code.
     case compile:forms(Transformed, [binary]) of
 	{ok, Module, Binary} ->
 	    code:load_binary(Module, File, Binary),
@@ -28,7 +29,7 @@ instrument(File) ->
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
 	    Abstract = erl_syntax:revert(Transformed),
-	    io:put_chars(erl_prettypr:format(Abstract)),
+	    %% io:put_chars(erl_prettypr:format(Abstract)),
 	    NewForms = erl_syntax:form_list_elements(Abstract),
 	    NewForms;
 	{error, Error} ->
@@ -113,14 +114,17 @@ instrument_receive(Tree) ->
 %%
 %% (temporarily Msg -> {Msg, [Actions]})
 transform_receive_clause(Clause) ->
-    OldPatterns = erl_syntax:clause_patterns(Clause),
+    [OldPattern] = erl_syntax:clause_patterns(Clause),
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
-    %% TODO: Patterns left the same for now.
-    NewPatterns = OldPatterns,
-    NewBody = [erl_syntax:tuple([erl_syntax:block_expr(OldPatterns),
+    %% TODO: Replace "SenderPid" with unique variable name.
+    PidVar = erl_syntax:variable("SenderPid"),
+    NewPattern = [erl_syntax:tuple([PidVar,
+				     OldPattern])],
+    NewBody = [erl_syntax:tuple([PidVar,
+				 OldPattern,
 				 erl_syntax:block_expr(OldBody)])],
-    erl_syntax:clause(NewPatterns, OldGuard, NewBody).
+    erl_syntax:clause(NewPattern, OldGuard, NewBody).
 
 %% Instrument a Pid ! Msg expression.
 %% Pid ! Msg is transformed into rep:send(Pid, Msg).
@@ -129,7 +133,8 @@ instrument_send(Tree) ->
     Function = erl_syntax:atom(rep_send),
     Pid = erl_syntax:infix_expr_left(Tree),
     Msg = erl_syntax:infix_expr_right(Tree),
-    Arguments = [Pid, Msg],
+    Sender = erl_syntax:application(erl_syntax:atom(self), []),
+    Arguments = [Pid, erl_syntax:tuple([Sender, Msg])],
     erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a spawn expression (only in the form spawn(fun() -> Body end
@@ -141,6 +146,3 @@ instrument_spawn(Tree) ->
     %% Fun expression arguments of the (before instrumentation) spawn call.
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
-
-test() ->
-    load("/home/alkis/Chess/pra1/test.erl").

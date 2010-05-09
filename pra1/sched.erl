@@ -11,7 +11,7 @@
 -define(RET_HEISENBUG, 2).
 
 %% Debug messages (TODO: define externally?).
-%%-define(DEBUG, true).
+%% -define(DEBUG, true).
 
 -ifdef(DEBUG).
 -define(debug(S_, L_), io:format("(Debug) " ++ S_, L_)).
@@ -72,8 +72,8 @@ analyze(Path, Mod, Fun, Args) ->
 		[] -> continue;
 		_Other -> log:log("Warnings: ~p~n", [Warnings])
 	    end,
-	    log:log("Module ~p loaded.~n", [Module]),
-	    log:log("Instrumentation done.~n"),
+	    log:log("Module \"~p\" loaded.~n", [Module]),
+	    log:log("Instrumentation done.~n~n"),
 	    interleave(Mod, Fun, Args);
 	{error, Errors, Warnings} ->
 	    case Warnings of
@@ -153,8 +153,8 @@ dispatcher(Info) ->
     receive
 	#sched{msg = block, pid = Pid} ->
 	    handler(block, Pid, Info, []);
-	#sched{msg = 'receive', pid = Pid, misc = [Msg]} ->
-	    handler('receive', Pid, Info, [Msg]);
+	#sched{msg = 'receive', pid = Pid, misc = [From, Msg]} ->
+	    handler('receive', Pid, Info, [From, Msg]);
 	#sched{msg = send, pid = Pid, misc = [Dest, Msg]} ->
 	    handler(send, Pid, Info, [Dest, Msg]);
 	#sched{msg = spawn, pid = Pid, misc = [ChildPid]} ->
@@ -269,9 +269,11 @@ handler(exit, Pid, Info, [Reason]) ->
 	    Info
     end;
 %% Receive message handler.
-handler('receive', Pid, Info, [Msg]) ->
+handler('receive', Pid, Info, [From, Msg]) ->
     Lid = lid(Pid),
-    log:log("Process ~p receives message \"~p\".~n", [Lid, Msg]),
+    SenderLid = lid(From),
+    log:log("Process ~p receives message \"~p\" from process ~p.~n",
+	    [Lid, Msg, SenderLid]),
     dispatcher(Info);
 %% Send message handler.
 %% When a message is sent to a process, the receiving process has to be awaken
@@ -387,8 +389,9 @@ rep_yield() ->
 -spec rep_receive(fun((fun()) -> any())) -> any().
 
 rep_receive(Fun) ->
-    {Msg, Result} = rep_receive_aux(Fun),
-    sched ! #sched{msg = 'receive', pid = self(), misc = [Msg]},
+    %% See instrumentation for more details.
+    {From, Msg, Result} = rep_receive_aux(Fun),
+    sched ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
     rep_yield(),
     Result.
 
@@ -400,8 +403,9 @@ rep_receive_aux(Fun) ->
 -spec rep_send(dest(), any()) -> any().
 
 rep_send(Dest, Msg) ->
-    Msg = Dest ! Msg,
-    sched ! #sched{msg = send, pid = self(), misc = [Dest, Msg]},
+    %% See instrumentation for more details.
+    {_Self, RealMsg} = Dest ! Msg,
+    sched ! #sched{msg = send, pid = self(), misc = [Dest, RealMsg]},
     rep_yield(),
     Msg.
 
