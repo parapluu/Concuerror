@@ -1,6 +1,8 @@
 TODO
 =====
-* receive order problem!
+* receive order problem (η rep_receive επιστρέφει μετά την αποτίμηση των
+  εκφράσεων στο σώμα του clause που έκανε match, συνεπώς το receive φαίνεται
+  σαν να γίνεται μετά από οτιδήποτε βρίσκεται μέσα στις εκφράσεις αυτές)!
 * replace anonymous variables
 * fix hardcode variable names (Aux, SenderPid)
 * mod:fun/number_of_args εκτός από lid
