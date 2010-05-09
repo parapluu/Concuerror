@@ -11,7 +11,7 @@
 -define(RET_HEISENBUG, 2).
 
 %% Debug messages (TODO: define externally?).
--define(DEBUG, true).
+%%-define(DEBUG, true).
 
 -ifdef(DEBUG).
 -define(debug(S_, L_), io:format("(Debug) " ++ S_, L_)).
@@ -95,9 +95,8 @@ interleave(Mod, Fun, Args) ->
     process_flag(trap_exit, true),
     %% Start state service.
     state_start(),
-    %% Insert first state to replay, i.e. "run first process first".
-    %% XXX: Breaks state and lid abstraction.
-    ets:insert(state, {["P1"]}),
+    %% Insert empty replay state for the first run.
+    state_insert(state_init()),
     {T1, _} = statistics(wall_clock),
     inter_loop(Mod, Fun, Args, 1),
     {T2, _} = statistics(wall_clock),
@@ -239,11 +238,12 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info,
 %% of them into the `states` table.
 %% Returns the process to be run next.
 search(#info{active = Active, state = State} = Info) ->
+    ?debug("(Search) active set: ~p~n", [sets:to_list(Active)]),
     %% Remove a process from the `actives` set and run it.
     {Next, NewActive} = set_pop(Active),
     %% Store all other possible successor states in `states` table for later
     %% exploration.
-    state_store_succ(Info#info{active = NewActive, state = State}),
+    state_insert_succ(Info#info{active = NewActive, state = State}),
     Next.
 
 %% Block message handler.
@@ -333,6 +333,7 @@ run(Lid) ->
 stop(Reason) ->
     log:log("-----------------------~n"),
     log:log("Run terminated (~p).~n~n", [Reason]),
+    ?debug("Unexplored: ~p~n~n", [ets:match(state, '$1')]),
     case Reason of
         normal -> ?RET_NORMAL;
         _ -> ?RET_HEISENBUG
@@ -410,6 +411,8 @@ rep_send(Dest, Msg) ->
 -spec rep_spawn(fun()) -> pid().
 
 rep_spawn(Fun) ->
+    %% XXX: Possible race between `yield` message of child and
+    %%      `spawn` message of parent.
     Pid = spawn(fun() -> rep_yield(), Fun() end),
     sched ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     rep_yield(),
@@ -515,6 +518,19 @@ state_get_next(State, Next) ->
 state_init() ->
     [].
 
+%% Add a state to the `state` table.
+state_insert(State) ->
+    ets:insert(state, {State}).
+
+%% Create all possible next states and add them to the `state` table.
+state_insert_succ(#info{active = Active, state = State}) ->
+    state_insert_succ_aux(State, set_list(Active)).
+
+state_insert_succ_aux(_State, []) -> ok;
+state_insert_succ_aux(State, [Proc|Procs]) ->
+    ets:insert(state, {[Proc|State]}),
+    state_insert_succ_aux(State, Procs).
+
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
 state_pop() ->
@@ -534,15 +550,6 @@ state_start() ->
 %% Clean up state table.
 state_stop() ->
     ets:delete(state).
-
-%% Create all possible next states and add them to the `state` table.
-state_store_succ(#info{active = Active, state = State}) ->
-    state_store_succ_aux(State, set_list(Active)).
-
-state_store_succ_aux(_State, []) -> ok;
-state_store_succ_aux(State, [Proc|Procs]) ->
-    ets:insert(state, {[Proc|State]}),
-    state_store_succ_aux(State, Procs).
 
 %%%----------------------------------------------------------------------
 %%% Unit tests (to be moved)
