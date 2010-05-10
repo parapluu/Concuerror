@@ -1,6 +1,7 @@
 -module(sched).
 -export([interleave/3, test/0, test/1]).
--export([rep_receive/1, rep_send/2, rep_spawn/1, rep_yield/0]).
+-export([rep_receive/1, rep_receive_notify/2,
+	 rep_send/2, rep_spawn/1, rep_yield/0]).
 
 %%%----------------------------------------------------------------------
 %%% Definitions
@@ -390,13 +391,15 @@ rep_yield() ->
 
 rep_receive(Fun) ->
     %% See instrumentation for more details.
-    {From, Msg, Result} = rep_receive_aux(Fun),
-    sched ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
+    Result = rep_receive_aux(Fun),
     rep_yield(),
     Result.
 
 rep_receive_aux(Fun) ->
     Fun(fun() -> block(), rep_receive_aux(Fun) end).
+
+rep_receive_notify(From, Msg) ->
+    sched ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]}.
 
 %% Replacement for send/2 (and the equivalent ! operator).
 %% Just yield after the send operation.

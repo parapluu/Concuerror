@@ -13,7 +13,7 @@ spawn_next(First, Counter, TTL, Msg) ->
 			
 loop(Next) ->
     receive
-	{0, _Msg} -> Next ! stop;
+	{0, _} -> Next ! stop;
 	{TTL, Msg} ->
 	    Next ! {TTL - 1, Msg},
 	    loop(Next);

@@ -3,8 +3,12 @@
 
 %% TODO: Maybe use compile with `parse_transform` option instead.
 load(File) ->
+    %% A table for holding used variable names.
+    ets:new(used, [named_table, private]),
     %% Instrument given source file.
     Transformed = instrument(File),
+    %% Delete `used` table.
+    ets:delete(used),
     %% Compile instrumented code.
     case compile:forms(Transformed, [binary]) of
 	{ok, Module, Binary} ->
@@ -29,7 +33,7 @@ instrument(File) ->
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
 	    Abstract = erl_syntax:revert(Transformed),
-	    %% io:put_chars(erl_prettypr:format(Abstract)),
+	    io:put_chars(erl_prettypr:format(Abstract)),
 	    NewForms = erl_syntax:form_list_elements(Abstract),
 	    NewForms;
 	{error, Error} ->
@@ -47,10 +51,15 @@ instrument_toplevel(Tree) ->
 
 %% Instrument a function.
 instrument_function(Tree) ->
-    _Vars = erl_syntax_lib:variables(Tree),
-    %% TODO: Add anonymous variable replacement.
+    %% Delete previous entry in `used` table (if any).
+    ets:delete_all_objects(used),
+    %% A set of all variables used in the function.
+    Used = erl_syntax_lib:variables(Tree),
+    %% Insert the used set into `used` table.
+    ets:insert(used, {used, Used}),
     instrument_subtrees(Tree).
 
+%% Instrument all subtrees of Tree.
 instrument_subtrees(Tree) ->
     MapFun = fun(T) -> instrument_term(T) end,
     erl_syntax_lib:map_subtrees(MapFun, Tree).
@@ -64,12 +73,12 @@ instrument_term(Tree) ->
 		atom ->
 		    Function = erl_syntax:atom_value(Qualifier),
 		    case Function of
-			spawn -> instrument_spawn(instrument_subtrees(Tree));
+			spawn ->
+			    instrument_spawn(instrument_subtrees(Tree));
 			_Other -> Tree
 		    end;
 		_Other -> Tree
 	    end;
-	clause -> instrument_subtrees(Tree);
 	infix_expr ->
 	    Operator = erl_syntax:infix_expr_operator(Tree),
 	    case erl_syntax:operator_name(Operator) of
@@ -78,6 +87,12 @@ instrument_term(Tree) ->
 	    end;
 	receive_expr ->
 	    instrument_receive(instrument_subtrees(Tree));
+	%% Replace every underscore with a new (underscore-prefixed) variable.
+	underscore ->
+	    [{used, Used}] = ets:lookup(used, used),
+	    Fresh = erl_syntax_lib:new_variable_name(Used),
+	    String = "_" ++ atom_to_list(Fresh),
+	    erl_syntax:variable(String);
 	_Other -> instrument_subtrees(Tree)
     end.
 
@@ -87,7 +102,6 @@ instrument_receive(Tree) ->
     Function = erl_syntax:atom(rep_receive),
     %% Get old receive expression's clauses.
     OldClauses = erl_syntax:receive_expr_clauses(Tree),
-    %% TODO: Tuplify (sic) old clauses.
     NewClauses = lists:map(fun(Clause) -> transform_receive_clause(Clause) end,
 			   OldClauses),
     %% `receive ... after` not supported for now.
@@ -97,8 +111,10 @@ instrument_receive(Tree) ->
     end,
     %% Create new receive expression adding the `after 0` part.
     Timeout = erl_syntax:integer(0),
-    %% TODO: Replace "Aux" with unique variable name.
-    FunVar = erl_syntax:variable("Aux"),
+    %% Create new variable to use as 'Aux'.
+    [{used, Used}] = ets:lookup(used, used),
+    Fresh = erl_syntax_lib:new_variable_name(Used),
+    FunVar = erl_syntax:variable(Fresh),
     Action = erl_syntax:application(FunVar, []),
     NewRecv = erl_syntax:receive_expr(NewClauses, Timeout, [Action]),
     %% Create a new fun to be the argument of rep_receive.
@@ -117,13 +133,17 @@ transform_receive_clause(Clause) ->
     [OldPattern] = erl_syntax:clause_patterns(Clause),
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
-    %% TODO: Replace "SenderPid" with unique variable name.
-    PidVar = erl_syntax:variable("SenderPid"),
+    %% Create new variable to use as 'SenderPid'.
+    [{used, Used}] = ets:lookup(used, used),
+    Fresh = erl_syntax_lib:new_variable_name(Used),
+    PidVar = erl_syntax:variable(Fresh),
     NewPattern = [erl_syntax:tuple([PidVar,
 				     OldPattern])],
-    NewBody = [erl_syntax:tuple([PidVar,
-				 OldPattern,
-				 erl_syntax:block_expr(OldBody)])],
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_receive_notify),
+    Arguments = [PidVar, OldPattern],
+    Notify = erl_syntax:application(Module, Function, Arguments),
+    NewBody = [Notify | OldBody],
     erl_syntax:clause(NewPattern, OldGuard, NewBody).
 
 %% Instrument a Pid ! Msg expression.
