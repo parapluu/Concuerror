@@ -65,24 +65,13 @@
 %% Instrument file Path and produce all interleavings of (Mod, Fun, Args).
 -spec analyze(string(), atom(), atom(), [any()]) -> 'true'.
 
-analyze(Path, Mod, Fun, Args) ->
-    log:log("Instrumenting file ~p~n", [Path]),
-    case instr:load(Path) of
-	{ok, Module, Warnings} ->
-	    case Warnings of
-		[] -> continue;
-		_Other -> log:log("Warnings: ~p~n", [Warnings])
-	    end,
-	    log:log("Module \"~p\" loaded.~n", [Module]),
-	    log:log("Instrumentation done.~n~n"),
+analyze(File, Mod, Fun, Args) ->
+    case instr:instrument_and_load(File) of
+	ok ->
+	    log:log("~n"),
 	    interleave(Mod, Fun, Args);
-	{error, Errors, Warnings} ->
-	    case Warnings of
-		[] -> continue;
-		_Other -> log:log("Warnings: ~p~n", [Warnings])
-	    end,
-	    log:log("Errors: ~p~n", [Errors]),
-	    log:log("Instrumentation failed.~n")
+	error ->
+	    error
     end.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
@@ -191,7 +180,7 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
 	    Next = search(Info),
 	    %% Remove process Next from the `active` set and run it.
 	    NewActive = set_remove(Active, Next),
-	    ?debug("Running process ~p.~n", [Next]),
+	    ?debug("Running process ~s.~n", [Next]),
 	    run(Next),
 	    %% Create new state.
 	    NewState = state_get_next(State, Next),
@@ -221,7 +210,7 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info,
 	false ->
 	    %% Remove process Next from the `active` set and run it.
 	    NewActive = set_remove(Active, Next),
-	    ?debug("Running process ~p.~n", [Next]),
+	    ?debug("Running process ~s.~n", [Next]),
 	    run(Next),
 	    %% Create new state.
 	    NewState = state_get_next(State, Next),
@@ -253,7 +242,7 @@ search(#info{active = Active, state = State} = Info) ->
 handler(block, Pid, #info{blocked = Blocked} = Info, _Opt) ->
     Lid = lid(Pid),
     NewBlocked = set_add(Blocked, Lid),
-    log:log("Process ~p blocks.~n", [Lid]),
+    log:log("Process ~s blocks.~n", [Lid]),
     Info#info{blocked = NewBlocked};
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
@@ -263,17 +252,17 @@ handler(exit, Pid, Info, [Reason]) ->
     Lid = lid(Pid),
     case Lid of
 	not_found ->
-	    ?debug("Process ~p (pid = ~p) exits (~p).~n", [Lid, Pid, Reason]),
+	    ?debug("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Reason]),
 	    dispatcher(Info);
 	_Any ->
-	    log:log("Process ~p exits (~p).~n", [Lid, Reason]),
+	    log:log("Process ~s exits (~p).~n", [Lid, Reason]),
 	    Info
     end;
 %% Receive message handler.
 handler('receive', Pid, Info, [From, Msg]) ->
     Lid = lid(Pid),
     SenderLid = lid(From),
-    log:log("Process ~p receives message \"~p\" from process ~p.~n",
+    log:log("Process ~s receives message `~p` from process ~s.~n",
 	    [Lid, Msg, SenderLid]),
     dispatcher(Info);
 %% Send message handler.
@@ -284,7 +273,7 @@ handler('receive', Pid, Info, [From, Msg]) ->
 handler(send, Pid, Info, [DstPid, Msg]) ->
     Lid = lid(Pid),
     DstLid = lid(DstPid),
-    log:log("Process ~p sends message \"~p\" to process ~p.~n",
+    log:log("Process ~s sends message `~p` to process ~s.~n",
 	    [Lid, Msg, DstLid]),
     NewInfo = wakeup(DstLid, Info),
     dispatcher(NewInfo);
@@ -297,7 +286,7 @@ handler(spawn, ParentPid, Info, [ChildPid]) ->
     link(ChildPid),
     ParentLid = lid(ParentPid),
     ChildLid = lid_new(ParentLid, ChildPid),
-    log:log("Process ~p spawns process ~p.~n", [ParentLid, ChildLid]),
+    log:log("Process ~s spawns process ~s.~n", [ParentLid, ChildLid]),
     NewInfo = dispatcher(Info),
     dispatcher(NewInfo);
 %% Yield message handler.
@@ -305,7 +294,7 @@ handler(spawn, ParentPid, Info, [ChildPid]) ->
 %% remains in the active set.
 handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
     Lid = lid(Pid),
-    ?debug("Process ~p yields.~n", [Lid]),
+    ?debug("Process ~s yields.~n", [Lid]),
     NewActive = set_add(Active, Lid),
     Info#info{active = NewActive}.
 
@@ -398,8 +387,13 @@ rep_receive(Fun) ->
 rep_receive_aux(Fun) ->
     Fun(fun() -> block(), rep_receive_aux(Fun) end).
 
+%% Called first thing after a message has been received, to inform the scheduler
+%% about the message received and the sender.
+-spec rep_receive_notify(pid(), any()) -> 'ok'.
+
 rep_receive_notify(From, Msg) ->
-    sched ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]}.
+    sched ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
+    ok.
 
 %% Replacement for send/2 (and the equivalent ! operator).
 %% Just yield after the send operation.

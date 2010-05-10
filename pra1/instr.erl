@@ -1,26 +1,38 @@
 -module(instr).
 -compile(export_all).
 
-%% TODO: Maybe use compile with `parse_transform` option instead.
-load(File) ->
+%% Instrument
+instrument_and_load(File) ->
     %% A table for holding used variable names.
     ets:new(used, [named_table, private]),
     %% Instrument given source file.
-    Transformed = instrument(File),
-    %% Delete `used` table.
-    ets:delete(used),
-    %% Compile instrumented code.
-    case compile:forms(Transformed, [binary]) of
-	{ok, Module, Binary} ->
-	    code:load_binary(Module, File, Binary),
-	    {ok, Module, []};
-	{ok, Module, Binary, Warnings} ->
-	    code:load_binary(Module, File, Binary),
-	    {ok, Module, Warnings};
-	{error, Errors, Warnings} ->
-	    {error, Errors, Warnings};
-	_Any ->
-	    {error, [unknown], []}
+    log:log("Instrumenting file `~s`... ", [File]),
+    case instrument(File) of
+	{ok, NewForms} ->
+	    log:log("ok~n"),
+	    %% Delete `used` table.
+	    ets:delete(used),
+	    %% Compile instrumented code.
+	    CompOptions = [binary, verbose, report_errors, report_warnings],
+	    case compile:forms(NewForms, CompOptions) of
+		{ok, Module, Binary} ->
+		    log:log("Loading module `~p`... ", [Module]),
+		    case code:load_binary(Module, File, Binary) of
+			{module, Module} ->
+			    log:log("ok~n"),
+			    ok;
+			{error, Error} ->
+			    log:log("error~n~p~n", [Error]),
+			    error
+		    end;
+		error ->
+		    error
+	    end;
+	{error, Error} ->
+	    log:log("error~n~p~n", [Error]),
+	    %% Delete `used` table.
+	    ets:delete(used),
+	    error
     end.
 
 instrument(File) ->
@@ -33,11 +45,10 @@ instrument(File) ->
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
 	    Abstract = erl_syntax:revert(Transformed),
-	    io:put_chars(erl_prettypr:format(Abstract)),
+	    %% io:put_chars(erl_prettypr:format(Abstract)),
 	    NewForms = erl_syntax:form_list_elements(Abstract),
-	    NewForms;
-	{error, Error} ->
-	    log:internal("parse_file error: ~p~n", [Error])
+	    {ok, NewForms};
+	{error, Error} -> {error, Error}
     end.
 
 %% Instrument a "top-level" element.
