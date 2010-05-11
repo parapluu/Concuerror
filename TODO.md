@@ -5,5 +5,6 @@ TODO
 * και άλλο ένα &lt;TODO> στο exit, στις περιπτώσεις που το
   αποτέλεσμα ενός process είναι προφανές, όπως για παράδειγμα
   όταν τελειώνει με receive που ξέρουμε τι επιστρέφει
+* replace registered names with "more unique" ones
 * fix rep_spawn race
 * test, test, test :)
