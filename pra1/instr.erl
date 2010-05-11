@@ -1,7 +1,9 @@
 -module(instr).
--compile(export_all).
+-export([instrument_and_load/1]).
 
-%% Instrument
+-spec instrument_and_load(string()) -> 'ok' | 'error'.
+
+%% Instrument and load a file.
 instrument_and_load(File) ->
     %% A table for holding used variable names.
     ets:new(used, [named_table, private]),
