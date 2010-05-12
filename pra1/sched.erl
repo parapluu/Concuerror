@@ -41,6 +41,9 @@
 -type lid()  :: string().
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
+-type interleave_ret() :: ?RET_NORMAL | ?RET_HEISENBUG.
+-type analysis_ret()   :: ?RET_INSTR_ERROR | interleave_ret().
+
 %%%----------------------------------------------------------------------
 %%% Records
 %%%----------------------------------------------------------------------
@@ -70,16 +73,14 @@
 %% misc:    A list of optional arguments, depending on the the message type.
 -record(sched, {msg  :: atom(),
                 pid  :: pid(),
-                misc :: [_]}).
+                misc :: [term()]}).
 
 %%%----------------------------------------------------------------------
 %%% User interface
 %%%----------------------------------------------------------------------
 
 %% Instrument file Path and produce all interleavings of (Mod, Fun, Args).
--spec analyze(string(), atom(), atom(), [any()]) -> ?RET_NORMAL |
-						    ?RET_HEISENBUG |
-						    ?RET_INSTR_ERROR.
+-spec analyze(string(), module(), atom(), [term()]) -> analysis_ret().
 
 analyze(File, Mod, Fun, Args) ->
     case instr:instrument_and_load(File) of
@@ -91,7 +92,7 @@ analyze(File, Mod, Fun, Args) ->
     end.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
--spec interleave(atom(), atom(), [any()]) -> ?RET_NORMAL | ?RET_HEISENBUG.
+-spec interleave(module(), atom(), [term()]) -> interleave_ret().
 
 interleave(Mod, Fun, Args) ->
     register(sched, self()),
@@ -393,7 +394,7 @@ rep_yield() ->
 %% When a new message arrives the process is woken up (see `send` handler).
 %% The check mailbox - block - wakeup loop is repeated until a matching message
 %% arrives.
--spec rep_receive(fun((fun()) -> any())) -> any().
+-spec rep_receive(fun((fun()) -> term())) -> term().
 
 rep_receive(Fun) ->
     %% See instrumentation for more details.
@@ -406,7 +407,7 @@ rep_receive_aux(Fun) ->
 
 %% Called first thing after a message has been received, to inform the scheduler
 %% about the message received and the sender.
--spec rep_receive_notify(pid(), any()) -> 'ok'.
+-spec rep_receive_notify(pid(), term()) -> 'ok'.
 
 rep_receive_notify(From, Msg) ->
     sched ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
@@ -414,7 +415,7 @@ rep_receive_notify(From, Msg) ->
 
 %% Replacement for send/2 (and the equivalent ! operator).
 %% Just yield after the send operation.
--spec rep_send(dest(), any()) -> any().
+-spec rep_send(dest(), term()) -> term().
 
 rep_send(Dest, Msg) ->
     %% See instrumentation for more details.
@@ -573,7 +574,7 @@ state_stop() ->
 %%% Unit tests
 %%%----------------------------------------------------------------------
 
--spec set_test_() -> any().
+-spec set_test_() -> term().
 
 set_test_() ->
      [{"Empty",
@@ -596,7 +597,7 @@ set_test_() ->
 		 ?assertEqual(true, set_is_empty(Set3))
 	     end)}].
 
--spec lid_test_() -> any().
+-spec lid_test_() -> term().
 
 lid_test_() ->
      [{"Lid",
@@ -625,7 +626,7 @@ lid_test_() ->
 		  ?assertEqual(L4, 'not_found')
 	      end)}].
 
--spec interleave_test_() -> any().
+-spec interleave_test_() -> term().
 
 interleave_test_() ->
     [{"test1",

@@ -4,14 +4,14 @@
 %% TODO: Originally defined in sched.erl.
 -define(RET_INTERNAL_ERROR, 1).
 
--spec internal(string()) -> none().
+-spec internal(string()) -> no_return().
 
 %% Print an internal error message.
 internal(String) ->
     io:format("(Internal) " ++ String),
     halt(?RET_INTERNAL_ERROR).
 
--spec internal(string(), [any()]) -> none().
+-spec internal(string(), [term()]) -> no_return().
 
 internal(String, Args) ->
     io:format("(Internal) " ++ String, Args),
@@ -23,7 +23,7 @@ internal(String, Args) ->
 log(String) ->
     io:format(String).
 
--spec log(string(), [any()]) -> 'ok'.
+-spec log(string(), [term()]) -> 'ok'.
 
 log(String, Args) ->
     io:format(String, Args).
