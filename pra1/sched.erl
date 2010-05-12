@@ -23,6 +23,7 @@
 -define(RET_NORMAL, 0).
 -define(RET_INTERNAL_ERROR, 1).
 -define(RET_HEISENBUG, 2).
+-define(RET_INSTR_ERROR, 3).
 
 %% Debug messages (TODO: define externally?).
 %% -define(DEBUG, true).
@@ -76,7 +77,9 @@
 %%%----------------------------------------------------------------------
 
 %% Instrument file Path and produce all interleavings of (Mod, Fun, Args).
--spec analyze(string(), atom(), atom(), [any()]) -> 'true'.
+-spec analyze(string(), atom(), atom(), [any()]) -> ?RET_NORMAL |
+						    ?RET_HEISENBUG |
+						    ?RET_INSTR_ERROR.
 
 analyze(File, Mod, Fun, Args) ->
     case instr:instrument_and_load(File) of
@@ -84,11 +87,11 @@ analyze(File, Mod, Fun, Args) ->
 	    log:log("~n"),
 	    interleave(Mod, Fun, Args);
 	error ->
-	    error
+	    ?RET_INSTR_ERROR
     end.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
--spec interleave(atom(), atom(), [any()]) -> 'true'.
+-spec interleave(atom(), atom(), [any()]) -> ?RET_NORMAL | ?RET_HEISENBUG.
 
 interleave(Mod, Fun, Args) ->
     register(sched, self()),
@@ -574,12 +577,12 @@ state_stop() ->
 
 set_test_() ->
      [{"Empty",
-       ?_assert(set_is_empty(set_new()))},
+       ?_assertEqual(true, set_is_empty(set_new()))},
       {"Add/remove one",
        ?_test(begin
 		  {Result, NewSet} = set_pop(set_add(set_new(), 42)),
 		  ?assertEqual(42, Result),
-		  ?assert(set_is_empty(NewSet))
+		  ?assertEqual(true, set_is_empty(NewSet))
 	      end)},
       {"Add/remove multiple",
       ?_test(begin
@@ -590,7 +593,7 @@ set_test_() ->
 		 {Val3, Set3} = set_pop(Set2),
 		 List2 = lists:sort([Val1, Val2, Val3]),
 		 ?assertEqual(List1, List2),
-		 ?assert(set_is_empty(Set3))
+		 ?assertEqual(true, set_is_empty(Set3))
 	     end)}].
 
 -spec lid_test_() -> any().
