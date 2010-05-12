@@ -88,7 +88,7 @@ pulse_gui.sh:
 test.sh:
 	printf "#%c/bin/bash\n \
 	      erl -noshell -pa $(EBIN) \
-	      -s sched test \044\061 -s init stop" ! \
+	      -s sched test -s init stop" ! \
 	      > test.sh
 	chmod +x test.sh
 

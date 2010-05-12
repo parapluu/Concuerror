@@ -1,7 +1,20 @@
 -module(sched).
--export([interleave/3, test/0, test/1]).
+
+%% UI related exports.
+-export([analyze/4, interleave/3]).
+
+%% Instrumentation related exports.
 -export([rep_receive/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_yield/0]).
+
+%%%----------------------------------------------------------------------
+%%% Eunit related
+%%%----------------------------------------------------------------------
+
+-include_lib("eunit/include/eunit.hrl").
+
+%% Spec for auto-generated test/0 function (eunit).
+-spec test() -> 'ok' | {error, term()}.
 
 %%%----------------------------------------------------------------------
 %%% Definitions
@@ -88,16 +101,17 @@ interleave(Mod, Fun, Args) ->
     %% Insert empty replay state for the first run.
     state_insert(state_init()),
     {T1, _} = statistics(wall_clock),
-    inter_loop(Mod, Fun, Args, 1),
+    Result = inter_loop(Mod, Fun, Args, 1),
     {T2, _} = statistics(wall_clock),
     report_elapsed_time(T1, T2),
     state_stop(),
-    unregister(sched).
+    unregister(sched),
+    Result.
 
 inter_loop(Mod, Fun, Args, RunCounter) ->
     %% Lookup state to replay.
     case state_pop() of
-        no_state -> ok;
+        no_state -> ?RET_NORMAL;
         ReplayState ->
             log:log("Running interleaving ~p~n", [RunCounter]),
             log:log("----------------------~n"),
@@ -129,7 +143,7 @@ inter_loop(Mod, Fun, Args, RunCounter) ->
             case Ret of
                 ?RET_NORMAL ->
                     inter_loop(Mod, Fun, Args, RunCounter + 1);
-                ?RET_HEISENBUG -> ok
+                ?RET_HEISENBUG -> ?RET_HEISENBUG
             end
     end.
 
@@ -553,117 +567,76 @@ state_stop() ->
     ets:delete(state).
 
 %%%----------------------------------------------------------------------
-%%% Unit tests (to be moved)
+%%% Unit tests
 %%%----------------------------------------------------------------------
 
-test_all(I, Max, Passed) when I > Max ->
-    io:format("Unit test complete.~n"),
-    io:format("Passed ~p out of ~p.~n", [Passed, Max]),
-    ok;
-test_all(I, Max, Passed) ->
-    io:format("Running test ~p of ~p:~n", [I, Max]),
-    io:format("---------------------~n"),
-    try
-	test(I),
-	io:format("Passed~n~n"),
-	test_all(I + 1, Max, Passed + 1)
-    catch
-	Error:Reason -> io:format("Failed (~p, ~p)~n~n", [Error, Reason]),
-			test_all(I + 1, Max, Passed)
-    end.
+-spec set_test_() -> any().
 
-%% Run all unit tests.
--spec test() -> 'ok'.
+set_test_() ->
+     [{"Empty",
+       ?_assert(set_is_empty(set_new()))},
+      {"Add/remove one",
+       ?_test(begin
+		  {Result, NewSet} = set_pop(set_add(set_new(), 42)),
+		  ?assertEqual(42, Result),
+		  ?assert(set_is_empty(NewSet))
+	      end)},
+      {"Add/remove multiple",
+      ?_test(begin
+		 Set = set_add(set_add(set_add(set_new(), "42"), "P4.2"), "P42"),
+		 List1 = lists:sort(set_list(Set)),
+		 {Val1, Set1} = set_pop(Set),
+		 {Val2, Set2} = set_pop(Set1),
+		 {Val3, Set3} = set_pop(Set2),
+		 List2 = lists:sort([Val1, Val2, Val3]),
+		 ?assertEqual(List1, List2),
+		 ?assert(set_is_empty(Set3))
+	     end)}].
 
-test() ->
-    io:format("Starting unit test.~n~n"),
-    test_all(1, 7, 0).
+-spec lid_test_() -> any().
 
-%% Run a specific unit test.
--spec test(integer() | atom() | [atom()]) -> 'ok'.
+lid_test_() ->
+     [{"Lid",
+       ?_test(begin
+		  lid_start(),
+		  Pid1 = c:pid(0, 2, 3),
+		  Lid1 = lid_new(Pid1),
+		  Pid2 = c:pid(0, 2, 4),
+		  Lid2 = lid_new(Lid1, Pid2),
+		  Pid3 = c:pid(0, 2, 5),
+		  Lid3 = lid_new(Lid1, Pid3),
+		  P1 = lid_to_pid(Lid1),
+		  L1 = lid(Pid1),
+		  P2 = lid_to_pid(Lid2),
+		  L2 = lid(Pid2),
+		  P3 = lid_to_pid(Lid3),
+		  L3 = lid(Pid3),
+		  L4 = lid(c:pid(0, 2, 6)),
+		  lid_stop(),
+		  ?assertEqual(P1, Pid1),
+		  ?assertEqual(P2, Pid2),
+		  ?assertEqual(P3, Pid3),
+		  ?assertEqual(L1, Lid1),
+		  ?assertEqual(L2, Lid2),
+		  ?assertEqual(L3, Lid3),
+		  ?assertEqual(L4, 'not_found')
+	      end)}].
 
-test([X]) ->
-    test(X);
-test(X) when is_atom(X) ->
-    test(list_to_integer(atom_to_list(X)));
-test(1) ->
-    io:format("Checking set interface:~n"),
-    Set1 = set_new(),
-    io:format("Initial set empty..."),
-    case set_is_empty(Set1) of
-	true -> ok();
-	false -> error()
-    end,
-    io:format("Set add - pop..."),
-    Set2 = set_add(Set1, "42"),
-    case set_pop(Set2) of
-	{"42", Set3} ->
-	    case set_is_empty(Set3) of
-		true -> ok();
-		_Any -> error()
-	    end;
-	Set3 -> error()
-    end,
-    io:format("Set add multiple - to_list..."),
-    Set4 = set_add(Set3, "42"),
-    Set5 = set_add(Set4, "P4.2"),
-    Set6 = set_add(Set5, "P42"),
-    List = set_list(Set6),
-    {Val1, Set7} = set_pop(Set6),
-    {Val2, Set8} = set_pop(Set7),
-    {Val3, Set9} = set_pop(Set8),
-    SList1 = lists:sort(List),
-    SList2 = lists:sort([Val1, Val2, Val3]),
-    case SList1 =:= SList2 of
-	true ->
-	    case set_list(Set9) =:= [] of
-		true -> ok();
-		false -> error()
-	    end;
-	false -> error()
-    end;
-test(2) ->
-    io:format("Checking lid interface..."),
-    lid_start(),
-    Pid1 = c:pid(0, 2, 3),
-    Lid1 = lid_new(Pid1),
-    Pid2 = c:pid(0, 2, 4),
-    Lid2 = lid_new(Lid1, Pid2),
-    Pid3 = c:pid(0, 2, 5),
-    Lid3 = lid_new(Lid1, Pid3),
-    P1 = lid_to_pid(Lid1),
-    L1 = lid(Pid1),
-    P2 = lid_to_pid(Lid2),
-    L2 = lid(Pid2),
-    P3 = lid_to_pid(Lid3),
-    L3 = lid(Pid3),
-    L4 = lid(c:pid(0, 2, 6)),
-    lid_stop(),
-    if P1 =:= Pid1, P2 =:= Pid2, P3 =:= Pid3,
-       L1 =:= Lid1, L2 =:= Lid2, L3 =:= Lid3,
-       L4 =:= not_found ->
-	    ok();
-       true ->
-	    error()
-    end;
-test(3) ->
-    analyze("./test/test.erl", test, test1, []),
-    ok;
-test(4) ->
-    analyze("./test/test.erl", test, test2, []),
-    ok;
-test(5) ->
-    analyze("./test/test.erl", test, test3, []),
-    ok;
-test(6) ->
-    analyze("./test/test.erl", test, test4, []),
-    ok;
-test(7) ->
-    analyze("./test/test.erl", test, test5, []),
-    ok;
-test(8) ->
-    analyze("./test/ring.erl", ring, start, [2, 1, hello]),
-    ok.
+-spec interleave_test_() -> any().
 
-ok() -> io:format(" ok~n"), ok.
-error() -> io:format(" error~n"), throw(error).
+interleave_test_() ->
+    [{"test1",
+      ?_assertEqual(?RET_NORMAL,
+		    analyze("./test/test.erl", test, test1, []))},
+     {"test2",
+      ?_assertEqual(?RET_NORMAL,
+		    analyze("./test/test.erl", test, test2, []))},
+     {"test3",
+      ?_assertEqual(?RET_NORMAL,
+		    analyze("./test/test.erl", test, test3, []))},
+     {"test4",
+      ?_assertEqual(?RET_HEISENBUG,
+		    analyze("./test/test.erl", test, test4, []))},
+     {"test5",
+      ?_assertEqual(?RET_HEISENBUG,
+		    analyze("./test/test.erl", test, test5, []))}].
