@@ -115,8 +115,7 @@ instrument_receive(Tree) ->
     Function = erl_syntax:atom(rep_receive),
     %% Get old receive expression's clauses.
     OldClauses = erl_syntax:receive_expr_clauses(Tree),
-    NewClauses = lists:map(fun(Clause) -> transform_receive_clause(Clause) end,
-			   OldClauses),
+    NewClauses = [transform_receive_clause(Clause) || Clause <- OldClauses],
     %% `receive ... after` not supported for now.
     case erl_syntax:receive_expr_timeout(Tree) of
 	none -> continue;
