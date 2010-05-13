@@ -397,10 +397,7 @@ rep_yield() ->
 -spec rep_receive(fun((fun()) -> term())) -> term().
 
 rep_receive(Fun) ->
-    %% See instrumentation for more details.
-    Result = rep_receive_aux(Fun),
-    rep_yield(),
-    Result.
+    rep_receive_aux(Fun).
 
 rep_receive_aux(Fun) ->
     Fun(fun() -> block(), rep_receive_aux(Fun) end).
@@ -411,6 +408,7 @@ rep_receive_aux(Fun) ->
 
 rep_receive_notify(From, Msg) ->
     sched ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
+    rep_yield(),
     ok.
 
 %% Replacement for send/2 (and the equivalent ! operator).
@@ -418,11 +416,10 @@ rep_receive_notify(From, Msg) ->
 -spec rep_send(dest(), term()) -> term().
 
 rep_send(Dest, Msg) ->
-    %% See instrumentation for more details.
     {_Self, RealMsg} = Dest ! Msg,
     sched ! #sched{msg = send, pid = self(), misc = [Dest, RealMsg]},
     rep_yield(),
-    Msg.
+    RealMsg.
 
 %% Replacement for spawn/1.
 %% The argument provided is the argument of the original spawn call.
