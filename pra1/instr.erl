@@ -15,9 +15,12 @@ instrument_and_load(File) ->
 	    %% Delete `used` table.
 	    ets:delete(used),
 	    %% Compile instrumented code.
+	    %% TODO: More compile options?
+	    log:log("Compiling instrumented code...~n"),
 	    CompOptions = [binary, verbose, report_errors, report_warnings],
 	    case compile:forms(NewForms, CompOptions) of
 		{ok, Module, Binary} ->
+		    log:log("Compilation ok~n"),
 		    log:log("Loading module `~p`... ", [Module]),
 		    case code:load_binary(Module, File, Binary) of
 			{module, Module} ->
@@ -28,6 +31,7 @@ instrument_and_load(File) ->
 			    error
 		    end;
 		error ->
+		    log:log("Compilation failed~n"),
 		    error
 	    end;
 	{error, Error} ->
