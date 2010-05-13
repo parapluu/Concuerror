@@ -4,7 +4,7 @@
 -export([analyze/4, interleave/3]).
 
 %% Instrumentation related exports.
--export([rep_receive/1, rep_receive_notify/2,
+-export([rep_link/1, rep_receive/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_yield/0]).
 
 %%%----------------------------------------------------------------------
@@ -161,6 +161,8 @@ dispatcher(Info) ->
     receive
 	#sched{msg = block, pid = Pid} ->
 	    handler(block, Pid, Info, []);
+	#sched{msg = link, pid = Pid, misc = [TargetPid]} ->
+	    handler(link, Pid, Info, [TargetPid]);
 	#sched{msg = 'receive', pid = Pid, misc = [From, Msg]} ->
 	    handler('receive', Pid, Info, [From, Msg]);
 	#sched{msg = send, pid = Pid, misc = [Dest, Msg]} ->
@@ -276,6 +278,12 @@ handler(exit, Pid, Info, [Reason]) ->
 	    log:log("Process ~s exits (~p).~n", [Lid, Reason]),
 	    Info
     end;
+%% Link message handler.
+handler(link, Pid, Info, [TargetPid]) ->
+    Lid = lid(Pid),
+    TargetLid = lid(TargetPid),
+    log:log("Process ~s links to process ~s.~n", [Lid, TargetLid]),
+    dispatcher(Info);
 %% Receive message handler.
 handler('receive', Pid, Info, [From, Msg]) ->
     Lid = lid(Pid),
@@ -375,6 +383,16 @@ block() ->
 	#sched{msg = continue} -> true
     end.
 
+%% Replacement for link/1.
+%% Just yield after linking.
+-spec rep_link(pid() | port()) -> 'true'.
+
+rep_link(Pid) ->
+    Result = link(Pid),
+    sched ! #sched{msg = link, pid = self(), misc = [Pid]},
+    rep_yield(),
+    Result.
+
 %% Replacement for yield/0.
 %% The calling process is preempted, but remains in the active set and awaits
 %% a message to continue.
@@ -412,7 +430,7 @@ rep_receive_notify(From, Msg) ->
     ok.
 
 %% Replacement for send/2 (and the equivalent ! operator).
-%% Just yield after the send operation.
+%% Just yield after sending.
 -spec rep_send(dest(), term()) -> term().
 
 rep_send(Dest, Msg) ->
@@ -640,4 +658,10 @@ interleave_test_() ->
 		    analyze("./test/test.erl", test, test4, []))},
      {"test5",
       ?_assertEqual(?RET_HEISENBUG,
-		    analyze("./test/test.erl", test, test5, []))}].
+		    analyze("./test/test.erl", test, test5, []))},
+     {"test6",
+      ?_assertEqual(?RET_NORMAL,
+		    analyze("./test/test.erl", test, test6, []))},
+     {"test7",
+      ?_assertEqual(?RET_NORMAL,
+		    analyze("./test/test.erl", test, test7, []))}].

@@ -51,7 +51,7 @@ instrument(File) ->
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
 	    Abstract = erl_syntax:revert(Transformed),
-	    %% io:put_chars(erl_prettypr:format(Abstract)),
+	    io:put_chars(erl_prettypr:format(Abstract)),
 	    NewForms = erl_syntax:form_list_elements(Abstract),
 	    {ok, NewForms};
 	{error, Error} -> {error, Error}
@@ -92,6 +92,8 @@ instrument_term(Tree) ->
 		    case Function of
 			spawn ->
 			    instrument_spawn(instrument_subtrees(Tree));
+			link ->
+			    instrument_link(instrument_subtrees(Tree));
 			_Other -> Tree
 		    end;
 		_Other -> Tree
@@ -112,6 +114,14 @@ instrument_term(Tree) ->
 	    erl_syntax:variable(String);
 	_Other -> instrument_subtrees(Tree)
     end.
+
+%% Instrument a link/1 call.
+%% link(Pid) is transformed into sched:rep_link(Pid).
+instrument_link(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_link),
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a receive expression.
 instrument_receive(Tree) ->
