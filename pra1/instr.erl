@@ -35,7 +35,7 @@ instrument_and_load(File) ->
 		    error
 	    end;
 	{error, Error} ->
-	    log:log("error~n~p~n", [Error]),
+	    log:log("error: ~p~n", [Error]),
 	    %% Delete `used` table.
 	    ets:delete(used),
 	    error
@@ -51,7 +51,7 @@ instrument(File) ->
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
 	    Abstract = erl_syntax:revert(Transformed),
-	    io:put_chars(erl_prettypr:format(Abstract)),
+	    %% io:put_chars(erl_prettypr:format(Abstract)),
 	    NewForms = erl_syntax:form_list_elements(Abstract),
 	    {ok, NewForms};
 	{error, Error} -> {error, Error}
@@ -94,15 +94,15 @@ instrument_term(Tree) ->
 			    instrument_spawn(instrument_subtrees(Tree));
 			link ->
 			    instrument_link(instrument_subtrees(Tree));
-			_Other -> Tree
+			_Other -> instrument_subtrees(Tree)
 		    end;
-		_Other -> Tree
+		_Other -> instrument_subtrees(Tree)
 	    end;
 	infix_expr ->
 	    Operator = erl_syntax:infix_expr_operator(Tree),
 	    case erl_syntax:operator_name(Operator) of
 		'!' -> instrument_send(instrument_subtrees(Tree));
-		_Other -> Tree
+		_Other -> instrument_subtrees(Tree)
 	    end;
 	receive_expr ->
 	    instrument_receive(instrument_subtrees(Tree));
@@ -153,8 +153,6 @@ instrument_receive(Tree) ->
 %%   Msg -> [Actions]
 %% to
 %%   {SenderPid, Msg} -> {SenderPid, Msg, [Actions]}
-%%
-%% (temporarily Msg -> {Msg, [Actions]})
 transform_receive_clause(Clause) ->
     [OldPattern] = erl_syntax:clause_patterns(Clause),
     OldGuard = erl_syntax:clause_guard(Clause),
