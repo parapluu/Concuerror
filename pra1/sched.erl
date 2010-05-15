@@ -1,11 +1,13 @@
 -module(sched).
 
 %% UI related exports.
--export([analyze/4, interleave/3]).
+-export([analyze/4]).
 
 %% Instrumentation related exports.
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_yield/0]).
+
+-include("gen.hrl").
 
 %%%----------------------------------------------------------------------
 %%% Eunit related
@@ -19,11 +21,6 @@
 %%%----------------------------------------------------------------------
 %%% Definitions
 %%%----------------------------------------------------------------------
-
--define(RET_NORMAL, 0).
--define(RET_INTERNAL_ERROR, 1).
--define(RET_HEISENBUG, 2).
--define(RET_INSTR_ERROR, 3).
 
 %% Debug messages (TODO: define externally?).
 %% -define(DEBUG, true).
@@ -41,8 +38,7 @@
 -type lid()  :: string().
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
--type interleave_ret() :: ?RET_NORMAL | ?RET_HEISENBUG.
--type analysis_ret()   :: ?RET_INSTR_ERROR | interleave_ret().
+-type analysis_ret() :: ?RET_NORMAL | ?RET_HEISENBUG | ?RET_INSTR_ERROR.
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -79,11 +75,12 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
-%% Instrument file Path and produce all interleavings of (Mod, Fun, Args).
--spec analyze(string(), module(), atom(), [term()]) -> analysis_ret().
+%% Instrument one or more files and produce all interleavings of running
+%% Mod:Fun(Args).
+-spec analyze([file()], module(), atom(), [term()]) -> analysis_ret().
 
-analyze(File, Mod, Fun, Args) ->
-    case instr:instrument_and_load(File) of
+analyze(Files, Mod, Fun, Args) ->
+    case instr:instrument_and_load(Files) of
 	ok ->
 	    log:log("~n"),
 	    interleave(Mod, Fun, Args);
@@ -92,8 +89,6 @@ analyze(File, Mod, Fun, Args) ->
     end.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
--spec interleave(module(), atom(), [term()]) -> interleave_ret().
-
 interleave(Mod, Fun, Args) ->
     register(sched, self()),
     %% The mailbox is flushed mainly to discard possible `exit` messages
@@ -646,22 +641,22 @@ lid_test_() ->
 interleave_test_() ->
     [{"test1",
       ?_assertEqual(?RET_NORMAL,
-		    analyze("./test/test.erl", test, test1, []))},
+		    analyze(["./test/test.erl"], test, test1, []))},
      {"test2",
       ?_assertEqual(?RET_NORMAL,
-		    analyze("./test/test.erl", test, test2, []))},
+		    analyze(["./test/test.erl"], test, test2, []))},
      {"test3",
       ?_assertEqual(?RET_NORMAL,
-		    analyze("./test/test.erl", test, test3, []))},
+		    analyze(["./test/test.erl"], test, test3, []))},
      {"test4",
       ?_assertEqual(?RET_HEISENBUG,
-		    analyze("./test/test.erl", test, test4, []))},
+		    analyze(["./test/test.erl"], test, test4, []))},
      {"test5",
       ?_assertEqual(?RET_HEISENBUG,
-		    analyze("./test/test.erl", test, test5, []))},
+		    analyze(["./test/test.erl"], test, test5, []))},
      {"test6",
       ?_assertEqual(?RET_NORMAL,
-		    analyze("./test/test.erl", test, test6, []))},
+		    analyze(["./test/test.erl"], test, test6, []))},
      {"test7",
       ?_assertEqual(?RET_NORMAL,
-		    analyze("./test/test.erl", test, test7, []))}].
+		    analyze(["./test/test.erl"], test, test7, []))}].

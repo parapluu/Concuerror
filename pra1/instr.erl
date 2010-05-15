@@ -1,14 +1,28 @@
 -module(instr).
 -export([instrument_and_load/1]).
 
--spec instrument_and_load(string()) -> 'ok' | 'error'.
+-include("gen.hrl").
 
-%% Instrument and load a file.
-instrument_and_load(File) ->
+%% Instrument and load a list of files.
+-spec instrument_and_load([file()]) -> 'ok' | 'error'.
+
+instrument_and_load([]) ->
+    log:log("No files instrumented~n"),
+    ok;
+instrument_and_load([File]) ->
+    instrument_and_load_one(File);
+instrument_and_load([File | Rest]) ->
+    case instrument_and_load_one(File) of
+	ok -> instrument_and_load(Rest);
+	error -> error
+    end.
+
+%% Instrument and load a single file.
+instrument_and_load_one(File) ->
     %% A table for holding used variable names.
     ets:new(used, [named_table, private]),
     %% Instrument given source file.
-    log:log("Instrumenting file `~s`... ", [File]),
+    log:log("Instrumenting file ~p... ", [File]),
     case instrument(File) of
 	{ok, NewForms} ->
 	    log:log("ok~n"),
@@ -149,7 +163,7 @@ instrument_receive(Tree) ->
     %% Call sched:rep_receive.
     erl_syntax:application(Module, Function, [FunExpr]).
 
-%% Tranforms a clause
+%% Tranform a clause
 %%   Msg -> [Actions]
 %% to
 %%   {SenderPid, Msg} -> {SenderPid, Msg, [Actions]}
@@ -161,8 +175,7 @@ transform_receive_clause(Clause) ->
     [{used, Used}] = ets:lookup(used, used),
     Fresh = erl_syntax_lib:new_variable_name(Used),
     PidVar = erl_syntax:variable(Fresh),
-    NewPattern = [erl_syntax:tuple([PidVar,
-				     OldPattern])],
+    NewPattern = [erl_syntax:tuple([PidVar, OldPattern])],
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_receive_notify),
     Arguments = [PidVar, OldPattern],

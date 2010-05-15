@@ -1,8 +1,7 @@
 -module(log).
 -export([internal/1, internal/2, log/1, log/2]).
 
-%% TODO: Originally defined in sched.erl.
--define(RET_INTERNAL_ERROR, 1).
+-include("gen.hrl").
 
 -spec internal(string()) -> no_return().
 
