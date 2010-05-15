@@ -80,15 +80,14 @@ utest:	test.sh
 
 pulse_gui.sh:
 	printf "#%c/bin/bash\n \
-	      erl -noshell -pa $(EBIN) \
-	      -s gui start -s init stop" ! \
+	        erl -noshell -pa $(EBIN) -s gui start -s init stop" ! \
 	      > pulse_gui.sh
 	chmod +x pulse_gui.sh
 
 test.sh:
 	printf "#%c/bin/bash\n \
-	      erl -noshell -pa $(EBIN) \
-	      -s sched test -s init stop" ! \
+		dialyzer $(EBIN)/*.beam\n \
+	        erl -noshell -pa $(EBIN) -s sched test -s init stop" ! \
 	      > test.sh
 	chmod +x test.sh
 
@@ -103,3 +102,7 @@ driver.beam : gui.hrl
 gui.beam: gui.hrl
 refServer.beam: gui.hrl
 scheduler.beam: gui.hrl
+
+instr.beam: gen.hrl
+log.beam: gen.hrl
+sched.beam: gen.hrl
