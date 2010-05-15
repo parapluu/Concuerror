@@ -19,39 +19,49 @@ instrument_and_load([File | Rest]) ->
 
 %% Instrument and load a single file.
 instrument_and_load_one(File) ->
-    %% A table for holding used variable names.
-    ets:new(used, [named_table, private]),
-    %% Instrument given source file.
-    log:log("Instrumenting file ~p... ", [File]),
-    case instrument(File) of
-	{ok, NewForms} ->
-	    log:log("ok~n"),
-	    %% Delete `used` table.
-	    ets:delete(used),
-	    %% Compile instrumented code.
-	    %% TODO: More compile options?
-	    log:log("Compiling instrumented code...~n"),
-	    CompOptions = [binary, verbose, report_errors, report_warnings],
-	    case compile:forms(NewForms, CompOptions) of
-		{ok, Module, Binary} ->
-		    log:log("Compilation ok~n"),
-		    log:log("Loading module `~p`... ", [Module]),
-		    case code:load_binary(Module, File, Binary) of
-			{module, Module} ->
-			    log:log("ok~n"),
-			    ok;
-			{error, Error} ->
-			    log:log("error~n~p~n", [Error]),
+    %% Compilation of original file without emiting code, just to emit all
+    %% warnings or stop if an error is found, before instrumenting it.
+    log:log("Validating file ~p...~n", [File]),
+    PreOptions = [strong_validation, verbose, report_errors, report_warnings],
+    case compile:file(File, PreOptions) of
+	{ok, Module} ->
+	    %% A table for holding used variable names.
+	    ets:new(used, [named_table, private]),
+	    %% Instrument given source file.
+	    log:log("Instrumenting file ~p... ", [File]),
+	    case instrument(File) of
+		{ok, NewForms} ->
+		    log:log("ok~n"),
+		    %% Delete `used` table.
+		    ets:delete(used),
+		    %% Compile instrumented code.
+		    %% TODO: More compile options?
+		    log:log("Compiling instrumented code...~n"),
+		    CompOptions = [binary, verbose,
+				   report_errors, report_warnings],
+		    case compile:forms(NewForms, CompOptions) of
+			{ok, Module, Binary} ->
+			    log:log("Loading module `~p`... ", [Module]),
+			    case code:load_binary(Module, File, Binary) of
+				{module, Module} ->
+				    log:log("ok~n"),
+				    ok;
+				{error, Error} ->
+				    log:log("error~n~p~n", [Error]),
+				    error
+			    end;
+			error ->
+			    log:log("error~n"),
 			    error
 		    end;
-		error ->
-		    log:log("Compilation failed~n"),
+		{error, Error} ->
+		    log:log("error: ~p~n", [Error]),
+		    %% Delete `used` table.
+		    ets:delete(used),
 		    error
 	    end;
-	{error, Error} ->
-	    log:log("error: ~p~n", [Error]),
-	    %% Delete `used` table.
-	    ets:delete(used),
+	error ->
+	    log:log("error~n"),
 	    error
     end.
 

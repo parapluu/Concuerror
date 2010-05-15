@@ -1,6 +1,7 @@
 -module(test).
 -export([test1/0, test2/0, test3/0, test4/0,
-	 test5/0, test6/0, test7/0, test8/0]).
+	 test5/0, test6/0, test7/0, test8/0,
+	 test9/0]).
 
 %% Normal, 2 proc: Simple send-receive.
 -spec test1() -> 'ok'.
@@ -105,5 +106,12 @@ test8() ->
     Pid = spawn(fun() -> foo1(Self) end),
     link(Pid),
     receive
-	Any -> ok
+	_Any -> ok
     end.
+
+%% Normal, 2 proc: Like test1/0, but using function from other file.
+-spec test9() -> 'ok'.
+test9() ->
+    Self = self(),
+    spawn(fun() -> test_aux:bar(Self) end),
+    receive _Any -> ok end.

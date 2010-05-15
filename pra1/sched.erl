@@ -659,4 +659,8 @@ interleave_test_() ->
 		    analyze(["./test/test.erl"], test, test6, []))},
      {"test7",
       ?_assertEqual(?RET_NORMAL,
-		    analyze(["./test/test.erl"], test, test7, []))}].
+		    analyze(["./test/test.erl"], test, test7, []))},
+     {"test9",
+      ?_assertEqual(?RET_NORMAL,
+		    analyze(["./test/test.erl", "./test/test_aux.erl"],
+			    test, test9, []))}].
