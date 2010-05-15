@@ -7,4 +7,5 @@ TODO
   όταν τελειώνει με receive που ξέρουμε τι επιστρέφει
 * replace registered names with "more unique" ones
 * fix rep_spawn race
+* fix gui crash when running in background (./run.sh &) and pressing enter
 * test, test, test :)

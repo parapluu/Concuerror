@@ -312,38 +312,38 @@ addListItems(Id, Items) ->
 analyze() ->
     Module = getModule(),
     {Function, Arity} = getFunction(),
-    Self = self(),
+    ModuleList = refServer:lookup(?MODULE_LIST),
+    %% Get the list of files to be instrumented.
+    Files = getStrings(ModuleList),
+    %% Check if a module and function is selected.
     if Module =/= '', Function =/= '' ->
 	    case Arity of
 		0 ->
-		    instrumentAll(?MODULE_LIST),
 		    LogText = refServer:lookup(?LOG_TEXT),
 		    wxTextCtrl:clear(LogText),
-		    spawn(fun() ->
-			    driver:drive(
-			      fun() -> Module:Function() end,
-			      Self)
+		    spawn(fun() -> sched:analyze(Files, Module, Function, [])
 			  end);
+		%% If the function to be analyzed is of non-zero arity,
+		%% a dialog window is displayed prompting the user to enter
+		%% the function's arguments.
 		Count ->
 		    Frame = refServer:lookup(?FRAME),
 		    case argDialog(Frame, Count) of
 			{ok, Args} ->
-			    instrumentAll(?MODULE_LIST),
 			    LogText = refServer:lookup(?LOG_TEXT),
 			    wxTextCtrl:clear(LogText),
 			    spawn(fun() ->
-				    driver:drive(fun() ->
-						   apply(Module, Function, Args)
-						 end,
-						 Self)
+				    sched:analyze(Files, Module, Function, Args)
 				  end);
+			%% User pressed 'cancel' or closed dialog window.
 			_Other -> continue
 		    end
 	    end;
        true -> continue
     end.
 
-%% Dialog for inserting function arguments (terms)
+%% Dialog prompting the user to insert function arguments (valid erlang terms
+%% without the terminating `.`).
 argDialog(Parent, Argnum) ->
     Dialog = wxDialog:new(Parent, ?wxID_ANY, "Enter arguments"),
     TopSizer = wxBoxSizer:new(?wxVERTICAL),
@@ -378,7 +378,7 @@ argDialog(Parent, Argnum) ->
 	_Other -> wxDialog:destroy(Dialog), continue
     end.
 
-%% Clear module list
+%% Clear module list.
 clear() ->
     ModuleList = refServer:lookup(?MODULE_LIST),
     FunctionList = refServer:lookup(?FUNCTION_LIST),
@@ -389,7 +389,7 @@ clear() ->
     wxStyledTextCtrl:clearAll(SourceText),
     wxStyledTextCtrl:setReadOnly(SourceText, true).
 
-%% Return directory path of selected module
+%% Return the directory path of selected module.
 getDirectory() ->
     ModuleList = refServer:lookup(?MODULE_LIST),
     Path = wxControlWithItems:getStringSelection(ModuleList),
@@ -400,6 +400,9 @@ getDirectory() ->
 	nomatch -> ""
     end.
 
+%% Return the selected function and arity from the function list.
+%% The result is returned in the form {Function, Arity}, where Function
+%% is an atom and Arity is an integer.
 getFunction() ->
     FunctionList = refServer:lookup(?FUNCTION_LIST),
     Expr = wxControlWithItems:getStringSelection(FunctionList),
@@ -411,6 +414,8 @@ getFunction() ->
 	nomatch -> {'', 0}
     end.
 
+%% Return the selected module from the module list.
+%% The result is an atom.
 getModule() ->
     ModuleList = refServer:lookup(?MODULE_LIST),
     Path = wxControlWithItems:getStringSelection(ModuleList),
@@ -421,34 +426,24 @@ getModule() ->
 	nomatch -> ''
     end.
 
-%% wxControlWithItems:getStrings (function missing from wxErlang lib)
+%% wxControlWithItems:getStrings (function missing from wxErlang lib).
 getStrings(Ref) ->
     Count = wxControlWithItems:getCount(Ref),
     if Count > 0 -> getStrings(Ref, 0, Count, []);
        true -> []
     end.
 
+%% Auxiliary function to the above.
 getStrings(_Ref, Count, Count, Strings) ->
     Strings;
 getStrings(Ref, N, Count, Strings) ->
     String = wxControlWithItems:getString(Ref, N),
     getStrings(Ref, N + 1, Count, [String|Strings]).
 
-%% Instrument all modules in ModuleList
-instrumentAll(Id) ->
-    ModuleList = refServer:lookup(Id),
-    instrumentList(getStrings(ModuleList)).
-
-instrumentList([]) ->
-    ok;
-instrumentList([String|Strings]) ->
-    instrument:c(String),
-    instrumentList(Strings).
-
 %% Refresh selected module (reload source code from disk).
 %% NOTE: When switching selected modules, no explicit refresh
-%% by the user is required, because the `command_listbox_selected`
-%% event for the module-list uses this function.
+%%       by the user is required, because the `command_listbox_selected`
+%%       event for the module-list uses this function.
 refresh() ->
     ModuleList = refServer:lookup(?MODULE_LIST),
     case wxListBox:getSelection(ModuleList) of
@@ -465,7 +460,7 @@ refresh() ->
 	    wxStyledTextCtrl:setReadOnly(SourceText, true)
     end.
     
-%% Remove selected module from module list
+%% Remove selected module from module list.
 remove() ->
     ModuleList = refServer:lookup(?MODULE_LIST),
     Selection = wxListBox:getSelection(ModuleList),
@@ -488,7 +483,7 @@ remove() ->
 	    end
     end.
 
-%% Set ListBox (Id) items (remove existing)
+%% Set ListBox (Id) items (remove existing).
 setListItems(Id, Items) ->
     if Items =/= [], Items =/= [[]] ->
 	    List = refServer:lookup(Id),
@@ -500,6 +495,11 @@ setListItems(Id, Items) ->
        true -> continue
     end.
 
+%% Validate user provided function arguments.
+%% The arguments are first scanned and then parsed to ensure that they
+%% represent valid erlang terms.
+%% Returns {ok, ListOfArgs} if everything is valid, else 'error' is returned
+%% and error messages are written to the log.
 validateArgs(_I, [], Args, _RefError) ->
     {ok, lists:reverse(Args)};
 validateArgs(I, [Ref|Refs], Args, RefError) ->
@@ -570,7 +570,6 @@ loop() ->
 	    addDialog(Frame),
 	    loop();
 	#wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
-	    refresh(),
 	    analyze(),
 	    loop();
 	#wx{id = ?CLEAR, event = #wxCommand{type = command_menu_selected}} ->

@@ -28,24 +28,17 @@ ERL_COMPILE_FLAGS += +warn_exported_vars +warn_unused_import +warn_untyped_recor
 # ----------------------------------------------------
 
 TARGETS = \
+	core \
 	gui \
-	pulse \
-	wx \
-	src \
-	utest
+	utest \
+	wx
 
 GUI_MODULES = \
 	funs \
 	refServer \
 	gui
 
-PULSE_MODULES = \
-	dot \
-	driver \
-	instrument \
-	scheduler
-
-SRC_MODULES = \
+CORE_MODULES = \
 	instr \
 	log \
 	sched \
@@ -53,12 +46,9 @@ SRC_MODULES = \
 
 MODULES = \
 	$(GUI_MODULES) \
-	$(PULSE_MODULES) \
-	$(SRC_MODULES)
+	$(CORE_MODULES)
 
 ERL_DIRS = \
-	gui \
-	pulse \
 	src
 
 vpath %.hrl include
@@ -76,21 +66,19 @@ clean:
 doc:	util.beam
 	erl -noshell -pa $(EBIN) -s util doc $(TOP) -s init stop
 
-gui:   	$(GUI_MODULES:%=%.beam)
+core:	$(CORE_MODULES:%=%.beam)
 
-pulse: 	$(PULSE_MODULES:%=%.beam)
+gui:	$(GUI_MODULES:%=%.beam)
 
-src:	$(SRC_MODULES:%=%.beam)
-
-wx:	pulse_gui.sh
+wx:	run.sh
 
 utest:	test.sh
 
-pulse_gui.sh:
+run.sh:
 	printf "#%c/bin/bash\n \
 	        erl -noshell -pa $(EBIN) -s gui start -s init stop" ! \
-	      > pulse_gui.sh
-	chmod +x pulse_gui.sh
+	      > run.sh
+	chmod +x run.sh
 
 test.sh:
 	printf "#%c/bin/bash\n \
