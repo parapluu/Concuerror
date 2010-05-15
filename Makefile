@@ -15,6 +15,8 @@ EBIN = 	  $(TOP)/ebin
 
 INCLUDE = $(TOP)/include
 
+DOC = $(TOP)/doc
+
 # ----------------------------------------------------
 # Flags
 # ----------------------------------------------------
@@ -29,7 +31,7 @@ TARGETS = \
 	gui \
 	pulse \
 	wx \
-	pra1 \
+	src \
 	utest
 
 GUI_MODULES = \
@@ -43,20 +45,21 @@ PULSE_MODULES = \
 	instrument \
 	scheduler
 
-PRA1_MODULES = \
-	sched \
+SRC_MODULES = \
 	instr \
-	log
+	log \
+	sched \
+	util
 
 MODULES = \
 	$(GUI_MODULES) \
 	$(PULSE_MODULES) \
-	$(PRA1_MODULES)
+	$(SRC_MODULES)
 
 ERL_DIRS = \
 	gui \
 	pulse \
-	pra1
+	src
 
 vpath %.hrl include
 vpath %.erl $(ERL_DIRS)
@@ -67,12 +70,17 @@ all: 	$(TARGETS)
 clean:
 	rm -f *.sh
 	rm -f $(EBIN)/*.beam
+	rm -f $(DOC)/*.html $(DOC)/*.css $(DOC)/edoc-info $(DOC)/*.png
+
+.PHONY: doc
+doc:	util.beam
+	erl -noshell -pa $(EBIN) -s util doc $(TOP) -s init stop
 
 gui:   	$(GUI_MODULES:%=%.beam)
 
 pulse: 	$(PULSE_MODULES:%=%.beam)
 
-pra1:	$(PRA1_MODULES:%=%.beam)
+src:	$(SRC_MODULES:%=%.beam)
 
 wx:	pulse_gui.sh
 

@@ -1,9 +1,17 @@
+%% @doc: The instrumenter.
+
 -module(instr).
 -export([instrument_and_load/1]).
 
 -include("gen.hrl").
 
-%% Instrument and load a list of files.
+%% @spec instrument_and_load([file()]) -> 'ok' | 'error'
+%% @doc: Instrument, compile and load a list of files.
+%%
+%% Each file is first validated (i.e. checked whether it will compile
+%% successfully). If no errors are encountered, the file gets instrumented,
+%% compiled and loaded. If all of these actions are successfull, the function
+%% returns `ok', otherwise `error' is returned. No `.beam' files are produced.
 -spec instrument_and_load([file()]) -> 'ok' | 'error'.
 
 instrument_and_load([]) ->

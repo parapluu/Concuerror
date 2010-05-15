@@ -1,3 +1,5 @@
+%% @doc: The scheduler.
+
 -module(sched).
 
 %% UI related exports.
@@ -34,6 +36,11 @@
 %%%----------------------------------------------------------------------
 %%% Types
 %%%----------------------------------------------------------------------
+
+%% @type: lid() = string().
+%% @type: dest() =  pid() | port() | atom() | {atom(), atom()}.
+
+%% @type: analysis_ret() = 0 | 1 | 2.
 
 -type lid()  :: string().
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
@@ -75,8 +82,9 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
-%% Instrument one or more files and produce all interleavings of running
-%% Mod:Fun(Args).
+%% @spec analyze([file()], atom(), atom(), [term()]) -> analysis_ret()
+%% @doc: Instrument one or more files and produce all interleavings of running
+%% `Mod:Fun(Args)'.
 -spec analyze([file()], module(), atom(), [term()]) -> analysis_ret().
 
 analyze(Files, Mod, Fun, Args) ->
@@ -378,7 +386,9 @@ block() ->
 	#sched{msg = continue} -> true
     end.
 
-%% Replacement for link/1.
+%% @spec: rep_link(pid() | port()) -> 'true'
+%% @doc: Replacement for `link/1'.
+%%
 %% Just yield after linking.
 -spec rep_link(pid() | port()) -> 'true'.
 
@@ -388,11 +398,15 @@ rep_link(Pid) ->
     rep_yield(),
     Result.
 
-%% Replacement for yield/0.
+%% @spec rep_yield() -> 'true'
+%% @doc: Replacement for `yield/0'.
+%%
 %% The calling process is preempted, but remains in the active set and awaits
 %% a message to continue.
-%% NOTE: Besides replacing yield/0, this function is heavily used by the
-%%       instrumenter before other calls (e.g. spawn, send, etc.).
+%%
+%% Note: Besides replacing `yield/0', this function is heavily used by other
+%%       functions of the instrumentation interface.
+
 -spec rep_yield() -> 'true'.
 
 rep_yield() ->
@@ -401,10 +415,12 @@ rep_yield() ->
 	#sched{msg = continue} -> true
     end.
 
-%% Replacement for an erlang `receive` statement (without an `after` clause).
+%% @spec rep_receive(function((function()) -> term())) -> term()
+%% @doc: Replacement for a `receive' statement.
+%%
 %% The first time the process is scheduled it searches its mailbox. If no
 %% matching message is found, it blocks (i.e. is moved to the blocked set).
-%% When a new message arrives the process is woken up (see `send` handler).
+%% When a new message arrives the process is woken up.
 %% The check mailbox - block - wakeup loop is repeated until a matching message
 %% arrives.
 -spec rep_receive(fun((fun()) -> term())) -> term().
@@ -415,6 +431,9 @@ rep_receive(Fun) ->
 rep_receive_aux(Fun) ->
     Fun(fun() -> block(), rep_receive_aux(Fun) end).
 
+%% @spec rep_receive_notify(pid(), term()) -> 'ok'
+%% @doc: Auxiliary function used in the `receive' statetement instrumentation.
+%%
 %% Called first thing after a message has been received, to inform the scheduler
 %% about the message received and the sender.
 -spec rep_receive_notify(pid(), term()) -> 'ok'.
@@ -424,7 +443,9 @@ rep_receive_notify(From, Msg) ->
     rep_yield(),
     ok.
 
-%% Replacement for send/2 (and the equivalent ! operator).
+%% @spec rep_send(dest(), term()) -> term()
+%% @doc: Replacement for `send/2' (and the equivalent `!' operator).
+%%
 %% Just yield after sending.
 -spec rep_send(dest(), term()) -> term().
 
@@ -434,7 +455,9 @@ rep_send(Dest, Msg) ->
     rep_yield(),
     RealMsg.
 
-%% Replacement for spawn/1.
+%% @spec rep_spawn(fun()) -> pid()
+%% @doc: Replacement for `spawn/1'.
+%%
 %% The argument provided is the argument of the original spawn call.
 %% When spawned, the new process has to yield.
 -spec rep_spawn(fun()) -> pid().
