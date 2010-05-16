@@ -330,10 +330,17 @@ handler(spawn, ParentPid, Info, [ChildPid]) ->
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
 handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
-    Lid = lid(Pid),
-    ?debug("Process ~s yields.~n", [Lid]),
-    NewActive = set_add(Active, Lid),
-    Info#info{active = NewActive}.
+    case lid(Pid) of
+        %% This case clause avoids a possible race between `yield` message
+        %% of child and `spawn` message of parent.
+        not_found ->
+            '.sched' ! #sched{msg = yield, pid = Pid},
+            dispatcher(Info);
+        Lid ->
+            ?debug("Process ~s yields.~n", [Lid]),
+            NewActive = set_add(Active, Lid),
+            Info#info{active = NewActive}
+    end.
 
 %%%----------------------------------------------------------------------
 %%% Helper functions
@@ -471,8 +478,6 @@ rep_send(Dest, Msg) ->
 -spec rep_spawn(fun()) -> pid().
 
 rep_spawn(Fun) ->
-    %% XXX: Possible race between `yield` message of child and
-    %%      `spawn` message of parent.
     Pid = spawn(fun() -> rep_yield(), Fun() end),
     '.sched' ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     rep_yield(),
