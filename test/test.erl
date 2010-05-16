@@ -1,3 +1,11 @@
+%%%----------------------------------------------------------------------
+%%% File    : test.erl
+%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Description : Tests
+%%%
+%%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%----------------------------------------------------------------------
+
 -module(test).
 -export([test1/0, test2/0, test3/0, test4/0,
 	 test5/0, test6/0, test7/0, test8/0,
