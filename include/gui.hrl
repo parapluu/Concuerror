@@ -61,7 +61,7 @@ http://www.protest-project.eu/
 ").
 
 %% Scheduler module name
--define(SCHEDULER, scheduler).
+-define(SCHEDULER, sched).
 
 %% File paths
 -define(ICON_PATH, "img/icon.png").
