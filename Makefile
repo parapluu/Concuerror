@@ -64,7 +64,7 @@ clean:
 
 .PHONY: doc
 doc:	util.beam
-	erl -noshell -pa $(EBIN) -s util doc $(TOP) -s init stop
+	erl -noinput -pa $(EBIN) -s util doc $(TOP) -s init stop
 
 core:	$(CORE_MODULES:%=%.beam)
 
@@ -76,14 +76,14 @@ utest:	test.sh
 
 run.sh:
 	printf "#%c/bin/bash\n \
-	        erl -noshell -pa $(EBIN) -s gui start -s init stop" ! \
+	        erl -noinput -pa $(EBIN) -s gui start -s init stop" ! \
 	      > run.sh
 	chmod +x run.sh
 
 test.sh:
 	printf "#%c/bin/bash\n \
 		dialyzer $(EBIN)/*.beam\n \
-	        erl -noshell -pa $(EBIN) -s sched test -s init stop" ! \
+	        erl -noinput -pa $(EBIN) -s sched test -s init stop" ! \
 	      > test.sh
 	chmod +x test.sh
 
