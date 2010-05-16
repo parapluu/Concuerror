@@ -1,3 +1,11 @@
+%%%----------------------------------------------------------------------
+%%% File    : sched.erl
+%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Description : Scheduler
+%%%
+%%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%----------------------------------------------------------------------
+
 %% @doc: The scheduler.
 
 -module(sched).
@@ -18,7 +26,7 @@
 -include_lib("eunit/include/eunit.hrl").
 
 %% Spec for auto-generated test/0 function (eunit).
--spec test() -> 'ok' | {error, term()}.
+-spec test() -> 'ok' | {'error', term()}.
 
 %%%----------------------------------------------------------------------
 %%% Definitions
@@ -620,7 +628,8 @@ set_test_() ->
 	      end)},
       {"Add/remove multiple",
       ?_test(begin
-		 Set = set_add(set_add(set_add(set_new(), "42"), "P4.2"), "P42"),
+		 Set = set_add(set_add(set_add(set_new(), "42"), "P4.2"),
+                               "P42"),
 		 List1 = lists:sort(set_list(Set)),
 		 {Val1, Set1} = set_pop(Set),
 		 {Val2, Set2} = set_pop(Set1),

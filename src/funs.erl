@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File    : funs.erl
 %%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%% Description : 
+%%% Description : GUI Function Utilities
 %%%
 %%% Created : 31 Mar 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
 %%%----------------------------------------------------------------------

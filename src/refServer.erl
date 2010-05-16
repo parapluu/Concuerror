@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File    : refServer.erl
 %%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%% Description : 
+%%% Description : GUI Utility Server
 %%%
 %%% Created : 31 Mar 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
 %%%----------------------------------------------------------------------
@@ -21,7 +21,7 @@
 
 %% Start server linked to calling process
 
--spec start(boolean()) -> ok.
+-spec start(boolean()) -> 'ok'.
 
 start(Link) ->
     Self = self(),

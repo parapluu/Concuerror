@@ -1,3 +1,11 @@
+%%%----------------------------------------------------------------------
+%%% File    : util.erl
+%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Description : Utilities
+%%%
+%%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%----------------------------------------------------------------------
+
 %% @doc: Utility functions.
 
 -module(util).

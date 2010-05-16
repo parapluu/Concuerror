@@ -1,3 +1,11 @@
+%%%----------------------------------------------------------------------
+%%% File    : instr.erl
+%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Description : Instrumenter
+%%%
+%%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%----------------------------------------------------------------------
+
 %% @doc: The instrumenter.
 
 -module(instr).

@@ -1,3 +1,11 @@
+%%%----------------------------------------------------------------------
+%%% File    : log.erl
+%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Description : Logging and error reporting interface
+%%%
+%%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%----------------------------------------------------------------------
+
 %% @doc: Logging and error reporting interface.
 
 -module(log).
