@@ -24,12 +24,12 @@ start() ->
     refServer:start(true),
     %% Set initial file load path (for the add module dialog)
     refServer:add({?FILE_PATH, ""}),
-    %% Load PULSE modules
+    %% Load CED modules
     code:load_file(?SCHEDULER),
     Frame = setupFrame(),
     wxFrame:show(Frame),
     loop(),
-    %% purge PULSE modules
+    %% purge CED modules
     code:purge(?SCHEDULER),
     refServer:stop(),
     os:cmd("rm -f *.dot *.png"),
@@ -40,7 +40,7 @@ start() ->
 %%%----------------------------------------------------------------------
 
 setupFrame() ->
-    Frame = wxFrame:new(wx:null(), ?FRAME, "PULSE"),
+    Frame = wxFrame:new(wx:null(), ?FRAME, "CED"),
     refServer:add({?FRAME, Frame}),
     MenuBar = wxMenuBar:new(),
     setupMenu(MenuBar, ?MENU_SPEC),
@@ -556,7 +556,7 @@ loop() ->
 	    loop();
 	%% -------------------- Menu handlers -------------------- %%
 	#wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
-	    Caption = "About PULSE",
+	    Caption = "About CED",
 	    Frame = refServer:lookup(?FRAME),
 	    Dialog = wxMessageDialog:new(Frame, ?INFO_MSG,
                                          [{style, ?wxOK}, {caption, Caption}]),

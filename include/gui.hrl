@@ -14,7 +14,7 @@
 %%    [{MenuName1, [MenuItem11, MenuItem12, ...]}, ...]
 -define(MENU_SPEC,
 	[{"&File",
-	  [[{id, ?EXIT}, {help, "Quit PULSE."}]]},
+	  [[{id, ?EXIT}, {help, "Quit CED."}]]},
 	 {"&Module",
 	  [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
 	    {help, "Add an existing erlang module."}],
@@ -45,19 +45,9 @@
 %% 'About' message
 -define(INFO_MSG,
 "
-                             PULSE
+                                    CED
 A tool for finding concurrency bugs in Erlang programs.
-                          Version 0.1
-
-------------------------------------------------------------------
-
-This is a preliminary version of the PULSE scheduler
-described in paper \"Finding Race Conditions in Erlang
-with QuickCheck and PULSE\". The work is part of the
-Property-based testing project:
-http://www.protest-project.eu/
-
-------------------------------------------------------------------
+                                Version 0.1
 ").
 
 %% Scheduler module name
