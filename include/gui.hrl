@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File    : gui.hrl
 %%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%% Description : 
+%%% Description :
 %%%
 %%% Created : 31 Mar 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
 %%%----------------------------------------------------------------------
@@ -36,7 +36,7 @@
 	       {kind, ?wxITEM_RADIO}],
 	      [{id, ?THEME_DARK}, {text, "Dark theme"},
 	       {kind, ?wxITEM_RADIO}]]}
-	   ]]}, 
+	   ]]},
 	 {"&Help",
 	  [[{id, ?ABOUT}, {text, "&About"},
 	    {help, "Show project info."}]]}
@@ -99,7 +99,7 @@ http://www.protest-project.eu/
 -define(SOURCE_BG_DARK, {63, 63, 63}).
 -define(SOURCE_FG_DARK, {220, 220, 204}).
 %% -define(SOURCE_FG_DARK, {204, 220, 220}).
--define(SOURCE_STYLES_DARK, 
+-define(SOURCE_STYLES_DARK,
 	[{?wxSTC_ERLANG_ATOM,          ?SOURCE_FG_DARK,  normal},
 	 {?wxSTC_ERLANG_CHARACTER,     {204, 147, 147},  normal},
 	 {?wxSTC_ERLANG_COMMENT,       {127, 159, 127},  normal},

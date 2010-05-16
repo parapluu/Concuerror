@@ -10,7 +10,7 @@ spawn_next(First, 0, TTL, Msg) ->
 spawn_next(First, Counter, TTL, Msg) ->
     Pid = spawn(fun() -> spawn_next(First, Counter - 1, TTL, Msg) end),
     loop(Pid).
-			
+
 loop(Next) ->
     receive
 	{0, _} -> Next ! stop;

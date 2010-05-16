@@ -459,7 +459,7 @@ refresh() ->
 	    wxStyledTextCtrl:loadFile(SourceText, Module),
 	    wxStyledTextCtrl:setReadOnly(SourceText, true)
     end.
-    
+
 %% Remove selected module from module list.
 remove() ->
     ModuleList = refServer:lookup(?MODULE_LIST),

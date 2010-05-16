@@ -10,7 +10,7 @@
 -export([stringList/1, tupleList/1]).
 
 -spec tupleList(string()) -> [{atom(), arity()}].
-                       
+
 tupleList(Module) ->
     {ok, Form} = epp_dodger:quick_parse_file(Module),
     getFuns(Form, []).
@@ -39,7 +39,7 @@ getFuns([Node | Rest] = L, Funs) ->
 		    NewFuns = getExports(Args, []),
 		    getFuns(Rest, NewFuns ++ Funs);
 		_Other -> getFuns(Rest, Funs)
-	    end;	
+	    end;
 	function ->
 	    case Funs of
 		[] -> getAllFuns(L, []);

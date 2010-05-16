@@ -48,7 +48,7 @@ stop() ->
 add({_Id, _Ref} = T) ->
     refServer ! {self(), #ref{type = ref_add, msg = T}},
     receive #ref{type = ref_ok} -> ok end.
-	
+
 -spec lookup(id()) -> ref() | string() | 'not_found'.
 
 lookup(Id) ->
