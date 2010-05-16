@@ -21,7 +21,6 @@
 
 start() ->
     wx:new(),
-    register(loop, self()),
     refServer:start(true),
     %% Set initial file load path (for the add module dialog)
     refServer:add({?FILE_PATH, ""}),
@@ -33,7 +32,6 @@ start() ->
     %% purge PULSE modules
     code:purge(?SCHEDULER),
     refServer:stop(),
-    unregister(loop),
     os:cmd("rm -f *.dot *.png"),
     wx:destroy().
 
