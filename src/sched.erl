@@ -106,7 +106,7 @@ analyze(Files, Mod, Fun, Args) ->
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
 interleave(Mod, Fun, Args) ->
-    register(sched, self()),
+    register('.sched', self()),
     %% The mailbox is flushed mainly to discard possible `exit` messages
     %% before enabling the `trap_exit` flag.
     flush_mailbox(),
@@ -120,7 +120,7 @@ interleave(Mod, Fun, Args) ->
     {T2, _} = statistics(wall_clock),
     report_elapsed_time(T1, T2),
     state_stop(),
-    unregister(sched),
+    unregister('.sched'),
     Result.
 
 inter_loop(Mod, Fun, Args, RunCounter) ->
@@ -136,7 +136,7 @@ inter_loop(Mod, Fun, Args, RunCounter) ->
             %% The process is created linked to the scheduler, so that the
             %% latter can receive the former's exit message when it terminates.
             %% In the same way, every process that may be spawned in the course
-            %% of the program shall be linked to this (`sched`) process.
+            %% of the program shall be linked to this (`.sched`) process.
             FirstPid = spawn_link(Mod, Fun, Args),
             %% Create the first LID and register it with FirstPid.
             lid_new(FirstPid),
@@ -389,7 +389,7 @@ wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
 %% is required to block, i.e. moved to the `blocked` set and stop being
 %% scheduled, until awaken.
 block() ->
-    sched ! #sched{msg = block, pid = self()},
+    '.sched' ! #sched{msg = block, pid = self()},
     receive
 	#sched{msg = continue} -> true
     end.
@@ -402,7 +402,7 @@ block() ->
 
 rep_link(Pid) ->
     Result = link(Pid),
-    sched ! #sched{msg = link, pid = self(), misc = [Pid]},
+    '.sched' ! #sched{msg = link, pid = self(), misc = [Pid]},
     rep_yield(),
     Result.
 
@@ -418,7 +418,7 @@ rep_link(Pid) ->
 -spec rep_yield() -> 'true'.
 
 rep_yield() ->
-    sched ! #sched{msg = yield, pid = self()},
+    '.sched' ! #sched{msg = yield, pid = self()},
     receive
 	#sched{msg = continue} -> true
     end.
@@ -447,7 +447,7 @@ rep_receive_aux(Fun) ->
 -spec rep_receive_notify(pid(), term()) -> 'ok'.
 
 rep_receive_notify(From, Msg) ->
-    sched ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
+    '.sched' ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
     rep_yield(),
     ok.
 
@@ -459,7 +459,7 @@ rep_receive_notify(From, Msg) ->
 
 rep_send(Dest, Msg) ->
     {_Self, RealMsg} = Dest ! Msg,
-    sched ! #sched{msg = send, pid = self(), misc = [Dest, RealMsg]},
+    '.sched' ! #sched{msg = send, pid = self(), misc = [Dest, RealMsg]},
     rep_yield(),
     RealMsg.
 
@@ -474,7 +474,7 @@ rep_spawn(Fun) ->
     %% XXX: Possible race between `yield` message of child and
     %%      `spawn` message of parent.
     Pid = spawn(fun() -> rep_yield(), Fun() end),
-    sched ! #sched{msg = spawn, pid = self(), misc = [Pid]},
+    '.sched' ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     rep_yield(),
     Pid.
 

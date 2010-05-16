@@ -36,8 +36,8 @@ start(Link) ->
 -spec stop() -> 'ok'.
 
 stop() ->
-    Pid = whereis(refServer),
-    unregister(refServer),
+    Pid = whereis('.refServer'),
+    unregister('.refServer'),
     Pid ! {self(), #ref{type = ref_stop}},
     receive
 	#ref{type = ref_ok} -> ok
@@ -46,20 +46,20 @@ stop() ->
 -spec add({id(), ref()}) -> 'ok'.
 
 add({_Id, _Ref} = T) ->
-    refServer ! {self(), #ref{type = ref_add, msg = T}},
+    '.refServer' ! {self(), #ref{type = ref_add, msg = T}},
     receive #ref{type = ref_ok} -> ok end.
 
 -spec lookup(id()) -> ref() | string() | 'not_found'.
 
 lookup(Id) ->
-    refServer ! {self(), #ref{type = ref_lookup, msg = Id}},
+    '.refServer' ! {self(), #ref{type = ref_lookup, msg = Id}},
     receive
 	#ref{type = ref_ok, msg = not_found} -> not_found;
 	#ref{type = ref_ok, msg = Value} -> Value
     end.
 
 reg(Self) ->
-    register(refServer, self()),
+    register('.refServer', self()),
     Self ! #ref{type = ref_ok},
     loop(dict:new()).
 
