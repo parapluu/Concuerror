@@ -23,6 +23,7 @@
 %%% Eunit related
 %%%----------------------------------------------------------------------
 
+%% -define(NODEBUG, true).
 -include_lib("eunit/include/eunit.hrl").
 
 %% Spec for auto-generated test/0 function (eunit).
@@ -31,9 +32,6 @@
 %%%----------------------------------------------------------------------
 %%% Definitions
 %%%----------------------------------------------------------------------
-
-%% Debug messages (TODO: define externally?).
-%% -define(DEBUG, true).
 
 -ifdef(DEBUG).
 -define(debug(S_, L_), io:format("(Debug) " ++ S_, L_)).
@@ -46,14 +44,25 @@
 %%%----------------------------------------------------------------------
 
 %% @type: lid() = string().
+%% The logical id (LID) for each process reflects the process' logical
+%% position in the program's "process creation tree" and doesn't change
+%% between different runs of the same program (as opposed to erlang pids).
+-type lid() :: string().
+%% @type: state() = atom().
+%% A state is a list of LIDs showing the (reverse) interleaving of
+%% processes up to a point of the program.
+-type state() :: [lid()].
 %% @type: dest() =  pid() | port() | atom() | {atom(), atom()}.
-
-%% @type: analysis_ret() = 0 | 1 | 2.
-
--type lid()  :: string().
+%% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
-
--type analysis_ret() :: ?RET_NORMAL | ?RET_HEISENBUG | ?RET_INSTR_ERROR.
+%% @type: error_descr() = 'deadlock'.
+-type error_descr() :: 'deadlock'.
+%% @type: analysis_ret() = 'ok' |
+%%                         {error, instr} |
+%%                         {error, analysis, [{error_descr(), state()}]}.
+-type analysis_ret() :: 'ok' |
+                        {error, instr} |
+                        {error, analysis, [{error_descr(), state()}]}.
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -65,17 +74,9 @@
 %% blocked: A set containing all processes that cannot be scheduled next
 %%          (e.g. waiting for a message on a `receive`).
 %% state:   The current state of the program.
-%%          A state is a list of LIDs showing the (reverse?) interleaving of
-%%          processes up to a point of the program.
-%%
-%%          NOTE:
-%%          The logical id (LID) for each process reflects the process' logical
-%%          position in the program's "process creation tree" and doesn't change
-%%          between different runs of the same program (as opposed to erlang
-%%          pids).
 -record(info, {active  :: set(),
                blocked :: set(),
-               state   :: [lid()]}).
+               state   :: state()}).
 
 %% Internal message format
 %%
@@ -90,18 +91,20 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
-%% @spec analyze([file()], atom(), atom(), [term()]) -> analysis_ret()
+%% @spec: analyze([file()], atom(), atom(), [term()]) -> analysis_ret()
 %% @doc: Instrument one or more files and produce all interleavings of running
-%% `Mod:Fun(Args)'.
+%%       `Mod:Fun(Args)'.
 -spec analyze([file()], module(), atom(), [term()]) -> analysis_ret().
 
 analyze(Files, Mod, Fun, Args) ->
     case instr:instrument_and_load(Files) of
 	ok ->
-	    log:log("~n"),
-	    interleave(Mod, Fun, Args);
+	    case interleave(Mod, Fun, Args) of
+		ok -> ok;
+		{error, ErrorStates} -> {error, analysis, ErrorStates}
+	    end;
 	error ->
-	    ?RET_INSTR_ERROR
+	    {error, instr}
     end.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
@@ -116,17 +119,22 @@ interleave(Mod, Fun, Args) ->
     %% Insert empty replay state for the first run.
     state_insert(state_init()),
     {T1, _} = statistics(wall_clock),
-    Result = inter_loop(Mod, Fun, Args, 1),
+    Result = interleave_loop(Mod, Fun, Args, 1, []),
     {T2, _} = statistics(wall_clock),
     report_elapsed_time(T1, T2),
     state_stop(),
     unregister('.sched'),
     Result.
 
-inter_loop(Mod, Fun, Args, RunCounter) ->
+%% Main loop for producing process interleavings.
+interleave_loop(Mod, Fun, Args, RunCounter, Errors) ->
     %% Lookup state to replay.
     case state_pop() of
-        no_state -> ?RET_NORMAL;
+        no_state ->
+	    case Errors of
+		[] -> ok;
+		_Any -> {error, lists:reverse(Errors)}
+	    end;
         ReplayState ->
             log:log("Running interleaving ~p~n", [RunCounter]),
             log:log("----------------------~n"),
@@ -152,13 +160,14 @@ inter_loop(Mod, Fun, Args, RunCounter) ->
                                        state = State}),
             %% Use driver to replay ReplayState.
             Ret = driver(NewInfo, ReplayState),
-            %% Stop LID service (LID tables have to be reset on each
-            %% run).
+	    %% TODO: Proper cleanup of any remaining processes.
+            %% Stop LID service (LID tables have to be reset on each run).
             lid_stop(),
             case Ret of
-                ?RET_NORMAL ->
-                    inter_loop(Mod, Fun, Args, RunCounter + 1);
-                ?RET_HEISENBUG -> ?RET_HEISENBUG
+                ok -> interleave_loop(Mod, Fun, Args, RunCounter + 1, Errors);
+                {error, ErrorDescr, ErrorState} ->
+		    interleave_loop(Mod, Fun, Args, RunCounter + 1,
+				    [{ErrorDescr, ErrorState} | Errors]) 
             end
     end.
 
@@ -180,7 +189,8 @@ dispatcher(Info) ->
 	    handler(send, Pid, Info, [Dest, Msg]);
 	#sched{msg = spawn, pid = Pid, misc = [ChildPid]} ->
 	    handler(spawn, Pid, Info, [ChildPid]);
-	#sched{msg = yield, pid = Pid} -> handler(yield, Pid, Info, []);
+	#sched{msg = yield, pid = Pid} ->
+	    handler(yield, Pid, Info, []);
 	{'EXIT', Pid, Reason} ->
 	    handler(exit, Pid, Info, [Reason]);
 	Other ->
@@ -202,9 +212,11 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
     %% a deadlock, else if both sets are empty, report program termination.
     case set_is_empty(Active) of
 	true ->
+	    log:log("-----------------------~n"),
+	    log:log("Run terminated.~n~n"),
 	    case set_is_empty(Blocked) of
-		true -> stop(normal);
-		false -> stop(deadlock)
+		true -> ok;
+		false -> {error, deadlock, State}
 	    end;
 	false ->
 	    %% Run search algorithm to find next process to be run.
@@ -234,9 +246,11 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info,
     %% a deadlock, else if both sets are empty, report program termination.
     case set_is_empty(Active) of
 	true ->
+	    log:log("-----------------------~n"),
+	    log:log("Run terminated.~n~n"),
 	    case set_is_empty(Blocked) of
-		true -> stop(normal);
-		false -> stop(deadlock)
+		true -> ok;
+		false -> {error, deadlock, State}
 	    end;
 	false ->
 	    %% Remove process Next from the `active` set and run it.
@@ -259,7 +273,6 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info,
 %% of them into the `states` table.
 %% Returns the process to be run next.
 search(#info{active = Active, state = State} = Info) ->
-    ?debug("(Search) active set: ~p~n", [sets:to_list(Active)]),
     %% Remove a process from the `actives` set and run it.
     {Next, NewActive} = set_pop(Active),
     %% Store all other possible successor states in `states` table for later
@@ -358,22 +371,12 @@ report_elapsed_time(T1, T2) ->
     ElapsedTime = T2 - T1,
     Mins = ElapsedTime div 60000,
     Secs = (ElapsedTime rem 60000) / 1000,
-    io:format("Done in ~wm~.2fs\n", [Mins, Secs]).
+    log:log("Done in ~wm~.2fs\n", [Mins, Secs]).
 
 %% Signal process Lid to continue its execution.
 run(Lid) ->
     Pid = lid_to_pid(Lid),
     Pid ! #sched{msg = continue}.
-
-%% Single run termination.
-stop(Reason) ->
-    log:log("-----------------------~n"),
-    log:log("Run terminated (~p).~n~n", [Reason]),
-    ?debug("Unexplored: ~p~n~n", [ets:match(state, '$1')]),
-    case Reason of
-        normal -> ?RET_NORMAL;
-        _ -> ?RET_HEISENBUG
-    end.
 
 %% Wakeup a process.
 %% If process is in `blocked` set, move to `active` set.
@@ -677,27 +680,27 @@ lid_test_() ->
 
 interleave_test_() ->
     [{"test1",
-      ?_assertEqual(?RET_NORMAL,
+      ?_assertEqual(ok,
 		    analyze(["./test/test.erl"], test, test1, []))},
      {"test2",
-      ?_assertEqual(?RET_NORMAL,
+      ?_assertEqual(ok,
 		    analyze(["./test/test.erl"], test, test2, []))},
      {"test3",
-      ?_assertEqual(?RET_NORMAL,
+      ?_assertEqual(ok,
 		    analyze(["./test/test.erl"], test, test3, []))},
      {"test4",
-      ?_assertEqual(?RET_HEISENBUG,
+      ?_assertMatch({error, analysis, _}, 
 		    analyze(["./test/test.erl"], test, test4, []))},
      {"test5",
-      ?_assertEqual(?RET_HEISENBUG,
+      ?_assertMatch({error, analysis, _},
 		    analyze(["./test/test.erl"], test, test5, []))},
      {"test6",
-      ?_assertEqual(?RET_NORMAL,
+      ?_assertEqual(ok,
 		    analyze(["./test/test.erl"], test, test6, []))},
      {"test7",
-      ?_assertEqual(?RET_NORMAL,
+      ?_assertEqual(ok,
 		    analyze(["./test/test.erl"], test, test7, []))},
      {"test9",
-      ?_assertEqual(?RET_NORMAL,
+      ?_assertEqual(ok,
 		    analyze(["./test/test.erl", "./test/test_aux.erl"],
 			    test, test9, []))}].
