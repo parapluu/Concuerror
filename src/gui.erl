@@ -22,15 +22,11 @@
 start() ->
     wx:new(),
     refServer:start(true),
-    %% Set initial file load path (for the add module dialog)
+    %% Set initial file load path (used by the module addition dialog).
     refServer:add({?FILE_PATH, ""}),
-    %% Load CED modules
-    code:load_file(?SCHEDULER),
     Frame = setupFrame(),
     wxFrame:show(Frame),
     loop(),
-    %% purge CED modules
-    code:purge(?SCHEDULER),
     refServer:stop(),
     os:cmd("rm -f *.dot *.png"),
     wx:destroy().
@@ -212,8 +208,6 @@ setupSourceText(Ref, Theme) ->
                             ?wxNORMAL, []),
     BoldFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL,
                           ?wxBOLD, []),
-%%     ItalicFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxITALIC,
-%%                             ?wxBOLD, []),
     case Theme of
 	dark ->
 	    Styles = ?SOURCE_STYLES_DARK,
@@ -238,8 +232,6 @@ setupSourceText(Ref, Theme) ->
 		  case Option of
 		      bold ->
 			  wxStyledTextCtrl:styleSetFont(Ref, Style, BoldFont);
-%% 		      italic ->
-%% 			  wxStyledTextCtrl:styleSetFont(Ref, Style, ItalicFont);
 		      _Other ->
 			  wxStyledTextCtrl:styleSetFont(Ref, Style, NormalFont)
 		  end,
@@ -592,22 +584,23 @@ loop() ->
 	#wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
 	    ok;
 	%% -------------------- Misc handlers -------------------- %%
-	#gui{type = dot, msg = ok} ->
-	    StaticBmp = refServer:lookup(?STATIC_BMP),
-	    ScrGraph = refServer:lookup(?SCR_GRAPH),
-	    os:cmd("dot -Tpng < schedule.dot > schedule.png"),
-	    Image = wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
-	    {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
-	    wxScrolledWindow:setScrollbars(ScrGraph, 20, 20, W div 20,
-                                           H div 20),
-	    wxStaticBitmap:setBitmap(StaticBmp, Image),
-	    %% NOTE: Important, memory leak if left out!
-	    wxBitmap:destroy(Image),
-	    loop();
-	#gui{type = log, msg = String} ->
-	    LogText = refServer:lookup(?LOG_TEXT),
-	    wxTextCtrl:appendText(LogText, String),
-	    loop();
+	%% FIXME: To be deleted shortly.
+	%% #gui{type = dot, msg = ok} ->
+	%%     StaticBmp = refServer:lookup(?STATIC_BMP),
+	%%     ScrGraph = refServer:lookup(?SCR_GRAPH),
+	%%     os:cmd("dot -Tpng < schedule.dot > schedule.png"),
+	%%     Image = wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
+	%%     {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
+	%%     wxScrolledWindow:setScrollbars(ScrGraph, 20, 20, W div 20,
+        %%                                    H div 20),
+	%%     wxStaticBitmap:setBitmap(StaticBmp, Image),
+	%%     %% NOTE: Important, memory leak if left out!
+	%%     wxBitmap:destroy(Image),
+	%%     loop();
+	%% #gui{type = log, msg = String} ->
+	%%     LogText = refServer:lookup(?LOG_TEXT),
+	%%     wxTextCtrl:appendText(LogText, String),
+	%%     loop();
 	#wx{event = #wxClose{type = close_window}} ->
 	    ok;
 	%% -------------------- Catchall -------------------- %%
