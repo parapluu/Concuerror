@@ -4,9 +4,10 @@
 %%% Description : Utilities
 %%%
 %%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%
+%%% @doc: Utility functions
+%%% @end
 %%%----------------------------------------------------------------------
-
-%% @doc: Utility functions.
 
 -module(util).
 -export([doc/1, funs/1, funs/2]).

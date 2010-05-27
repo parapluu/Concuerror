@@ -4,6 +4,9 @@
 %%% Description : Graphical User Interface
 %%%
 %%% Created : 31 Mar 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%
+%%% @doc: Graphical User Interface
+%%% @end
 %%%----------------------------------------------------------------------
 
 -module(gui).

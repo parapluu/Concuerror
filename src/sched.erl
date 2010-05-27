@@ -4,9 +4,10 @@
 %%% Description : Scheduler
 %%%
 %%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%
+%%% @doc: Scheduler
+%%% @end
 %%%----------------------------------------------------------------------
-
-%% @doc: The scheduler.
 
 -module(sched).
 

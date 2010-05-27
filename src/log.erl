@@ -4,9 +4,10 @@
 %%% Description : Logging and Error Reporting Interface
 %%%
 %%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%
+%%% @doc: Logging and error reporting interface
+%%% @end
 %%%----------------------------------------------------------------------
-
-%% @doc: Logging and error reporting interface.
 
 -module(log).
 -export([internal/1, internal/2, log/1, log/2]).
