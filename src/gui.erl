@@ -39,7 +39,7 @@ start() ->
 %%%----------------------------------------------------------------------
 
 setupFrame() ->
-    Frame = wxFrame:new(wx:null(), ?FRAME, "CED"),
+    Frame = wxFrame:new(wx:null(), ?FRAME, ?APP_STRING),
     ref_add(?FRAME, Frame),
     MenuBar = wxMenuBar:new(),
     setupMenu(MenuBar, ?MENU_SPEC),
@@ -52,7 +52,7 @@ setupFrame() ->
     wxEvtHandler:connect(Frame, command_listbox_selected),
     wxEvtHandler:connect(Frame, command_listbox_doubleclicked),
     setupPanel(Frame),
-    wxWindow:setSize(Frame, {1024, 768}),
+    wxWindow:setSize(Frame, ?FRAME_SIZE_INIT),
     %% wxWindow:fit(Frame),
     wxFrame:center(Frame),
     Frame.
@@ -567,7 +567,7 @@ loop() ->
 	    loop();
 	%% -------------------- Menu handlers -------------------- %%
 	#wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
-	    Caption = "About CED",
+	    Caption = "About" ++ ?APP_STRING,
 	    Frame = ref_lookup(?FRAME),
 	    Dialog = wxMessageDialog:new(Frame, ?INFO_MSG,
                                          [{style, ?wxOK}, {caption, Caption}]),

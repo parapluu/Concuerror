@@ -10,10 +10,23 @@
 %%% Definitions
 %%%----------------------------------------------------------------------
 
--define(RET_NORMAL, 0).
+%% Application name (atom and string).
+-define(APP_ATOM, 'CED').
+-define(APP_STRING, "CED").
+
+%% Registered process names.
+-define(RP_SCHED, '_._sched').
+
+%% Named ets table names.
+-define(NT_REF, '_._ref').
+-define(NT_PID, '_._pid').
+-define(NT_LID, '_._lid').
+-define(NT_STATE, '_._state').
+-define(NT_USED, '_._used').
+
+
+%% Internal error return code.
 -define(RET_INTERNAL_ERROR, 1).
--define(RET_DEADLOCK, 2).
--define(RET_INSTR_ERROR, 3).
 
 %%%----------------------------------------------------------------------
 %%% Types

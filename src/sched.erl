@@ -109,7 +109,7 @@ analyze(Files, Mod, Fun, Args) ->
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
 interleave(Mod, Fun, Args) ->
-    register('.sched', self()),
+    register(?RP_SCHED, self()),
     %% The mailbox is flushed mainly to discard possible `exit` messages
     %% before enabling the `trap_exit` flag.
     flush_mailbox(),
@@ -123,7 +123,7 @@ interleave(Mod, Fun, Args) ->
     {T2, _} = statistics(wall_clock),
     report_elapsed_time(T1, T2),
     state_stop(),
-    unregister('.sched'),
+    unregister(?RP_SCHED),
     Result.
 
 %% Main loop for producing process interleavings.
@@ -144,7 +144,7 @@ interleave_loop(Mod, Fun, Args, RunCounter, Errors) ->
             %% The process is created linked to the scheduler, so that the
             %% latter can receive the former's exit message when it terminates.
             %% In the same way, every process that may be spawned in the course
-            %% of the program shall be linked to this (`.sched`) process.
+            %% of the program shall be linked to this process.
             FirstPid = spawn_link(Mod, Fun, Args),
             %% Create the first LID and register it with FirstPid.
             lid_new(FirstPid),
@@ -347,7 +347,7 @@ handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
         %% This case clause avoids a possible race between `yield` message
         %% of child and `spawn` message of parent.
         not_found ->
-            '.sched' ! #sched{msg = yield, pid = Pid},
+            ?RP_SCHED ! #sched{msg = yield, pid = Pid},
             dispatcher(Info);
         Lid ->
             ?debug("Process ~s yields.~n", [Lid]),
@@ -399,7 +399,7 @@ wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
 %% is required to block, i.e. moved to the `blocked` set and stop being
 %% scheduled, until awaken.
 block() ->
-    '.sched' ! #sched{msg = block, pid = self()},
+    ?RP_SCHED ! #sched{msg = block, pid = self()},
     receive
 	#sched{msg = continue} -> true
     end.
@@ -412,7 +412,7 @@ block() ->
 
 rep_link(Pid) ->
     Result = link(Pid),
-    '.sched' ! #sched{msg = link, pid = self(), misc = [Pid]},
+    ?RP_SCHED ! #sched{msg = link, pid = self(), misc = [Pid]},
     rep_yield(),
     Result.
 
@@ -428,7 +428,7 @@ rep_link(Pid) ->
 -spec rep_yield() -> 'true'.
 
 rep_yield() ->
-    '.sched' ! #sched{msg = yield, pid = self()},
+    ?RP_SCHED ! #sched{msg = yield, pid = self()},
     receive
 	#sched{msg = continue} -> true
     end.
@@ -457,7 +457,7 @@ rep_receive_aux(Fun) ->
 -spec rep_receive_notify(pid(), term()) -> 'ok'.
 
 rep_receive_notify(From, Msg) ->
-    '.sched' ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
+    ?RP_SCHED ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
     rep_yield(),
     ok.
 
@@ -469,11 +469,11 @@ rep_receive_notify(From, Msg) ->
 
 rep_send(Dest, Msg) ->
     {_Self, RealMsg} = Dest ! Msg,
-    '.sched' ! #sched{msg = send, pid = self(), misc = [Dest, RealMsg]},
+    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = [Dest, RealMsg]},
     rep_yield(),
     RealMsg.
 
-%% @spec rep_spawn(fun()) -> pid()
+%% @spec rep_spawn(function()) -> pid()
 %% @doc: Replacement for `spawn/1'.
 %%
 %% The argument provided is the argument of the original spawn call.
@@ -482,7 +482,7 @@ rep_send(Dest, Msg) ->
 
 rep_spawn(Fun) ->
     Pid = spawn(fun() -> rep_yield(), Fun() end),
-    '.sched' ! #sched{msg = spawn, pid = self(), misc = [Pid]},
+    ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     rep_yield(),
     Pid.
 
@@ -492,7 +492,7 @@ rep_spawn(Fun) ->
 
 %% Return the LID of process Pid or 'not_found' if mapping not in table.
 lid(Pid) ->
-    case ets:lookup(pid, Pid) of
+    case ets:lookup(?NT_PID, Pid) of
 	[{_Pid, Lid}] -> Lid;
 	[] -> not_found
     end.
@@ -504,19 +504,19 @@ lid(Pid) ->
 lid_new(Pid) ->
     %% The first process has LID = "P1" and has no children spawned at init.
     Lid = "P1",
-    ets:insert(lid, {Lid, Pid, 0}),
-    ets:insert(pid, {Pid, Lid}),
+    ets:insert(?NT_LID, {Lid, Pid, 0}),
+    ets:insert(?NT_PID, {Pid, Lid}),
     Lid.
 
 lid_new(ParentLID, Pid) ->
-    [{_ParentLID, _ParentPid, Children}] = ets:lookup(lid, ParentLID),
+    [{_ParentLID, _ParentPid, Children}] = ets:lookup(?NT_LID, ParentLID),
     %% Create new process' Lid
     Lid = lists:concat([ParentLID, ".", Children + 1]),
     %% Update parent info (increment children counter).
-    ets:update_element(lid, ParentLID, {3, Children + 1}),
+    ets:update_element(?NT_LID, ParentLID, {3, Children + 1}),
     %% Insert child info.
-    ets:insert(lid, {Lid, Pid, 0}),
-    ets:insert(pid, {Pid, Lid}),
+    ets:insert(?NT_LID, {Lid, Pid, 0}),
+    ets:insert(?NT_PID, {Pid, Lid}),
     Lid.
 
 %% Initialize LID tables.
@@ -525,19 +525,19 @@ lid_start() ->
     %% Table for storing process info.
     %% Its elements are of the form {Lid, Pid, Children}, where Children
     %% is the number of processes spawned by it so far.
-    ets:new(lid, [named_table]),
+    ets:new(?NT_LID, [named_table]),
     %% Table for reverse lookup (Lid -> Pid) purposes.
     %% Its elements are of the form {Pid, Lid}.
-    ets:new(pid, [named_table]).
+    ets:new(?NT_PID, [named_table]).
 
 %% Clean up LID tables.
 lid_stop() ->
-    ets:delete(lid),
-    ets:delete(pid).
+    ets:delete(?NT_LID),
+    ets:delete(?NT_PID).
 
 %% Return the erlang pid of the process Lid.
 lid_to_pid(Lid) ->
-    ets:lookup_element(lid, Lid, 2).
+    ets:lookup_element(?NT_LID, Lid, 2).
 
 %%%----------------------------------------------------------------------
 %%% Set interface
@@ -588,7 +588,7 @@ state_init() ->
 
 %% Add a state to the `state` table.
 state_insert(State) ->
-    ets:insert(state, {State}).
+    ets:insert(?NT_STATE, {State}).
 
 %% Create all possible next states and add them to the `state` table.
 state_insert_succ(#info{active = Active, state = State}) ->
@@ -596,16 +596,16 @@ state_insert_succ(#info{active = Active, state = State}) ->
 
 state_insert_succ_aux(_State, []) -> ok;
 state_insert_succ_aux(State, [Proc|Procs]) ->
-    ets:insert(state, {[Proc|State]}),
+    ets:insert(?NT_STATE, {[Proc|State]}),
     state_insert_succ_aux(State, Procs).
 
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
 state_pop() ->
-    case ets:first(state) of
+    case ets:first(?NT_STATE) of
 	'$end_of_table' -> no_state;
 	State ->
-	    ets:delete(state, State),
+	    ets:delete(?NT_STATE, State),
 	    lists:reverse(State)
     end.
 
@@ -613,11 +613,11 @@ state_pop() ->
 %% Must be called before any other call to state_* functions.
 state_start() ->
     %% Table for storing unvisited states (as keys, the values are irrelevant).
-    ets:new(state, [named_table]).
+    ets:new(?NT_STATE, [named_table]).
 
 %% Clean up state table.
 state_stop() ->
-    ets:delete(state).
+    ets:delete(?NT_STATE).
 
 %%%----------------------------------------------------------------------
 %%% Unit tests

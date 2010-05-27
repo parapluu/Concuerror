@@ -10,6 +10,9 @@
 %%% Definitions
 %%%----------------------------------------------------------------------
 
+%% Initial frame size.
+-define(FRAME_SIZE_INIT, {1042, 768}).
+
 %% Menu specification:
 %%    [{MenuName1, [MenuItem11, MenuItem12, ...]}, ...]
 -define(MENU_SPEC,
@@ -49,9 +52,6 @@
 A tool for finding concurrency bugs in Erlang programs.
                                 Version 0.1
 ").
-
-%% Scheduler module name
--define(SCHEDULER, sched).
 
 %% File paths
 -define(ICON_PATH, "img/icon.png").

@@ -13,7 +13,7 @@
 
 -include("gen.hrl").
 
-%% @spec instrument_and_load([file()]) -> 'ok' | 'error'
+%% @spec instrument_and_load(Files::[file()]) -> 'ok' | 'error'
 %% @doc: Instrument, compile and load a list of files.
 %%
 %% Each file is first validated (i.e. checked whether it will compile
@@ -42,14 +42,14 @@ instrument_and_load_one(File) ->
     case compile:file(File, PreOptions) of
 	{ok, Module} ->
 	    %% A table for holding used variable names.
-	    ets:new(used, [named_table, private]),
+	    ets:new(?NT_USED, [named_table, private]),
 	    %% Instrument given source file.
 	    log:log("Instrumenting file ~p... ", [File]),
 	    case instrument(File) of
 		{ok, NewForms} ->
 		    log:log("ok~n"),
 		    %% Delete `used` table.
-		    ets:delete(used),
+		    ets:delete(?NT_USED),
 		    %% Compile instrumented code.
 		    %% TODO: More compile options?
 		    log:log("Compiling instrumented code...~n"),
@@ -73,7 +73,7 @@ instrument_and_load_one(File) ->
 		{error, Error} ->
 		    log:log("error: ~p~n", [Error]),
 		    %% Delete `used` table.
-		    ets:delete(used),
+		    ets:delete(?NT_USED),
 		    error
 	    end;
 	error ->
@@ -109,11 +109,11 @@ instrument_toplevel(Tree) ->
 %% Instrument a function.
 instrument_function(Tree) ->
     %% Delete previous entry in `used` table (if any).
-    ets:delete_all_objects(used),
+    ets:delete_all_objects(?NT_USED),
     %% A set of all variables used in the function.
     Used = erl_syntax_lib:variables(Tree),
     %% Insert the used set into `used` table.
-    ets:insert(used, {used, Used}),
+    ets:insert(?NT_USED, {used, Used}),
     instrument_subtrees(Tree).
 
 %% Instrument all subtrees of Tree.
@@ -148,7 +148,7 @@ instrument_term(Tree) ->
 	    instrument_receive(instrument_subtrees(Tree));
 	%% Replace every underscore with a new (underscore-prefixed) variable.
 	underscore ->
-	    [{used, Used}] = ets:lookup(used, used),
+	    [{used, Used}] = ets:lookup(?NT_USED, used),
 	    Fresh = erl_syntax_lib:new_variable_name(Used),
 	    String = "_" ++ atom_to_list(Fresh),
 	    erl_syntax:variable(String);
@@ -178,7 +178,7 @@ instrument_receive(Tree) ->
     %% Create new receive expression adding the `after 0` part.
     Timeout = erl_syntax:integer(0),
     %% Create new variable to use as 'Aux'.
-    [{used, Used}] = ets:lookup(used, used),
+    [{used, Used}] = ets:lookup(?NT_USED, used),
     Fresh = erl_syntax_lib:new_variable_name(Used),
     FunVar = erl_syntax:variable(Fresh),
     Action = erl_syntax:application(FunVar, []),
@@ -198,7 +198,7 @@ transform_receive_clause(Clause) ->
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
     %% Create new variable to use as 'SenderPid'.
-    [{used, Used}] = ets:lookup(used, used),
+    [{used, Used}] = ets:lookup(?NT_USED, used),
     Fresh = erl_syntax_lib:new_variable_name(Used),
     PidVar = erl_syntax:variable(Fresh),
     NewPattern = [erl_syntax:tuple([PidVar, OldPattern])],
