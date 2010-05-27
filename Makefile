@@ -30,12 +30,9 @@ ERL_COMPILE_FLAGS += +warn_exported_vars +warn_unused_import +warn_untyped_recor
 TARGETS = \
 	core \
 	gui \
-	utest \
-	wx
+	scripts
 
 GUI_MODULES = \
-	funs \
-	refServer \
 	gui
 
 CORE_MODULES = \
@@ -70,9 +67,7 @@ core:	$(CORE_MODULES:%=%.beam)
 
 gui:	$(GUI_MODULES:%=%.beam)
 
-wx:	run.sh
-
-utest:	test.sh
+scripts: run.sh test.sh
 
 run.sh:
 	printf "#%c/bin/bash\n \
@@ -94,9 +89,7 @@ test.sh:
 # Dependencies
 # ----------------------------------------------------
 
-driver.beam : gui.hrl
 gui.beam: gui.hrl
-refServer.beam: gui.hrl
 scheduler.beam: gui.hrl
 
 instr.beam: gen.hrl

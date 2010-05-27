@@ -123,37 +123,3 @@ A tool for finding concurrency bugs in Erlang programs.
 	 {?wxSTC_ERLANG_STRING,        {50, 50, 200},    normal},
 	 {?wxSTC_ERLANG_VARIABLE,      {20, 120, 140},   bold},
 	 {?wxSTC_ERLANG_UNKNOWN,       {255, 0, 0},      normal}]).
-
-%%%----------------------------------------------------------------------
-%%% Types
-%%%----------------------------------------------------------------------
-
--type id()  :: ?FRAME
-             | ?FUNCTION_LIST
-             | ?LOG_TEXT
-             | ?MODULE_LIST
-             | ?NOTEBOOK
-             | ?SCR_GRAPH
-             | ?STATIC_BMP
-             | ?SOURCE_TEXT
-             | ?FILE_PATH.
-
--type ref() :: any(). %% XXX: should be imported from wx
-%%                wxFrame:wxFrame()
-%%              | wxListBox:wxListBox()
-%%              | wxNotebook:wxNotebook()
-%%              | wxTextCtrl:wxTextCtrl()
-%%              | wxScrolledWindow:wxScrolledWindow()
-%%              | wxStaticBitmap:wxStaticBitmap()
-%%              | wxHtmlWindow:wxHtmlWindow().
-
--type gui_type() :: 'dot' | 'log'.
--type gui_msg()  :: 'ok' | string().
-
-%%%----------------------------------------------------------------------
-%%% Records
-%%%----------------------------------------------------------------------
-
-%% Internal message format
--record(gui, {type :: gui_type(),
-              msg  :: gui_msg()}).

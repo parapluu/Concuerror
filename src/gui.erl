@@ -11,23 +11,26 @@
 -export([start/0]).
 
 -include_lib("wx/include/wx.hrl").
--include("../include/gui.hrl").
+-include("gen.hrl").
+-include("gui.hrl").
 
 %%%----------------------------------------------------------------------
 %%% Exported functions
 %%%----------------------------------------------------------------------
 
+%% @spec start() -> 'ok'
+%% @doc: Start the CED GUI.
 -spec start() -> 'ok'.
 
 start() ->
     wx:new(),
-    refServer:start(true),
+    ref_start(),
     %% Set initial file load path (used by the module addition dialog).
-    refServer:add({?FILE_PATH, ""}),
+    ref_add(?FILE_PATH, ""),
     Frame = setupFrame(),
     wxFrame:show(Frame),
     loop(),
-    refServer:stop(),
+    ref_stop(),
     os:cmd("rm -f *.dot *.png"),
     wx:destroy().
 
@@ -37,7 +40,7 @@ start() ->
 
 setupFrame() ->
     Frame = wxFrame:new(wx:null(), ?FRAME, "CED"),
-    refServer:add({?FRAME, Frame}),
+    ref_add(?FRAME, Frame),
     MenuBar = wxMenuBar:new(),
     setupMenu(MenuBar, ?MENU_SPEC),
     wxFrame:setIcon(Frame, wxIcon:new(?ICON_PATH)),
@@ -81,9 +84,9 @@ setupLeftColumn(Panel) ->
     ModuleBox = wxStaticBox:new(Panel, ?wxID_ANY, "Modules"),
     FunctionBox = wxStaticBox:new(Panel, ?wxID_ANY, "Functions"),
     ModuleList = wxListBox:new(Panel, ?MODULE_LIST),
-    refServer:add({?MODULE_LIST, ModuleList}),
+    ref_add(?MODULE_LIST, ModuleList),
     FunctionList = wxListBox:new(Panel, ?FUNCTION_LIST, [{style, ?wxLB_SORT}]),
-    refServer:add({?FUNCTION_LIST, FunctionList}),
+    ref_add(?FUNCTION_LIST, FunctionList),
     AddButton = wxButton:new(Panel, ?ADD, [{label, "&Add..."}]),
     RemButton = wxButton:new(Panel, ?REMOVE),
     ClearButton = wxButton:new(Panel, ?CLEAR),
@@ -130,22 +133,22 @@ setupLeftColumn(Panel) ->
 setupRightColumn(Panel) ->
     %% Create widgets
     Notebook = wxNotebook:new(Panel, ?NOTEBOOK, [{style, ?wxNB_NOPAGETHEME}]),
-    refServer:add({?NOTEBOOK, Notebook}),
+    ref_add(?NOTEBOOK, Notebook),
     LogPanel = wxPanel:new(Notebook),
     GraphPanel = wxPanel:new(Notebook),
     SourcePanel = wxPanel:new(Notebook),
     LogText = wxTextCtrl:new(LogPanel, ?LOG_TEXT,
 			     [{style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
-    refServer:add({?LOG_TEXT, LogText}),
+    ref_add(?LOG_TEXT, LogText),
     ScrGraph = wxScrolledWindow:new(GraphPanel),
-    refServer:add({?SCR_GRAPH, ScrGraph}),
+    ref_add(?SCR_GRAPH, ScrGraph),
     wxWindow:setOwnBackgroundColour(ScrGraph, {255, 255, 255}),
     wxWindow:clearBackground(ScrGraph),
     Bmp = wxBitmap:new(),
     StaticBmp = wxStaticBitmap:new(ScrGraph, ?STATIC_BMP, Bmp),
-    refServer:add({?STATIC_BMP, StaticBmp}),
+    ref_add(?STATIC_BMP, StaticBmp),
     SourceText = wxStyledTextCtrl:new(SourcePanel),
-    refServer:add({?SOURCE_TEXT, SourceText}),
+    ref_add(?SOURCE_TEXT, SourceText),
     setupSourceText(SourceText, light),
     %% Setup tab sizers
     LogPanelSizer = wxBoxSizer:new(?wxVERTICAL),
@@ -242,6 +245,22 @@ setupSourceText(Ref, Theme) ->
     wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
 %%%----------------------------------------------------------------------
+%%% GUI element reference store/retrieve interface
+%%%----------------------------------------------------------------------
+
+ref_add(Id, Ref) ->
+    ets:insert(?NT_REF, {Id, Ref}).
+
+ref_lookup(Id) ->
+    ets:lookup_element(?NT_REF, Id, 2).
+
+ref_start() ->
+    ets:new(?NT_REF, [named_table]).
+
+ref_stop() ->
+    ets:delete(?NT_REF).
+
+%%%----------------------------------------------------------------------
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
@@ -268,7 +287,7 @@ addArgs(Parent, Sizer, I, Max, Refs) ->
 addDialog(Parent) ->
     Caption = "Open erlang module",
     Wildcard = "Erlang source|*.erl;*.hrl| All files|*",
-    DefaultDir = refServer:lookup(?FILE_PATH),
+    DefaultDir = ref_lookup(?FILE_PATH),
     DefaultFile = "",
     Dialog = wxFileDialog:new(Parent, [{message, Caption},
                                        {defaultDir, DefaultDir},
@@ -280,14 +299,14 @@ addDialog(Parent) ->
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
 	    addListItems(?MODULE_LIST, wxFileDialog:getPaths(Dialog)),
-	    refServer:add({?FILE_PATH, getDirectory()});
+	    ref_add(?FILE_PATH, getDirectory());
 	_Other -> continue
     end,
     wxDialog:destroy(Dialog).
 
 %% Add items to ListBox (Id) and select first of newly added modules
 addListItems(Id, Items) ->
-    List = refServer:lookup(Id),
+    List = ref_lookup(Id),
     Count = wxControlWithItems:getCount(List),
     wxListBox:insertItems(List, Items, Count),
     case Count of
@@ -302,14 +321,14 @@ addListItems(Id, Items) ->
 analyze() ->
     Module = getModule(),
     {Function, Arity} = getFunction(),
-    ModuleList = refServer:lookup(?MODULE_LIST),
+    ModuleList = ref_lookup(?MODULE_LIST),
     %% Get the list of files to be instrumented.
     Files = getStrings(ModuleList),
     %% Check if a module and function is selected.
     if Module =/= '', Function =/= '' ->
 	    case Arity of
 		0 ->
-		    LogText = refServer:lookup(?LOG_TEXT),
+		    LogText = ref_lookup(?LOG_TEXT),
 		    wxTextCtrl:clear(LogText),
 		    spawn(fun() -> sched:analyze(Files, Module, Function, [])
 			  end);
@@ -317,10 +336,10 @@ analyze() ->
 		%% a dialog window is displayed prompting the user to enter
 		%% the function's arguments.
 		Count ->
-		    Frame = refServer:lookup(?FRAME),
+		    Frame = ref_lookup(?FRAME),
 		    case argDialog(Frame, Count) of
 			{ok, Args} ->
-			    LogText = refServer:lookup(?LOG_TEXT),
+			    LogText = ref_lookup(?LOG_TEXT),
 			    wxTextCtrl:clear(LogText),
 			    spawn(fun() ->
 				    sched:analyze(Files, Module, Function, Args)
@@ -357,7 +376,7 @@ argDialog(Parent, Argnum) ->
     wxSizer:fit(TopSizer, Dialog),
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
-	    LogText = refServer:lookup(?LOG_TEXT),
+	    LogText = ref_lookup(?LOG_TEXT),
 	    wxTextCtrl:clear(LogText),
 	    ValResult = validateArgs(0, Refs, [], LogText),
 	    wxDialog:destroy(Dialog),
@@ -370,9 +389,9 @@ argDialog(Parent, Argnum) ->
 
 %% Clear module list.
 clear() ->
-    ModuleList = refServer:lookup(?MODULE_LIST),
-    FunctionList = refServer:lookup(?FUNCTION_LIST),
-    SourceText = refServer:lookup(?SOURCE_TEXT),
+    ModuleList = ref_lookup(?MODULE_LIST),
+    FunctionList = ref_lookup(?FUNCTION_LIST),
+    SourceText = ref_lookup(?SOURCE_TEXT),
     wxControlWithItems:clear(ModuleList),
     wxControlWithItems:clear(FunctionList),
     wxStyledTextCtrl:setReadOnly(SourceText, false),
@@ -381,7 +400,7 @@ clear() ->
 
 %% Return the directory path of selected module.
 getDirectory() ->
-    ModuleList = refServer:lookup(?MODULE_LIST),
+    ModuleList = ref_lookup(?MODULE_LIST),
     Path = wxControlWithItems:getStringSelection(ModuleList),
     Match =  re:run(Path, "(?<PATH>.*)/*?\.erl\$",
                     [dotall, {capture, ['PATH'], list}]),
@@ -394,7 +413,7 @@ getDirectory() ->
 %% The result is returned in the form {Function, Arity}, where Function
 %% is an atom and Arity is an integer.
 getFunction() ->
-    FunctionList = refServer:lookup(?FUNCTION_LIST),
+    FunctionList = ref_lookup(?FUNCTION_LIST),
     Expr = wxControlWithItems:getStringSelection(FunctionList),
     Match = re:run(Expr, "(?<FUN>.*)/(?<ARITY>.*)\$",
                    [dotall, {capture, ['FUN', 'ARITY'], list}]),
@@ -407,7 +426,7 @@ getFunction() ->
 %% Return the selected module from the module list.
 %% The result is an atom.
 getModule() ->
-    ModuleList = refServer:lookup(?MODULE_LIST),
+    ModuleList = ref_lookup(?MODULE_LIST),
     Path = wxControlWithItems:getStringSelection(ModuleList),
     Match =  re:run(Path, ".*/(?<MODULE>.*?)\.erl\$",
                     [dotall, {capture, ['MODULE'], list}]),
@@ -435,16 +454,16 @@ getStrings(Ref, N, Count, Strings) ->
 %%       by the user is required, because the `command_listbox_selected`
 %%       event for the module-list uses this function.
 refresh() ->
-    ModuleList = refServer:lookup(?MODULE_LIST),
+    ModuleList = ref_lookup(?MODULE_LIST),
     case wxListBox:getSelection(ModuleList) of
 	?wxNOT_FOUND -> continue;
 	_Other ->
 	    Module = wxListBox:getStringSelection(ModuleList),
-	    %% Update module functions
-	    Funs = funs:stringList(Module),
+	    %% Scan selected module for exported functions.
+	    Funs = util:funs(Module, [string]),
 	    setListItems(?FUNCTION_LIST, Funs),
-	    %% Update module source
-	    SourceText = refServer:lookup(?SOURCE_TEXT),
+	    %% Update source viewer.
+	    SourceText = ref_lookup(?SOURCE_TEXT),
 	    wxStyledTextCtrl:setReadOnly(SourceText, false),
 	    wxStyledTextCtrl:loadFile(SourceText, Module),
 	    wxStyledTextCtrl:setReadOnly(SourceText, true)
@@ -452,10 +471,10 @@ refresh() ->
 
 %% Remove selected module from module list.
 remove() ->
-    ModuleList = refServer:lookup(?MODULE_LIST),
+    ModuleList = ref_lookup(?MODULE_LIST),
     Selection = wxListBox:getSelection(ModuleList),
-    FunctionList = refServer:lookup(?FUNCTION_LIST),
-    SourceText = refServer:lookup(?SOURCE_TEXT),
+    FunctionList = ref_lookup(?FUNCTION_LIST),
+    SourceText = ref_lookup(?SOURCE_TEXT),
     if Selection =:= ?wxNOT_FOUND ->
 	    continue;
        true ->
@@ -476,7 +495,7 @@ remove() ->
 %% Set ListBox (Id) items (remove existing).
 setListItems(Id, Items) ->
     if Items =/= [], Items =/= [[]] ->
-	    List = refServer:lookup(Id),
+	    List = ref_lookup(Id),
 	    wxListBox:set(List, Items),
 	    wxControlWithItems:setSelection(List, 0),
 	    %% XXX: hack (send event message to self)
@@ -517,7 +536,7 @@ loop() ->
     receive
 	%% -------------------- Button handlers -------------------- %%
 	#wx{id = ?ADD, event = #wxCommand{type = command_button_clicked}} ->
-	    Frame = refServer:lookup(?FRAME),
+	    Frame = ref_lookup(?FRAME),
 	    addDialog(Frame),
 	    loop();
 	#wx{id = ?ANALYZE, event = #wxCommand{type = command_button_clicked}} ->
@@ -549,14 +568,14 @@ loop() ->
 	%% -------------------- Menu handlers -------------------- %%
 	#wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
 	    Caption = "About CED",
-	    Frame = refServer:lookup(?FRAME),
+	    Frame = ref_lookup(?FRAME),
 	    Dialog = wxMessageDialog:new(Frame, ?INFO_MSG,
                                          [{style, ?wxOK}, {caption, Caption}]),
 	    wxDialog:showModal(Dialog),
 	    wxWindow:destroy(Dialog),
 	    loop();
 	#wx{id = ?ADD, event = #wxCommand{type = command_menu_selected}} ->
-	    Frame = refServer:lookup(?FRAME),
+	    Frame = ref_lookup(?FRAME),
 	    addDialog(Frame),
 	    loop();
 	#wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
@@ -567,12 +586,12 @@ loop() ->
 	    loop();
 	#wx{id = ?THEME_LIGHT,
 	    event = #wxCommand{type = command_menu_selected}} ->
-	    SourceText = refServer:lookup(?SOURCE_TEXT),
+	    SourceText = ref_lookup(?SOURCE_TEXT),
 	    setupSourceText(SourceText, light),
 	    loop();
 	#wx{id = ?THEME_DARK,
 	    event = #wxCommand{type = command_menu_selected}} ->
-	    SourceText = refServer:lookup(?SOURCE_TEXT),
+	    SourceText = ref_lookup(?SOURCE_TEXT),
 	    setupSourceText(SourceText, dark),
 	    loop();
 	#wx{id = ?REFRESH, event = #wxCommand{type = command_menu_selected}} ->
@@ -586,8 +605,8 @@ loop() ->
 	%% -------------------- Misc handlers -------------------- %%
 	%% FIXME: To be deleted shortly.
 	%% #gui{type = dot, msg = ok} ->
-	%%     StaticBmp = refServer:lookup(?STATIC_BMP),
-	%%     ScrGraph = refServer:lookup(?SCR_GRAPH),
+	%%     StaticBmp = ref_lookup(?STATIC_BMP),
+	%%     ScrGraph = ref_lookup(?SCR_GRAPH),
 	%%     os:cmd("dot -Tpng < schedule.dot > schedule.png"),
 	%%     Image = wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
 	%%     {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
@@ -598,7 +617,7 @@ loop() ->
 	%%     wxBitmap:destroy(Image),
 	%%     loop();
 	%% #gui{type = log, msg = String} ->
-	%%     LogText = refServer:lookup(?LOG_TEXT),
+	%%     LogText = ref_lookup(?LOG_TEXT),
 	%%     wxTextCtrl:appendText(LogText, String),
 	%%     loop();
 	#wx{event = #wxClose{type = close_window}} ->
