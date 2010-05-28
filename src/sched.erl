@@ -45,22 +45,23 @@
 %%%----------------------------------------------------------------------
 
 %% @type: lid() = string().
+%% @type: state() = atom().
+%% @type: dest() =  pid() | port() | atom() | {atom(), atom()}.
+%% @type: error_descr() = 'deadlock'
+%% @type: analysis_ret() = 'ok' |
+%%                         {error, instr} |
+%%                         {error, analysis, [{error_descr(), state()}]}.
+
 %% The logical id (LID) for each process reflects the process' logical
 %% position in the program's "process creation tree" and doesn't change
 %% between different runs of the same program (as opposed to erlang pids).
 -type lid() :: string().
-%% @type: state() = atom().
 %% A state is a list of LIDs showing the (reverse) interleaving of
 %% processes up to a point of the program.
 -type state() :: [lid()].
-%% @type: dest() =  pid() | port() | atom() | {atom(), atom()}.
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
-%% @type: error_descr() = 'deadlock'.
 -type error_descr() :: 'deadlock'.
-%% @type: analysis_ret() = 'ok' |
-%%                         {error, instr} |
-%%                         {error, analysis, [{error_descr(), state()}]}.
 -type analysis_ret() :: 'ok' |
                         {error, instr} |
                         {error, analysis, [{error_descr(), state()}]}.
