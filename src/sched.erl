@@ -16,7 +16,7 @@
 
 %% Instrumentation related exports.
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
-	 rep_send/2, rep_spawn/1, rep_yield/0]).
+	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0]).
 
 -include("gen.hrl").
 
@@ -484,6 +484,20 @@ rep_send(Dest, Msg) ->
 
 rep_spawn(Fun) ->
     Pid = spawn(fun() -> rep_yield(), Fun() end),
+    ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = [Pid]},
+    rep_yield(),
+    Pid.
+
+%% @spec rep_spawn_link(function()) -> pid()
+%% @doc: Replacement for `spawn_link/1'.
+%%
+%% The argument provided is the argument of the original spawn call.
+%% When spawned, the new process has to yield.
+-spec rep_spawn_link(fun()) -> pid().
+
+rep_spawn_link(Fun) ->
+    Pid = spawn_link(fun() -> rep_yield(), Fun() end),
+    %% Same as rep_spawn for now.
     ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = [Pid]},
     rep_yield(),
     Pid.

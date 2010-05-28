@@ -131,10 +131,12 @@ instrument_term(Tree) ->
 		atom ->
 		    Function = erl_syntax:atom_value(Qualifier),
 		    case Function of
-			spawn ->
-			    instrument_spawn(instrument_subtrees(Tree));
 			link ->
 			    instrument_link(instrument_subtrees(Tree));
+			spawn ->
+			    instrument_spawn(instrument_subtrees(Tree));
+			spawn_link ->
+			    instrument_spawn_link(instrument_subtrees(Tree));
 			_Other -> instrument_subtrees(Tree)
 		    end;
 		_Other -> instrument_subtrees(Tree)
@@ -221,12 +223,20 @@ instrument_send(Tree) ->
     Arguments = [Pid, erl_syntax:tuple([Sender, Msg])],
     erl_syntax:application(Module, Function, Arguments).
 
-%% Instrument a spawn expression (only in the form spawn(fun() -> Body end
-%% for now).
-%% spawn(Fun) is transformed into sched:rep_spawn(Fun).
+%% Instrument a spawn/1 call.
+%% `spawn(Fun)' is transformed into `sched:rep_spawn(Fun)'.
 instrument_spawn(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn),
+    %% Fun expression arguments of the (before instrumentation) spawn call.
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
+
+%% Instrument a spawn_link/1 call.
+%% `spawn_link(Fun)' is transformed into `sched:rep_spawn_link(Fun)'.
+instrument_spawn_link(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_spawn_link),
     %% Fun expression arguments of the (before instrumentation) spawn call.
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
