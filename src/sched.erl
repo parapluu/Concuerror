@@ -12,7 +12,7 @@
 -module(sched).
 
 %% UI related exports.
--export([analyze/4]).
+-export([analyze/4, replay/4]).
 
 %% Instrumentation related exports.
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
@@ -24,21 +24,10 @@
 %%% Eunit related
 %%%----------------------------------------------------------------------
 
-%% -define(NODEBUG, true).
 -include_lib("eunit/include/eunit.hrl").
 
 %% Spec for auto-generated test/0 function (eunit).
 -spec test() -> 'ok' | {'error', term()}.
-
-%%%----------------------------------------------------------------------
-%%% Definitions
-%%%----------------------------------------------------------------------
-
--ifdef(DEBUG).
--define(debug(S_, L_), io:format("(Debug) " ++ S_, L_)).
--else.
--define(debug(S_, L_), ok).
--endif.
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -48,10 +37,12 @@
 %% @type: state() = atom().
 %% @type: dest() =  pid() | port() | atom() | {atom(), atom()}.
 %% @type: error_descr() = 'deadlock'
+%% @type: analysis_target() = {module(), atom(), [term()]}
 %% @type: analysis_ret() = 'ok' |
 %%                         {'error', 'instr'} |
 %%                         {'error', 'analysis', [{error_descr(), state()}]}.
 %% @type: error() = 'assert'
+%% @type: proc_action() = term().
 
 %% The logical id (LID) for each process reflects the process' logical
 %% position in the program's "process creation tree" and doesn't change
@@ -62,10 +53,12 @@
 -type state() :: [lid()].
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
--type error_descr() :: 'deadlock'.
--type analysis_ret() :: 'ok' |
-                        {'error', 'instr'} |
-                        {'error', 'analysis', [{error_descr(), state()}]}.
+-type error_descr() :: 'deadlock' | 'assert'.
+-type analysis_target() :: {module(), atom(), [term()]}.
+-type analysis_ret() :: {'ok', analysis_target()} |
+                        {error, instr, analysis_target()} |
+                        {error, analysis, analysis_target(),
+			 [{error_descr(), state()}]}.
 -type error_info() :: 'assert'.
 
 %%%----------------------------------------------------------------------
@@ -97,26 +90,84 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
-%% @spec: analyze([file()], atom(), atom(), [term()]) -> analysis_ret()
-%% @doc: Instrument one or more files and produce all interleavings of running
-%%       `Mod:Fun(Args)'.
--spec analyze([file()], module(), atom(), [term()]) -> analysis_ret().
+%% @spec: analyze(atom(), atom(), [term()], [term()]) -> analysis_ret()
+%% @doc: Produce all interleavings of running `Mod:Fun(Args)'.
+%%
+%% Returns `ok' if no errors occur, `{error, instr}' if the
+%% compilation/instrumentation fails or `{error, analysis, List}' if
+%% any erroneous interleaving is found.
+%% `List' is a list of `{ErrorDescription, ErrorInterleaving}'.
+-spec analyze(module(), atom(), [term()], [term()]) -> analysis_ret().
 
-analyze(Files, Mod, Fun, Args) ->
+analyze(Mod, Fun, Args, Options) ->
+    %% List of files to instrument.
+    Files = case lists:keyfind(files, 1, Options) of
+		false -> [];
+	        {files, List} -> List
+	    end,
     %% Disable error logging messages.
     error_logger:tty(false),
     case instr:instrument_and_load(Files) of
 	ok ->
-	    case interleave(Mod, Fun, Args) of
-		ok -> ok;
-		{error, ErrorStates} -> {error, analysis, ErrorStates}
+	    log:log("Running analysis...~n"),
+	    {Result, {Mins, Secs}} = interleave(Mod, Fun, Args),
+	    case Result of
+		{ok, RunCount} ->
+		    log:log("Analysis complete (checked ~w interleavings "
+			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
+		    log:log("No errors found.~n"),
+		    Return = {ok, {Mod, Fun, Args}},
+		    log:result(Return),
+		    Return;
+		{error, RunCount, ErrorStates} ->
+		    ErrorCount = length(ErrorStates),
+		    log:log("Analysis complete (checked ~w interleavings "
+			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
+		    log:log("Found ~p error(s).~n", [ErrorCount]),
+		    Return = {error, analysis, {Mod, Fun, Args}, ErrorStates},
+		    log:result(Return),
+		    Return
 	    end;
 	error ->
-	    {error, instr}
+	    Return = {error, instr, {Mod, Fun, Args}},
+	    log:result(Return),
+	    Return
     end.
 
+%% Replay the given state and return detailed information about the process
+%% interleaving.
+-spec replay(module(), atom(), [term()], state()) -> [proc_action()].
+
+replay(Mod, Fun, Args, State) ->
+    Self = self(),
+    spawn_link(fun() -> replay_aux(Mod, Fun, Args, State, Self) end),
+    receive
+	{replay_result, Result} -> Result
+    end.
+
+replay_aux(Mod, Fun, Args, State, Parent) ->
+    replay_logger:start(),
+    replay_logger:start_replay(),
+    %% TODO init_state
+    interleave(Mod, Fun, Args, [details, {init_state, State}]),
+    Result = replay_logger:get_replay(),
+    replay_logger:stop(),
+    Parent ! {replay_result, Result}.
+
 %% Produce all possible process interleavings of (Mod, Fun, Args).
+%% Options:
+%%   {init_state, InitState}: State to replay (default: state_init()).
+%%   details: Produce detailed interleaving information (see `replay_logger`).
 interleave(Mod, Fun, Args) ->
+    interleave(Mod, Fun, Args, [init_state, state_init()]).
+
+interleave(Mod, Fun, Args, Options) ->
+    InitState =
+	case lists:keyfind(init_state, 1, Options) of
+	    false -> state_init();
+	    {init_state, Any} -> Any
+	end,
+    DetailsFlag = lists:member(details, Options),
     register(?RP_SCHED, self()),
     %% The mailbox is flushed mainly to discard possible `exit` messages
     %% before enabling the `trap_exit` flag.
@@ -125,27 +176,30 @@ interleave(Mod, Fun, Args) ->
     %% Start state service.
     state_start(),
     %% Insert empty replay state for the first run.
-    state_insert(state_init()),
+    state_insert(InitState),
     {T1, _} = statistics(wall_clock),
-    Result = interleave_loop(Mod, Fun, Args, 1, []),
+    Result = interleave_loop(Mod, Fun, Args, 1, [], DetailsFlag),
     {T2, _} = statistics(wall_clock),
-    report_elapsed_time(T1, T2),
+    Time = elapsed_time(T1, T2),
     state_stop(),
     unregister(?RP_SCHED),
-    Result.
+    {Result, Time}.
 
 %% Main loop for producing process interleavings.
 interleave_loop(Mod, Fun, Args, RunCounter, Errors) ->
+    interleave_loop(Mod, Fun, Args, RunCounter, Errors, false).
+
+interleave_loop(Mod, Fun, Args, RunCounter, Errors, DetailsFlag) ->
     %% Lookup state to replay.
     case state_pop() of
         no_state ->
 	    case Errors of
-		[] -> ok;
-		_Any -> {error, lists:reverse(Errors)}
+		[] -> {ok, RunCounter - 1};
+		_Any -> {error, RunCounter - 1, lists:reverse(Errors)}
 	    end;
         ReplayState ->
-            log:log("Running interleaving ~p~n", [RunCounter]),
-            log:log("----------------------~n"),
+            ?debug_1("Running interleaving ~p~n", [RunCounter]),
+            ?debug_1("----------------------~n"),
             %% Start LID service.
             lid_start(),
             %% Create the first process.
@@ -161,13 +215,15 @@ interleave_loop(Mod, Fun, Args, RunCounter, Errors) ->
             Blocked = set_new(),
             %% Create initial state.
             State = state_init(),
+	    %% TODO: Not especially nice (maybe refactor into driver?).
             %% Receive the first message from the first process. That is, wait
             %% until it yields, blocks or terminates.
             NewInfo = dispatcher(#info{active = Active,
                                        blocked = Blocked,
-                                       state = State}),
+                                       state = State},
+				 DetailsFlag),
             %% Use driver to replay ReplayState.
-            Ret = driver(NewInfo, ReplayState),
+            Ret = driver(NewInfo, ReplayState, DetailsFlag),
 	    %% TODO: Proper cleanup of any remaining processes.
             %% Stop LID service (LID tables have to be reset on each run).
             lid_stop(),
@@ -175,7 +231,7 @@ interleave_loop(Mod, Fun, Args, RunCounter, Errors) ->
                 ok -> interleave_loop(Mod, Fun, Args, RunCounter + 1, Errors);
                 {error, ErrorDescr, ErrorState} ->
 		    interleave_loop(Mod, Fun, Args, RunCounter + 1,
-				    [{ErrorDescr, ErrorState} | Errors]) 
+				    [{ErrorDescr, ErrorState}|Errors]) 
             end
     end.
 
@@ -185,22 +241,24 @@ interleave_loop(Mod, Fun, Args, RunCounter, Errors) ->
 
 %% Delegates messages sent by instrumented client code to the appropriate
 %% handlers.
-dispatcher(Info) ->
+dispatcher(Info) -> dispatcher(Info, false).
+
+dispatcher(Info, DetailsFlag) ->
     receive
 	#sched{msg = block, pid = Pid} ->
-	    handler(block, Pid, Info, []);
+	    handler(block, Pid, Info, [], DetailsFlag);
 	#sched{msg = link, pid = Pid, misc = [TargetPid]} ->
-	    handler(link, Pid, Info, [TargetPid]);
+	    handler(link, Pid, Info, [TargetPid], DetailsFlag);
 	#sched{msg = 'receive', pid = Pid, misc = [From, Msg]} ->
-	    handler('receive', Pid, Info, [From, Msg]);
+	    handler('receive', Pid, Info, [From, Msg], DetailsFlag);
 	#sched{msg = send, pid = Pid, misc = [Dest, Msg]} ->
-	    handler(send, Pid, Info, [Dest, Msg]);
+	    handler(send, Pid, Info, [Dest, Msg], DetailsFlag);
 	#sched{msg = spawn, pid = Pid, misc = [ChildPid]} ->
-	    handler(spawn, Pid, Info, [ChildPid]);
+	    handler(spawn, Pid, Info, [ChildPid], DetailsFlag);
 	#sched{msg = yield, pid = Pid} ->
-	    handler(yield, Pid, Info, []);
+	    handler(yield, Pid, Info, [], DetailsFlag);
 	{'EXIT', Pid, Reason} ->
-	    handler(exit, Pid, Info, [Reason]);
+	    handler(exit, Pid, Info, [Reason], DetailsFlag);
 	Other ->
 	    log:internal("Dispatcher received: ~p~n", [Other])
     end.
@@ -215,7 +273,8 @@ dispatcher(Info) ->
 %% messages received from the running process to the appropriate handler
 %% functions.
 driver(#info{active = Active, blocked = Blocked,
-             error = Error, state = State} = Info) ->
+	     error = Error, state = State} = Info,
+       DetailsFlag) when is_boolean(DetailsFlag) ->
     %% Assertion violation check.
     case Error of
 	assert -> {error, assert, State};
@@ -226,8 +285,8 @@ driver(#info{active = Active, blocked = Blocked,
 	    %% program termination.
 	    case set_is_empty(Active) of
 		true ->
-		    log:log("-----------------------~n"),
-		    log:log("Run terminated.~n~n"),
+		    ?debug_1("-----------------------~n"),
+		    ?debug_1("Run terminated.~n~n"),
 		    case set_is_empty(Blocked) of
 			true -> ok;
 			false -> {error, deadlock, State}
@@ -237,25 +296,27 @@ driver(#info{active = Active, blocked = Blocked,
 		    Next = search(Info),
 		    %% Remove process Next from the `active` set and run it.
 		    NewActive = set_remove(Active, Next),
-		    ?debug("Running process ~s.~n", [Next]),
+		    ?debug_2("Running process ~s.~n", [Next]),
 		    run(Next),
 		    %% Create new state.
 		    NewState = state_get_next(State, Next),
 		    %% Call the dispatcher to handle incoming messages from the
 		    %% running process.
 		    NewInfo = dispatcher(Info#info{active = NewActive,
-						   state = NewState}),
-		    driver(NewInfo)
+						   state = NewState},
+					 DetailsFlag),
+		    driver(NewInfo, DetailsFlag)
 	    end
-    end.
+    end;
 
 %% Same as above, but instead of searching, the process to be activated is
 %% provided at each step by the head of the State argument. When the State list
-%% is empty, the driver falls back to the standard search behaviour stated
-%% above.
-driver(Info, []) -> driver(Info);
+%% is empty, the driver falls back to the standard search behavior stated above.
+driver(Info, State) -> driver(Info, State, false).
+
+driver(Info, [], DetailsFlag) -> driver(Info, DetailsFlag);
 driver(#info{active = Active, blocked = Blocked,
-	     error = Error, state = State} = Info, [Next|Rest]) ->
+	     error = Error, state = State} = Info, [Next|Rest], DetailsFlag) ->
     %% Assertion violation check.
     case Error of
 	assert -> {error, assert, State};
@@ -266,8 +327,8 @@ driver(#info{active = Active, blocked = Blocked,
             %% program termination.
 	    case set_is_empty(Active) of
 		true ->
-		    log:log("-----------------------~n"),
-		    log:log("Run terminated.~n~n"),
+		    ?debug_1("-----------------------~n"),
+		    ?debug_1("Run terminated.~n~n"),
 		    case set_is_empty(Blocked) of
 			true -> ok;
 			false -> {error, deadlock, State}
@@ -275,15 +336,16 @@ driver(#info{active = Active, blocked = Blocked,
 		false ->
 		    %% Remove process Next from the `active` set and run it.
 		    NewActive = set_remove(Active, Next),
-		    ?debug("Running process ~s.~n", [Next]),
+		    ?debug_2("Running process ~s.~n", [Next]),
 		    run(Next),
 		    %% Create new state.
 		    NewState = state_get_next(State, Next),
 		    %% Call the dispatcher to handle incoming messages from the
 		    %% running process.
 		    NewInfo = dispatcher(Info#info{active = NewActive,
-						   state = NewState}),
-		    driver(NewInfo, Rest)
+						   state = NewState},
+					 DetailsFlag),
+		    driver(NewInfo, Rest, DetailsFlag)
 	    end
     end.
 
@@ -304,23 +366,31 @@ search(#info{active = Active, state = State} = Info) ->
 %% Block message handler.
 %% Receiving a `block` message means that the process cannot be scheduled
 %% next and must be moved to the blocked set.
-handler(block, Pid, #info{blocked = Blocked} = Info, _Opt) ->
+handler(block, Pid, #info{blocked = Blocked} = Info, _Misc, DetailsFlag) ->
     Lid = lid(Pid),
     NewBlocked = set_add(Blocked, Lid),
-    log:log("Process ~s blocks.~n", [Lid]),
+    ?debug_1("Process ~s blocks.~n", [Lid]),
+    case DetailsFlag of
+	true -> replay_logger:log({block, Lid});
+	false -> continue
+    end,
     Info#info{blocked = NewBlocked};
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% call the dispatcher.
-handler(exit, Pid, Info, [Reason]) ->
+handler(exit, Pid, Info, [Reason], DetailsFlag) ->
     Lid = lid(Pid),
     case Lid of
 	not_found ->
-	    ?debug("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Reason]),
+	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Reason]),
 	    dispatcher(Info);
 	_Any ->
-	    log:log("Process ~s exits (~p).~n", [Lid, Reason]),
+	    ?debug_1("Process ~s exits (~p).~n", [Lid, Reason]),
+	    case DetailsFlag of
+		true -> replay_logger:log({exit, Lid, Reason});
+		false -> continue
+	    end,
 	    %% If the exception was caused by an assertion violation, propagate
 	    %% it to the driver via the `error` field of the `info` record.
 	    case Reason of
@@ -330,54 +400,70 @@ handler(exit, Pid, Info, [Reason]) ->
 	    end
     end;
 %% Link message handler.
-handler(link, Pid, Info, [TargetPid]) ->
+handler(link, Pid, Info, [TargetPid], DetailsFlag) ->
     Lid = lid(Pid),
     TargetLid = lid(TargetPid),
-    log:log("Process ~s links to process ~s.~n", [Lid, TargetLid]),
-    dispatcher(Info);
+    ?debug_1("Process ~s links to process ~s.~n", [Lid, TargetLid]),
+    case DetailsFlag of
+	true -> replay_logger:log({link, Lid, TargetLid});
+	false -> continue
+    end,
+    dispatcher(Info, DetailsFlag);
 %% Receive message handler.
-handler('receive', Pid, Info, [From, Msg]) ->
+handler('receive', Pid, Info, [From, Msg], DetailsFlag) ->
     Lid = lid(Pid),
     SenderLid = lid(From),
-    log:log("Process ~s receives message `~p` from process ~s.~n",
+    ?debug_1("Process ~s receives message `~p` from process ~s.~n",
 	    [Lid, Msg, SenderLid]),
-    dispatcher(Info);
+    case DetailsFlag of
+	true -> replay_logger:log({'receive', Lid, SenderLid, Msg});
+	false -> continue
+    end,
+    dispatcher(Info, DetailsFlag);
 %% Send message handler.
 %% When a message is sent to a process, the receiving process has to be awaken
 %% if it is blocked on a receive.
 %% XXX: No check for reason of blocking for now. If the process is blocked on
 %%      something else, it will be awaken!
-handler(send, Pid, Info, [DstPid, Msg]) ->
+handler(send, Pid, Info, [DstPid, Msg], DetailsFlag) ->
     Lid = lid(Pid),
     DstLid = lid(DstPid),
-    log:log("Process ~s sends message `~p` to process ~s.~n",
+    ?debug_1("Process ~s sends message `~p` to process ~s.~n",
 	    [Lid, Msg, DstLid]),
+    case DetailsFlag of
+	true -> replay_logger:log({send, Lid, DstLid, Msg});
+	false -> continue
+    end,
     NewInfo = wakeup(DstLid, Info),
-    dispatcher(NewInfo);
+    dispatcher(NewInfo, DetailsFlag);
 %% Spawn message handler.
 %% First, link the newly spawned process to the scheduler process.
 %% The new process yields as soon as it gets spawned and the parent process
 %% yields as soon as it spawns. Therefore wait for two `yield` messages using
 %% two calls to the dispatcher.
-handler(spawn, ParentPid, Info, [ChildPid]) ->
+handler(spawn, ParentPid, Info, [ChildPid], DetailsFlag) ->
     link(ChildPid),
     ParentLid = lid(ParentPid),
     ChildLid = lid_new(ParentLid, ChildPid),
-    log:log("Process ~s spawns process ~s.~n", [ParentLid, ChildLid]),
-    NewInfo = dispatcher(Info),
-    dispatcher(NewInfo);
+    ?debug_1("Process ~s spawns process ~s.~n", [ParentLid, ChildLid]),
+    case DetailsFlag of
+	true -> replay_logger:log({spawn, ParentLid, ChildLid});
+	false -> continue
+    end,
+    NewInfo = dispatcher(Info, DetailsFlag),
+    dispatcher(NewInfo, DetailsFlag);
 %% Yield message handler.
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
-handler(yield, Pid, #info{active = Active} = Info, _Opt) ->
+handler(yield, Pid, #info{active = Active} = Info, _Opt, DetailsFlag) ->
     case lid(Pid) of
         %% This case clause avoids a possible race between `yield` message
         %% of child and `spawn` message of parent.
         not_found ->
             ?RP_SCHED ! #sched{msg = yield, pid = Pid},
-            dispatcher(Info);
+            dispatcher(Info, DetailsFlag);
         Lid ->
-            ?debug("Process ~s yields.~n", [Lid]),
+            ?debug_2("Process ~s yields.~n", [Lid]),
             NewActive = set_add(Active, Lid),
             Info#info{active = NewActive}
     end.
@@ -394,11 +480,12 @@ flush_mailbox() ->
     end.
 
 %% Calculate and print elapsed time between T1 and T2.
-report_elapsed_time(T1, T2) ->
+elapsed_time(T1, T2) ->
     ElapsedTime = T2 - T1,
     Mins = ElapsedTime div 60000,
     Secs = (ElapsedTime rem 60000) / 1000,
-    log:log("Done in ~wm~.2fs\n", [Mins, Secs]).
+    ?debug_1("Done in ~wm~.2fs\n", [_Mins, _Secs]),
+    {Mins, Secs}.
 
 %% Signal process Lid to continue its execution.
 run(Lid) ->
@@ -410,7 +497,7 @@ run(Lid) ->
 wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
     case set_member(Blocked, Lid) of
 	true ->
-            ?debug("Process ~p wakes up.~n", [Lid]),
+            ?debug_2("Process ~p wakes up.~n", [Lid]),
 	    NewBlocked = set_remove(Blocked, Lid),
 	    NewActive = set_add(Active, Lid),
 	    Info#info{active = NewActive, blocked = NewBlocked};
@@ -720,34 +807,39 @@ lid_test_() ->
 -spec interleave_test_() -> term().
 
 interleave_test_() ->
-    [{"test1",
-      ?_assertEqual(ok,
-		    analyze(["./test/test.erl"], test, test1, []))},
-     {"test2",
-      ?_assertEqual(ok,
-		    analyze(["./test/test.erl"], test, test2, []))},
-     {"test3",
-      ?_assertEqual(ok,
-		    analyze(["./test/test.erl"], test, test3, []))},
-     {"test4",
-      ?_assertMatch({error, analysis, _}, 
-		    analyze(["./test/test.erl"], test, test4, []))},
-     {"test5",
-      ?_assertMatch({error, analysis, _},
-		    analyze(["./test/test.erl"], test, test5, []))},
-     {"test6",
-      ?_assertEqual(ok,
-		    analyze(["./test/test.erl"], test, test6, []))},
-     {"test7",
-      ?_assertEqual(ok,
-		    analyze(["./test/test.erl"], test, test7, []))},
-     {"test8",
-      ?_assertMatch({error, analysis, _},
-		    analyze(["./test/test.erl"], test, test8, []))},
-     {"test9",
-      ?_assertEqual(ok,
-		    analyze(["./test/test.erl", "./test/test_aux.erl"],
-			    test, test9, []))},
-     {"test10",
-      ?_assertMatch({error, analysis, _},
-		    analyze(["./test/test.erl"], test, test10, []))}].
+    {setup,
+     fun() -> log:start(log, []) end,
+     fun(_) -> log:stop() end,
+     [{"test1",
+       ?_assertEqual({ok, {test, test1, []}},
+		     analyze(test, test1, [], [{files, ["./test/test.erl"]}]))},
+      {"test2",
+       ?_assertEqual({ok, {test, test2, []}},
+		     analyze(test, test2, [], [{files, ["./test/test.erl"]}]))},
+      {"test3",
+       ?_assertEqual({ok, {test, test3, []}},
+		     analyze(test, test3, [], [{files, ["./test/test.erl"]}]))},
+      {"test4",
+       ?_assertMatch({error, analysis, _, _}, 
+		     analyze(test, test4, [], [{files, ["./test/test.erl"]}]))},
+      {"test5",
+       ?_assertMatch({error, analysis, _, _},
+		     analyze(test, test5, [], [{files, ["./test/test.erl"]}]))},
+      {"test6",
+       ?_assertEqual({ok, {test, test6, []}},
+		     analyze(test, test6, [], [{files, ["./test/test.erl"]}]))},
+      {"test7",
+       ?_assertEqual({ok, {test, test7, []}},
+		     analyze(test, test7, [], [{files, ["./test/test.erl"]}]))},
+      {"test8",
+       ?_assertMatch({error, analysis, _, _},
+		     analyze(test, test8, [], [{files, ["./test/test.erl"]}]))},
+      {"test9",
+       ?_assertEqual({ok, {test, test3, []}},
+		     analyze(test, test3, [],
+			     [{files, ["./test/test.erl",
+				       "./test/test_aux.erl"]}]))},
+      {"test10",
+       ?_assertMatch({error, analysis, _, _},
+		     analyze(test, test10, [], [{files, ["./test/test.erl"]}]))}
+     ]}.

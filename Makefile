@@ -30,6 +30,7 @@ ERL_COMPILE_FLAGS += +warn_exported_vars +warn_unused_import +warn_untyped_recor
 TARGETS = \
 	core \
 	gui \
+	log \
 	scripts
 
 GUI_MODULES = \
@@ -37,13 +38,18 @@ GUI_MODULES = \
 
 CORE_MODULES = \
 	instr \
-	log \
 	sched \
 	util
 
+LOG_MODULES = \
+	log \
+	replay_server \
+	replay_logger
+
 MODULES = \
 	$(GUI_MODULES) \
-	$(CORE_MODULES)
+	$(CORE_MODULES) \
+	$(LOG_MODULES)
 
 ERL_DIRS = \
 	src
@@ -59,6 +65,13 @@ clean:
 	rm -f $(EBIN)/*.beam
 	rm -f $(DOC)/*.html $(DOC)/*.css $(DOC)/edoc-info $(DOC)/*.png
 
+# TODO: Better way than 'clean'.
+debug1:	ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_1
+debug1:	clean $(TARGETS)
+
+debug2:	ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_2
+debug2:	clean $(TARGETS)
+
 .PHONY: doc
 doc:	util.beam
 	erl -noinput -pa $(EBIN) -s util doc $(TOP) -s init stop
@@ -66,6 +79,8 @@ doc:	util.beam
 core:	$(CORE_MODULES:%=%.beam)
 
 gui:	$(GUI_MODULES:%=%.beam)
+
+log:	$(LOG_MODULES:%=%.beam)
 
 scripts: run.sh test.sh
 
@@ -78,7 +93,7 @@ run.sh:
 test.sh:
 	printf "#%c/bin/bash\n \
 		dialyzer $(EBIN)/*.beam\n \
-	        erl -noinput -pa $(EBIN) -s sched test -s init stop" ! \
+	        erl -noinput -pa $(EBIN) -s util test -s init stop" ! \
 	      > test.sh
 	chmod +x test.sh
 

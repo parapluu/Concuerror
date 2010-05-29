@@ -11,31 +11,88 @@
 
 -module(gui).
 
+%% UI exports.
 -export([start/0]).
+%% Log server callback exports.
+-export([init/1, terminate/2, handle_event/2]).
 
 -include_lib("wx/include/wx.hrl").
 -include("gen.hrl").
 -include("gui.hrl").
 
+-type(state() :: []).
+
 %%%----------------------------------------------------------------------
-%%% Exported functions
+%%% UI functions
 %%%----------------------------------------------------------------------
 
-%% @spec start() -> 'ok'
+%% @spec start() -> 'true'
 %% @doc: Start the CED GUI.
--spec start() -> 'ok'.
+-spec start() -> 'true'.
 
 start() ->
+    register(?RP_GUI, self()),
     wx:new(),
+    %% Start the object reference mapping service.
     ref_start(),
     %% Set initial file load path (used by the module addition dialog).
     ref_add(?FILE_PATH, ""),
     Frame = setupFrame(),
     wxFrame:show(Frame),
+    %% Start the log manager.
+    log:start(?MODULE, wx:get_env()),
+    %% Start the replay server.
+    replay_server:start(),
     loop(),
+    replay_server:stop(),
+    log:stop(),
     ref_stop(),
-    os:cmd("rm -f *.dot *.png"),
-    wx:destroy().
+    wx:destroy(),
+    unregister(?RP_GUI).
+
+%%%----------------------------------------------------------------------
+%%% Log event handler callback functions
+%%%----------------------------------------------------------------------
+
+-spec init(term()) -> {ok, state()}.
+
+%% @doc: Initialize the event handler.
+%% Note: The wx environment is set once in this function and is subsequently
+%%       used by all callback functions. If any change is to happen to the
+%%       environment (e.g. new elements added dynamically), `set_env` will have
+%%       to be called again (by manually calling a special update_environment
+%%       function for each update?).
+init(Env) ->
+    wx:set_env(Env),
+    {ok, []}.
+
+-spec terminate(term(), state()) -> 'ok'.
+
+terminate(_Reason, _State) ->
+    ok.
+
+-spec handle_event(term(), state()) -> {ok, state()}.
+
+handle_event({msg, String}, State) ->
+    LogText = ref_lookup(?LOG_TEXT),
+    wxTextCtrl:appendText(LogText, String),
+    {ok, State};
+handle_event({result, {error, analysis, {Mod, Fun, Args}, ErrorStates}},
+	     State) ->
+    Errors = [error_to_string(Error) || {Error, _State} <- ErrorStates],
+    setListItems(?ERROR_LIST, Errors),
+    replay_server:register_errors(Mod, Fun, Args, ErrorStates),
+    analysis_cleanup(),
+    {ok, State};
+handle_event({result, _Result}, State) ->
+    analysis_cleanup(),
+    {ok, State}.
+
+%% To be moved.
+error_to_string(assert) ->
+    "Assertion violation";
+error_to_string(deadlock) ->
+    "Deadlock".
 
 %%%----------------------------------------------------------------------
 %%% Setup functions
@@ -94,6 +151,7 @@ setupLeftColumn(Panel) ->
     RemButton = wxButton:new(Panel, ?REMOVE),
     ClearButton = wxButton:new(Panel, ?CLEAR),
     AnalyzeButton = wxButton:new(Panel, ?ANALYZE, [{label, "Ana&lyze"}]),
+    ref_add(?ANALYZE, AnalyzeButton),
     %% Setup button sizers
     AddRemSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(AddRemSizer, AddButton,
@@ -132,83 +190,108 @@ setupLeftColumn(Panel) ->
     LeftColumnSizer.
 
 %% Setup right column of top-level panel, including a notebook for displaying
-%% tabbed log, graph and source code panels.
+%% tabbed main, graph and source code panels and another notebook for displaying
+%% log messages.
 setupRightColumn(Panel) ->
-    %% Create widgets
-    Notebook = wxNotebook:new(Panel, ?NOTEBOOK, [{style, ?wxNB_NOPAGETHEME}]),
+    MainNotebook = setupMainNotebook(Panel),
+    LogNotebook = setupLogNotebook(Panel),
+    %% Setup right column sizer
+    RightColumnSizer = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(RightColumnSizer, MainNotebook,
+		[{proportion, 3}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 0}]),
+    wxSizer:add(RightColumnSizer, LogNotebook,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
+		 {border, 10}]),
+    RightColumnSizer.
+
+%% Setup main notebook, containing 3 tabs:
+%% Main tab: Contains a list showing the errors encountered and another list
+%%           showing the selected erroneous interleaving.
+%% Graph tab: Displays a process interaction graph of the selected erroneous
+%%            interleaving.
+%% Source tab: Displays the source code for the selected module.
+%% TODO: Temporarily removed graph tab.
+setupMainNotebook(Parent) ->
+  %% Notebook widgets.
+    Notebook = wxNotebook:new(Parent, ?NOTEBOOK, [{style, ?wxNB_NOPAGETHEME}]),
     ref_add(?NOTEBOOK, Notebook),
-    LogPanel = wxPanel:new(Notebook),
-    GraphPanel = wxPanel:new(Notebook),
-    SourcePanel = wxPanel:new(Notebook),
-    LogText = wxTextCtrl:new(LogPanel, ?LOG_TEXT,
-			     [{style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
-    ref_add(?LOG_TEXT, LogText),
-    ScrGraph = wxScrolledWindow:new(GraphPanel),
+    %% Setup tab panels.
+    MainPanel = setupMainPanel(Notebook),
+    _GraphPanel = setupGraphPanel(Notebook),
+    SourcePanel = setupSourcePanel(Notebook),
+    %% Add tabs to notebook.
+    wxNotebook:addPage(Notebook, MainPanel, "Main", [{bSelect, true}]),
+    %% TODO: Temporarily removed graph tab.
+    %% wxNotebook:addPage(Notebook, GraphPanel, "Graph", [{bSelect, false}]),
+    wxNotebook:addPage(Notebook, SourcePanel, "Source", [{bSelect, false}]),
+    Notebook.
+
+setupMainPanel(Parent) ->
+    Panel = wxPanel:new(Parent),
+    ErrorBox = wxStaticBox:new(Panel, ?wxID_ANY, "Errors"),
+    IleaveBox = wxStaticBox:new(Panel, ?wxID_ANY, "Process interleaving"),
+    ErrorList = wxListBox:new(Panel, ?ERROR_LIST),
+    ref_add(?ERROR_LIST, ErrorList),
+    IleaveList = wxListBox:new(Panel, ?ILEAVE_LIST),
+    ref_add(?ILEAVE_LIST, IleaveList),
+    %% Setup sizers.
+    ErrorSizer = wxStaticBoxSizer:new(ErrorBox, ?wxVERTICAL),
+    wxSizer:add(ErrorSizer, ErrorList,
+		[{proportion, 1},
+		 {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    IleaveSizer = wxStaticBoxSizer:new(IleaveBox, ?wxVERTICAL),
+    wxSizer:add(IleaveSizer, IleaveList,
+		[{proportion, 1},
+		 {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    PanelSizer = wxBoxSizer:new(?wxHORIZONTAL),
+    wxSizer:add(PanelSizer, ErrorSizer,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxSizer:add(PanelSizer, IleaveSizer,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxWindow:setSizer(Panel, PanelSizer),
+    Panel.
+
+%% Setup the graph panel.
+%% A static bitmap combined with a scrolled window is used for
+%% displaying the graph image.
+setupGraphPanel(Parent) ->
+    Panel = wxPanel:new(Parent),
+    ScrGraph = wxScrolledWindow:new(Panel),
     ref_add(?SCR_GRAPH, ScrGraph),
     wxWindow:setOwnBackgroundColour(ScrGraph, {255, 255, 255}),
     wxWindow:clearBackground(ScrGraph),
     Bmp = wxBitmap:new(),
     StaticBmp = wxStaticBitmap:new(ScrGraph, ?STATIC_BMP, Bmp),
     ref_add(?STATIC_BMP, StaticBmp),
-    SourceText = wxStyledTextCtrl:new(SourcePanel),
+    %% Setup sizer.
+    PanelSizer = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(PanelSizer, ScrGraph,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxWindow:setSizer(Panel, PanelSizer),
+    Panel.
+
+setupSourcePanel(Parent) ->
+    Panel = wxPanel:new(Parent),
+    SourceText = wxStyledTextCtrl:new(Panel),
     ref_add(?SOURCE_TEXT, SourceText),
     setupSourceText(SourceText, light),
-    %% Setup tab sizers
-    LogPanelSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(LogPanelSizer, LogText,
+    %% Setup sizer.
+    PanelSizer = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(PanelSizer, SourceText,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
 		 {border, 10}]),
-    wxWindow:setSizer(LogPanel, LogPanelSizer),
-    GraphPanelSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(GraphPanelSizer, ScrGraph,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxWindow:setSizer(GraphPanel, GraphPanelSizer),
-    SourcePanelSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(SourcePanelSizer, SourceText,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxWindow:setSizer(SourcePanel, SourcePanelSizer),
-    %% Add tabs to notebook
-    wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
-    wxNotebook:addPage(Notebook, GraphPanel, "Graph", [{bSelect, false}]),
-    wxNotebook:addPage(Notebook, SourcePanel, "Source", [{bSelect, false}]),
-    %% Setup right column sizer
-    RightColumnSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(RightColumnSizer, Notebook,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 0}]),
-    RightColumnSizer.
+    wxWindow:setSizer(Panel, PanelSizer),
+    Panel.
 
-%% Menu constructor according to specification (gui.hrl)
-setupMenu(MenuBar, [{Title, Items}|Rest]) ->
-    setupMenu(MenuBar, [{Title, Items, []}|Rest]);
-setupMenu(_MenuBar, []) ->
-    ok;
-setupMenu(MenuBar, [{Title, Items, Options}|Rest]) ->
-    Menu = wxMenu:new(Options),
-    setupMenuItems(Menu, Items),
-    wxMenuBar:append(MenuBar, Menu, Title),
-    setupMenu(MenuBar, Rest).
-
-setupMenuItems(_Menu, []) ->
-    ok;
-setupMenuItems(Menu, [Options|Rest]) ->
-    case lists:keytake(sub, 1, Options) of
-	{value, {_, SubItems}, NewOptions} ->
-	    Submenu = wxMenu:new(),
-	    setupMenuItems(Submenu, SubItems),
-	    Item = wxMenuItem:new(NewOptions),
-	    wxMenuItem:setSubMenu(Item, Submenu),
-	    wxMenu:append(Menu, Item),
-	    setupMenuItems(Menu, Rest);
-	false ->
-	    Item = wxMenuItem:new(Options),
-	    wxMenu:append(Menu, Item),
-	    setupMenuItems(Menu, Rest)
-    end.
-
-%% Setup source viewer
+%% Setup source viewer, using a styled text control.
+%% Ref is a reference to the wxStyledTextCtrl object and theme is
+%% either 'light' or 'dark'.
 setupSourceText(Ref, Theme) ->
     NormalFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL,
                             ?wxNORMAL, []),
@@ -247,6 +330,54 @@ setupSourceText(Ref, Theme) ->
     [SetStyles(Style) || Style <- Styles],
     wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
+%% Setup a notebook for displaying log messages.
+setupLogNotebook(Parent) ->
+    %% Log notebook widgets (notebook -> panel -> textcontrol).
+    Notebook = wxNotebook:new(Parent, ?LOG_NOTEBOOK,
+			      [{style, ?wxNB_NOPAGETHEME}]),
+    ref_add(?LOG_NOTEBOOK, Notebook),
+    LogPanel = wxPanel:new(Notebook),
+    LogText = wxTextCtrl:new(LogPanel, ?LOG_TEXT,
+			     [{style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
+    ref_add(?LOG_TEXT, LogText),
+    %% Setup notebook tab sizers.
+    LogPanelSizer = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(LogPanelSizer, LogText,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxWindow:setSizer(LogPanel, LogPanelSizer),
+    %% Add tabs to log notebook.
+    wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
+    Notebook.
+
+%% Menu constructor according to specification (see gui.hrl).
+setupMenu(MenuBar, [{Title, Items}|Rest]) ->
+    setupMenu(MenuBar, [{Title, Items, []}|Rest]);
+setupMenu(_MenuBar, []) ->
+    ok;
+setupMenu(MenuBar, [{Title, Items, Options}|Rest]) ->
+    Menu = wxMenu:new(Options),
+    setupMenuItems(Menu, Items),
+    wxMenuBar:append(MenuBar, Menu, Title),
+    setupMenu(MenuBar, Rest).
+
+setupMenuItems(_Menu, []) ->
+    ok;
+setupMenuItems(Menu, [Options|Rest]) ->
+    case lists:keytake(sub, 1, Options) of
+	{value, {_, SubItems}, NewOptions} ->
+	    Submenu = wxMenu:new(),
+	    setupMenuItems(Submenu, SubItems),
+	    Item = wxMenuItem:new(NewOptions),
+	    wxMenuItem:setSubMenu(Item, Submenu),
+	    wxMenu:append(Menu, Item),
+	    setupMenuItems(Menu, Rest);
+	false ->
+	    Item = wxMenuItem:new(Options),
+	    wxMenu:append(Menu, Item),
+	    setupMenuItems(Menu, Rest)
+    end.
+
 %%%----------------------------------------------------------------------
 %%% GUI element reference store/retrieve interface
 %%%----------------------------------------------------------------------
@@ -271,7 +402,7 @@ addArgs(_Parent, _Sizer, Max, Max, Refs) ->
     lists:reverse(Refs);
 addArgs(Parent, Sizer, I, Max, Refs) ->
     %% XXX: semi-hack, custom width, default height (-1)
-    Ref =  wxTextCtrl:new(Parent, ?wxID_ANY, [{size, {130, -1}}]),
+    Ref =  wxTextCtrl:new(Parent, ?wxID_ANY, [{size, {170, -1}}]),
     HorizSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(HorizSizer,
                 wxStaticText:new(Parent, ?wxID_ANY,
@@ -320,7 +451,7 @@ addListItems(Id, Items) ->
     self() ! #wx{id = Id,
 		 event = #wxCommand{type = command_listbox_selected}}.
 
-%% Analyze selected function
+%% Analyze selected function.
 analyze() ->
     Module = getModule(),
     {Function, Arity} = getFunction(),
@@ -331,9 +462,9 @@ analyze() ->
     if Module =/= '', Function =/= '' ->
 	    case Arity of
 		0 ->
-		    LogText = ref_lookup(?LOG_TEXT),
-		    wxTextCtrl:clear(LogText),
-		    spawn(fun() -> sched:analyze(Files, Module, Function, [])
+		    analysis_init(),
+		    Opts = [{files, Files}],
+		    spawn(fun() -> sched:analyze(Module, Function, [], Opts)
 			  end);
 		%% If the function to be analyzed is of non-zero arity,
 		%% a dialog window is displayed prompting the user to enter
@@ -342,10 +473,10 @@ analyze() ->
 		    Frame = ref_lookup(?FRAME),
 		    case argDialog(Frame, Count) of
 			{ok, Args} ->
-			    LogText = ref_lookup(?LOG_TEXT),
-			    wxTextCtrl:clear(LogText),
+			    analysis_init(),
+			    Opts = [{files, Files}],
 			    spawn(fun() ->
-				    sched:analyze(Files, Module, Function, Args)
+			            sched:analyze(Module, Function, Args, Opts)
 				  end);
 			%% User pressed 'cancel' or closed dialog window.
 			_Other -> continue
@@ -353,6 +484,23 @@ analyze() ->
 	    end;
        true -> continue
     end.
+
+%% Initialization actions before starting analysis (clear log, etc.).
+analysis_init() ->
+    LogText = ref_lookup(?LOG_TEXT),
+    wxTextCtrl:clear(LogText),
+    ErrorList = ref_lookup(?ERROR_LIST),
+    wxControlWithItems:clear(ErrorList),
+    IleaveList = ref_lookup(?ILEAVE_LIST),
+    wxControlWithItems:clear(IleaveList),
+    AnalyzeButton = ref_lookup(?ANALYZE),
+    wxWindow:disable(AnalyzeButton).
+
+%% Cleanup actions after completing analysis
+%% (reactivate `analyze` button, etc.).
+analysis_cleanup() ->
+    AnalyzeButton = ref_lookup(?ANALYZE),
+    wxWindow:enable(AnalyzeButton).
 
 %% Dialog prompting the user to insert function arguments (valid erlang terms
 %% without the terminating `.`).
@@ -380,7 +528,7 @@ argDialog(Parent, Argnum) ->
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
 	    LogText = ref_lookup(?LOG_TEXT),
-	    wxTextCtrl:clear(LogText),
+	    wxTextCtrl:clear(LogText),	    
 	    ValResult = validateArgs(0, Refs, [], LogText),
 	    wxDialog:destroy(Dialog),
 	    case ValResult of
@@ -502,10 +650,43 @@ setListItems(Id, Items) ->
 	    wxListBox:set(List, Items),
 	    wxControlWithItems:setSelection(List, 0),
 	    %% XXX: hack (send event message to self)
-	    self() ! #wx{id = Id,
-                         event = #wxCommand{type = command_listbox_selected}};
+	    ?RP_GUI !
+		#wx{id = Id,
+		    event = #wxCommand{type = command_listbox_selected}};
        true -> continue
     end.
+
+%% Show detailed interleaving information about the selected error.
+show_details() ->
+    ErrorList = ref_lookup(?ERROR_LIST),
+    IleaveList = ref_lookup(?ILEAVE_LIST),
+    case wxControlWithItems:getSelection(ErrorList) of
+	?wxNOT_FOUND -> continue;
+	Id ->
+	    Details = replay_server:lookup(Id + 1),
+	    wxControlWithItems:clear(IleaveList),
+	    setListItems(?ILEAVE_LIST, details_to_strings(Details))
+    end.
+
+%% Function to be moved (to sched or util).
+details_to_strings(Details) ->
+    [detail_to_string(Detail) || Detail <- Details].
+
+detail_to_string({block, Proc}) ->
+    io_lib:format("Process ~s blocks", [Proc]);
+detail_to_string({exit, Proc, Reason}) ->
+    io_lib:format("Process ~s exits (~p)", [Proc, Reason]);
+detail_to_string({link, Proc1, Proc2}) ->
+    io_lib:format("Process ~s links to process ~s", [Proc1, Proc2]);
+detail_to_string({'receive', Receiver, Sender, Msg}) ->
+    io_lib:format("Process ~s receives message `~p` from process ~s",
+		  [Receiver, Msg, Sender]);
+detail_to_string({send, Sender, Receiver, Msg}) ->
+    io_lib:format("Process ~s sends message `~p` to process ~s",
+		  [Sender, Msg, Receiver]);
+detail_to_string({spawn, Parent, Child}) ->
+    io_lib:format("Process ~s spawns process ~s", [Parent, Child]).
+
 
 %% Validate user provided function arguments.
 %% The arguments are first scanned and then parsed to ensure that they
@@ -552,6 +733,22 @@ loop() ->
 	    remove(),
 	    loop();
 	%% -------------------- Listbox handlers --------------------- %%
+	#wx{id = ?ERROR_LIST,
+	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
+	    %% do nothing
+	    loop();
+	#wx{id = ?ERROR_LIST,
+            event = #wxCommand{type = command_listbox_selected}} ->
+	    show_details(),
+	    loop();
+	#wx{id = ?ILEAVE_LIST,
+	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
+	    %% do nothing
+	    loop();
+	#wx{id = ?ILEAVE_LIST,
+            event = #wxCommand{type = command_listbox_selected}} ->
+	    %% do nothing
+	    loop();
 	#wx{id = ?FUNCTION_LIST,
 	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
 	    analyze(),
@@ -620,8 +817,8 @@ loop() ->
 	%%     wxBitmap:destroy(Image),
 	%%     loop();
 	%% #gui{type = log, msg = String} ->
-	%%     LogText = ref_lookup(?LOG_TEXT),
-	%%     wxTextCtrl:appendText(LogText, String),
+	%%     ProcText = ref_lookup(?PROC_TEXT),
+	%%     wxTextCtrl:appendText(ProcText, String),
 	%%     loop();
 	#wx{event = #wxClose{type = close_window}} ->
 	    ok;

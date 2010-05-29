@@ -79,6 +79,10 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(THEME_DARK, 512).
 -define(REFRESH, 513).
 -define(FILE_PATH, 514).
+-define(PROC_TEXT, 515).
+-define(LOG_NOTEBOOK, 516).
+-define(ERROR_LIST, 517).
+-define(ILEAVE_LIST, 518).
 
 %% Erlang keywords
 -define(KEYWORDS, "after begin case try cond catch andalso orelse end fun "

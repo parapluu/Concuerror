@@ -10,7 +10,7 @@
 %%%----------------------------------------------------------------------
 
 -module(util).
--export([doc/1, funs/1, funs/2]).
+-export([doc/1, test/0, funs/1, funs/2]).
 
 -include("gen.hrl").
 
@@ -22,6 +22,15 @@ doc(AppDir) ->
     AppName = ?APP_ATOM,
     Options = [],
     edoc:application(AppName, AppDir, Options).
+
+%% @spec test() -> 'ok'
+%% @doc: Run all EUnit tests for the modules in the `src` directory.
+-spec test() -> 'ok'.
+
+test() ->
+    eunit:test(sched),
+    eunit:test(replay_server),
+    eunit:test(replay_logger).
 
 %% @spec funs(string()) -> [{atom(), integer()}]
 %% @doc: Same as `funs(File, [tuple])'.

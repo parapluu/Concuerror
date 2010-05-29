@@ -38,33 +38,31 @@ instrument_and_load([File | Rest]) ->
 
 %% Instrument and load a single file.
 instrument_and_load_one(File) ->
-    %% Compilation of original file without emiting code, just to emit all
+    %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
     log:log("Validating file ~p...~n", [File]),
-    PreOptions = [strong_validation, verbose, report_errors, report_warnings,
-                  {i, ?INCLUDE_DIR}],
+    PreOptions = [strong_validation, verbose, return, {i, ?INCLUDE_DIR}],
     case compile:file(File, PreOptions) of
-	{ok, Module} ->
+	{ok, Module, Warnings} ->
+	    %% Log warning messages.
+	    log_warning_list(Warnings),
 	    %% A table for holding used variable names.
 	    ets:new(?NT_USED, [named_table, private]),
 	    %% Instrument given source file.
-	    log:log("Instrumenting file ~p... ", [File]),
+	    log:log("Instrumenting file ~p...~n", [File]),
 	    case instrument(File) of
 		{ok, NewForms} ->
-		    log:log("ok~n"),
 		    %% Delete `used` table.
 		    ets:delete(?NT_USED),
 		    %% Compile instrumented code.
 		    %% TODO: More compile options?
 		    log:log("Compiling instrumented code...~n"),
-		    CompOptions = [binary, verbose, report_errors,
-                                   report_warnings],
+		    CompOptions = [binary],
 		    case compile:forms(NewForms, CompOptions) of
 			{ok, Module, Binary} ->
-			    log:log("Loading module `~p`... ", [Module]),
+			    log:log("Loading module `~p`...~n", [Module]),
 			    case code:load_binary(Module, File, Binary) of
 				{module, Module} ->
-				    log:log("ok~n"),
 				    ok;
 				{error, Error} ->
 				    log:log("error~n~p~n", [Error]),
@@ -80,7 +78,9 @@ instrument_and_load_one(File) ->
 		    ets:delete(?NT_USED),
 		    error
 	    end;
-	error ->
+	{error, Errors, Warnings} ->
+	    log_error_list(Errors),
+	    log_warning_list(Warnings),
 	    log:log("error~n"),
 	    error
     end.
@@ -243,3 +243,18 @@ instrument_spawn_link(Tree) ->
     %% Fun expression arguments of the (before instrumentation) spawn call.
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
+
+%% Log a list of errors, as returned by compile:file/2.
+log_error_list(List) ->
+    log_list(List, "").
+
+%% Log a list of warnings, as returned by compile:file/2.
+log_warning_list(List) ->
+    log_list(List, "Warning:").
+
+%% Log a list of error or warning descriptors, as returned by compile:file/2.
+log_list(List, Pre) ->
+    LogFun = fun(String) -> log:log(String) end,
+    [LogFun(io_lib:format("~s:~p: ~s ", [File, Line, Pre]) ++
+	    Mod:format_error(Descr) ++ "\n") || {File, Info} <- List,
+						{Line, Mod, Descr} <- Info].

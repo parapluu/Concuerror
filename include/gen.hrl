@@ -15,7 +15,11 @@
 -define(APP_STRING, "CED").
 
 %% Registered process names.
+-define(RP_GUI, '_._gui').
+-define(RP_REPLAY_SERVER, '_._replay_server').
+-define(RP_REPLAY_LOGGER, '_._replay_logger').
 -define(RP_SCHED, '_._sched').
+
 
 %% Named ets table names.
 -define(NT_REF, '_._ref').
@@ -23,13 +27,36 @@
 -define(NT_LID, '_._lid').
 -define(NT_STATE, '_._state').
 -define(NT_USED, '_._used').
-
+-define(NT_ERROR, '_._error').
 
 %% Internal error return code.
 -define(RET_INTERNAL_ERROR, 1).
+
+%% Debug macros.
+-ifdef(DEBUG_LEVEL_1).
+-define(debug_1(S_, L_), io:format("(D-1) " ++ S_, L_)).
+-define(debug_1(S_), io:format("(D-1) " ++ S_)).
+-define(debug_2(S_, L_), ok).
+-define(debug_2(S_), ok).
+-else.
+-ifdef(DEBUG_LEVEL_2).
+-define(debug_1(S_, L_), io:format("(D-1) " ++ S_, L_)).
+-define(debug_1(S_), io:format("(D-1) " ++ S_)).
+-define(debug_2(S_, L_), io:format("|--(D-2) " ++ S_, L_)).
+-define(debug_2(S_), io:format("|--(D-2) " ++ S_)).
+-else.
+-define(debug_1(S_, L_), ok).
+-define(debug_1(S_), ok).
+-define(debug_2(S_, L_), ok).
+-define(debug_2(S_), ok).
+-endif.
+-endif.
 
 %%%----------------------------------------------------------------------
 %%% Types
 %%%----------------------------------------------------------------------
 
 -type file() :: file:filename().
+%% TODO: any() for now.
+%% A tuple providing information about a process' action.
+-type proc_action() :: term().
