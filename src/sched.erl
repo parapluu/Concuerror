@@ -75,9 +75,11 @@
 %% active:  A set containing all processes ready to be scheduled.
 %% blocked: A set containing all processes that cannot be scheduled next
 %%          (e.g. waiting for a message on a `receive`).
+%% error:   An atom describing the error that occured.
 %% state:   The current state of the program.
 -record(info, {active  :: set(),
                blocked :: set(),
+	       error   :: atom(),
                state   :: state()}).
 
 %% Internal message format
@@ -208,32 +210,39 @@ dispatcher(Info) ->
 %% After activating said process the dispatcher is called to delegate the
 %% messages received from the running process to the appropriate handler
 %% functions.
-driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
-    %% Deadlock/Termination check.
-    %% If the `active` set is empty and the `blocked` set is non-empty, report
-    %% a deadlock, else if both sets are empty, report program termination.
-    case set_is_empty(Active) of
-	true ->
-	    log:log("-----------------------~n"),
-	    log:log("Run terminated.~n~n"),
-	    case set_is_empty(Blocked) of
-		true -> ok;
-		false -> {error, deadlock, State}
-	    end;
-	false ->
-	    %% Run search algorithm to find next process to be run.
-	    Next = search(Info),
-	    %% Remove process Next from the `active` set and run it.
-	    NewActive = set_remove(Active, Next),
-	    ?debug("Running process ~s.~n", [Next]),
-	    run(Next),
-	    %% Create new state.
-	    NewState = state_get_next(State, Next),
-	    %% Call the dispatcher to handle incoming messages from the
-	    %% running process.
-	    NewInfo = dispatcher(Info#info{active = NewActive,
-                                           state = NewState}),
-	    driver(NewInfo)
+driver(#info{active = Active, blocked = Blocked,
+             error = Error, state = State} = Info) ->
+    %% Assertion violation check.
+    case Error of
+	assert -> {error, assert, State};
+	_NoError ->
+	    %% Deadlock/Termination check.
+	    %% If the `active` set is empty and the `blocked` set is non-empty,
+            %% report a deadlock, else if both sets are empty, report normal
+	    %% program termination.
+	    case set_is_empty(Active) of
+		true ->
+		    log:log("-----------------------~n"),
+		    log:log("Run terminated.~n~n"),
+		    case set_is_empty(Blocked) of
+			true -> ok;
+			false -> {error, deadlock, State}
+		    end;
+		false ->
+		    %% Run search algorithm to find next process to be run.
+		    Next = search(Info),
+		    %% Remove process Next from the `active` set and run it.
+		    NewActive = set_remove(Active, Next),
+		    ?debug("Running process ~s.~n", [Next]),
+		    run(Next),
+		    %% Create new state.
+		    NewState = state_get_next(State, Next),
+		    %% Call the dispatcher to handle incoming messages from the
+		    %% running process.
+		    NewInfo = dispatcher(Info#info{active = NewActive,
+						   state = NewState}),
+		    driver(NewInfo)
+	    end
     end.
 
 %% Same as above, but instead of searching, the process to be activated is
@@ -241,31 +250,37 @@ driver(#info{active = Active, blocked = Blocked, state = State} = Info) ->
 %% is empty, the driver falls back to the standard search behaviour stated
 %% above.
 driver(Info, []) -> driver(Info);
-driver(#info{active = Active, blocked = Blocked, state = State} = Info,
-       [Next|Rest]) ->
-    %% Deadlock/Termination check.
-    %% If the `active` set is empty and the `blocked` set is non-empty, report
-    %% a deadlock, else if both sets are empty, report program termination.
-    case set_is_empty(Active) of
-	true ->
-	    log:log("-----------------------~n"),
-	    log:log("Run terminated.~n~n"),
-	    case set_is_empty(Blocked) of
-		true -> ok;
-		false -> {error, deadlock, State}
-	    end;
-	false ->
-	    %% Remove process Next from the `active` set and run it.
-	    NewActive = set_remove(Active, Next),
-	    ?debug("Running process ~s.~n", [Next]),
-	    run(Next),
-	    %% Create new state.
-	    NewState = state_get_next(State, Next),
-	    %% Call the dispatcher to handle incoming messages from the
-	    %% running process.
-	    NewInfo = dispatcher(Info#info{active = NewActive,
-                                           state = NewState}),
-	    driver(NewInfo, Rest)
+driver(#info{active = Active, blocked = Blocked,
+	     error = Error, state = State} = Info, [Next|Rest]) ->
+    %% Assertion violation check.
+    case Error of
+	assert -> {error, assert, State};
+	_NoError ->
+	    %% Deadlock/Termination check.
+	    %% If the `active` set is empty and the `blocked` set is non-empty,
+	    %% report a deadlock, else if both sets are empty, report normal
+            %% program termination.
+	    case set_is_empty(Active) of
+		true ->
+		    log:log("-----------------------~n"),
+		    log:log("Run terminated.~n~n"),
+		    case set_is_empty(Blocked) of
+			true -> ok;
+			false -> {error, deadlock, State}
+		    end;
+		false ->
+		    %% Remove process Next from the `active` set and run it.
+		    NewActive = set_remove(Active, Next),
+		    ?debug("Running process ~s.~n", [Next]),
+		    run(Next),
+		    %% Create new state.
+		    NewState = state_get_next(State, Next),
+		    %% Call the dispatcher to handle incoming messages from the
+		    %% running process.
+		    NewInfo = dispatcher(Info#info{active = NewActive,
+						   state = NewState}),
+		    driver(NewInfo, Rest)
+	    end
     end.
 
 %% Implements the search logic (currently depth-first when looked at combined
@@ -292,8 +307,8 @@ handler(block, Pid, #info{blocked = Blocked} = Info, _Opt) ->
     Info#info{blocked = NewBlocked};
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
-%% If the exited process is irrelevant (i.e. has no LID assigned), recall the
-%% dispatcher.
+%% If the exited process is irrelevant (i.e. has no LID assigned),
+%% call the dispatcher.
 handler(exit, Pid, Info, [Reason]) ->
     Lid = lid(Pid),
     case Lid of
@@ -302,7 +317,13 @@ handler(exit, Pid, Info, [Reason]) ->
 	    dispatcher(Info);
 	_Any ->
 	    log:log("Process ~s exits (~p).~n", [Lid, Reason]),
-	    Info
+	    %% If the exception was caused by an assertion violation, propagate
+	    %% it to the driver via the `error` field of the `info` record.
+	    case Reason of
+		{{assertion_failed, _Details}, _Stack} ->
+		    Info#info{error = assert};
+		_Other -> Info
+	    end
     end;
 %% Link message handler.
 handler(link, Pid, Info, [TargetPid]) ->
@@ -716,6 +737,9 @@ interleave_test_() ->
      {"test7",
       ?_assertEqual(ok,
 		    analyze(["./test/test.erl"], test, test7, []))},
+     {"test8",
+      ?_assertMatch({error, analysis, _},
+		    analyze(["./test/test.erl"], test, test8, []))},
      {"test9",
       ?_assertEqual(ok,
 		    analyze(["./test/test.erl", "./test/test_aux.erl"],
