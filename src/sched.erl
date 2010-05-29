@@ -101,6 +101,8 @@
 -spec analyze([file()], module(), atom(), [term()]) -> analysis_ret().
 
 analyze(Files, Mod, Fun, Args) ->
+    %% Disable error logging messages.
+    error_logger:tty(false),
     case instr:instrument_and_load(Files) of
 	ok ->
 	    case interleave(Mod, Fun, Args) of
