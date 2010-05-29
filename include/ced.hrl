@@ -1,3 +1,11 @@
+%%%----------------------------------------------------------------------
+%%% File    : ced.hrl
+%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Description : EUnit-style assertion macros for CED.
+%%%
+%%% Created : 29 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%----------------------------------------------------------------------
+
 -ifdef(NOASSERT).
 %% The plain assert macro should be defined to do nothing if this file
 %% is included when debugging/testing is turned off.
