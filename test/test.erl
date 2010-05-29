@@ -9,40 +9,52 @@
 -module(test).
 -export([test1/0, test2/0, test3/0, test4/0,
 	 test5/0, test6/0, test7/0, test8/0,
-	 test9/0]).
+	 test9/0, test10/0]).
+
+-include_lib("eunit/include/eunit.hrl").
+-include("/home/alkis/Chess/include/ced.hrl").
 
 %% Normal, 2 proc: Simple send-receive.
 -spec test1() -> 'ok'.
 
 test1() ->
+    ?assert(foo1() =:= ok).
+
+foo1() ->
     Self = self(),
-    spawn(fun() -> foo1(Self) end),
+    spawn(fun() -> foo1_1(Self) end),
     receive _Any -> ok end.
 
-foo1(Pid) ->
+foo1_1(Pid) ->
     Pid ! 42.
 
 %% Normal, 3 proc: Only spawns.
 -spec test2() -> 'ok'.
 
 test2() ->
-    spawn(fun() -> foo21() end),
-    spawn(fun() -> foo22() end),
+    ?assert(foo2() =:= ok).
+
+foo2() ->
+    spawn(fun() -> foo2_1() end),
+    spawn(fun() -> foo2_2() end),
     ok.
 
-foo21() ->
-    spawn(fun() -> foo22() end).
+foo2_1() ->
+    spawn(fun() -> foo2_2() end).
 
-foo22() ->
+foo2_2() ->
     42.
 
 %% Normal, 3 proc: Simple send-receive.
 -spec test3() -> 'ok'.
 
 test3() ->
+    ?assert(foo3() =:= ok).
+
+foo3() ->
     Self = self(),
-    spawn(fun() -> foo31(Self) end),
-    spawn(fun() -> foo32(Self) end),
+    spawn(fun() -> foo3_1(Self) end),
+    spawn(fun() -> foo3_2(Self) end),
     receive
 	_Any1 -> ok
     end,
@@ -50,58 +62,70 @@ test3() ->
 	_Any2 -> ok
     end.
 
-foo31(Pid) ->
+foo3_1(Pid) ->
     Pid ! msg1.
 
-foo32(Pid) ->
+foo3_2(Pid) ->
     Pid ! msg2.
 
 %% Deadlock, 2 proc: Both receiving.
 -spec test4() -> no_return().
 
 test4() ->
-    spawn(fun() -> foo4() end),
-    receive _Any -> ok end.
+    ?assert(foo4() =:= ok).
 
 foo4() ->
+    spawn(fun() -> foo4_1() end),
+    receive _Any -> ok end.
+
+foo4_1() ->
     receive _Any -> ok end.
 
 %% Deadlock, 2 proc: Sending 42, expecting to receive 43.
 -spec test5() -> no_return().
 
 test5() ->
+    ?assert(foo5() =:= ok).
+
+foo5() ->
     Self = self(),
-    spawn(fun() -> foo1(Self) end),
+    spawn(fun() -> foo1_1(Self) end),
     receive 43 -> ok end.
 
 %% Normal, 2 proc: Nested send.
 -spec test6() -> 'ok'.
 
 test6() ->
+    ?assert(foo6() =:= ok).
+
+foo6() ->
     Self = self(),
-    spawn(fun() -> foo6(Self) end),
+    spawn(fun() -> foo6_1(Self) end),
     receive
 	Any -> receive
 		   Any -> ok
 	       end
     end.
 
-foo6(Pid) ->
+foo6_1(Pid) ->
     Pid ! Pid ! 42.
 
 %% Normal, 2 proc: Nested send-receive.
 -spec test7() -> 'ok'.
 
 test7() ->
+    ?assert(foo7() =:= ok).
+
+foo7() ->
     Self = self(),
-    Pid = spawn(fun() -> foo7(Self) end),
+    Pid = spawn(fun() -> foo7_1(Self) end),
     Msg = hello,
     Pid ! Msg,
     receive
 	Msg -> ok
     end.
 
-foo7(Pid) ->
+foo7_1(Pid) ->
     Pid ! receive
 	      Any -> Any
 	  end.
@@ -110,8 +134,11 @@ foo7(Pid) ->
 -spec test8() -> 'ok'.
 
 test8() ->
+    ?assert(foo8() =:= ok).
+
+foo8() ->
     Self = self(),
-    Pid = spawn(fun() -> foo1(Self) end),
+    Pid = spawn(fun() -> foo1_1(Self) end),
     link(Pid),
     receive
 	_Any -> ok
@@ -119,7 +146,22 @@ test8() ->
 
 %% Normal, 2 proc: Like test1/0, but using function from other file.
 -spec test9() -> 'ok'.
+
 test9() ->
+    ?assert(foo9() =:= ok).
+
+foo9() ->
     Self = self(),
     spawn(fun() -> test_aux:bar(Self) end),
     receive _Any -> ok end.
+
+%% Assertion violation, 3 proc: 
+-spec test10() -> 'ok'.
+
+test10() ->
+    Self = self(),
+    spawn(fun() -> foo3_1(Self) end),
+    spawn(fun() -> foo3_2(Self) end),
+    receive
+	Msg -> ?assert(Msg =:= msg1)
+    end.

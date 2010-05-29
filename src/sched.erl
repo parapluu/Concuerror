@@ -743,4 +743,7 @@ interleave_test_() ->
      {"test9",
       ?_assertEqual(ok,
 		    analyze(["./test/test.erl", "./test/test_aux.erl"],
-			    test, test9, []))}].
+			    test, test9, []))},
+     {"test10",
+      ?_assertMatch({error, analysis, _},
+		    analyze(["./test/test.erl"], test, test10, []))}].
