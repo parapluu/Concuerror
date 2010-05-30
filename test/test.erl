@@ -11,8 +11,7 @@
 	 test5/0, test6/0, test7/0, test8/0,
 	 test9/0, test10/0]).
 
--include_lib("eunit/include/eunit.hrl").
--include("/home/alkis/Chess/include/ced.hrl").
+-include("ced.hrl").
 
 %% Normal, 2 proc: Simple send-receive.
 -spec test1() -> 'ok'.

@@ -14,6 +14,8 @@
 
 -include("gen.hrl").
 
+-define(INCLUDE_DIR, filename:absname("include")).
+
 %% @spec instrument_and_load(Files::[file()]) -> 'ok' | 'error'
 %% @doc: Instrument, compile and load a list of files.
 %%
@@ -39,7 +41,8 @@ instrument_and_load_one(File) ->
     %% Compilation of original file without emiting code, just to emit all
     %% warnings or stop if an error is found, before instrumenting it.
     log:log("Validating file ~p...~n", [File]),
-    PreOptions = [strong_validation, verbose, report_errors, report_warnings],
+    PreOptions = [strong_validation, verbose, report_errors, report_warnings,
+                  {i, ?INCLUDE_DIR}],
     case compile:file(File, PreOptions) of
 	{ok, Module} ->
 	    %% A table for holding used variable names.
@@ -54,8 +57,8 @@ instrument_and_load_one(File) ->
 		    %% Compile instrumented code.
 		    %% TODO: More compile options?
 		    log:log("Compiling instrumented code...~n"),
-		    CompOptions = [binary, verbose,
-				   report_errors, report_warnings],
+		    CompOptions = [binary, verbose, report_errors,
+                                   report_warnings],
 		    case compile:forms(NewForms, CompOptions) of
 			{ok, Module, Binary} ->
 			    log:log("Loading module `~p`... ", [Module]),
@@ -86,7 +89,7 @@ instrument(File) ->
     %% TODO: For now using an empty include path. In the future we have to
     %%       provide a means for an externally defined include path (like the
     %%       erlc -I flag).
-    case epp:parse_file(File, [], []) of
+    case epp:parse_file(File, [?INCLUDE_DIR], []) of
 	{ok, OldForms} ->
 	    Tree = erl_recomment:recomment_forms(OldForms, []),
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
