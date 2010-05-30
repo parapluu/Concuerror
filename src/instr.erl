@@ -86,10 +86,10 @@ instrument_and_load_one(File) ->
     end.
 
 instrument(File) ->
-    %% TODO: For now using an empty include path. In the future we have to
-    %%       provide a means for an externally defined include path (like the
-    %%       erlc -I flag).
-    case epp:parse_file(File, [?INCLUDE_DIR], []) of
+    %% TODO: For now using the default and the test directory include path.
+    %%       In the future we have to provide a means for an externally
+    %%       defined include path (like the erlc -I flag).
+    case epp:parse_file(File, [?INCLUDE_DIR, filename:dirname(File)], []) of
 	{ok, OldForms} ->
 	    Tree = erl_recomment:recomment_forms(OldForms, []),
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
