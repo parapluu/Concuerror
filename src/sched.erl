@@ -49,8 +49,9 @@
 %% @type: dest() =  pid() | port() | atom() | {atom(), atom()}.
 %% @type: error_descr() = 'deadlock'
 %% @type: analysis_ret() = 'ok' |
-%%                         {error, instr} |
-%%                         {error, analysis, [{error_descr(), state()}]}.
+%%                         {'error', 'instr'} |
+%%                         {'error', 'analysis', [{error_descr(), state()}]}.
+%% @type: error() = 'assert'
 
 %% The logical id (LID) for each process reflects the process' logical
 %% position in the program's "process creation tree" and doesn't change
@@ -63,8 +64,9 @@
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 -type error_descr() :: 'deadlock'.
 -type analysis_ret() :: 'ok' |
-                        {error, instr} |
-                        {error, analysis, [{error_descr(), state()}]}.
+                        {'error', 'instr'} |
+                        {'error', 'analysis', [{error_descr(), state()}]}.
+-type error_info() :: 'assert'.
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -79,7 +81,7 @@
 %% state:   The current state of the program.
 -record(info, {active  :: set(),
                blocked :: set(),
-	       error   :: atom(),
+	       error   :: error_info(),
                state   :: state()}).
 
 %% Internal message format
