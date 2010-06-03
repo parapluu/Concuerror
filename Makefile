@@ -23,6 +23,8 @@ DOC = $(TOP)/doc
 
 ERL_COMPILE_FLAGS += +warn_exported_vars +warn_unused_import +warn_untyped_record +warn_missing_spec +debug_info
 
+DIALYZER_FLAGS += -Wbehaviours
+
 # ----------------------------------------------------
 # Targets
 # ----------------------------------------------------
@@ -92,7 +94,7 @@ run.sh:
 
 test.sh:
 	printf "#%c/bin/bash\n \
-		dialyzer $(EBIN)/*.beam\n \
+		dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam\n \
 	        erl -noinput -pa $(EBIN) -s util test -s init stop" ! \
 	      > test.sh
 	chmod +x test.sh
