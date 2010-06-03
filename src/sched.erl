@@ -154,7 +154,6 @@ replay(Mod, Fun, Args, State) ->
 replay_aux(Mod, Fun, Args, State, Parent) ->
     replay_logger:start(),
     replay_logger:start_replay(),
-    %% TODO init_state
     interleave(Mod, Fun, Args, [details, {init_state, State}]),
     Result = replay_logger:get_replay(),
     replay_logger:stop(),
@@ -313,12 +312,11 @@ driver(#info{active = Active, blocked = Blocked,
 					 DetailsFlag),
 		    driver(NewInfo, DetailsFlag)
 	    end
-    end;
+    end.
+
 %% Same as above, but instead of searching, the process to be activated is
 %% provided at each step by the head of the State argument. When the State list
 %% is empty, the driver falls back to the standard search behavior stated above.
-driver(Info, State) -> driver(Info, State, false).
-
 driver(Info, [], DetailsFlag) -> driver(Info, DetailsFlag);
 driver(#info{active = Active, blocked = Blocked,
 	     error = Error, state = State} = Info, [Next|Rest], DetailsFlag) ->
