@@ -21,7 +21,7 @@
 
 -include("gen.hrl").
 
--type state() :: [proc_action()].
+-type state() :: [sched:proc_action()].
 
 %%%----------------------------------------------------------------------
 %%% Eunit related
@@ -52,7 +52,7 @@ stop() ->
 start_replay() ->
     gen_server:cast(?RP_REPLAY_LOGGER, start_replay).
 
--spec log(proc_action()) -> 'ok'.
+-spec log(sched:proc_action()) -> 'ok'.
 
 log(Msg) ->
     gen_server:cast(?RP_REPLAY_LOGGER, {log_replay, Msg}).
@@ -76,7 +76,8 @@ init(_Args) ->
 terminate(_Reason, _State) ->
     ok.
 
--spec handle_cast('start_replay' | {'log_replay', proc_action()}, state()) ->
+-spec handle_cast('start_replay' | {'log_replay', sched:proc_action()},
+                  state()) ->
 			 {'noreply', state()}.
 
 handle_cast(start_replay, _State) ->

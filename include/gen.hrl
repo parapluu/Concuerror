@@ -57,16 +57,3 @@
 %%%----------------------------------------------------------------------
 
 -type file() :: file:filename().
-%% The logical id (LID) for each process reflects the process' logical
-%% position in the program's "process creation tree" and doesn't change
-%% between different runs of the same program (as opposed to erlang pids).
--type lid() :: string().
-%% A process' exit reasons
--type exit_reasons() :: {{'assertion_failed', [term()]}, term()}.
-%% Tuples providing information about a process' action.
--type proc_action() :: {'block', lid()} |
-                       {'link', lid(), lid()} |
-                       {'receive', lid(), lid(), term()} |
-                       {'send', lid(), lid(), term()} |
-                       {'spawn', lid(), lid()} |
-                       {'exit', lid(), exit_reasons()}.

@@ -57,7 +57,7 @@ stop() ->
 register_errors(Mod, Fun, Args, ErrorStates) ->
     gen_server:cast(?RP_REPLAY_SERVER, {register, Mod, Fun, Args, ErrorStates}).
 
--spec lookup(integer()) -> [proc_action()].
+-spec lookup(integer()) -> [sched:proc_action()].
 
 lookup(Id) when is_integer(Id) ->
     gen_server:call(?RP_REPLAY_SERVER, {lookup_by_id, Id}).
@@ -88,7 +88,7 @@ handle_cast({register, Mod, Fun, Args, ErrorStates}, State) ->
     {noreply, State#state{module = Mod, function = Fun, args = Args}}.
 
 -spec handle_call({'lookup_by_id', integer()}, {pid(), term()}, state()) ->
-			 {'reply', [proc_action()], state()}.
+			 {'reply', [sched:proc_action()], state()}.
 
 handle_call({lookup_by_id, Id}, _From,
 	    #state{module = Mod, function = Fun, args = Args} = State) ->

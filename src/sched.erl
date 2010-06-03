@@ -18,6 +18,8 @@
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0]).
 
+-export_type([proc_action/0]).
+
 -include("gen.hrl").
 
 %%%----------------------------------------------------------------------
@@ -54,6 +56,7 @@
 %% The logical id (LID) for each process reflects the process' logical
 %% position in the program's "process creation tree" and doesn't change
 %% between different runs of the same program (as opposed to erlang pids).
+-type lid() :: string().
 %% A state is a list of LIDs showing the (reverse) interleaving of
 %% processes up to a point of the program.
 -type state() :: [lid()].
@@ -66,6 +69,15 @@
                         {'error', 'analysis', analysis_target(),
 			 [{error_descr(), state()}]}.
 -type error_info() :: 'assert'.
+%% A process' exit reasons
+-type exit_reasons() :: {{'assertion_failed', [term()]}, term()}.
+%% Tuples providing information about a process' action.
+-type proc_action() :: {'block', lid()} |
+                       {'link', lid(), lid()} |
+                       {'receive', lid(), lid(), term()} |
+                       {'send', lid(), lid(), term()} |
+                       {'spawn', lid(), lid()} |
+                       {'exit', lid(), exit_reasons()}.
 
 %%%----------------------------------------------------------------------
 %%% Records
