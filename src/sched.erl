@@ -34,20 +34,26 @@
 %%%----------------------------------------------------------------------
 
 %% @type: lid() = string().
-%% @type: state() = atom().
+%% @type: state() = [lid()].
 %% @type: dest() =  pid() | port() | atom() | {atom(), atom()}.
-%% @type: error_descr() = 'deadlock'
-%% @type: analysis_target() = {module(), atom(), [term()]}
-%% @type: analysis_ret() = 'ok' |
-%%                         {'error', 'instr'} |
-%%                         {'error', 'analysis', [{error_descr(), state()}]}.
-%% @type: error() = 'assert'
-%% @type: proc_action() = term().
+%% @type: error_descr() = 'deadlock' | 'assert'.
+%% @type: analysis_target() = {module(), atom(), [term()]}.
+%% @type: analysis_ret() = {'ok', analysis_target()} |
+%%                         {'error', 'instr', analysis_target()} |
+%%                         {'error', 'analysis', analysis_target(),
+%%                          [{error_descr(), state()}]}.
+%% @type: error_info() = 'assert'.
+%% @type exit_reasons() = {{'assertion_failed', [term()]}, term()}.
+%% @type: proc_action() = {'block', lid()} |
+%%                        {'link', lid(), lid()} |
+%%                        {'receive', lid(), lid(), term()} |
+%%                        {'send', lid(), lid(), term()} |
+%%                        {'spawn', lid(), lid()} |
+%%                        {'exit', lid(), exit_reasons()}.
 
 %% The logical id (LID) for each process reflects the process' logical
 %% position in the program's "process creation tree" and doesn't change
 %% between different runs of the same program (as opposed to erlang pids).
--type lid() :: string().
 %% A state is a list of LIDs showing the (reverse) interleaving of
 %% processes up to a point of the program.
 -type state() :: [lid()].
@@ -56,8 +62,8 @@
 -type error_descr() :: 'deadlock' | 'assert'.
 -type analysis_target() :: {module(), atom(), [term()]}.
 -type analysis_ret() :: {'ok', analysis_target()} |
-                        {error, instr, analysis_target()} |
-                        {error, analysis, analysis_target(),
+                        {'error', 'instr', analysis_target()} |
+                        {'error', 'analysis', analysis_target(),
 			 [{error_descr(), state()}]}.
 -type error_info() :: 'assert'.
 
@@ -308,7 +314,6 @@ driver(#info{active = Active, blocked = Blocked,
 		    driver(NewInfo, DetailsFlag)
 	    end
     end;
-
 %% Same as above, but instead of searching, the process to be activated is
 %% provided at each step by the head of the State argument. When the State list
 %% is empty, the driver falls back to the standard search behavior stated above.
@@ -547,7 +552,7 @@ rep_yield() ->
 	#sched{msg = continue} -> true
     end.
 
-%% @spec rep_receive(function((function()) -> term())) -> term()
+%% @spec rep_receive(fun((function()) -> term())) -> term()
 %% @doc: Replacement for a `receive' statement.
 %%
 %% The first time the process is scheduled it searches its mailbox. If no
@@ -555,7 +560,7 @@ rep_yield() ->
 %% When a new message arrives the process is woken up.
 %% The check mailbox - block - wakeup loop is repeated until a matching message
 %% arrives.
--spec rep_receive(fun((fun()) -> term())) -> term().
+-spec rep_receive(fun((function()) -> term())) -> term().
 
 rep_receive(Fun) ->
     rep_receive_aux(Fun).
@@ -592,7 +597,7 @@ rep_send(Dest, Msg) ->
 %%
 %% The argument provided is the argument of the original spawn call.
 %% When spawned, the new process has to yield.
--spec rep_spawn(fun()) -> pid().
+-spec rep_spawn(function()) -> pid().
 
 rep_spawn(Fun) ->
     Pid = spawn(fun() -> rep_yield(), Fun() end),
@@ -605,7 +610,7 @@ rep_spawn(Fun) ->
 %%
 %% The argument provided is the argument of the original spawn call.
 %% When spawned, the new process has to yield.
--spec rep_spawn_link(fun()) -> pid().
+-spec rep_spawn_link(function()) -> pid().
 
 rep_spawn_link(Fun) ->
     Pid = spawn_link(fun() -> rep_yield(), Fun() end),

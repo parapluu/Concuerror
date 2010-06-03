@@ -18,17 +18,24 @@
 -export([init/1, terminate/2, handle_call/2, handle_info/2,
 	 handle_event/2, code_change/3]).
 
--behavior(gen_event).
+-behaviour(gen_event).
 
 -include("gen.hrl").
 
--type(state() :: []).
+%%%----------------------------------------------------------------------
+%%% Callback types
+%%%----------------------------------------------------------------------
+
+-type event() :: {'msg', string()} | {'result', term()}.
+-type state() :: [].
+
+-export_type([event/0, state/0]).
 
 %%%----------------------------------------------------------------------
 %%% Non gen_evt functions.
 %%%----------------------------------------------------------------------
 
-%% @spec internal(string()) -> none()
+%% @spec internal(string()) -> no_return()
 %% @doc: Print an internal error message and halt.
 -spec internal(string()) -> no_return().
 
@@ -36,7 +43,7 @@ internal(String) ->
     io:format("(Internal) " ++ String),
     halt(?RET_INTERNAL_ERROR).
 
-%% @spec internal(string(), [term()]) -> none()
+%% @spec internal(string(), [term()]) -> no_return()
 %% @doc: Like `internal/1', but prints a formatted message using arguments.
 -spec internal(string(), [term()]) -> no_return().
 
@@ -48,13 +55,14 @@ internal(String, Args) ->
 %%% API functions
 %%%----------------------------------------------------------------------
 
-%% @spec start(atom()) -> {ok, pid()} | {error, {already_started, pid()}}
+%% @spec start(atom(), term()) -> {'ok', pid()} |
+%%                                  {'error', {'already_started', pid()}}
 %% @doc: Starts the log event manager.
 %%
 %% `Mod' is the module containing the callback functions.
 %% `Args' are the arguments given to the callback function `Mod:init/1'.
--spec start(module(), term()) -> {ok, pid()} |
-                                 {error, {already_started, pid()}}.
+-spec start(module(), term()) -> {'ok', pid()} |
+                                 {'error', {'already_started', pid()}}.
 
 start(Mod, Args) ->
     gen_event:start({local, log}),
@@ -67,14 +75,14 @@ start(Mod, Args) ->
 stop() ->
     gen_event:stop(log).
 
-%% @spec spec log(string()) -> 'ok'
+%% @spec log(string()) -> 'ok'
 %% @doc: Logs a string.
 -spec log(string()) -> 'ok'.
 
 log(String) when is_list(String) ->
     log(String, []).
 
-%% @spec spec log(string(), [term()]) -> 'ok'
+%% @spec log(string(), [term()]) -> 'ok'
 %% @doc: Logs a formatted string.
 -spec log(string(), [term()]) -> 'ok'.
 
@@ -82,8 +90,8 @@ log(String, Args) when is_list(String), is_list(Args) ->
     LogMsg = io_lib:format(String, Args),
     gen_event:notify(log, {msg, LogMsg}).
 
-%% @spec spec result([term()]) -> 'ok'
-%% @doc: Logs the analysis error list.
+%% @spec result(term()) -> 'ok'
+%% @doc: Logs the analysis error.
 -spec result(term()) -> 'ok'.
 
 result(Result) ->
@@ -93,7 +101,7 @@ result(Result) ->
 %%% Callback functions
 %%%----------------------------------------------------------------------
 
--spec init(term()) -> {ok, state()}.
+-spec init(term()) -> {'ok', state()}.
 
 init(_State) ->
     {ok, []}.
@@ -103,8 +111,7 @@ init(_State) ->
 terminate(_Reason, _State) ->
     ok.
 
--spec handle_event({msg, string()} | {result, term()}, state()) ->
-			  {ok, state()}.
+-spec handle_event(event(), state()) -> {'ok', state()}.
 
 handle_event({msg, String}, State) ->
     io:format("~s", [String]),
@@ -116,14 +123,14 @@ handle_event({result, _Result}, State) ->
 -spec code_change(term(), term(), term()) -> no_return().
 
 code_change(_OldVsn, _State, _Extra) ->
-    log:internal("~p:~p: code_change~n", [?MODULE, ?LINE]).
+    internal("~p:~p: code_change~n", [?MODULE, ?LINE]).
 
 -spec handle_info(term(), term()) -> no_return().
 
 handle_info(_Info, _State) ->
-    log:internal("~p:~p: handle_info~n", [?MODULE, ?LINE]).
+    internal("~p:~p: handle_info~n", [?MODULE, ?LINE]).
 
--spec handle_call(term(), term()) -> term().
+-spec handle_call(term(), term()) -> no_return().
 
 handle_call(_Request, _State) ->
-    log:internal("~p:~p: handle_call~n", [?MODULE, ?LINE]).
+    internal("~p:~p: handle_call~n", [?MODULE, ?LINE]).

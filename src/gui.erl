@@ -20,8 +20,6 @@
 -include("gen.hrl").
 -include("gui.hrl").
 
--type(state() :: []).
-
 %%%----------------------------------------------------------------------
 %%% UI functions
 %%%----------------------------------------------------------------------
@@ -54,24 +52,24 @@ start() ->
 %%% Log event handler callback functions
 %%%----------------------------------------------------------------------
 
--spec init(term()) -> {ok, state()}.
+-spec init(term()) -> {'ok', log:state()}.
 
 %% @doc: Initialize the event handler.
 %% Note: The wx environment is set once in this function and is subsequently
 %%       used by all callback functions. If any change is to happen to the
-%%       environment (e.g. new elements added dynamically), `set_env` will have
+%%       environment (e.g. new elements added dynamically), `set_env' will have
 %%       to be called again (by manually calling a special update_environment
 %%       function for each update?).
 init(Env) ->
     wx:set_env(Env),
     {ok, []}.
 
--spec terminate(term(), state()) -> 'ok'.
+-spec terminate(term(), log:state()) -> 'ok'.
 
 terminate(_Reason, _State) ->
     ok.
 
--spec handle_event(term(), state()) -> {ok, state()}.
+-spec handle_event(log:event(), log:state()) -> {'ok', log:state()}.
 
 handle_event({msg, String}, State) ->
     LogText = ref_lookup(?LOG_TEXT),
@@ -213,7 +211,7 @@ setupRightColumn(Panel) ->
 %% Source tab: Displays the source code for the selected module.
 %% TODO: Temporarily removed graph tab.
 setupMainNotebook(Parent) ->
-  %% Notebook widgets.
+    %% Notebook widgets.
     Notebook = wxNotebook:new(Parent, ?NOTEBOOK, [{style, ?wxNB_NOPAGETHEME}]),
     ref_add(?NOTEBOOK, Notebook),
     %% Setup tab panels.
@@ -476,7 +474,8 @@ analyze() ->
 			    analysis_init(),
 			    Opts = [{files, Files}],
 			    spawn(fun() ->
-			            sched:analyze(Module, Function, Args, Opts)
+                                          sched:analyze(Module, Function, Args,
+                                                        Opts)
 				  end);
 			%% User pressed 'cancel' or closed dialog window.
 			_Other -> continue

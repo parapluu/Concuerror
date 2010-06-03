@@ -256,5 +256,5 @@ log_warning_list(List) ->
 log_list(List, Pre) ->
     LogFun = fun(String) -> log:log(String) end,
     [LogFun(io_lib:format("~s:~p: ~s ", [File, Line, Pre]) ++
-	    Mod:format_error(Descr) ++ "\n") || {File, Info} <- List,
-						{Line, Mod, Descr} <- Info].
+                Mod:format_error(Descr) ++ "\n") || {File, Info} <- List,
+                                                    {Line, Mod, Descr} <- Info].

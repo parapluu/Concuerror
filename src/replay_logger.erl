@@ -17,11 +17,11 @@
 -export([init/1, terminate/2, handle_cast/2, handle_call/3,
 	 code_change/3, handle_info/2]).
 
--behavior(gen_server).
+-behaviour(gen_server).
 
 -include("gen.hrl").
 
--type(state() :: [proc_action()]).
+-type state() :: [proc_action()].
 
 %%%----------------------------------------------------------------------
 %%% Eunit related
@@ -36,7 +36,8 @@
 %%% API functions
 %%%----------------------------------------------------------------------
 
--spec start() -> term().
+-spec start() -> {'ok', pid()} | 'ignore' |
+                 {'error', {'already_started', pid()} | term()}.
 
 start() ->
     gen_server:start({local, ?RP_REPLAY_LOGGER}, ?MODULE, [], []).
@@ -65,7 +66,7 @@ get_replay() ->
 %%% Callback functions
 %%%----------------------------------------------------------------------
 
--spec init(term()) -> {ok, state()}.
+-spec init(term()) -> {'ok', state()}.
 
 init(_Args) ->
     {ok, []}.
@@ -75,16 +76,16 @@ init(_Args) ->
 terminate(_Reason, _State) ->
     ok.
 
--spec handle_cast(start_replay | {log_replay, proc_action()}, state()) ->
-			 {noreply, state()}.
+-spec handle_cast('start_replay' | {'log_replay', proc_action()}, state()) ->
+			 {'noreply', state()}.
 
 handle_cast(start_replay, _State) ->
     {noreply, []};
 handle_cast({log_replay, Msg}, State) ->
     {noreply, [Msg|State]}.
 
--spec handle_call(get_replay, {pid(), term()}, state()) ->
-			 {reply, state(), state()}.
+-spec handle_call('get_replay', {pid(), term()}, state()) ->
+			 {'reply', state(), state()}.
 
 handle_call(get_replay, _From, State) ->
     Details = lists:reverse(State),

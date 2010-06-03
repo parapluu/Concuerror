@@ -17,16 +17,16 @@
 -export([init/1, terminate/2, handle_cast/2, handle_call/3,
 	 code_change/3, handle_info/2]).
 
--behavior(gen_server).
+-behaviour(gen_server).
 
 -include("gen.hrl").
 
 %% Internal server state record.
 -record(state, {module   :: module(),
-		function :: function(),
+		function :: atom(),
 		args     :: [term()]}).
 
--type(state() :: #state{}).
+-type state() :: #state{}.
 		
 %%%----------------------------------------------------------------------
 %%% Eunit related
@@ -41,7 +41,8 @@
 %%% API functions
 %%%----------------------------------------------------------------------
 
--spec start() -> term().
+-spec start() -> {'ok', pid()} | 'ignore' |
+                 {'error', {'already_started', pid()} | term()}.
 
 start() ->
     gen_server:start({local, ?RP_REPLAY_SERVER}, ?MODULE, [], []).
@@ -51,7 +52,7 @@ start() ->
 stop() ->
     gen_server:cast(?RP_REPLAY_SERVER, stop).
 
--spec register_errors(module(), function(), [term()], [term()]) -> 'ok'.
+-spec register_errors(module(), atom(), [term()], [term()]) -> 'ok'.
 
 register_errors(Mod, Fun, Args, ErrorStates) ->
     gen_server:cast(?RP_REPLAY_SERVER, {register, Mod, Fun, Args, ErrorStates}).
@@ -65,7 +66,7 @@ lookup(Id) when is_integer(Id) ->
 %%% Callback functions
 %%%----------------------------------------------------------------------
 
--spec init(term()) -> {ok, state()}.
+-spec init(term()) -> {'ok', state()}.
 
 init(_Args) ->
     ets:new(?NT_ERROR, [named_table]),
@@ -76,9 +77,9 @@ init(_Args) ->
 terminate(_Reason, _State) ->
     ets:delete(?NT_ERROR).
 
--spec handle_cast({register, module(), function(),
-		   [term()], [term()]}, state()) ->
-			 {noreply, state()}.
+-spec handle_cast({'register', module(), atom(), [term()], [term()]},
+                  state()) ->
+			 {'noreply', state()}.
 
 handle_cast({register, Mod, Fun, Args, ErrorStates}, State) ->
     ets:delete_all_objects(?NT_ERROR),
@@ -86,8 +87,8 @@ handle_cast({register, Mod, Fun, Args, ErrorStates}, State) ->
     ets:insert(?NT_ERROR, TupleList),
     {noreply, State#state{module = Mod, function = Fun, args = Args}}.
 
--spec handle_call({lookup_by_id, integer()}, {pid(), term()}, state()) ->
-			 {reply, [proc_action()], state()}.
+-spec handle_call({'lookup_by_id', integer()}, {pid(), term()}, state()) ->
+			 {'reply', [proc_action()], state()}.
 
 handle_call({lookup_by_id, Id}, _From,
 	    #state{module = Mod, function = Fun, args = Args} = State) ->

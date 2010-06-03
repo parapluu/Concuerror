@@ -24,7 +24,7 @@ doc(AppDir) ->
     edoc:application(AppName, AppDir, Options).
 
 %% @spec test() -> 'ok'
-%% @doc: Run all EUnit tests for the modules in the `src` directory.
+%% @doc: Run all EUnit tests for the modules in the `src' directory.
 -spec test() -> 'ok'.
 
 test() ->
@@ -32,7 +32,7 @@ test() ->
     eunit:test(replay_server),
     eunit:test(replay_logger).
 
-%% @spec funs(string()) -> [{atom(), integer()}]
+%% @spec funs(string()) -> [{atom(), non_neg_integer()}]
 %% @doc: Same as `funs(File, [tuple])'.
 -spec funs(string()) -> [{atom(), arity()}].
 
@@ -40,8 +40,8 @@ funs(File) ->
     funs(File, [tuple]).
 
 %% @type: funs_options() = 'tuple' | 'string'. 
-%% @spec funs(string(), Options::funs_options()) -> [{atom(), integer}] |
-%%                                                  [string()]
+%% @spec funs(string(), Options::funs_options()) ->
+%%              [{atom(), non_neg_integer()}] | [string()]
 %% @doc: Scan a file for exported functions.
 %%
 %% If no `export' attribute is found in the file, all functions of the module
