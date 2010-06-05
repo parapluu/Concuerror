@@ -20,6 +20,9 @@
 -include("gen.hrl").
 -include("gui.hrl").
 
+%% Log event handler internal state.
+-type state() :: [].
+
 %%%----------------------------------------------------------------------
 %%% UI functions
 %%%----------------------------------------------------------------------
@@ -52,7 +55,7 @@ start() ->
 %%% Log event handler callback functions
 %%%----------------------------------------------------------------------
 
--spec init(term()) -> {'ok', log:state()}.
+-spec init(term()) -> {'ok', state()}.
 
 %% @doc: Initialize the event handler.
 %% Note: The wx environment is set once in this function and is subsequently
@@ -64,12 +67,12 @@ init(Env) ->
     wx:set_env(Env),
     {ok, []}.
 
--spec terminate(term(), log:state()) -> 'ok'.
+-spec terminate(term(), state()) -> 'ok'.
 
 terminate(_Reason, _State) ->
     ok.
 
--spec handle_event(log:event(), log:state()) -> {'ok', log:state()}.
+-spec handle_event(log:event(), state()) -> {'ok', state()}.
 
 handle_event({msg, String}, State) ->
     LogText = ref_lookup(?LOG_TEXT),
