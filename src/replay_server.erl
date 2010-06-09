@@ -27,6 +27,8 @@
 		args     :: [term()]}).
 
 -type state() :: #state{}.
+-type register_arg() :: {'register', module(), atom(), [term()], [term()]}.
+-type stop_arg() :: 'stop'.
 		
 %%%----------------------------------------------------------------------
 %%% Eunit related
@@ -77,15 +79,16 @@ init(_Args) ->
 terminate(_Reason, _State) ->
     ets:delete(?NT_ERROR).
 
--spec handle_cast({'register', module(), atom(), [term()], [term()]},
-                  state()) ->
-			 {'noreply', state()}.
+-spec handle_cast(register_arg() | stop_arg(), state()) ->
+			 {'noreply', state()} | {stop, 'normal', state()}.
 
 handle_cast({register, Mod, Fun, Args, ErrorStates}, State) ->
     ets:delete_all_objects(?NT_ERROR),
     TupleList = create_list(ErrorStates),
     ets:insert(?NT_ERROR, TupleList),
-    {noreply, State#state{module = Mod, function = Fun, args = Args}}.
+    {noreply, State#state{module = Mod, function = Fun, args = Args}};
+handle_cast(stop, State) ->
+    {stop, normal, State}.
 
 -spec handle_call({'lookup_by_id', integer()}, {pid(), term()}, state()) ->
 			 {'reply', [sched:proc_action()], state()}.
