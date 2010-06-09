@@ -152,8 +152,9 @@ analyze(Mod, Fun, Args, Options) ->
 	    Return
     end.
 
-%% Replay the given state and return detailed information about the process
-%% interleaving.
+%% @spec: replay(atom(), atom(), [term()], state()) -> [proc_action()]
+%% @doc: Replay the given state and return detailed information about the
+%% process interleaving.
 -spec replay(module(), atom(), [term()], state()) -> [proc_action()].
 
 replay(Mod, Fun, Args, State) ->

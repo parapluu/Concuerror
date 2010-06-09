@@ -58,6 +58,7 @@ start() ->
 -spec init(term()) -> {'ok', state()}.
 
 %% @doc: Initialize the event handler.
+%%
 %% Note: The wx environment is set once in this function and is subsequently
 %%       used by all callback functions. If any change is to happen to the
 %%       environment (e.g. new elements added dynamically), `set_env' will have
