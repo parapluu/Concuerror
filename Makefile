@@ -71,7 +71,7 @@ clean:
 debug1:	ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_1
 debug1:	clean $(TARGETS)
 
-debug2:	ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_2
+debug2:	ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_1 -DDEBUG_LEVEL_2
 debug2:	clean $(TARGETS)
 
 .PHONY: doc

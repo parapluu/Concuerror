@@ -36,20 +36,17 @@
 -ifdef(DEBUG_LEVEL_1).
 -define(debug_1(S_, L_), io:format("(D-1) " ++ S_, L_)).
 -define(debug_1(S_), io:format("(D-1) " ++ S_)).
--define(debug_2(S_, L_), ok).
--define(debug_2(S_), ok).
--else.
--ifdef(DEBUG_LEVEL_2).
--define(debug_1(S_, L_), io:format("(D-1) " ++ S_, L_)).
--define(debug_1(S_), io:format("(D-1) " ++ S_)).
--define(debug_2(S_, L_), io:format("|--(D-2) " ++ S_, L_)).
--define(debug_2(S_), io:format("|--(D-2) " ++ S_)).
 -else.
 -define(debug_1(S_, L_), ok).
 -define(debug_1(S_), ok).
+-endif.
+
+-ifdef(DEBUG_LEVEL_2).
+-define(debug_2(S_, L_), io:format("|--(D-2) " ++ S_, L_)).
+-define(debug_2(S_), io:format("|--(D-2) " ++ S_)).
+-else.
 -define(debug_2(S_, L_), ok).
 -define(debug_2(S_), ok).
--endif.
 -endif.
 
 %%%----------------------------------------------------------------------
