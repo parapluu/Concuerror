@@ -15,15 +15,23 @@ EBIN = 	  $(TOP)/ebin
 
 INCLUDE = $(TOP)/include
 
-DOC = $(TOP)/doc
+DOC =     $(TOP)/doc
+
+OPTS =    $(TOP)/opts.mk
 
 # ----------------------------------------------------
 # Flags
 # ----------------------------------------------------
 
-ERL_COMPILE_FLAGS += +warn_exported_vars +warn_unused_import +warn_untyped_record +warn_missing_spec +debug_info
+DEFAULT_ERL_COMPILE_FLAGS = +warn_exported_vars +warn_unused_import +warn_untyped_record +warn_missing_spec +debug_info
 
-DIALYZER_FLAGS += -Wbehaviours
+ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS)
+
+DEBUG1_ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS) -DDEBUG_LEVEL_1
+
+DEBUG2_ERL_COMPILE_FLAGS = $(DEBUG1_ERL_COMPILE_FLAGS) -DDEBUG_LEVEL_2
+
+DIALYZER_FLAGS = -Wbehaviours
 
 # ----------------------------------------------------
 # Targets
@@ -60,19 +68,44 @@ vpath %.hrl include
 vpath %.erl $(ERL_DIRS)
 vpath %.beam ebin
 
+include $(OPTS)
+
 all: 	$(TARGETS)
 
 clean:
+	printf "" > $(OPTS)
 	rm -f *.sh
 	rm -f $(EBIN)/*.beam
 	rm -f $(DOC)/*.html $(DOC)/*.css $(DOC)/edoc-info $(DOC)/*.png
 
-# TODO: Better way than 'clean'.
-debug1:	ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_1
-debug1:	clean $(TARGETS)
+ifneq ($(ERL_COMPILE_FLAGS), $(DEFAULT_ERL_COMPILE_FLAGS))
+release:
+	make clean
+	make
+else
+release:
+	make
+endif
 
-debug2:	ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_1 -DDEBUG_LEVEL_2
-debug2:	clean $(TARGETS)
+ifneq ($(ERL_COMPILE_FLAGS), $(DEBUG1_ERL_COMPILE_FLAGS))
+debug1:
+	make clean
+	printf "ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_1" > $(OPTS)
+	make
+else
+debug1:
+	make
+endif
+
+ifneq ($(ERL_COMPILE_FLAGS), $(DEBUG2_ERL_COMPILE_FLAGS))
+debug2:
+	make clean
+	printf "ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_1 -DDEBUG_LEVEL_2" > $(OPTS)
+	make
+else
+debug2:
+	make
+endif
 
 .PHONY: doc
 doc:	util.beam
