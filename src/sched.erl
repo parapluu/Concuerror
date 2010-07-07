@@ -500,7 +500,7 @@ elapsed_time(T1, T2) ->
     ElapsedTime = T2 - T1,
     Mins = ElapsedTime div 60000,
     Secs = (ElapsedTime rem 60000) / 1000,
-    ?debug_1("Done in ~wm~.2fs\n", [_Mins, _Secs]),
+    ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
     {Mins, Secs}.
 
 %% Signal process Lid to continue its execution.
