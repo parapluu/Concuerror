@@ -450,8 +450,8 @@ addListItems(Id, Items) ->
 	_Other -> wxControlWithItems:setSelection(List, Count)
     end,
     %% XXX: hack (send event message to self)
-    self() ! #wx{id = Id,
-		 event = #wxCommand{type = command_listbox_selected}}.
+    ?RP_GUI ! #wx{id = Id,
+                  event = #wxCommand{type = command_listbox_selected}}.
 
 %% Analyze selected function.
 analyze() ->
@@ -614,13 +614,34 @@ refresh() ->
 	_Other ->
 	    Module = wxListBox:getStringSelection(ModuleList),
 	    %% Scan selected module for exported functions.
-	    Funs = util:funs(Module, [string]),
+	    Funs = util:funs(Module, string),
 	    setListItems(?FUNCTION_LIST, Funs),
 	    %% Update source viewer.
 	    SourceText = ref_lookup(?SOURCE_TEXT),
 	    wxStyledTextCtrl:setReadOnly(SourceText, false),
 	    wxStyledTextCtrl:loadFile(SourceText, Module),
 	    wxStyledTextCtrl:setReadOnly(SourceText, true)
+    end.
+
+%% Refresh source code (show selected function).
+refreshFun() ->
+    Module = getModule(),
+    {Function, Arity} = getFunction(),
+    %% Check if a module and function is selected.
+    if Module =/= '', Function =/= '' ->
+            ModuleList = ref_lookup(?MODULE_LIST),
+            case wxListBox:getSelection(ModuleList) of
+                ?wxNOT_FOUND -> continue;
+                _Other ->
+                    Path = wxListBox:getStringSelection(ModuleList),
+                    %% Scan selected module for selected function line number.
+                    Line = util:funLine(Path, Function, Arity),
+                    %% Update source viewer.
+                    SourceText = ref_lookup(?SOURCE_TEXT),
+                    wxStyledTextCtrl:gotoLine(SourceText, Line),
+                    wxStyledTextCtrl:lineUpExtend(SourceText)
+            end;
+       true -> continue
     end.
 
 %% Remove selected module from module list.
@@ -758,7 +779,7 @@ loop() ->
 	    loop();
 	#wx{id = ?FUNCTION_LIST,
 	    event = #wxCommand{type = command_listbox_selected}} ->
-	    %% do nothing
+            refreshFun(),
 	    loop();
 	#wx{id = ?MODULE_LIST,
 	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
