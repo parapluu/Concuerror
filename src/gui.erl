@@ -466,8 +466,7 @@ analyze() ->
 		0 ->
 		    analysis_init(),
 		    Opts = [{files, Files}],
-		    spawn(fun() -> sched:analyze({Module, Function, []}, Opts)
-			  end);
+		    sched:analyze({Module, Function, []}, Opts);
 		%% If the function to be analyzed is of non-zero arity,
 		%% a dialog window is displayed prompting the user to enter
 		%% the function's arguments.
@@ -477,10 +476,7 @@ analyze() ->
 			{ok, Args} ->
 			    analysis_init(),
 			    Opts = [{files, Files}],
-			    spawn(fun() ->
-                                         sched:analyze({Module, Function, Args},
-                                                        Opts)
-				  end);
+			    sched:analyze({Module, Function, Args}, Opts);
 			%% User pressed 'cancel' or closed dialog window.
 			_Other -> continue
 		    end
@@ -846,6 +842,11 @@ loop() ->
 	%%     loop();
 	#wx{event = #wxClose{type = close_window}} ->
 	    ok;
+	%% Ignore normal 'EXIT' messages from linked processes.
+	%% (Added to ignore exit messages coming from calls to compile:file
+	%% and compile:forms)
+	{'EXIT', _Pid, normal} ->
+	    loop();
 	%% -------------------- Catchall -------------------- %%
 	Other ->
 	    io:format("main loop unimplemented: ~p~n", [Other]),

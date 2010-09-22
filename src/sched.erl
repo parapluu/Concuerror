@@ -122,6 +122,8 @@
 %% compilation/instrumentation fails or `{error, analysis, List}' if
 %% any erroneous interleaving is found.
 %% `List' is a list of `{ErrorDescription, ErrorInterleaving}'.
+%%
+%% Note: Both analyze and replay are implemented 
 -spec analyze(analysis_target(), [term()]) -> analysis_ret().
 
 analyze(Target, Options) ->
@@ -165,19 +167,12 @@ analyze(Target, Options) ->
 -spec replay(analysis_target(), state()) -> [proc_action()].
 
 replay(Target, State) ->
-    Self = self(),
-    spawn_link(fun() -> replay_aux(Target, State, Self) end),
-    receive
-	{replay_result, Result} -> Result
-    end.
-
-replay_aux(Target, State, Parent) ->
     replay_logger:start(),
     replay_logger:start_replay(),
     interleave(Target, [details, {init_state, State}]),
     Result = replay_logger:get_replay(),
     replay_logger:stop(),
-    Parent ! {replay_result, Result}.
+    Result.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
 %% Options:
@@ -187,6 +182,14 @@ interleave(Target) ->
     interleave(Target, [init_state, state_init()]).
 
 interleave(Target, Options) ->
+    Self = self(),
+    %% TODO: Need spawn_link?
+    spawn(fun() -> interleave_aux(Target, Options, Self) end),
+    receive
+	{interleave_result, Result} -> Result
+    end.
+
+interleave_aux(Target, Options, Parent) ->
     InitState =
 	case lists:keyfind(init_state, 1, Options) of
 	    false -> state_init();
@@ -208,7 +211,7 @@ interleave(Target, Options) ->
     Time = elapsed_time(T1, T2),
     state_stop(),
     unregister(?RP_SCHED),
-    {Result, Time}.
+    Parent ! {interleave_result, {Result, Time}}.
 
 %% Main loop for producing process interleavings.
 interleave_loop(Target, RunCounter, Errors) ->
