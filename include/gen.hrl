@@ -54,3 +54,7 @@
 %%%----------------------------------------------------------------------
 
 -type file() :: file:filename().
+
+%% @type: analysis_target() = {module(), atom(), [term()]}.
+%% Module-Function-Options tuple.
+-type analysis_target() :: {module(), atom(), [term()]}.

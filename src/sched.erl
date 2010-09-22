@@ -39,7 +39,6 @@
 %% @type: state() = [lid()].
 %% @type: dest() =  pid() | port() | atom() | {atom(), atom()}.
 %% @type: error_descr() = 'deadlock' | 'assert'.
-%% @type: analysis_target() = {module(), atom(), [term()]}.
 %% @type: analysis_ret() = {'ok', analysis_target()} |
 %%                         {'error', 'instr', analysis_target()} |
 %%                         {'error', 'analysis', analysis_target(),
@@ -57,20 +56,28 @@
 %% position in the program's "process creation tree" and doesn't change
 %% between different runs of the same program (as opposed to erlang pids).
 -type lid() :: string().
+
 %% A state is a list of LIDs showing the (reverse) interleaving of
 %% processes up to a point of the program.
 -type state() :: [lid()].
+
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
+
+%% Error descriptor.
 -type error_descr() :: 'deadlock' | 'assert'.
--type analysis_target() :: {module(), atom(), [term()]}.
+
+%% Analysis result tuple.
 -type analysis_ret() :: {'ok', analysis_target()} |
                         {'error', 'instr', analysis_target()} |
                         {'error', 'analysis', analysis_target(),
 			 [{error_descr(), state()}]}.
+
 -type error_info() :: 'assert'.
+
 %% A process' exit reasons
 -type exit_reasons() :: {{'assertion_failed', [term()]}, term()}.
+
 %% Tuples providing information about a process' action.
 -type proc_action() :: {'block', lid()} |
                        {'link', lid(), lid()} |
@@ -284,7 +291,7 @@ dispatcher(Info, DetailsFlag) ->
 %% Main scheduler component.
 %% Checks for different program states (normal, deadlock, termination, etc.)
 %% and acts appropriately. The argument should be a blocked scheduler state,
-%% i.e. no process running, when the driver is called.
+%% i.e. no process running when the driver is called.
 %% In the case of a normal (meaning non-terminal) state, the search component
 %% is called to handle state expansion and returns a process for activation.
 %% After activating said process the dispatcher is called to delegate the
@@ -391,6 +398,7 @@ handler(block, Pid, #info{blocked = Blocked} = Info, _Misc, DetailsFlag) ->
 	false -> continue
     end,
     Info#info{blocked = NewBlocked};
+
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
 %% If the exited process is irrelevant (i.e. has no LID assigned),
@@ -415,6 +423,7 @@ handler(exit, Pid, Info, [Reason], DetailsFlag) ->
 		_Other -> Info
 	    end
     end;
+
 %% Link message handler.
 handler(link, Pid, Info, [TargetPid], DetailsFlag) ->
     Lid = lid(Pid),
@@ -425,6 +434,7 @@ handler(link, Pid, Info, [TargetPid], DetailsFlag) ->
 	false -> continue
     end,
     dispatcher(Info, DetailsFlag);
+
 %% Receive message handler.
 handler('receive', Pid, Info, [From, Msg], DetailsFlag) ->
     Lid = lid(Pid),
@@ -436,6 +446,7 @@ handler('receive', Pid, Info, [From, Msg], DetailsFlag) ->
 	false -> continue
     end,
     dispatcher(Info, DetailsFlag);
+
 %% Send message handler.
 %% When a message is sent to a process, the receiving process has to be awaken
 %% if it is blocked on a receive.
@@ -452,6 +463,7 @@ handler(send, Pid, Info, [DstPid, Msg], DetailsFlag) ->
     end,
     NewInfo = wakeup(DstLid, Info),
     dispatcher(NewInfo, DetailsFlag);
+
 %% Spawn message handler.
 %% First, link the newly spawned process to the scheduler process.
 %% The new process yields as soon as it gets spawned and the parent process
@@ -468,6 +480,7 @@ handler(spawn, ParentPid, Info, [ChildPid], DetailsFlag) ->
     end,
     NewInfo = dispatcher(Info, DetailsFlag),
     dispatcher(NewInfo, DetailsFlag);
+
 %% Yield message handler.
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
