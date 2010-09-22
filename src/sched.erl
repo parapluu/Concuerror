@@ -869,6 +869,11 @@ interleave_test_() ->
 			     [{files, ["./test/test.erl",
 				       "./test/test_aux.erl"]}]))},
       {"test10",
+       ?_assertEqual({ok, {test, test9, []}},
+		     analyze(test, test9, [],
+			     [{files, ["./test/test.erl",
+				       "./test/test_aux.erl"]}]))},
+      {"test11",
        ?_assertMatch({error, analysis, _, _},
 		     analyze(test, test10, [], [{files, ["./test/test.erl"]}]))}
      ]}.
