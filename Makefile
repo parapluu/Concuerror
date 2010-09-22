@@ -23,7 +23,8 @@ OPTS =    $(TOP)/opts.mk
 # Flags
 # ----------------------------------------------------
 
-DEFAULT_ERL_COMPILE_FLAGS = +warn_exported_vars +warn_unused_import +warn_untyped_record +warn_missing_spec +debug_info
+DEFAULT_ERL_COMPILE_FLAGS = +warn_exported_vars +warn_unused_import \
++warn_untyped_record +warn_missing_spec +debug_info
 
 ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS)
 
