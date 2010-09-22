@@ -466,7 +466,7 @@ analyze() ->
 		0 ->
 		    analysis_init(),
 		    Opts = [{files, Files}],
-		    spawn(fun() -> sched:analyze(Module, Function, [], Opts)
+		    spawn(fun() -> sched:analyze({Module, Function, []}, Opts)
 			  end);
 		%% If the function to be analyzed is of non-zero arity,
 		%% a dialog window is displayed prompting the user to enter
@@ -478,7 +478,7 @@ analyze() ->
 			    analysis_init(),
 			    Opts = [{files, Files}],
 			    spawn(fun() ->
-                                          sched:analyze(Module, Function, Args,
+                                         sched:analyze({Module, Function, Args},
                                                         Opts)
 				  end);
 			%% User pressed 'cancel' or closed dialog window.

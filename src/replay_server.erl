@@ -98,7 +98,7 @@ handle_call({lookup_by_id, Id}, _From,
     [{Id, Ileaving, _Error, Details}] = ets:lookup(?NT_ERROR, Id),
     case Details of
 	[] ->
-	    NewDetails = sched:replay(Mod, Fun, Args, Ileaving),
+	    NewDetails = sched:replay({Mod, Fun, Args}, Ileaving),
 	    ets:update_element(?NT_ERROR, Id, {4, NewDetails}),
 	    {reply, NewDetails, State};
 	Any -> {reply, Any, State}
@@ -142,9 +142,9 @@ replay_test_() ->
 		 replay_server:start(),
 		 replay_logger:start(),
 		 {error, analysis, _, [{deadlock, ReplayState}|_Whatever]} = 
-		     sched:analyze(test, test4, [],
+		     sched:analyze({test, test4, []},
 				   [{files, ["./test/test.erl"]}]),
-		 Result = sched:replay(test, test4, [], ReplayState),
+		 Result = sched:replay({test, test4, []}, ReplayState),
 		 ?assertEqual(Result,
 			      [{spawn,"P1", "P1.1"},
 			       {block, "P1.1"}, {block, "P1"}]),

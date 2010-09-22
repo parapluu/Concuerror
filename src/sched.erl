@@ -12,7 +12,7 @@
 -module(sched).
 
 %% UI related exports.
--export([analyze/4, replay/4]).
+-export([analyze/2, replay/2]).
 
 %% Instrumentation related exports.
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
@@ -115,16 +115,16 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
-%% @spec: analyze(atom(), atom(), [term()], [term()]) -> analysis_ret()
+%% @spec: analyze(analysis_target(), [term()]) -> analysis_ret()
 %% @doc: Produce all interleavings of running `Mod:Fun(Args)'.
 %%
 %% Returns `ok' if no errors occur, `{error, instr}' if the
 %% compilation/instrumentation fails or `{error, analysis, List}' if
 %% any erroneous interleaving is found.
 %% `List' is a list of `{ErrorDescription, ErrorInterleaving}'.
--spec analyze(module(), atom(), [term()], [term()]) -> analysis_ret().
+-spec analyze(analysis_target(), [term()]) -> analysis_ret().
 
-analyze(Mod, Fun, Args, Options) ->
+analyze(Target, Options) ->
     %% List of files to instrument.
     Files = case lists:keyfind(files, 1, Options) of
 		false -> [];
@@ -135,13 +135,13 @@ analyze(Mod, Fun, Args, Options) ->
     case instr:instrument_and_load(Files) of
 	ok ->
 	    log:log("Running analysis...~n"),
-	    {Result, {Mins, Secs}} = interleave(Mod, Fun, Args),
+	    {Result, {Mins, Secs}} = interleave(Target),
 	    case Result of
 		{ok, RunCount} ->
 		    log:log("Analysis complete (checked ~w interleavings "
 			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 		    log:log("No errors found.~n"),
-		    Return = {ok, {Mod, Fun, Args}},
+		    Return = {ok, Target},
 		    log:result(Return),
 		    Return;
 		{error, RunCount, ErrorStates} ->
@@ -149,32 +149,32 @@ analyze(Mod, Fun, Args, Options) ->
 		    log:log("Analysis complete (checked ~w interleavings "
 			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 		    log:log("Found ~p error(s).~n", [ErrorCount]),
-		    Return = {error, analysis, {Mod, Fun, Args}, ErrorStates},
+		    Return = {error, analysis, Target, ErrorStates},
 		    log:result(Return),
 		    Return
 	    end;
 	error ->
-	    Return = {error, instr, {Mod, Fun, Args}},
+	    Return = {error, instr, Target},
 	    log:result(Return),
 	    Return
     end.
 
-%% @spec: replay(atom(), atom(), [term()], state()) -> [proc_action()]
+%% @spec: replay(analysis_target(), state()) -> [proc_action()]
 %% @doc: Replay the given state and return detailed information about the
 %% process interleaving.
--spec replay(module(), atom(), [term()], state()) -> [proc_action()].
+-spec replay(analysis_target(), state()) -> [proc_action()].
 
-replay(Mod, Fun, Args, State) ->
+replay(Target, State) ->
     Self = self(),
-    spawn_link(fun() -> replay_aux(Mod, Fun, Args, State, Self) end),
+    spawn_link(fun() -> replay_aux(Target, State, Self) end),
     receive
 	{replay_result, Result} -> Result
     end.
 
-replay_aux(Mod, Fun, Args, State, Parent) ->
+replay_aux(Target, State, Parent) ->
     replay_logger:start(),
     replay_logger:start_replay(),
-    interleave(Mod, Fun, Args, [details, {init_state, State}]),
+    interleave(Target, [details, {init_state, State}]),
     Result = replay_logger:get_replay(),
     replay_logger:stop(),
     Parent ! {replay_result, Result}.
@@ -183,10 +183,10 @@ replay_aux(Mod, Fun, Args, State, Parent) ->
 %% Options:
 %%   {init_state, InitState}: State to replay (default: state_init()).
 %%   details: Produce detailed interleaving information (see `replay_logger`).
-interleave(Mod, Fun, Args) ->
-    interleave(Mod, Fun, Args, [init_state, state_init()]).
+interleave(Target) ->
+    interleave(Target, [init_state, state_init()]).
 
-interleave(Mod, Fun, Args, Options) ->
+interleave(Target, Options) ->
     InitState =
 	case lists:keyfind(init_state, 1, Options) of
 	    false -> state_init();
@@ -203,7 +203,7 @@ interleave(Mod, Fun, Args, Options) ->
     %% Insert empty replay state for the first run.
     state_insert(InitState),
     {T1, _} = statistics(wall_clock),
-    Result = interleave_loop(Mod, Fun, Args, 1, [], DetailsFlag),
+    Result = interleave_loop(Target, 1, [], DetailsFlag),
     {T2, _} = statistics(wall_clock),
     Time = elapsed_time(T1, T2),
     state_stop(),
@@ -211,10 +211,10 @@ interleave(Mod, Fun, Args, Options) ->
     {Result, Time}.
 
 %% Main loop for producing process interleavings.
-interleave_loop(Mod, Fun, Args, RunCounter, Errors) ->
-    interleave_loop(Mod, Fun, Args, RunCounter, Errors, false).
+interleave_loop(Target, RunCounter, Errors) ->
+    interleave_loop(Target, RunCounter, Errors, false).
 
-interleave_loop(Mod, Fun, Args, RunCounter, Errors, DetailsFlag) ->
+interleave_loop(Target, RunCounter, Errors, DetailsFlag) ->
     %% Lookup state to replay.
     case state_pop() of
         no_state ->
@@ -232,6 +232,7 @@ interleave_loop(Mod, Fun, Args, RunCounter, Errors, DetailsFlag) ->
             %% latter can receive the former's exit message when it terminates.
             %% In the same way, every process that may be spawned in the course
             %% of the program shall be linked to this process.
+	    {Mod, Fun, Args} = Target,
             FirstPid = spawn_link(Mod, Fun, Args),
             %% Create the first LID and register it with FirstPid.
             lid_new(FirstPid),
@@ -253,9 +254,9 @@ interleave_loop(Mod, Fun, Args, RunCounter, Errors, DetailsFlag) ->
             %% Stop LID service (LID tables have to be reset on each run).
             lid_stop(),
             case Ret of
-                ok -> interleave_loop(Mod, Fun, Args, RunCounter + 1, Errors);
+                ok -> interleave_loop(Target, RunCounter + 1, Errors);
                 {error, ErrorDescr, ErrorState} ->
-		    interleave_loop(Mod, Fun, Args, RunCounter + 1,
+		    interleave_loop(Target, RunCounter + 1,
 				    [{ErrorDescr, ErrorState}|Errors]) 
             end
     end.
@@ -841,39 +842,39 @@ interleave_test_() ->
      fun(_) -> log:stop() end,
      [{"test1",
        ?_assertEqual({ok, {test, test1, []}},
-		     analyze(test, test1, [], [{files, ["./test/test.erl"]}]))},
+		     analyze({test, test1, []}, [{files, ["./test/test.erl"]}]))},
       {"test2",
        ?_assertEqual({ok, {test, test2, []}},
-		     analyze(test, test2, [], [{files, ["./test/test.erl"]}]))},
+		     analyze({test, test2, []}, [{files, ["./test/test.erl"]}]))},
       {"test3",
        ?_assertEqual({ok, {test, test3, []}},
-		     analyze(test, test3, [], [{files, ["./test/test.erl"]}]))},
+		     analyze({test, test3, []}, [{files, ["./test/test.erl"]}]))},
       {"test4",
        ?_assertMatch({error, analysis, _, _}, 
-		     analyze(test, test4, [], [{files, ["./test/test.erl"]}]))},
+		     analyze({test, test4, []}, [{files, ["./test/test.erl"]}]))},
       {"test5",
        ?_assertMatch({error, analysis, _, _},
-		     analyze(test, test5, [], [{files, ["./test/test.erl"]}]))},
+		     analyze({test, test5, []}, [{files, ["./test/test.erl"]}]))},
       {"test6",
        ?_assertEqual({ok, {test, test6, []}},
-		     analyze(test, test6, [], [{files, ["./test/test.erl"]}]))},
+		     analyze({test, test6, []}, [{files, ["./test/test.erl"]}]))},
       {"test7",
        ?_assertEqual({ok, {test, test7, []}},
-		     analyze(test, test7, [], [{files, ["./test/test.erl"]}]))},
+		     analyze({test, test7, []}, [{files, ["./test/test.erl"]}]))},
       {"test8",
        ?_assertMatch({error, analysis, _, _},
-		     analyze(test, test8, [], [{files, ["./test/test.erl"]}]))},
+		     analyze({test, test8, []}, [{files, ["./test/test.erl"]}]))},
       {"test9",
        ?_assertEqual({ok, {test, test3, []}},
-		     analyze(test, test3, [],
+		     analyze({test, test3, []},
 			     [{files, ["./test/test.erl",
 				       "./test/test_aux.erl"]}]))},
       {"test10",
        ?_assertEqual({ok, {test, test9, []}},
-		     analyze(test, test9, [],
+		     analyze({test, test9, []},
 			     [{files, ["./test/test.erl",
 				       "./test/test_aux.erl"]}]))},
       {"test11",
        ?_assertMatch({error, analysis, _, _},
-		     analyze(test, test10, [], [{files, ["./test/test.erl"]}]))}
+		     analyze({test, test10, []}, [{files, ["./test/test.erl"]}]))}
      ]}.
