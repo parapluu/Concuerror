@@ -78,16 +78,6 @@ terminate(_Reason, _State) ->
 handle_event({msg, String}, State) ->
     LogText = ref_lookup(?LOG_TEXT),
     wxTextCtrl:appendText(LogText, String),
-    {ok, State};
-handle_event({result, {error, analysis, {Mod, Fun, Args}, ErrorStates}},
-	     State) ->
-    Errors = [error_to_string(Error) || {Error, _State} <- ErrorStates],
-    setListItems(?ERROR_LIST, Errors),
-    replay_server:register_errors(Mod, Fun, Args, ErrorStates),
-    analysis_cleanup(),
-    {ok, State};
-handle_event({result, _Result}, State) ->
-    analysis_cleanup(),
     {ok, State}.
 
 %% To be moved.
@@ -465,8 +455,10 @@ analyze() ->
 	    case Arity of
 		0 ->
 		    analysis_init(),
+		    Target = {Module, Function, []},
 		    Opts = [{files, Files}],
-		    sched:analyze({Module, Function, []}, Opts);
+		    Result = sched:analyze(Target, Opts),
+		    analysis_cleanup(Result);
 		%% If the function to be analyzed is of non-zero arity,
 		%% a dialog window is displayed prompting the user to enter
 		%% the function's arguments.
@@ -475,8 +467,10 @@ analyze() ->
 		    case argDialog(Frame, Count) of
 			{ok, Args} ->
 			    analysis_init(),
+			    Target = {Module, Function, Args},
 			    Opts = [{files, Files}],
-			    sched:analyze({Module, Function, Args}, Opts);
+			    Result = sched:analyze(Target, Opts),
+			    analysis_cleanup(Result);
 			%% User pressed 'cancel' or closed dialog window.
 			_Other -> continue
 		    end
@@ -497,7 +491,13 @@ analysis_init() ->
 
 %% Cleanup actions after completing analysis
 %% (reactivate `analyze` button, etc.).
-analysis_cleanup() ->
+analysis_cleanup({error, analysis, {Mod, Fun, Args}, ErrorStates}) ->
+    Errors = [error_to_string(Error) || {Error, _State} <- ErrorStates],
+    setListItems(?ERROR_LIST, Errors),
+    replay_server:register_errors(Mod, Fun, Args, ErrorStates),
+    AnalyzeButton = ref_lookup(?ANALYZE),
+    wxWindow:enable(AnalyzeButton);
+analysis_cleanup({ok, _Target}) ->
     AnalyzeButton = ref_lookup(?ANALYZE),
     wxWindow:enable(AnalyzeButton).
 

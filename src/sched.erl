@@ -143,22 +143,16 @@ analyze(Target, Options) ->
 		    log:log("Analysis complete (checked ~w interleavings "
 			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 		    log:log("No errors found.~n"),
-		    Return = {ok, Target},
-		    log:result(Return),
-		    Return;
+		    {ok, Target};
 		{error, RunCount, ErrorStates} ->
 		    ErrorCount = length(ErrorStates),
 		    log:log("Analysis complete (checked ~w interleavings "
 			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 		    log:log("Found ~p error(s).~n", [ErrorCount]),
-		    Return = {error, analysis, Target, ErrorStates},
-		    log:result(Return),
-		    Return
+		    {error, analysis, Target, ErrorStates}
 	    end;
 	error ->
-	    Return = {error, instr, Target},
-	    log:result(Return),
-	    Return
+	    {error, instr, Target}
     end.
 
 %% @spec: replay(analysis_target(), state()) -> [proc_action()]

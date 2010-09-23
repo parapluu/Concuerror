@@ -13,7 +13,7 @@
 %% Non gen_evt exports.
 -export([internal/1, internal/2]).
 %% Log API exports.
--export([start/2, stop/0, log/1, log/2, result/1]).
+-export([start/2, stop/0, log/1, log/2]).
 %% Log callback exports.
 -export([init/1, terminate/2, handle_call/2, handle_info/2,
 	 handle_event/2, code_change/3]).
@@ -89,13 +89,6 @@ log(String) when is_list(String) ->
 log(String, Args) when is_list(String), is_list(Args) ->
     LogMsg = io_lib:format(String, Args),
     gen_event:notify(log, {msg, LogMsg}).
-
-%% @spec result(term()) -> 'ok'
-%% @doc: Logs the analysis error.
--spec result(term()) -> 'ok'.
-
-result(Result) ->
-    gen_event:notify(log, {result, Result}).
 
 %%%----------------------------------------------------------------------
 %%% Callback functions
