@@ -83,7 +83,9 @@ terminate(_Reason, _State) ->
 handle_cast(start_replay, _State) ->
     {noreply, []};
 handle_cast({log_replay, Msg}, State) ->
-    {noreply, [Msg|State]}.
+    {noreply, [Msg|State]};
+handle_cast(stop, State) ->
+    {stop, normal, State}.
 
 -spec handle_call('get_replay', {pid(), term()}, state()) ->
 			 {'reply', state(), state()}.
