@@ -9,7 +9,8 @@
 -module(test).
 -export([test1/0, test2/0, test3/0, test4/0,
 	 test5/0, test6/0, test7/0, test8/0,
-	 test9/0, test10/0, test11/0, test12/0]).
+	 test9/0, test10/0, test11/0, test12/0,
+         test13/0]).
 
 -include("ced.hrl").
 
@@ -186,4 +187,16 @@ test12() ->
 foo12() ->
     Self = self(),
     erlang:spawn(fun() -> foo1_1(Self) end),
+    receive _Any -> ok end.
+
+%% Normal, 2 proc: Call to erlang:yield.
+-spec test13() -> 'ok'.
+
+test13() ->
+    ?assert(foo13() =:= ok).
+
+foo13() ->
+    Self = self(),
+    spawn(fun() -> foo1_1(Self) end),
+    erlang:yield(),
     receive _Any -> ok end.

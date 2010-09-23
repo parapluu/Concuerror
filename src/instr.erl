@@ -162,6 +162,7 @@ instrument_term(Tree) ->
                                         spawn_link ->
                                             instrument_spawn_link(
                                               instrument_subtrees(Tree));
+                                        yield -> instrument_yield();
                                         _Other -> instrument_subtrees(Tree)
                                     end; 
                                 _Other -> instrument_subtrees(Tree)
@@ -279,6 +280,11 @@ instrument_spawn_link(Tree) ->
     %% Fun expression arguments of the (before instrumentation) spawn call.
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
+
+%% Instrument an erlang:yield/0 call.
+%% `erlang:yield' is transformed into `true'.
+instrument_yield() ->
+    erl_syntax:atom(true).
 
 %% Log a list of errors, as returned by compile:file/2.
 log_error_list(List) ->
