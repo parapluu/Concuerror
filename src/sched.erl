@@ -12,13 +12,13 @@
 -module(sched).
 
 %% UI related exports.
--export([analyze/2, replay/2]).
+-export([analyze/2, replay/1]).
 
 %% Instrumentation related exports.
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0]).
 
--export_type([proc_action/0]).
+-export_type([proc_action/0, analysis_target/0, error_descr/0, state/0]).
 
 -include("gen.hrl").
 
@@ -35,31 +35,16 @@
 %%% Types
 %%%----------------------------------------------------------------------
 
-%% @type: lid() = string().
-%% @type: state() = [lid()].
-%% @type: dest() =  pid() | port() | atom() | {atom(), atom()}.
-%% @type: error_descr() = 'deadlock' | 'assert'.
-%% @type: analysis_ret() = {'ok', analysis_target()} |
-%%                         {'error', 'instr', analysis_target()} |
-%%                         {'error', 'analysis', analysis_target(),
-%%                          [{error_descr(), state()}]}.
-%% @type: error_info() = 'assert'.
-%% @type exit_reasons() = {{'assertion_failed', [term()]}, term()}.
-%% @type: proc_action() = {'block', lid()} |
-%%                        {'link', lid(), lid()} |
-%%                        {'receive', lid(), lid(), term()} |
-%%                        {'send', lid(), lid(), term()} |
-%%                        {'spawn', lid(), lid()} |
-%%                        {'exit', lid(), exit_reasons()}.
+-type analysis_info() :: {analysis_target(), {integer(), integer()}}.
 
-%% The logical id (LID) for each process reflects the process' logical
-%% position in the program's "process creation tree" and doesn't change
-%% between different runs of the same program (as opposed to erlang pids).
--type lid() :: string().
+%% Analysis result tuple.
+-type analysis_ret() :: {'ok', analysis_info()} |
+                        {'error', 'instr', analysis_info()} |
+                        {'error', 'analysis', analysis_info(),
+			 [ticket:ticket()]}.
 
-%% A state is a list of LIDs showing the (reverse) interleaving of
-%% processes up to a point of the program.
--type state() :: [lid()].
+%% Module-Function-Options tuple.
+-type analysis_target() :: {module(), atom(), [term()]}.
 
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
@@ -67,16 +52,15 @@
 %% Error descriptor.
 -type error_descr() :: 'deadlock' | 'assert'.
 
-%% Analysis result tuple.
--type analysis_ret() :: {'ok', analysis_target()} |
-                        {'error', 'instr', analysis_target()} |
-                        {'error', 'analysis', analysis_target(),
-			 [{error_descr(), state()}]}.
-
 -type error_info() :: 'assert'.
 
 %% A process' exit reasons
 -type exit_reasons() :: {{'assertion_failed', [term()]}, term()}.
+
+%% The logical id (LID) for each process reflects the process' logical
+%% position in the program's "process creation tree" and doesn't change
+%% between different runs of the same program (as opposed to erlang pids).
+-type lid() :: string().
 
 %% Tuples providing information about a process' action.
 -type proc_action() :: {'block', lid()} |
@@ -85,6 +69,10 @@
                        {'send', lid(), lid(), term()} |
                        {'spawn', lid(), lid()} |
                        {'exit', lid(), exit_reasons()}.
+
+%% A state is a list of LIDs showing the (reverse) interleaving of
+%% processes up to a point of the program.
+-type state() :: [lid()].
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -116,14 +104,7 @@
 %%%----------------------------------------------------------------------
 
 %% @spec: analyze(analysis_target(), [term()]) -> analysis_ret()
-%% @doc: Produce all interleavings of running `Mod:Fun(Args)'.
-%%
-%% Returns `ok' if no errors occur, `{error, instr}' if the
-%% compilation/instrumentation fails or `{error, analysis, List}' if
-%% any erroneous interleaving is found.
-%% `List' is a list of `{ErrorDescription, ErrorInterleaving}'.
-%%
-%% Note: Both analyze and replay are implemented 
+%% @doc: Produce all interleavings of running `Target'.
 -spec analyze(analysis_target(), [term()]) -> analysis_ret().
 
 analyze(Target, Options) ->
@@ -143,26 +124,31 @@ analyze(Target, Options) ->
 		    log:log("Analysis complete (checked ~w interleavings "
 			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 		    log:log("No errors found.~n"),
-		    {ok, Target};
-		{error, RunCount, ErrorStates} ->
-		    ErrorCount = length(ErrorStates),
+		    Info = {Target, {Mins, Secs}},
+		    {ok, Info};
+		{error, RunCount, Tickets} ->
+		    TicketCount = length(Tickets),
 		    log:log("Analysis complete (checked ~w interleavings "
 			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-		    log:log("Found ~p error(s).~n", [ErrorCount]),
-		    {error, analysis, Target, ErrorStates}
+		    log:log("Found ~p error(s).~n", [TicketCount]),
+		    Info = {Target, {Mins, Secs}},
+		    {error, analysis, Info, Tickets}
 	    end;
 	error ->
-	    {error, instr, Target}
+	    Info = {Target, {0, 0}},
+	    {error, instr, Info}
     end.
 
 %% @spec: replay(analysis_target(), state()) -> [proc_action()]
 %% @doc: Replay the given state and return detailed information about the
 %% process interleaving.
--spec replay(analysis_target(), state()) -> [proc_action()].
+-spec replay(ticket:ticket()) -> [proc_action()].
 
-replay(Target, State) ->
+replay(Ticket) ->
     replay_logger:start(),
     replay_logger:start_replay(),
+    Target = ticket:get_target(Ticket),
+    State = ticket:get_state(Ticket),
     interleave(Target, [details, {init_state, State}]),
     Result = replay_logger:get_replay(),
     replay_logger:stop(),
@@ -208,16 +194,16 @@ interleave_aux(Target, Options, Parent) ->
     Parent ! {interleave_result, {Result, Time}}.
 
 %% Main loop for producing process interleavings.
-interleave_loop(Target, RunCounter, Errors) ->
-    interleave_loop(Target, RunCounter, Errors, false).
+interleave_loop(Target, RunCounter, Tickets) ->
+    interleave_loop(Target, RunCounter, Tickets, false).
 
-interleave_loop(Target, RunCounter, Errors, DetailsFlag) ->
+interleave_loop(Target, RunCounter, Tickets, DetailsFlag) ->
     %% Lookup state to replay.
     case state_pop() of
         no_state ->
-	    case Errors of
+	    case Tickets of
 		[] -> {ok, RunCounter - 1};
-		_Any -> {error, RunCounter - 1, lists:reverse(Errors)}
+		_Any -> {error, RunCounter - 1, lists:reverse(Tickets)}
 	    end;
         ReplayState ->
             ?debug_1("Running interleaving ~p~n", [RunCounter]),
@@ -251,10 +237,10 @@ interleave_loop(Target, RunCounter, Errors, DetailsFlag) ->
             %% Stop LID service (LID tables have to be reset on each run).
             lid_stop(),
             case Ret of
-                ok -> interleave_loop(Target, RunCounter + 1, Errors);
+                ok -> interleave_loop(Target, RunCounter + 1, Tickets);
                 {error, ErrorDescr, ErrorState} ->
-		    interleave_loop(Target, RunCounter + 1,
-				    [{ErrorDescr, ErrorState}|Errors]) 
+		    Ticket = ticket:new(Target, ErrorDescr, ErrorState),
+		    interleave_loop(Target, RunCounter + 1, [Ticket|Tickets])
             end
     end.
 
@@ -838,49 +824,89 @@ interleave_test_() ->
      fun() -> log:start(log, []) end,
      fun(_) -> log:stop() end,
      [{"test1",
-       ?_assertEqual({ok, {test, test1, []}},
+       ?_assertMatch({ok, {{test, test1, []}, _}},
 		     analyze({test, test1, []}, [{files, ["./test/test.erl"]}]))},
       {"test2",
-       ?_assertEqual({ok, {test, test2, []}},
+       ?_assertMatch({ok, {{test, test2, []}, _}},
 		     analyze({test, test2, []}, [{files, ["./test/test.erl"]}]))},
       {"test3",
-       ?_assertEqual({ok, {test, test3, []}},
+       ?_assertMatch({ok, {{test, test3, []}, _}},
 		     analyze({test, test3, []}, [{files, ["./test/test.erl"]}]))},
       {"test4",
-       ?_assertMatch({error, analysis, _, _}, 
-		     analyze({test, test4, []}, [{files, ["./test/test.erl"]}]))},
+       ?_test(
+	  begin
+	      Target = {test, test4, []},
+	      Options = [{files, ["./test/test.erl"]}],
+	      {error, analysis, Info, [Ticket|_Tickets]} =
+		  analyze(Target, Options),
+	      ?assertMatch({Target, {_, _}}, Info), 
+	      ?assertEqual(Target, ticket:get_target(Ticket)),
+	      ?assertEqual("Deadlock", ticket:get_error_string(Ticket))
+	  end)},
       {"test5",
-       ?_assertMatch({error, analysis, _, _},
-		     analyze({test, test5, []}, [{files, ["./test/test.erl"]}]))},
+       ?_test(
+	  begin
+	      Target = {test, test5, []},
+	      Options = [{files, ["./test/test.erl"]}],
+	      {error, analysis, Info, [Ticket|_Tickets]} =
+		  analyze(Target, Options),
+	      ?assertMatch({Target, {_, _}}, Info), 
+	      ?assertEqual(Target, ticket:get_target(Ticket)),
+	      ?assertEqual("Deadlock", ticket:get_error_string(Ticket))
+	  end)},
       {"test6",
-       ?_assertEqual({ok, {test, test6, []}},
+       ?_assertMatch({ok, {{test, test6, []}, _}},
 		     analyze({test, test6, []}, [{files, ["./test/test.erl"]}]))},
       {"test7",
-       ?_assertEqual({ok, {test, test7, []}},
+       ?_assertMatch({ok, {{test, test7, []}, _}},
 		     analyze({test, test7, []}, [{files, ["./test/test.erl"]}]))},
       {"test8",
-       ?_assertMatch({error, analysis, _, _},
-		     analyze({test, test8, []}, [{files, ["./test/test.erl"]}]))},
+       ?_test(
+	  begin
+	      Target = {test, test8, []},
+	      Options = [{files, ["./test/test.erl"]}],
+	      {error, analysis, Info, [Ticket|_Tickets]} =
+		  analyze(Target, Options),
+	      ?assertMatch({Target, {_, _}}, Info), 
+	      ?assertEqual(Target, ticket:get_target(Ticket)),
+	      ?assertEqual("Assertion violation",
+			   ticket:get_error_string(Ticket))
+	  end)},
       {"test9",
-       ?_assertEqual({ok, {test, test3, []}},
+       ?_assertMatch({ok, {{test, test3, []}, _}},
 		     analyze({test, test3, []},
 			     [{files, ["./test/test.erl",
 				       "./test/test_aux.erl"]}]))},
       {"test10",
-       ?_assertEqual({ok, {test, test9, []}},
+       ?_assertMatch({ok, {{test, test9, []}, _}},
 		     analyze({test, test9, []},
 			     [{files, ["./test/test.erl",
 				       "./test/test_aux.erl"]}]))},
       {"test11",
-       ?_assertMatch({error, analysis, _, _},
-		     analyze({test, test10, []}, [{files, ["./test/test.erl"]}]))},
+       ?_test(
+	  begin
+	      Target = {test, test10, []},
+	      Options = [{files, ["./test/test.erl"]}],
+	      {error, analysis, Info, [Ticket|_Tickets]} =
+		  analyze(Target, Options),
+	      ?assertMatch({Target, {_, _}}, Info), 
+	      ?assertEqual(Target, ticket:get_target(Ticket)),
+	      ?assertEqual("Assertion violation",
+			   ticket:get_error_string(Ticket))
+	  end)},
       {"test12",
-       ?_assertEqual({ok, {test, test11, []}},
-		     analyze({test, test11, []}, [{files, ["./test/test.erl"]}]))},
+       ?_assertMatch({ok, {{test, test11, []}, _}},
+		     analyze({test, test11, []},
+			     [{files, ["./test/test.erl",
+				       "./test/test_aux.erl"]}]))},
       {"test13",
-       ?_assertEqual({ok, {test, test12, []}},
-		     analyze({test, test12, []}, [{files, ["./test/test.erl"]}]))},
+       ?_assertMatch({ok, {{test, test12, []}, _}},
+		     analyze({test, test12, []},
+			     [{files, ["./test/test.erl",
+				       "./test/test_aux.erl"]}]))},
       {"test14",
-       ?_assertEqual({ok, {test, test13, []}},
-		     analyze({test, test13, []}, [{files, ["./test/test.erl"]}]))}
+       ?_assertMatch({ok, {{test, test13, []}, _}},
+		     analyze({test, test13, []},
+			     [{files, ["./test/test.erl",
+				       "./test/test_aux.erl"]}]))}
      ]}.

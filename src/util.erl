@@ -29,7 +29,6 @@ doc(AppDir) ->
 
 test() ->
     eunit:test(sched),
-    eunit:test(replay_server),
     eunit:test(replay_logger).
 
 %% @spec funs(string()) -> [{atom(), non_neg_integer()}]

@@ -43,9 +43,7 @@ start() ->
     %% Start the log manager.
     log:start(?MODULE, wx:get_env()),
     %% Start the replay server.
-    replay_server:start(),
     loop(),
-    replay_server:stop(),
     log:stop(),
     ref_stop(),
     wx:destroy(),
@@ -79,12 +77,6 @@ handle_event({msg, String}, State) ->
     LogText = ref_lookup(?LOG_TEXT),
     wxTextCtrl:appendText(LogText, String),
     {ok, State}.
-
-%% To be moved.
-error_to_string(assert) ->
-    "Assertion violation";
-error_to_string(deadlock) ->
-    "Deadlock".
 
 %%%----------------------------------------------------------------------
 %%% Setup functions
@@ -491,13 +483,14 @@ analysis_init() ->
 
 %% Cleanup actions after completing analysis
 %% (reactivate `analyze` button, etc.).
-analysis_cleanup({error, analysis, {Mod, Fun, Args}, ErrorStates}) ->
-    Errors = [error_to_string(Error) || {Error, _State} <- ErrorStates],
+analysis_cleanup({error, analysis, _Info, Tickets}) ->
+    Errors = [ticket:get_error_string(Ticket) || Ticket <- Tickets],
     setListItems(?ERROR_LIST, Errors),
-    replay_server:register_errors(Mod, Fun, Args, ErrorStates),
+    ListOfEmpty = lists:duplicate(length(Tickets), []),
+    setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty)),
     AnalyzeButton = ref_lookup(?ANALYZE),
     wxWindow:enable(AnalyzeButton);
-analysis_cleanup({ok, _Target}) ->
+analysis_cleanup(_Result) ->
     AnalyzeButton = ref_lookup(?ANALYZE),
     wxWindow:enable(AnalyzeButton).
 
@@ -663,6 +656,17 @@ remove() ->
 	    end
     end.
 
+%% Set ListBox (Id) data (remove existing).
+setListData(Id, DataList) ->
+    setListData_aux(Id, DataList, 0).
+
+setListData_aux(_Id, [], _N) ->
+    ok;
+setListData_aux(Id, [Data|Rest], N) ->
+    List = ref_lookup(Id),
+    wxControlWithItems:setClientData(List, N, Data),
+    setListData_aux(Id, Rest, N + 1).
+
 %% Set ListBox (Id) items (remove existing).
 setListItems(Id, Items) ->
     if Items =/= [], Items =/= [[]] ->
@@ -683,9 +687,16 @@ show_details() ->
     case wxControlWithItems:getSelection(ErrorList) of
 	?wxNOT_FOUND -> continue;
 	Id ->
-	    Details = replay_server:lookup(Id + 1),
 	    wxControlWithItems:clear(IleaveList),
-	    setListItems(?ILEAVE_LIST, details_to_strings(Details))
+	    case wxControlWithItems:getClientData(ErrorList, Id) of
+		{Ticket, []} ->
+		    Details = sched:replay(Ticket),
+		    NewData = {Ticket, Details},
+		    wxControlWithItems:setClientData(ErrorList, Id, NewData),
+		    setListItems(?ILEAVE_LIST, details_to_strings(Details));
+		{_Ticket, Cached} ->
+		    setListItems(?ILEAVE_LIST, details_to_strings(Cached))
+	    end
     end.
 
 %% Function to be moved (to sched or util).

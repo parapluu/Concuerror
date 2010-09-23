@@ -50,11 +50,11 @@ GUI_MODULES = \
 CORE_MODULES = \
 	instr \
 	sched \
-	util
+	util \
+	ticket
 
 LOG_MODULES = \
 	log \
-	replay_server \
 	replay_logger
 
 MODULES = \
