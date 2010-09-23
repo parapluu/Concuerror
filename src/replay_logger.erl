@@ -76,7 +76,7 @@ init(_Args) ->
 terminate(_Reason, _State) ->
     ok.
 
--spec handle_cast('start_replay' | {'log_replay', sched:proc_action()},
+-spec handle_cast('start_replay' | 'stop' | {'log_replay', sched:proc_action()},
                   state()) ->
 			 {'noreply', state()}.
 
