@@ -7,17 +7,17 @@
 %%%----------------------------------------------------------------------
 
 -module(test).
--export([test1/0, test2/0, test3/0, test4/0,
-	 test5/0, test6/0, test7/0, test8/0,
-	 test9/0, test10/0, test11/0, test12/0,
+-export([test01/0, test02/0, test03/0, test04/0,
+	 test05/0, test06/0, test07/0, test08/0,
+	 test09/0, test10/0, test11/0, test12/0,
          test13/0]).
 
 -include("ced.hrl").
 
 %% Normal, 2 proc: Simple send-receive.
--spec test1() -> 'ok'.
+-spec test01() -> 'ok'.
 
-test1() ->
+test01() ->
     ?assert(foo1() =:= ok).
 
 foo1() ->
@@ -29,9 +29,9 @@ foo1_1(Pid) ->
     Pid ! 42.
 
 %% Normal, 3 proc: Only spawns.
--spec test2() -> 'ok'.
+-spec test02() -> 'ok'.
 
-test2() ->
+test02() ->
     ?assert(foo2() =:= ok).
 
 foo2() ->
@@ -46,9 +46,9 @@ foo2_2() ->
     42.
 
 %% Normal, 3 proc: Simple send-receive.
--spec test3() -> 'ok'.
+-spec test03() -> 'ok'.
 
-test3() ->
+test03() ->
     ?assert(foo3() =:= ok).
 
 foo3() ->
@@ -69,9 +69,9 @@ foo3_2(Pid) ->
     Pid ! msg2.
 
 %% Deadlock, 2 proc: Both receiving.
--spec test4() -> no_return().
+-spec test04() -> no_return().
 
-test4() ->
+test04() ->
     ?assert(foo4() =:= ok).
 
 foo4() ->
@@ -82,9 +82,9 @@ foo4_1() ->
     receive _Any -> ok end.
 
 %% Deadlock, 2 proc: Sending 42, expecting to receive 43.
--spec test5() -> no_return().
+-spec test05() -> no_return().
 
-test5() ->
+test05() ->
     ?assert(foo5() =:= ok).
 
 foo5() ->
@@ -93,9 +93,9 @@ foo5() ->
     receive 43 -> ok end.
 
 %% Normal, 2 proc: Nested send.
--spec test6() -> 'ok'.
+-spec test06() -> 'ok'.
 
-test6() ->
+test06() ->
     ?assert(foo6() =:= ok).
 
 foo6() ->
@@ -111,9 +111,9 @@ foo6_1(Pid) ->
     Pid ! Pid ! 42.
 
 %% Normal, 2 proc: Nested send-receive.
--spec test7() -> 'ok'.
+-spec test07() -> 'ok'.
 
-test7() ->
+test07() ->
     ?assert(foo7() =:= ok).
 
 foo7() ->
@@ -131,9 +131,9 @@ foo7_1(Pid) ->
 	  end.
 
 %% Race, 2 proc: Classic spawn-link race.
--spec test8() -> 'ok'.
+-spec test08() -> 'ok'.
 
-test8() ->
+test08() ->
     ?assert(foo8() =:= ok).
 
 foo8() ->
@@ -145,9 +145,9 @@ foo8() ->
     end.
 
 %% Normal, 2 proc: Like test1/0, but using function from other file.
--spec test9() -> 'ok'.
+-spec test09() -> 'ok'.
 
-test9() ->
+test09() ->
     ?assert(foo9() =:= ok).
 
 foo9() ->
