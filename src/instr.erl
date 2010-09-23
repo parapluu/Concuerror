@@ -142,6 +142,32 @@ instrument_term(Tree) ->
 			    instrument_spawn_link(instrument_subtrees(Tree));
 			_Other -> instrument_subtrees(Tree)
 		    end;
+                module_qualifier ->
+                    Argument = erl_syntax:module_qualifier_argument(Qualifier),
+                    Body = erl_syntax:module_qualifier_body(Qualifier),
+                    case erl_syntax:type(Argument) =:= atom andalso
+                        erl_syntax:type(Body) =:= atom of
+                        true ->
+                            Module = erl_syntax:atom_value(Argument),
+                            case Module of
+                                erlang ->
+                                    Function = erl_syntax:atom_value(Body),
+                                    case Function of
+                                        link ->
+                                            instrument_link(
+                                              instrument_subtrees(Tree));
+                                        spawn ->
+                                            instrument_spawn(
+                                              instrument_subtrees(Tree));
+                                        spawn_link ->
+                                            instrument_spawn_link(
+                                              instrument_subtrees(Tree));
+                                        _Other -> instrument_subtrees(Tree)
+                                    end; 
+                                _Other -> instrument_subtrees(Tree)
+                            end;
+                        false -> instrument_subtrees(Tree)
+                    end;
 		_Other -> instrument_subtrees(Tree)
 	    end;
 	infix_expr ->
