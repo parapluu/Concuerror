@@ -108,9 +108,6 @@ terminate(_Reason, _State) ->
 
 handle_event({msg, String}, State) ->
     io:format("~s", [String]),
-    {ok, State};
-handle_event({result, _Result}, State) ->
-    %% Do nothing for now.
     {ok, State}.
 
 -spec code_change(term(), term(), term()) -> no_return().
