@@ -175,25 +175,35 @@ instrument_receive(Tree) ->
     Function = erl_syntax:atom(rep_receive),
     %% Get old receive expression's clauses.
     OldClauses = erl_syntax:receive_expr_clauses(Tree),
-    NewClauses = [transform_receive_clause(Clause) || Clause <- OldClauses],
-    %% `receive ... after` not supported for now.
-    case erl_syntax:receive_expr_timeout(Tree) of
-	none -> continue;
-	_Any -> log:internal("`receive ... after` expressions not supported.~n")
-    end,
-    %% Create new receive expression adding the `after 0` part.
-    Timeout = erl_syntax:integer(0),
-    %% Create new variable to use as 'Aux'.
-    [{used, Used}] = ets:lookup(?NT_USED, used),
-    Fresh = erl_syntax_lib:new_variable_name(Used),
-    FunVar = erl_syntax:variable(Fresh),
-    Action = erl_syntax:application(FunVar, []),
-    NewRecv = erl_syntax:receive_expr(NewClauses, Timeout, [Action]),
-    %% Create a new fun to be the argument of rep_receive.
-    FunClause = erl_syntax:clause([FunVar], [], [NewRecv]),
-    FunExpr = erl_syntax:fun_expr([FunClause]),
-    %% Call sched:rep_receive.
-    erl_syntax:application(Module, Function, [FunExpr]).
+    case OldClauses of
+        %% Keep only the action of any `receive after' construct
+        %% without patterns.
+        [] ->
+            Action = erl_syntax:receive_expr_action(Tree),
+            erl_syntax:block_expr(Action);
+        _Other ->
+            NewClauses = [transform_receive_clause(Clause)
+                          || Clause <- OldClauses],
+            %% `receive ... after` not supported for now.
+            case erl_syntax:receive_expr_timeout(Tree) of
+                none -> continue;
+                _Any -> log:internal("`receive ... after` expressions " ++
+                                     "not supported.~n")
+            end,
+            %% Create new receive expression adding the `after 0` part.
+            Timeout = erl_syntax:integer(0),
+            %% Create new variable to use as 'Aux'.
+            [{used, Used}] = ets:lookup(?NT_USED, used),
+            Fresh = erl_syntax_lib:new_variable_name(Used),
+            FunVar = erl_syntax:variable(Fresh),
+            Action = erl_syntax:application(FunVar, []),
+            NewRecv = erl_syntax:receive_expr(NewClauses, Timeout, [Action]),
+            %% Create a new fun to be the argument of rep_receive.
+            FunClause = erl_syntax:clause([FunVar], [], [NewRecv]),
+            FunExpr = erl_syntax:fun_expr([FunClause]),
+            %% Call sched:rep_receive.
+            erl_syntax:application(Module, Function, [FunExpr])
+    end.
 
 %% Tranform a clause
 %%   Msg -> [Actions]

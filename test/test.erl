@@ -9,7 +9,7 @@
 -module(test).
 -export([test1/0, test2/0, test3/0, test4/0,
 	 test5/0, test6/0, test7/0, test8/0,
-	 test9/0, test10/0]).
+	 test9/0, test10/0, test11/0]).
 
 -include("ced.hrl").
 
@@ -164,3 +164,15 @@ test10() ->
     receive
 	Msg -> ?assert(Msg =:= msg1)
     end.
+
+%% Normal, 2 proc: Simple receive-after with no patterns.
+-spec test11() -> 'ok'.
+
+test11() ->
+    ?assert(foo11() =:= ok).
+
+foo11() ->
+    Self = self(),
+    spawn(fun() -> foo1_1(Self) end),
+    receive after 42 -> ok end,
+    receive _Any -> ok end.
