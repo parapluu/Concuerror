@@ -40,4 +40,29 @@
                                                 {value, Class}]})
                   end
 	  end)())).
+
+-define(assertEqual(Expect, Expr),
+        ((fun () ->
+                  ExpectEval = 
+                      try (Expect) of
+                          _Any -> _Any
+                      catch
+                          Class:_ ->
+                              erlang:error({assertion_failed,
+                                            [{module, ?MODULE},
+                                             {line, ?LINE},
+                                             {expression, (??Expect)},
+                                             {expected, unknown},
+                                             {value, Class}]})
+                      end,
+                  case (Expr) of
+                      ExpectEval -> ok;
+                      __V -> erlang:error({assertion_failed,
+                                           [{module, ?MODULE},
+                                            {line, ?LINE},
+                                            {expression, (??Expr)},
+                                            {expected, ExpectEval},
+                                            {value, __V}]})
+                  end
+          end)())).
 -endif.
