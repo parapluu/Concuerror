@@ -43,7 +43,7 @@
                         {'error', 'analysis', analysis_info(),
 			 [ticket:ticket()]}.
 
-%% Module-Function-Options tuple.
+%% Module-Function-Arguments tuple.
 -type analysis_target() :: {module(), atom(), [term()]}.
 
 %% The destination of a `send' operation.
@@ -276,54 +276,17 @@ dispatcher(Info, DetailsFlag) ->
 %% Checks for different program states (normal, deadlock, termination, etc.)
 %% and acts appropriately. The argument should be a blocked scheduler state,
 %% i.e. no process running when the driver is called.
-%% In the case of a normal (meaning non-terminal) state, the search component
-%% is called to handle state expansion and returns a process for activation.
+%% In the case of a normal (meaning non-terminal) state:
+%% - if the State list is empty, the search component is called to handle
+%% state expansion and returns a process for activation;
+%% - if the State list is not empty, the process to be activated is
+%% provided at each step by its head.
 %% After activating said process the dispatcher is called to delegate the
 %% messages received from the running process to the appropriate handler
 %% functions.
 driver(#info{active = Active, blocked = Blocked,
 	     error = Error, state = State} = Info,
-       DetailsFlag) when is_boolean(DetailsFlag) ->
-    %% Assertion violation check.
-    case Error of
-	assert -> {error, assert, State};
-	_NoError ->
-	    %% Deadlock/Termination check.
-	    %% If the `active` set is empty and the `blocked` set is non-empty,
-            %% report a deadlock, else if both sets are empty, report normal
-	    %% program termination.
-	    case set_is_empty(Active) of
-		true ->
-		    ?debug_1("-----------------------~n"),
-		    ?debug_1("Run terminated.~n~n"),
-		    case set_is_empty(Blocked) of
-			true -> ok;
-			false -> {error, deadlock, State}
-		    end;
-		false ->
-		    %% Run search algorithm to find next process to be run.
-		    Next = search(Info),
-		    %% Remove process Next from the `active` set and run it.
-		    NewActive = set_remove(Active, Next),
-		    ?debug_2("Running process ~s.~n", [Next]),
-		    run(Next),
-		    %% Create new state.
-		    NewState = state_get_next(State, Next),
-		    %% Call the dispatcher to handle incoming messages from the
-		    %% running process.
-		    NewInfo = dispatcher(Info#info{active = NewActive,
-						   state = NewState},
-					 DetailsFlag),
-		    driver(NewInfo, DetailsFlag)
-	    end
-    end.
-
-%% Same as above, but instead of searching, the process to be activated is
-%% provided at each step by the head of the State argument. When the State list
-%% is empty, the driver falls back to the standard search behavior stated above.
-driver(Info, [], DetailsFlag) -> driver(Info, DetailsFlag);
-driver(#info{active = Active, blocked = Blocked,
-	     error = Error, state = State} = Info, [Next|Rest], DetailsFlag) ->
+       StateList, DetailsFlag) when is_boolean(DetailsFlag) ->
     %% Assertion violation check.
     case Error of
 	assert -> {error, assert, State};
@@ -341,6 +304,14 @@ driver(#info{active = Active, blocked = Blocked,
 			false -> {error, deadlock, State}
 		    end;
 		false ->
+                    {Next, Rest} =
+                        case StateList of
+                            [] ->
+                                %% Run search algorithm to find next process
+                                %% to be run.
+                                {search(Info), StateList};
+                            [H|T] -> {H, T}
+                        end,
 		    %% Remove process Next from the `active` set and run it.
 		    NewActive = set_remove(Active, Next),
 		    ?debug_2("Running process ~s.~n", [Next]),
