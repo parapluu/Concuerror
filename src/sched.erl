@@ -213,8 +213,8 @@ interleave_loop(Target, RunCounter, Tickets, DetailsFlag) ->
             %% Create the first LID and register it with FirstPid.
             lid:new(FirstPid, noparent),
             %% The initial `active` and `blocked` sets are empty.
-            Active = set_new(),
-            Blocked = set_new(),
+            Active = sets:new(),
+            Blocked = sets:new(),
             %% Create initial state.
             State = state:init(),
 	    %% TODO: Not especially nice (maybe refactor into driver?).
@@ -289,15 +289,15 @@ driver(#info{active = Active, blocked = Blocked,
 	    %% If the `active` set is empty and the `blocked` set is non-empty,
 	    %% report a deadlock, else if both sets are empty, report normal
             %% program termination.
-	    case set_is_empty(Active) of
-		true ->
+	    case sets:to_list(Active) of
+		[] ->
 		    ?debug_1("-----------------------~n"),
 		    ?debug_1("Run terminated.~n~n"),
-		    case set_is_empty(Blocked) of
-			true -> ok;
-			false -> {error, deadlock, State}
+		    case sets:to_list(Blocked) of
+			[] -> ok;
+			_NonEmptyBlocked -> {error, deadlock, State}
 		    end;
-		false ->
+		_NonEmptyActive ->
                     {Next, Rest} =
                         case StateList of
                             [] ->
@@ -307,7 +307,7 @@ driver(#info{active = Active, blocked = Blocked,
                             [H|T] -> {H, T}
                         end,
 		    %% Remove process Next from the `active` set and run it.
-		    NewActive = set_remove(Active, Next),
+		    NewActive = sets:del_element(Next, Active),
 		    ?debug_2("Running process ~s.~n", [Next]),
 		    run(Next),
 		    %% Create new state.
@@ -329,9 +329,10 @@ driver(#info{active = Active, blocked = Blocked,
 %% Returns the process to be run next.
 search(#info{active = Active, state = State}) ->
     %% Remove a process from the `actives` set and run it.
-    {Next, NewActive} = set_pop(Active),
+    [Next|Tail] = sets:to_list(Active),
+    NewActive = sets:from_list(Tail),
     %% Store all other possible successor states for later exploration.
-    [state:insert(state:extend(State, Lid)) || Lid <- set_list(NewActive)],
+    [state:insert(state:extend(State, Lid)) || Lid <- sets:to_list(NewActive)],
     Next.
 
 %% Block message handler.
@@ -339,7 +340,7 @@ search(#info{active = Active, state = State}) ->
 %% next and must be moved to the blocked set.
 handler(block, Pid, #info{blocked = Blocked} = Info, _Misc, DetailsFlag) ->
     Lid = lid:from_pid(Pid),
-    NewBlocked = set_add(Blocked, Lid),
+    NewBlocked = sets:add_element(Lid, Blocked),
     ?debug_1("Process ~s blocks.~n", [Lid]),
     case DetailsFlag of
 	true -> replay_logger:log({block, Lid});
@@ -442,7 +443,7 @@ handler(yield, Pid, #info{active = Active} = Info, _Misc, DetailsFlag) ->
             dispatcher(Info, DetailsFlag);
         Lid ->
             ?debug_2("Process ~s yields.~n", [Lid]),
-            NewActive = set_add(Active, Lid),
+            NewActive = sets:add_element(Lid, Active),
             Info#info{active = NewActive}
     end.
 
@@ -473,11 +474,11 @@ run(Lid) ->
 %% Wakeup a process.
 %% If process is in `blocked` set, move to `active` set.
 wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
-    case set_member(Blocked, Lid) of
+    case sets:is_element(Lid, Blocked) of
 	true ->
             ?debug_2("Process ~p wakes up.~n", [Lid]),
-	    NewBlocked = set_remove(Blocked, Lid),
-	    NewActive = set_add(Active, Lid),
+	    NewBlocked = sets:del_element(Lid, Blocked),
+	    NewActive = sets:add_element(Lid, Active),
 	    Info#info{active = NewActive, blocked = NewBlocked};
 	false ->
 	    Info
@@ -591,68 +592,3 @@ rep_spawn_link(Fun) ->
     ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
     rep_yield(),
     Pid.
-
-%%%----------------------------------------------------------------------
-%%% Set interface
-%%%----------------------------------------------------------------------
-
-%% Add Element to Set and return new set.
-set_add(Set, Element) ->
-    sets:add_element(Element, Set).
-
-%% Return true if Set is empty, false otherwise.
-set_is_empty(Set) ->
-    sets:to_list(Set) =:= [].
-
-%% Return a list of the elements in Set.
-set_list(Set) ->
-    sets:to_list(Set).
-
-%% Checks if Element is in Set.
-set_member(Set, Element) ->
-    sets:is_element(Element, Set).
-
-%% Return a new empty set.
-set_new() ->
-    sets:new().
-
-%% Remove a "random" element from Set and return that element and the
-%% new set.
-%% Crashes if given an empty set.
-set_pop(Set) ->
-    [Head|Tail] = sets:to_list(Set),
-    {Head, sets:from_list(Tail)}.
-
-%% Remove Element from Set.
-set_remove(Set, Element) ->
-    sets:del_element(Element, Set).
-
-
-
-%%%----------------------------------------------------------------------
-%%% Unit tests
-%%%----------------------------------------------------------------------
-
--spec set_test_() -> term().
-
-set_test_() ->
-     [{"Empty",
-       ?_assertEqual(true, set_is_empty(set_new()))},
-      {"Add/remove one",
-       ?_test(begin
-		  {Result, NewSet} = set_pop(set_add(set_new(), 42)),
-		  ?assertEqual(42, Result),
-		  ?assertEqual(true, set_is_empty(NewSet))
-	      end)},
-      {"Add/remove multiple",
-      ?_test(begin
-		 Set = set_add(set_add(set_add(set_new(), "42"), "P4.2"),
-                               "P42"),
-		 List1 = lists:sort(set_list(Set)),
-		 {Val1, Set1} = set_pop(Set),
-		 {Val2, Set2} = set_pop(Set1),
-		 {Val3, Set3} = set_pop(Set2),
-		 List2 = lists:sort([Val1, Val2, Val3]),
-		 ?assertEqual(List1, List2),
-		 ?assertEqual(true, set_is_empty(Set3))
-	     end)}].
