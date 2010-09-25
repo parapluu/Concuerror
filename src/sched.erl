@@ -130,7 +130,8 @@ analyze(Target, Options) ->
 		    TicketCount = length(Tickets),
 		    log:log("Analysis complete (checked ~w interleavings "
 			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-		    log:log("Found ~p error(s).~n", [TicketCount]),
+		    log:log("Found ~p erroneous interleaving(s).~n",
+                            [TicketCount]),
 		    Info = {Target, {Mins, Secs}},
 		    {error, analysis, Info, Tickets}
 	    end;
