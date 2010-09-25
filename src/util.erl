@@ -1,6 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File    : util.erl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Authors : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%           Maria Christakis <christakismaria@gmail.com>
 %%% Description : Utilities
 %%%
 %%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
