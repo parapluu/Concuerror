@@ -94,10 +94,10 @@
 %%
 %% msg:     An atom describing the type of the message.
 %% pid:     The sender's pid.
-%% misc:    A list of optional arguments, depending on the the message type.
+%% misc:    Optional arguments, depending on the message type.
 -record(sched, {msg  :: atom(),
                 pid  :: pid(),
-                misc :: [term()]}).
+                misc  = empty :: term()}).
 
 %%%----------------------------------------------------------------------
 %%% User interface
@@ -255,19 +255,19 @@ dispatcher(Info) -> dispatcher(Info, false).
 dispatcher(Info, DetailsFlag) ->
     receive
 	#sched{msg = block, pid = Pid} ->
-	    handler(block, Pid, Info, [], DetailsFlag);
-	#sched{msg = link, pid = Pid, misc = [TargetPid]} ->
-	    handler(link, Pid, Info, [TargetPid], DetailsFlag);
-	#sched{msg = 'receive', pid = Pid, misc = [From, Msg]} ->
-	    handler('receive', Pid, Info, [From, Msg], DetailsFlag);
-	#sched{msg = send, pid = Pid, misc = [Dest, Msg]} ->
-	    handler(send, Pid, Info, [Dest, Msg], DetailsFlag);
-	#sched{msg = spawn, pid = Pid, misc = [ChildPid]} ->
-	    handler(spawn, Pid, Info, [ChildPid], DetailsFlag);
+	    handler(block, Pid, Info, empty, DetailsFlag);
+	#sched{msg = link, pid = Pid, misc = TargetPid} ->
+	    handler(link, Pid, Info, TargetPid, DetailsFlag);
+	#sched{msg = 'receive', pid = Pid, misc = {_From, _Msg} = Misc} ->
+	    handler('receive', Pid, Info, Misc, DetailsFlag);
+	#sched{msg = send, pid = Pid, misc = {_Dest, _Msg} = Misc} ->
+	    handler(send, Pid, Info, Misc, DetailsFlag);
+	#sched{msg = spawn, pid = Pid, misc = ChildPid} ->
+	    handler(spawn, Pid, Info, ChildPid, DetailsFlag);
 	#sched{msg = yield, pid = Pid} ->
-	    handler(yield, Pid, Info, [], DetailsFlag);
+	    handler(yield, Pid, Info, empty, DetailsFlag);
 	{'EXIT', Pid, Reason} ->
-	    handler(exit, Pid, Info, [Reason], DetailsFlag);
+	    handler(exit, Pid, Info, Reason, DetailsFlag);
 	Other ->
 	    log:internal("Dispatcher received: ~p~n", [Other])
     end.
@@ -387,7 +387,7 @@ handler(block, Pid, #info{blocked = Blocked} = Info, _Misc, DetailsFlag) ->
 %% Discard the exited process (don't add to any set).
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% call the dispatcher.
-handler(exit, Pid, Info, [Reason], DetailsFlag) ->
+handler(exit, Pid, Info, Reason, DetailsFlag) ->
     Lid = lid(Pid),
     case Lid of
 	not_found ->
@@ -409,7 +409,7 @@ handler(exit, Pid, Info, [Reason], DetailsFlag) ->
     end;
 
 %% Link message handler.
-handler(link, Pid, Info, [TargetPid], DetailsFlag) ->
+handler(link, Pid, Info, TargetPid, DetailsFlag) ->
     Lid = lid(Pid),
     TargetLid = lid(TargetPid),
     ?debug_1("Process ~s links to process ~s.~n", [Lid, TargetLid]),
@@ -420,7 +420,7 @@ handler(link, Pid, Info, [TargetPid], DetailsFlag) ->
     dispatcher(Info, DetailsFlag);
 
 %% Receive message handler.
-handler('receive', Pid, Info, [From, Msg], DetailsFlag) ->
+handler('receive', Pid, Info, {From, Msg}, DetailsFlag) ->
     Lid = lid(Pid),
     SenderLid = lid(From),
     ?debug_1("Process ~s receives message `~p` from process ~s.~n",
@@ -436,7 +436,7 @@ handler('receive', Pid, Info, [From, Msg], DetailsFlag) ->
 %% if it is blocked on a receive.
 %% XXX: No check for reason of blocking for now. If the process is blocked on
 %%      something else, it will be awaken!
-handler(send, Pid, Info, [DstPid, Msg], DetailsFlag) ->
+handler(send, Pid, Info, {DstPid, Msg}, DetailsFlag) ->
     Lid = lid(Pid),
     DstLid = lid(DstPid),
     ?debug_1("Process ~s sends message `~p` to process ~s.~n",
@@ -453,7 +453,7 @@ handler(send, Pid, Info, [DstPid, Msg], DetailsFlag) ->
 %% The new process yields as soon as it gets spawned and the parent process
 %% yields as soon as it spawns. Therefore wait for two `yield` messages using
 %% two calls to the dispatcher.
-handler(spawn, ParentPid, Info, [ChildPid], DetailsFlag) ->
+handler(spawn, ParentPid, Info, ChildPid, DetailsFlag) ->
     link(ChildPid),
     ParentLid = lid(ParentPid),
     ChildLid = lid_new(ParentLid, ChildPid),
@@ -468,7 +468,7 @@ handler(spawn, ParentPid, Info, [ChildPid], DetailsFlag) ->
 %% Yield message handler.
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
-handler(yield, Pid, #info{active = Active} = Info, _Opt, DetailsFlag) ->
+handler(yield, Pid, #info{active = Active} = Info, _Misc, DetailsFlag) ->
     case lid(Pid) of
         %% This case clause avoids a possible race between `yield` message
         %% of child and `spawn` message of parent.
@@ -539,7 +539,7 @@ block() ->
 
 rep_link(Pid) ->
     Result = link(Pid),
-    ?RP_SCHED ! #sched{msg = link, pid = self(), misc = [Pid]},
+    ?RP_SCHED ! #sched{msg = link, pid = self(), misc = Pid},
     rep_yield(),
     Result.
 
@@ -584,7 +584,7 @@ rep_receive_aux(Fun) ->
 -spec rep_receive_notify(pid(), term()) -> 'ok'.
 
 rep_receive_notify(From, Msg) ->
-    ?RP_SCHED ! #sched{msg = 'receive', pid = self(), misc = [From, Msg]},
+    ?RP_SCHED ! #sched{msg = 'receive', pid = self(), misc = {From, Msg}},
     rep_yield(),
     ok.
 
@@ -596,7 +596,7 @@ rep_receive_notify(From, Msg) ->
 
 rep_send(Dest, Msg) ->
     {_Self, RealMsg} = Dest ! Msg,
-    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = [Dest, RealMsg]},
+    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {Dest, RealMsg}},
     rep_yield(),
     RealMsg.
 
@@ -609,7 +609,7 @@ rep_send(Dest, Msg) ->
 
 rep_spawn(Fun) ->
     Pid = spawn(fun() -> rep_yield(), Fun() end),
-    ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = [Pid]},
+    ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
     rep_yield(),
     Pid.
 
@@ -623,7 +623,7 @@ rep_spawn(Fun) ->
 rep_spawn_link(Fun) ->
     Pid = spawn_link(fun() -> rep_yield(), Fun() end),
     %% Same as rep_spawn for now.
-    ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = [Pid]},
+    ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
     rep_yield(),
     Pid.
 
