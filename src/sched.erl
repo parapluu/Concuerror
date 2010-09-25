@@ -289,12 +289,12 @@ driver(#info{active = Active, blocked = Blocked,
 	    %% If the `active` set is empty and the `blocked` set is non-empty,
 	    %% report a deadlock, else if both sets are empty, report normal
             %% program termination.
-	    case sets:to_list(Active) of
-		[] ->
+	    case sets:size(Active) of
+		0 ->
 		    ?debug_1("-----------------------~n"),
 		    ?debug_1("Run terminated.~n~n"),
-		    case sets:to_list(Blocked) of
-			[] -> ok;
+		    case sets:size(Blocked) of
+			0 -> ok;
 			_NonEmptyBlocked -> {error, deadlock, State}
 		    end;
 		_NonEmptyActive ->
@@ -329,10 +329,9 @@ driver(#info{active = Active, blocked = Blocked,
 %% Returns the process to be run next.
 search(#info{active = Active, state = State}) ->
     %% Remove a process from the `actives` set and run it.
-    [Next|Tail] = sets:to_list(Active),
-    NewActive = sets:from_list(Tail),
+    [Next|NewActive] = sets:to_list(Active),
     %% Store all other possible successor states for later exploration.
-    [state:insert(state:extend(State, Lid)) || Lid <- sets:to_list(NewActive)],
+    [state:insert(state:extend(State, Lid)) || Lid <- NewActive],
     Next.
 
 %% Block message handler.
