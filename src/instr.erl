@@ -180,11 +180,7 @@ instrument_term(Tree) ->
 	receive_expr ->
 	    instrument_receive(instrument_subtrees(Tree));
 	%% Replace every underscore with a new (underscore-prefixed) variable.
-	underscore ->
-	    [{used, Used}] = ets:lookup(?NT_USED, used),
-	    Fresh = erl_syntax_lib:new_variable_name(Used),
-	    String = "_" ++ atom_to_list(Fresh),
-	    erl_syntax:variable(String);
+	underscore -> new_underscore_variable();
 	_Other -> instrument_subtrees(Tree)
     end.
 
@@ -197,6 +193,19 @@ instrument_link(Tree) ->
     erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a receive expression.
+%% receive
+%%    Msg -> Actions
+%% end
+%% is transformed into
+%% sched:rep_receive(Fun),
+%% where Fun = fun(Aux) ->
+%%               receive
+%%                 {SenderPid, Msg} ->
+%%                   {SenderPid, Msg, Actions}
+%%               after 0 ->
+%%                 Aux()
+%%               end
+%%             end
 instrument_receive(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_receive),
@@ -220,9 +229,7 @@ instrument_receive(Tree) ->
             %% Create new receive expression adding the `after 0` part.
             Timeout = erl_syntax:integer(0),
             %% Create new variable to use as 'Aux'.
-            [{used, Used}] = ets:lookup(?NT_USED, used),
-            Fresh = erl_syntax_lib:new_variable_name(Used),
-            FunVar = erl_syntax:variable(Fresh),
+            FunVar = new_variable(),
             Action = erl_syntax:application(FunVar, []),
             NewRecv = erl_syntax:receive_expr(NewClauses, Timeout, [Action]),
             %% Create a new fun to be the argument of rep_receive.
@@ -241,9 +248,7 @@ transform_receive_clause(Clause) ->
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
     %% Create new variable to use as 'SenderPid'.
-    [{used, Used}] = ets:lookup(?NT_USED, used),
-    Fresh = erl_syntax_lib:new_variable_name(Used),
-    PidVar = erl_syntax:variable(Fresh),
+    PidVar = new_variable(),
     NewPattern = [erl_syntax:tuple([PidVar, OldPattern])],
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_receive_notify),
@@ -285,6 +290,39 @@ instrument_spawn_link(Tree) ->
 %% `erlang:yield' is transformed into `true'.
 instrument_yield() ->
     erl_syntax:atom(true).
+
+%%%----------------------------------------------------------------------
+%%% Utilities
+%%%----------------------------------------------------------------------
+
+new_variable() ->
+    [{used, Used}] = ets:lookup(?NT_USED, used),
+    Fresh = erl_syntax_lib:new_variable_name(Used),
+    ets:insert(?NT_USED, {used, sets:add_element(Fresh, Used)}),
+    erl_syntax:variable(Fresh).
+
+new_underscore_variable() ->
+    [{used, Used}] = ets:lookup(?NT_USED, used),
+    new_underscore_variable(Used).
+
+new_underscore_variable(Used) ->
+    Fresh1 = erl_syntax_lib:new_variable_name(Used),
+    String = "_" ++ atom_to_list(Fresh1),
+    Fresh2 = list_to_atom(String),
+    case is_fresh(Fresh2, Used) of
+        true ->
+            ets:insert(?NT_USED, {used, sets:add_element(Fresh2, Used)}),
+            erl_syntax:variable(Fresh2);
+        false ->
+            new_underscore_variable(Used)
+    end.
+
+is_fresh(Atom, Set) ->
+    not sets:is_element(Atom, Set).
+
+%%%----------------------------------------------------------------------
+%%% Logging
+%%%----------------------------------------------------------------------
 
 %% Log a list of errors, as returned by compile:file/2.
 log_error_list(List) ->
