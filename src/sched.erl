@@ -327,7 +327,7 @@ driver(#info{active = Active, blocked = Blocked,
 %% possible next states, chooses one of them for running and inserts the rest
 %% of them into the `states` table.
 %% Returns the process to be run next.
-search(#info{active = Active, state = State} = Info) ->
+search(#info{active = Active, state = State}) ->
     %% Remove a process from the `actives` set and run it.
     {Next, NewActive} = set_pop(Active),
     %% Store all other possible successor states for later exploration.
