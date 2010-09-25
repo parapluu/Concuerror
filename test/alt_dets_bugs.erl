@@ -1,28 +1,23 @@
 -module(alt_dets_bugs).
 
--export([bug3/0, bug5/0]).
+-export([bug3/0, bug5/0, bug6/0]).
 
 -include("ced.hrl").
 
 %% should always print [{0,0}], but sometimes prints []
 bug3() ->
-    Close = dets:close(dets_table),
+    dets:close(dets_table),
     sched:rep_yield(),
-    Close,
-    Del = file:delete(dets_table),
+    file:delete(dets_table),
     sched:rep_yield(),
-    Del,
-    {ok, T} = dets:open_file(dets_table,[{type,bag}]),
+    dets:open_file(dets_table,[{type,bag}]),
     sched:rep_yield(),
-    {ok, T},
-    spawn(fun() -> Ret = dets:open_file(dets_table,[{type,bag}]),
-                   sched:rep_yield(),
-                   Ret
+    spawn(fun() -> dets:open_file(dets_table,[{type,bag}]),
+                   sched:rep_yield()
           end),
     spawn(fun() ->
-                  Ret = dets:insert(dets_table,[{0,0}]),
+                  dets:insert(dets_table,[{0,0}]),
                   sched:rep_yield(),
-                  Ret,
                   ?assertEqual([{0,0}], get_contents(dets_table))
           end).
 
@@ -51,7 +46,30 @@ bug5() ->
           end),
     receive ok -> ok end.
 
+bug6() ->
+    dets:open_file(dets_table,[{type,bag}]),
+    sched:rep_yield(),
+    dets:close(dets_table),
+    sched:rep_yield(),
+    dets:open_file(dets_table,[{type,bag}]),
+    sched:rep_yield(),
+    spawn(fun() -> dets:lookup(dets_table,0),
+                   sched:rep_yield()
+          end),
+    spawn(fun() -> dets:insert(dets_table,{0,0}),
+                   sched:rep_yield()
+          end),
+    spawn(fun() -> dets:insert(dets_table,{0,0}),
+                   sched:rep_yield()
+          end),
+    ?assertEqual([{0,0}], match_object(dets_table)).
+
 get_contents(Name) ->
     Ret = dets:traverse(Name, fun(X)-> {continue,X} end),
+    sched:rep_yield(),
+    Ret.
+
+match_object(Name) ->
+    Ret = dets:match_object(Name,'_'),
     sched:rep_yield(),
     Ret.

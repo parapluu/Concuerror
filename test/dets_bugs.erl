@@ -1,6 +1,6 @@
 -module(dets_bugs).
 
--export([bug1/0, bug2/0, bug3/0, bug4/0, bug5/0]).
+-export([bug1/0, bug2/0, bug3/0, bug4/0, bug5/0, bug6/0]).
 
 %% should always print a boolean, but sometimes prints 'ok'
 bug1() ->
@@ -59,6 +59,19 @@ bug5() ->
                   Self ! ok
           end),
     receive ok -> ok end.
+
+bug6() ->
+    dets:open_file(dets_table,[{type,bag}]), 
+    dets:close(dets_table), 
+    dets:open_file(dets_table,[{type,bag}]), 
+    spawn(fun() -> dets:lookup(dets_table,0)
+          end),
+    spawn(fun() -> dets:insert(dets_table,{0,0})
+          end),
+    spawn(fun() -> dets:insert(dets_table,{0,0})
+          end),
+    dets:match_object(dets_table,'_').
+    
 
 get_contents(Name) ->
     dets:traverse(Name,fun(X)->{continue,X}end).
