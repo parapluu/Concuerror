@@ -20,4 +20,5 @@ insert_pop_equal_test() ->
     state:start(),
     Init = state:init(),
     state:insert(Init),
-    ?assertEqual(Init, state:pop()).
+    ?assertEqual(Init, state:pop()),
+    state:stop().
