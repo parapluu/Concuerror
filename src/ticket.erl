@@ -17,10 +17,10 @@
 
 %% An error ticket containing information needed to replay the
 %% interleaving that caused it.
--type ticket() :: {sched:analysis_target(), sched:error_descr(), sched:state()}.
+-type ticket() :: {sched:analysis_target(), sched:error_descr(), state:state()}.
 
 %% @doc: Create a new error ticket.
--spec new(sched:analysis_target(), sched:error_descr(), sched:state()) ->
+-spec new(sched:analysis_target(), sched:error_descr(), state:state()) ->
 		 ticket().
 
 new(Target, ErrorDescr, ErrorState) ->
@@ -36,7 +36,7 @@ get_error_string({_Target, ErrorDescr, _ErrorState}) ->
 get_target({Target, _ErrorDescr, _ErrorState}) ->
     Target.
 
--spec get_state(ticket()) -> sched:state().
+-spec get_state(ticket()) -> state:state().
 get_state({_Target, _ErrorDescr, ErrorState}) ->
     ErrorState.
 

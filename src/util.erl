@@ -28,8 +28,9 @@ doc(AppDir) ->
 -spec test() -> 'ok'.
 
 test() ->
-    eunit:test(sched),
-    eunit:test(replay_logger).
+    Modules = [replay_logger, sched, ticket],
+    Tests = lists:zip(lists:duplicate(length(Modules), module), Modules),
+    eunit:test(Tests, [verbose]).
 
 %% @spec funs(string()) -> [{atom(), non_neg_integer()}]
 %% @doc: Same as `funs(File, tuple)'.

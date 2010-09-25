@@ -18,7 +18,7 @@
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0]).
 
--export_type([proc_action/0, analysis_target/0, error_descr/0, state/0]).
+-export_type([proc_action/0, analysis_target/0, error_descr/0, lid/0]).
 
 -include("gen.hrl").
 
@@ -70,10 +70,6 @@
                        {'spawn', lid(), lid()} |
                        {'exit', lid(), exit_reasons()}.
 
-%% A state is a list of LIDs showing the (reverse) interleaving of
-%% processes up to a point of the program.
--type state() :: [lid()].
-
 %%%----------------------------------------------------------------------
 %%% Records
 %%%----------------------------------------------------------------------
@@ -88,7 +84,7 @@
 -record(info, {active  :: set(),
                blocked :: set(),
 	       error   :: error_info(),
-               state   :: state()}).
+               state   :: state:state()}).
 
 %% Internal message format
 %%
@@ -160,7 +156,7 @@ replay(Ticket) ->
 %%   {init_state, InitState}: State to replay (default: state_init()).
 %%   details: Produce detailed interleaving information (see `replay_logger`).
 interleave(Target) ->
-    interleave(Target, [init_state, state_init()]).
+    interleave(Target, [init_state, state:init()]).
 
 interleave(Target, Options) ->
     Self = self(),
@@ -173,7 +169,7 @@ interleave(Target, Options) ->
 interleave_aux(Target, Options, Parent) ->
     InitState =
 	case lists:keyfind(init_state, 1, Options) of
-	    false -> state_init();
+	    false -> state:init();
 	    {init_state, Any} -> Any
 	end,
     DetailsFlag = lists:member(details, Options),
@@ -183,14 +179,14 @@ interleave_aux(Target, Options, Parent) ->
     flush_mailbox(),
     process_flag(trap_exit, true),
     %% Start state service.
-    state_start(),
+    state:start(),
     %% Insert empty replay state for the first run.
-    state_insert(InitState),
+    state:insert(InitState),
     {T1, _} = statistics(wall_clock),
     Result = interleave_loop(Target, 1, [], DetailsFlag),
     {T2, _} = statistics(wall_clock),
     Time = elapsed_time(T1, T2),
-    state_stop(),
+    state:stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, {Result, Time}}.
 
@@ -200,7 +196,7 @@ interleave_loop(Target, RunCounter, Tickets) ->
 
 interleave_loop(Target, RunCounter, Tickets, DetailsFlag) ->
     %% Lookup state to replay.
-    case state_pop() of
+    case state:pop() of
         no_state ->
 	    case Tickets of
 		[] -> {ok, RunCounter - 1};
@@ -224,7 +220,7 @@ interleave_loop(Target, RunCounter, Tickets, DetailsFlag) ->
             Active = set_new(),
             Blocked = set_new(),
             %% Create initial state.
-            State = state_init(),
+            State = state:init(),
 	    %% TODO: Not especially nice (maybe refactor into driver?).
             %% Receive the first message from the first process. That is, wait
             %% until it yields, blocks or terminates.
@@ -319,7 +315,7 @@ driver(#info{active = Active, blocked = Blocked,
 		    ?debug_2("Running process ~s.~n", [Next]),
 		    run(Next),
 		    %% Create new state.
-		    NewState = state_get_next(State, Next),
+		    NewState = state:extend(State, Next),
 		    %% Call the dispatcher to handle incoming messages from the
 		    %% running process.
 		    NewInfo = dispatcher(Info#info{active = NewActive,
@@ -338,9 +334,8 @@ driver(#info{active = Active, blocked = Blocked,
 search(#info{active = Active, state = State} = Info) ->
     %% Remove a process from the `actives` set and run it.
     {Next, NewActive} = set_pop(Active),
-    %% Store all other possible successor states in `states` table for later
-    %% exploration.
-    state_insert_succ(Info#info{active = NewActive, state = State}),
+    %% Store all other possible successor states for later exploration.
+    [state:insert(state:extend(State, Lid)) || Lid <- set_list(NewActive)],
     Next.
 
 %% Block message handler.
@@ -689,50 +684,7 @@ set_pop(Set) ->
 set_remove(Set, Element) ->
     sets:del_element(Element, Set).
 
-%%%----------------------------------------------------------------------
-%%% State interface
-%%%----------------------------------------------------------------------
 
-%% Given the current state and a process to be run next, return the new state.
-state_get_next(State, Next) ->
-    [Next|State].
-
-%% Return initial (empty) state.
-state_init() ->
-    [].
-
-%% Add a state to the `state` table.
-state_insert(State) ->
-    ets:insert(?NT_STATE, {State}).
-
-%% Create all possible next states and add them to the `state` table.
-state_insert_succ(#info{active = Active, state = State}) ->
-    state_insert_succ_aux(State, set_list(Active)).
-
-state_insert_succ_aux(_State, []) -> ok;
-state_insert_succ_aux(State, [Proc|Procs]) ->
-    ets:insert(?NT_STATE, {[Proc|State]}),
-    state_insert_succ_aux(State, Procs).
-
-%% Remove and return a state.
-%% If no states available, return 'no_state'.
-state_pop() ->
-    case ets:first(?NT_STATE) of
-	'$end_of_table' -> no_state;
-	State ->
-	    ets:delete(?NT_STATE, State),
-	    lists:reverse(State)
-    end.
-
-%% Initialize state table.
-%% Must be called before any other call to state_* functions.
-state_start() ->
-    %% Table for storing unvisited states (as keys, the values are irrelevant).
-    ets:new(?NT_STATE, [named_table]).
-
-%% Clean up state table.
-state_stop() ->
-    ets:delete(?NT_STATE).
 
 %%%----------------------------------------------------------------------
 %%% Unit tests
@@ -790,102 +742,3 @@ lid_test_() ->
 		  ?assertEqual(L3, Lid3),
 		  ?assertEqual(L4, 'not_found')
 	      end)}].
-
--spec interleave_test_() -> term().
-
-interleave_test_() ->
-    {setup,
-     fun() -> log:start(log, []) end,
-     fun(_) -> log:stop() end,
-     [{"test01",
-       ?_assertMatch({ok, {{test, test01, []}, _}},
-		     analyze({test, test01, []},
-			     [{files, ["./test/test.erl"]}]))},
-      {"test02",
-       ?_assertMatch({ok, {{test, test02, []}, _}},
-		     analyze({test, test02, []},
-			     [{files, ["./test/test.erl"]}]))},
-      {"test03",
-       ?_assertMatch({ok, {{test, test03, []}, _}},
-		     analyze({test, test03, []},
-			     [{files, ["./test/test.erl"]}]))},
-      {"test04",
-       ?_test(
-	  begin
-	      Target = {test, test04, []},
-	      Options = [{files, ["./test/test.erl"]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
-		  analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Deadlock", ticket:get_error_string(Ticket))
-	  end)},
-      {"test05",
-       ?_test(
-	  begin
-	      Target = {test, test05, []},
-	      Options = [{files, ["./test/test.erl"]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
-		  analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Deadlock", ticket:get_error_string(Ticket))
-	  end)},
-      {"test06",
-       ?_assertMatch({ok, {{test, test06, []}, _}},
-		     analyze({test, test06, []},
-			     [{files, ["./test/test.erl"]}]))},
-      {"test07",
-       ?_assertMatch({ok, {{test, test07, []}, _}},
-		     analyze({test, test07, []},
-			     [{files, ["./test/test.erl"]}]))},
-      {"test08",
-       ?_test(
-	  begin
-	      Target = {test, test08, []},
-	      Options = [{files, ["./test/test.erl"]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
-		  analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Assertion violation",
-			   ticket:get_error_string(Ticket))
-	  end)},
-      {"test09",
-       ?_assertMatch({ok, {{test, test03, []}, _}},
-		     analyze({test, test03, []},
-			     [{files, ["./test/test.erl",
-				       "./test/test_aux.erl"]}]))},
-      {"test10",
-       ?_assertMatch({ok, {{test, test09, []}, _}},
-		     analyze({test, test09, []},
-			     [{files, ["./test/test.erl",
-				       "./test/test_aux.erl"]}]))},
-      {"test11",
-       ?_test(
-	  begin
-	      Target = {test, test10, []},
-	      Options = [{files, ["./test/test.erl"]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
-		  analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Assertion violation",
-			   ticket:get_error_string(Ticket))
-	  end)},
-      {"test12",
-       ?_assertMatch({ok, {{test, test11, []}, _}},
-		     analyze({test, test11, []},
-			     [{files, ["./test/test.erl",
-				       "./test/test_aux.erl"]}]))},
-      {"test13",
-       ?_assertMatch({ok, {{test, test12, []}, _}},
-		     analyze({test, test12, []},
-			     [{files, ["./test/test.erl",
-				       "./test/test_aux.erl"]}]))},
-      {"test14",
-       ?_assertMatch({ok, {{test, test13, []}, _}},
-		     analyze({test, test13, []},
-			     [{files, ["./test/test.erl",
-				       "./test/test_aux.erl"]}]))}
-     ]}.

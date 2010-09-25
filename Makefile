@@ -43,6 +43,7 @@ TARGETS = \
 	core \
 	gui \
 	log \
+	utest \
 	scripts
 
 GUI_MODULES = \
@@ -51,6 +52,7 @@ GUI_MODULES = \
 CORE_MODULES = \
 	instr \
 	sched \
+	state \
 	util \
 	ticket
 
@@ -58,13 +60,19 @@ LOG_MODULES = \
 	log \
 	replay_logger
 
+UTEST_MODULES = \
+	sched_tests \
+	ticket_tests
+
 MODULES = \
 	$(GUI_MODULES) \
 	$(CORE_MODULES) \
-	$(LOG_MODULES)
+	$(LOG_MODULES) \
+	$(UTEST_MODULES)
 
 ERL_DIRS = \
-	src
+	src \
+	utest
 
 vpath %.hrl include
 vpath %.erl $(ERL_DIRS)
@@ -118,6 +126,8 @@ core:	$(CORE_MODULES:%=%.beam)
 gui:	$(GUI_MODULES:%=%.beam)
 
 log:	$(LOG_MODULES:%=%.beam)
+
+utest:	$(UTEST_MODULES:%=%.beam)
 
 scripts: run.sh test.sh
 
