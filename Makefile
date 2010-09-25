@@ -158,3 +158,4 @@ scheduler.beam: gui.hrl
 instr.beam: gen.hrl
 log.beam: gen.hrl
 sched.beam: gen.hrl
+state.beam: gen.hrl
