@@ -19,7 +19,7 @@
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0]).
 
--export_type([proc_action/0, analysis_target/0, error_descr/0, lid/0]).
+-export_type([proc_action/0, analysis_target/0, error_descr/0]).
 
 -include("gen.hrl").
 
@@ -58,18 +58,13 @@
 %% A process' exit reasons
 -type exit_reasons() :: {{'assertion_failed', [term()]}, term()}.
 
-%% The logical id (LID) for each process reflects the process' logical
-%% position in the program's "process creation tree" and doesn't change
-%% between different runs of the same program (as opposed to erlang pids).
--type lid() :: string().
-
 %% Tuples providing information about a process' action.
--type proc_action() :: {'block', lid()} |
-                       {'link', lid(), lid()} |
-                       {'receive', lid(), lid(), term()} |
-                       {'send', lid(), lid(), term()} |
-                       {'spawn', lid(), lid()} |
-                       {'exit', lid(), exit_reasons()}.
+-type proc_action() :: {'block', lid:lid()} |
+                       {'link', lid:lid(), lid:lid()} |
+                       {'receive', lid:lid(), lid:lid(), term()} |
+                       {'send', lid:lid(), lid:lid(), term()} |
+                       {'spawn', lid:lid(), lid:lid()} |
+                       {'exit', lid:lid(), exit_reasons()}.
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -207,7 +202,7 @@ interleave_loop(Target, RunCounter, Tickets, DetailsFlag) ->
             ?debug_1("Running interleaving ~p~n", [RunCounter]),
             ?debug_1("----------------------~n"),
             %% Start LID service.
-            lid_start(),
+            lid:start(),
             %% Create the first process.
             %% The process is created linked to the scheduler, so that the
             %% latter can receive the former's exit message when it terminates.
@@ -216,7 +211,7 @@ interleave_loop(Target, RunCounter, Tickets, DetailsFlag) ->
 	    {Mod, Fun, Args} = Target,
             FirstPid = spawn_link(Mod, Fun, Args),
             %% Create the first LID and register it with FirstPid.
-            lid_new(FirstPid),
+            lid:new(FirstPid, noparent),
             %% The initial `active` and `blocked` sets are empty.
             Active = set_new(),
             Blocked = set_new(),
@@ -233,7 +228,7 @@ interleave_loop(Target, RunCounter, Tickets, DetailsFlag) ->
             Ret = driver(NewInfo, ReplayState, DetailsFlag),
 	    %% TODO: Proper cleanup of any remaining processes.
             %% Stop LID service (LID tables have to be reset on each run).
-            lid_stop(),
+            lid:stop(),
             case Ret of
                 ok -> interleave_loop(Target, RunCounter + 1, Tickets);
                 {error, ErrorDescr, ErrorState} ->
@@ -343,7 +338,7 @@ search(#info{active = Active, state = State} = Info) ->
 %% Receiving a `block` message means that the process cannot be scheduled
 %% next and must be moved to the blocked set.
 handler(block, Pid, #info{blocked = Blocked} = Info, _Misc, DetailsFlag) ->
-    Lid = lid(Pid),
+    Lid = lid:from_pid(Pid),
     NewBlocked = set_add(Blocked, Lid),
     ?debug_1("Process ~s blocks.~n", [Lid]),
     case DetailsFlag of
@@ -357,7 +352,7 @@ handler(block, Pid, #info{blocked = Blocked} = Info, _Misc, DetailsFlag) ->
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% call the dispatcher.
 handler(exit, Pid, Info, Reason, DetailsFlag) ->
-    Lid = lid(Pid),
+    Lid = lid:from_pid(Pid),
     case Lid of
 	not_found ->
 	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Reason]),
@@ -380,8 +375,8 @@ handler(exit, Pid, Info, Reason, DetailsFlag) ->
 
 %% Link message handler.
 handler(link, Pid, Info, TargetPid, DetailsFlag) ->
-    Lid = lid(Pid),
-    TargetLid = lid(TargetPid),
+    Lid = lid:from_pid(Pid),
+    TargetLid = lid:from_pid(TargetPid),
     ?debug_1("Process ~s links to process ~s.~n", [Lid, TargetLid]),
     case DetailsFlag of
 	true -> replay_logger:log({link, Lid, TargetLid});
@@ -391,8 +386,8 @@ handler(link, Pid, Info, TargetPid, DetailsFlag) ->
 
 %% Receive message handler.
 handler('receive', Pid, Info, {From, Msg}, DetailsFlag) ->
-    Lid = lid(Pid),
-    SenderLid = lid(From),
+    Lid = lid:from_pid(Pid),
+    SenderLid = lid:from_pid(From),
     ?debug_1("Process ~s receives message `~p` from process ~s.~n",
 	    [Lid, Msg, SenderLid]),
     case DetailsFlag of
@@ -407,8 +402,8 @@ handler('receive', Pid, Info, {From, Msg}, DetailsFlag) ->
 %% XXX: No check for reason of blocking for now. If the process is blocked on
 %%      something else, it will be awaken!
 handler(send, Pid, Info, {DstPid, Msg}, DetailsFlag) ->
-    Lid = lid(Pid),
-    DstLid = lid(DstPid),
+    Lid = lid:from_pid(Pid),
+    DstLid = lid:from_pid(DstPid),
     ?debug_1("Process ~s sends message `~p` to process ~s.~n",
 	    [Lid, Msg, DstLid]),
     case DetailsFlag of
@@ -425,8 +420,8 @@ handler(send, Pid, Info, {DstPid, Msg}, DetailsFlag) ->
 %% two calls to the dispatcher.
 handler(spawn, ParentPid, Info, ChildPid, DetailsFlag) ->
     link(ChildPid),
-    ParentLid = lid(ParentPid),
-    ChildLid = lid_new(ParentLid, ChildPid),
+    ParentLid = lid:from_pid(ParentPid),
+    ChildLid = lid:new(ChildPid, ParentLid),
     ?debug_1("Process ~s spawns process ~s.~n", [ParentLid, ChildLid]),
     case DetailsFlag of
 	true -> replay_logger:log({spawn, ParentLid, ChildLid});
@@ -439,7 +434,7 @@ handler(spawn, ParentPid, Info, ChildPid, DetailsFlag) ->
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
 handler(yield, Pid, #info{active = Active} = Info, _Misc, DetailsFlag) ->
-    case lid(Pid) of
+    case lid:from_pid(Pid) of
         %% This case clause avoids a possible race between `yield` message
         %% of child and `spawn` message of parent.
         not_found ->
@@ -472,7 +467,7 @@ elapsed_time(T1, T2) ->
 
 %% Signal process Lid to continue its execution.
 run(Lid) ->
-    Pid = lid_to_pid(Lid),
+    Pid = lid:to_pid(Lid),
     Pid ! #sched{msg = continue}.
 
 %% Wakeup a process.
@@ -598,59 +593,6 @@ rep_spawn_link(Fun) ->
     Pid.
 
 %%%----------------------------------------------------------------------
-%%% LID interface
-%%%----------------------------------------------------------------------
-
-%% Return the LID of process Pid or 'not_found' if mapping not in table.
-lid(Pid) ->
-    case ets:lookup(?NT_PID, Pid) of
-	[{_Pid, Lid}] -> Lid;
-	[] -> not_found
-    end.
-
-%% "Register" a new process spawned by the process with LID `ParentLID`.
-%% Pid is the new process' erlang pid.
-%% If called without a `ParentLID` argument, it "registers" the first process.
-%% Returns the LID of the newly "registered" process.
-lid_new(Pid) ->
-    %% The first process has LID = "P1" and has no children spawned at init.
-    Lid = "P1",
-    ets:insert(?NT_LID, {Lid, Pid, 0}),
-    ets:insert(?NT_PID, {Pid, Lid}),
-    Lid.
-
-lid_new(ParentLID, Pid) ->
-    [{_ParentLID, _ParentPid, Children}] = ets:lookup(?NT_LID, ParentLID),
-    %% Create new process' Lid
-    Lid = lists:concat([ParentLID, ".", Children + 1]),
-    %% Update parent info (increment children counter).
-    ets:update_element(?NT_LID, ParentLID, {3, Children + 1}),
-    %% Insert child info.
-    ets:insert(?NT_LID, {Lid, Pid, 0}),
-    ets:insert(?NT_PID, {Pid, Lid}),
-    Lid.
-
-%% Initialize LID tables.
-%% Must be called before any other call to lid_* functions.
-lid_start() ->
-    %% Table for storing process info.
-    %% Its elements are of the form {Lid, Pid, Children}, where Children
-    %% is the number of processes spawned by it so far.
-    ets:new(?NT_LID, [named_table]),
-    %% Table for reverse lookup (Lid -> Pid) purposes.
-    %% Its elements are of the form {Pid, Lid}.
-    ets:new(?NT_PID, [named_table]).
-
-%% Clean up LID tables.
-lid_stop() ->
-    ets:delete(?NT_LID),
-    ets:delete(?NT_PID).
-
-%% Return the erlang pid of the process Lid.
-lid_to_pid(Lid) ->
-    ets:lookup_element(?NT_LID, Lid, 2).
-
-%%%----------------------------------------------------------------------
 %%% Set interface
 %%%----------------------------------------------------------------------
 
@@ -714,32 +656,3 @@ set_test_() ->
 		 ?assertEqual(List1, List2),
 		 ?assertEqual(true, set_is_empty(Set3))
 	     end)}].
-
--spec lid_test_() -> term().
-
-lid_test_() ->
-     [{"Lid",
-       ?_test(begin
-		  lid_start(),
-		  Pid1 = c:pid(0, 2, 3),
-		  Lid1 = lid_new(Pid1),
-		  Pid2 = c:pid(0, 2, 4),
-		  Lid2 = lid_new(Lid1, Pid2),
-		  Pid3 = c:pid(0, 2, 5),
-		  Lid3 = lid_new(Lid1, Pid3),
-		  P1 = lid_to_pid(Lid1),
-		  L1 = lid(Pid1),
-		  P2 = lid_to_pid(Lid2),
-		  L2 = lid(Pid2),
-		  P3 = lid_to_pid(Lid3),
-		  L3 = lid(Pid3),
-		  L4 = lid(c:pid(0, 2, 6)),
-		  lid_stop(),
-		  ?assertEqual(P1, Pid1),
-		  ?assertEqual(P2, Pid2),
-		  ?assertEqual(P3, Pid3),
-		  ?assertEqual(L1, Lid1),
-		  ?assertEqual(L2, Lid2),
-		  ?assertEqual(L3, Lid3),
-		  ?assertEqual(L4, 'not_found')
-	      end)}].

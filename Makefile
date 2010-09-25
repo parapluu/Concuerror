@@ -51,6 +51,7 @@ GUI_MODULES = \
 
 CORE_MODULES = \
 	instr \
+	lid \
 	sched \
 	state \
 	util \
@@ -61,6 +62,7 @@ LOG_MODULES = \
 	replay_logger
 
 UTEST_MODULES = \
+	lid_tests \
 	sched_tests \
 	state_tests \
 	ticket_tests

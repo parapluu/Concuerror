@@ -16,10 +16,10 @@
 
 %% A state is a list of LIDs showing the (reverse) interleaving of
 %% processes up to a point of the program.
--type state() :: [sched:lid()].
+-type state() :: [lid:lid()].
 
 %% Given the current state and a process to be run next, return the new state.
--spec extend(state(), sched:lid()) -> state().
+-spec extend(state(), lid:lid()) -> state().
 
 extend(State, Next) ->
     [Next|State].
