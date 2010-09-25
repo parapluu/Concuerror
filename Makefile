@@ -62,6 +62,7 @@ LOG_MODULES = \
 
 UTEST_MODULES = \
 	sched_tests \
+	state_tests \
 	ticket_tests
 
 MODULES = \
