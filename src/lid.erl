@@ -1,9 +1,9 @@
 %%%----------------------------------------------------------------------
-%%% File    : sched.erl
+%%% File    : lid.erl
 %%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
 %%% Description : LID interface
 %%%
-%%% Created : 25 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Created : 25 Sep 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
 %%%----------------------------------------------------------------------
 
 -module(lid).
