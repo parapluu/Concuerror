@@ -72,14 +72,14 @@
 
 %% Scheduler state
 %%
-%% active : A set containing all processes ready to be scheduled.
-%% blocked: A set containing all processes that cannot be scheduled next
+%% active  : A set containing all processes ready to be scheduled.
+%% blocked : A set containing all processes that cannot be scheduled next
 %%          (e.g. waiting for a message on a `receive`).
-%% error  : An atom describing the error that occured.
-%% state  : The current state of the program.
-%% details: A boolean being false when running a normal run and
-%%          false when running a replay and need to send detailed
-%%          info to the replay_logger.
+%% error   : An atom describing the error that occured.
+%% state   : The current state of the program.
+%% details : A boolean being false when running a normal run and
+%%           true when running a replay and need to send detailed
+%%           info to the replay_logger.
 -record(info, {active  :: set(),
                blocked :: set(),
 	       error   :: error_info(),
@@ -88,9 +88,9 @@
 
 %% Internal message format
 %%
-%% msg:     An atom describing the type of the message.
-%% pid:     The sender's pid.
-%% misc:    Optional arguments, depending on the message type.
+%% msg    : An atom describing the type of the message.
+%% pid    : The sender's pid.
+%% misc   : Optional arguments, depending on the message type.
 -record(sched, {msg  :: atom(),
                 pid  :: pid(),
                 misc  = empty :: term()}).
