@@ -43,4 +43,6 @@ get_state({_Target, _ErrorDescr, ErrorState}) ->
 error_descr_to_string(assert) ->
     "Assertion violation";
 error_descr_to_string(deadlock) ->
-    "Deadlock".
+    "Deadlock";
+error_descr_to_string(exception) ->
+    "Exception".

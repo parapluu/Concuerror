@@ -50,9 +50,9 @@
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
 %% Error descriptor.
--type error_descr() :: 'deadlock' | 'assert'.
+-type error_descr() :: 'deadlock' | error_info().
 
--type error_info() :: 'assert'.
+-type error_info() :: 'assert' | 'exception'.
 
 %% A process' exit reasons
 -type exit_reasons() :: {{'assertion_failed', [term()]}, term()}.
@@ -290,6 +290,7 @@ driver(#info{active = Active, blocked = Blocked,
     %% Assertion violation check.
     case Error of
 	assert -> {error, assert, State};
+        exception -> {error, exception, State};
 	_NoError ->
 	    %% Deadlock/Termination check.
 	    %% If the `active` set is empty and the `blocked` set is non-empty,
@@ -373,9 +374,10 @@ handler(exit, Pid, Info, Reason, DetailsFlag) ->
 	    %% If the exception was caused by an assertion violation, propagate
 	    %% it to the driver via the `error` field of the `info` record.
 	    case Reason of
+                normal -> Info;
 		{{assertion_failed, _Details}, _Stack} ->
 		    Info#info{error = assert};
-		_Other -> Info
+		_Other -> Info#info{error = exception}
 	    end
     end;
 
