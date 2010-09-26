@@ -59,9 +59,8 @@ bug6() ->
     spawn(fun() -> dets:insert(dets_table,{0,0}),
                    sched:rep_yield()
           end),
-    spawn(fun() -> dets:insert(dets_table,{0,0}),
-                   sched:rep_yield()
-          end),
+    dets:insert(dets_table,{0,0}),
+    sched:rep_yield(),
     ?assertEqual([{0,0}], match_object(dets_table)).
 
 get_contents(Name) ->

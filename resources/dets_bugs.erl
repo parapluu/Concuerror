@@ -68,8 +68,7 @@ bug6() ->
           end),
     spawn(fun() -> dets:insert(dets_table,{0,0})
           end),
-    spawn(fun() -> dets:insert(dets_table,{0,0})
-          end),
+    dets:insert(dets_table,{0,0}),
     dets:match_object(dets_table,'_').
     
 
