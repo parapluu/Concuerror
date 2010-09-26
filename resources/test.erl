@@ -11,7 +11,7 @@
 -export([test01/0, test02/0, test03/0, test04/0,
 	 test05/0, test06/0, test07/0, test08/0,
 	 test09/0, test10/0, test11/0, test12/0,
-         test13/0]).
+         test13/0, test14/0]).
 
 -include("ced.hrl").
 
@@ -201,3 +201,18 @@ foo13() ->
     spawn(fun() -> foo1_1(Self) end),
     erlang:yield(),
     receive _Any -> ok end.
+
+%% Normal, 2 proc: Simple send-receive/after.
+-spec test14() -> 'ok'.
+
+test14() ->
+    ?assert(foo14() =:= ok).
+
+foo14() ->
+    Self = self(),
+    spawn(fun() -> foo1_1(Self) end),
+    receive
+        42 -> ok
+    after 42 ->
+            gazonk
+    end.

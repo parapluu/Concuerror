@@ -221,23 +221,26 @@ instrument_receive(Tree) ->
         _Other ->
             NewClauses = [transform_receive_clause(Clause)
                           || Clause <- OldClauses],
-            %% `receive ... after` not supported for now.
-            case erl_syntax:receive_expr_timeout(Tree) of
-                none -> continue;
-                _Any -> log:internal("`receive ... after` expressions " ++
-                                     "not supported.~n")
-            end,
             %% Create new receive expression adding the `after 0` part.
             Timeout = erl_syntax:integer(0),
-            %% Create new variable to use as 'Aux'.
-            FunVar = new_variable(),
-            Action = erl_syntax:application(FunVar, []),
-            NewRecv = erl_syntax:receive_expr(NewClauses, Timeout, [Action]),
-            %% Create a new fun to be the argument of rep_receive.
-            FunClause = erl_syntax:clause([FunVar], [], [NewRecv]),
-            FunExpr = erl_syntax:fun_expr([FunClause]),
-            %% Call sched:rep_receive.
-            erl_syntax:application(Module, Function, [FunExpr])
+            case erl_syntax:receive_expr_timeout(Tree) of
+                %% Instrument `receive` without `after` part.
+                none ->
+                    %% Create new variable to use as 'Aux'.
+                    FunVar = new_variable(),
+                    Action = [erl_syntax:application(FunVar, [])],
+                    NewRecv = erl_syntax:receive_expr(NewClauses, Timeout,
+                                                      Action),
+                    %% Create a new fun to be the argument of rep_receive.
+                    FunClause = erl_syntax:clause([FunVar], [], [NewRecv]),
+                    FunExpr = erl_syntax:fun_expr([FunClause]),
+                    %% Call sched:rep_receive.
+                    erl_syntax:application(Module, Function, [FunExpr]);
+                %% Instrument `receive` with `after` part.
+                _Any ->
+                    Action = erl_syntax:receive_expr_action(Tree),
+                    erl_syntax:receive_expr(NewClauses, Timeout, Action)
+            end
     end.
 
 %% Tranform a clause

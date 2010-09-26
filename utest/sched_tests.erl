@@ -113,5 +113,17 @@ interleave_test_() ->
        ?_assertMatch({ok, {{test, test13, []}, _}},
 		     sched:analyze({test, test13, []},
 			     [{files, [?TEST_ERL_PATH,
-				       ?TEST_AUX_ERL_PATH]}]))}
+				       ?TEST_AUX_ERL_PATH]}]))},
+      {"test15",
+       ?_test(
+	  begin
+	      Target = {test, test14, []},
+	      Options = [{files, [?TEST_ERL_PATH]}],
+	      {error, analysis, Info, [Ticket|_Tickets]} =
+		  sched:analyze(Target, Options),
+	      ?assertMatch({Target, {_, _}}, Info), 
+	      ?assertEqual(Target, ticket:get_target(Ticket)),
+	      ?assertEqual("Assertion violation",
+			   ticket:get_error_string(Ticket))
+	  end)}
      ]}.
