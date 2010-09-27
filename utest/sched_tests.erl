@@ -1,6 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File    : sched_tests.erl
 %%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%           Maria Christakis <christakismaria@gmail.com>
 %%% Description : sched.erl unit tests
 %%%
 %%% Created : 25 Sep 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
@@ -44,7 +45,7 @@ interleave_test_() ->
 		  sched:analyze(Target, Options),
 	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Deadlock", ticket:get_error_string(Ticket))
+	      ?assertEqual("Deadlock", ticket:get_error_type_str(Ticket))
 	  end)},
       {"test05",
        ?_test(
@@ -55,7 +56,7 @@ interleave_test_() ->
 		  sched:analyze(Target, Options),
 	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Deadlock", ticket:get_error_string(Ticket))
+	      ?assertEqual("Deadlock", ticket:get_error_type_str(Ticket))
 	  end)},
       {"test06",
        ?_assertMatch({ok, {{test, test06, []}, _}},
@@ -75,7 +76,7 @@ interleave_test_() ->
 	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
 	      ?assertEqual("Assertion violation",
-			   ticket:get_error_string(Ticket))
+			   ticket:get_error_type_str(Ticket))
 	  end)},
       {"test09",
        ?_assertMatch({ok, {{test, test03, []}, _}},
@@ -97,7 +98,7 @@ interleave_test_() ->
 	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
 	      ?assertEqual("Assertion violation",
-			   ticket:get_error_string(Ticket))
+			   ticket:get_error_type_str(Ticket))
 	  end)},
       {"test12",
        ?_assertMatch({ok, {{test, test11, []}, _}},
@@ -124,6 +125,6 @@ interleave_test_() ->
 	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
 	      ?assertEqual("Assertion violation",
-			   ticket:get_error_string(Ticket))
+			   ticket:get_error_type_str(Ticket))
 	  end)}
      ]}.

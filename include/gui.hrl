@@ -83,6 +83,7 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(LOG_NOTEBOOK, 516).
 -define(ERROR_LIST, 517).
 -define(ILEAVE_LIST, 518).
+-define(ERROR_TEXT, 519).
 
 %% Erlang keywords
 -define(KEYWORDS, "after begin case try cond catch andalso orelse end fun "

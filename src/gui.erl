@@ -321,19 +321,38 @@ setupLogNotebook(Parent) ->
     Notebook = wxNotebook:new(Parent, ?LOG_NOTEBOOK,
 			      [{style, ?wxNB_NOPAGETHEME}]),
     ref_add(?LOG_NOTEBOOK, Notebook),
-    LogPanel = wxPanel:new(Notebook),
-    LogText = wxTextCtrl:new(LogPanel, ?LOG_TEXT,
-			     [{style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
-    ref_add(?LOG_TEXT, LogText),
-    %% Setup notebook tab sizers.
-    LogPanelSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(LogPanelSizer, LogText,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxWindow:setSizer(LogPanel, LogPanelSizer),
+    %% Setup tab panels
+    LogPanel = setupLogPanel(Notebook),
+    ErrorPanel = setupErrorPanel(Notebook),
     %% Add tabs to log notebook.
     wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
+    wxNotebook:addPage(Notebook, ErrorPanel, "Error details",
+                       [{bSelect, false}]),
     Notebook.
+
+setupLogPanel(Parent) ->
+    Panel = wxPanel:new(Parent),
+    LogText = wxTextCtrl:new(Panel, ?LOG_TEXT,
+                             [{style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
+    ref_add(?LOG_TEXT, LogText),
+    PanelSizer = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(PanelSizer, LogText,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxWindow:setSizer(Panel, PanelSizer),
+    Panel.
+
+setupErrorPanel(Parent) ->
+    Panel = wxPanel:new(Parent),
+    ErrorText = wxTextCtrl:new(Panel, ?ERROR_TEXT,
+                               [{style, ?wxTE_MULTILINE bor ?wxTE_READONLY}]),
+    ref_add(?ERROR_TEXT, ErrorText),
+    PanelSizer = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(PanelSizer, ErrorText,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxWindow:setSizer(Panel, PanelSizer),
+    Panel.
 
 %% Menu constructor according to specification (see gui.hrl).
 setupMenu(MenuBar, [{Title, Items}|Rest]) ->
@@ -475,6 +494,8 @@ analyze() ->
 analysis_init() ->
     LogText = ref_lookup(?LOG_TEXT),
     wxTextCtrl:clear(LogText),
+    ErrorText = ref_lookup(?ERROR_TEXT),
+    wxTextCtrl:clear(ErrorText),
     ErrorList = ref_lookup(?ERROR_LIST),
     wxControlWithItems:clear(ErrorList),
     IleaveList = ref_lookup(?ILEAVE_LIST),
@@ -485,7 +506,7 @@ analysis_init() ->
 %% Cleanup actions after completing analysis
 %% (reactivate `analyze` button, etc.).
 analysis_cleanup({error, analysis, _Info, Tickets}) ->
-    Errors = [ticket:get_error_string(Ticket) || Ticket <- Tickets],
+    Errors = [ticket:get_error_type_str(Ticket) || Ticket <- Tickets],
     setListItems(?ERROR_LIST, Errors),
     ListOfEmpty = lists:duplicate(length(Tickets), []),
     setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty)),
@@ -689,15 +710,23 @@ show_details() ->
 	?wxNOT_FOUND -> continue;
 	Id ->
 	    wxControlWithItems:clear(IleaveList),
-	    case wxControlWithItems:getClientData(ErrorList, Id) of
-		{Ticket, []} ->
-		    Details = sched:replay(Ticket),
-		    NewData = {Ticket, Details},
-		    wxControlWithItems:setClientData(ErrorList, Id, NewData),
-		    setListItems(?ILEAVE_LIST, details_to_strings(Details));
-		{_Ticket, Cached} ->
-		    setListItems(?ILEAVE_LIST, details_to_strings(Cached))
-	    end
+            Ticket =
+                case wxControlWithItems:getClientData(ErrorList, Id) of
+                    {T, []} ->
+                        Details = sched:replay(T),
+                        NewData = {T, Details},
+                        wxControlWithItems:setClientData(ErrorList, Id,
+                                                         NewData),
+                        setListItems(?ILEAVE_LIST, details_to_strings(Details)),
+                        T;
+                    {T, Cached} ->
+                        setListItems(?ILEAVE_LIST, details_to_strings(Cached)),
+                        T
+                end,
+            ErrorDescrStr = ticket:get_error_descr_str(Ticket),
+            ErrorText = ref_lookup(?ERROR_TEXT),
+            wxTextCtrl:clear(ErrorText),
+            wxTextCtrl:appendText(ErrorText, ErrorDescrStr)
     end.
 
 %% Function to be moved (to sched or util).

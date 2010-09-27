@@ -19,7 +19,8 @@
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0]).
 
--export_type([proc_action/0, analysis_target/0, error_descr/0]).
+-export_type([proc_action/0, analysis_target/0, error_type/0,
+              error_descr/0]).
 
 -include("gen.hrl").
 
@@ -50,13 +51,16 @@
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
+%% Error type.
+-type error_type() :: 'deadlock' | error_info().
+
 %% Error descriptor.
--type error_descr() :: 'deadlock' | error_info().
+-type error_descr() :: term().
 
 -type error_info() :: 'assert' | 'exception'.
 
 %% A process' exit reasons
--type exit_reasons() :: {{'assertion_failed', [term()]}, term()}.
+-type exit_reason() :: term().
 
 %% Tuples providing information about a process' action.
 -type proc_action() :: {'block', lid:lid()} |
@@ -64,7 +68,7 @@
                        {'receive', lid:lid(), lid:lid(), term()} |
                        {'send', lid:lid(), lid:lid(), term()} |
                        {'spawn', lid:lid(), lid:lid()} |
-                       {'exit', lid:lid(), exit_reasons()}.
+                       {'exit', lid:lid(), exit_reason()}.
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -75,7 +79,8 @@
 %% active  : A set containing all processes ready to be scheduled.
 %% blocked : A set containing all processes that cannot be scheduled next
 %%          (e.g. waiting for a message on a `receive`).
-%% error   : An atom describing the error that occured.
+%% error   : An atom describing the type of error that occured.
+%% reason  : A term describing the process' exit reason.
 %% state   : The current state of the program.
 %% details : A boolean being false when running a normal run and
 %%           true when running a replay and need to send detailed
@@ -83,6 +88,7 @@
 -record(info, {active  :: set(),
                blocked :: set(),
 	       error   :: error_info(),
+               reason  :: exit_reason(),
                state   :: state:state(),
 	       details :: boolean()}).
 
@@ -231,8 +237,9 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
             lid:stop(),
             case Ret of
                 ok -> interleave_loop(Target, RunCnt + 1, Tickets, Det);
-                {error, ErrorDescr, ErrorState} ->
-		    Ticket = ticket:new(Target, ErrorDescr, ErrorState),
+                {error, ErrorType, ErrorDescr, ErrorState} ->
+		    Ticket = ticket:new(Target, ErrorType, ErrorDescr,
+                                        ErrorState),
 		    interleave_loop(Target, RunCnt + 1, [Ticket|Tickets], Det)
             end
     end.
@@ -275,12 +282,12 @@ dispatcher(Info) ->
 %% After activating said process the dispatcher is called to delegate the
 %% messages received from the running process to the appropriate handler
 %% functions.
-driver(#info{active = Active, blocked = Blocked,
-	     error = Error, state = State} = Info, ReplayState) ->
+driver(#info{active = Active, blocked = Blocked, error = Error,
+             reason = Reason, state = State} = Info, ReplayState) ->
     %% Assertion violation check.
     case Error of
-	assert -> {error, assert, State};
-        exception -> {error, exception, State};
+	assert -> {error, assert, Reason, State};
+        exception -> {error, exception, Reason, State};
 	_NoError ->
 	    %% Deadlock/Termination check.
 	    %% If the `active` set is empty and the `blocked` set is non-empty,
@@ -292,7 +299,7 @@ driver(#info{active = Active, blocked = Blocked,
 		    ?debug_1("Run terminated.~n~n"),
 		    case sets:size(Blocked) of
 			0 -> ok;
-			_NonEmptyBlocked -> {error, deadlock, State}
+			_NonEmptyBlocked -> {error, deadlock, Blocked, State}
 		    end;
 		_NonEmptyActive ->
                     {Next, Rest} =
@@ -349,24 +356,26 @@ handler(block, Pid, #info{blocked = Blocked, details = Det} = Info, _Misc) ->
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% call the dispatcher.
 handler(exit, Pid, #info{details = Det} = Info, Reason) ->
+    NewReason = shorten_reason(Reason),
     Lid = lid:from_pid(Pid),
     case Lid of
 	not_found ->
-	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Reason]),
+	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n",
+                     [Lid, Pid, NewReason]),
 	    dispatcher(Info);
 	_Any ->
-	    ?debug_1("Process ~s exits (~p).~n", [Lid, Reason]),
+	    ?debug_1("Process ~s exits (~p).~n", [Lid, NewReason]),
 	    case Det of
-		true -> replay_logger:log({exit, Lid, Reason});
+		true -> replay_logger:log({exit, Lid, NewReason});
 		false -> continue
 	    end,
 	    %% If the exception was caused by an assertion violation, propagate
 	    %% it to the driver via the `error` field of the `info` record.
-	    case Reason of
+            case Reason of
                 normal -> Info;
-		{{assertion_failed, _Details}, _Stack} ->
-		    Info#info{error = assert};
-		_Other -> Info#info{error = exception}
+		{{assertion_failed, _Details}, _Stack} = AF ->
+		    Info#info{error = assert, reason = AF};
+		Other -> Info#info{error = exception, reason = Other}
 	    end
     end;
 
@@ -466,6 +475,12 @@ elapsed_time(T1, T2) ->
 run(Lid) ->
     Pid = lid:to_pid(Lid),
     Pid ! #sched{msg = continue}.
+
+%% Shorten a process' exit reason.
+shorten_reason(normal) -> normal;
+shorten_reason({{assertion_failed, _Details}, _Stack}) ->
+    assertion_failed;
+shorten_reason(_Other) -> exception.
 
 %% Wakeup a process.
 %% If process is in `blocked` set, move to `active` set.
