@@ -8,7 +8,7 @@
 
 -module(state).
 
--export([extend/2, init/0, insert/1, pop/0, start/0, stop/0]).
+-export([extend/2, empty/0, is_empty/1, load/0, save/1, start/0, stop/0, trim/1]).
 
 -export_type([state/0]).
 
@@ -18,35 +18,42 @@
 %% processes up to a point of the program.
 -type state() :: [lid:lid()].
 
-%% Given the current state and a process to be run next, return the new state.
+%% Given a state and a process LID, return a new extended state
+%% containing the given LID as its last element.
 -spec extend(state(), lid:lid()) -> state().
 
-extend(State, Next) ->
-    [Next|State].
+extend(State, Lid) ->
+    [Lid|State].
 
 %% Return initial (empty) state.
--spec init() -> state().
+-spec empty() -> state().
 
-init() ->
+empty() ->
     [].
 
-%% Add a state to the `state` table.
--spec insert(state()) -> 'true'.
+%% Check if State is an empty state.
+-spec is_empty(state()) -> boolean().
 
-insert(State) ->
-    ets:insert(?NT_STATE, {State}).
+is_empty(State) ->
+    State =:= [].
 
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
--spec pop() -> state() | 'no_state'.
+-spec load() -> state() | 'no_state'.
 
-pop() ->
+load() ->
     case ets:first(?NT_STATE) of
 	'$end_of_table' -> no_state;
 	State ->
 	    ets:delete(?NT_STATE, State),
 	    lists:reverse(State)
     end.
+
+%% Add a state to the `state` table.
+-spec save(state()) -> 'true'.
+
+save(State) ->
+    ets:insert(?NT_STATE, {State}).
 
 %% Initialize state table.
 %% Must be called before any other call to state_* functions.
@@ -61,3 +68,10 @@ start() ->
 
 stop() ->
     ets:delete(?NT_STATE).
+
+%% Return a tuple containing the first Lid in the given state
+%% and a new state with that Lid removed.
+-spec trim(state()) -> {lid:lid(), state()}.
+
+trim([Lid|StateTail]) ->
+    {Lid, StateTail}.

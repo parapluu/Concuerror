@@ -156,7 +156,7 @@ replay(Ticket) ->
 %%   {init_state, InitState}: State to replay (default: state_init()).
 %%   details: Produce detailed interleaving information (see `replay_logger`).
 interleave(Target) ->
-    interleave(Target, [init_state, state:init()]).
+    interleave(Target, [init_state, state:empty()]).
 
 interleave(Target, Options) ->
     Self = self(),
@@ -169,7 +169,7 @@ interleave(Target, Options) ->
 interleave_aux(Target, Options, Parent) ->
     InitState =
 	case lists:keyfind(init_state, 1, Options) of
-	    false -> state:init();
+	    false -> state:empty();
 	    {init_state, Any} -> Any
 	end,
     Det = lists:member(details, Options),
@@ -180,8 +180,8 @@ interleave_aux(Target, Options, Parent) ->
     process_flag(trap_exit, true),
     %% Start state service.
     state:start(),
-    %% Insert empty replay state for the first run.
-    state:insert(InitState),
+    %% Save empty replay state for the first run.
+    state:save(InitState),
     {T1, _} = statistics(wall_clock),
     Result = interleave_loop(Target, 1, [], Det),
     {T2, _} = statistics(wall_clock),
@@ -193,7 +193,7 @@ interleave_aux(Target, Options, Parent) ->
 %% Main loop for producing process interleavings.
 interleave_loop(Target, RunCnt, Tickets, Det) ->
     %% Lookup state to replay.
-    case state:pop() of
+    case state:load() of
         no_state ->
 	    case Tickets of
 		[] -> {ok, RunCnt - 1};
@@ -217,7 +217,7 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
             Active = sets:new(),
             Blocked = sets:new(),
             %% Create initial state.
-            State = state:init(),
+            State = state:empty(),
 	    %% TODO: Not especially nice (maybe refactor into driver?).
             %% Receive the first message from the first process. That is, wait
             %% until it yields, blocks or terminates.
@@ -276,7 +276,7 @@ dispatcher(Info) ->
 %% messages received from the running process to the appropriate handler
 %% functions.
 driver(#info{active = Active, blocked = Blocked,
-	     error = Error, state = State} = Info, StateList) ->
+	     error = Error, state = State} = Info, ReplayState) ->
     %% Assertion violation check.
     case Error of
 	assert -> {error, assert, State};
@@ -296,12 +296,13 @@ driver(#info{active = Active, blocked = Blocked,
 		    end;
 		_NonEmptyActive ->
                     {Next, Rest} =
-                        case StateList of
-                            [] ->
-                                %% Run search algorithm to find next process
-                                %% to be run.
-                                {search(Info), StateList};
-                            [H|T] -> {H, T}
+                        case state:is_empty(ReplayState) of
+			    %% If in normal mode, run search algorithm to
+			    %% find next process to be run.
+                            true -> {search(Info), ReplayState};
+			    %% If in replay mode, next process to be run
+			    %% is defined by ReplayState.
+                            false -> state:trim(ReplayState)
                         end,
 		    %% Remove process Next from the `active` set and run it.
 		    NewActive = sets:del_element(Next, Active),
@@ -327,7 +328,7 @@ search(#info{active = Active, state = State}) ->
     %% Remove a process from the `actives` set and run it.
     [Next|NewActive] = sets:to_list(Active),
     %% Store all other possible successor states for later exploration.
-    [state:insert(state:extend(State, Lid)) || Lid <- NewActive],
+    [state:save(state:extend(State, Lid)) || Lid <- NewActive],
     Next.
 
 %% Block message handler.

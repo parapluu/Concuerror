@@ -19,7 +19,7 @@
 get_error_string_test() ->
     Target = {mymodule, myfunction, []},
     ErrorDescr = assert,
-    ErrorState = state:init(),
+    ErrorState = state:empty(),
     Ticket = ticket:new(Target, ErrorDescr, ErrorState),
     ?assertEqual("Assertion violation", ticket:get_error_string(Ticket)).
 
@@ -28,7 +28,7 @@ get_error_string_test() ->
 get_target_test() ->
     Target = {mymodule, myfunction, []},
     ErrorDescr = assert,
-    ErrorState = state:init(),
+    ErrorState = state:empty(),
     Ticket = ticket:new(Target, ErrorDescr, ErrorState),
     ?assertEqual(Target, ticket:get_target(Ticket)).
 
@@ -37,6 +37,6 @@ get_target_test() ->
 get_state_test() ->
     Target = {mymodule, myfunction, []},
     ErrorDescr = assert,
-    ErrorState = state:init(),
+    ErrorState = state:empty(),
     Ticket = ticket:new(Target, ErrorDescr, ErrorState),
     ?assertEqual(ErrorState, ticket:get_state(Ticket)).
