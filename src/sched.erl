@@ -17,7 +17,8 @@
 
 %% Instrumentation related exports.
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
-	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0]).
+	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0,
+	 wait/0]).
 
 -export_type([proc_action/0, analysis_target/0, error_type/0,
               error_descr/0]).
@@ -197,6 +198,10 @@ interleave_aux(Target, Options, Parent) ->
     Parent ! {interleave_result, {Result, Time}}.
 
 %% Main loop for producing process interleavings.
+%% The first process (FirstPid) is created linked to the scheduler,
+%% so that the latter can receive the former's exit message when it
+%% terminates. In the same way, every process that may be spawned in
+%% the course of the program shall be linked to the scheduler process.
 interleave_loop(Target, RunCnt, Tickets, Det) ->
     %% Lookup state to replay.
     case state:load() of
@@ -208,35 +213,25 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
         ReplayState ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
-            %% Start LID service.
             lid:start(),
-            %% Create the first process.
-            %% The process is created linked to the scheduler, so that the
-            %% latter can receive the former's exit message when it terminates.
-            %% In the same way, every process that may be spawned in the course
-            %% of the program shall be linked to this process.
+	    %% Spawn initial process.
 	    {Mod, Fun, Args} = Target,
-            FirstPid = spawn_link(Mod, Fun, Args),
-            %% Create the first LID and register it with FirstPid.
-            lid:new(FirstPid, noparent),
-            %% The initial `active` and `blocked` sets are empty.
-            Active = sets:new(),
+	    NewFun = fun() -> sched:wait(), apply(Mod, Fun, Args) end,
+            FirstPid = spawn_link(NewFun),
+            FirstLid = lid:new(FirstPid, noparent),
+	    %% Initialize scheduler context.
+            Active = sets:add_element(FirstLid, sets:new()),
             Blocked = sets:new(),
-            %% Create initial state.
             State = state:empty(),
-	    %% TODO: Not especially nice (maybe refactor into driver?).
-            %% Receive the first message from the first process. That is, wait
-            %% until it yields, blocks or terminates.
-	    InitInfo = #info{active = Active, blocked = Blocked,
-			     state = State, details = Det},
-            NewInfo = dispatcher(InitInfo),
-            %% Use driver to replay ReplayState.
-            Ret = driver(NewInfo, ReplayState),
+	    Info = #info{active = Active, blocked = Blocked,
+			 state = State, details = Det},
+	    %% Interleave using driver.
+            Ret = driver(Info, ReplayState),
+	    %% Cleanup.
+            lid:stop(),
 	    ?debug_1("-----------------------~n"),
 	    ?debug_1("Run terminated.~n~n"),
 	    %% TODO: Proper cleanup of any remaining processes.
-            %% Stop LID service (LID tables have to be reset on every run).
-            lid:stop(),
             case Ret of
                 ok -> interleave_loop(Target, RunCnt + 1, Tickets, Det);
                 {error, ErrorType, ErrorDescr, ErrorState} ->
@@ -286,7 +281,6 @@ dispatcher(Info) ->
 %% functions.
 driver(#info{active = Active, blocked = Blocked, error = Error,
              reason = Reason, state = State} = Info, ReplayState) ->
-    %% Assertion violation check.
     case Error of
 	assert -> {error, assert, Reason, State};
         exception -> {error, exception, Reason, State};
@@ -323,7 +317,7 @@ driver(#info{active = Active, blocked = Blocked, error = Error,
 %% of them into the `states` table.
 %% Returns the process to be run next.
 search(#info{active = Active, state = State}) ->
-    %% Remove a process from the `actives` set and run it.
+    %% Remove a process to be run next from the `actives` set.
     [Next|NewActive] = sets:to_list(Active),
     %% Store all other possible successor states for later exploration.
     [state:save(state:extend(State, Lid)) || Lid <- NewActive],
@@ -602,3 +596,11 @@ rep_spawn_link(Fun) ->
     ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
     rep_yield(),
     Pid.
+
+%% Wait until the scheduler prompts to continue.
+-spec wait() -> 'true'.
+
+wait() ->
+    receive
+	#sched{msg = continue} -> true
+    end.
