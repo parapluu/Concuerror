@@ -232,8 +232,10 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
             NewInfo = dispatcher(InitInfo),
             %% Use driver to replay ReplayState.
             Ret = driver(NewInfo, ReplayState),
+	    ?debug_1("-----------------------~n"),
+	    ?debug_1("Run terminated.~n~n"),
 	    %% TODO: Proper cleanup of any remaining processes.
-            %% Stop LID service (LID tables have to be reset on each run).
+            %% Stop LID service (LID tables have to be reset on every run).
             lid:stop(),
             case Ret of
                 ok -> interleave_loop(Target, RunCnt + 1, Tickets, Det);
@@ -295,8 +297,6 @@ driver(#info{active = Active, blocked = Blocked, error = Error,
             %% program termination.
 	    case sets:size(Active) of
 		0 ->
-		    ?debug_1("-----------------------~n"),
-		    ?debug_1("Run terminated.~n~n"),
 		    case sets:size(Blocked) of
 			0 -> ok;
 			_NonEmptyBlocked -> {error, deadlock, Blocked, State}
@@ -311,16 +311,7 @@ driver(#info{active = Active, blocked = Blocked, error = Error,
 			    %% is defined by ReplayState.
                             false -> state:trim(ReplayState)
                         end,
-		    %% Remove process Next from the `active` set and run it.
-		    NewActive = sets:del_element(Next, Active),
-		    ?debug_2("Running process ~s.~n", [Next]),
-		    run(Next),
-		    %% Create new state.
-		    NewState = state:extend(State, Next),
-		    %% Call the dispatcher to handle incoming messages from the
-		    %% running process.
-		    NewInfo = dispatcher(Info#info{active = NewActive,
-						   state = NewState}),
+		    NewInfo = run(Next, Info),
 		    driver(NewInfo, Rest)
 	    end
     end.
@@ -471,10 +462,19 @@ elapsed_time(T1, T2) ->
     ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
     {Mins, Secs}.
 
-%% Signal process Lid to continue its execution.
-run(Lid) ->
+%% Run process Lid in context Info.
+run(Lid, #info{active = Active, state = State} = Info) ->
+    ?debug_2("Running process ~s.~n", [Lid]),
+    %% Remove process from the `active` set.
+    NewActive = sets:del_element(Lid, Active),
+    %% Create new state by adding this process.
+    NewState = state:extend(State, Lid),
+    %% Send message to "unblock" the process.
     Pid = lid:to_pid(Lid),
-    Pid ! #sched{msg = continue}.
+    Pid ! #sched{msg = continue},
+    %% Call the dispatcher to handle incoming actions from the process
+    %% we just "unblocked".
+    dispatcher(Info#info{active = NewActive, state = NewState}).
 
 %% Shorten a process' exit reason.
 shorten_reason(normal) -> normal;
@@ -491,8 +491,7 @@ wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
 	    NewBlocked = sets:del_element(Lid, Blocked),
 	    NewActive = sets:add_element(Lid, Active),
 	    Info#info{active = NewActive, blocked = NewBlocked};
-	false ->
-	    Info
+	false -> Info
     end.
 
 %%%----------------------------------------------------------------------
