@@ -50,24 +50,25 @@ GUI_MODULES = \
 	gui
 
 CORE_MODULES = \
+	error \
 	instr \
 	lid \
 	sched \
 	state \
 	util \
-	ticket \
-	error
+	ticket
 
 LOG_MODULES = \
 	log \
 	replay_logger
 
 UTEST_MODULES = \
+	error_tests \
 	lid_tests \
+        preb_tests \
 	sched_tests \
 	state_tests \
-	ticket_tests \
-	error_tests
+	ticket_tests
 
 MODULES = \
 	$(GUI_MODULES) \

@@ -27,7 +27,7 @@
 %%% Types
 %%%----------------------------------------------------------------------
 
--type analysis_info() :: {analysis_target(), {integer(), integer()}}.
+-type analysis_info() :: analysis_target().
 
 %% Analysis result tuple.
 -type analysis_ret() :: {'ok', analysis_info()} |
@@ -111,20 +111,17 @@ analyze(Target, Options) ->
 			log:log("Analysis complete (checked ~w interleavings "
 				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 			log:log("No errors found.~n"),
-			Info = {Target, {Mins, Secs}},
-			{ok, Info};
+			{ok, Target};
 		    {error, RunCount, Tickets} ->
 			TicketCount = length(Tickets),
 			log:log("Analysis complete (checked ~w interleavings "
 				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 			log:log("Found ~p erroneous interleaving(s).~n",
 				[TicketCount]),
-			Info = {Target, {Mins, Secs}},
-			{error, analysis, Info, Tickets}
+			{error, analysis, Target, Tickets}
 		end;
 	    error ->
-		Info = {Target, {0, 0}},
-		{error, instr, Info}
+		{error, instr, Target}
 	end,
     %% Purge previously loaded modules.
     ModsToPurge = [list_to_atom(filename:basename(F, ".erl")) || F <- Files],

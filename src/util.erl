@@ -28,7 +28,7 @@ doc(AppDir) ->
 -spec test() -> 'ok'.
 
 test() ->
-    Modules = [lid, replay_logger, sched, state, ticket, error],
+    Modules = [error, lid, replay_logger, preb_tests, sched, state, ticket],
     Tests = lists:zip(lists:duplicate(length(Modules), module), Modules),
     eunit:test(Tests, [verbose]).
 

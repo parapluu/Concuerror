@@ -24,15 +24,15 @@ interleave_test_() ->
      fun() -> log:start(log, []) end,
      fun(_) -> log:stop() end,
      [{"test01",
-       ?_assertMatch({ok, {{test, test01, []}, _}},
+       ?_assertMatch({ok, {test, test01, []}},
 		     sched:analyze({test, test01, []},
 			     [{files, [?TEST_ERL_PATH]}]))},
       {"test02",
-       ?_assertMatch({ok, {{test, test02, []}, _}},
+       ?_assertMatch({ok, {test, test02, []}},
 		     sched:analyze({test, test02, []},
 			     [{files, [?TEST_ERL_PATH]}]))},
       {"test03",
-       ?_assertMatch({ok, {{test, test03, []}, _}},
+       ?_assertMatch({ok, {test, test03, []}},
 		     sched:analyze({test, test03, []},
 			     [{files, [?TEST_ERL_PATH]}]))},
       {"test04",
@@ -40,9 +40,8 @@ interleave_test_() ->
 	  begin
 	      Target = {test, test04, []},
 	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
+	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
 	      ?assertEqual("Deadlock",
                            error:format_error_type(ticket:get_error(Ticket)))
@@ -52,19 +51,18 @@ interleave_test_() ->
 	  begin
 	      Target = {test, test05, []},
 	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
+	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
 	      ?assertEqual("Deadlock",
                            error:format_error_type(ticket:get_error(Ticket)))
 	  end)},
       {"test06",
-       ?_assertMatch({ok, {{test, test06, []}, _}},
+       ?_assertMatch({ok, {test, test06, []}},
 		     sched:analyze({test, test06, []},
 			     [{files, [?TEST_ERL_PATH]}]))},
       {"test07",
-       ?_assertMatch({ok, {{test, test07, []}, _}},
+       ?_assertMatch({ok, {test, test07, []}},
 		     sched:analyze({test, test07, []},
 			     [{files, [?TEST_ERL_PATH]}]))},
       {"test08",
@@ -72,20 +70,19 @@ interleave_test_() ->
 	  begin
 	      Target = {test, test08, []},
 	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
+	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
 	      ?assertEqual("Exception",
                            error:format_error_type(ticket:get_error(Ticket)))
 	  end)},
       {"test09",
-       ?_assertMatch({ok, {{test, test03, []}, _}},
+       ?_assertMatch({ok, {test, test03, []}},
 		     sched:analyze({test, test03, []},
 			     [{files, [?TEST_ERL_PATH,
 				       ?TEST_AUX_ERL_PATH]}]))},
       {"test10",
-       ?_assertMatch({ok, {{test, test09, []}, _}},
+       ?_assertMatch({ok, {test, test09, []}},
 		     sched:analyze({test, test09, []},
 			     [{files, [?TEST_ERL_PATH,
 				       ?TEST_AUX_ERL_PATH]}]))},
@@ -94,9 +91,8 @@ interleave_test_() ->
 	  begin
 	      Target = {test, test09, []},
 	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
+	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
 	      ?assertEqual("Exception",
                            error:format_error_type(ticket:get_error(Ticket)))
@@ -106,23 +102,22 @@ interleave_test_() ->
 	  begin
 	      Target = {test, test10, []},
 	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
+	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
 	      ?assertEqual("Assertion violation",
                            error:format_error_type(ticket:get_error(Ticket)))
 	  end)},
       {"test13",
-       ?_assertMatch({ok, {{test, test11, []}, _}},
+       ?_assertMatch({ok, {test, test11, []}},
 		     sched:analyze({test, test11, []},
 			     [{files, [?TEST_ERL_PATH]}]))},
       {"test14",
-       ?_assertMatch({ok, {{test, test12, []}, _}},
+       ?_assertMatch({ok, {test, test12, []}},
 		     sched:analyze({test, test12, []},
 			     [{files, [?TEST_ERL_PATH]}]))},
       {"test15",
-       ?_assertMatch({ok, {{test, test13, []}, _}},
+       ?_assertMatch({ok, {test, test13, []}},
 		     sched:analyze({test, test13, []},
 			     [{files, [?TEST_ERL_PATH]}]))},
       {"test16",
@@ -130,9 +125,8 @@ interleave_test_() ->
 	  begin
 	      Target = {test, test14, []},
 	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Info, [Ticket|_Tickets]} =
+	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
-	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
 	      ?assertEqual("Assertion violation",
                            error:format_error_type(ticket:get_error(Ticket)))
