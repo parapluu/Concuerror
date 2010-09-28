@@ -292,7 +292,8 @@ driver(#context{active = Active, blocked = Blocked, error = Error,
 		    case sets:size(Blocked) of
 			0 -> ok;
 			_NonEmptyBlocked ->
-                            Deadlock = {deadlock, Blocked},
+                            Deadlock = {deadlock,
+                                        lists:sort(sets:to_list(Blocked))},
                             {error, Deadlock, State}
 		    end;
 		_NonEmptyActive ->

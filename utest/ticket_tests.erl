@@ -41,13 +41,17 @@ get_error_descr_str1_test() ->
     Error = {ErrorType, ErrorDescr},
     ErrorState = state:empty(),
     Ticket = ticket:new(Target, Error, ErrorState),
-    ?assertEqual(io_lib:format("~p.erl:~p: The assertion failed~n",
-                               [mymodule, 42]),
+    ?assertEqual(io_lib:format("~p.erl:~p: "
+                               ++ "The expression '~s' evaluates to '~p' "
+                               ++ "instead of '~p'~n"
+                               ++ "Stack trace: ~p~n",
+                               [mymodule, 42, "true =:= false", false, true,
+                                []]),
                  ticket:get_error_descr_str(Ticket)).
 
--spec get_error_descr_str2_test() -> term().
+-spec get_error_descr_str3_test() -> term().
 
-get_error_descr_str2_test() ->
+get_error_descr_str3_test() ->
     Target = {mymodule, myfunction, []},
     ErrorType = exception,
     ErrorDescr = foobar,

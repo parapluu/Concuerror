@@ -40,13 +40,15 @@ get_error_type_str({_Target, {ErrorType, _ErrorDescr}, _ErrorState}) ->
 %% @doc: Return the error description for the given ticket.
 -spec get_error_descr_str(ticket()) -> string().
 
-get_error_descr_str({_Target, {_ErrorType, ErrorDescr}, _ErrorState}) ->
-    case ErrorDescr of
-        {{assertion_violation, Details}, _Stack} ->
-            [{module, Mod}, {line, L}, {expression, _Expr},
-             {expected, _Exp}, {value, _Val}] = Details,
-            io_lib:format("~p.erl:~p: The assertion failed~n", [Mod, L]);
-        _Other -> io_lib:format("~p~n", [ErrorDescr])
+get_error_descr_str({_Target, {ErrorType, ErrorDescr}, _ErrorState}) ->
+    case ErrorType of
+        assert ->
+            {{assertion_violation, Details}, Stack} = ErrorDescr,
+            [{module, Mod}, {line, L}, {expression, Expr},
+             {expected, Exp}, {value, Val}] = Details,
+            assert_to_string(Mod, L, Expr, Val, Exp, Stack);
+        deadlock -> deadlock_to_string(ErrorDescr);
+        exception -> exception_to_string(ErrorDescr)
     end.
 
 -spec get_target(ticket()) -> sched:analysis_target().
@@ -63,3 +65,24 @@ error_type_to_string(deadlock) ->
     "Deadlock";
 error_type_to_string(exception) ->
     "Exception".
+
+assert_to_string(Mod, L, Expr, Val, Exp, Stack) ->
+    io_lib:format("~p.erl:~p: "
+                  ++ "The expression '~s' evaluates to '~p' instead of '~p'~n"
+                  ++ "Stack trace: ~p~n",
+                  [Mod, L, Expr, Val, Exp, Stack]).
+
+deadlock_to_string([P]) ->
+    io_lib:format("Process ~s blocks~n", [P]);
+deadlock_to_string(Ps) ->
+    Str = processes_to_string(Ps),
+    io_lib:format("Processes ~s block~n", [Str]).
+
+processes_to_string([P1, P2]) ->
+    io_lib:format("~s and ~s", [P1, P2]);
+processes_to_string([P|Ps]) ->
+    io_lib:format("~s, ", [P]) ++
+        processes_to_string(Ps).
+
+exception_to_string(E) ->
+    io_lib:format("~p~n", [E]).
