@@ -85,11 +85,12 @@
 %% details : A boolean being false when running a normal run and
 %%           true when running a replay and need to send detailed
 %%           info to the replay_logger.
--record(info, {active  :: set(),
-               blocked :: set(),
-	       error = no_error  :: {error_info(), exit_reason()} | 'no_error',
-               state   :: state:state(),
-	       details :: boolean()}).
+-record(context, {active  :: set(),
+                  blocked :: set(),
+                  error = no_error :: {error_info(), exit_reason()} |
+                                      'no_error',
+                  state   :: state:state(),
+                  details :: boolean()}).
 
 %% Internal message format
 %%
@@ -221,10 +222,10 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
             Active = sets:add_element(FirstLid, sets:new()),
             Blocked = sets:new(),
             State = state:empty(),
-	    Info = #info{active = Active, blocked = Blocked,
-			 state = State, details = Det},
+	    Context = #context{active = Active, blocked = Blocked,
+                               state = State, details = Det},
 	    %% Interleave using driver.
-            Ret = driver(Info, ReplayState),
+            Ret = driver(Context, ReplayState),
 	    %% Cleanup.
             lid:stop(),
 	    ?debug_1("-----------------------~n"),
@@ -244,22 +245,22 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
 
 %% Delegates messages sent by instrumented client code to the appropriate
 %% handlers.
-dispatcher(Info) ->
+dispatcher(Context) ->
     receive
 	#sched{msg = block, pid = Pid} ->
-	    handler(block, Pid, Info, empty);
+	    handler(block, Pid, Context, empty);
 	#sched{msg = link, pid = Pid, misc = TargetPid} ->
-	    handler(link, Pid, Info, TargetPid);
+	    handler(link, Pid, Context, TargetPid);
 	#sched{msg = 'receive', pid = Pid, misc = {_From, _Msg} = Misc} ->
-	    handler('receive', Pid, Info, Misc);
+	    handler('receive', Pid, Context, Misc);
 	#sched{msg = send, pid = Pid, misc = {_Dest, _Msg} = Misc} ->
-	    handler(send, Pid, Info, Misc);
+	    handler(send, Pid, Context, Misc);
 	#sched{msg = spawn, pid = Pid, misc = ChildPid} ->
-	    handler(spawn, Pid, Info, ChildPid);
+	    handler(spawn, Pid, Context, ChildPid);
 	#sched{msg = yield, pid = Pid} ->
-	    handler(yield, Pid, Info, empty);
+	    handler(yield, Pid, Context, empty);
 	{'EXIT', Pid, Reason} ->
-	    handler(exit, Pid, Info, Reason);
+	    handler(exit, Pid, Context, Reason);
 	Other ->
 	    log:internal("Dispatcher received: ~p~n", [Other])
     end.
@@ -276,8 +277,8 @@ dispatcher(Info) ->
 %% After activating said process the dispatcher is called to delegate the
 %% messages received from the running process to the appropriate handler
 %% functions.
-driver(#info{active = Active, blocked = Blocked, error = Error,
-             state = State} = Info, ReplayState) ->
+driver(#context{active = Active, blocked = Blocked, error = Error,
+                state = State} = Context, ReplayState) ->
     case Error of
 	{assert, _Descr} -> {error, Error, State};
         {exception, _Descr} -> {error, Error, State};
@@ -299,13 +300,13 @@ driver(#info{active = Active, blocked = Blocked, error = Error,
                         case state:is_empty(ReplayState) of
 			    %% If in normal mode, run search algorithm to
 			    %% find next process to be run.
-                            true -> {search(Info), ReplayState};
+                            true -> {search(Context), ReplayState};
 			    %% If in replay mode, next process to be run
 			    %% is defined by ReplayState.
                             false -> state:trim(ReplayState)
                         end,
-		    NewInfo = run(Next, Info),
-		    driver(NewInfo, Rest)
+		    NewContext = run(Next, Context),
+		    driver(NewContext, Rest)
 	    end
     end.
 
@@ -315,7 +316,7 @@ driver(#info{active = Active, blocked = Blocked, error = Error,
 %% possible next states, chooses one of them for running and inserts the rest
 %% of them into the `states` table.
 %% Returns the process to be run next.
-search(#info{active = Active, state = State}) ->
+search(#context{active = Active, state = State}) ->
     %% Remove a process to be run next from the `actives` set.
     [Next|NewActive] = sets:to_list(Active),
     %% Store all other possible successor states for later exploration.
@@ -325,7 +326,8 @@ search(#info{active = Active, state = State}) ->
 %% Block message handler.
 %% Receiving a `block` message means that the process cannot be scheduled
 %% next and must be moved to the blocked set.
-handler(block, Pid, #info{blocked = Blocked, details = Det} = Info, _Misc) ->
+handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
+        _Misc) ->
     Lid = lid:from_pid(Pid),
     NewBlocked = sets:add_element(Lid, Blocked),
     ?debug_1("Process ~s blocks.~n", [Lid]),
@@ -333,20 +335,20 @@ handler(block, Pid, #info{blocked = Blocked, details = Det} = Info, _Misc) ->
 	true -> replay_logger:log({block, Lid});
 	false -> continue
     end,
-    Info#info{blocked = NewBlocked};
+    Context#context{blocked = NewBlocked};
 
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% call the dispatcher.
-handler(exit, Pid, #info{details = Det} = Info, Reason) ->
+handler(exit, Pid, #context{details = Det} = Context, Reason) ->
     NewReason = shorten_reason(Reason),
     Lid = lid:from_pid(Pid),
     case Lid of
 	not_found ->
 	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n",
                      [Lid, Pid, NewReason]),
-	    dispatcher(Info);
+	    dispatcher(Context);
 	_Any ->
 	    ?debug_1("Process ~s exits (~p).~n", [Lid, NewReason]),
 	    case Det of
@@ -354,17 +356,17 @@ handler(exit, Pid, #info{details = Det} = Info, Reason) ->
 		false -> continue
 	    end,
 	    %% If the exception was caused by an assertion violation, propagate
-	    %% it to the driver via the `error` field of the `info` record.
+	    %% it to the driver via the `error` field of the `context` record.
             case Reason of
-                normal -> Info;
+                normal -> Context;
 		{{assertion_failed, _Details}, _Stack} = AF ->
-		    Info#info{error = {assert, AF}};
-		Other -> Info#info{error = {exception, Other}}
+		    Context#context{error = {assert, AF}};
+		Other -> Context#context{error = {exception, Other}}
 	    end
     end;
 
 %% Link message handler.
-handler(link, Pid, #info{details = Det} = Info, TargetPid) ->
+handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
     Lid = lid:from_pid(Pid),
     TargetLid = lid:from_pid(TargetPid),
     ?debug_1("Process ~s links to process ~s.~n", [Lid, TargetLid]),
@@ -372,10 +374,10 @@ handler(link, Pid, #info{details = Det} = Info, TargetPid) ->
 	true -> replay_logger:log({link, Lid, TargetLid});
 	false -> continue
     end,
-    dispatcher(Info);
+    dispatcher(Context);
 
 %% Receive message handler.
-handler('receive', Pid, #info{details = Det} = Info, {From, Msg}) ->
+handler('receive', Pid, #context{details = Det} = Context, {From, Msg}) ->
     Lid = lid:from_pid(Pid),
     SenderLid = lid:from_pid(From),
     ?debug_1("Process ~s receives message `~p` from process ~s.~n",
@@ -384,14 +386,14 @@ handler('receive', Pid, #info{details = Det} = Info, {From, Msg}) ->
 	true -> replay_logger:log({'receive', Lid, SenderLid, Msg});
 	false -> continue
     end,
-    dispatcher(Info);
+    dispatcher(Context);
 
 %% Send message handler.
 %% When a message is sent to a process, the receiving process has to be awaken
 %% if it is blocked on a receive.
 %% XXX: No check for reason of blocking for now. If the process is blocked on
 %%      something else, it will be awaken!
-handler(send, Pid, #info{details = Det} = Info, {DstPid, Msg}) ->
+handler(send, Pid, #context{details = Det} = Context, {DstPid, Msg}) ->
     Lid = lid:from_pid(Pid),
     DstLid = lid:from_pid(DstPid),
     ?debug_1("Process ~s sends message `~p` to process ~s.~n",
@@ -400,15 +402,15 @@ handler(send, Pid, #info{details = Det} = Info, {DstPid, Msg}) ->
 	true -> replay_logger:log({send, Lid, DstLid, Msg});
 	false -> continue
     end,
-    NewInfo = wakeup(DstLid, Info),
-    dispatcher(NewInfo);
+    NewContext = wakeup(DstLid, Context),
+    dispatcher(NewContext);
 
 %% Spawn message handler.
 %% First, link the newly spawned process to the scheduler process.
 %% The new process yields as soon as it gets spawned and the parent process
 %% yields as soon as it spawns. Therefore wait for two `yield` messages using
 %% two calls to the dispatcher.
-handler(spawn, ParentPid, #info{details = Det} = Info, ChildPid) ->
+handler(spawn, ParentPid, #context{details = Det} = Context, ChildPid) ->
     link(ChildPid),
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
@@ -417,23 +419,23 @@ handler(spawn, ParentPid, #info{details = Det} = Info, ChildPid) ->
 	true -> replay_logger:log({spawn, ParentLid, ChildLid});
 	false -> continue
     end,
-    NewInfo = dispatcher(Info),
-    dispatcher(NewInfo);
+    NewContext = dispatcher(Context),
+    dispatcher(NewContext);
 
 %% Yield message handler.
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
-handler(yield, Pid, #info{active = Active} = Info, _Misc) ->
+handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
     case lid:from_pid(Pid) of
         %% This case clause avoids a possible race between `yield` message
         %% of child and `spawn` message of parent.
         not_found ->
             ?RP_SCHED ! #sched{msg = yield, pid = Pid},
-            dispatcher(Info);
+            dispatcher(Context);
         Lid ->
             ?debug_2("Process ~s yields.~n", [Lid]),
             NewActive = sets:add_element(Lid, Active),
-            Info#info{active = NewActive}
+            Context#context{active = NewActive}
     end.
 
 %%%----------------------------------------------------------------------
@@ -455,8 +457,8 @@ elapsed_time(T1, T2) ->
     ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
     {Mins, Secs}.
 
-%% Run process Lid in context Info.
-run(Lid, #info{active = Active, state = State} = Info) ->
+%% Run process Lid in context Context.
+run(Lid, #context{active = Active, state = State} = Context) ->
     ?debug_2("Running process ~s.~n", [Lid]),
     %% Remove process from the `active` set.
     NewActive = sets:del_element(Lid, Active),
@@ -467,7 +469,7 @@ run(Lid, #info{active = Active, state = State} = Info) ->
     Pid ! #sched{msg = continue},
     %% Call the dispatcher to handle incoming actions from the process
     %% we just "unblocked".
-    dispatcher(Info#info{active = NewActive, state = NewState}).
+    dispatcher(Context#context{active = NewActive, state = NewState}).
 
 %% Shorten a process' exit reason.
 shorten_reason(normal) -> normal;
@@ -477,14 +479,14 @@ shorten_reason(_Other) -> exception.
 
 %% Wakeup a process.
 %% If process is in `blocked` set, move to `active` set.
-wakeup(Lid, #info{active = Active, blocked = Blocked} = Info) ->
+wakeup(Lid, #context{active = Active, blocked = Blocked} = Context) ->
     case sets:is_element(Lid, Blocked) of
 	true ->
             ?debug_2("Process ~p wakes up.~n", [Lid]),
 	    NewBlocked = sets:del_element(Lid, Blocked),
 	    NewActive = sets:add_element(Lid, Active),
-	    Info#info{active = NewActive, blocked = NewBlocked};
-	false -> Info
+	    Context#context{active = NewActive, blocked = NewBlocked};
+	false -> Context
     end.
 
 %%%----------------------------------------------------------------------
