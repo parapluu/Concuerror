@@ -10,7 +10,7 @@
 %%%----------------------------------------------------------------------
 
 -module(util).
--export([doc/1, test/0, funs/1, funs/2, funLine/3]).
+-export([doc/1, test/0, flush_mailbox/0, funs/1, funs/2, funLine/3]).
 
 -include("gen.hrl").
 
@@ -31,6 +31,15 @@ test() ->
     Modules = [error, lid, replay_logger, preb_tests, sched, state, ticket],
     Tests = lists:zip(lists:duplicate(length(Modules), module), Modules),
     eunit:test(Tests, [verbose]).
+
+%% Flush a process' mailbox.
+-spec flush_mailbox() -> 'ok'.
+
+flush_mailbox() ->
+    receive
+	_Any -> flush_mailbox()
+    after 0 -> ok
+    end.
 
 %% @spec funs(string()) -> [{atom(), non_neg_integer()}]
 %% @doc: Same as `funs(File, tuple)'.

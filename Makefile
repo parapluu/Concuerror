@@ -53,10 +53,11 @@ CORE_MODULES = \
 	error \
 	instr \
 	lid \
+	preb \
 	sched \
 	state \
-	util \
-	ticket
+	ticket \
+	util
 
 LOG_MODULES = \
 	log \

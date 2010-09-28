@@ -12,14 +12,14 @@
 -module(sched).
 
 %% UI related exports.
--export([analyze/2, replay/1]).
+-export([analyze/2, driver/3, replay/1]).
 
 %% Instrumentation related exports.
 -export([rep_link/1, rep_receive/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0,
 	 wait/0]).
 
--export_type([proc_action/0, analysis_target/0]).
+-export_type([proc_action/0, analysis_target/0, analysis_ret/0]).
 
 -include("gen.hrl").
 
@@ -41,9 +41,8 @@
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
--type exit_error() ::  'normal' |
-                       error:assertion() |
-                       error:exception().
+%% Driver return type.
+-type driver_ret() :: 'ok' | {'error', error:error(), state:state()}.
 
 %% A process' exit reasons.
 -type exit_reason() :: term().
@@ -59,22 +58,6 @@
 %%%----------------------------------------------------------------------
 %%% Records
 %%%----------------------------------------------------------------------
-
-%% Scheduler state
-%%
-%% active  : A set containing all processes ready to be scheduled.
-%% blocked : A set containing all processes that cannot be scheduled next
-%%          (e.g. waiting for a message on a `receive`).
-%% error   : A term describing the error that occured.
-%% state   : The current state of the program.
-%% details : A boolean being false when running a normal run and
-%%           true when running a replay and need to send detailed
-%%           info to the replay_logger.
--record(context, {active  :: set(),
-                  blocked :: set(),
-                  error = normal :: exit_error(),
-                  state   :: state:state(),
-                  details :: boolean()}).
 
 %% Internal message format
 %%
@@ -99,13 +82,21 @@ analyze(Target, Options) ->
 		false -> [];
 	        {files, List} -> List
 	    end,
+    %% Set interleave function to be used.
+    Interleave = case lists:keyfind(preb, 1, Options) of
+		false -> fun(T) -> interleave(T) end;
+	        {preb, _Bound} -> fun(T) -> preb:interleave(T) end 
+	    end,
     %% Disable error logging messages.
     error_logger:tty(false),
     Ret =
 	case instr:instrument_and_load(Files) of
 	    ok ->
 		log:log("Running analysis...~n"),
-		{Result, {Mins, Secs}} = interleave(Target),
+		{T1, _} = statistics(wall_clock),
+		Result = Interleave(Target),
+		{T2, _} = statistics(wall_clock),
+		{Mins, Secs} = elapsed_time(T1, T2),
 		case Result of
 		    {ok, RunCount} ->
 			log:log("Analysis complete (checked ~w interleavings "
@@ -148,7 +139,7 @@ replay(Ticket) ->
 %%   {init_state, InitState}: State to replay (default: state_init()).
 %%   details: Produce detailed interleaving information (see `replay_logger`).
 interleave(Target) ->
-    interleave(Target, [init_state, state:empty()]).
+    interleave(Target, [{init_state, state:empty()}]).
 
 interleave(Target, Options) ->
     Self = self(),
@@ -159,28 +150,21 @@ interleave(Target, Options) ->
     end.
 
 interleave_aux(Target, Options, Parent) ->
-    InitState =
-	case lists:keyfind(init_state, 1, Options) of
-	    false -> state:empty();
-	    {init_state, Any} -> Any
-	end,
+    {init_state, InitState} = lists:keyfind(init_state, 1, Options),
     Det = lists:member(details, Options),
     register(?RP_SCHED, self()),
     %% The mailbox is flushed mainly to discard possible `exit` messages
     %% before enabling the `trap_exit` flag.
-    flush_mailbox(),
+    util:flush_mailbox(),
     process_flag(trap_exit, true),
     %% Start state service.
     state:start(),
     %% Save empty replay state for the first run.
     state:save(InitState),
-    {T1, _} = statistics(wall_clock),
     Result = interleave_loop(Target, 1, [], Det),
-    {T2, _} = statistics(wall_clock),
-    Time = elapsed_time(T1, T2),
     state:stop(),
     unregister(?RP_SCHED),
-    Parent ! {interleave_result, {Result, Time}}.
+    Parent ! {interleave_result, Result}.
 
 %% Main loop for producing process interleavings.
 %% The first process (FirstPid) is created linked to the scheduler,
@@ -210,8 +194,9 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
             State = state:empty(),
 	    Context = #context{active = Active, blocked = Blocked,
                                state = State, details = Det},
+	    Search = fun(C) -> search(C) end,
 	    %% Interleave using driver.
-            Ret = driver(Context, ReplayState),
+            Ret = driver(Search, Context, ReplayState),
 	    %% Cleanup.
             lid:stop(),
 	    ?debug_1("-----------------------~n"),
@@ -263,8 +248,12 @@ dispatcher(Context) ->
 %% After activating said process the dispatcher is called to delegate the
 %% messages received from the running process to the appropriate handler
 %% functions.
-driver(#context{active = Active, blocked = Blocked, error = Error,
-                state = State} = Context, ReplayState) ->
+-spec driver(function(), context(), state:state()) -> driver_ret().
+
+driver(Search,
+       #context{active = Active, blocked = Blocked,
+		error = Error, state = State} = Context,
+       ReplayState) ->
     case error:type(Error) of
 	normal ->
 	    %% Deadlock/Termination check.
@@ -284,13 +273,13 @@ driver(#context{active = Active, blocked = Blocked, error = Error,
                         case state:is_empty(ReplayState) of
 			    %% If in normal mode, run search algorithm to
 			    %% find next process to be run.
-                            true -> {search(Context), ReplayState};
+                            true -> {Search(Context), ReplayState};
 			    %% If in replay mode, next process to be run
 			    %% is defined by ReplayState.
                             false -> state:trim(ReplayState)
                         end,
 		    NewContext = run(Next, Context),
-		    driver(NewContext, Rest)
+		    driver(Search, NewContext, Rest)
 	    end;
         _Other -> {error, Error, State}
     end.
@@ -429,13 +418,6 @@ handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
 %%%----------------------------------------------------------------------
 %%% Helper functions
 %%%----------------------------------------------------------------------
-
-%% Flush a process' mailbox.
-flush_mailbox() ->
-    receive
-	_Any -> flush_mailbox()
-    after 0 -> ok
-    end.
 
 %% Calculate and print elapsed time between T1 and T2.
 elapsed_time(T1, T2) ->
