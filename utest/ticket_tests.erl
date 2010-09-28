@@ -24,8 +24,9 @@ get_error_type_str_test() ->
                                       {expression, "true =:= false"},
                                       {expected, true}, {value, false}]},
                   []},
+    Error = {ErrorType, ErrorDescr},
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, ErrorType, ErrorDescr, ErrorState),
+    Ticket = ticket:new(Target, Error, ErrorState),
     ?assertEqual("Assertion violation", ticket:get_error_type_str(Ticket)).
 
 -spec get_error_descr_str1_test() -> term().
@@ -37,8 +38,9 @@ get_error_descr_str1_test() ->
                                       {expression, "true =:= false"},
                                       {expected, true}, {value, false}]},
                   []},
+    Error = {ErrorType, ErrorDescr},
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, ErrorType, ErrorDescr, ErrorState),
+    Ticket = ticket:new(Target, Error, ErrorState),
     ?assertEqual(io_lib:format("~p.erl:~p: The assertion failed~n",
                                [mymodule, 42]),
                  ticket:get_error_descr_str(Ticket)).
@@ -49,8 +51,9 @@ get_error_descr_str2_test() ->
     Target = {mymodule, myfunction, []},
     ErrorType = exception,
     ErrorDescr = foobar,
+    Error = {ErrorType, ErrorDescr},
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, ErrorType, ErrorDescr, ErrorState),
+    Ticket = ticket:new(Target, Error, ErrorState),
     ?assertEqual(io_lib:format("~p~n", [ErrorDescr]),
                  ticket:get_error_descr_str(Ticket)).
 
@@ -63,8 +66,9 @@ get_target_test() ->
                                       {expression, "true =:= false"},
                                       {expected, true}, {value, false}]},
                   []},
+    Error = {ErrorType, ErrorDescr},
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, ErrorType, ErrorDescr, ErrorState),
+    Ticket = ticket:new(Target, Error, ErrorState),
     ?assertEqual(Target, ticket:get_target(Ticket)).
 
 -spec get_state_test() -> term().
@@ -76,6 +80,7 @@ get_state_test() ->
                                       {expression, "true =:= false"},
                                       {expected, true}, {value, false}]},
                   []},
+    Error = {ErrorType, ErrorDescr},
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, ErrorType, ErrorDescr, ErrorState),
+    Ticket = ticket:new(Target, Error, ErrorState),
     ?assertEqual(ErrorState, ticket:get_state(Ticket)).

@@ -80,16 +80,14 @@
 %% active  : A set containing all processes ready to be scheduled.
 %% blocked : A set containing all processes that cannot be scheduled next
 %%          (e.g. waiting for a message on a `receive`).
-%% error   : An atom describing the type of error that occured.
-%% reason  : A term describing the process' exit reason.
+%% error   : A tuple describing the error that occured.
 %% state   : The current state of the program.
 %% details : A boolean being false when running a normal run and
 %%           true when running a replay and need to send detailed
 %%           info to the replay_logger.
 -record(info, {active  :: set(),
                blocked :: set(),
-	       error   :: error_info(),
-               reason  :: exit_reason(),
+	       error = no_error  :: {error_info(), exit_reason()} | 'no_error',
                state   :: state:state(),
 	       details :: boolean()}).
 
@@ -234,9 +232,8 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
 	    %% TODO: Proper cleanup of any remaining processes.
             case Ret of
                 ok -> interleave_loop(Target, RunCnt + 1, Tickets, Det);
-                {error, ErrorType, ErrorDescr, ErrorState} ->
-		    Ticket = ticket:new(Target, ErrorType, ErrorDescr,
-                                        ErrorState),
+                {error, Error, ErrorState} ->
+		    Ticket = ticket:new(Target, Error, ErrorState),
 		    interleave_loop(Target, RunCnt + 1, [Ticket|Tickets], Det)
             end
     end.
@@ -280,11 +277,11 @@ dispatcher(Info) ->
 %% messages received from the running process to the appropriate handler
 %% functions.
 driver(#info{active = Active, blocked = Blocked, error = Error,
-             reason = Reason, state = State} = Info, ReplayState) ->
+             state = State} = Info, ReplayState) ->
     case Error of
-	assert -> {error, assert, Reason, State};
-        exception -> {error, exception, Reason, State};
-	_NoError ->
+	{assert, _Descr} -> {error, Error, State};
+        {exception, _Descr} -> {error, Error, State};
+	no_error ->
 	    %% Deadlock/Termination check.
 	    %% If the `active` set is empty and the `blocked` set is non-empty,
 	    %% report a deadlock, else if both sets are empty, report normal
@@ -293,7 +290,9 @@ driver(#info{active = Active, blocked = Blocked, error = Error,
 		0 ->
 		    case sets:size(Blocked) of
 			0 -> ok;
-			_NonEmptyBlocked -> {error, deadlock, Blocked, State}
+			_NonEmptyBlocked ->
+                            Deadlock = {deadlock, Blocked},
+                            {error, Deadlock, State}
 		    end;
 		_NonEmptyActive ->
                     {Next, Rest} =
@@ -359,8 +358,8 @@ handler(exit, Pid, #info{details = Det} = Info, Reason) ->
             case Reason of
                 normal -> Info;
 		{{assertion_failed, _Details}, _Stack} = AF ->
-		    Info#info{error = assert, reason = AF};
-		Other -> Info#info{error = exception, reason = Other}
+		    Info#info{error = {assert, AF}};
+		Other -> Info#info{error = {exception, Other}}
 	    end
     end;
 
