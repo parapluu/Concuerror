@@ -92,6 +92,18 @@ interleave_test_() ->
       {"test11",
        ?_test(
 	  begin
+	      Target = {test, test09, []},
+	      Options = [{files, [?TEST_ERL_PATH]}],
+	      {error, analysis, Info, [Ticket|_Tickets]} =
+		  sched:analyze(Target, Options),
+	      ?assertMatch({Target, {_, _}}, Info), 
+	      ?assertEqual(Target, ticket:get_target(Ticket)),
+	      ?assertEqual("Exception",
+                           error:format_error_type(ticket:get_error(Ticket)))
+	  end)},
+      {"test12",
+       ?_test(
+	  begin
 	      Target = {test, test10, []},
 	      Options = [{files, [?TEST_ERL_PATH]}],
 	      {error, analysis, Info, [Ticket|_Tickets]} =
@@ -101,22 +113,19 @@ interleave_test_() ->
 	      ?assertEqual("Assertion violation",
                            error:format_error_type(ticket:get_error(Ticket)))
 	  end)},
-      {"test12",
+      {"test13",
        ?_assertMatch({ok, {{test, test11, []}, _}},
 		     sched:analyze({test, test11, []},
-			     [{files, [?TEST_ERL_PATH,
-				       ?TEST_AUX_ERL_PATH]}]))},
-      {"test13",
+			     [{files, [?TEST_ERL_PATH]}]))},
+      {"test14",
        ?_assertMatch({ok, {{test, test12, []}, _}},
 		     sched:analyze({test, test12, []},
-			     [{files, [?TEST_ERL_PATH,
-				       ?TEST_AUX_ERL_PATH]}]))},
-      {"test14",
+			     [{files, [?TEST_ERL_PATH]}]))},
+      {"test15",
        ?_assertMatch({ok, {{test, test13, []}, _}},
 		     sched:analyze({test, test13, []},
-			     [{files, [?TEST_ERL_PATH,
-				       ?TEST_AUX_ERL_PATH]}]))},
-      {"test15",
+			     [{files, [?TEST_ERL_PATH]}]))},
+      {"test16",
        ?_test(
 	  begin
 	      Target = {test, test14, []},
