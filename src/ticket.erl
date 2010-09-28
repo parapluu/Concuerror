@@ -84,5 +84,31 @@ processes_to_string([P|Ps]) ->
     io_lib:format("~s, ", [P]) ++
         processes_to_string(Ps).
 
+exception_to_string({Reason, Stack} = E) ->
+    case is_generated_exception(Reason) of
+        true -> io_lib:format("~p~n", [E]);
+        false ->
+            io_lib:format("Reason: ~p~nStack trace: ~p~n",
+                          [Reason, Stack])
+    end;         
 exception_to_string(E) ->
     io_lib:format("~p~n", [E]).
+
+is_generated_exception(R) ->
+    case R of
+        badarg -> false;
+        badarith -> false;
+        {badmatch, _V} -> false;
+        function_clause -> false;
+        {case_clause, _V} -> false;
+        if_clause -> false;
+        {try_clause, _V} -> false;
+        undef -> false;
+        {badfun, _F} -> false;
+        {badarity, _F} -> false;
+        timeout_value -> false;
+        noproc -> false;
+        {nocatch, _V} -> false;
+        system_limit -> false;
+        _Other -> true
+    end.

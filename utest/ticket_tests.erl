@@ -99,6 +99,18 @@ get_error_descr_str5_test() ->
     ?assertEqual(io_lib:format("~p~n", [ErrorDescr]),
                  ticket:get_error_descr_str(Ticket)).
 
+-spec get_error_descr_str6_test() -> term().
+
+get_error_descr_str6_test() ->
+    Target = {mymodule, myfunction, []},
+    ErrorType = exception,
+    ErrorDescr = {badarg, []},
+    Error = {ErrorType, ErrorDescr},
+    ErrorState = state:empty(),
+    Ticket = ticket:new(Target, Error, ErrorState),
+    ?assertEqual(io_lib:format("Reason: ~p~nStack trace: ~p~n", [badarg, []]),
+                 ticket:get_error_descr_str(Ticket)).
+
 -spec get_target_test() -> term().
 
 get_target_test() ->
