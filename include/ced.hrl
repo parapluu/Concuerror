@@ -18,7 +18,7 @@
 -undef(assert).
 -define(assert(BoolExpr),
 	((fun () ->
-                  try (BoolExpr) of
+                  case (BoolExpr) of
                       true -> ok;
                       __V -> erlang:error({assertion_violation,
                                            [{module, ?MODULE},
@@ -26,43 +26,22 @@
                                             {expression, (??BoolExpr)},
                                             {expected, true},
                                             {value, case __V of
-                                                        false ->
-                                                            __V;
-                                                        _ -> 
-                                                            {not_a_boolean,__V}
+                                                        false -> __V;
+                                                        _ -> {not_a_boolean,__V}
                                                     end}]})
-                  catch
-                      Class:_ -> erlang:error({assertion_violation,
-                                               [{module, ?MODULE},
-                                                {line, ?LINE},
-                                                {expression, (??BoolExpr)},
-                                                {expected, true},
-                                                {value, Class}]})
                   end
 	  end)())).
 
 -define(assertEqual(Expect, Expr),
-        ((fun () ->
-                  ExpectEval = 
-                      try (Expect) of
-                          _Any -> _Any
-                      catch
-                          Class:_ ->
-                              erlang:error({assertion_violation,
-                                            [{module, ?MODULE},
-                                             {line, ?LINE},
-                                             {expression, (??Expect)},
-                                             {expected, unknown},
-                                             {value, Class}]})
-                      end,
+        ((fun (__X) ->
                   case (Expr) of
-                      ExpectEval -> ok;
+                      __X -> ok;
                       __V -> erlang:error({assertion_violation,
                                            [{module, ?MODULE},
                                             {line, ?LINE},
                                             {expression, (??Expr)},
-                                            {expected, ExpectEval},
+                                            {expected, __X},
                                             {value, __V}]})
                   end
-          end)())).
+          end)(Expect))).
 -endif.

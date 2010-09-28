@@ -75,7 +75,7 @@ interleave_test_() ->
 		  sched:analyze(Target, Options),
 	      ?assertMatch({Target, {_, _}}, Info), 
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Assertion violation",
+	      ?assertEqual("Exception",
 			   ticket:get_error_type_str(Ticket))
 	  end)},
       {"test09",
