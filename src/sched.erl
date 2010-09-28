@@ -101,30 +101,35 @@ analyze(Target, Options) ->
 	    end,
     %% Disable error logging messages.
     error_logger:tty(false),
-    case instr:instrument_and_load(Files) of
-	ok ->
-	    log:log("Running analysis...~n"),
-	    {Result, {Mins, Secs}} = interleave(Target),
-	    case Result of
-		{ok, RunCount} ->
-		    log:log("Analysis complete (checked ~w interleavings "
-			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-		    log:log("No errors found.~n"),
-		    Info = {Target, {Mins, Secs}},
-		    {ok, Info};
-		{error, RunCount, Tickets} ->
-		    TicketCount = length(Tickets),
-		    log:log("Analysis complete (checked ~w interleavings "
-			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-		    log:log("Found ~p erroneous interleaving(s).~n",
-                            [TicketCount]),
-		    Info = {Target, {Mins, Secs}},
-		    {error, analysis, Info, Tickets}
-	    end;
-	error ->
-	    Info = {Target, {0, 0}},
-	    {error, instr, Info}
-    end.
+    Ret =
+	case instr:instrument_and_load(Files) of
+	    ok ->
+		log:log("Running analysis...~n"),
+		{Result, {Mins, Secs}} = interleave(Target),
+		case Result of
+		    {ok, RunCount} ->
+			log:log("Analysis complete (checked ~w interleavings "
+				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
+			log:log("No errors found.~n"),
+			Info = {Target, {Mins, Secs}},
+			{ok, Info};
+		    {error, RunCount, Tickets} ->
+			TicketCount = length(Tickets),
+			log:log("Analysis complete (checked ~w interleavings "
+				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
+			log:log("Found ~p erroneous interleaving(s).~n",
+				[TicketCount]),
+			Info = {Target, {Mins, Secs}},
+			{error, analysis, Info, Tickets}
+		end;
+	    error ->
+		Info = {Target, {0, 0}},
+		{error, instr, Info}
+	end,
+    %% Purge previously loaded modules.
+    ModsToPurge = [list_to_atom(filename:basename(F, ".erl")) || F <- Files],
+    [begin code:delete(M), code:purge(M) end || M <- ModsToPurge],
+    Ret.
 
 %% @spec: replay(analysis_target(), state()) -> [proc_action()]
 %% @doc: Replay the given state and return detailed information about the
