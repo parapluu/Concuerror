@@ -55,7 +55,8 @@ CORE_MODULES = \
 	sched \
 	state \
 	util \
-	ticket
+	ticket \
+	error
 
 LOG_MODULES = \
 	log \
@@ -65,7 +66,8 @@ UTEST_MODULES = \
 	lid_tests \
 	sched_tests \
 	state_tests \
-	ticket_tests
+	ticket_tests \
+	error_tests
 
 MODULES = \
 	$(GUI_MODULES) \

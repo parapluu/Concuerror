@@ -20,8 +20,7 @@
 	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_yield/0,
 	 wait/0]).
 
--export_type([proc_action/0, analysis_target/0, error_type/0,
-              error_descr/0]).
+-export_type([proc_action/0, analysis_target/0]).
 
 -include("gen.hrl").
 
@@ -52,15 +51,11 @@
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
-%% Error type.
--type error_type() :: 'deadlock' | error_info().
+-type exit_error() ::  'normal' |
+                       error:assertion() |
+                       error:exception().
 
-%% Error descriptor.
--type error_descr() :: term().
-
--type error_info() :: 'assert' | 'exception'.
-
-%% A process' exit reasons
+%% A process' exit reasons.
 -type exit_reason() :: term().
 
 %% Tuples providing information about a process' action.
@@ -80,15 +75,14 @@
 %% active  : A set containing all processes ready to be scheduled.
 %% blocked : A set containing all processes that cannot be scheduled next
 %%          (e.g. waiting for a message on a `receive`).
-%% error   : A tuple describing the error that occured.
+%% error   : A term describing the error that occured.
 %% state   : The current state of the program.
 %% details : A boolean being false when running a normal run and
 %%           true when running a replay and need to send detailed
 %%           info to the replay_logger.
 -record(context, {active  :: set(),
                   blocked :: set(),
-                  error = no_error :: {error_info(), exit_reason()} |
-                                      'no_error',
+                  error = normal :: exit_error(),
                   state   :: state:state(),
                   details :: boolean()}).
 
@@ -279,10 +273,8 @@ dispatcher(Context) ->
 %% functions.
 driver(#context{active = Active, blocked = Blocked, error = Error,
                 state = State} = Context, ReplayState) ->
-    case Error of
-	{assert, _Descr} -> {error, Error, State};
-        {exception, _Descr} -> {error, Error, State};
-	no_error ->
+    case error:type(Error) of
+	normal ->
 	    %% Deadlock/Termination check.
 	    %% If the `active` set is empty and the `blocked` set is non-empty,
 	    %% report a deadlock, else if both sets are empty, report normal
@@ -292,8 +284,7 @@ driver(#context{active = Active, blocked = Blocked, error = Error,
 		    case sets:size(Blocked) of
 			0 -> ok;
 			_NonEmptyBlocked ->
-                            Deadlock = {deadlock,
-                                        lists:sort(sets:to_list(Blocked))},
+                            Deadlock = error:deadlock(Blocked),
                             {error, Deadlock, State}
 		    end;
 		_NonEmptyActive ->
@@ -308,7 +299,8 @@ driver(#context{active = Active, blocked = Blocked, error = Error,
                         end,
 		    NewContext = run(Next, Context),
 		    driver(NewContext, Rest)
-	    end
+	    end;
+        _Other -> {error, Error, State}
     end.
 
 %% Implements the search logic (currently depth-first when looked at combined
@@ -343,26 +335,29 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% call the dispatcher.
 handler(exit, Pid, #context{details = Det} = Context, Reason) ->
-    NewReason = shorten_reason(Reason),
+    Type =
+        case Reason of
+            normal -> normal;
+            _Else -> error:type_from_descr(Reason)
+        end,
     Lid = lid:from_pid(Pid),
     case Lid of
 	not_found ->
-	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n",
-                     [Lid, Pid, NewReason]),
+	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Type]),
 	    dispatcher(Context);
 	_Any ->
-	    ?debug_1("Process ~s exits (~p).~n", [Lid, NewReason]),
+	    ?debug_1("Process ~s exits (~p).~n", [Lid, Type]),
 	    case Det of
-		true -> replay_logger:log({exit, Lid, NewReason});
+		true -> replay_logger:log({exit, Lid, Type});
 		false -> continue
 	    end,
 	    %% If the exception was caused by an assertion violation, propagate
 	    %% it to the driver via the `error` field of the `context` record.
-            case Reason of
+            case Type of
                 normal -> Context;
-		{{assertion_violation, _Details}, _Stack} = AF ->
-		    Context#context{error = {assert, AF}};
-		Other -> Context#context{error = {exception, Other}}
+		_Other ->
+                    Error = error:new(Type, Reason),
+		    Context#context{error = Error}
 	    end
     end;
 
@@ -471,12 +466,6 @@ run(Lid, #context{active = Active, state = State} = Context) ->
     %% Call the dispatcher to handle incoming actions from the process
     %% we just "unblocked".
     dispatcher(Context#context{active = NewActive, state = NewState}).
-
-%% Shorten a process' exit reason.
-shorten_reason(normal) -> normal;
-shorten_reason({{assertion_violation, _Details}, _Stack}) ->
-    assertion_violation;
-shorten_reason(_Other) -> exception.
 
 %% Wakeup a process.
 %% If process is in `blocked` set, move to `active` set.

@@ -506,8 +506,9 @@ analysis_init() ->
 %% Cleanup actions after completing analysis
 %% (reactivate `analyze` button, etc.).
 analysis_cleanup({error, analysis, _Info, Tickets}) ->
-    Errors = [ticket:get_error_type_str(Ticket) || Ticket <- Tickets],
-    setListItems(?ERROR_LIST, Errors),
+    Errors = [ticket:get_error(Ticket) || Ticket <- Tickets],
+    ErrorTypes = [error:format_error_type(Error) || Error <- Errors],
+    setListItems(?ERROR_LIST, ErrorTypes),
     ListOfEmpty = lists:duplicate(length(Tickets), []),
     setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty)),
     AnalyzeButton = ref_lookup(?ANALYZE),
@@ -723,10 +724,11 @@ show_details() ->
                         setListItems(?ILEAVE_LIST, details_to_strings(Cached)),
                         T
                 end,
-            ErrorDescrStr = ticket:get_error_descr_str(Ticket),
+            Error = ticket:get_error(Ticket),
+            ErrorDescr = error:format_error_descr(Error),
             ErrorText = ref_lookup(?ERROR_TEXT),
             wxTextCtrl:clear(ErrorText),
-            wxTextCtrl:appendText(ErrorText, ErrorDescrStr)
+            wxTextCtrl:appendText(ErrorText, ErrorDescr)
     end.
 
 %% Function to be moved (to sched or util).
