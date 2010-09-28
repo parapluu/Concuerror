@@ -49,9 +49,47 @@ get_error_descr_str1_test() ->
                                 []]),
                  ticket:get_error_descr_str(Ticket)).
 
+-spec get_error_descr_str2_test() -> term().
+
+get_error_descr_str2_test() ->
+    Target = {mymodule, myfunction, []},
+    ErrorType = deadlock,
+    ErrorDescr = ["P1"],
+    Error = {ErrorType, ErrorDescr},
+    ErrorState = state:empty(),
+    Ticket = ticket:new(Target, Error, ErrorState),
+    ?assertEqual(io_lib:format("Process ~s blocks~n", ["P1"]),
+                 ticket:get_error_descr_str(Ticket)).
+
 -spec get_error_descr_str3_test() -> term().
 
 get_error_descr_str3_test() ->
+    Target = {mymodule, myfunction, []},
+    ErrorType = deadlock,
+    ErrorDescr = ["P1", "P1.1"],
+    Error = {ErrorType, ErrorDescr},
+    ErrorState = state:empty(),
+    Ticket = ticket:new(Target, Error, ErrorState),
+    Ps = io_lib:format("~s and ~s", ["P1", "P1.1"]),
+    ?assertEqual(io_lib:format("Processes ~s block~n", [Ps]),
+                 ticket:get_error_descr_str(Ticket)).
+
+-spec get_error_descr_str4_test() -> term().
+
+get_error_descr_str4_test() ->
+    Target = {mymodule, myfunction, []},
+    ErrorType = deadlock,
+    ErrorDescr = ["P1", "P1.1", "P1.2"],
+    Error = {ErrorType, ErrorDescr},
+    ErrorState = state:empty(),
+    Ticket = ticket:new(Target, Error, ErrorState),
+    Ps = io_lib:format("~s, ~s and ~s", ["P1", "P1.1", "P1.2"]),
+    ?assertEqual(io_lib:format("Processes ~s block~n", [Ps]),
+                 ticket:get_error_descr_str(Ticket)).
+
+-spec get_error_descr_str5_test() -> term().
+
+get_error_descr_str5_test() ->
     Target = {mymodule, myfunction, []},
     ErrorType = exception,
     ErrorDescr = foobar,
