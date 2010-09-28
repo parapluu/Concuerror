@@ -359,7 +359,7 @@ handler(exit, Pid, #context{details = Det} = Context, Reason) ->
 	    %% it to the driver via the `error` field of the `context` record.
             case Reason of
                 normal -> Context;
-		{{assertion_failed, _Details}, _Stack} = AF ->
+		{{assertion_violation, _Details}, _Stack} = AF ->
 		    Context#context{error = {assert, AF}};
 		Other -> Context#context{error = {exception, Other}}
 	    end
@@ -473,8 +473,8 @@ run(Lid, #context{active = Active, state = State} = Context) ->
 
 %% Shorten a process' exit reason.
 shorten_reason(normal) -> normal;
-shorten_reason({{assertion_failed, _Details}, _Stack}) ->
-    assertion_failed;
+shorten_reason({{assertion_violation, _Details}, _Stack}) ->
+    assertion_violation;
 shorten_reason(_Other) -> exception.
 
 %% Wakeup a process.

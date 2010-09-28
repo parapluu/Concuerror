@@ -20,7 +20,7 @@
 	((fun () ->
                   try (BoolExpr) of
                       true -> ok;
-                      __V -> erlang:error({assertion_failed,
+                      __V -> erlang:error({assertion_violation,
                                            [{module, ?MODULE},
                                             {line, ?LINE},
                                             {expression, (??BoolExpr)},
@@ -32,7 +32,7 @@
                                                             {not_a_boolean,__V}
                                                     end}]})
                   catch
-                      Class:_ -> erlang:error({assertion_failed,
+                      Class:_ -> erlang:error({assertion_violation,
                                                [{module, ?MODULE},
                                                 {line, ?LINE},
                                                 {expression, (??BoolExpr)},
@@ -48,7 +48,7 @@
                           _Any -> _Any
                       catch
                           Class:_ ->
-                              erlang:error({assertion_failed,
+                              erlang:error({assertion_violation,
                                             [{module, ?MODULE},
                                              {line, ?LINE},
                                              {expression, (??Expect)},
@@ -57,7 +57,7 @@
                       end,
                   case (Expr) of
                       ExpectEval -> ok;
-                      __V -> erlang:error({assertion_failed,
+                      __V -> erlang:error({assertion_violation,
                                            [{module, ?MODULE},
                                             {line, ?LINE},
                                             {expression, (??Expr)},

@@ -42,7 +42,7 @@ get_error_type_str({_Target, {ErrorType, _ErrorDescr}, _ErrorState}) ->
 
 get_error_descr_str({_Target, {_ErrorType, ErrorDescr}, _ErrorState}) ->
     case ErrorDescr of
-        {{assertion_failed, Details}, _Stack} ->
+        {{assertion_violation, Details}, _Stack} ->
             [{module, Mod}, {line, L}, {expression, _Expr},
              {expected, _Exp}, {value, _Val}] = Details,
             io_lib:format("~p.erl:~p: The assertion failed~n", [Mod, L]);
