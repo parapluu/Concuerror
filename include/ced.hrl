@@ -1,9 +1,8 @@
 %%%----------------------------------------------------------------------
-%%% File    : ced.hrl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% File        : ced.hrl
+%%% Author      : Alkis Gotovos <el3ctrologos@hotmail.com>
 %%% Description : EUnit-style assertion macros for CED.
-%%%
-%%% Created : 29 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Created     : 29 May 2010
 %%%----------------------------------------------------------------------
 
 -ifdef(NOASSERT).

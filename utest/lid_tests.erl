@@ -1,9 +1,8 @@
 %%%----------------------------------------------------------------------
-%%% File    : lid_tests.erl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%% Description : lid.erl unit tests
-%%%
-%%% Created : 25 Sep 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% File        : lid_tests.erl
+%%% Author      : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Description : LID interface unit tests
+%%% Created     : 25 Sep 2010
 %%%----------------------------------------------------------------------
 
 -module(lid_tests).

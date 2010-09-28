@@ -1,10 +1,9 @@
 %%%----------------------------------------------------------------------
-%%% File    : ticket_tests.erl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%           Maria Christakis <christakismaria@gmail.com>
-%%% Description : ticket.erl unit tests
-%%%
-%%% Created : 25 Sep 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% File        : ticket_tests.erl
+%%% Author      : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <christakismaria@gmail.com>
+%%% Description : Ticket interface unit tests
+%%% Created     : 25 Sep 2010
 %%%----------------------------------------------------------------------
 
 -module(ticket_tests).

@@ -1,10 +1,9 @@
 %%%----------------------------------------------------------------------
-%%% File    : error_tests.erl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%           Maria Christakis <christakismaria@gmail.com>
-%%% Description : error.erl unit tests
-%%%
-%%% Created : 28 Sep 2010 by Maria Christakis <christakismaria@gmail.com>
+%%% File        : error_tests.erl
+%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <christakismaria@gmail.com>
+%%% Description : Error interface unit tests
+%%% Created     : 28 Sep 2010
 %%%----------------------------------------------------------------------
 
 -module(error_tests).

@@ -1,9 +1,8 @@
 %%%----------------------------------------------------------------------
-%%% File    : gui.hrl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%% Description : GUI Header File
-%%%
-%%% Created : 31 Mar 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% File        : gui.hrl
+%%% Author      : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Description : GUI header file
+%%% Created     : 31 Mar 2010
 %%%----------------------------------------------------------------------
 
 %%%----------------------------------------------------------------------

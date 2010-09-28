@@ -1,9 +1,8 @@
 %%%----------------------------------------------------------------------
-%%% File    : state.erl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% File        : state.erl
+%%% Author      : Alkis Gotovos <el3ctrologos@hotmail.com>
 %%% Description : State interface
-%%%
-%%% Created : 25 Sep 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Created     : 25 Sep 2010
 %%%----------------------------------------------------------------------
 
 -module(state).

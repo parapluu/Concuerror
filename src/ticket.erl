@@ -1,10 +1,9 @@
 %%%----------------------------------------------------------------------
-%%% File    : ticket.erl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%           Maria Christakis <christakismaria@gmail.com>
+%%% File        : ticket.erl
+%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <christakismaria@gmail.com>
 %%% Description : Error ticket interface
-%%%
-%%% Created : 23 Sep 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Created     : 23 Sep 2010
 %%%
 %%% @doc: Error ticket interface.
 %%% @end

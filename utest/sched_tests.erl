@@ -1,10 +1,9 @@
 %%%----------------------------------------------------------------------
-%%% File    : sched_tests.erl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%           Maria Christakis <christakismaria@gmail.com>
-%%% Description : sched.erl unit tests
-%%%
-%%% Created : 25 Sep 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% File        : sched_tests.erl
+%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <christakismaria@gmail.com>
+%%% Description : Scheduler unit tests
+%%% Created     : 25 Sep 2010
 %%%----------------------------------------------------------------------
 
 -module(sched_tests).

@@ -1,10 +1,9 @@
 %%%----------------------------------------------------------------------
-%%% File    : replay_logger.erl
-%%% Authors : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%           Maria Christakis <christakismaria@gmail.com>
-%%% Description : Replay Logger
-%%%
-%%% Created : 1 Jun 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% File        : replay_logger.erl
+%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <christakismaria@gmail.com>
+%%% Description : Replay logger
+%%% Created     : 1 Jun 2010
 %%%
 %%% @doc: Replay logger
 %%% @end

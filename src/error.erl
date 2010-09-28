@@ -1,10 +1,9 @@
 %%%----------------------------------------------------------------------
-%%% File    : error.erl
-%%% Author  : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%           Maria Christakis <christakismaria@gmail.com>
+%%% File        : error.erl
+%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <christakismaria@gmail.com>
 %%% Description : Error interface
-%%%
-%%% Created : 28 Sep 2010 by Maria Christakis <christakismaria@gmail.com>
+%%% Created     : 28 Sep 2010
 %%%
 %%% @doc: Error interface.
 %%% @end

@@ -1,10 +1,9 @@
 %%%----------------------------------------------------------------------
-%%% File    : gen.hrl
-%%% Authors : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%           Maria Christakis <christakismaria@gmail.com>
-%%% Description : General Header File
-%%%
-%%% Created : 16 May 2010 by Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% File        : gen.hrl
+%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <christakismaria@gmail.com>
+%%% Description : General header file
+%%% Created     : 16 May 2010
 %%%----------------------------------------------------------------------
 
 %%%----------------------------------------------------------------------
@@ -20,7 +19,6 @@
 -define(RP_REPLAY_SERVER, '_._replay_server').
 -define(RP_REPLAY_LOGGER, '_._replay_logger').
 -define(RP_SCHED, '_._sched').
-
 
 %% Named ets table names.
 -define(NT_REF, '_._ref').
