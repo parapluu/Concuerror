@@ -38,13 +38,29 @@ interleave_aux(Target, Options, Parent) ->
     util:flush_mailbox(),
     process_flag(trap_exit, true),
     %% Start state service.
-    state:start(),
+    state_start(),
     %% Save empty replay state for the first run.
-    state:save(InitState),
-    Result = interleave_loop(Target, 1, [], Det),
-    state:stop(),
+    state_save(InitState),
+    Result = interleave_outer_loop(Target, 0, [], Det),
+    state_stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
+
+%% Outer analysis loop.
+%% Preemption bound starts at 0 and is increased by 1 on each iteration.
+interleave_outer_loop(Target, RunCnt, Tickets, Det) ->
+    {NewRunCnt, NewTickets} = interleave_loop(Target, 1, [], Det),
+    TotalRunCnt = NewRunCnt + RunCnt,
+    TotalTickets = NewTickets ++ Tickets,
+    state_swap(),
+    case state_peak() of
+	no_state ->
+	    case TotalTickets of
+		[] -> {ok, TotalRunCnt};
+		_Any -> {error, TotalRunCnt, ticket:sort(TotalTickets)}
+	    end;
+	_State -> interleave_outer_loop(Target, TotalRunCnt, TotalTickets, Det)
+    end.
 
 %% Main loop for producing process interleavings.
 %% The first process (FirstPid) is created linked to the scheduler,
@@ -53,12 +69,8 @@ interleave_aux(Target, Options, Parent) ->
 %% the course of the program shall be linked to the scheduler process.
 interleave_loop(Target, RunCnt, Tickets, Det) ->
     %% Lookup state to replay.
-    case state:load() of
-        no_state ->
-	    case Tickets of
-		[] -> {ok, RunCnt - 1};
-		_Any -> {error, RunCnt - 1, lists:reverse(Tickets)}
-	    end;
+    case state_load() of
+        no_state -> {RunCnt - 1, Tickets};
         ReplayState ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
@@ -97,8 +109,70 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
 %% of them into the `states` table.
 %% Returns the process to be run next.
 search(#context{active = Active, state = State}) ->
-    %% Remove a process to be run next from the `actives` set.
-    [Next|NewActive] = sets:to_list(Active),
-    %% Store all other possible successor states for later exploration.
-    [state:save(state:extend(State, Lid)) || Lid <- NewActive],
-    Next.
+    case state:is_empty(State) of
+	%% Handle first call to search (empty state, one active process).
+	true ->
+	    [Next] = sets:to_list(Active),
+	    Next;
+	false ->
+	    %% Get last process that was run by the driver.
+	    {LastLid, _Rest} = state:trim(State),
+	    %% If that process is in the `active` set (i.e. has not blocked),
+	    %% remove it from the actives and make it next-to-run, else do
+	    %% that for another process from the actives.
+	    {Next, NewActive} =
+		case sets:is_element(LastLid, Active) of
+		    true -> {LastLid,
+			     sets:to_list(sets:del_element(LastLid, Active))};
+		    false ->
+			[INext|INewActive] = sets:to_list(Active),
+			{INext, INewActive}
+		end,
+	    %%io:format("Search - NewActive: ~p~n", [NewActive]),
+	    %% Store all other possible successor states for later exploration.
+	    [state_save(state:extend(State, Lid)) || Lid <- NewActive],
+	    Next
+    end.
+
+%%%----------------------------------------------------------------------
+%%% Helper functions
+%%%----------------------------------------------------------------------
+
+%% Remove and return a state.
+%% If no states available, return 'no_state'.
+state_load() ->
+    case ets:first(?NT_STATE1) of
+	'$end_of_table' -> no_state;
+	State ->
+	    ets:delete(?NT_STATE1, State),
+	    lists:reverse(State)
+    end.
+
+%% Return a state without remoing it.
+%% If no states available, return 'no_state'.
+state_peak() ->
+    case ets:first(?NT_STATE1) of
+	'$end_of_table' ->  no_state;
+	State -> lists:reverse(State)
+    end.
+
+%% Add a state to the `state` table.
+state_save(State) ->
+    ets:insert(?NT_STATE2, {State}).
+
+%% Initialize state tables.
+state_start() ->
+    ets:new(?NT_STATE1, [named_table]),
+    ets:new(?NT_STATE2, [named_table]).
+
+%% Clean up state table.
+state_stop() ->
+    ets:delete(?NT_STATE1),
+    ets:delete(?NT_STATE2).
+
+%% Swap names of the two state tables and clear one of them.
+state_swap() ->
+    ets:rename(?NT_STATE1, ?NT_STATE_TEMP),
+    ets:rename(?NT_STATE2, ?NT_STATE1),
+    ets:rename(?NT_STATE_TEMP, ?NT_STATE2),
+    ets:delete_all_objects(?NT_STATE2).

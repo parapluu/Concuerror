@@ -157,12 +157,12 @@ interleave_aux(Target, Options, Parent) ->
     %% before enabling the `trap_exit` flag.
     util:flush_mailbox(),
     process_flag(trap_exit, true),
-    %% Start state service.
-    state:start(),
+    %% Initialize state table.
+    state_start(),
     %% Save empty replay state for the first run.
-    state:save(InitState),
+    state_save(InitState),
     Result = interleave_loop(Target, 1, [], Det),
-    state:stop(),
+    state_stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
 
@@ -173,11 +173,11 @@ interleave_aux(Target, Options, Parent) ->
 %% the course of the program shall be linked to the scheduler process.
 interleave_loop(Target, RunCnt, Tickets, Det) ->
     %% Lookup state to replay.
-    case state:load() of
+    case state_load() of
         no_state ->
 	    case Tickets of
 		[] -> {ok, RunCnt - 1};
-		_Any -> {error, RunCnt - 1, lists:reverse(Tickets)}
+		_Any -> {error, RunCnt - 1, ticket:sort(Tickets)}
 	    end;
         ReplayState ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
@@ -294,7 +294,7 @@ search(#context{active = Active, state = State}) ->
     %% Remove a process to be run next from the `actives` set.
     [Next|NewActive] = sets:to_list(Active),
     %% Store all other possible successor states for later exploration.
-    [state:save(state:extend(State, Lid)) || Lid <- NewActive],
+    [state_save(state:extend(State, Lid)) || Lid <- NewActive],
     Next.
 
 %% Block message handler.
@@ -452,6 +452,28 @@ wakeup(Lid, #context{active = Active, blocked = Blocked} = Context) ->
 	    Context#context{active = NewActive, blocked = NewBlocked};
 	false -> Context
     end.
+
+%% Remove and return a state.
+%% If no states available, return 'no_state'.
+state_load() ->
+    case ets:first(?NT_STATE) of
+	'$end_of_table' -> no_state;
+	State ->
+	    ets:delete(?NT_STATE, State),
+	    lists:reverse(State)
+    end.
+
+%% Add a state to the `state` table.
+state_save(State) ->
+    ets:insert(?NT_STATE, {State}).
+
+%% Initialize state table.
+state_start() ->
+    ets:new(?NT_STATE, [named_table]).
+
+%% Clean up state table.
+state_stop() ->
+    ets:delete(?NT_STATE).
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation interface

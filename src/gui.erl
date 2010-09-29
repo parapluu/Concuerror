@@ -467,7 +467,7 @@ analyze() ->
 		0 ->
 		    analysis_init(),
 		    Target = {Module, Function, []},
-		    Opts = [{files, Files}],
+		    Opts = [{files, Files}, {preb, infinite}],
 		    Result = sched:analyze(Target, Opts),
 		    analysis_cleanup(Result);
 		%% If the function to be analyzed is of non-zero arity,
@@ -479,7 +479,7 @@ analyze() ->
 			{ok, Args} ->
 			    analysis_init(),
 			    Target = {Module, Function, Args},
-			    Opts = [{files, Files}],
+			    Opts = [{files, Files}, {preb, infinite}],
 			    Result = sched:analyze(Target, Opts),
 			    analysis_cleanup(Result);
 			%% User pressed 'cancel' or closed dialog window.

@@ -21,12 +21,15 @@
 -define(RP_SCHED, '_._sched').
 
 %% Named ets table names.
--define(NT_REF, '_._ref').
--define(NT_PID, '_._pid').
--define(NT_LID, '_._lid').
--define(NT_STATE, '_._state').
--define(NT_USED, '_._used').
 -define(NT_ERROR, '_._error').
+-define(NT_LID, '_._lid').
+-define(NT_PID, '_._pid').
+-define(NT_REF, '_._ref').
+-define(NT_STATE, ?NT_STATE1).
+-define(NT_STATE1, '_._state1').
+-define(NT_STATE2, '_._state2').
+-define(NT_STATE_TEMP, '_._state_temp').
+-define(NT_USED, '_._used').
 
 %% Internal error return code.
 -define(RET_INTERNAL_ERROR, 1).

@@ -11,7 +11,7 @@
 
 -module(ticket).
 
--export([new/3, get_target/1, get_error/1, get_state/1]).
+-export([new/3, get_target/1, get_error/1, get_state/1, sort/1]).
 
 -export_type([ticket/0]).
 
@@ -40,3 +40,10 @@ get_error({_Target, Error, _ErrorState}) ->
 
 get_state({_Target, _Error, ErrorState}) ->
     ErrorState.
+
+%% Sort a list of tickets according to state.
+-spec sort([ticket()]) -> [ticket()].
+
+sort(Tickets) ->
+    Compare = fun(T1, T2) -> get_state(T1) =< get_state(T2) end,
+    lists:sort(Compare, Tickets).

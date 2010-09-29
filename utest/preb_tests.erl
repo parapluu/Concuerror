@@ -166,7 +166,7 @@ preemption_bounding_test_() ->
 	      ResultPreb = sched:analyze(Target, OptionsPreb),
 	      ?assertEqual(Result, ResultPreb)
 	  end)},
-      {"test12",
+      {"test13",
        ?_test(
 	  begin
 	      Target = {test, test11, []},
@@ -177,8 +177,7 @@ preemption_bounding_test_() ->
 	      ResultPreb = sched:analyze(Target, OptionsPreb),
 	      ?assertEqual(Result, ResultPreb)
 	  end)},
-
-      {"test13",
+      {"test14",
        ?_test(
 	  begin
 	      Target = {test, test12, []},
@@ -189,7 +188,7 @@ preemption_bounding_test_() ->
 	      ResultPreb = sched:analyze(Target, OptionsPreb),
 	      ?assertEqual(Result, ResultPreb)
 	  end)},
-      {"test14",
+      {"test15",
        ?_test(
 	  begin
 	      Target = {test, test13, []},
@@ -200,7 +199,7 @@ preemption_bounding_test_() ->
 	      ResultPreb = sched:analyze(Target, OptionsPreb),
 	      ?assertEqual(Result, ResultPreb)
 	  end)},
-      {"test15",
+      {"test16",
        ?_test(
 	  begin
 	      Target = {test, test14, []},
