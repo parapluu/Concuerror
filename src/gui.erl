@@ -348,8 +348,8 @@ setupErrorPanel(Parent) ->
     ref_add(?ERROR_TEXT, ErrorText),
     PanelSizer = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(PanelSizer, ErrorText,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
+        	[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+        	 {border, 10}]),
     wxWindow:setSizer(Panel, PanelSizer),
     Panel.
 
@@ -506,8 +506,10 @@ analysis_init() ->
 %% (reactivate `analyze` button, etc.).
 analysis_cleanup({error, analysis, _Info, Tickets}) ->
     Errors = [ticket:get_error(Ticket) || Ticket <- Tickets],
-    ErrorTypes = [error:format_error_type(Error) || Error <- Errors],
-    setListItems(?ERROR_LIST, ErrorTypes),
+    ErrorItems = [error:error_type_to_string(Error)
+                  ++ error:error_reason_to_string(Error, short)
+                  || Error <- Errors],
+    setListItems(?ERROR_LIST, ErrorItems),
     ListOfEmpty = lists:duplicate(length(Tickets), []),
     setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty)),
     AnalyzeButton = ref_lookup(?ANALYZE),
@@ -724,10 +726,14 @@ show_details() ->
                         T
                 end,
             Error = ticket:get_error(Ticket),
-            ErrorDescr = error:format_error_descr(Error),
+            ErrorReason = error:error_reason_to_string(Error, long),
+            ErrorStack = error: error_stack_to_string(Error),
             ErrorText = ref_lookup(?ERROR_TEXT),
             wxTextCtrl:clear(ErrorText),
-            wxTextCtrl:appendText(ErrorText, ErrorDescr)
+            Reason = io_lib:format("Reason: ~s~n", [ErrorReason]),
+            Stack = io_lib:format("Stack trace: ~s", [ErrorStack]),
+            wxTextCtrl:appendText(ErrorText, Reason),
+            wxTextCtrl:appendText(ErrorText, Stack)
     end.
 
 %% Function to be moved (to sched or util).

@@ -43,8 +43,9 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Deadlock",
-                           error:format_error_type(ticket:get_error(Ticket)))
+	      ?assertEqual(io_lib:format("~s~n", ["Deadlock"]),
+                           error:error_type_to_string(
+                             ticket:get_error(Ticket)))
 	  end)},
       {"test05",
        ?_test(
@@ -54,8 +55,9 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Deadlock",
-                           error:format_error_type(ticket:get_error(Ticket)))
+	      ?assertEqual(io_lib:format("~s~n", ["Deadlock"]),
+                           error:error_type_to_string(
+                             ticket:get_error(Ticket)))
 	  end)},
       {"test06",
        ?_assertMatch({ok, {test, test06, []}},
@@ -73,8 +75,9 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Exception",
-                           error:format_error_type(ticket:get_error(Ticket)))
+	      ?assertEqual(io_lib:format("~s~n", ["Exception"]),
+                           error:error_type_to_string(
+                             ticket:get_error(Ticket)))
 	  end)},
       {"test09",
        ?_assertMatch({ok, {test, test03, []}},
@@ -94,8 +97,9 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Exception",
-                           error:format_error_type(ticket:get_error(Ticket)))
+	      ?assertEqual(io_lib:format("~s~n", ["Exception"]),
+                           error:error_type_to_string(
+                             ticket:get_error(Ticket)))
 	  end)},
       {"test12",
        ?_test(
@@ -105,8 +109,9 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Assertion violation",
-                           error:format_error_type(ticket:get_error(Ticket)))
+	      ?assertEqual(io_lib:format("~s~n", ["Assertion violation"]),
+                           error:error_type_to_string(
+                             ticket:get_error(Ticket)))
 	  end)},
       {"test13",
        ?_assertMatch({ok, {test, test11, []}},
@@ -128,7 +133,8 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Assertion violation",
-                           error:format_error_type(ticket:get_error(Ticket)))
+	      ?assertEqual(io_lib:format("~s~n", ["Assertion violation"]),
+                           error:error_type_to_string(
+                             ticket:get_error(Ticket)))
 	  end)}
      ]}.

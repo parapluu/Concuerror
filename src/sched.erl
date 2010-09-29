@@ -319,7 +319,7 @@ handler(exit, Pid, #context{details = Det} = Context, Reason) ->
     Type =
         case Reason of
             normal -> normal;
-            _Else -> error:type_from_descr(Reason)
+            _Else -> error:type_from_description(Reason)
         end,
     Lid = lid:from_pid(Pid),
     case Lid of
