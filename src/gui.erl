@@ -40,8 +40,9 @@ start() ->
     ref_add(?FILE_PATH, ""),
     Frame = setupFrame(),
     wxFrame:show(Frame),
-    %% Start the log manager.
-    log:start(?MODULE, wx:get_env()),
+    %% Start the log manager and attach the event handler below.
+    log:start(),
+    log:attach(?MODULE, wx:get_env()),
     %% Start the replay server.
     loop(),
     log:stop(),
@@ -715,7 +716,10 @@ show_details() ->
             Ticket =
                 case wxControlWithItems:getClientData(ErrorList, Id) of
                     {T, []} ->
+			%% Disable log event handler while replaying.
+			log:detach(?MODULE, []),
                         Details = sched:replay(T),
+			log:attach(?MODULE, wx:get_env()),
                         NewData = {T, Details},
                         wxControlWithItems:setClientData(ErrorList, Id,
                                                          NewData),

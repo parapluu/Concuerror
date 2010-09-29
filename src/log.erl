@@ -13,7 +13,7 @@
 %% Non gen_evt exports.
 -export([internal/1, internal/2]).
 %% Log API exports.
--export([start/2, stop/0, log/1, log/2]).
+-export([attach/2, detach/2, start/0, stop/0, log/1, log/2]).
 %% Log callback exports.
 -export([init/1, terminate/2, handle_call/2, handle_info/2,
 	 handle_event/2, code_change/3]).
@@ -55,18 +55,28 @@ internal(String, Args) ->
 %%% API functions
 %%%----------------------------------------------------------------------
 
+%% Attach an event handler module.
+-spec attach(module(), term()) -> term().
+
+attach(Mod, Args) ->
+    gen_event:add_handler(log, Mod, Args).
+
+%% Detach an event handler module.
+-spec detach(module(), term()) -> term().
+
+detach(Mod, Args) ->
+    gen_event:delete_handler(log, Mod, Args).
+
 %% @spec start(atom(), term()) -> {'ok', pid()} |
 %%                                  {'error', {'already_started', pid()}}
 %% @doc: Starts the log event manager.
 %%
 %% `Mod' is the module containing the callback functions.
 %% `Args' are the arguments given to the callback function `Mod:init/1'.
--spec start(module(), term()) -> {'ok', pid()} |
-                                 {'error', {'already_started', pid()}}.
+-spec start() -> {'ok', pid()} | {'error', {'already_started', pid()}}.
 
-start(Mod, Args) ->
-    gen_event:start({local, log}),
-    gen_event:add_handler(log, Mod, Args).
+start() ->
+    gen_event:start({local, log}).
 
 %% @spec stop() -> 'ok'
 %% @doc: Terminates the log event manager.

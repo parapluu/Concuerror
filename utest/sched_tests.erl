@@ -21,7 +21,7 @@
 
 interleave_test_() ->
     {setup,
-     fun() -> log:start(log, []) end,
+     fun() -> log:start() end,
      fun(_) -> log:stop() end,
      [{"test01",
        ?_assertMatch({ok, {test, test01, []}},
