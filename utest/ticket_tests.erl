@@ -17,28 +17,28 @@
 
 get_target_test() ->
     Target = {mymodule, myfunction, []},
-    ErrorType = assertion_violation,
-    ErrorDescr = {{assertion_violation, [{module, mymodule}, {line, 42},
-                                         {expression, "true =:= false"},
-                                         {expected, true}, {value, false}]},
-                  []},
-    Error = error:new(ErrorType, ErrorDescr),
     Files = [],
+    Error = error:stub(),
     ErrorState = state:empty(),
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Target, ticket:get_target(Ticket)).
+
+-spec get_files_test() -> term().
+
+get_files_test() ->
+    Target = {mymodule, myfunction, []},
+    Files = [],
+    Error = error:stub(),
+    ErrorState = state:empty(),
+    Ticket = ticket:new(Target, Files, Error, ErrorState),
+    ?assertEqual(Files, ticket:get_files(Ticket)).
 
 -spec get_error_test() -> term().
 
 get_error_test() ->
     Target = {mymodule, myfunction, []},
-    ErrorType = assertion_violation,
-    ErrorDescr = {{assertion_violation, [{module, mymodule}, {line, 42},
-                                         {expression, "true =:= false"},
-                                         {expected, true}, {value, false}]},
-                  []},
-    Error = error:new(ErrorType, ErrorDescr),
     Files = [],
+    Error = error:stub(),
     ErrorState = state:empty(),
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Error, ticket:get_error(Ticket)).
@@ -47,13 +47,8 @@ get_error_test() ->
 
 get_state_test() ->
     Target = {mymodule, myfunction, []},
-    ErrorType = assertion_violation,
-    ErrorDescr = {{assertion_violation, [{module, mymodule}, {line, 42},
-                                         {expression, "true =:= false"},
-                                         {expected, true}, {value, false}]},
-                  []},
-    Error = error:new(ErrorType, ErrorDescr),
     Files = [],
+    Error = error:stub(),
     ErrorState = state:empty(),
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(ErrorState, ticket:get_state(Ticket)).

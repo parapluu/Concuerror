@@ -13,7 +13,7 @@
 
 -export([new/2, deadlock/1, error_reason_to_string/2,
          error_stack_to_string/1, error_type_to_string/1,
-         type/1, type_from_description/1]).
+         type/1, type_from_description/1, stub/0]).
 
 -export_type([error/0, assertion/0, exception/0]).
 
@@ -106,6 +106,17 @@ type(Other) -> Other.
 type_from_description({{assertion_violation, _Details}, _Stack}) ->
     assertion_violation;
 type_from_description(_Other) -> exception.
+
+%% @doc: Return an error stub for testing purposes.
+-spec stub() -> error().
+
+stub() ->
+    ErrorType = assertion_violation,
+    ErrorDescr = {{assertion_violation, [{module, mymodule}, {line, 42},
+                                         {expression, "true =:= false"},
+                                         {expected, true}, {value, false}]},
+		  []},
+    error:new(ErrorType, ErrorDescr).
 
 %%%----------------------------------------------------------------------
 %%% Helper functions
