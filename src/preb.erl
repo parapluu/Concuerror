@@ -8,7 +8,7 @@
 
 -module(preb).
 
--export([interleave/1]).
+-export([interleave/2]).
 
 -include("gen.hrl").
 
@@ -16,10 +16,7 @@
 %% Options:
 %%   {init_state, InitState}: State to replay (default: state_init()).
 %%   details: Produce detailed interleaving information (see `replay_logger`).
--spec interleave(sched:analysis_target()) -> sched:analysis_ret().
-
-interleave(Target) ->
-    interleave(Target, [{init_state, state:empty()}]).
+-spec interleave(sched:analysis_target(), [term()]) -> sched:analysis_ret().
 
 interleave(Target, Options) ->
     Self = self(),
@@ -30,8 +27,6 @@ interleave(Target, Options) ->
     end.
 
 interleave_aux(Target, Options, Parent) ->
-    {init_state, InitState} = lists:keyfind(init_state, 1, Options),
-    Det = lists:member(details, Options),
     register(?RP_SCHED, self()),
     %% The mailbox is flushed mainly to discard possible `exit` messages
     %% before enabling the `trap_exit` flag.
@@ -40,16 +35,17 @@ interleave_aux(Target, Options, Parent) ->
     %% Start state service.
     state_start(),
     %% Save empty replay state for the first run.
+    {init_state, InitState} = lists:keyfind(init_state, 1, Options),
     state_save(InitState),
-    Result = interleave_outer_loop(Target, 0, [], Det),
+    Result = interleave_outer_loop(Target, 0, [], Options),
     state_stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
 
 %% Outer analysis loop.
 %% Preemption bound starts at 0 and is increased by 1 on each iteration.
-interleave_outer_loop(Target, RunCnt, Tickets, Det) ->
-    {NewRunCnt, NewTickets} = interleave_loop(Target, 1, [], Det),
+interleave_outer_loop(Target, RunCnt, Tickets, Options) ->
+    {NewRunCnt, NewTickets} = interleave_loop(Target, 1, [], Options),
     TotalRunCnt = NewRunCnt + RunCnt,
     TotalTickets = NewTickets ++ Tickets,
     state_swap(),
@@ -59,7 +55,8 @@ interleave_outer_loop(Target, RunCnt, Tickets, Det) ->
 		[] -> {ok, TotalRunCnt};
 		_Any -> {error, TotalRunCnt, ticket:sort(TotalTickets)}
 	    end;
-	_State -> interleave_outer_loop(Target, TotalRunCnt, TotalTickets, Det)
+	_State ->
+	    interleave_outer_loop(Target, TotalRunCnt, TotalTickets, Options)
     end.
 
 %% Main loop for producing process interleavings.
@@ -67,7 +64,8 @@ interleave_outer_loop(Target, RunCnt, Tickets, Det) ->
 %% so that the latter can receive the former's exit message when it
 %% terminates. In the same way, every process that may be spawned in
 %% the course of the program shall be linked to the scheduler process.
-interleave_loop(Target, RunCnt, Tickets, Det) ->
+interleave_loop(Target, RunCnt, Tickets, Options) ->
+    Det = lists:member(details, Options),
     %% Lookup state to replay.
     case state_load() of
         no_state -> {RunCnt - 1, Tickets};
@@ -95,18 +93,15 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
 	    ?debug_1("Run terminated.~n~n"),
 	    %% TODO: Proper cleanup of any remaining processes.
             case Ret of
-                ok -> interleave_loop(Target, RunCnt + 1, Tickets, Det);
+                ok -> interleave_loop(Target, RunCnt + 1, Tickets, Options);
                 {error, Error, ErrorState} ->
-		    Ticket = ticket:new(Target, Error, ErrorState),
-		    interleave_loop(Target, RunCnt + 1, [Ticket|Tickets], Det)
+		    {files, Files} = lists:keyfind(files, 1, Options),
+		    Ticket = ticket:new(Target, Files, Error, ErrorState),
+		    interleave_loop(Target, RunCnt + 1, [Ticket|Tickets],
+				    Options)
             end
     end.
 
-%% Implements the search logic (currently depth-first when looked at combined
-%% with the replay logic).
-%% Given a blocked state (no process running when called), creates all
-%% possible next states, chooses one of them for running and inserts the rest
-%% of them into the `states` table.
 %% Returns the process to be run next.
 search(#context{active = Active, state = State}) ->
     case state:is_empty(State) of

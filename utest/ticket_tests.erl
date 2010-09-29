@@ -23,8 +23,9 @@ get_target_test() ->
                                          {expected, true}, {value, false}]},
                   []},
     Error = error:new(ErrorType, ErrorDescr),
+    Files = [],
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, Error, ErrorState),
+    Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Target, ticket:get_target(Ticket)).
 
 -spec get_error_test() -> term().
@@ -37,8 +38,9 @@ get_error_test() ->
                                          {expected, true}, {value, false}]},
                   []},
     Error = error:new(ErrorType, ErrorDescr),
+    Files = [],
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, Error, ErrorState),
+    Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Error, ticket:get_error(Ticket)).
 
 -spec get_state_test() -> term().
@@ -51,6 +53,7 @@ get_state_test() ->
                                          {expected, true}, {value, false}]},
                   []},
     Error = error:new(ErrorType, ErrorDescr),
+    Files = [],
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, Error, ErrorState),
+    Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(ErrorState, ticket:get_state(Ticket)).

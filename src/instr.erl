@@ -10,11 +10,19 @@
 %%%----------------------------------------------------------------------
 
 -module(instr).
--export([instrument_and_load/1]).
+-export([delete_and_purge/1, instrument_and_load/1]).
 
 -include("gen.hrl").
 
 -define(INCLUDE_DIR, filename:absname("include")).
+
+%% Delete and purge all modules in Files.
+-spec delete_and_purge([file()]) -> 'ok'.
+
+delete_and_purge(Files) ->
+    ModsToPurge = [list_to_atom(filename:basename(F, ".erl")) || F <- Files],
+    [begin code:delete(M), code:purge(M) end || M <- ModsToPurge],
+    ok.
 
 %% @spec instrument_and_load(Files::[file()]) -> 'ok' | 'error'
 %% @doc: Instrument, compile and load a list of files.

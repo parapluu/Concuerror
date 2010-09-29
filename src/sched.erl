@@ -84,8 +84,8 @@ analyze(Target, Options) ->
 	    end,
     %% Set interleave function to be used.
     Interleave = case lists:keyfind(preb, 1, Options) of
-		false -> fun(T) -> interleave(T) end;
-	        {preb, _Bound} -> fun(T) -> preb:interleave(T) end 
+		false -> fun(T, Opt) -> interleave(T, Opt) end;
+	        {preb, _Bound} -> fun(T, Opt) -> preb:interleave(T, Opt) end
 	    end,
     %% Disable error logging messages.
     error_logger:tty(false),
@@ -94,7 +94,8 @@ analyze(Target, Options) ->
 	    ok ->
 		log:log("Running analysis...~n"),
 		{T1, _} = statistics(wall_clock),
-		Result = Interleave(Target),
+		ISOption = {init_state, state:empty()},
+		Result = Interleave(Target, [ISOption|Options]),
 		{T2, _} = statistics(wall_clock),
 		{Mins, Secs} = elapsed_time(T1, T2),
 		case Result of
@@ -114,11 +115,9 @@ analyze(Target, Options) ->
 	    error ->
 		{error, instr, Target}
 	end,
-    %% Purge previously loaded modules.
-    ModsToPurge = [list_to_atom(filename:basename(F, ".erl")) || F <- Files],
-    [begin code:delete(M), code:purge(M) end || M <- ModsToPurge],
+    instr:delete_and_purge(Files),
     Ret.
-
+    
 %% @spec: replay(analysis_target(), state()) -> [proc_action()]
 %% @doc: Replay the given state and return detailed information about the
 %% process interleaving.
@@ -129,7 +128,11 @@ replay(Ticket) ->
     replay_logger:start_replay(),
     Target = ticket:get_target(Ticket),
     State = ticket:get_state(Ticket),
-    interleave(Target, [details, {init_state, State}]),
+    Files = ticket:get_files(Ticket),
+    Options = [details, {init_state, State}, {files, Files}],
+    instr:instrument_and_load(Files),
+    interleave(Target, Options),
+    instr:delete_and_purge(Files),
     Result = replay_logger:get_replay(),
     replay_logger:stop(),
     Result.
@@ -138,9 +141,6 @@ replay(Ticket) ->
 %% Options:
 %%   {init_state, InitState}: State to replay (default: state_init()).
 %%   details: Produce detailed interleaving information (see `replay_logger`).
-interleave(Target) ->
-    interleave(Target, [{init_state, state:empty()}]).
-
 interleave(Target, Options) ->
     Self = self(),
     %% TODO: Need spawn_link?
@@ -150,8 +150,6 @@ interleave(Target, Options) ->
     end.
 
 interleave_aux(Target, Options, Parent) ->
-    {init_state, InitState} = lists:keyfind(init_state, 1, Options),
-    Det = lists:member(details, Options),
     register(?RP_SCHED, self()),
     %% The mailbox is flushed mainly to discard possible `exit` messages
     %% before enabling the `trap_exit` flag.
@@ -160,8 +158,9 @@ interleave_aux(Target, Options, Parent) ->
     %% Initialize state table.
     state_start(),
     %% Save empty replay state for the first run.
+    {init_state, InitState} = lists:keyfind(init_state, 1, Options),
     state_save(InitState),
-    Result = interleave_loop(Target, 1, [], Det),
+    Result = interleave_loop(Target, 1, [], Options),
     state_stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
@@ -171,7 +170,8 @@ interleave_aux(Target, Options, Parent) ->
 %% so that the latter can receive the former's exit message when it
 %% terminates. In the same way, every process that may be spawned in
 %% the course of the program shall be linked to the scheduler process.
-interleave_loop(Target, RunCnt, Tickets, Det) ->
+interleave_loop(Target, RunCnt, Tickets, Options) ->
+    Det = lists:member(details, Options),
     %% Lookup state to replay.
     case state_load() of
         no_state ->
@@ -203,10 +203,12 @@ interleave_loop(Target, RunCnt, Tickets, Det) ->
 	    ?debug_1("Run terminated.~n~n"),
 	    %% TODO: Proper cleanup of any remaining processes.
             case Ret of
-                ok -> interleave_loop(Target, RunCnt + 1, Tickets, Det);
+                ok -> interleave_loop(Target, RunCnt + 1, Tickets, Options);
                 {error, Error, ErrorState} ->
-		    Ticket = ticket:new(Target, Error, ErrorState),
-		    interleave_loop(Target, RunCnt + 1, [Ticket|Tickets], Det)
+		    {files, Files} = lists:keyfind(files, 1, Options),
+		    Ticket = ticket:new(Target, Files, Error, ErrorState),
+		    interleave_loop(Target, RunCnt + 1, [Ticket|Tickets],
+				    Options)
             end
     end.
 
