@@ -77,6 +77,13 @@
 %%% Types
 %%%----------------------------------------------------------------------
 
--type file() :: file:filename().
+-type bound() :: 'infinite' | non_neg_integer().
 
 -type context() :: #context{}.
+
+-type file() :: file:filename().
+
+-type options() :: [{'details', 'true'} |
+                    {'files', [file()]} |
+                    {'init_state', state:state()} |
+                    {'preb',  bound()}].

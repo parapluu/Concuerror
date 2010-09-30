@@ -72,9 +72,9 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
-%% @spec: analyze(analysis_target(), [term()]) -> analysis_ret()
+%% @spec: analyze(analysis_target(), options()) -> analysis_ret()
 %% @doc: Produce all interleavings of running `Target'.
--spec analyze(analysis_target(), [term()]) -> analysis_ret().
+-spec analyze(analysis_target(), options()) -> analysis_ret().
 
 analyze(Target, Options) ->
     %% List of files to instrument.
@@ -129,7 +129,7 @@ replay(Ticket) ->
     Target = ticket:get_target(Ticket),
     State = ticket:get_state(Ticket),
     Files = ticket:get_files(Ticket),
-    Options = [details, {init_state, State}, {files, Files}],
+    Options = [{details, true}, {init_state, State}, {files, Files}],
     instr:instrument_and_load(Files),
     interleave(Target, Options),
     instr:delete_and_purge(Files),
@@ -140,7 +140,8 @@ replay(Ticket) ->
 %% Produce all possible process interleavings of (Mod, Fun, Args).
 %% Options:
 %%   {init_state, InitState}: State to replay (default: state_init()).
-%%   details: Produce detailed interleaving information (see `replay_logger`).
+%%   {details, true}: Produce detailed interleaving information
+%%                    (see `replay_logger`).
 interleave(Target, Options) ->
     Self = self(),
     %% TODO: Need spawn_link?
@@ -171,7 +172,10 @@ interleave_aux(Target, Options, Parent) ->
 %% terminates. In the same way, every process that may be spawned in
 %% the course of the program shall be linked to the scheduler process.
 interleave_loop(Target, RunCnt, Tickets, Options) ->
-    Det = lists:member(details, Options),
+    Det = case lists:keyfind(details, 1, Options) of
+              false -> false;
+              {details, true} -> true
+          end,
     %% Lookup state to replay.
     case state_load() of
         no_state ->

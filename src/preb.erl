@@ -15,8 +15,9 @@
 %% Produce all possible process interleavings of (Mod, Fun, Args).
 %% Options:
 %%   {init_state, InitState}: State to replay (default: state_init()).
-%%   details: Produce detailed interleaving information (see `replay_logger`).
--spec interleave(sched:analysis_target(), [term()]) -> sched:analysis_ret().
+%%   {details, true}: Produce detailed interleaving information
+%%                    (see `replay_logger`).
+-spec interleave(sched:analysis_target(), options()) -> sched:analysis_ret().
 
 interleave(Target, Options) ->
     Self = self(),
@@ -65,7 +66,10 @@ interleave_outer_loop(Target, RunCnt, Tickets, Options) ->
 %% terminates. In the same way, every process that may be spawned in
 %% the course of the program shall be linked to the scheduler process.
 interleave_loop(Target, RunCnt, Tickets, Options) ->
-    Det = lists:member(details, Options),
+    Det = case lists:keyfind(details, 1, Options) of
+              false -> false;
+              {details, true} -> true
+          end,
     %% Lookup state to replay.
     case state_load() of
         no_state -> {RunCnt - 1, Tickets};
@@ -123,7 +127,7 @@ search(#context{active = Active, state = State}) ->
 			[INext|INewActive] = sets:to_list(Active),
 			{INext, INewActive}
 		end,
-	    %%io:format("Search - NewActive: ~p~n", [NewActive]),
+	    %% io:format("Search - NewActive: ~p~n", [NewActive]),
 	    %% Store all other possible successor states for later exploration.
 	    [state_save(state:extend(State, Lid)) || Lid <- NewActive],
 	    Next
@@ -143,7 +147,7 @@ state_load() ->
 	    lists:reverse(State)
     end.
 
-%% Return a state without remoing it.
+%% Return a state without removing it.
 %% If no states available, return 'no_state'.
 state_peak() ->
     case ets:first(?NT_STATE1) of
