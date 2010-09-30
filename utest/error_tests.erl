@@ -30,24 +30,14 @@ deadlock_test() ->
 -spec error_type_to_string_test() -> term().
 
 error_type_to_string_test() ->
-    ErrorType = assertion_violation,
-    ErrorDescr = {{assertion_violation, [{module, mymodule}, {line, 42},
-                                         {expression, "true =:= false"},
-                                         {expected, true}, {value, false}]},
-                  []},
-    Error = error:new(ErrorType, ErrorDescr),
+    Error = error:stub(),
     ?assertEqual(io_lib:format("~s~n", ["Assertion violation"]),
                  error:error_type_to_string(Error)).
 
 -spec error_reason_to_string1_test() -> term().
 
 error_reason_to_string1_test() ->
-    ErrorType = assertion_violation,
-    ErrorDescr = {{assertion_violation, [{module, mymodule}, {line, 42},
-                                         {expression, "true =:= false"},
-                                         {expected, true}, {value, false}]},
-                  []},
-    Error = error:new(ErrorType, ErrorDescr),
+    Error = error:stub(),
     ?assertEqual(io_lib:format("On line ~p of module ~p, "
                                ++ "the expression ~s evaluates to ~p "
                                ++ "instead of ~p~n",
@@ -104,12 +94,7 @@ error_reason_to_string6_test() ->
 -spec error_stack_to_string1_test() -> term().
 
 error_stack_to_string1_test() ->
-    ErrorType = assertion_violation,
-    ErrorDescr = {{assertion_violation, [{module, mymodule}, {line, 42},
-                                         {expression, "true =:= false"},
-                                         {expected, true}, {value, false}]},
-                  []},
-    Error = error:new(ErrorType, ErrorDescr),
+    Error = error:stub(),
     ?assertEqual(io_lib:format("~p", [[]]),
                  error:error_stack_to_string(Error)).
 
