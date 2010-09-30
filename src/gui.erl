@@ -326,7 +326,7 @@ setupLogNotebook(Parent) ->
     ErrorPanel = setupErrorPanel(Notebook),
     %% Add tabs to log notebook.
     wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
-    wxNotebook:addPage(Notebook, ErrorPanel, "Error details",
+    wxNotebook:addPage(Notebook, ErrorPanel, "Problems",
                        [{bSelect, false}]),
     Notebook.
 
@@ -543,13 +543,13 @@ argDialog(Parent, Argnum) ->
     wxSizer:fit(TopSizer, Dialog),
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
-	    LogText = ref_lookup(?LOG_TEXT),
-	    wxTextCtrl:clear(LogText),	    
-	    ValResult = validateArgs(0, Refs, [], LogText),
+	    ErrorText = ref_lookup(?ERROR_TEXT),
+	    wxTextCtrl:clear(ErrorText),
+	    ValResult = validateArgs(0, Refs, [], ErrorText),
 	    wxDialog:destroy(Dialog),
 	    case ValResult of
 		{ok, Args} -> {ok, Args};
-		_Other -> continue
+		_Other -> argDialog(Parent, Argnum)
 	    end;
 	_Other -> wxDialog:destroy(Dialog), continue
     end.
