@@ -505,8 +505,9 @@ analysis_init() ->
 %% (reactivate `analyze` button, etc.).
 analysis_cleanup({error, analysis, _Info, Tickets}) ->
     Errors = [ticket:get_error(Ticket) || Ticket <- Tickets],
-    ErrorItems = [error:error_type_to_string(Error)
-                  ++ error:error_reason_to_string(Error, short)
+    ErrorItems = [io_lib:format("~s~n~s",
+                                [error:error_type_to_string(Error),
+                                 error:error_reason_to_string(Error, short)])
                   || Error <- Errors],
     setListItems(?ERROR_LIST, ErrorItems),
     ListOfEmpty = lists:duplicate(length(Tickets), []),

@@ -86,13 +86,11 @@ error_stack_to_string({ErrorType, ErrorDescr}) ->
 -spec error_type_to_string(error()) -> string().
 
 error_type_to_string({ErrorType, _ErrorDescr}) ->
-    Str =
-        case ErrorType of
-            assertion_violation -> "Assertion violation";
-            deadlock            -> "Deadlock";
-            exception           -> "Exception"
-        end,
-    io_lib:format("~s~n", [Str]).
+    case ErrorType of
+        assertion_violation -> "Assertion violation";
+        deadlock            -> "Deadlock";
+        exception           -> "Exception"
+    end.
 
 %% @doc: Return the error type for the given error.
 -spec type(term()) -> term().
@@ -136,7 +134,7 @@ assertion_reason_to_string(Mod, L, Expr, Val, Exp, Details) ->
         long ->
             io_lib:format("On line ~p of module ~p, "
                           ++ "the expression ~s evaluates to ~p "
-                          ++ "instead of ~p~n",
+                          ++ "instead of ~p",
                           [L, Mod, Expr, Val, Exp])
     end.
 
@@ -156,9 +154,9 @@ deadlock_reason_to_string(Ps, Details) ->
         long ->
             case Ps of
                 [_] ->
-                    io_lib:format("Process ~s blocks~n", [Str]);
+                    io_lib:format("Process ~s blocks", [Str]);
                 _More ->
-                    io_lib:format("Processes ~s block~n", [Str])
+                    io_lib:format("Processes ~s block", [Str])
             end
     end.
 
@@ -170,18 +168,18 @@ exception_reason_to_string({Reason, _Stack} = E, Details) ->
         true ->
             case Details of
                 short -> io_lib:format("Exit: ~p", [E]);
-                long ->  io_lib:format("~p~n", [E])
+                long ->  io_lib:format("~p", [E])
             end;
         false ->
             case Details of
                 short -> io_lib:format("Exit: ~p", [Reason]);
-                long -> io_lib:format("~p~n", [Reason])
+                long -> io_lib:format("~p", [Reason])
             end
     end;         
 exception_reason_to_string(E, Details) ->
     case Details of
         short -> io_lib:format("Exit: ~p", [E]);
-        long -> io_lib:format("~p~n", [E])
+        long -> io_lib:format("~p", [E])
     end.
 
 exception_stack_to_string({Reason, Stack}) ->

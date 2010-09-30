@@ -31,8 +31,7 @@ deadlock_test() ->
 
 error_type_to_string_test() ->
     Error = error:stub(),
-    ?assertEqual(io_lib:format("~s~n", ["Assertion violation"]),
-                 error:error_type_to_string(Error)).
+    ?assertEqual("Assertion violation", error:error_type_to_string(Error)).
 
 -spec error_reason_to_string1_test() -> term().
 
@@ -40,7 +39,7 @@ error_reason_to_string1_test() ->
     Error = error:stub(),
     ?assertEqual(io_lib:format("On line ~p of module ~p, "
                                ++ "the expression ~s evaluates to ~p "
-                               ++ "instead of ~p~n",
+                               ++ "instead of ~p",
                                [42, mymodule, "true =:= false", false, true]),
                  error:error_reason_to_string(Error, long)).
 
@@ -50,7 +49,7 @@ error_reason_to_string2_test() ->
     ErrorType = deadlock,
     ErrorDescr = ["P1"],
     Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("Process ~s blocks~n", ["P1"]),
+    ?assertEqual(io_lib:format("Process ~s blocks", ["P1"]),
                  error:error_reason_to_string(Error, long)).
 
 -spec error_reason_to_string3_test() -> term().
@@ -60,7 +59,7 @@ error_reason_to_string3_test() ->
     ErrorDescr = ["P1", "P1.1"],
     Error = error:new(ErrorType, ErrorDescr),
     Ps = io_lib:format("~s and ~s", ["P1", "P1.1"]),
-    ?assertEqual(io_lib:format("Processes ~s block~n", [Ps]),
+    ?assertEqual(io_lib:format("Processes ~s block", [Ps]),
                  error:error_reason_to_string(Error, long)).
 
 -spec error_reason_to_string4_test() -> term().
@@ -70,7 +69,7 @@ error_reason_to_string4_test() ->
     ErrorDescr = ["P1", "P1.1", "P1.2"],
     Error = error:new(ErrorType, ErrorDescr),
     Ps = io_lib:format("~s, ~s and ~s", ["P1", "P1.1", "P1.2"]),
-    ?assertEqual(io_lib:format("Processes ~s block~n", [Ps]),
+    ?assertEqual(io_lib:format("Processes ~s block", [Ps]),
                  error:error_reason_to_string(Error, long)).
 
 -spec error_reason_to_string5_test() -> term().
@@ -79,7 +78,7 @@ error_reason_to_string5_test() ->
     ErrorType = exception,
     ErrorDescr = foobar,
     Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("~p~n", [ErrorDescr]),
+    ?assertEqual(io_lib:format("~p", [ErrorDescr]),
                  error:error_reason_to_string(Error, long)).
 
 -spec error_reason_to_string6_test() -> term().
@@ -88,7 +87,7 @@ error_reason_to_string6_test() ->
     ErrorType = exception,
     ErrorDescr = {badarg, []},
     Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("~p~n", [badarg]),
+    ?assertEqual(io_lib:format("~p", [badarg]),
                  error:error_reason_to_string(Error, long)).
 
 -spec error_stack_to_string1_test() -> term().
