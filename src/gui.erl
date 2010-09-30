@@ -465,12 +465,7 @@ analyze() ->
     %% Check if a module and function is selected.
     if Module =/= '', Function =/= '' ->
 	    case Arity of
-		0 ->
-		    analysis_init(),
-		    Target = {Module, Function, []},
-		    Opts = [{files, Files}, {preb, infinite}],
-		    Result = sched:analyze(Target, Opts),
-		    analysis_cleanup(Result);
+		0 -> analyze_aux(Module, Function, [], Files);
 		%% If the function to be analyzed is of non-zero arity,
 		%% a dialog window is displayed prompting the user to enter
 		%% the function's arguments.
@@ -478,17 +473,20 @@ analyze() ->
 		    Frame = ref_lookup(?FRAME),
 		    case argDialog(Frame, Count) of
 			{ok, Args} ->
-			    analysis_init(),
-			    Target = {Module, Function, Args},
-			    Opts = [{files, Files}, {preb, infinite}],
-			    Result = sched:analyze(Target, Opts),
-			    analysis_cleanup(Result);
+                            analyze_aux(Module, Function, Args, Files);
 			%% User pressed 'cancel' or closed dialog window.
 			_Other -> continue
 		    end
 	    end;
        true -> continue
     end.
+
+analyze_aux(Module, Function, Args, Files) ->
+    analysis_init(),
+    Target = {Module, Function, Args},
+    Opts = [{files, Files}, {preb, infinite}],
+    Result = sched:analyze(Target, Opts),
+    analysis_cleanup(Result).
 
 %% Initialization actions before starting analysis (clear log, etc.).
 analysis_init() ->
