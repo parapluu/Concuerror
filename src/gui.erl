@@ -38,6 +38,8 @@ start() ->
     ref_start(),
     %% Set initial file load path (used by the module addition dialog).
     ref_add(?FILE_PATH, ""),
+    %% Load preferences from file or if not found, load defaults.
+    loadPrefs(),
     Frame = setupFrame(),
     wxFrame:show(Frame),
     %% Start the log manager and attach the event handler below.
@@ -46,6 +48,8 @@ start() ->
     %% Start the replay server.
     loop(),
     log:stop(),
+    %% Save possibly edited preferences to file.
+    savePrefs(),
     ref_stop(),
     wx:destroy(),
     unregister(?RP_GUI).
@@ -393,7 +397,7 @@ ref_lookup(Id) ->
     ets:lookup_element(?NT_REF, Id, 2).
 
 ref_start() ->
-    ets:new(?NT_REF, [named_table]).
+    ets:new(?NT_REF, [set, named_table]).
 
 ref_stop() ->
     ets:delete(?NT_REF).
@@ -484,8 +488,12 @@ analyze() ->
 analyze_aux(Module, Function, Args, Files) ->
     analysis_init(),
     Target = {Module, Function, Args},
-    Opts = [{files, Files}, {preb, infinite}],
-    Result = sched:analyze(Target, Opts),
+    Opts = [{files, Files}],
+    NewOpts = case ref_lookup(?PREF_PREB_ENABLED) of
+		  true -> Opts ++ [{preb, ref_lookup(?PREF_PREB_BOUND)}];
+		  false -> Opts
+	      end,
+    Result = sched:analyze(Target, NewOpts),
     analysis_cleanup(Result).
 
 %% Initialization actions before starting analysis (clear log, etc.).
@@ -553,6 +561,93 @@ argDialog(Parent, Argnum) ->
 	    end;
 	_Other -> wxDialog:destroy(Dialog), continue
     end.
+
+%% Preferences dialog.
+prefsDialog(Parent) ->
+    %% Get current preferences.
+    PrebEnabled = ref_lookup(?PREF_PREB_ENABLED),
+    PrebBound = ref_lookup(?PREF_PREB_BOUND),
+    %% Set up sizers and components.
+    Dialog = wxDialog:new(Parent, ?wxID_ANY, "Preferences"),
+    TopSizer = wxBoxSizer:new(?wxVERTICAL),
+    %% Preemption bounding options.
+    PrebBox = wxStaticBox:new(Dialog, ?wxID_ANY, "Preemption bounding"),
+    PrebBoxSizer = wxStaticBoxSizer:new(PrebBox, ?wxVERTICAL),
+    HorizSizer1 = wxBoxSizer:new(?wxHORIZONTAL),
+    %% Semi-hack: Custom width, default height.
+    PrebEnabledCheckBox = wxCheckBox:new(Dialog, ?PREB_ENABLED_CBOX,
+					 "",
+					 [{style, ?wxALIGN_RIGHT}]),
+    ref_add(?PREB_ENABLED_CBOX, PrebEnabledCheckBox),
+    wxCheckBox:setValue(PrebEnabledCheckBox, PrebEnabled),
+    wxSizer:add(HorizSizer1,
+		wxStaticText:new(Dialog, ?wxID_ANY,
+				 "Enable preemption bounding:"),
+		[{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+		 {border, 0}]),
+    wxSizer:add(HorizSizer1,
+		PrebEnabledCheckBox,
+		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+                 {border, 0}]),
+    HorizSizer2 = wxBoxSizer:new(?wxHORIZONTAL),
+    PrebBoundSpinCtrl = wxSpinCtrl:new(Dialog, [{id, ?PREB_BOUND_SPIN},
+						{size, {50, -1}},
+						{min, 0},
+						{initial, PrebBound}]),
+    wxSizer:add(HorizSizer2,
+		wxStaticText:new(Dialog, ?wxID_ANY, "Preemption bound:"),
+		[{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+                 {border, 0}]),
+    wxSizer:add(HorizSizer2,
+		PrebBoundSpinCtrl,
+		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+                 {border, 0}]),
+    wxSizer:add(PrebBoxSizer,
+		HorizSizer1,
+		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxSizer:add(PrebBoxSizer,
+		HorizSizer2,
+		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    %% Buttons.
+    ButtonSizer = wxBoxSizer:new(?wxHORIZONTAL),
+    wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_CANCEL),
+		[{proportion, 3}, {flag, ?wxLEFT}, {border, 0}]),
+    wxSizer:addStretchSpacer(ButtonSizer),
+    wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_OK, [{label, "&Save"}]),
+		[{proportion, 4}, {flag, ?wxRIGHT}, {border, 0}]),
+    %% Top level sizer.
+    wxSizer:add(TopSizer, PrebBoxSizer,
+		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxSizer:add(TopSizer, ButtonSizer,
+                [{proportion, 0},
+		 {flag, ?wxALIGN_CENTER bor ?wxEXPAND bor
+		        ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
+		 {border, 10}]),
+    wxWindow:setSizer(Dialog, TopSizer),
+    wxSizer:fit(TopSizer, Dialog),
+    %% Show dialog.
+    case wxDialog:showModal(Dialog) of
+	?wxID_OK ->
+	    %% Save preferences.
+	    ref_add(?PREF_PREB_ENABLED,
+		    wxCheckBox:getValue(PrebEnabledCheckBox)),
+	    ref_add(?PREF_PREB_BOUND,
+		    wxSpinCtrl:getValue(PrebBoundSpinCtrl));
+	_Other ->
+	    continue
+    end.
+
+%% For now always load default preferences on startup.
+loadPrefs() ->
+    [ref_add(Id, Value) || {Id, Value} <- ?DEFAULT_PREFS].
+
+%% Do nothing for now.
+savePrefs() ->
+    ok.
+    
 
 %% Clear module list.
 clear() ->
@@ -854,6 +949,10 @@ loop() ->
 	    loop();
 	#wx{id = ?CLEAR, event = #wxCommand{type = command_menu_selected}} ->
 	    clear(),
+	    loop();
+	#wx{id = ?PREFS, event = #wxCommand{type = command_menu_selected}} ->
+	    Frame = ref_lookup(?FRAME),
+	    prefsDialog(Frame),
 	    loop();
 	#wx{id = ?THEME_LIGHT,
 	    event = #wxCommand{type = command_menu_selected}} ->

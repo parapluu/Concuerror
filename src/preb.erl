@@ -37,14 +37,20 @@ interleave_aux(Target, Options, Parent) ->
     %% Save empty replay state for the first run.
     {init_state, InitState} = lists:keyfind(init_state, 1, Options),
     state_save(InitState),
-    Result = interleave_outer_loop(Target, 0, [], Options),
+    {preb, Bound} = lists:keyfind(preb, 1, Options),
+    Result = interleave_outer_loop(Target, 0, [], -2, Bound, Options),
     state_stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
 
 %% Outer analysis loop.
 %% Preemption bound starts at 0 and is increased by 1 on each iteration.
-interleave_outer_loop(Target, RunCnt, Tickets, Options) ->
+interleave_outer_loop(_T, RunCnt, Tickets, MaxBound, MaxBound, _Opt) ->
+    case Tickets of
+	[] -> {ok, RunCnt};
+	_Any -> {error, RunCnt, ticket:sort(Tickets)}
+    end;
+interleave_outer_loop(Target, RunCnt, Tickets, CurrBound, MaxBound, Options) ->
     {NewRunCnt, NewTickets} = interleave_loop(Target, 1, [], Options),
     TotalRunCnt = NewRunCnt + RunCnt,
     TotalTickets = NewTickets ++ Tickets,
@@ -53,10 +59,11 @@ interleave_outer_loop(Target, RunCnt, Tickets, Options) ->
 	no_state ->
 	    case TotalTickets of
 		[] -> {ok, TotalRunCnt};
-		_Any -> {error, TotalRunCnt, ticket:sort(TotalTickets)}
+		_Any -> {error, TotalRunCnt, ticket:sort(TotalTickets)}	
 	    end;
 	_State ->
-	    interleave_outer_loop(Target, TotalRunCnt, TotalTickets, Options)
+	    interleave_outer_loop(Target, TotalRunCnt, TotalTickets,
+				  CurrBound + 1, MaxBound, Options)
     end.
 
 %% Main loop for producing process interleavings.

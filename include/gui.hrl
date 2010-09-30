@@ -10,13 +10,16 @@
 %%%----------------------------------------------------------------------
 
 %% Initial frame size.
--define(FRAME_SIZE_INIT, {1042, 768}).
+-define(FRAME_SIZE_INIT, {1024, 768}).
 
 %% Menu specification:
 %%    [{MenuName1, [MenuItem11, MenuItem12, ...]}, ...]
 -define(MENU_SPEC,
 	[{"&File",
 	  [[{id, ?EXIT}, {help, "Quit CED."}]]},
+	 {"&Edit",
+	  [[{id, ?PREFS}, {text, "&Preferences...\tCtrl-P"},
+	    {help, "Edit CED preferences."}]]},
 	 {"&Module",
 	  [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
 	    {help, "Add an existing erlang module."}],
@@ -55,7 +58,7 @@ A tool for finding concurrency bugs in Erlang programs.
 %% File paths
 -define(ICON_PATH, "img/icon.png").
 
-%% Local ID definitions
+%% GUI compoenent definitions
 -define(ABOUT, ?wxID_ABOUT).
 -define(ADD, ?wxID_ADD).
 -define(CLEAR, ?wxID_CLEAR).
@@ -77,12 +80,26 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(THEME_LIGHT, 511).
 -define(THEME_DARK, 512).
 -define(REFRESH, 513).
--define(FILE_PATH, 514).
--define(PROC_TEXT, 515).
--define(LOG_NOTEBOOK, 516).
--define(ERROR_LIST, 517).
--define(ILEAVE_LIST, 518).
--define(ERROR_TEXT, 519).
+-define(PROC_TEXT, 514).
+-define(LOG_NOTEBOOK, 515).
+-define(ERROR_LIST, 516).
+-define(ILEAVE_LIST, 517).
+-define(ERROR_TEXT, 518).
+-define(PREFS, 519).
+-define(PREB_ENABLED_CBOX, 520).
+-define(PREB_BOUND_SPIN, 521).
+
+%% Preferences related definitions
+-define(PREF_PREB_ENABLED, 561).
+-define(PREF_PREB_BOUND, 562).
+
+%% Other definitions
+-define(FILE_PATH, 560).
+
+%% Default preferences
+-define(DEFAULT_PREFS,
+	[{?PREF_PREB_ENABLED, true},
+	 {?PREF_PREB_BOUND, 2}]).
 
 %% Erlang keywords
 -define(KEYWORDS, "after begin case try cond catch andalso orelse end fun "
