@@ -56,13 +56,13 @@ internal(String, Args) ->
 %%%----------------------------------------------------------------------
 
 %% Attach an event handler module.
--spec attach(module(), term()) -> term().
+-spec attach(module(), term()) -> {'ok', state()}.
 
 attach(Mod, Args) ->
     gen_event:add_handler(log, Mod, Args).
 
 %% Detach an event handler module.
--spec detach(module(), term()) -> term().
+-spec detach(module(), term()) -> 'ok'.
 
 detach(Mod, Args) ->
     gen_event:delete_handler(log, Mod, Args).
