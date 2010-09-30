@@ -90,6 +90,50 @@ error_reason_to_string6_test() ->
     ?assertEqual(io_lib:format("~p", [badarg]),
                  error:error_reason_to_string(Error, long)).
 
+-spec error_reason_to_string7_test() -> term().
+
+error_reason_to_string7_test() ->
+    Error = error:stub(),
+    ?assertEqual(io_lib:format("Module: ~p, Line: ~p", [mymodule, 42]),
+                 error:error_reason_to_string(Error, short)).
+
+-spec error_reason_to_string8_test() -> term().
+
+error_reason_to_string8_test() ->
+    ErrorType = deadlock,
+    ErrorDescr = ["P1"],
+    Error = error:new(ErrorType, ErrorDescr),
+    ?assertEqual(io_lib:format("Process: ~s", ["P1"]),
+                 error:error_reason_to_string(Error, short)).
+
+-spec error_reason_to_string9_test() -> term().
+
+error_reason_to_string9_test() ->
+    ErrorType = deadlock,
+    ErrorDescr = ["P1", "P1.1"],
+    Error = error:new(ErrorType, ErrorDescr),
+    Ps = io_lib:format("~s and ~s", ["P1", "P1.1"]),
+    ?assertEqual(io_lib:format("Processes: ~s", [Ps]),
+                 error:error_reason_to_string(Error, short)).
+
+-spec error_reason_to_string10_test() -> term().
+
+error_reason_to_string10_test() ->
+    ErrorType = exception,
+    ErrorDescr = foobar,
+    Error = error:new(ErrorType, ErrorDescr),
+    ?assertEqual(io_lib:format("Exit: ~p", [ErrorDescr]),
+                 error:error_reason_to_string(Error, short)).
+
+-spec error_reason_to_string11_test() -> term().
+
+error_reason_to_string11_test() ->
+    ErrorType = exception,
+    ErrorDescr = {badarg, []},
+    Error = error:new(ErrorType, ErrorDescr),
+    ?assertEqual(io_lib:format("Exit: ~p", [badarg]),
+                 error:error_reason_to_string(Error, short)).
+
 -spec error_stack_to_string1_test() -> term().
 
 error_stack_to_string1_test() ->
