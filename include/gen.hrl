@@ -83,7 +83,7 @@
 
 -type file() :: file:filename().
 
--type options() :: [{'details', 'true'} |
+-type options() :: ['details' |
                     {'files', [file()]} |
                     {'init_state', state:state()} |
                     {'preb',  bound()}].
