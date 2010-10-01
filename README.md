@@ -1,8 +1,8 @@
 Howto
 ======
 
-* Build:	  make
-* Build doc:      make doc
-* Cleanup:        make clean
-* Run pulse GUI:  pulse_gui.sh
-* Run unit tests: test.sh
+* Build CED      : make
+* Build doc      : make doc
+* Cleanup        : make clean
+* Run CED GUI    : run.sh
+* Run unit tests : test.sh
