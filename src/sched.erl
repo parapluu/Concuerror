@@ -336,12 +336,17 @@ handler(exit, Pid, #context{details = Det} = Context, Reason) ->
 	    end,
 	    %% If the exception was caused by an assertion violation, propagate
 	    %% it to the driver via the `error` field of the `context` record.
-            case Type of
-                normal -> Context;
-		_Other ->
-                    Error = error:new(Type, Reason),
-		    Context#context{error = Error}
-	    end
+	    NewContext = 
+		case Type of
+		    normal -> Context;
+		    _Other ->
+			Error = error:new(Type, Reason),
+			Context#context{error = Error}
+		end,
+	    %% Temporary solution: When a process exits, unblock all blocked
+	    %% processes, so that they may receive an 'EXIT' message if they
+	    %% have enabled the 'trap_exit' process flag.
+	    wakeup_all(NewContext)
     end;
 
 %% Link message handler.
@@ -454,6 +459,11 @@ wakeup(Lid, #context{active = Active, blocked = Blocked} = Context) ->
 	    Context#context{active = NewActive, blocked = NewBlocked};
 	false -> Context
     end.
+
+wakeup_all(#context{active = Active, blocked = Blocked} = Context) ->
+    NewActive = sets:union(Active, Blocked),
+    NewBlocked = sets:new(),
+    Context#context{active = NewActive, blocked = NewBlocked}.
 
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
