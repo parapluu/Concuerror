@@ -16,10 +16,11 @@
 %%    [{MenuName1, [MenuItem11, MenuItem12, ...]}, ...]
 -define(MENU_SPEC,
 	[{"&File",
-          [[{id, ?IMPORT}, {text, "Import..."},
+          [[{id, ?IMPORT}, {text, "&Import...\tCtrl-I"},
             {help, "Import analysis information from file."}],
-           [{id, ?EXPORT}, {text, "Export..."},
+           [{id, ?EXPORT}, {text, "&Export...\tCtrl-E"},
             {help, "Export analysis information to file."}],
+	   [{id, ?wxID_SEPARATOR}, {kind, ?wxITEM_SEPARATOR}],
            [{id, ?EXIT}, {help, "Quit CED."}]]},
 	 {"&Edit",
 	  [[{id, ?PREFS}, {text, "&Preferences...\tCtrl-P"},
