@@ -555,7 +555,11 @@ rep_receive_notify(From, Msg) ->
 
 rep_send(Dest, Msg) ->
     {_Self, RealMsg} = Dest ! Msg,
-    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {Dest, RealMsg}},
+    NewDest = case is_atom(Dest) of
+		  true -> whereis(Dest);
+		  false -> Dest
+	      end,
+    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, RealMsg}},
     rep_yield(),
     RealMsg.
 
