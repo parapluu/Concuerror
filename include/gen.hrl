@@ -14,6 +14,9 @@
 -define(APP_ATOM, 'CED').
 -define(APP_STRING, "CED").
 
+%% Application file.
+-define(APP_FILE, ".ced").
+
 %% Registered process names.
 -define(RP_GUI, '_._gui').
 -define(RP_REPLAY_SERVER, '_._replay_server').
@@ -30,6 +33,12 @@
 -define(NT_STATE2, '_._state2').
 -define(NT_STATE_TEMP, '_._state_temp').
 -define(NT_USED, '_._used').
+
+%% Default export file.
+-define(EXPORT_FILE, "snapshot").
+
+%% Import directory.
+-define(IMPORT_DIR, "import").
 
 %% Internal error return code.
 -define(RET_INTERNAL_ERROR, 1).

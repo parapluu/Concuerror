@@ -55,6 +55,7 @@ CORE_MODULES = \
 	lid \
 	preb \
 	sched \
+	snapshot \
 	state \
 	ticket \
 	util

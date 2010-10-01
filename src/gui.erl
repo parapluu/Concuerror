@@ -40,6 +40,7 @@ start() ->
     ref_add(?FILE_PATH, ""),
     %% Load preferences from file or if not found, load defaults.
     loadPrefs(),
+    snapshot_init(),
     Frame = setupFrame(),
     wxFrame:show(Frame),
     %% Start the log manager and attach the event handler below.
@@ -47,6 +48,7 @@ start() ->
     log:attach(?MODULE, wx:get_env()),
     %% Start the replay server.
     loop(),
+    snapshot_cleanup(),
     log:stop(),
     %% Save possibly edited preferences to file.
     savePrefs(),
@@ -440,7 +442,9 @@ addDialog(Parent) ->
                                                ?wxFD_MULTIPLE}]),
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
-	    addListItems(?MODULE_LIST, wxFileDialog:getPaths(Dialog)),
+            Files = wxFileDialog:getPaths(Dialog),
+	    addListItems(?MODULE_LIST, Files),
+            snapshot_add_files(Files),
 	    ref_add(?FILE_PATH, getDirectory());
 	_Other -> continue
     end,
@@ -454,10 +458,7 @@ addListItems(Id, Items) ->
     case Count of
 	0 -> wxControlWithItems:setSelection(List, 0);
 	_Other -> wxControlWithItems:setSelection(List, Count)
-    end,
-    %% XXX: hack (send event message to self)
-    ?RP_GUI ! #wx{id = Id,
-                  event = #wxCommand{type = command_listbox_selected}}.
+    end.
 
 %% Analyze selected function.
 analyze() ->
@@ -494,18 +495,15 @@ analyze_aux(Module, Function, Args, Files) ->
 		  false -> Opts
 	      end,
     Result = sched:analyze(Target, NewOpts),
+    snapshot_add_analysis_ret(Result),
     analysis_cleanup(Result).
 
 %% Initialization actions before starting analysis (clear log, etc.).
 analysis_init() ->
-    LogText = ref_lookup(?LOG_TEXT),
-    wxTextCtrl:clear(LogText),
-    ErrorText = ref_lookup(?ERROR_TEXT),
-    wxTextCtrl:clear(ErrorText),
-    ErrorList = ref_lookup(?ERROR_LIST),
-    wxControlWithItems:clear(ErrorList),
-    IleaveList = ref_lookup(?ILEAVE_LIST),
-    wxControlWithItems:clear(IleaveList),
+    clearLog(),
+    clearProbs(),
+    clearErrors(),
+    clearIleaves(),
     AnalyzeButton = ref_lookup(?ANALYZE),
     wxWindow:disable(AnalyzeButton).
 
@@ -551,9 +549,8 @@ argDialog(Parent, Argnum) ->
     wxSizer:fit(TopSizer, Dialog),
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
-	    ErrorText = ref_lookup(?ERROR_TEXT),
-	    wxTextCtrl:clear(ErrorText),
-	    ValResult = validateArgs(0, Refs, [], ErrorText),
+            clearProbs(),
+	    ValResult = validateArgs(0, Refs, [], ref_lookup(?ERROR_TEXT)),
 	    wxDialog:destroy(Dialog),
 	    case ValResult of
 		{ok, Args} -> {ok, Args};
@@ -648,17 +645,63 @@ loadPrefs() ->
 savePrefs() ->
     ok.
     
+clearAll() ->
+    clearMods(),
+    clearFuns(),
+    clearSrc(),
+    clearLog(),
+    clearProbs(),
+    clearErrors(),
+    clearIleaves().
 
-%% Clear module list.
-clear() ->
-    ModuleList = ref_lookup(?MODULE_LIST),
+clearErrors() ->
+    ErrorList = ref_lookup(?ERROR_LIST),
+    wxControlWithItems:clear(ErrorList).
+
+clearFuns() ->
     FunctionList = ref_lookup(?FUNCTION_LIST),
+    wxControlWithItems:clear(FunctionList).
+
+clearIleaves() ->
+    IleaveList = ref_lookup(?ILEAVE_LIST),
+    wxControlWithItems:clear(IleaveList).
+
+clearLog() ->
+    LogText = ref_lookup(?LOG_TEXT),
+    wxTextCtrl:clear(LogText).
+
+clearMods() ->
+    ModuleList = ref_lookup(?MODULE_LIST),
+    wxControlWithItems:clear(ModuleList).
+
+clearProbs() ->
+    ErrorText = ref_lookup(?ERROR_TEXT),
+    wxTextCtrl:clear(ErrorText).
+
+clearSrc() ->
     SourceText = ref_lookup(?SOURCE_TEXT),
-    wxControlWithItems:clear(ModuleList),
-    wxControlWithItems:clear(FunctionList),
     wxStyledTextCtrl:setReadOnly(SourceText, false),
     wxStyledTextCtrl:clearAll(SourceText),
     wxStyledTextCtrl:setReadOnly(SourceText, true).
+
+%% Export dialog
+exportDialog(Parent) ->
+    Caption = "Export to " ++ ?APP_STRING ++ " file",
+    Wildcard = ?APP_STRING ++ " files |*" ++ ?APP_FILE,
+    DefaultDir = ref_lookup(?FILE_PATH),
+    DefaultFile = "",
+    Dialog = wxFileDialog:new(Parent, [{message, Caption},
+                                       {defaultDir, DefaultDir},
+                                       {defaultFile, DefaultFile},
+                                       {wildCard, Wildcard},
+                                       {style, ?wxFD_SAVE bor
+                                            ?wxFD_OVERWRITE_PROMPT}]),
+    wxFileDialog:setFilename(Dialog, ?EXPORT_FILE ++ ?APP_FILE),
+    case wxDialog:showModal(Dialog) of
+	?wxID_OK -> snapshot_export(wxFileDialog:getPath(Dialog));
+	_Other -> continue
+    end,
+    wxDialog:destroy(Dialog).
 
 %% Return the directory path of selected module.
 getDirectory() ->
@@ -711,6 +754,24 @@ getStrings(Ref, N, Count, Strings) ->
     String = wxControlWithItems:getString(Ref, N),
     getStrings(Ref, N + 1, Count, [String|Strings]).
 
+%% Import dialog
+importDialog(Parent) ->
+    Caption = "Import from " ++ ?APP_STRING ++ " file",
+    Wildcard = ?APP_STRING ++ " files |*" ++ ?APP_FILE,
+    DefaultDir = ref_lookup(?FILE_PATH),
+    DefaultFile = "",
+    Dialog = wxFileDialog:new(Parent, [{message, Caption},
+                                       {defaultDir, DefaultDir},
+                                       {defaultFile, DefaultFile},
+                                       {wildCard, Wildcard},
+                                       {style, ?wxFD_OPEN bor
+                                            ?wxFD_FILE_MUST_EXIST}]),
+    case wxDialog:showModal(Dialog) of
+	?wxID_OK -> snapshot_import(wxFileDialog:getPath(Dialog));
+	_Other -> continue
+    end,
+    wxDialog:destroy(Dialog).
+
 %% Refresh selected module (reload source code from disk).
 %% NOTE: When switching selected modules, no explicit refresh
 %%       by the user is required, because the `command_listbox_selected`
@@ -756,7 +817,6 @@ refreshFun() ->
 remove() ->
     ModuleList = ref_lookup(?MODULE_LIST),
     Selection = wxListBox:getSelection(ModuleList),
-    FunctionList = ref_lookup(?FUNCTION_LIST),
     SourceText = ref_lookup(?SOURCE_TEXT),
     if Selection =:= ?wxNOT_FOUND ->
 	    continue;
@@ -764,7 +824,7 @@ remove() ->
 	    wxControlWithItems:delete(ModuleList, Selection),
 	    Count = wxControlWithItems:getCount(ModuleList),
 	    if Count =:= 0 ->
-		    wxControlWithItems:clear(FunctionList),
+                    clearFuns(),
 		    wxStyledTextCtrl:setReadOnly(SourceText, false),
 		    wxStyledTextCtrl:clearAll(SourceText),
 		    wxStyledTextCtrl:setReadOnly(SourceText, true);
@@ -774,6 +834,11 @@ remove() ->
 		    wxControlWithItems:setSelection(ModuleList, Selection)
 	    end
     end.
+
+%% XXX: hack (send event message to self)
+send_event_msg_to_self(Id) ->
+    ?RP_GUI ! #wx{id = Id,
+                  event = #wxCommand{type = command_listbox_selected}}.
 
 %% Set ListBox (Id) data (remove existing).
 setListData(Id, DataList) ->
@@ -791,11 +856,7 @@ setListItems(Id, Items) ->
     if Items =/= [], Items =/= [[]] ->
 	    List = ref_lookup(Id),
 	    wxListBox:set(List, Items),
-	    wxControlWithItems:setSelection(List, 0),
-	    %% XXX: hack (send event message to self)
-	    ?RP_GUI !
-		#wx{id = Id,
-		    event = #wxCommand{type = command_listbox_selected}};
+	    wxControlWithItems:setSelection(List, 0);
        true -> continue
     end.
 
@@ -826,10 +887,10 @@ show_details() ->
             Error = ticket:get_error(Ticket),
             ErrorReason = error:error_reason_to_string(Error, long),
             ErrorStack = error: error_stack_to_string(Error),
-            ErrorText = ref_lookup(?ERROR_TEXT),
-            wxTextCtrl:clear(ErrorText),
+            clearProbs(),
             Reason = io_lib:format("Reason: ~s~n", [ErrorReason]),
             Stack = io_lib:format("Stack trace: ~s", [ErrorStack]),
+            ErrorText = ref_lookup(?ERROR_TEXT),
             wxTextCtrl:appendText(ErrorText, Reason),
             wxTextCtrl:appendText(ErrorText, Stack)
     end.
@@ -879,6 +940,77 @@ validateArgs(I, [Ref|Refs], Args, RefError) ->
     end.
 
 %%%----------------------------------------------------------------------
+%%% Snapshot utilities
+%%%----------------------------------------------------------------------
+
+snapshot_add_analysis_ret(AnalysisRet) ->
+    ref_add(?ANALYSIS_RET, AnalysisRet).
+
+snapshot_add_files(Files) ->
+    ref_add(?FILES, Files).
+
+snapshot_cleanup() ->
+    os:cmd("rm -rf " ++ ?IMPORT_DIR),
+    util:flush_mailbox().
+
+snapshot_export(Export) ->
+    AnalysisRet = ref_lookup(?ANALYSIS_RET),
+    Files = ref_lookup(?FILES),
+    ModuleList = ref_lookup(?MODULE_LIST),
+    ModuleID = wxListBox:getSelection(ModuleList),
+    FunctionList = ref_lookup(?FUNCTION_LIST),
+    FunctionID = wxListBox:getSelection(FunctionList),
+    ErrorList = ref_lookup(?ERROR_LIST),
+    ErrorID = wxListBox:getSelection(ErrorList),
+    IleaveList = ref_lookup(?ILEAVE_LIST),
+    IleaveID = wxListBox:getSelection(IleaveList),
+    Selection = snapshot:selection(ModuleID, FunctionID,
+                                   ErrorID, IleaveID),
+    snapshot:export(AnalysisRet, Files, Selection, Export).
+
+snapshot_import(Import) ->
+    clearAll(),
+    snapshot_cleanup(),
+    case snapshot:import(Import) of
+        ok -> continue;
+        Snapshot ->
+            Mods = snapshot:get_modules(Snapshot),
+            Files = [[filename:absname(M)] || M <- Mods],
+            addListItems(?MODULE_LIST, Files),
+            ref_add(?FILE_PATH, getDirectory()),
+            Selection = snapshot:get_selection(Snapshot),
+            ModuleList = ref_lookup(?MODULE_LIST),
+            ModuleID = snapshot:get_module_id(Selection),
+            wxControlWithItems:setSelection(ModuleList, ModuleID),
+            refresh(),
+            FunctionList = ref_lookup(?FUNCTION_LIST),
+            FunctionID = snapshot:get_function_id(Selection),
+            wxControlWithItems:setSelection(FunctionList, FunctionID),
+            refreshFun(),
+            AnalysisRet = snapshot:get_analysis(Snapshot),
+            case AnalysisRet of
+                {ok, _Info} ->
+                    log:log("No errors found.~n");
+                {error, analysis, _Info, Tickets} ->
+                    log:log("Found ~p erroneous interleaving(s).~n",
+                            [length(Tickets)]);
+                _Other -> continue
+            end,
+            analysis_cleanup(AnalysisRet),
+            ErrorList = ref_lookup(?ERROR_LIST),
+            ErrorID = snapshot:get_error_id(Selection),
+            wxControlWithItems:setSelection(ErrorList, ErrorID),
+            show_details(),
+            IleaveList = ref_lookup(?ILEAVE_LIST),
+            IleaveID = snapshot:get_ileave_id(Selection),
+            wxControlWithItems:setSelection(IleaveList, IleaveID)
+    end.
+
+snapshot_init() ->
+    ref_add(?ANALYSIS_RET, undef),
+    ref_add(?FILES, []).
+
+%%%----------------------------------------------------------------------
 %%% Main event loop
 %%%----------------------------------------------------------------------
 
@@ -888,12 +1020,16 @@ loop() ->
 	#wx{id = ?ADD, event = #wxCommand{type = command_button_clicked}} ->
 	    Frame = ref_lookup(?FRAME),
 	    addDialog(Frame),
+            send_event_msg_to_self(?MODULE_LIST),
 	    loop();
 	#wx{id = ?ANALYZE, event = #wxCommand{type = command_button_clicked}} ->
 	    analyze(),
+            send_event_msg_to_self(?ERROR_LIST),
 	    loop();
 	#wx{id = ?CLEAR, event = #wxCommand{type = command_button_clicked}} ->
-	    clear(),
+            clearMods(),
+            clearFuns(),
+            clearSrc(),
 	    loop();
 	#wx{id = ?REMOVE, event = #wxCommand{type = command_button_clicked}} ->
 	    remove(),
@@ -906,6 +1042,7 @@ loop() ->
 	#wx{id = ?ERROR_LIST,
             event = #wxCommand{type = command_listbox_selected}} ->
 	    show_details(),
+            send_event_msg_to_self(?ILEAVE_LIST),
 	    loop();
 	#wx{id = ?ILEAVE_LIST,
 	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
@@ -918,6 +1055,7 @@ loop() ->
 	#wx{id = ?FUNCTION_LIST,
 	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
 	    analyze(),
+            send_event_msg_to_self(?ERROR_LIST),
 	    loop();
 	#wx{id = ?FUNCTION_LIST,
 	    event = #wxCommand{type = command_listbox_selected}} ->
@@ -930,6 +1068,7 @@ loop() ->
 	#wx{id = ?MODULE_LIST,
             event = #wxCommand{type = command_listbox_selected}} ->
 	    refresh(),
+            send_event_msg_to_self(?FUNCTION_LIST),
 	    loop();
 	%% -------------------- Menu handlers -------------------- %%
 	#wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
@@ -943,12 +1082,24 @@ loop() ->
 	#wx{id = ?ADD, event = #wxCommand{type = command_menu_selected}} ->
 	    Frame = ref_lookup(?FRAME),
 	    addDialog(Frame),
+            send_event_msg_to_self(?MODULE_LIST),
 	    loop();
 	#wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
 	    analyze(),
+            send_event_msg_to_self(?ERROR_LIST),
 	    loop();
 	#wx{id = ?CLEAR, event = #wxCommand{type = command_menu_selected}} ->
-	    clear(),
+            clearMods(),
+            clearFuns(),
+            clearSrc(),
+	    loop();
+        #wx{id = ?EXPORT, event = #wxCommand{type = command_menu_selected}} ->
+            Frame = ref_lookup(?FRAME),
+            exportDialog(Frame),
+	    loop();
+        #wx{id = ?IMPORT, event = #wxCommand{type = command_menu_selected}} ->
+            Frame = ref_lookup(?FRAME),
+            importDialog(Frame),
 	    loop();
 	#wx{id = ?PREFS, event = #wxCommand{type = command_menu_selected}} ->
 	    Frame = ref_lookup(?FRAME),
@@ -966,6 +1117,7 @@ loop() ->
 	    loop();
 	#wx{id = ?REFRESH, event = #wxCommand{type = command_menu_selected}} ->
 	    refresh(),
+            send_event_msg_to_self(?FUNCTION_LIST),
 	    loop();
 	#wx{id = ?REMOVE, event = #wxCommand{type = command_menu_selected}} ->
 	    remove(),

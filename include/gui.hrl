@@ -16,11 +16,15 @@
 %%    [{MenuName1, [MenuItem11, MenuItem12, ...]}, ...]
 -define(MENU_SPEC,
 	[{"&File",
-	  [[{id, ?EXIT}, {help, "Quit CED."}]]},
+          [[{id, ?IMPORT}, {text, "Import..."},
+            {help, "Import analysis information from file."}],
+           [{id, ?EXPORT}, {text, "Export..."},
+            {help, "Export analysis information to file."}],
+           [{id, ?EXIT}, {help, "Quit CED."}]]},
 	 {"&Edit",
 	  [[{id, ?PREFS}, {text, "&Preferences...\tCtrl-P"},
 	    {help, "Edit CED preferences."}]]},
-	 {"&Module",
+        {"&Module",
 	  [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
 	    {help, "Add an existing erlang module."}],
 	   [{id, ?REMOVE}, {text, "&Remove\tCtrl-R"},
@@ -88,10 +92,16 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(PREFS, 519).
 -define(PREB_ENABLED_CBOX, 520).
 -define(PREB_BOUND_SPIN, 521).
+-define(EXPORT, 522).
+-define(IMPORT, 523).
 
 %% Preferences related definitions
 -define(PREF_PREB_ENABLED, 561).
 -define(PREF_PREB_BOUND, 562).
+
+%% Snapshot related definitions
+-define(ANALYSIS_RET, 563).
+-define(FILES, 564).
 
 %% Other definitions
 -define(FILE_PATH, 560).
