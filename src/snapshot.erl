@@ -1,5 +1,5 @@
 %%%----------------------------------------------------------------------
-%%% File        : impexp.erl
+%%% File        : snapshot.erl
 %%% Author      : Maria Christakis <christakismaria@gmail.com>
 %%% Description : Snapshot utilities
 %%% Created     : 30 Sep 2010
