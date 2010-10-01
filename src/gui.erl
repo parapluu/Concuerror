@@ -656,14 +656,17 @@ clearAll() ->
 
 clearErrors() ->
     ErrorList = ref_lookup(?ERROR_LIST),
+    wxListBox:setSelection(ErrorList, ?wxNOT_FOUND),
     wxControlWithItems:clear(ErrorList).
 
 clearFuns() ->
     FunctionList = ref_lookup(?FUNCTION_LIST),
+    wxListBox:setSelection(FunctionList, ?wxNOT_FOUND),
     wxControlWithItems:clear(FunctionList).
 
 clearIleaves() ->
     IleaveList = ref_lookup(?ILEAVE_LIST),
+    wxListBox:setSelection(IleaveList, ?wxNOT_FOUND),
     wxControlWithItems:clear(IleaveList).
 
 clearLog() ->
@@ -672,6 +675,7 @@ clearLog() ->
 
 clearMods() ->
     ModuleList = ref_lookup(?MODULE_LIST),
+    wxListBox:setSelection(ModuleList, ?wxNOT_FOUND),
     wxControlWithItems:clear(ModuleList).
 
 clearProbs() ->
@@ -950,8 +954,7 @@ snapshot_add_files(Files) ->
     ref_add(?FILES, Files).
 
 snapshot_cleanup() ->
-    os:cmd("rm -rf " ++ ?IMPORT_DIR),
-    util:flush_mailbox().
+    os:cmd("rm -rf " ++ ?IMPORT_DIR).
 
 snapshot_export(Export) ->
     AnalysisRet = ref_lookup(?ANALYSIS_RET),
