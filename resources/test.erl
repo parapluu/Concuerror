@@ -10,7 +10,7 @@
 -export([test01/0, test02/0, test03/0, test04/0,
 	 test05/0, test06/0, test07/0, test08/0,
 	 test09/0, test10/0, test11/0, test12/0,
-         test13/0, test14/0]).
+         test13/0, test14/0, test15/0]).
 
 -include("ced.hrl").
 
@@ -215,3 +215,16 @@ foo14() ->
     after 42 ->
             gazonk
     end.
+
+%% Normal, 2 proc: Spawn link, trap_exit and receive exit message.
+-spec test15() -> 'ok'.
+
+test15() ->
+    process_flag(trap_exit, true),
+    Child = spawn_link(fun() -> foo15() end),
+    receive
+	{'EXIT', Child, normal} -> ok
+    end.
+
+foo15() ->
+    ok.
