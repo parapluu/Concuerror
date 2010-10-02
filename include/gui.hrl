@@ -61,7 +61,9 @@ A tool for finding concurrency bugs in Erlang programs.
 ").
 
 %% File paths
--define(ICON_PATH, "img/icon.png").
+-define(ICON_PATH16, "img/icon16.png").
+-define(ICON_PATH32, "img/icon32.png").
+-define(ICON_PATH64, "img/icon64.png").
 
 %% GUI compoenent definitions
 -define(ABOUT, ?wxID_ABOUT).
