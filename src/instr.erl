@@ -258,41 +258,14 @@ transform_receive_clause(Clause) ->
     [OldPattern] = erl_syntax:clause_patterns(Clause),
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
-    {Pid, NewPattern} =
-        case is_exit_tuple_pattern(OldPattern) of
-            {true, ExitPid} ->
-                {ExitPid, [OldPattern]};
-            false ->
-                PidVar = new_variable(),
-                {PidVar, [erl_syntax:tuple([PidVar, OldPattern])]}
-        end,
+    PidVar = new_variable(),
+    NewPattern = [erl_syntax:tuple([PidVar, OldPattern])],
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_receive_notify),
-    Arguments = [Pid, OldPattern],
+    Arguments = [PidVar, OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),
     NewBody = [Notify | OldBody],
     erl_syntax:clause(NewPattern, OldGuard, NewBody).
-
-%% Returns {true, PidSubTree} if Pattern is a subtree representing an
-%% {'EXIT', PidSubTree, ReasonSubTree} tuple, else returns false.
-is_exit_tuple_pattern(Pattern) ->
-    case erl_syntax:type(Pattern) of
-	tuple ->
-	    case erl_syntax:tuple_size(Pattern) of
-		3 ->
-		    [Fst, Sec, _Thrd] = erl_syntax:tuple_elements(Pattern),
-		    case erl_syntax:type(Fst) of
-			atom ->
-			    case erl_syntax:atom_value(Fst) of
- 				'EXIT' -> {true, Sec};
-				_OtherValue -> false
-			    end;
-			_OtherFirstType -> false
-		    end;
-		_OtherSize -> false
-	    end;
-	_OtherType -> false
-    end.
 
 %% Instrument a Pid ! Msg expression.
 %% Pid ! Msg is transformed into rep:send(Pid, Msg).

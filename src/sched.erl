@@ -117,7 +117,7 @@ analyze(Target, Options) ->
 	end,
     instr:delete_and_purge(Files),
     Ret.
-    
+
 %% @spec: replay(analysis_target(), state()) -> [proc_action()]
 %% @doc: Replay the given state and return detailed information about the
 %% process interleaving.
@@ -336,17 +336,12 @@ handler(exit, Pid, #context{details = Det} = Context, Reason) ->
 	    end,
 	    %% If the exception was caused by an assertion violation, propagate
 	    %% it to the driver via the `error` field of the `context` record.
-	    NewContext = 
-		case Type of
-		    normal -> Context;
-		    _Other ->
-			Error = error:new(Type, Reason),
-			Context#context{error = Error}
-		end,
-	    %% Temporary solution: When a process exits, unblock all blocked
-	    %% processes, so that they may receive an 'EXIT' message if they
-	    %% have enabled the 'trap_exit' process flag.
-	    wakeup_all(NewContext)
+            case Type of
+                normal -> Context;
+                _Other ->
+                    Error = error:new(Type, Reason),
+                    Context#context{error = Error}
+            end
     end;
 
 %% Link message handler.
@@ -459,11 +454,6 @@ wakeup(Lid, #context{active = Active, blocked = Blocked} = Context) ->
 	    Context#context{active = NewActive, blocked = NewBlocked};
 	false -> Context
     end.
-
-wakeup_all(#context{active = Active, blocked = Blocked} = Context) ->
-    NewActive = sets:union(Active, Blocked),
-    NewBlocked = sets:new(),
-    Context#context{active = NewActive, blocked = NewBlocked}.
 
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
@@ -593,7 +583,34 @@ rep_spawn(Fun) ->
 -spec rep_spawn_link(function()) -> pid().
 
 rep_spawn_link(Fun) ->
-    Pid = spawn_link(fun() -> rep_yield(), Fun() end),
+    Parent = self(),
+    {trap_exit, TrapExit} = process_info(Parent, trap_exit),
+    NewFun =
+        case TrapExit of
+            true ->
+                true = process_flag(trap_exit, false),
+                fun() ->
+                        rep_yield(),
+                        {Reason, Result} =
+                            case catch Fun() of
+                                {'EXIT', R} = Exit-> {R, Exit};
+                                Return -> {normal, Return}
+                            end,
+                        Self = self(),
+                        Msg = {'EXIT', Self, Reason},
+                        rep_send(Parent, {Self, Msg}),
+                        case Reason of
+                            normal -> Result;
+                            _Abnormal -> exit(Reason)
+                        end
+                end;
+            false -> fun() -> rep_yield(), Fun() end
+        end,
+    Pid = spawn_link(NewFun),
+    case TrapExit of
+        true -> false = process_flag(trap_exit, true);
+        false -> continue
+    end,
     %% Same as rep_spawn for now.
     ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
     rep_yield(),
@@ -606,11 +623,8 @@ rep_spawn_link(Fun) ->
 -spec rep_spawn_link(atom(), atom(), [term()]) -> pid().
 
 rep_spawn_link(Module, Function, Args) ->
-    Pid = spawn_link(fun() -> rep_yield(), apply(Module, Function, Args) end),
-    %% Same as rep_spawn for now.
-    ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
-    rep_yield(),
-    Pid.
+    Fun = fun() -> apply(Module, Function, Args) end,
+    rep_spawn_link(Fun).
 
 %% Wait until the scheduler prompts to continue.
 -spec wait() -> 'true'.
