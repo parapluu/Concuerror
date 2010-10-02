@@ -258,24 +258,20 @@ transform_receive_clause(Clause) ->
     [OldPattern] = erl_syntax:clause_patterns(Clause),
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
-    case is_exit_tuple_pattern(OldPattern) of
-	{true, ExitPid} ->
-	    Module = erl_syntax:atom(sched),
-	    Function = erl_syntax:atom(rep_receive_notify),
-	    Arguments = [ExitPid, OldPattern],
-	    Notify = erl_syntax:application(Module, Function, Arguments),
-	    NewBody = [Notify | OldBody],
-	    erl_syntax:clause([OldPattern], OldGuard, NewBody);
-	false ->
-	    PidVar = new_variable(),
-	    NewPattern = [erl_syntax:tuple([PidVar, OldPattern])],
-	    Module = erl_syntax:atom(sched),
-	    Function = erl_syntax:atom(rep_receive_notify),
-	    Arguments = [PidVar, OldPattern],
-	    Notify = erl_syntax:application(Module, Function, Arguments),
-	    NewBody = [Notify | OldBody],
-	    erl_syntax:clause(NewPattern, OldGuard, NewBody)
-    end.
+    {Pid, NewPattern} =
+        case is_exit_tuple_pattern(OldPattern) of
+            {true, ExitPid} ->
+                {ExitPid, [OldPattern]};
+            false ->
+                PidVar = new_variable(),
+                {PidVar, [erl_syntax:tuple([PidVar, OldPattern])]}
+        end,
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_receive_notify),
+    Arguments = [Pid, OldPattern],
+    Notify = erl_syntax:application(Module, Function, Arguments),
+    NewBody = [Notify | OldBody],
+    erl_syntax:clause(NewPattern, OldGuard, NewBody).
 
 %% Returns {true, PidSubTree} if Pattern is a subtree representing an
 %% {'EXIT', PidSubTree, ReasonSubTree} tuple, else returns false.
@@ -318,8 +314,8 @@ instrument_spawn(Tree) ->
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
-%% Instrument a spawn_link/1 call.
-%% `spawn_link(Fun)' is transformed into `sched:rep_spawn_link(Fun)'.
+%% Instrument a spawn_link/{1,3} call.
+%% `spawn_link(Args)' is transformed into `sched:rep_spawn_link(Args)'.
 instrument_spawn_link(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn_link),
