@@ -323,6 +323,11 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% call the dispatcher.
 handler(exit, Pid, #context{details = Det} = Context, Reason) ->
+    %% Pids of processes that are linked to the one that just exited
+    %% and have their 'trap_exit' flag set to true.
+    Pids = lid:get_trapping_exits(lid:get_linked(Pid)),
+    %% Send 'EXIT' messages.
+    NewContext = send_exits(Pids, Pid, Reason, Context),
     Type =
         case Reason of
             normal -> normal;
@@ -332,7 +337,7 @@ handler(exit, Pid, #context{details = Det} = Context, Reason) ->
     case Lid of
 	not_found ->
 	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Type]),
-	    dispatcher(Context);
+	    dispatcher(NewContext);
 	_Any ->
 	    ?debug_1("Process ~s exits (~p).~n", [Lid, Type]),
 	    case Det of
@@ -342,10 +347,10 @@ handler(exit, Pid, #context{details = Det} = Context, Reason) ->
 	    %% If the exception was caused by an assertion violation, propagate
 	    %% it to the driver via the `error` field of the `context` record.
             case Type of
-                normal -> Context;
+                normal -> NewContext;
                 _Other ->
                     Error = error:new(Type, Reason),
-                    Context#context{error = Error}
+                    NewContext#context{error = Error}
             end
     end;
 
@@ -472,6 +477,21 @@ run(Lid, #context{active = Active, state = State} = Context) ->
     %% Call the dispatcher to handle incoming actions from the process
     %% we just "unblocked".
     dispatcher(Context#context{active = NewActive, state = NewState}).
+
+%% Send 'EXIT' messages to all processes that are linked to the one
+%% that just exited and have their 'trap_exit' flag set to true.
+send_exits([], _Sender, _Reason, Context) ->
+    Context;
+send_exits([Pid|Pids], Sender, Reason, Context) ->
+    try
+        Pid ! {Sender, {'EXIT', Sender, Reason}},
+        Lid = lid:from_pid(Pid),
+        NewContext = wakeup(Lid, Context),
+        send_exits(Pids, Sender, Reason, NewContext)
+    catch
+        error:badarg ->
+            send_exits(Pids, Sender, Reason, Context)
+    end.
 
 %% Wakeup a process.
 %% If process is in `blocked` set, move to `active` set.

@@ -8,8 +8,8 @@
 
 -module(lid).
 
--export([from_pid/1, link/2, new/2, start/0, stop/0, to_pid/1,
-         update_flags/2]).
+-export([from_pid/1, get_linked/1, get_trapping_exits/1, link/2,
+         new/2, start/0, stop/0, to_pid/1, update_flags/2]).
 
 -export_type([lid/0]).
 
@@ -31,13 +31,38 @@ from_pid(Pid) ->
 	[] -> not_found
     end.
 
+%% Return the pids of all processes linked to process Pid.
+-spec get_linked(pid()) -> [pid()].
+
+get_linked(Pid) ->
+    ets:lookup_element(?NT_PID, Pid, 4).
+
+%% Return the pids of processes Pids that have their 'trap_exit' flag
+%% set to true.
+-spec get_trapping_exits([pid()]) -> [pid()].
+
+get_trapping_exits(Pids) ->
+    get_trapping_exits_aux(Pids, []).
+
+get_trapping_exits_aux([], Acc) ->
+    Acc;
+get_trapping_exits_aux([Pid|Pids], Acc) ->
+    Flags = ets:lookup_element(?NT_PID, Pid, 3),
+    {trap_exit, Value} = lists:keyfind(trap_exit, 1, Flags),
+    NewAcc =
+        case Value of
+            true -> [Pid|Acc];
+            false -> Acc
+        end,
+    get_trapping_exits_aux(Pids, NewAcc).
+
 %% Update the linking information of the two pids.
 -spec link(pid(), pid()) -> 'true'.
 
 link(Pid1, Pid2) ->
-    [{Pid1, _Lid1, _Flags1, LinkedTo1}] = ets:lookup(?NT_PID, Pid1),
+    LinkedTo1 = ets:lookup_element(?NT_PID, Pid1, 4),
     ets:update_element(?NT_PID, Pid1, {4, [Pid2|LinkedTo1]}),
-    [{Pid2, _Lid2, _Flags2, LinkedTo2}] = ets:lookup(?NT_PID, Pid2),
+    LinkedTo2 = ets:lookup_element(?NT_PID, Pid2, 4),
     ets:update_element(?NT_PID, Pid2, {4, [Pid1|LinkedTo2]}).
 
 %% "Register" a new process spawned by the process with LID `ParentLid`.
@@ -94,7 +119,7 @@ to_pid(Lid) ->
 -spec update_flags(pid(), flag()) -> 'true'.
 
 update_flags(Pid, {Key, _Value} = Flag) ->
-    [{Pid, _Lid, Flags, _LinkedTo}] = ets:lookup(?NT_PID, Pid),
+    Flags = ets:lookup_element(?NT_PID, Pid, 3),
     ets:update_element(?NT_PID, Pid,
                        {3, lists:keyreplace(Key, 1, Flags, Flag)}).
 
