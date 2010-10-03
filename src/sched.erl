@@ -15,9 +15,10 @@
 -export([analyze/2, driver/3, replay/1]).
 
 %% Instrumentation related exports.
--export([rep_link/1, rep_receive/1, rep_receive_notify/2,
-	 rep_send/2, rep_spawn/1, rep_spawn_link/1, rep_spawn_link/3,
-	 rep_yield/0, wait/0]).
+-export([rep_link/1, rep_process_flag/2, rep_receive/1,
+         rep_receive_notify/2, rep_send/2, rep_spawn/1,
+         rep_spawn_link/1, rep_spawn_link/3, rep_yield/0,
+         wait/0]).
 
 -export_type([proc_action/0, analysis_target/0, analysis_ret/0]).
 
@@ -224,6 +225,8 @@ dispatcher(Context) ->
 	    handler(block, Pid, Context, empty);
 	#sched{msg = link, pid = Pid, misc = TargetPid} ->
 	    handler(link, Pid, Context, TargetPid);
+        #sched{msg = process_flag, pid = Pid, misc = {_Flag, _Value} = Misc} ->
+	    handler(process_flag, Pid, Context, Misc);
 	#sched{msg = 'receive', pid = Pid, misc = {_From, _Msg} = Misc} ->
 	    handler('receive', Pid, Context, Misc);
 	#sched{msg = send, pid = Pid, misc = {_Dest, _Msg} = Misc} ->
@@ -353,6 +356,11 @@ handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
 	true -> replay_logger:log({link, Lid, TargetLid});
 	false -> continue
     end,
+    dispatcher(Context);
+
+%% Process flag message handler.
+handler(process_flag, Pid, Context, {_Flag, _Value} = NewFlag) ->
+    lid:update_flags(Pid, NewFlag),
     dispatcher(Context);
 
 %% Receive message handler.
@@ -502,22 +510,37 @@ rep_link(Pid) ->
     rep_yield(),
     Result.
 
-%% @spec rep_yield() -> 'true'
-%% @doc: Replacement for `yield/0'.
+%% @spec: rep_process_flag('trap_exit', boolean()) -> boolean();
+%%                        ('error_handler', atom()) -> atom();
+%%                        ('min_heap_size', non_neg_integer()) ->
+%%                                non_neg_integer();
+%%                        ('min_bin_vheap_size', non_neg_integer()) ->
+%%                                non_neg_integer();
+%%                        ('priority', process_priority_level()) ->
+%%                                process_priority_level();
+%%                        ('save_calls', non_neg_integer()) ->
+%%                                non_neg_integer();
+%%                       ('sensitive', boolean()) -> boolean().
+%% @doc: Replacement for `process_flag/2'.
 %%
-%% The calling process is preempted, but remains in the active set and awaits
-%% a message to continue.
-%%
-%% Note: Besides replacing `yield/0', this function is heavily used by other
-%%       functions of the instrumentation interface.
+%% Just save the trap_exit flag of the process.
+-type process_priority_level() :: 'max' | 'high' | 'normal' | 'low'.
+-spec rep_process_flag('trap_exit', boolean()) -> boolean();
+                      ('error_handler', atom()) -> atom();
+                      ('min_heap_size', non_neg_integer()) -> non_neg_integer();
+                      ('min_bin_vheap_size', non_neg_integer()) ->
+                              non_neg_integer();
+                      ('priority', process_priority_level()) ->
+                              process_priority_level();
+                      ('save_calls', non_neg_integer()) -> non_neg_integer();
+                      ('sensitive', boolean()) -> boolean().
 
--spec rep_yield() -> 'true'.
-
-rep_yield() ->
-    ?RP_SCHED ! #sched{msg = yield, pid = self()},
-    receive
-	#sched{msg = continue} -> true
-    end.
+rep_process_flag(trap_exit = Flag, Value) ->
+    Result = process_flag(Flag, Value),
+    ?RP_SCHED ! #sched{msg = process_flag, pid = self(), misc = {Flag, Value}},
+    Result;
+rep_process_flag(Flag, Value) ->
+    process_flag(Flag, Value).
 
 %% @spec rep_receive(fun((function()) -> term())) -> term()
 %% @doc: Replacement for a `receive' statement.
@@ -598,6 +621,23 @@ rep_spawn_link(Fun) ->
 rep_spawn_link(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn_link(Fun).
+
+%% @spec rep_yield() -> 'true'
+%% @doc: Replacement for `yield/0'.
+%%
+%% The calling process is preempted, but remains in the active set and awaits
+%% a message to continue.
+%%
+%% Note: Besides replacing `yield/0', this function is heavily used by other
+%%       functions of the instrumentation interface.
+
+-spec rep_yield() -> 'true'.
+
+rep_yield() ->
+    ?RP_SCHED ! #sched{msg = yield, pid = self()},
+    receive
+	#sched{msg = continue} -> true
+    end.
 
 %% Wait until the scheduler prompts to continue.
 -spec wait() -> 'true'.

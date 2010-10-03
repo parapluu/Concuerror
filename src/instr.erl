@@ -144,6 +144,8 @@ instrument_term(Tree) ->
 		    case Function of
 			link ->
 			    instrument_link(instrument_subtrees(Tree));
+                        process_flag ->
+                            instrument_process_flag(instrument_subtrees(Tree));
 			spawn ->
 			    instrument_spawn(instrument_subtrees(Tree));
 			spawn_link ->
@@ -163,6 +165,9 @@ instrument_term(Tree) ->
                                     case Function of
                                         link ->
                                             instrument_link(
+                                              instrument_subtrees(Tree));
+                                        process_flag ->
+                                            instrument_process_flag(
                                               instrument_subtrees(Tree));
                                         spawn ->
                                             instrument_spawn(
@@ -276,6 +281,15 @@ instrument_send(Tree) ->
     Msg = erl_syntax:infix_expr_right(Tree),
     Sender = erl_syntax:application(erl_syntax:atom(self), []),
     Arguments = [Pid, erl_syntax:tuple([Sender, Msg])],
+    erl_syntax:application(Module, Function, Arguments).
+
+%% Instrument a process_flag/2 call.
+%% `process_flag(Flag, Value) is transformed into
+%% `sched:rep_process_flag(Flag, Value).
+instrument_process_flag(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_process_flag),
+    Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a spawn/1 call.

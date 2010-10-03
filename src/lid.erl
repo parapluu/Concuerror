@@ -1,13 +1,14 @@
 %%%----------------------------------------------------------------------
 %%% File        : lid.erl
-%%% Author      : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <christakismaria@gmail.com>
 %%% Description : LID interface
 %%% Created     : 25 Sep 2010
 %%%----------------------------------------------------------------------
 
 -module(lid).
 
--export([from_pid/1, new/2, start/0, stop/0, to_pid/1]).
+-export([from_pid/1, new/2, start/0, stop/0, to_pid/1, update_flags/2]).
 
 -export_type([lid/0]).
 
@@ -18,12 +19,14 @@
 %% between different runs of the same program (as opposed to erlang pids).
 -type lid() :: string().
 
+-type flag() :: {'trap_exit', boolean()}.
+
 %% Return the LID of process Pid or 'not_found' if mapping not in table.
 -spec from_pid(pid()) -> lid() | 'not_found'.
 
 from_pid(Pid) ->
     case ets:lookup(?NT_PID, Pid) of
-	[{_Pid, Lid}] -> Lid;
+	[{Pid, Lid, _Flags}] -> Lid;
 	[] -> not_found
     end.
 
@@ -34,20 +37,21 @@ from_pid(Pid) ->
 -spec new(pid(), lid() | 'noparent') -> lid().
 
 new(Pid, noparent) ->
-    %% The first process has LID = "P1" and has no children spawned at init.
+    %% The first process has LID = "P1", has no children spawned at init
+    %% and its default list of flags.
     Lid = "P1",
     ets:insert(?NT_LID, {Lid, Pid, 0}),
-    ets:insert(?NT_PID, {Pid, Lid}),
+    ets:insert(?NT_PID, {Pid, Lid, default_flags()}),
     Lid;
 new(Pid, ParentLid) ->
-    [{_ParentLid, _ParentPid, Children}] = ets:lookup(?NT_LID, ParentLid),
+    [{ParentLid, _ParentPid, Children}] = ets:lookup(?NT_LID, ParentLid),
     %% Create new process' Lid
     Lid = lists:concat([ParentLid, ".", Children + 1]),
     %% Update parent info (increment children counter).
     ets:update_element(?NT_LID, ParentLid, {3, Children + 1}),
-    %% Insert child info.
+    %% Insert child and flag info.
     ets:insert(?NT_LID, {Lid, Pid, 0}),
-    ets:insert(?NT_PID, {Pid, Lid}),
+    ets:insert(?NT_PID, {Pid, Lid, default_flags()}),
     Lid.
 
 %% Initialize LID tables.
@@ -60,7 +64,7 @@ start() ->
     %% is the number of processes spawned by it so far.
     ets:new(?NT_LID, [named_table]),
     %% Table for reverse lookup (Lid -> Pid) purposes.
-    %% Its elements are of the form {Pid, Lid}.
+    %% Its elements are of the form {Pid, Lid, Flags}.
     ets:new(?NT_PID, [named_table]).
 
 %% Clean up LID tables.
@@ -75,3 +79,18 @@ stop() ->
 
 to_pid(Lid) ->
     ets:lookup_element(?NT_LID, Lid, 2).
+
+%% Update the process flags.
+-spec update_flags(pid(), flag()) -> 'true'.
+
+update_flags(Pid, {Key, _Value} = Flag) ->
+    [{Pid, _Lid, Flags}] = ets:lookup(?NT_PID, Pid),
+    ets:update_element(?NT_PID, Pid,
+                       {3, lists:keyreplace(Key, 1, Flags, Flag)}).
+
+%%%----------------------------------------------------------------------
+%%% Helper functions
+%%%----------------------------------------------------------------------
+
+default_flags() ->
+    [{trap_exit, false}].
