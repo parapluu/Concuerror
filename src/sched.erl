@@ -583,34 +583,7 @@ rep_spawn(Fun) ->
 -spec rep_spawn_link(function()) -> pid().
 
 rep_spawn_link(Fun) ->
-    Parent = self(),
-    {trap_exit, TrapExit} = process_info(Parent, trap_exit),
-    NewFun =
-        case TrapExit of
-            true ->
-                true = process_flag(trap_exit, false),
-                fun() ->
-                        rep_yield(),
-                        {Reason, Result} =
-                            case catch Fun() of
-                                {'EXIT', R} = Exit-> {R, Exit};
-                                Return -> {normal, Return}
-                            end,
-                        Self = self(),
-                        Msg = {'EXIT', Self, Reason},
-                        rep_send(Parent, {Self, Msg}),
-                        case Reason of
-                            normal -> Result;
-                            _Abnormal -> exit(Reason)
-                        end
-                end;
-            false -> fun() -> rep_yield(), Fun() end
-        end,
-    Pid = spawn_link(NewFun),
-    case TrapExit of
-        true -> false = process_flag(trap_exit, true);
-        false -> continue
-    end,
+    Pid = spawn_link(fun() -> rep_yield(), Fun() end),
     %% Same as rep_spawn for now.
     ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
     rep_yield(),
