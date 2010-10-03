@@ -233,6 +233,8 @@ dispatcher(Context) ->
 	    handler(send, Pid, Context, Misc);
 	#sched{msg = spawn, pid = Pid, misc = ChildPid} ->
 	    handler(spawn, Pid, Context, ChildPid);
+        #sched{msg = spawn_link, pid = Pid, misc = ChildPid} ->
+	    handler(spawn_link, Pid, Context, ChildPid);
 	#sched{msg = yield, pid = Pid} ->
 	    handler(yield, Pid, Context, empty);
 	{'EXIT', Pid, Reason} ->
@@ -356,9 +358,10 @@ handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
 	true -> replay_logger:log({link, Lid, TargetLid});
 	false -> continue
     end,
+    lid:link(Pid, TargetPid),
     dispatcher(Context);
 
-%% Process flag message handler.
+%% Process_flag message handler.
 handler(process_flag, Pid, Context, {_Flag, _Value} = NewFlag) ->
     lid:update_flags(Pid, NewFlag),
     dispatcher(Context);
@@ -406,6 +409,25 @@ handler(spawn, ParentPid, #context{details = Det} = Context, ChildPid) ->
 	true -> replay_logger:log({spawn, ParentLid, ChildLid});
 	false -> continue
     end,
+    NewContext = dispatcher(Context),
+    dispatcher(NewContext);
+
+%% Spawn_link message handler.
+%% First, link the newly spawned process to the scheduler process.
+%% The new process yields as soon as it gets spawned and the parent process
+%% yields as soon as it spawns. Therefore wait for two `yield` messages using
+%% two calls to the dispatcher.
+%% Save linked pids.
+handler(spawn_link, ParentPid, #context{details = Det} = Context, ChildPid) ->
+    link(ChildPid),
+    ParentLid = lid:from_pid(ParentPid),
+    ChildLid = lid:new(ChildPid, ParentLid),
+    ?debug_1("Process ~s spawns process ~s.~n", [ParentLid, ChildLid]),
+    case Det of
+	true -> replay_logger:log({spawn, ParentLid, ChildLid});
+	false -> continue
+    end,
+    lid:link(ParentPid, ChildPid),
     NewContext = dispatcher(Context),
     dispatcher(NewContext);
 
@@ -607,8 +629,7 @@ rep_spawn(Fun) ->
 
 rep_spawn_link(Fun) ->
     Pid = spawn_link(fun() -> rep_yield(), Fun() end),
-    %% Same as rep_spawn for now.
-    ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
+    ?RP_SCHED ! #sched{msg = spawn_link, pid = self(), misc = Pid},
     rep_yield(),
     Pid.
 
