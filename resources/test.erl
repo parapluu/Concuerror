@@ -11,7 +11,7 @@
 	 test05/0, test06/0, test07/0, test08/0,
 	 test09/0, test10/0, test11/0, test12/0,
          test13/0, test14/0, test15/0, test16/0,
-	 test17/0]).
+	 test17/0, test18/0]).
 
 -include("ced.hrl").
 
@@ -258,3 +258,22 @@ test17() ->
 
 foo17() ->
     ok.
+
+%% TODO: Should have some correct interleavings.
+test18() ->
+    Self = self(),
+    spawn(fun() -> foo18(Self) end),
+    spawn(fun() -> foo18(Self) end),
+    process_flag(trap_exit, true),
+    N = flush_mailbox(0),
+    ?assertEqual(2, N).
+
+foo18(Parent) ->
+    link(Parent),
+    ok.
+
+flush_mailbox(N) ->
+    receive
+	_Any -> flush_mailbox(N + 1)
+    after 0 -> N
+    end.
