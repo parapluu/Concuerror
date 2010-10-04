@@ -223,24 +223,8 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
 %% handlers.
 dispatcher(Context) ->
     receive
-	#sched{msg = block, pid = Pid} ->
-	    handler(block, Pid, Context, empty);
-	#sched{msg = link, pid = Pid, misc = TargetPid} ->
-	    handler(link, Pid, Context, TargetPid);
-        #sched{msg = process_flag, pid = Pid, misc = {_Flag, _Value} = Misc} ->
-	    handler(process_flag, Pid, Context, Misc);
-	#sched{msg = 'receive', pid = Pid, misc = {_From, _Msg} = Misc} ->
-	    handler('receive', Pid, Context, Misc);
-	#sched{msg = 'receive', pid = Pid, misc = Msg} ->
-	    handler('receive', Pid, Context, Msg);
-	#sched{msg = send, pid = Pid, misc = {_Dest, _Msg} = Misc} ->
-	    handler(send, Pid, Context, Misc);
-	#sched{msg = spawn, pid = Pid, misc = ChildPid} ->
-	    handler(spawn, Pid, Context, ChildPid);
-        #sched{msg = spawn_link, pid = Pid, misc = ChildPid} ->
-	    handler(spawn_link, Pid, Context, ChildPid);
-	#sched{msg = yield, pid = Pid} ->
-	    handler(yield, Pid, Context, empty);
+	#sched{msg = Type, pid = Pid, misc = Misc} ->
+	    handler(Type, Pid, Context, Misc);
 	{'EXIT', Pid, Reason} ->
 	    handler(exit, Pid, Context, Reason);
 	Other ->
