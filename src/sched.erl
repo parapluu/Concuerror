@@ -300,10 +300,7 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
     Lid = lid:from_pid(Pid),
     NewBlocked = sets:add_element(Lid, Blocked),
     ?debug_1("Process ~s blocks.~n", [Lid]),
-    case Det of
-	true -> replay_logger:log({block, Lid});
-	false -> continue
-    end,
+    log_details(Det, {block, Lid}),
     Context#context{blocked = NewBlocked};
 
 %% Exit message handler.
@@ -334,10 +331,7 @@ handler(exit, Pid,
 		    _Else -> error:type_from_description(Reason)
 		end,
 	    ?debug_1("Process ~s exits (~p).~n", [Lid, Type]),
-	    case Det of
-		true -> replay_logger:log({exit, Lid, Type});
-		false -> continue
-	    end,
+	    log_details(Det, {exit, Lid, Type}),
             case Type of
                 normal -> NewContext;
                 _Other ->
@@ -351,10 +345,7 @@ handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
     Lid = lid:from_pid(Pid),
     TargetLid = lid:from_pid(TargetPid),
     ?debug_1("Process ~s links to process ~s.~n", [Lid, TargetLid]),
-    case Det of
-	true -> replay_logger:log({link, Lid, TargetLid});
-	false -> continue
-    end,
+    log_details(Det, {link, Lid, TargetLid}),
     lid:link(Lid, TargetLid),
     dispatcher(Context);
 
@@ -362,10 +353,7 @@ handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
 handler(process_flag, Pid, #context{details = Det} = Context, {Flag, Value}) ->
     Lid = lid:from_pid(Pid),
     ?debug_1("Process ~s sets flag '~p' to '~p'.~n", [Lid, Flag, Value]),
-    case Det of
-	true -> replay_logger:log({process_flag, Lid, Flag, Value});
-	false -> continue
-    end,
+    log_details(Det, {process_flag, Lid, Flag, Value}),
     dispatcher(Context);
 
 %% Normal receive message handler.
@@ -374,10 +362,7 @@ handler('receive', Pid, #context{details = Det} = Context, {From, Msg}) ->
     SenderLid = lid:from_pid(From),
     ?debug_1("Process ~s receives message `~p` from process ~s.~n",
 	    [Lid, Msg, SenderLid]),
-    case Det of
-	true -> replay_logger:log({'receive', Lid, SenderLid, Msg});
-	false -> continue
-    end,
+    log_details(Det, {'receive', Lid, SenderLid, Msg}),
     dispatcher(Context);
 
 %% Receive message handler for special messages, like 'EXIT' and 'DOWN',
@@ -385,10 +370,7 @@ handler('receive', Pid, #context{details = Det} = Context, {From, Msg}) ->
 handler('receive', Pid, #context{details = Det} = Context, Msg) ->
     Lid = lid:from_pid(Pid),
     ?debug_1("Process ~s receives message `~p`.~n", [Lid, Msg]),
-    case Det of
-	true -> replay_logger:log({'receive', Lid, Msg});
-	false -> continue
-    end,
+    log_details(Det, {'receive', Lid, Msg}),
     dispatcher(Context);
 
 %% Send message handler.
@@ -401,10 +383,7 @@ handler(send, Pid, #context{details = Det} = Context, {DstPid, Msg}) ->
     DstLid = lid:from_pid(DstPid),
     ?debug_1("Process ~s sends message `~p` to process ~s.~n",
 	    [Lid, Msg, DstLid]),
-    case Det of
-	true -> replay_logger:log({send, Lid, DstLid, Msg});
-	false -> continue
-    end,
+    log_details(Det, {send, Lid, DstLid, Msg}),
     NewContext = wakeup(DstLid, Context),
     dispatcher(NewContext);
 
@@ -418,10 +397,7 @@ handler(spawn, ParentPid, #context{details = Det} = Context, ChildPid) ->
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     ?debug_1("Process ~s spawns process ~s.~n", [ParentLid, ChildLid]),
-    case Det of
-	true -> replay_logger:log({spawn, ParentLid, ChildLid});
-	false -> continue
-    end,
+    log_details(Det, {spawn, ParentLid, ChildLid}),
     NewContext = dispatcher(Context),
     dispatcher(NewContext);
 
@@ -436,10 +412,7 @@ handler(spawn_link, ParentPid, #context{details = Det} = Context, ChildPid) ->
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     ?debug_1("Process ~s spawns process ~s.~n", [ParentLid, ChildLid]),
-    case Det of
-	true -> replay_logger:log({spawn, ParentLid, ChildLid});
-	false -> continue
-    end,
+    log_details(Det, {spawn_link, ParentLid, ChildLid}),
     lid:link(ParentLid, ChildLid),
     NewContext = dispatcher(Context),
     dispatcher(NewContext);
@@ -463,6 +436,13 @@ handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
 %%%----------------------------------------------------------------------
 %%% Helper functions
 %%%----------------------------------------------------------------------
+
+%% Send LogTuple to replay_logger if details flag (first argument) is true,
+%% else do nothing.
+log_details(false, _Any) ->
+    continue;
+log_details(true, LogTuple) ->
+    replay_logger:log(LogTuple).
 
 %% Calculate and print elapsed time between T1 and T2.
 elapsed_time(T1, T2) ->
