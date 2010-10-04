@@ -924,7 +924,10 @@ detail_to_string({send, Sender, Receiver, Msg}) ->
     io_lib:format("Process ~s sends message `~p` to process ~s",
 		  [Sender, Msg, Receiver]);
 detail_to_string({spawn, Parent, Child}) ->
-    io_lib:format("Process ~s spawns process ~s", [Parent, Child]).
+    io_lib:format("Process ~s spawns process ~s", [Parent, Child]);
+detail_to_string({spawn_link, Parent, Child}) ->
+    io_lib:format("Process ~s spawns and links to process ~s",
+		  [Parent, Child]).
 
 
 %% Validate user provided function arguments.

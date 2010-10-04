@@ -56,6 +56,7 @@
                        {'receive', lid:lid(), term()} |
                        {'send', lid:lid(), lid:lid(), term()} |
                        {'spawn', lid:lid(), lid:lid()} |
+		       {'spawn_link', lid:lid(), lid:lid()} |
                        {'exit', lid:lid(), exit_reason()}.
 
 %%%----------------------------------------------------------------------
@@ -411,7 +412,8 @@ handler(spawn_link, ParentPid, #context{details = Det} = Context, ChildPid) ->
     link(ChildPid),
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
-    ?debug_1("Process ~s spawns process ~s.~n", [ParentLid, ChildLid]),
+    ?debug_1("Process ~s spawns and links to process ~s.~n",
+	     [ParentLid, ChildLid]),
     log_details(Det, {spawn_link, ParentLid, ChildLid}),
     lid:link(ParentLid, ChildLid),
     NewContext = dispatcher(Context),
