@@ -10,7 +10,8 @@
 -export([test01/0, test02/0, test03/0, test04/0,
 	 test05/0, test06/0, test07/0, test08/0,
 	 test09/0, test10/0, test11/0, test12/0,
-         test13/0, test14/0, test15/0]).
+         test13/0, test14/0, test15/0, test16/0,
+	 test17/0]).
 
 -include("ced.hrl").
 
@@ -227,4 +228,33 @@ test15() ->
     end.
 
 foo15() ->
+    ok.
+
+%% Normal, 2 proc: Spawn link, trap_exit and receive exit message.
+%% Same as above, but with catch-all instead of specific pattern.
+-spec test16() -> 'ok'.
+
+test16() ->
+    process_flag(trap_exit, true),
+    spawn_link(fun() -> foo16() end),
+    receive
+	_Exit -> ok
+    end.
+
+foo16() ->
+    ok.
+
+%% Deadlock, 2 proc: Spawn link, trap_exit and receive exit message.
+%% Same as above, but trap_exit is set to false before receive.
+-spec test17() -> 'ok'.
+
+test17() ->
+    process_flag(trap_exit, true),
+    spawn_link(fun() -> foo17() end),
+    process_flag(trap_exit, false),
+    receive
+	_Exit -> ok
+    end.
+
+foo17() ->
     ok.
