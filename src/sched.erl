@@ -322,30 +322,44 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
 %% Discard the exited process (don't add to any set).
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% call the dispatcher.
-handler(exit, Pid, #context{details = Det} = Context, Reason) ->
-    %% Pids of processes that are linked to the one that just exited
-    %% and have their 'trap_exit' flag set to true.
-    Pids = lid:get_trapping_exits(lid:get_linked(Pid)),
-    %% Send 'EXIT' messages.
-    NewContext = send_exits(Pids, Pid, Reason, Context),
-    Type =
-        case Reason of
-            normal -> normal;
-            _Else -> error:type_from_description(Reason)
-        end,
+handler(exit, Pid, 
+	#context{active = Active, blocked = Blocked, details = Det} = Context,
+	Reason) ->
     Lid = lid:from_pid(Pid),
     case Lid of
 	not_found ->
 	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Type]),
-	    dispatcher(NewContext);
+	    dispatcher(Context);
 	_Any ->
+	    %% Pids of processes that are linked to the one that just exited
+	    %% and have their 'trap_exit' flag set to true.
+	    LnT = sets:intersection(lid:get_linked(Lid),
+				    lid:get_trapping_exits()),
+	    %% Send 'EXIT' messages.
+	    Fun = fun(L, Unused) ->
+			  P = lid:to_pid(L),
+			  P ! {Pid, {'EXIT', Pid, Reason}},
+			  Unused
+		  end,
+	    sets:fold(Fun, unused, LnT),
+	    %% Wakeup all processes in LnT.
+	    NewActive = sets:union(Active, LnT),
+	    NewBlocked = sets:subtract(Blocked, LnT),
+	    NewContext = Context#context{active = NewActive,
+					 blocked = NewBlocked},
+	    %% Cleanup Lid stored info.
+	    lid:cleanup(Lid),
+	    %% Handle and propagate errors.
+	    Type =
+		case Reason of
+		    normal -> normal;
+		    _Else -> error:type_from_description(Reason)
+		end,
 	    ?debug_1("Process ~s exits (~p).~n", [Lid, Type]),
 	    case Det of
 		true -> replay_logger:log({exit, Lid, Type});
 		false -> continue
 	    end,
-	    %% If the exception was caused by an assertion violation, propagate
-	    %% it to the driver via the `error` field of the `context` record.
             case Type of
                 normal -> NewContext;
                 _Other ->
@@ -363,12 +377,13 @@ handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
 	true -> replay_logger:log({link, Lid, TargetLid});
 	false -> continue
     end,
-    lid:link(Pid, TargetPid),
+    lid:link(Lid, TargetLid),
     dispatcher(Context);
 
 %% Process_flag message handler.
 handler(process_flag, Pid, Context, {_Flag, _Value} = NewFlag) ->
-    lid:update_flags(Pid, NewFlag),
+    Lid = lid:from_pid(Pid),
+    lid:update_flags(Lid, NewFlag),
     dispatcher(Context);
 
 %% Receive message handler.
@@ -432,7 +447,7 @@ handler(spawn_link, ParentPid, #context{details = Det} = Context, ChildPid) ->
 	true -> replay_logger:log({spawn, ParentLid, ChildLid});
 	false -> continue
     end,
-    lid:link(ParentPid, ChildPid),
+    lid:link(ParentLid, ChildLid),
     NewContext = dispatcher(Context),
     dispatcher(NewContext);
 
@@ -477,21 +492,6 @@ run(Lid, #context{active = Active, state = State} = Context) ->
     %% Call the dispatcher to handle incoming actions from the process
     %% we just "unblocked".
     dispatcher(Context#context{active = NewActive, state = NewState}).
-
-%% Send 'EXIT' messages to all processes that are linked to the one
-%% that just exited and have their 'trap_exit' flag set to true.
-send_exits([], _Sender, _Reason, Context) ->
-    Context;
-send_exits([Pid|Pids], Sender, Reason, Context) ->
-    try
-        Pid ! {Sender, {'EXIT', Sender, Reason}},
-        Lid = lid:from_pid(Pid),
-        NewContext = wakeup(Lid, Context),
-        send_exits(Pids, Sender, Reason, NewContext)
-    catch
-        error:badarg ->
-            send_exits(Pids, Sender, Reason, Context)
-    end.
 
 %% Wakeup a process.
 %% If process is in `blocked` set, move to `active` set.
