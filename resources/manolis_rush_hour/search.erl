@@ -283,7 +283,7 @@ coordinator_outer(0, [], _Moves, Workers, Opts) ->
 	false -> -1
     end;
 coordinator_outer(NextLeft, NextStates, Moves, Workers, Opts) ->
-    io:format("~b~n", [Moves]),
+    %% io:format("~b~n", [Moves]),
     case Opts#opts.limit == Moves of
 	true ->
 	    coordinator_outer(0, [], Moves, Workers, Opts);
