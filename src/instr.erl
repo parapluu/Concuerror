@@ -206,19 +206,63 @@ instrument_link(Tree) ->
     erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a receive expression.
+%% -----------------------------------------------------------------------------
 %% receive
-%%    Msg -> Actions
+%%    Patterns -> Actions
 %% end
+%%
 %% is transformed into
+%%
 %% sched:rep_receive(Fun),
 %% where Fun = fun(Aux) ->
 %%               receive
-%%                 {SenderPid, Msg} ->
-%%                   {SenderPid, Msg, Actions}
+%%                   NewPatterns -> NewActions
 %%               after 0 ->
 %%                 Aux()
 %%               end
 %%             end
+%%
+%% Pattern -> NewPattern maps are divided into following categories:
+%%
+%%   - Patterns consisting of size-3 tuples, i.e. `{X, Y, Z}' are kept as
+%%     they are and additionally a pattern `{Fresh, {X, Y, Z}}' is added.
+%%     That way possible `{'EXIT', Pid, Reason}' messages are caught
+%%     if the receiver has trap_exit set to true.
+%%
+%%   - Same as above for size-5 tuples, to catch possible 'DOWN' messages.
+%%
+%%   - Same as above for catch-all patterns, i.e. `Var' or `_' patterns.
+%%
+%%   - All other patterns `Pattern' are transformed into {Fresh, Pattern}.
+%%
+%% `Action' is normally transformed into
+%% `sched:rep_receive(Fresh, Pattern), Action'.
+%% In the case of size-3, size-5 and catch-all patterns, the patterns that
+%% are duplicated as they were originally, will have a NewAction of
+%% `sched:rep_receive(Pattern), Action'.
+%% -----------------------------------------------------------------------------
+%% receive
+%%   Patterns -> Actions
+%% after N -> AfterActions
+%%
+%% is transformed into
+%%
+%% receive
+%%   NewPatterns -> NewActions
+%% after 0 -> AfterActions
+%%
+%% Pattens and Actions are mapped into NewPatterns and NewActions as described
+%% previously for the case of a `receive' expression with no `after' clause.
+%% -----------------------------------------------------------------------------
+%% receive
+%% after N -> AfterActions
+%%
+%% is transformed into
+%%
+%% AfterActions
+%%
+%% That is, the `receive' expression and the delay are dropped off completely.
+%% -----------------------------------------------------------------------------
 instrument_receive(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_receive),
@@ -231,8 +275,13 @@ instrument_receive(Tree) ->
             Action = erl_syntax:receive_expr_action(Tree),
             erl_syntax:block_expr(Action);
         _Other ->
-            NewClauses = [transform_receive_clause(Clause)
-                          || Clause <- OldClauses],
+	    Fold = fun(Old, Acc) ->
+			   case transform_receive_clause(Old) of
+			       [One] -> [One|Acc];
+			       [One, Two] -> [One, Two|Acc]
+			   end
+		   end,
+	    NewClauses = lists:foldr(Fold, [], OldClauses),
             %% Create new receive expression adding the `after 0` part.
             Timeout = erl_syntax:integer(0),
             case erl_syntax:receive_expr_timeout(Tree) of
@@ -255,11 +304,29 @@ instrument_receive(Tree) ->
             end
     end.
 
-%% Tranform a clause
-%%   Msg -> [Actions]
-%% to
-%%   {SenderPid, Msg} -> {SenderPid, Msg, [Actions]}
+%% Transform a Pattern -> Action clause, according to its Pattern.
 transform_receive_clause(Clause) ->
+    [Pattern] = erl_syntax:clause_patterns(Clause),
+    Fnormal = fun(P) -> [transform_receive_clause_regular(P)] end,
+    Fspecial = fun(P) -> [transform_receive_clause_regular(P),
+     			  transform_receive_clause_special(P)]
+    	       end,
+    case erl_syntax:type(Pattern) of
+	tuple ->
+	    case erl_syntax:tuple_size(Pattern) of
+		3 -> Fspecial(Clause);
+		5 -> Fspecial(Clause);
+		_OtherSize -> Fnormal(Clause)
+	    end;
+	variable -> Fspecial(Clause);
+	_OtherType -> Fnormal(Clause)
+    end.    
+
+%% Tranform a clause
+%%   Pattern -> Action
+%% into
+%%   {Fresh, Pattern} -> sched:rep_receive_notify(Fresh, Pattern), Action
+transform_receive_clause_regular(Clause) ->
     [OldPattern] = erl_syntax:clause_patterns(Clause),
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
@@ -269,8 +336,23 @@ transform_receive_clause(Clause) ->
     Function = erl_syntax:atom(rep_receive_notify),
     Arguments = [PidVar, OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),
-    NewBody = [Notify | OldBody],
+    NewBody = [Notify|OldBody],
     erl_syntax:clause(NewPattern, OldGuard, NewBody).
+
+%% Transform a clause
+%%   Pattern -> Action
+%% into
+%%   Pattern -> sched:rep_receive_notify(Pattern), Action
+transform_receive_clause_special(Clause) ->
+    [OldPattern] = erl_syntax:clause_patterns(Clause),
+    OldGuard = erl_syntax:clause_guard(Clause),
+    OldBody = erl_syntax:clause_body(Clause),
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_receive_notify),
+    Arguments = [OldPattern],
+    Notify = erl_syntax:application(Module, Function, Arguments),
+    NewBody = [Notify|OldBody],
+    erl_syntax:clause([OldPattern], OldGuard, NewBody).
 
 %% Instrument a Pid ! Msg expression.
 %% Pid ! Msg is transformed into rep:send(Pid, Msg).

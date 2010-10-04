@@ -16,9 +16,9 @@
 
 %% Instrumentation related exports.
 -export([rep_link/1, rep_process_flag/2, rep_receive/1,
-         rep_receive_notify/2, rep_send/2, rep_spawn/1,
-         rep_spawn_link/1, rep_spawn_link/3, rep_yield/0,
-         wait/0]).
+         rep_receive_notify/1, rep_receive_notify/2,
+	 rep_send/2, rep_spawn/1, rep_spawn_link/1,
+	 rep_spawn_link/3, rep_yield/0, wait/0]).
 
 -export_type([proc_action/0, analysis_target/0, analysis_ret/0]).
 
@@ -51,7 +51,9 @@
 %% Tuples providing information about a process' action.
 -type proc_action() :: {'block', lid:lid()} |
                        {'link', lid:lid(), lid:lid()} |
+		       {'process_flag', lid:lid(), 'trap_exit', boolean()} |
                        {'receive', lid:lid(), lid:lid(), term()} |
+                       {'receive', lid:lid(), term()} |
                        {'send', lid:lid(), lid:lid(), term()} |
                        {'spawn', lid:lid(), lid:lid()} |
                        {'exit', lid:lid(), exit_reason()}.
@@ -229,6 +231,8 @@ dispatcher(Context) ->
 	    handler(process_flag, Pid, Context, Misc);
 	#sched{msg = 'receive', pid = Pid, misc = {_From, _Msg} = Misc} ->
 	    handler('receive', Pid, Context, Misc);
+	#sched{msg = 'receive', pid = Pid, misc = Msg} ->
+	    handler('receive', Pid, Context, Msg);
 	#sched{msg = send, pid = Pid, misc = {_Dest, _Msg} = Misc} ->
 	    handler(send, Pid, Context, Misc);
 	#sched{msg = spawn, pid = Pid, misc = ChildPid} ->
@@ -321,7 +325,7 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
 %% If the exited process is irrelevant (i.e. has no LID assigned),
-%% call the dispatcher.
+%% do nothing and call the dispatcher.
 handler(exit, Pid, 
 	#context{active = Active, blocked = Blocked, details = Det} = Context,
 	Reason) ->
@@ -331,20 +335,10 @@ handler(exit, Pid,
 	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Type]),
 	    dispatcher(Context);
 	_Any ->
-	    %% Pids of processes that are linked to the one that just exited
-	    %% and have their 'trap_exit' flag set to true.
-	    LnT = sets:intersection(lid:get_linked(Lid),
-				    lid:get_trapping_exits()),
-	    %% Send 'EXIT' messages.
-	    Fun = fun(L, Unused) ->
-			  P = lid:to_pid(L),
-			  P ! {Pid, {'EXIT', Pid, Reason}},
-			  Unused
-		  end,
-	    sets:fold(Fun, unused, LnT),
-	    %% Wakeup all processes in LnT.
-	    NewActive = sets:union(Active, LnT),
-	    NewBlocked = sets:subtract(Blocked, LnT),
+	    %% Wakeup all processes linked to the one that just exited.
+	    Linked = lid:get_linked(Lid),
+	    NewActive = sets:union(Active, Linked),
+	    NewBlocked = sets:subtract(Blocked, Linked),
 	    NewContext = Context#context{active = NewActive,
 					 blocked = NewBlocked},
 	    %% Cleanup Lid stored info.
@@ -381,12 +375,16 @@ handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
     dispatcher(Context);
 
 %% Process_flag message handler.
-handler(process_flag, Pid, Context, {_Flag, _Value} = NewFlag) ->
+handler(process_flag, Pid, #context{details = Det} = Context, {Flag, Value}) ->
     Lid = lid:from_pid(Pid),
-    lid:update_flags(Lid, NewFlag),
+    ?debug_1("Process ~s sets flag '~p' to '~p'.~n", [Lid, Flag, Value]),
+    case Det of
+	true -> replay_logger:log({process_flag, Lid, Flag, Value});
+	false -> continue
+    end,
     dispatcher(Context);
 
-%% Receive message handler.
+%% Normal receive message handler.
 handler('receive', Pid, #context{details = Det} = Context, {From, Msg}) ->
     Lid = lid:from_pid(Pid),
     SenderLid = lid:from_pid(From),
@@ -394,6 +392,17 @@ handler('receive', Pid, #context{details = Det} = Context, {From, Msg}) ->
 	    [Lid, Msg, SenderLid]),
     case Det of
 	true -> replay_logger:log({'receive', Lid, SenderLid, Msg});
+	false -> continue
+    end,
+    dispatcher(Context);
+
+%% Receive message handler for special messages, like 'EXIT' and 'DOWN',
+%% which don't have an associated sender process.
+handler('receive', Pid, #context{details = Det} = Context, Msg) ->
+    Lid = lid:from_pid(Pid),
+    ?debug_1("Process ~s receives message `~p`.~n", [Lid, Msg]),
+    case Det of
+	true -> replay_logger:log({'receive', Lid, Msg});
 	false -> continue
     end,
     dispatcher(Context);
@@ -565,7 +574,7 @@ rep_link(Pid) ->
 %%                       ('sensitive', boolean()) -> boolean().
 %% @doc: Replacement for `process_flag/2'.
 %%
-%% Just save the trap_exit flag of the process.
+%% Just yield after altering the process flag.
 -type process_priority_level() :: 'max' | 'high' | 'normal' | 'low'.
 -spec rep_process_flag('trap_exit', boolean()) -> boolean();
                       ('error_handler', atom()) -> atom();
@@ -580,6 +589,7 @@ rep_link(Pid) ->
 rep_process_flag(trap_exit = Flag, Value) ->
     Result = process_flag(Flag, Value),
     ?RP_SCHED ! #sched{msg = process_flag, pid = self(), misc = {Flag, Value}},
+    rep_yield(),
     Result;
 rep_process_flag(Flag, Value) ->
     process_flag(Flag, Value).
@@ -609,6 +619,23 @@ rep_receive_aux(Fun) ->
 
 rep_receive_notify(From, Msg) ->
     ?RP_SCHED ! #sched{msg = 'receive', pid = self(), misc = {From, Msg}},
+    rep_yield(),
+    ok.
+
+%% @spec rep_receive_notify(pid(), term()) -> 'ok'
+%% @doc: Auxiliary function used in the `receive' statetement instrumentation.
+%%
+%% Called first thing after a message has been received, to inform the scheduler
+%% about the message received.
+-spec rep_receive_notify(term()) -> 'ok'.
+
+rep_receive_notify(Msg) ->
+    case Msg of
+	{'EXIT', _Pid, _Reason} -> continue;
+	{'DOWN', _Ref, process, _Pid, _Reason} -> continue;
+	Other -> log:internal("rep_receive_notify received ~p~n", [Other])
+    end,
+    ?RP_SCHED ! #sched{msg = 'receive', pid = self(), misc = Msg},
     rep_yield(),
     ok.
 

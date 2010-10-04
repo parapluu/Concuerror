@@ -242,5 +242,16 @@ preemption_bounding_test_() ->
 	      Result = sched:analyze(Target, Options),
 	      ResultPreb = sched:analyze(Target, OptionsPreb),
 	      ?assertEqual(Result, ResultPreb)
+	  end)},
+     {"test20",
+       ?_test(
+	  begin
+	      Target = {test, test18, []},
+	      Files = {files, [?TEST_ERL_PATH]},
+	      Options = [Files],
+	      OptionsPreb = [Files, {preb, infinite}],
+	      Result = sched:analyze(Target, Options),
+	      ResultPreb = sched:analyze(Target, OptionsPreb),
+	      ?assertEqual(Result, ResultPreb)
 	  end)}
      ]}.

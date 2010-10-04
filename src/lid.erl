@@ -8,8 +8,8 @@
 
 -module(lid).
 
--export([cleanup/1, from_pid/1, get_linked/1, get_trapping_exits/0,
-	 link/2, new/2, start/0, stop/0, to_pid/1, update_flags/2]).
+-export([cleanup/1, from_pid/1, get_linked/1, link/2, new/2,
+	 start/0, stop/0, to_pid/1]).
 
 -export_type([lid/0]).
 
@@ -20,22 +20,20 @@
 %% between different runs of the same program (as opposed to erlang pids).
 -type lid() :: string().
 
--type flag() :: {'trap_exit', boolean()}.
-
 %% Cleanup all information of a process.
 -spec cleanup(lid()) -> 'ok'.
 
 cleanup(Lid) ->
-    [{Lid, Pid, _C, _F, Linked}] = ets:lookup(?NT_LID, Lid),
+    [{Lid, Pid, _C, Linked}] = ets:lookup(?NT_LID, Lid),
     %% Delete LID table entry of Lid.
     ets:delete(?NT_LID, Lid),
     %% Delete pid table entry.
     ets:delete(?NT_PID, Pid),
     %% Delete all occurrences of Lid in other process' link-sets.
     Fun = fun(L, Unused) ->
-		  OldLinked = ets:lookup_element(?NT_LID, L, 5),
+		  OldLinked = ets:lookup_element(?NT_LID, L, 4),
 		  NewLinked = sets:del_element(Lid, OldLinked),
-		  ets:update_element(?NT_LID, L, {5, NewLinked}),
+		  ets:update_element(?NT_LID, L, {4, NewLinked}),
 		  Unused
 	  end,
     sets:fold(Fun, unused, Linked).
@@ -53,37 +51,16 @@ from_pid(Pid) ->
 -spec get_linked(lid()) -> set().
 
 get_linked(Lid) ->
-    ets:lookup_element(?NT_LID, Lid, 5).
-
-%% Return the LIDs of processes that have their 'trap_exit' flag
-%% set to true.
--spec get_trapping_exits() -> set().
-
-get_trapping_exits() ->
-    Next = ets:first(?NT_LID),
-    get_trapping_exits_aux(Next, sets:new()).
-
-get_trapping_exits_aux('$end_of_table', Acc) ->
-    Acc;
-get_trapping_exits_aux(PrevLid, Acc) ->
-    Flags = ets:lookup_element(?NT_LID, PrevLid, 4),
-    {trap_exit, Value} = lists:keyfind(trap_exit, 1, Flags),
-    NewAcc =
-        case Value of
-            true -> sets:add_element(PrevLid, Acc);
-            false -> Acc
-        end,
-    NextLid = ets:next(?NT_LID, PrevLid),
-    get_trapping_exits_aux(NextLid, NewAcc).
+    ets:lookup_element(?NT_LID, Lid, 4).
 
 %% Update the linking information of the two pids.
 -spec link(lid(), lid()) -> boolean().
 
 link(Lid1, Lid2) ->
-    LinkedTo1 = ets:lookup_element(?NT_LID, Lid1, 5),
-    ets:update_element(?NT_LID, Lid1, {5, sets:add_element(Lid2, LinkedTo1)}),
-    LinkedTo2 = ets:lookup_element(?NT_LID, Lid2, 5),
-    ets:update_element(?NT_LID, Lid2, {5, sets:add_element(Lid1, LinkedTo2)}).
+    LinkedTo1 = ets:lookup_element(?NT_LID, Lid1, 4),
+    ets:update_element(?NT_LID, Lid1, {4, sets:add_element(Lid2, LinkedTo1)}),
+    LinkedTo2 = ets:lookup_element(?NT_LID, Lid2, 4),
+    ets:update_element(?NT_LID, Lid2, {4, sets:add_element(Lid1, LinkedTo2)}).
 
 %% "Register" a new process spawned by the process with LID `ParentLid`.
 %% Pid is the new process' erlang pid.
@@ -95,17 +72,17 @@ new(Pid, noparent) ->
     %% The first process has LID = "P1", has no children spawned at init,
     %% has the default list of flags and is not linked to any processes.
     Lid = "P1",
-    ets:insert(?NT_LID, {Lid, Pid, 0, default_flags(), sets:new()}),
+    ets:insert(?NT_LID, {Lid, Pid, 0, sets:new()}),
     ets:insert(?NT_PID, {Pid, Lid}),
     Lid;
 new(Pid, ParentLid) ->
-    [{ParentLid, _PPid, Children, _F, _L}] = ets:lookup(?NT_LID, ParentLid),
+    [{ParentLid, _PPid, Children, _L}] = ets:lookup(?NT_LID, ParentLid),
     %% Create new process' Lid
     Lid = lists:concat([ParentLid, ".", Children + 1]),
     %% Update parent info (increment children counter).
     ets:update_element(?NT_LID, ParentLid, {3, Children + 1}),
     %% Insert child, flag and linking info.
-    ets:insert(?NT_LID, {Lid, Pid, 0, default_flags(), sets:new()}),
+    ets:insert(?NT_LID, {Lid, Pid, 0, sets:new()}),
     ets:insert(?NT_PID, {Pid, Lid}),
     Lid.
 
@@ -136,21 +113,6 @@ stop() ->
 
 to_pid(Lid) ->
     case ets:lookup(?NT_LID, Lid) of
-	[{Lid, Pid, _Children, _Flags, _Linked}] -> Pid;
+	[{Lid, Pid, _Children, _Linked}] -> Pid;
 	[] -> not_found
     end.
-
-%% Update the process flags.
--spec update_flags(lid(), flag()) -> 'true'.
-
-update_flags(Lid, {Key, _Value} = Flag) ->
-    Flags = ets:lookup_element(?NT_LID, Lid, 4),
-    NewFlags = lists:keyreplace(Key, 1, Flags, Flag),
-    ets:update_element(?NT_LID, Lid, {4, NewFlags}).
-
-%%%----------------------------------------------------------------------
-%%% Helper functions
-%%%----------------------------------------------------------------------
-
-default_flags() ->
-    [{trap_exit, false}].

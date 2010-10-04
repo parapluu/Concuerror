@@ -75,23 +75,6 @@ link_test() ->
     ?assertEqual(0, sets:size(ISection)),
     lid:stop().
 
--spec trap_exit_test() -> term().
-
-trap_exit_test() ->
-    lid:start(),
-    Pid1 = c:pid(0, 2, 3),
-    Pid2 = c:pid(0, 2, 4),
-    Pid3 = c:pid(0, 2, 5),
-    Lid1 = lid:new(Pid1, noparent),
-    _Lid2 = lid:new(Pid2, Lid1),
-    Lid3 = lid:new(Pid3, Lid1),
-    lid:update_flags(Lid1, {trap_exit, true}),
-    lid:update_flags(Lid3, {trap_exit, true}),
-    Set = sets:from_list([Lid1, Lid3]),
-    ISection = sets:subtract(Set, lid:get_trapping_exits()),
-    ?assertEqual(0, sets:size(ISection)),
-    lid:stop().
-
 -spec cleanup_test() -> term().
 
 cleanup_test() ->

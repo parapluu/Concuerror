@@ -244,7 +244,7 @@ test16() ->
 foo16() ->
     ok.
 
-%% Deadlock, 2 proc: Spawn link, trap_exit and receive exit message.
+%% Deadlock/Normal, 2 proc: Spawn link, trap_exit and receive exit message.
 %% Same as above, but trap_exit is set to false before receive.
 -spec test17() -> 'ok'.
 
@@ -259,7 +259,8 @@ test17() ->
 foo17() ->
     ok.
 
-%% TODO: Should have some correct interleavings.
+%% Assertion violation/Normal, 3 proc: Testing interleaving of process exits
+%% and trap_exit.
 test18() ->
     Self = self(),
     spawn(fun() -> foo18(Self) end),
@@ -274,6 +275,6 @@ foo18(Parent) ->
 
 flush_mailbox(N) ->
     receive
-	_Any -> flush_mailbox(N + 1)
+	_ -> flush_mailbox(N + 1)
     after 0 -> N
     end.

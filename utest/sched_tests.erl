@@ -134,16 +134,5 @@ interleave_test_() ->
       {"test18",
        ?_assertMatch({ok, {test, test16, []}},
 		     sched:analyze({test, test16, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test19",
-       ?_test(
-	  begin
-	      Target = {test, test17, []},
-	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Target, [Ticket|_Tickets]} =
-		  sched:analyze(Target, Options),
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual(deadlock,
-                           error:type(ticket:get_error(Ticket)))
-	  end)}
+			     [{files, [?TEST_ERL_PATH]}]))}
      ]}.
