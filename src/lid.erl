@@ -21,7 +21,7 @@
 
 %% The following definitions refer to the ?NT_LID table.
 -define(children, 3).
--define(linkedps, 4).
+-define(linked, 4).
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -47,9 +47,9 @@ cleanup(Lid) ->
     ets:delete(?NT_PID, Pid),
     %% Delete all occurrences of Lid in other process' link-sets.
     Fun = fun(L, Unused) ->
-		  OldLinked = ets:lookup_element(?NT_LID, L, ?linkedps),
+		  OldLinked = get_linked(L),
 		  NewLinked = sets:del_element(Lid, OldLinked),
-		  ets:update_element(?NT_LID, L, {?linkedps, NewLinked}),
+                  put_linked(L, NewLinked),
 		  Unused
 	  end,
     sets:fold(Fun, unused, Linked).
@@ -67,18 +67,16 @@ from_pid(Pid) ->
 -spec get_linked(lid()) -> set().
 
 get_linked(Lid) ->
-    ets:lookup_element(?NT_LID, Lid, ?linkedps).
+    ets:lookup_element(?NT_LID, Lid, ?linked).
 
-%% Update the linking information of the two pids.
+%% Update the linking information of the two LIDs.
 -spec link(lid(), lid()) -> boolean().
 
 link(Lid1, Lid2) ->
-    LinkedTo1 = ets:lookup_element(?NT_LID, Lid1, ?linkedps),
-    ets:update_element(?NT_LID, Lid1, {?linkedps,
-                                       sets:add_element(Lid2, LinkedTo1)}),
-    LinkedTo2 = ets:lookup_element(?NT_LID, Lid2, ?linkedps),
-    ets:update_element(?NT_LID, Lid2, {?linkedps,
-                                       sets:add_element(Lid1, LinkedTo2)}).
+    LinkedTo1 = get_linked(Lid1),
+    put_linked(Lid1, sets:add_element(Lid2, LinkedTo1)),
+    LinkedTo2 = get_linked(Lid2),
+    put_linked(Lid2, sets:add_element(Lid1, LinkedTo2)).
 
 %% "Register" a new process spawned by the process with LID `ParentLid`.
 %% Pid is the new process' erlang pid.
@@ -103,6 +101,10 @@ new(Pid, ParentLid) ->
     ets:insert(?NT_LID, {Lid, Pid, 0, sets:new()}),
     ets:insert(?NT_PID, {Pid, Lid}),
     Lid.
+
+%% Update the LIDs of all processes linked to process Lid.
+put_linked(Lid, Linked) ->
+    ets:update_element(?NT_LID, Lid, {?linked, Linked}).
 
 %% Initialize LID tables.
 %% Must be called before any other call to lid_* functions.
