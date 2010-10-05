@@ -23,7 +23,7 @@
          rep_spawn_monitor/3, rep_unlink/1, rep_yield/0,
          wait/0]).
 
--export_type([proc_action/0, analysis_target/0, analysis_ret/0]).
+-export_type([analysis_target/0, analysis_ret/0]).
 
 -include("gen.hrl").
 
@@ -47,22 +47,6 @@
 
 %% Driver return type.
 -type driver_ret() :: 'ok' | {'error', error:error(), state:state()}.
-
-%% A process' exit reasons.
--type exit_reason() :: term().
-
-%% Tuples providing information about a process' action.
--type proc_action() :: {'block', lid:lid()} |
-                       {'exit', lid:lid(), exit_reason()} |
-                       {'link', lid:lid(), lid:lid()} |
-		       {'process_flag', lid:lid(), 'trap_exit', boolean()} |
-                       {'receive', lid:lid(), lid:lid(), term()} |
-                       {'receive', lid:lid(), term()} |
-                       {'send', lid:lid(), lid:lid(), term()} |
-                       {'spawn', lid:lid(), lid:lid()} |
-		       {'spawn_link', lid:lid(), lid:lid()} |
-                       {'spawn_monitor', lid:lid(), lid:lid()} |
-                       {'unlink', lid:lid(), lid:lid()}.
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -130,7 +114,7 @@ analyze(Target, Options) ->
 %% @spec: replay(analysis_target(), state()) -> [proc_action()]
 %% @doc: Replay the given state and return detailed information about the
 %% process interleaving.
--spec replay(ticket:ticket()) -> [proc_action()].
+-spec replay(ticket:ticket()) -> [proc_action:proc_action()].
 
 replay(Ticket) ->
     replay_logger:start(),
@@ -305,7 +289,7 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
         _Misc) ->
     Lid = lid:from_pid(Pid),
     NewBlocked = sets:add_element(Lid, Blocked),
-    ?debug_1("Process ~s blocks.~n", [Lid]),
+    ?debug_1("Process ~s blocks.~n", [lid:to_string(Lid)]),
     log_details(Det, {block, Lid}),
     Context#context{blocked = NewBlocked};
 
@@ -313,9 +297,7 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
 handler(demonitor, Pid, #context{details = Det} = Context, Ref) ->
     Lid = lid:from_pid(Pid),
     case lid:demonitor(Lid, Ref) of
-	{true, TargetLid} ->
-	    ?debug_1("Process ~s demonitors process ~s.~n", [Lid, TargetLid]),
-	    log_details(Det, {demonitor, Lid, TargetLid});
+	{true, TargetLid} -> log_details(Det, {demonitor, Lid, TargetLid});
 	false -> continue
     end,
     dispatcher(Context);
@@ -330,7 +312,8 @@ handler(exit, Pid,
     Lid = lid:from_pid(Pid),
     case Lid of
 	not_found ->
-	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Type]),
+	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n",
+		     [lid:to_string(Lid), Pid, Type]),
 	    dispatcher(Context);
 	_Any ->
 	    %% Wake up all processes linked to/monitoring the one that just
@@ -350,7 +333,6 @@ handler(exit, Pid,
 		    normal -> normal;
 		    _Else -> error:type_from_description(Reason)
 		end,
-	    ?debug_1("Process ~s exits (~p).~n", [Lid, Type]),
 	    log_details(Det, {exit, Lid, Type}),
             case Type of
                 normal -> NewContext;
@@ -364,7 +346,6 @@ handler(exit, Pid,
 handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
     Lid = lid:from_pid(Pid),
     TargetLid = lid:from_pid(TargetPid),
-    ?debug_1("Process ~s links to process ~s.~n", [Lid, TargetLid]),
     log_details(Det, {link, Lid, TargetLid}),
     lid:link(Lid, TargetLid),
     dispatcher(Context);
@@ -375,7 +356,6 @@ handler(monitor, Pid, #context{details = Det} = Context, {Item, Ref}) ->
     case lid:from_pid(Item) of
 	'not_found' -> continue;
 	TargetLid ->
-	    ?debug_1("Process ~s monitors process ~s.~n", [Lid, TargetLid]),
 	    log_details(Det, {monitor, Lid, TargetLid}),
 	    lid:monitor(Lid, TargetLid, Ref)
     end,
@@ -384,7 +364,6 @@ handler(monitor, Pid, #context{details = Det} = Context, {Item, Ref}) ->
 %% Process_flag message handler.
 handler(process_flag, Pid, #context{details = Det} = Context, {Flag, Value}) ->
     Lid = lid:from_pid(Pid),
-    ?debug_1("Process ~s sets flag `~p` to `~p`.~n", [Lid, Flag, Value]),
     log_details(Det, {process_flag, Lid, Flag, Value}),
     dispatcher(Context);
 
@@ -392,8 +371,6 @@ handler(process_flag, Pid, #context{details = Det} = Context, {Flag, Value}) ->
 handler('receive', Pid, #context{details = Det} = Context, {From, Msg}) ->
     Lid = lid:from_pid(Pid),
     SenderLid = lid:from_pid(From),
-    ?debug_1("Process ~s receives message `~p` from process ~s.~n",
-	    [Lid, Msg, SenderLid]),
     log_details(Det, {'receive', Lid, SenderLid, Msg}),
     dispatcher(Context);
 
@@ -401,7 +378,6 @@ handler('receive', Pid, #context{details = Det} = Context, {From, Msg}) ->
 %% which don't have an associated sender process.
 handler('receive', Pid, #context{details = Det} = Context, Msg) ->
     Lid = lid:from_pid(Pid),
-    ?debug_1("Process ~s receives message `~p`.~n", [Lid, Msg]),
     log_details(Det, {'receive', Lid, Msg}),
     dispatcher(Context);
 
@@ -413,8 +389,6 @@ handler('receive', Pid, #context{details = Det} = Context, Msg) ->
 handler(send, Pid, #context{details = Det} = Context, {DstPid, Msg}) ->
     Lid = lid:from_pid(Pid),
     DstLid = lid:from_pid(DstPid),
-    ?debug_1("Process ~s sends message `~p` to process ~s.~n",
-	    [Lid, Msg, DstLid]),
     log_details(Det, {send, Lid, DstLid, Msg}),
     NewContext = wakeup(DstLid, Context),
     dispatcher(NewContext);
@@ -428,7 +402,6 @@ handler(spawn, ParentPid, #context{details = Det} = Context, ChildPid) ->
     link(ChildPid),
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
-    ?debug_1("Process ~s spawns process ~s.~n", [ParentLid, ChildLid]),
     log_details(Det, {spawn, ParentLid, ChildLid}),
     NewContext = dispatcher(Context),
     dispatcher(NewContext);
@@ -439,8 +412,6 @@ handler(spawn_link, ParentPid, #context{details = Det} = Context, ChildPid) ->
     link(ChildPid),
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
-    ?debug_1("Process ~s spawns and links to process ~s.~n",
-	     [ParentLid, ChildLid]),
     log_details(Det, {spawn_link, ParentLid, ChildLid}),
     lid:link(ParentLid, ChildLid),
     NewContext = dispatcher(Context),
@@ -453,8 +424,6 @@ handler(spawn_monitor, ParentPid, #context{details = Det} = Context,
     link(ChildPid),
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
-    ?debug_1("Process ~s spawns and monitors process ~s.~n",
-             [ParentLid, ChildLid]),
     log_details(Det, {spawn_monitor, ParentLid, ChildLid}),
     lid:monitor(ParentLid, ChildLid, Ref),
     NewContext = dispatcher(Context),
@@ -466,7 +435,6 @@ handler(unlink, Pid, #context{details = Det} = Context, TargetPid) ->
     case lid:from_pid(TargetPid) of
 	'not_found' -> continue;
 	TargetLid ->
-	    ?debug_1("Process ~s unlinks from process ~s.~n", [Lid, TargetLid]),
 	    log_details(Det, {unlink, Lid, TargetLid}),
 	    lid:unlink(Lid, TargetLid)
     end,
@@ -492,12 +460,13 @@ handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
-%% Send LogTuple to replay_logger if details flag (first argument) is true,
-%% else do nothing.
-log_details(false, _Any) ->
-    continue;
-log_details(true, LogTuple) ->
-    replay_logger:log(LogTuple).
+%% Print debug messages and send them to replay_logger if Det is true.
+log_details(Det, Action) ->
+    ?debug_1(proc_action:to_string(Action)),
+    case Det of
+	true -> replay_logger:log(Action);
+	false -> continue
+    end.
 
 %% Calculate and print elapsed time between T1 and T2.
 elapsed_time(T1, T2) ->

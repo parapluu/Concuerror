@@ -54,6 +54,7 @@ CORE_MODULES = \
 	instr \
 	lid \
 	preb \
+	proc_action \
 	sched \
 	snapshot \
 	state \

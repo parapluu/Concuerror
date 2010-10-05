@@ -10,7 +10,7 @@
 
 -export([cleanup/1, demonitor/2, from_pid/1, get_linked/1,
 	 get_monitored_by/1, link/2, monitor/3, new/2,
-	 start/0, stop/0, get_pid/1, unlink/2]).
+	 start/0, stop/0, to_string/1, get_pid/1, unlink/2]).
 
 -export_type([lid/0]).
 
@@ -186,6 +186,11 @@ start() ->
 stop() ->
     ets:delete(?NT_LID),
     ets:delete(?NT_PID).
+
+-spec to_string(lid()) -> string().
+
+to_string(Lid) ->
+    "P" ++ Lid.
 
 %% Unlink two LIDs.
 -spec unlink(lid(), lid()) -> boolean().
