@@ -15,10 +15,26 @@
 
 -include("gen.hrl").
 
+%%%----------------------------------------------------------------------
+%%% Definitions
+%%%----------------------------------------------------------------------
+
+%% The following definitions refer to the ?NT_LID table.
+-define(children, 3).
+-define(linkedps, 4).
+
+%%%----------------------------------------------------------------------
+%%% Types
+%%%----------------------------------------------------------------------
+
 %% The logical id (LID) for each process reflects the process' logical
 %% position in the program's "process creation tree" and doesn't change
 %% between different runs of the same program (as opposed to erlang pids).
 -type lid() :: string().
+
+%%%----------------------------------------------------------------------
+%%% User interface
+%%%----------------------------------------------------------------------
 
 %% Cleanup all information of a process.
 -spec cleanup(lid()) -> 'ok'.
@@ -31,9 +47,9 @@ cleanup(Lid) ->
     ets:delete(?NT_PID, Pid),
     %% Delete all occurrences of Lid in other process' link-sets.
     Fun = fun(L, Unused) ->
-		  OldLinked = ets:lookup_element(?NT_LID, L, 4),
+		  OldLinked = ets:lookup_element(?NT_LID, L, ?linkedps),
 		  NewLinked = sets:del_element(Lid, OldLinked),
-		  ets:update_element(?NT_LID, L, {4, NewLinked}),
+		  ets:update_element(?NT_LID, L, {?linkedps, NewLinked}),
 		  Unused
 	  end,
     sets:fold(Fun, unused, Linked).
@@ -51,16 +67,18 @@ from_pid(Pid) ->
 -spec get_linked(lid()) -> set().
 
 get_linked(Lid) ->
-    ets:lookup_element(?NT_LID, Lid, 4).
+    ets:lookup_element(?NT_LID, Lid, ?linkedps).
 
 %% Update the linking information of the two pids.
 -spec link(lid(), lid()) -> boolean().
 
 link(Lid1, Lid2) ->
-    LinkedTo1 = ets:lookup_element(?NT_LID, Lid1, 4),
-    ets:update_element(?NT_LID, Lid1, {4, sets:add_element(Lid2, LinkedTo1)}),
-    LinkedTo2 = ets:lookup_element(?NT_LID, Lid2, 4),
-    ets:update_element(?NT_LID, Lid2, {4, sets:add_element(Lid1, LinkedTo2)}).
+    LinkedTo1 = ets:lookup_element(?NT_LID, Lid1, ?linkedps),
+    ets:update_element(?NT_LID, Lid1, {?linkedps,
+                                       sets:add_element(Lid2, LinkedTo1)}),
+    LinkedTo2 = ets:lookup_element(?NT_LID, Lid2, ?linkedps),
+    ets:update_element(?NT_LID, Lid2, {?linkedps,
+                                       sets:add_element(Lid1, LinkedTo2)}).
 
 %% "Register" a new process spawned by the process with LID `ParentLid`.
 %% Pid is the new process' erlang pid.
@@ -80,7 +98,7 @@ new(Pid, ParentLid) ->
     %% Create new process' Lid
     Lid = lists:concat([ParentLid, ".", Children + 1]),
     %% Update parent info (increment children counter).
-    ets:update_element(?NT_LID, ParentLid, {3, Children + 1}),
+    ets:update_element(?NT_LID, ParentLid, {?children, Children + 1}),
     %% Insert child, flag and linking info.
     ets:insert(?NT_LID, {Lid, Pid, 0, sets:new()}),
     ets:insert(?NT_PID, {Pid, Lid}),
