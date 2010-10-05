@@ -150,7 +150,7 @@ monitor(Lid1, Lid2, Ref) ->
 new(Pid, noparent) ->
     %% The first process has LID = "P1", has no children spawned at init,
     %% has the default list of flags and is not linked to any processes.
-    Lid = "P1",
+    Lid = root_lid(),
     Info = #info{lid = Lid, pid = Pid, nch = 0, lnk = sets:new(),
 		 mns = dict:new(), mnd = dict:new()},
     ets:insert(?NT_LID, Info),
@@ -159,7 +159,7 @@ new(Pid, noparent) ->
 new(Pid, ParentLid) ->
     Children = get_children(ParentLid),
     %% Create new process' Lid
-    Lid = lists:concat([ParentLid, ".", Children + 1]),
+    Lid = next_lid(ParentLid, Children),
     %% Update parent info (increment children counter).
     set_children(ParentLid, Children + 1),
     %% Insert child, flag and linking info.
@@ -242,3 +242,15 @@ set_monitors(Lid, Monitors) ->
 
 set_monitored(Lid, Monitored) ->
     ets:update_element(?NT_LID, Lid, {?POS_MND, Monitored}).
+
+%%%----------------------------------------------------------------------
+%%% Helper functions
+%%%----------------------------------------------------------------------
+
+%% First process' LID.
+root_lid() ->
+    "1".
+
+%% Create new lid from parent and its number of children.
+next_lid(ParentLid, Children) ->
+    lists:concat([ParentLid, ".", Children + 1]).
