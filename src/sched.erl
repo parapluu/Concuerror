@@ -18,7 +18,8 @@
 -export([rep_link/1, rep_process_flag/2, rep_receive/1,
          rep_receive_notify/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_spawn_link/1,
-	 rep_spawn_link/3, rep_yield/0, wait/0]).
+	 rep_spawn_link/3, rep_unlink/1, rep_yield/0,
+         wait/0]).
 
 -export_type([proc_action/0, analysis_target/0, analysis_ret/0]).
 
@@ -50,6 +51,7 @@
 
 %% Tuples providing information about a process' action.
 -type proc_action() :: {'block', lid:lid()} |
+                       {'exit', lid:lid(), exit_reason()} |
                        {'link', lid:lid(), lid:lid()} |
 		       {'process_flag', lid:lid(), 'trap_exit', boolean()} |
                        {'receive', lid:lid(), lid:lid(), term()} |
@@ -57,7 +59,7 @@
                        {'send', lid:lid(), lid:lid(), term()} |
                        {'spawn', lid:lid(), lid:lid()} |
 		       {'spawn_link', lid:lid(), lid:lid()} |
-                       {'exit', lid:lid(), exit_reason()}.
+                       {'unlink', lid:lid(), lid:lid()}.
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -419,6 +421,15 @@ handler(spawn_link, ParentPid, #context{details = Det} = Context, ChildPid) ->
     NewContext = dispatcher(Context),
     dispatcher(NewContext);
 
+%% Unlink message handler.
+handler(unlink, Pid, #context{details = Det} = Context, TargetPid) ->
+    Lid = lid:from_pid(Pid),
+    TargetLid = lid:from_pid(TargetPid),
+    ?debug_1("Process ~s unlinks from process ~s.~n", [Lid, TargetLid]),
+    log_details(Det, {unlink, Lid, TargetLid}),
+    lid:unlink(Lid, TargetLid),
+    dispatcher(Context);
+
 %% Yield message handler.
 %% Receiving a `yield` message means that the process is preempted, but
 %% remains in the active set.
@@ -655,6 +666,18 @@ rep_spawn_link(Fun) ->
 rep_spawn_link(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn_link(Fun).
+
+%% @spec: rep_unlink(pid() | port()) -> 'true'
+%% @doc: Replacement for `unlink/1'.
+%%
+%% Just yield after unlinking.
+-spec rep_unlink(pid() | port()) -> 'true'.
+
+rep_unlink(Pid) ->
+    Result = unlink(Pid),
+    ?RP_SCHED ! #sched{msg = unlink, pid = self(), misc = Pid},
+    rep_yield(),
+    Result.
 
 %% @spec rep_yield() -> 'true'
 %% @doc: Replacement for `yield/0'.

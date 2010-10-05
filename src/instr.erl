@@ -150,6 +150,8 @@ instrument_term(Tree) ->
 			    instrument_spawn(instrument_subtrees(Tree));
 			spawn_link ->
 			    instrument_spawn_link(instrument_subtrees(Tree));
+                        unlink ->
+                            instrument_unlink(instrument_subtrees(Tree));
 			_Other -> instrument_subtrees(Tree)
 		    end;
                 module_qualifier ->
@@ -174,6 +176,9 @@ instrument_term(Tree) ->
                                               instrument_subtrees(Tree));
                                         spawn_link ->
                                             instrument_spawn_link(
+                                              instrument_subtrees(Tree));
+                                        unlink ->
+                                            instrument_unlink(
                                               instrument_subtrees(Tree));
                                         yield -> instrument_yield();
                                         _Other -> instrument_subtrees(Tree)
@@ -389,6 +394,14 @@ instrument_spawn_link(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn_link),
     %% Fun expression arguments of the (before instrumentation) spawn call.
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
+
+%% Instrument a unlink/1 call.
+%% unlink(Pid) is transformed into sched:rep_unlink(Pid).
+instrument_unlink(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_unlink),
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 

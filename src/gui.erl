@@ -927,8 +927,9 @@ detail_to_string({spawn, Parent, Child}) ->
     io_lib:format("Process ~s spawns process ~s", [Parent, Child]);
 detail_to_string({spawn_link, Parent, Child}) ->
     io_lib:format("Process ~s spawns and links to process ~s",
-		  [Parent, Child]).
-
+		  [Parent, Child]);
+detail_to_string({unlink, Proc1, Proc2}) ->
+    io_lib:format("Process ~s unlinks from process ~s", [Proc1, Proc2]).
 
 %% Validate user provided function arguments.
 %% The arguments are first scanned and then parsed to ensure that they

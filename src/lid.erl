@@ -9,7 +9,7 @@
 -module(lid).
 
 -export([cleanup/2, from_pid/1, get_linked/1, link/2, new/2,
-	 start/0, stop/0, to_pid/1]).
+	 start/0, stop/0, to_pid/1, unlink/2]).
 
 -export_type([lid/0]).
 
@@ -48,13 +48,16 @@ cleanup(Lid, Pid) ->
     ets:delete(?NT_PID, Pid),
     %% Delete all occurrences of Lid in other process' link-sets.
     Fun = fun(L, Unused) ->
-		  OldLinked = get_linked(L),
-		  NewLinked = sets:del_element(Lid, OldLinked),
-                  put_linked(L, NewLinked),
+                  delete_link(L, Lid),
 		  Unused
 	  end,
     sets:fold(Fun, unused, Linked).
-		  
+
+delete_link(Lid1, Lid2) ->
+    OldLinked = get_linked(Lid1),
+    NewLinked = sets:del_element(Lid2, OldLinked),
+    put_linked(Lid1, NewLinked).
+
 %% Return the LID of process Pid or 'not_found' if mapping not in table.
 -spec from_pid(pid()) -> lid() | 'not_found'.
 
@@ -70,7 +73,7 @@ from_pid(Pid) ->
 get_linked(Lid) ->
     ets:lookup_element(?NT_LID, Lid, ?linked).
 
-%% Update the linking information of the two LIDs.
+%% Link two LIDs.
 -spec link(lid(), lid()) -> boolean().
 
 link(Lid1, Lid2) ->
@@ -113,7 +116,7 @@ put_linked(Lid, Linked) ->
 
 start() ->
     %% Table for storing process info.
-    %% Its elements are of the form {Lid, Pid, Children, Flags, LinkedTo},
+    %% Its elements are of the form {Lid, Pid, Children, LinkedTo},
     %% where Children is the number of processes spawned by it so far,
     %% Flags is a {Key, Value} list of process flags and LinkedTo is a set
     %% of linked processes.
@@ -135,6 +138,17 @@ stop() ->
 to_pid(Lid) ->
     try
         ets:lookup_element(?NT_LID, Lid, ?pid)
+    catch
+        error:badarg -> not_found
+    end.
+
+%% Unlink two LIDs.
+-spec unlink(lid(), lid()) -> boolean() | 'not_found'.
+
+unlink(Lid1, Lid2) ->
+    delete_link(Lid1, Lid2),
+    try
+        delete_link(Lid2, Lid1)
     catch
         error:badarg -> not_found
     end.

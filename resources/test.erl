@@ -11,7 +11,7 @@
 	 test05/0, test06/0, test07/0, test08/0,
 	 test09/0, test10/0, test11/0, test12/0,
          test13/0, test14/0, test15/0, test16/0,
-	 test17/0, test18/0]).
+	 test17/0, test18/0, test19/0]).
 
 -include("ced.hrl").
 
@@ -268,4 +268,16 @@ flush_mailbox(N) ->
     receive
 	_ -> flush_mailbox(N + 1)
     after 0 -> N
+    end.
+
+%% Deadlock/Normal, 2 proc: Spawn link, trap_exit, unlink
+%% and receive exit message.
+-spec test19() -> 'ok'.
+
+test19() ->
+    process_flag(trap_exit, true),
+    Pid = spawn_link(fun() -> ok end),
+    unlink(Pid),
+    receive
+	_Exit -> ok
     end.

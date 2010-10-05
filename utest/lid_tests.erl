@@ -89,3 +89,21 @@ cleanup_test() ->
     ?assertEqual('not_found', lid:to_pid(Lid1)),
     ?assertEqual(0, sets:size(lid:get_linked(Lid2))),
     lid:stop().
+
+-spec unlink_test() -> term().
+
+unlink_test() ->
+    lid:start(),
+    Pid1 = c:pid(0, 2, 3),
+    Pid2 = c:pid(0, 2, 4),
+    Pid3 = c:pid(0, 2, 5),
+    Lid1 = lid:new(Pid1, noparent),
+    Lid2 = lid:new(Pid2, Lid1),
+    Lid3 = lid:new(Pid3, Lid1),
+    lid:link(Lid1, Lid2),
+    lid:link(Lid2, Lid3),
+    lid:unlink(Lid1, Lid2),
+    Set = sets:from_list([Lid3]),
+    ISection = sets:subtract(Set, lid:get_linked(Lid2)),
+    ?assertEqual(0, sets:size(ISection)),
+    lid:stop().
