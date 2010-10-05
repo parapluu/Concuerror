@@ -222,13 +222,10 @@ foo14() ->
 
 test15() ->
     process_flag(trap_exit, true),
-    Child = spawn_link(fun() -> foo15() end),
+    Child = spawn_link(fun() -> ok end),
     receive
 	{'EXIT', Child, normal} -> ok
     end.
-
-foo15() ->
-    ok.
 
 %% Normal, 2 proc: Spawn link, trap_exit and receive exit message.
 %% Same as above, but with catch-all instead of specific pattern.
@@ -236,13 +233,10 @@ foo15() ->
 
 test16() ->
     process_flag(trap_exit, true),
-    spawn_link(fun() -> foo16() end),
+    spawn_link(fun() -> ok end),
     receive
 	_Exit -> ok
     end.
-
-foo16() ->
-    ok.
 
 %% Deadlock/Normal, 2 proc: Spawn link, trap_exit and receive exit message.
 %% Same as above, but trap_exit is set to false before receive.
@@ -250,14 +244,11 @@ foo16() ->
 
 test17() ->
     process_flag(trap_exit, true),
-    spawn_link(fun() -> foo17() end),
+    spawn_link(fun() -> ok end),
     process_flag(trap_exit, false),
     receive
 	_Exit -> ok
     end.
-
-foo17() ->
-    ok.
 
 %% Assertion violation/Normal, 3 proc: Testing interleaving of process exits
 %% and trap_exit.
