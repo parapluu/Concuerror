@@ -324,7 +324,7 @@ handler(exit, Pid,
 	    NewContext = Context#context{active = NewActive,
 					 blocked = NewBlocked},
 	    %% Cleanup Lid stored info.
-	    lid:cleanup(Lid),
+	    lid:cleanup(Lid, Pid),
 	    %% Handle and propagate errors.
 	    Type =
 		case Reason of

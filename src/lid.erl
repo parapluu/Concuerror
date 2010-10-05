@@ -8,7 +8,7 @@
 
 -module(lid).
 
--export([cleanup/1, from_pid/1, get_linked/1, link/2, new/2,
+-export([cleanup/2, from_pid/1, get_linked/1, link/2, new/2,
 	 start/0, stop/0, to_pid/1]).
 
 -export_type([lid/0]).
@@ -20,6 +20,7 @@
 %%%----------------------------------------------------------------------
 
 %% The following definitions refer to the ?NT_LID table.
+-define(pid, 2).
 -define(children, 3).
 -define(linked, 4).
 
@@ -37,10 +38,10 @@
 %%%----------------------------------------------------------------------
 
 %% Cleanup all information of a process.
--spec cleanup(lid()) -> 'ok'.
+-spec cleanup(lid(), pid()) -> 'ok'.
 
-cleanup(Lid) ->
-    [{Lid, Pid, _C, Linked}] = ets:lookup(?NT_LID, Lid),
+cleanup(Lid, Pid) ->
+    Linked = get_linked(Lid),
     %% Delete LID table entry of Lid.
     ets:delete(?NT_LID, Lid),
     %% Delete pid table entry.
@@ -92,7 +93,7 @@ new(Pid, noparent) ->
     ets:insert(?NT_PID, {Pid, Lid}),
     Lid;
 new(Pid, ParentLid) ->
-    [{ParentLid, _PPid, Children, _L}] = ets:lookup(?NT_LID, ParentLid),
+    Children = ets:lookup_element(?NT_LID, ParentLid, ?children),
     %% Create new process' Lid
     Lid = lists:concat([ParentLid, ".", Children + 1]),
     %% Update parent info (increment children counter).
@@ -132,7 +133,8 @@ stop() ->
 -spec to_pid(lid()) -> pid() | 'not_found'.
 
 to_pid(Lid) ->
-    case ets:lookup(?NT_LID, Lid) of
-	[{Lid, Pid, _Children, _Linked}] -> Pid;
-	[] -> not_found
+    try
+        ets:lookup_element(?NT_LID, Lid, ?pid)
+    catch
+        error:badarg -> not_found
     end.

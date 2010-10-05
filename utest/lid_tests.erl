@@ -84,7 +84,7 @@ cleanup_test() ->
     Lid1 = lid:new(Pid1, noparent),
     Lid2 = lid:new(Pid2, Lid1),
     lid:link(Lid1, Lid2),
-    lid:cleanup(Lid1),
+    lid:cleanup(Lid1, Pid1),
     ?assertEqual('not_found', lid:from_pid(Pid1)),
     ?assertEqual('not_found', lid:to_pid(Lid1)),
     ?assertEqual(0, sets:size(lid:get_linked(Lid2))),
