@@ -540,7 +540,7 @@ state_load() ->
 	'$end_of_table' -> no_state;
 	State ->
 	    ets:delete(?NT_STATE, State),
-	    lists:reverse(State)
+	    State
     end.
 
 %% Add a state to the `state` table.

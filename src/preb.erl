@@ -147,7 +147,7 @@ state_load() ->
 	'$end_of_table' -> no_state;
 	State ->
 	    ets:delete(?NT_STATE1, State),
-	    lists:reverse(State)
+	    State
     end.
 
 %% Return a state without removing it.
@@ -155,7 +155,7 @@ state_load() ->
 state_peak() ->
     case ets:first(?NT_STATE1) of
 	'$end_of_table' ->  no_state;
-	State -> lists:reverse(State)
+	State -> State
     end.
 
 %% Add a state to the `state` table.
