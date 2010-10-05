@@ -222,7 +222,7 @@ instrument_link(Tree) ->
 %%               end
 %%             end
 %%
-%% Pattern -> NewPattern maps are divided into following categories:
+%% Pattern -> NewPattern maps are divided into the following categories:
 %%
 %%   - Patterns consisting of size-3 tuples, i.e. `{X, Y, Z}' are kept as
 %%     they are and additionally a pattern `{Fresh, {X, Y, Z}}' is added.

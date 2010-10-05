@@ -914,7 +914,7 @@ detail_to_string({exit, Proc, Reason}) ->
 detail_to_string({link, Proc1, Proc2}) ->
     io_lib:format("Process ~s links to process ~s", [Proc1, Proc2]);
 detail_to_string({'process_flag', Proc, Flag, Value}) ->
-    io_lib:format("Process ~s sets flag '~p' to '~p'", [Proc, Flag, Value]);
+    io_lib:format("Process ~s sets flag `~p` to `~p`", [Proc, Flag, Value]);
 detail_to_string({'receive', Receiver, Sender, Msg}) ->
     io_lib:format("Process ~s receives message `~p` from process ~s",
 		  [Receiver, Msg, Sender]);

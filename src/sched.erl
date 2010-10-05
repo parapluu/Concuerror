@@ -317,7 +317,7 @@ handler(exit, Pid,
 	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Type]),
 	    dispatcher(Context);
 	_Any ->
-	    %% Wakeup all processes linked to the one that just exited.
+	    %% Wake up all processes linked to the one that just exited.
 	    Linked = lid:get_linked(Lid),
 	    NewActive = sets:union(Active, Linked),
 	    NewBlocked = sets:subtract(Blocked, Linked),
@@ -353,7 +353,7 @@ handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
 %% Process_flag message handler.
 handler(process_flag, Pid, #context{details = Det} = Context, {Flag, Value}) ->
     Lid = lid:from_pid(Pid),
-    ?debug_1("Process ~s sets flag '~p' to '~p'.~n", [Lid, Flag, Value]),
+    ?debug_1("Process ~s sets flag `~p` to `~p`.~n", [Lid, Flag, Value]),
     log_details(Det, {process_flag, Lid, Flag, Value}),
     dispatcher(Context);
 
@@ -468,7 +468,7 @@ run(Lid, #context{active = Active, state = State} = Context) ->
     %% we just "unblocked".
     dispatcher(Context#context{active = NewActive, state = NewState}).
 
-%% Wakeup a process.
+%% Wake up a process.
 %% If process is in `blocked` set, move to `active` set.
 wakeup(Lid, #context{active = Active, blocked = Blocked} = Context) ->
     case sets:is_element(Lid, Blocked) of
@@ -537,7 +537,7 @@ rep_link(Pid) ->
 %%                                process_priority_level();
 %%                        ('save_calls', non_neg_integer()) ->
 %%                                non_neg_integer();
-%%                       ('sensitive', boolean()) -> boolean().
+%%                        ('sensitive', boolean()) -> boolean().
 %% @doc: Replacement for `process_flag/2'.
 %%
 %% Just yield after altering the process flag.
@@ -577,7 +577,7 @@ rep_receive_aux(Fun) ->
     Fun(fun() -> block(), rep_receive_aux(Fun) end).
 
 %% @spec rep_receive_notify(pid(), term()) -> 'ok'
-%% @doc: Auxiliary function used in the `receive' statetement instrumentation.
+%% @doc: Auxiliary function used in the `receive' statement instrumentation.
 %%
 %% Called first thing after a message has been received, to inform the scheduler
 %% about the message received and the sender.
@@ -588,8 +588,8 @@ rep_receive_notify(From, Msg) ->
     rep_yield(),
     ok.
 
-%% @spec rep_receive_notify(pid(), term()) -> 'ok'
-%% @doc: Auxiliary function used in the `receive' statetement instrumentation.
+%% @spec rep_receive_notify(term()) -> 'ok'
+%% @doc: Auxiliary function used in the `receive' statement instrumentation.
 %%
 %% Called first thing after a message has been received, to inform the scheduler
 %% about the message received.
