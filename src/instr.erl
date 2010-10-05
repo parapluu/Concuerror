@@ -142,14 +142,20 @@ instrument_term(Tree) ->
 		atom ->
 		    Function = erl_syntax:atom_value(Qualifier),
 		    case Function of
+                        demonitor ->
+                            instrument_demonitor(instrument_subtrees(Tree));
 			link ->
 			    instrument_link(instrument_subtrees(Tree));
+                        monitor ->
+                            instrument_monitor(instrument_subtrees(Tree));
                         process_flag ->
                             instrument_process_flag(instrument_subtrees(Tree));
 			spawn ->
 			    instrument_spawn(instrument_subtrees(Tree));
 			spawn_link ->
 			    instrument_spawn_link(instrument_subtrees(Tree));
+                        spawn_monitor ->
+                            instrument_spawn_monitor(instrument_subtrees(Tree));
                         unlink ->
                             instrument_unlink(instrument_subtrees(Tree));
 			_Other -> instrument_subtrees(Tree)
@@ -165,8 +171,14 @@ instrument_term(Tree) ->
                                 erlang ->
                                     Function = erl_syntax:atom_value(Body),
                                     case Function of
+                                        demonitor ->
+                                            instrument_demonitor(
+                                              instrument_subtrees(Tree));
                                         link ->
                                             instrument_link(
+                                              instrument_subtrees(Tree));
+                                        monitor ->
+                                            instrument_monitor(
                                               instrument_subtrees(Tree));
                                         process_flag ->
                                             instrument_process_flag(
@@ -176,6 +188,9 @@ instrument_term(Tree) ->
                                               instrument_subtrees(Tree));
                                         spawn_link ->
                                             instrument_spawn_link(
+                                              instrument_subtrees(Tree));
+                                        spawn_monitor ->
+                                            instrument_spawn_monitor(
                                               instrument_subtrees(Tree));
                                         unlink ->
                                             instrument_unlink(
@@ -202,11 +217,27 @@ instrument_term(Tree) ->
 	_Other -> instrument_subtrees(Tree)
     end.
 
+%% Instrument a demonitor/{1,2} call.
+%% demonitor(Args) is transformed into sched:rep_demonitor(Args).
+instrument_demonitor(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_demonitor),
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
+
 %% Instrument a link/1 call.
 %% link(Pid) is transformed into sched:rep_link(Pid).
 instrument_link(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_link),
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
+
+%% Instrument a monitor/1 call.
+%% monitor(Ref) is transformed into sched:rep_monitor(Ref).
+instrument_monitor(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_monitor),
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
@@ -393,6 +424,15 @@ instrument_spawn(Tree) ->
 instrument_spawn_link(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn_link),
+    %% Fun expression arguments of the (before instrumentation) spawn call.
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
+
+%% Instrument a spawn_monitor/{1,3} call.
+%% `spawn_monitor(Args)' is transformed into `sched:rep_spawn_monitor(Args)'.
+instrument_spawn_monitor(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_spawn_monitor),
     %% Fun expression arguments of the (before instrumentation) spawn call.
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).

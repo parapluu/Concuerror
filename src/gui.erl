@@ -909,10 +909,14 @@ details_to_strings(Details) ->
 
 detail_to_string({block, Proc}) ->
     io_lib:format("Process ~s blocks", [Proc]);
+detail_to_string({demonitor, Proc1, Proc2}) ->
+    io_lib:format("Process ~s demonitors process ~s", [Proc1, Proc2]);
 detail_to_string({exit, Proc, Reason}) ->
     io_lib:format("Process ~s exits (~p)", [Proc, Reason]);
 detail_to_string({link, Proc1, Proc2}) ->
     io_lib:format("Process ~s links to process ~s", [Proc1, Proc2]);
+detail_to_string({monitor, Proc1, Proc2}) ->
+    io_lib:format("Process ~s monitors process ~s", [Proc1, Proc2]);
 detail_to_string({'process_flag', Proc, Flag, Value}) ->
     io_lib:format("Process ~s sets flag `~p` to `~p`", [Proc, Flag, Value]);
 detail_to_string({'receive', Receiver, Sender, Msg}) ->
@@ -927,6 +931,9 @@ detail_to_string({spawn, Parent, Child}) ->
     io_lib:format("Process ~s spawns process ~s", [Parent, Child]);
 detail_to_string({spawn_link, Parent, Child}) ->
     io_lib:format("Process ~s spawns and links to process ~s",
+		  [Parent, Child]);
+detail_to_string({spawn_monitor, Parent, Child}) ->
+    io_lib:format("Process ~s spawns and monitors process ~s",
 		  [Parent, Child]);
 detail_to_string({unlink, Proc1, Proc2}) ->
     io_lib:format("Process ~s unlinks from process ~s", [Proc1, Proc2]).

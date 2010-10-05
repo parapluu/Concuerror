@@ -11,7 +11,8 @@
 	 test05/0, test06/0, test07/0, test08/0,
 	 test09/0, test10/0, test11/0, test12/0,
          test13/0, test14/0, test15/0, test16/0,
-	 test17/0, test18/0, test19/0]).
+	 test17/0, test18/0, test19/0, test20/0,
+         test21/0, test22/0, test23/0]).
 
 -include("ced.hrl").
 
@@ -281,3 +282,43 @@ test19() ->
     receive
 	_Exit -> ok
     end.
+
+%% Normal, 2 proc: Spawn, monitor and receive down message.
+-spec test20() -> 'ok'.
+
+test20() ->
+    Ref = monitor(process, Pid = spawn(fun() -> ok end)),
+    receive
+	{'DOWN', Ref, process, Pid, _Info} -> ok
+    end.
+
+%% Deadlock/Normal, 2 proc: Spawn, monitor and receive down message.
+%% Same as above, but demonitor is called before receive.
+-spec test21() -> 'ok'.
+
+test21() ->
+    Ref = monitor(process, spawn(fun() -> ok end)),
+    demonitor(Ref),
+    receive
+	_Down -> ok
+    end.
+
+%% Assertion violation/Normal, 3 proc: Testing interleaving of process deaths
+%% and monitor.
+test22() ->
+    Pid1 = spawn(fun() -> ok end),
+    Pid2 = spawn(fun() -> ok end),
+    monitor(process, Pid1),
+    monitor(process, Pid2),
+    N = flush_mailbox(0),
+    ?assertEqual(2, N).
+
+%% Assertion violation/Normal, 3 proc: Testing interleaving of process deaths
+%% and monitor.
+%% Same as above, but spawn_monitor/1 is called instead of spawn/1
+%% and monitor/2.
+test23() ->
+    spawn_monitor(fun() -> ok end),
+    spawn_monitor(fun() -> ok end),
+    N = flush_mailbox(0),
+    ?assertEqual(2, N).

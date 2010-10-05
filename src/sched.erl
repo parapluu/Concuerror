@@ -15,10 +15,12 @@
 -export([analyze/2, driver/3, replay/1]).
 
 %% Instrumentation related exports.
--export([rep_link/1, rep_process_flag/2, rep_receive/1,
+-export([rep_demonitor/1, rep_demonitor/2, rep_link/1,
+         rep_monitor/2, rep_process_flag/2, rep_receive/1,
          rep_receive_notify/1, rep_receive_notify/2,
 	 rep_send/2, rep_spawn/1, rep_spawn_link/1,
-	 rep_spawn_link/3, rep_unlink/1, rep_yield/0,
+	 rep_spawn_link/3, rep_spawn_monitor/1,
+         rep_spawn_monitor/3, rep_unlink/1, rep_yield/0,
          wait/0]).
 
 -export_type([proc_action/0, analysis_target/0, analysis_ret/0]).
@@ -59,6 +61,7 @@
                        {'send', lid:lid(), lid:lid(), term()} |
                        {'spawn', lid:lid(), lid:lid()} |
 		       {'spawn_link', lid:lid(), lid:lid()} |
+                       {'spawn_monitor', lid:lid(), lid:lid()} |
                        {'unlink', lid:lid(), lid:lid()}.
 
 %%%----------------------------------------------------------------------
@@ -306,6 +309,17 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
     log_details(Det, {block, Lid}),
     Context#context{blocked = NewBlocked};
 
+%% Demonitor message handler.
+handler(demonitor, Pid, #context{details = Det} = Context, Ref) ->
+    Lid = lid:from_pid(Pid),
+    case lid:demonitor(Lid, Ref) of
+	{true, TargetLid} ->
+	    ?debug_1("Process ~s demonitors process ~s.~n", [Lid, TargetLid]),
+	    log_details(Det, {demonitor, Lid, TargetLid});
+	false -> continue
+    end,
+    dispatcher(Context);
+
 %% Exit message handler.
 %% Discard the exited process (don't add to any set).
 %% If the exited process is irrelevant (i.e. has no LID assigned),
@@ -319,14 +333,17 @@ handler(exit, Pid,
 	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n", [Lid, Pid, Type]),
 	    dispatcher(Context);
 	_Any ->
-	    %% Wake up all processes linked to the one that just exited.
+	    %% Wake up all processes linked to/monitoring the one that just
+            %% exited.
 	    Linked = lid:get_linked(Lid),
-	    NewActive = sets:union(Active, Linked),
-	    NewBlocked = sets:subtract(Blocked, Linked),
+            Monitors = lid:get_monitored_by(Lid),
+	    NewActive = sets:union(sets:union(Active, Linked), Monitors),
+	    NewBlocked = sets:subtract(sets:subtract(Blocked, Linked),
+                                       Monitors),
 	    NewContext = Context#context{active = NewActive,
 					 blocked = NewBlocked},
-	    %% Cleanup Lid stored info.
-	    lid:cleanup(Lid, Pid),
+	    %% Cleanup LID stored info.
+	    lid:cleanup(Lid),
 	    %% Handle and propagate errors.
 	    Type =
 		case Reason of
@@ -350,6 +367,18 @@ handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
     ?debug_1("Process ~s links to process ~s.~n", [Lid, TargetLid]),
     log_details(Det, {link, Lid, TargetLid}),
     lid:link(Lid, TargetLid),
+    dispatcher(Context);
+
+%% Monitor message handler.
+handler(monitor, Pid, #context{details = Det} = Context, {Item, Ref}) ->
+    Lid = lid:from_pid(Pid),
+    case lid:from_pid(Item) of
+	'not_found' -> continue;
+	TargetLid ->
+	    ?debug_1("Process ~s monitors process ~s.~n", [Lid, TargetLid]),
+	    log_details(Det, {monitor, Lid, TargetLid}),
+	    lid:monitor(Lid, TargetLid, Ref)
+    end,
     dispatcher(Context);
 
 %% Process_flag message handler.
@@ -405,11 +434,7 @@ handler(spawn, ParentPid, #context{details = Det} = Context, ChildPid) ->
     dispatcher(NewContext);
 
 %% Spawn_link message handler.
-%% First, link the newly spawned process to the scheduler process.
-%% The new process yields as soon as it gets spawned and the parent process
-%% yields as soon as it spawns. Therefore wait for two `yield` messages using
-%% two calls to the dispatcher.
-%% Save linked pids.
+%% Same as above, but save linked LIDs.
 handler(spawn_link, ParentPid, #context{details = Det} = Context, ChildPid) ->
     link(ChildPid),
     ParentLid = lid:from_pid(ParentPid),
@@ -421,13 +446,30 @@ handler(spawn_link, ParentPid, #context{details = Det} = Context, ChildPid) ->
     NewContext = dispatcher(Context),
     dispatcher(NewContext);
 
+%% Spawn_monitor message handler.
+%% Same as spawn, but save monitored LIDs.
+handler(spawn_monitor, ParentPid, #context{details = Det} = Context,
+        {ChildPid, Ref}) ->
+    link(ChildPid),
+    ParentLid = lid:from_pid(ParentPid),
+    ChildLid = lid:new(ChildPid, ParentLid),
+    ?debug_1("Process ~s spawns and monitors process ~s.~n",
+             [ParentLid, ChildLid]),
+    log_details(Det, {spawn_monitor, ParentLid, ChildLid}),
+    lid:monitor(ParentLid, ChildLid, Ref),
+    NewContext = dispatcher(Context),
+    dispatcher(NewContext);
+
 %% Unlink message handler.
 handler(unlink, Pid, #context{details = Det} = Context, TargetPid) ->
     Lid = lid:from_pid(Pid),
-    TargetLid = lid:from_pid(TargetPid),
-    ?debug_1("Process ~s unlinks from process ~s.~n", [Lid, TargetLid]),
-    log_details(Det, {unlink, Lid, TargetLid}),
-    lid:unlink(Lid, TargetLid),
+    case lid:from_pid(TargetPid) of
+	'not_found' -> continue;
+	TargetLid ->
+	    ?debug_1("Process ~s unlinks from process ~s.~n", [Lid, TargetLid]),
+	    log_details(Det, {unlink, Lid, TargetLid}),
+	    lid:unlink(Lid, TargetLid)
+    end,
     dispatcher(Context);
 
 %% Yield message handler.
@@ -473,7 +515,7 @@ run(Lid, #context{active = Active, state = State} = Context) ->
     %% Create new state by adding this process.
     NewState = state:extend(State, Lid),
     %% Send message to "unblock" the process.
-    Pid = lid:to_pid(Lid),
+    Pid = lid:get_pid(Lid),
     Pid ! #sched{msg = continue},
     %% Call the dispatcher to handle incoming actions from the process
     %% we just "unblocked".
@@ -526,6 +568,30 @@ block() ->
 	#sched{msg = continue} -> true
     end.
 
+%% @spec: rep_demonitor(reference()) -> 'true'
+%% @doc: Replacement for `demonitor/1'.
+%%
+%% Just yield after demonitoring.
+-spec rep_demonitor(reference()) -> 'true'.
+
+rep_demonitor(Ref) ->
+    Result = demonitor(Ref),
+    ?RP_SCHED ! #sched{msg = demonitor, pid = self(), misc = Ref},
+    rep_yield(),
+    Result.
+
+%% @spec: rep_demonitor(reference(), ['flush' | 'info']) -> 'true'
+%% @doc: Replacement for `demonitor/2'.
+%%
+%% Just yield after demonitoring.
+-spec rep_demonitor(reference(), ['flush' | 'info']) -> 'true'.
+
+rep_demonitor(Ref, Opts) ->
+    Result = demonitor(Ref, Opts),
+    ?RP_SCHED ! #sched{msg = demonitor, pid = self(), misc = Ref},
+    rep_yield(),
+    Result.
+
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.
 %%
@@ -537,6 +603,20 @@ rep_link(Pid) ->
     ?RP_SCHED ! #sched{msg = link, pid = self(), misc = Pid},
     rep_yield(),
     Result.
+
+%% @spec: rep_monitor('process', pid() | {atom(), node()} | atom()) ->
+%%                           reference().  
+%% @doc: Replacement for `monitor/2'.
+%%
+%% Just yield after monitoring.
+-spec rep_monitor('process', pid() | {atom(), node()} | atom()) ->
+                         reference().
+
+rep_monitor(Type, Item) ->
+    Ref = monitor(Type, Item),
+    ?RP_SCHED ! #sched{msg = monitor, pid = self(), misc = {Item, Ref}},
+    rep_yield(),
+    Ref.
 
 %% @spec: rep_process_flag('trap_exit', boolean()) -> boolean();
 %%                        ('error_handler', atom()) -> atom();
@@ -657,7 +737,7 @@ rep_spawn_link(Fun) ->
     rep_yield(),
     Pid.
 
-%% @spec rep_spawn_link(atom(), function(), term()) -> pid()
+%% @spec rep_spawn_link(atom(), function(), [term()]) -> pid()
 %% @doc: Replacement for `spawn_link/3'.
 %%
 %% When spawned, the new process has to yield.
@@ -666,6 +746,28 @@ rep_spawn_link(Fun) ->
 rep_spawn_link(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn_link(Fun).
+
+%% @spec rep_spawn_monitor(function()) -> pid()
+%% @doc: Replacement for `spawn_monitor/1'.
+%%
+%% When spawned, the new process has to yield.
+-spec rep_spawn_monitor(function()) -> pid().
+
+rep_spawn_monitor(Fun) ->
+    Ret = spawn_monitor(fun() -> rep_yield(), Fun() end),
+    ?RP_SCHED ! #sched{msg = spawn_monitor, pid = self(), misc = Ret},
+    rep_yield(),
+    Ret.
+
+%% @spec rep_spawn_monitor(atom(), function(), [term()]) -> pid()
+%% @doc: Replacement for `spawn_monitor/3'.
+%%
+%% When spawned, the new process has to yield.
+-spec rep_spawn_monitor(atom(), atom(), [term()]) -> pid().
+
+rep_spawn_monitor(Module, Function, Args) ->
+    Fun = fun() -> apply(Module, Function, Args) end,
+    rep_spawn_monitor(Fun).
 
 %% @spec: rep_unlink(pid() | port()) -> 'true'
 %% @doc: Replacement for `unlink/1'.

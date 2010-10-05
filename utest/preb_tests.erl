@@ -264,5 +264,49 @@ preemption_bounding_test_() ->
 	      Result = sched:analyze(Target, Options),
 	      ResultPreb = sched:analyze(Target, OptionsPreb),
 	      ?assertEqual(Result, ResultPreb)
+	  end)},
+      {"test22",
+       ?_test(
+	  begin
+	      Target = {test, test20, []},
+	      Files = {files, [?TEST_ERL_PATH]},
+	      Options = [Files],
+	      OptionsPreb = [Files, {preb, infinite}],
+	      Result = sched:analyze(Target, Options),
+	      ResultPreb = sched:analyze(Target, OptionsPreb),
+	      ?assertEqual(Result, ResultPreb)
+	  end)},
+      {"test23",
+       ?_test(
+	  begin
+	      Target = {test, test21, []},
+	      Files = {files, [?TEST_ERL_PATH]},
+	      Options = [Files],
+	      OptionsPreb = [Files, {preb, infinite}],
+	      Result = sched:analyze(Target, Options),
+	      ResultPreb = sched:analyze(Target, OptionsPreb),
+	      ?assertEqual(Result, ResultPreb)
+	  end)},
+      {"test24",
+       ?_test(
+	  begin
+	      Target = {test, test22, []},
+	      Files = {files, [?TEST_ERL_PATH]},
+	      Options = [Files],
+	      OptionsPreb = [Files, {preb, infinite}],
+	      Result = sched:analyze(Target, Options),
+	      ResultPreb = sched:analyze(Target, OptionsPreb),
+	      ?assertEqual(Result, ResultPreb)
+	  end)},
+      {"test25",
+       ?_test(
+	  begin
+	      Target = {test, test23, []},
+	      Files = {files, [?TEST_ERL_PATH]},
+	      Options = [Files],
+	      OptionsPreb = [Files, {preb, infinite}],
+	      Result = sched:analyze(Target, Options),
+	      ResultPreb = sched:analyze(Target, OptionsPreb),
+	      ?assertEqual(Result, ResultPreb)
 	  end)}
      ]}.
