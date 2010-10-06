@@ -68,10 +68,10 @@ cleanup(Lid) ->
     ets:delete(?NT_LID, Lid),
     %% Delete pid table entry.
     ets:delete(?NT_PID, Pid),
-    %% Delete all occurrences of Lid in other process' link-sets.
+    %% Delete all occurrences of Lid in other processes' link-sets.
     Fun1 = fun(L, Unused) -> delete_link(L, Lid), Unused end,
     sets:fold(Fun1, ok, Linked),
-    %% Delete all occurrences of Lid in other process' monitored dicts.
+    %% Delete all occurrences of Lid in other processes' monitored dicts.
     Fun2 = fun(R, L, Unused) ->
 		   M = get_monitored(L),
 		   set_monitored(L, dict:erase(R, M)),
@@ -92,8 +92,9 @@ delete_link(Lid1, Lid2) ->
     set_linked(Lid1, NewLinked).
 
 %% Remove monitoring information from a LID.
-%% If the given reference does not exist return false, otherwise return true.
--spec demonitor(lid(), reference()) -> {'true', lid()} | 'false'.
+%% If the given reference does not exist return not_found,
+%% otherwise return the corresponding LID.
+-spec demonitor(lid(), reference()) -> lid() | 'not_found'.
 
 demonitor(Lid, Ref) ->
     Monitored = get_monitored(Lid),
@@ -102,8 +103,8 @@ demonitor(Lid, Ref) ->
 	    TargetMonitors = get_monitors(TargetLid),
 	    set_monitored(Lid, dict:erase(Ref, Monitored)),
 	    set_monitors(TargetLid, dict:erase(Ref, TargetMonitors)),
-	    {true, TargetLid};
-	error -> false
+	    TargetLid;
+	error -> not_found
     end.
 
 %% Return the LID of process Pid or 'not_found' if mapping not in table.

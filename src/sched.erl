@@ -296,10 +296,8 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
 %% Demonitor message handler.
 handler(demonitor, Pid, #context{details = Det} = Context, Ref) ->
     Lid = lid:from_pid(Pid),
-    case lid:demonitor(Lid, Ref) of
-	{true, TargetLid} -> log_details(Det, {demonitor, Lid, TargetLid});
-	false -> continue
-    end,
+    TargetLid = lid:demonitor(Lid, Ref),
+    log_details(Det, {demonitor, Lid, TargetLid}),
     dispatcher(Context);
 
 %% Exit message handler.
@@ -347,17 +345,20 @@ handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
     Lid = lid:from_pid(Pid),
     TargetLid = lid:from_pid(TargetPid),
     log_details(Det, {link, Lid, TargetLid}),
-    lid:link(Lid, TargetLid),
+    case TargetLid of
+        not_found -> continue;
+        _ -> lid:link(Lid, TargetLid)
+    end,
     dispatcher(Context);
 
 %% Monitor message handler.
 handler(monitor, Pid, #context{details = Det} = Context, {Item, Ref}) ->
     Lid = lid:from_pid(Pid),
-    case lid:from_pid(Item) of
-	'not_found' -> continue;
-	TargetLid ->
-	    log_details(Det, {monitor, Lid, TargetLid}),
-	    lid:monitor(Lid, TargetLid, Ref)
+    TargetLid = lid:from_pid(Item),
+    log_details(Det, {monitor, Lid, TargetLid}),
+    case TargetLid of
+        not_found -> continue;
+        _ -> lid:monitor(Lid, TargetLid, Ref)
     end,
     dispatcher(Context);
 
@@ -432,11 +433,11 @@ handler(spawn_monitor, ParentPid, #context{details = Det} = Context,
 %% Unlink message handler.
 handler(unlink, Pid, #context{details = Det} = Context, TargetPid) ->
     Lid = lid:from_pid(Pid),
-    case lid:from_pid(TargetPid) of
-	'not_found' -> continue;
-	TargetLid ->
-	    log_details(Det, {unlink, Lid, TargetLid}),
-	    lid:unlink(Lid, TargetLid)
+    TargetLid = lid:from_pid(TargetPid),
+    log_details(Det, {unlink, Lid, TargetLid}),
+    case TargetLid of
+        not_found -> continue;
+        _ -> lid:unlink(Lid, TargetLid)
     end,
     dispatcher(Context);
 
