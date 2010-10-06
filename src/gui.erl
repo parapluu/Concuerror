@@ -106,47 +106,60 @@ setupFrame() ->
     wxEvtHandler:connect(Frame, command_button_clicked),
     wxEvtHandler:connect(Frame, command_listbox_selected),
     wxEvtHandler:connect(Frame, command_listbox_doubleclicked),
-    setupPanel(Frame),
+    wxEvtHandler:connect(Frame, command_splitter_sash_pos_changed),
+    setupTopSplitter(Frame),
     wxWindow:setSize(Frame, ?FRAME_SIZE_INIT),
     %% wxWindow:fit(Frame),
     wxFrame:center(Frame),
+    setSplitterInitSizes(),
     Frame.
 
-%% Setup top-level panel, having a simple two-column horizontal layout.
-setupPanel(Parent) ->
-    Panel = wxPanel:new(Parent),
-    LeftColumnSizer = setupLeftColumn(Panel),
-    RightColumnSizer = setupRightColumn(Panel),
-    %% Top-level layout
-    TopSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(TopSizer, LeftColumnSizer,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxSizer:add(TopSizer, RightColumnSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxWindow:setSizer(Panel, TopSizer),
-    wxSizer:fit(TopSizer, Panel),
-    %% Uncomment if starting frame size should be the minimum size
-    %% (i.e. frame shouldn't be allowed to shrink below it).
-    %% wxSizer:setSizeHints(TopSizer, Parent),
-    Panel.
+setupTopSplitter(Parent) ->
+    Splitter = wxSplitterWindow:new(Parent, [{id, ?TOP_SPLITTER}]),
+    ref_add(?TOP_SPLITTER, Splitter),
+    LeftPanel = wxPanel:new(Splitter),
+    LeftSizer = setupLeftColumn(LeftPanel),
+    wxWindow:setSizer(LeftPanel, LeftSizer),
+    wxSizer:fit(LeftSizer, LeftPanel),
+    RightPanel = wxPanel:new(Splitter),
+    RightSizer = setupRightColumn(RightPanel),
+    wxWindow:setSizer(RightPanel, RightSizer),
+    wxSizer:fit(RightSizer, RightPanel),
+    wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_TOP),
+    wxSplitterWindow:splitVertically(Splitter, LeftPanel, RightPanel),
+    Splitter.
+
+%% Sets initial sizes for all splitters.
+setSplitterInitSizes() ->
+    [wxSplitterWindow:setSashPosition(ref_lookup(S), V) ||
+	{S, V} <- ?SPLITTER_INIT].
 
 %% Setup left column of top-level panel, including module and function
 %% listboxes and several buttons.
-setupLeftColumn(Panel) ->
-    %% Create widgets
-    ModuleBox = wxStaticBox:new(Panel, ?wxID_ANY, "Modules"),
-    FunctionBox = wxStaticBox:new(Panel, ?wxID_ANY, "Functions"),
-    ModuleList = wxListBox:new(Panel, ?MODULE_LIST),
+setupLeftColumn(Parent) ->
+    Splitter = wxSplitterWindow:new(Parent, [{id, ?MODFUN_SPLITTER}]),
+    ref_add(?MODFUN_SPLITTER, Splitter),
+    ModulePanel = wxPanel:new(Splitter),
+    ModuleSizer = setupModuleSizer(ModulePanel),
+    wxWindow:setSizerAndFit(ModulePanel, ModuleSizer),
+    FunctionPanel = wxPanel:new(Splitter),
+    FunctionSizer = setupFunctionSizer(FunctionPanel),
+    wxWindow:setSizerAndFit(FunctionPanel, FunctionSizer),
+    wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_MODFUN),
+    wxSplitterWindow:splitHorizontally(Splitter, ModulePanel, FunctionPanel),
+    %% Add padding to the whole sizer.
+    LeftColumnSizerOuter = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(LeftColumnSizerOuter, Splitter,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+    LeftColumnSizerOuter.
+
+setupModuleSizer(Parent) ->
+    ModuleBox = wxStaticBox:new(Parent, ?wxID_ANY, "Modules"),
+    ModuleList = wxListBox:new(Parent, ?MODULE_LIST),
     ref_add(?MODULE_LIST, ModuleList),
-    FunctionList = wxListBox:new(Panel, ?FUNCTION_LIST, [{style, ?wxLB_SORT}]),
-    ref_add(?FUNCTION_LIST, FunctionList),
-    AddButton = wxButton:new(Panel, ?ADD, [{label, "&Add..."}]),
-    RemButton = wxButton:new(Panel, ?REMOVE),
-    ClearButton = wxButton:new(Panel, ?CLEAR),
-    AnalyzeButton = wxButton:new(Panel, ?ANALYZE, [{label, "Ana&lyze"}]),
-    ref_add(?ANALYZE, AnalyzeButton),
+    AddButton = wxButton:new(Parent, ?ADD, [{label, "&Add..."}]),
+    RemButton = wxButton:new(Parent, ?REMOVE),
+    ClearButton = wxButton:new(Parent, ?CLEAR),
     %% Setup button sizers
     AddRemSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(AddRemSizer, AddButton,
@@ -156,7 +169,7 @@ setupLeftColumn(Panel) ->
 		 {border, 5}]),
     wxSizer:add(AddRemSizer, ClearButton,
 		[{proportion, 0}, {flag, ?wxLEFT}, {border, 5}]),
-    %% Setup module/function sizers
+    %% Setup module sizers
     ModuleSizer = wxStaticBoxSizer:new(ModuleBox, ?wxVERTICAL),
     wxSizer:add(ModuleSizer, ModuleList,
 		[{proportion, 1},
@@ -166,6 +179,21 @@ setupLeftColumn(Panel) ->
 		[{proportion, 0},
 		 {flag, ?wxALIGN_CENTER bor ?wxALL},
                  {border, 10}]),
+    %% Add padding to the whole sizer.
+    ModuleSizerOuter = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(ModuleSizerOuter, ModuleSizer,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+		 {border, 10}]),
+    ModuleSizerOuter.
+
+setupFunctionSizer(Parent) ->
+    %% Create widgets
+    FunctionBox = wxStaticBox:new(Parent, ?wxID_ANY, "Functions"),
+    FunctionList = wxListBox:new(Parent, ?FUNCTION_LIST, [{style, ?wxLB_SORT}]),
+    ref_add(?FUNCTION_LIST, FunctionList),
+    AnalyzeButton = wxButton:new(Parent, ?ANALYZE, [{label, "Ana&lyze"}]),
+    ref_add(?ANALYZE, AnalyzeButton),
+    %% Setup function sizers
     FunctionSizer = wxStaticBoxSizer:new(FunctionBox, ?wxVERTICAL),
     wxSizer:add(FunctionSizer, FunctionList,
 		[{proportion, 1},
@@ -174,31 +202,28 @@ setupLeftColumn(Panel) ->
     wxSizer:add(FunctionSizer, AnalyzeButton,
 		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
                  {border, 10}]),
-    %% Setup left column sizer
-    LeftColumnSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(LeftColumnSizer, ModuleSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
-		 {border, 10}]),
-    wxSizer:add(LeftColumnSizer, FunctionSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
-		 {border, 10}]),
-    LeftColumnSizer.
+    FunctionSizer.
 
 %% Setup right column of top-level panel, including a notebook for displaying
 %% tabbed main, graph and source code panels and another notebook for displaying
 %% log messages.
-setupRightColumn(Panel) ->
-    MainNotebook = setupMainNotebook(Panel),
-    LogNotebook = setupLogNotebook(Panel),
-    %% Setup right column sizer
-    RightColumnSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(RightColumnSizer, MainNotebook,
-		[{proportion, 3}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 0}]),
-    wxSizer:add(RightColumnSizer, LogNotebook,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
-		 {border, 10}]),
-    RightColumnSizer.
+setupRightColumn(Parent) ->
+    Splitter = wxSplitterWindow:new(Parent, [{id, ?NOTEBOOK_SPLITTER}]),
+    ref_add(?NOTEBOOK_SPLITTER, Splitter),
+    TopPanel = wxPanel:new(Splitter),
+    TopSizer = setupMainNotebookSizer(TopPanel),
+    wxWindow:setSizerAndFit(TopPanel, TopSizer),
+    BottomPanel = wxPanel:new(Splitter),
+    BottomSizer = setupLogNotebookSizer(BottomPanel),
+    wxWindow:setSizerAndFit(BottomPanel, BottomSizer),
+    wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_NOTEBOOK),
+    wxSplitterWindow:setSashGravity(Splitter, 1.0),
+    wxSplitterWindow:splitHorizontally(Splitter, TopPanel, BottomPanel),
+    %% Add padding to the whole sizer.
+    RightColumnSizerOuter = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(RightColumnSizerOuter, Splitter,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+    RightColumnSizerOuter.
 
 %% Setup main notebook, containing 3 tabs:
 %% Main tab: Contains a list showing the errors encountered and another list
@@ -207,7 +232,7 @@ setupRightColumn(Panel) ->
 %%            interleaving.
 %% Source tab: Displays the source code for the selected module.
 %% TODO: Temporarily removed graph tab.
-setupMainNotebook(Parent) ->
+setupMainNotebookSizer(Parent) ->
     %% Notebook widgets.
     Notebook = wxNotebook:new(Parent, ?NOTEBOOK, [{style, ?wxNB_NOPAGETHEME}]),
     ref_add(?NOTEBOOK, Notebook),
@@ -220,7 +245,12 @@ setupMainNotebook(Parent) ->
     %% TODO: Temporarily removed graph tab.
     %% wxNotebook:addPage(Notebook, GraphPanel, "Graph", [{bSelect, false}]),
     wxNotebook:addPage(Notebook, SourcePanel, "Source", [{bSelect, false}]),
-    Notebook.
+    %% Add padding to the notebook.
+    NotebookSizerOuter = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(NotebookSizerOuter, Notebook,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+		 {border, 10}]),
+    NotebookSizerOuter.
 
 setupMainPanel(Parent) ->
     Panel = wxPanel:new(Parent),
@@ -326,7 +356,7 @@ setupSourceText(Ref, Theme) ->
     wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
 %% Setup a notebook for displaying log messages.
-setupLogNotebook(Parent) ->
+setupLogNotebookSizer(Parent) ->
     %% Log notebook widgets (notebook -> panel -> textcontrol).
     Notebook = wxNotebook:new(Parent, ?LOG_NOTEBOOK,
 			      [{style, ?wxNB_NOPAGETHEME}]),
@@ -338,7 +368,11 @@ setupLogNotebook(Parent) ->
     wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
     wxNotebook:addPage(Notebook, ErrorPanel, "Problems",
                        [{bSelect, false}]),
-    Notebook.
+    NotebookSizerOuter = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(NotebookSizerOuter, Notebook,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+		 {border, 0}]),
+    NotebookSizerOuter.
 
 setupLogPanel(Parent) ->
     Panel = wxPanel:new(Parent),
@@ -1116,23 +1150,13 @@ loop() ->
 	#wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
 	    ok;
 	%% -------------------- Misc handlers -------------------- %%
-	%% FIXME: To be deleted shortly.
-	%% #gui{type = dot, msg = ok} ->
-	%%     StaticBmp = ref_lookup(?STATIC_BMP),
-	%%     ScrGraph = ref_lookup(?SCR_GRAPH),
-	%%     os:cmd("dot -Tpng < schedule.dot > schedule.png"),
-	%%     Image = wxBitmap:new("schedule.png", [{type, ?wxBITMAP_TYPE_PNG}]),
-	%%     {W, H} = {wxBitmap:getWidth(Image), wxBitmap:getHeight(Image)},
-	%%     wxScrolledWindow:setScrollbars(ScrGraph, 20, 20, W div 20,
-        %%                                    H div 20),
-	%%     wxStaticBitmap:setBitmap(StaticBmp, Image),
-	%%     %% NOTE: Important, memory leak if left out!
-	%%     wxBitmap:destroy(Image),
-	%%     loop();
-	%% #gui{type = log, msg = String} ->
-	%%     ProcText = ref_lookup(?PROC_TEXT),
-	%%     wxTextCtrl:appendText(ProcText, String),
-	%%     loop();
+	%% Every time a splitter sash changes its position, refresh the whole
+	%% window to avoid annoying artifacts from the previous position of the
+	%% sash.
+	#wx{event = #wxSplitter{type = command_splitter_sash_pos_changed}} ->
+	    Frame = ref_lookup(?FRAME),
+	    wxWindow:refresh(Frame),
+	    loop();
 	#wx{event = #wxClose{type = close_window}} ->
 	    ok;
 	%% Ignore normal 'EXIT' messages from linked processes.

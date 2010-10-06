@@ -97,6 +97,19 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(PREB_BOUND_SPIN, 521).
 -define(EXPORT, 522).
 -define(IMPORT, 523).
+-define(TOP_SPLITTER, 524).
+-define(MODFUN_SPLITTER, 525).
+-define(NOTEBOOK_SPLITTER, 526).
+
+%% Splitter init-sizes
+-define(SPLITTER_INIT, [{?TOP_SPLITTER, 330},
+			{?MODFUN_SPLITTER, 300},
+			{?NOTEBOOK_SPLITTER, 530}]).
+
+%% Splitter min-sizes
+-define(MIN_TOP, 330).
+-define(MIN_MODFUN, 50).
+-define(MIN_NOTEBOOK, 50).
 
 %% Preferences related definitions
 -define(PREF_PREB_ENABLED, 561).
