@@ -31,7 +31,7 @@
 to_string({block, Proc}) ->
     io_lib:format("Process ~s blocks", [lid:to_string(Proc)]);
 to_string({demonitor, Proc, not_found}) ->
-    io_lib:format("Process ~s attempts to demonitor nonexisting process",
+    io_lib:format("Process ~s demonitors nonexisting process",
 		  [lid:to_string(Proc)]);
 to_string({demonitor, Proc1, Proc2}) ->
     io_lib:format("Process ~s demonitors process ~s",
@@ -39,13 +39,13 @@ to_string({demonitor, Proc1, Proc2}) ->
 to_string({exit, Proc, Reason}) ->
     io_lib:format("Process ~s exits (~p)", [lid:to_string(Proc), Reason]);
 to_string({link, Proc, not_found}) ->
-    io_lib:format("Process ~s attempts to link to nonexisting process",
+    io_lib:format("Process ~s links to nonexisting process",
 		  [lid:to_string(Proc)]);
 to_string({link, Proc1, Proc2}) ->
     io_lib:format("Process ~s links to process ~s",
 		  [lid:to_string(Proc1), lid:to_string(Proc2)]);
 to_string({monitor, Proc, not_found}) ->
-    io_lib:format("Process ~s attempts to monitor nonexisting process",
+    io_lib:format("Process ~s monitors nonexisting process",
 		  [lid:to_string(Proc)]);
 to_string({monitor, Proc1, Proc2}) ->
     io_lib:format("Process ~s monitors process ~s",
@@ -72,7 +72,7 @@ to_string({spawn_monitor, Parent, Child}) ->
     io_lib:format("Process ~s spawns and monitors process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
 to_string({unlink, Proc, not_found}) ->
-    io_lib:format("Process ~s attempts to unlink from nonexisting process",
+    io_lib:format("Process ~s unlinks from nonexisting process",
 		  [lid:to_string(Proc)]);
 to_string({unlink, Proc1, Proc2}) ->
     io_lib:format("Process ~s unlinks from process ~s",
