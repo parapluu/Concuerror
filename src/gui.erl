@@ -163,12 +163,13 @@ setupModuleSizer(Parent) ->
     %% Setup button sizers
     AddRemSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(AddRemSizer, AddButton,
-		[{proportion, 0}, {flag, ?wxRIGHT}, {border, 5}]),
+		[{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
     wxSizer:add(AddRemSizer, RemButton,
-		[{proportion, 0}, {flag, ?wxRIGHT bor ?wxLEFT},
+		[{proportion, 1}, {flag, ?wxLEFT},
 		 {border, 5}]),
-    wxSizer:add(AddRemSizer, ClearButton,
-		[{proportion, 0}, {flag, ?wxLEFT}, {border, 5}]),
+    ClrSizer = wxBoxSizer:new(?wxHORIZONTAL),
+    wxSizer:add(ClrSizer, ClearButton,
+     		[{proportion, 1}, {border, 5}]),
     %% Setup module sizers
     ModuleSizer = wxStaticBoxSizer:new(ModuleBox, ?wxVERTICAL),
     wxSizer:add(ModuleSizer, ModuleList,
@@ -177,7 +178,11 @@ setupModuleSizer(Parent) ->
 		 {border, 10}]),
     wxSizer:add(ModuleSizer, AddRemSizer,
 		[{proportion, 0},
-		 {flag, ?wxALIGN_CENTER bor ?wxALL},
+		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
+                 {border, 10}]),
+    wxSizer:add(ModuleSizer, ClrSizer,
+		[{proportion, 0},
+		 {flag, ?wxEXPAND bor ?wxALL},
                  {border, 10}]),
     %% Add padding to the whole sizer.
     ModuleSizerOuter = wxBoxSizer:new(?wxVERTICAL),
@@ -195,12 +200,13 @@ setupFunctionSizer(Parent) ->
     ref_add(?ANALYZE, AnalyzeButton),
     %% Setup function sizers
     FunctionSizer = wxStaticBoxSizer:new(FunctionBox, ?wxVERTICAL),
+    ref_add(?ANALYZE_SIZER, FunctionSizer),
     wxSizer:add(FunctionSizer, FunctionList,
 		[{proportion, 1},
 		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
 		 {border, 10}]),
     wxSizer:add(FunctionSizer, AnalyzeButton,
-		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
                  {border, 10}]),
     FunctionSizer.
 
@@ -542,8 +548,17 @@ analysis_init() ->
     clearProbs(),
     clearErrors(),
     clearIleaves(),
+    AnalyzeSizer = ref_lookup(?ANALYZE_SIZER),
     AnalyzeButton = ref_lookup(?ANALYZE),
-    wxWindow:disable(AnalyzeButton).
+    Parent = wxWindow:getParent(AnalyzeButton),
+    Gauge = wxGauge:new(Parent, ?wxID_ANY, 100,
+			[{size, {200, 20}}, {style, ?wxGA_HORIZONTAL}]),
+    ref_add(?ANALYZE_GAUGE, Gauge),
+    wxSizer:replace(AnalyzeSizer, AnalyzeButton, Gauge),
+    wxWindow:destroy(AnalyzeButton),
+    wxSizer:layout(AnalyzeSizer),
+    start_pulsing(Gauge).
+
 
 %% Cleanup actions after completing analysis
 %% (reactivate `analyze` button, etc.).
@@ -556,11 +571,39 @@ analysis_cleanup({error, analysis, _Info, Tickets}) ->
     setListItems(?ERROR_LIST, ErrorItems),
     ListOfEmpty = lists:duplicate(length(Tickets), []),
     setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty)),
-    AnalyzeButton = ref_lookup(?ANALYZE),
-    wxWindow:enable(AnalyzeButton);
+    analysis_cleanup_common();
 analysis_cleanup(_Result) ->
-    AnalyzeButton = ref_lookup(?ANALYZE),
-    wxWindow:enable(AnalyzeButton).
+    analysis_cleanup_common().
+
+analysis_cleanup_common() ->
+    stop_pulsing(ref_lookup(?ANALYZE_GAUGE)),
+    AnalyzeSizer = ref_lookup(?ANALYZE_SIZER),
+    Gauge = ref_lookup(?ANALYZE_GAUGE),
+    Parent = wxWindow:getParent(Gauge),
+    AnalyzeButton = wxButton:new(Parent, ?ANALYZE, [{label, "Ana&lyze"}]),
+    ref_add(?ANALYZE, AnalyzeButton),
+    wxSizer:replace(AnalyzeSizer, Gauge, AnalyzeButton),
+    wxWindow:destroy(Gauge),
+    wxSizer:layout(AnalyzeSizer).
+
+start_pulsing(Gauge) ->
+    Env = wx:get_env(),
+    Pid = spawn(fun() -> wx:set_env(Env), pulse(Gauge) end),
+    [Hash] = io_lib:format("~c", [erlang:phash2(Gauge)]),
+    Reg = list_to_atom("_._GP_" ++ Hash),
+    register(Reg, Pid).		       
+
+stop_pulsing(Gauge) ->
+    [Hash] = io_lib:format("~c", [erlang:phash2(Gauge)]),
+    Reg = list_to_atom("_._GP_" ++ Hash),
+    Reg ! stop.
+
+pulse(Gauge) ->
+    wxGauge:pulse(Gauge),
+    receive
+	stop -> ok
+    after 200 -> pulse(Gauge)
+    end.
 
 %% Dialog prompting the user to insert function arguments (valid erlang terms
 %% without the terminating `.`).

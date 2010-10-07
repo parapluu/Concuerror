@@ -100,6 +100,8 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(TOP_SPLITTER, 524).
 -define(MODFUN_SPLITTER, 525).
 -define(NOTEBOOK_SPLITTER, 526).
+-define(ANALYZE_SIZER, 527).
+-define(ANALYZE_GAUGE, 528).
 
 %% Splitter init-sizes
 -define(SPLITTER_INIT, [{?TOP_SPLITTER, 330},
@@ -107,7 +109,7 @@ A tool for finding concurrency bugs in Erlang programs.
 			{?NOTEBOOK_SPLITTER, 530}]).
 
 %% Splitter min-sizes
--define(MIN_TOP, 330).
+-define(MIN_TOP, 250).
 -define(MIN_MODFUN, 50).
 -define(MIN_NOTEBOOK, 50).
 
