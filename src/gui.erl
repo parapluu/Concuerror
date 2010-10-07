@@ -43,6 +43,7 @@ start() ->
     snapshot_init(),
     Frame = setupFrame(),
     wxFrame:show(Frame),
+    setSplitterInitSizes(),
     %% Start the log manager and attach the event handler below.
     log:start(),
     log:attach(?MODULE, wx:get_env()),
@@ -111,7 +112,6 @@ setupFrame() ->
     wxWindow:setSize(Frame, ?FRAME_SIZE_INIT),
     %% wxWindow:fit(Frame),
     wxFrame:center(Frame),
-    setSplitterInitSizes(),
     Frame.
 
 setupTopSplitter(Parent) ->
@@ -131,8 +131,9 @@ setupTopSplitter(Parent) ->
 
 %% Sets initial sizes for all splitters.
 setSplitterInitSizes() ->
-    [wxSplitterWindow:setSashPosition(ref_lookup(S), V) ||
-	{S, V} <- ?SPLITTER_INIT].
+    Fun = fun(S, V) -> wxSplitterWindow:setSashPosition(ref_lookup(S), V)
+	  end,
+    [Fun(S, V) || {S, V} <- ?SPLITTER_INIT].
 
 %% Setup left column of top-level panel, including module and function
 %% listboxes and several buttons.
@@ -188,7 +189,7 @@ setupModuleSizer(Parent) ->
     ModuleSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(ModuleSizerOuter, ModuleSizer,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
-		 {border, 10}]),
+		 {border, 5}]),
     ModuleSizerOuter.
 
 setupFunctionSizer(Parent) ->
@@ -208,7 +209,12 @@ setupFunctionSizer(Parent) ->
     wxSizer:add(FunctionSizer, AnalyzeButton,
 		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
                  {border, 10}]),
-    FunctionSizer.
+    %% Add padding to the whole sizer.
+    FunctionSizerOuter = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(FunctionSizerOuter, FunctionSizer,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
+		 {border, 0}]),
+    FunctionSizerOuter.
 
 %% Setup right column of top-level panel, including a notebook for displaying
 %% tabbed main, graph and source code panels and another notebook for displaying
@@ -255,37 +261,62 @@ setupMainNotebookSizer(Parent) ->
     NotebookSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(NotebookSizerOuter, Notebook,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
-		 {border, 10}]),
+		 {border, 5}]),
     NotebookSizerOuter.
 
 setupMainPanel(Parent) ->
-    Panel = wxPanel:new(Parent),
-    ErrorBox = wxStaticBox:new(Panel, ?wxID_ANY, "Errors"),
-    IleaveBox = wxStaticBox:new(Panel, ?wxID_ANY, "Process interleaving"),
-    ErrorList = wxListBox:new(Panel, ?ERROR_LIST),
+    MainPanel = wxPanel:new(Parent),
+    Splitter = wxSplitterWindow:new(MainPanel, [{id, ?ERROR_ILEAVE_SPLITTER}]),
+    ref_add(?ERROR_ILEAVE_SPLITTER, Splitter),
+    ErrorPanel = wxPanel:new(Splitter),
+    ErrorSizer = setupErrorListSizer(ErrorPanel),
+    wxWindow:setSizerAndFit(ErrorPanel, ErrorSizer),
+    IleavePanel = wxPanel:new(Splitter),
+    IleaveSizer = setupIleaveListSizer(IleavePanel),
+    wxWindow:setSizerAndFit(IleavePanel, IleaveSizer),
+    wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_ERROR_ILEAVE),
+    wxSplitterWindow:splitVertically(Splitter, ErrorPanel, IleavePanel),
+    %% Add padding to the panel.
+    MainPanelSizerOuter = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(MainPanelSizerOuter, Splitter,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		 {border, 10}]),
+    wxWindow:setSizer(MainPanel, MainPanelSizerOuter),
+    MainPanel.
+
+setupErrorListSizer(Parent) ->
+    ErrorBox = wxStaticBox:new(Parent, ?wxID_ANY, "Errors"),
+    ErrorList = wxListBox:new(Parent, ?ERROR_LIST),
     ref_add(?ERROR_LIST, ErrorList),
-    IleaveList = wxListBox:new(Panel, ?ILEAVE_LIST),
-    ref_add(?ILEAVE_LIST, IleaveList),
     %% Setup sizers.
     ErrorSizer = wxStaticBoxSizer:new(ErrorBox, ?wxVERTICAL),
     wxSizer:add(ErrorSizer, ErrorList,
 		[{proportion, 1},
 		 {flag, ?wxEXPAND bor ?wxALL},
 		 {border, 10}]),
+   %% Add padding to the whole sizer.
+    ErrorSizerOuter = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(ErrorSizerOuter, ErrorSizer,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxRIGHT},
+		 {border, 5}]),
+    ErrorSizerOuter.
+
+setupIleaveListSizer(Parent) ->
+    IleaveBox = wxStaticBox:new(Parent, ?wxID_ANY, "Process interleaving"),
+    IleaveList = wxListBox:new(Parent, ?ILEAVE_LIST),
+    ref_add(?ILEAVE_LIST, IleaveList),
+    %% Setup sizers.
     IleaveSizer = wxStaticBoxSizer:new(IleaveBox, ?wxVERTICAL),
     wxSizer:add(IleaveSizer, IleaveList,
 		[{proportion, 1},
 		 {flag, ?wxEXPAND bor ?wxALL},
 		 {border, 10}]),
-    PanelSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(PanelSizer, ErrorSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxSizer:add(PanelSizer, IleaveSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxWindow:setSizer(Panel, PanelSizer),
-    Panel.
+   %% Add padding to the whole sizer.
+    IleaveSizerOuter = wxBoxSizer:new(?wxVERTICAL),
+    wxSizer:add(IleaveSizerOuter, IleaveSizer,
+		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxLEFT},
+		 {border, 5}]),
+    IleaveSizerOuter.
 
 %% Setup the graph panel.
 %% A static bitmap combined with a scrolled window is used for
