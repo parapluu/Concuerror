@@ -126,6 +126,7 @@ setupTopSplitter(Parent) ->
     wxWindow:setSizer(RightPanel, RightSizer),
     wxSizer:fit(RightSizer, RightPanel),
     wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_TOP),
+    wxSplitterWindow:setSashGravity(Splitter, ?GRAV_TOP),
     wxSplitterWindow:splitVertically(Splitter, LeftPanel, RightPanel),
     Splitter.
 
@@ -147,6 +148,7 @@ setupLeftColumn(Parent) ->
     FunctionSizer = setupFunctionSizer(FunctionPanel),
     wxWindow:setSizerAndFit(FunctionPanel, FunctionSizer),
     wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_MODFUN),
+    wxSplitterWindow:setSashGravity(Splitter, ?GRAV_MODFUN),
     wxSplitterWindow:splitHorizontally(Splitter, ModulePanel, FunctionPanel),
     %% Add padding to the whole sizer.
     LeftColumnSizerOuter = wxBoxSizer:new(?wxVERTICAL),
@@ -229,7 +231,7 @@ setupRightColumn(Parent) ->
     BottomSizer = setupLogNotebookSizer(BottomPanel),
     wxWindow:setSizerAndFit(BottomPanel, BottomSizer),
     wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_NOTEBOOK),
-    wxSplitterWindow:setSashGravity(Splitter, 1.0),
+    wxSplitterWindow:setSashGravity(Splitter, ?GRAV_NOTEBOOK),
     wxSplitterWindow:splitHorizontally(Splitter, TopPanel, BottomPanel),
     %% Add padding to the whole sizer.
     RightColumnSizerOuter = wxBoxSizer:new(?wxVERTICAL),
@@ -275,6 +277,7 @@ setupMainPanel(Parent) ->
     IleaveSizer = setupIleaveListSizer(IleavePanel),
     wxWindow:setSizerAndFit(IleavePanel, IleaveSizer),
     wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_ERROR_ILEAVE),
+    wxSplitterWindow:setSashGravity(Splitter, ?GRAV_ERROR_ILEAVE),
     wxSplitterWindow:splitVertically(Splitter, ErrorPanel, IleavePanel),
     %% Add padding to the panel.
     MainPanelSizerOuter = wxBoxSizer:new(?wxVERTICAL),

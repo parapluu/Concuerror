@@ -116,6 +116,12 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(MIN_NOTEBOOK, 50).
 -define(MIN_ERROR_ILEAVE, 50).
 
+%% Splitter gravities
+-define(GRAV_TOP, 0.0).
+-define(GRAV_MODFUN, 0.3).
+-define(GRAV_NOTEBOOK, 0.8).
+-define(GRAV_ERROR_ILEAVE, 0.2).
+
 %% Preferences related definitions
 -define(PREF_PREB_ENABLED, 561).
 -define(PREF_PREB_BOUND, 562).
