@@ -208,9 +208,9 @@ is_generated_exception(R) ->
         _Other -> true
     end.
 
-processes_to_string([P]) -> P;
+processes_to_string([P]) -> lid:to_string(P);
 processes_to_string([P1, P2]) ->
-    io_lib:format("~s and ~s", [P1, P2]);
+    io_lib:format("~s and ~s", [lid:to_string(P1), lid:to_string(P2)]);
 processes_to_string([P|Ps]) ->
     io_lib:format("~s, ", [P]) ++
         processes_to_string(Ps).

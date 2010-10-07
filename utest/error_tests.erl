@@ -43,35 +43,6 @@ error_reason_to_string1_test() ->
                                [42, mymodule, "true =:= false", false, true]),
                  error:error_reason_to_string(Error, long)).
 
--spec error_reason_to_string2_test() -> term().
-
-error_reason_to_string2_test() ->
-    ErrorType = deadlock,
-    ErrorDescr = ["P1"],
-    Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("Process ~s blocks", ["P1"]),
-                 error:error_reason_to_string(Error, long)).
-
--spec error_reason_to_string3_test() -> term().
-
-error_reason_to_string3_test() ->
-    ErrorType = deadlock,
-    ErrorDescr = ["P1", "P1.1"],
-    Error = error:new(ErrorType, ErrorDescr),
-    Ps = io_lib:format("~s and ~s", ["P1", "P1.1"]),
-    ?assertEqual(io_lib:format("Processes ~s block", [Ps]),
-                 error:error_reason_to_string(Error, long)).
-
--spec error_reason_to_string4_test() -> term().
-
-error_reason_to_string4_test() ->
-    ErrorType = deadlock,
-    ErrorDescr = ["P1", "P1.1", "P1.2"],
-    Error = error:new(ErrorType, ErrorDescr),
-    Ps = io_lib:format("~s, ~s and ~s", ["P1", "P1.1", "P1.2"]),
-    ?assertEqual(io_lib:format("Processes ~s block", [Ps]),
-                 error:error_reason_to_string(Error, long)).
-
 -spec error_reason_to_string5_test() -> term().
 
 error_reason_to_string5_test() ->
@@ -95,25 +66,6 @@ error_reason_to_string6_test() ->
 error_reason_to_string7_test() ->
     Error = error:stub(),
     ?assertEqual(io_lib:format("Module: ~p, Line: ~p", [mymodule, 42]),
-                 error:error_reason_to_string(Error, short)).
-
--spec error_reason_to_string8_test() -> term().
-
-error_reason_to_string8_test() ->
-    ErrorType = deadlock,
-    ErrorDescr = ["P1"],
-    Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("Process: ~s", ["P1"]),
-                 error:error_reason_to_string(Error, short)).
-
--spec error_reason_to_string9_test() -> term().
-
-error_reason_to_string9_test() ->
-    ErrorType = deadlock,
-    ErrorDescr = ["P1", "P1.1"],
-    Error = error:new(ErrorType, ErrorDescr),
-    Ps = io_lib:format("~s and ~s", ["P1", "P1.1"]),
-    ?assertEqual(io_lib:format("Processes: ~s", [Ps]),
                  error:error_reason_to_string(Error, short)).
 
 -spec error_reason_to_string10_test() -> term().
