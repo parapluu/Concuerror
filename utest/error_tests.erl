@@ -43,43 +43,43 @@ error_reason_to_string1_test() ->
                                [42, mymodule, "true =:= false", false, true]),
                  error:error_reason_to_string(Error, long)).
 
--spec error_reason_to_string5_test() -> term().
+-spec error_reason_to_string2_test() -> term().
 
-error_reason_to_string5_test() ->
+error_reason_to_string2_test() ->
     ErrorType = exception,
     ErrorDescr = foobar,
     Error = error:new(ErrorType, ErrorDescr),
     ?assertEqual(io_lib:format("~p", [ErrorDescr]),
                  error:error_reason_to_string(Error, long)).
 
--spec error_reason_to_string6_test() -> term().
+-spec error_reason_to_string3_test() -> term().
 
-error_reason_to_string6_test() ->
+error_reason_to_string3_test() ->
     ErrorType = exception,
     ErrorDescr = {badarg, []},
     Error = error:new(ErrorType, ErrorDescr),
     ?assertEqual(io_lib:format("~p", [badarg]),
                  error:error_reason_to_string(Error, long)).
 
--spec error_reason_to_string7_test() -> term().
+-spec error_reason_to_string4_test() -> term().
 
-error_reason_to_string7_test() ->
+error_reason_to_string4_test() ->
     Error = error:stub(),
     ?assertEqual(io_lib:format("Module: ~p, Line: ~p", [mymodule, 42]),
                  error:error_reason_to_string(Error, short)).
 
--spec error_reason_to_string10_test() -> term().
+-spec error_reason_to_string5_test() -> term().
 
-error_reason_to_string10_test() ->
+error_reason_to_string5_test() ->
     ErrorType = exception,
     ErrorDescr = foobar,
     Error = error:new(ErrorType, ErrorDescr),
     ?assertEqual(io_lib:format("Exit: ~p", [ErrorDescr]),
                  error:error_reason_to_string(Error, short)).
 
--spec error_reason_to_string11_test() -> term().
+-spec error_reason_to_string6_test() -> term().
 
-error_reason_to_string11_test() ->
+error_reason_to_string6_test() ->
     ErrorType = exception,
     ErrorDescr = {badarg, []},
     Error = error:new(ErrorType, ErrorDescr),
