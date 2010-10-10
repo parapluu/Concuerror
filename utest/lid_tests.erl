@@ -167,3 +167,16 @@ cleanup_3_test() ->
     lid:cleanup(Lid1),
     ?assertEqual(0, sets:size(lid:get_monitored_by(Lid2))),
     lid:stop().
+
+-spec fold_pids_test() -> term().
+
+fold_pids_test() ->
+    lid:start(),
+    Pid1 = c:pid(0, 2, 3),
+    Pid2 = c:pid(0, 2, 4),
+    Lid1 = lid:new(Pid1, noparent),
+    _Lid2 = lid:new(Pid2, Lid1),
+    Fun = fun(P, A) -> [P|A] end,
+    Result = lid:fold_pids(Fun, []),
+    ?assertEqual([Pid2, Pid1], Result),
+    lid:stop().

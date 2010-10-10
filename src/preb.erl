@@ -94,11 +94,11 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
 	    Search = fun(C) -> search(C) end,
 	    %% Interleave using driver.
             Ret = sched:driver(Search, Context, ReplayState),
-	    %% Cleanup.
+	    %% Cleanup of any remaining processes.
+	    sched:proc_cleanup(),
             lid:stop(),
 	    ?debug_1("-----------------------~n"),
 	    ?debug_1("Run terminated.~n~n"),
-	    %% TODO: Proper cleanup of any remaining processes.
             case Ret of
                 ok -> interleave_loop(Target, RunCnt + 1, Tickets, Options);
                 {error, Error, ErrorState} ->

@@ -9,8 +9,9 @@
 -module(lid).
 
 -export([cleanup/1, demonitor/2, from_pid/1, get_linked/1,
-	 get_monitored_by/1, link/2, monitor/3, new/2,
-	 start/0, stop/0, to_string/1, get_pid/1, unlink/2]).
+	 fold_pids/2, get_monitored_by/1, link/2, monitor/3,
+	 new/2, start/0, stop/0, to_string/1, get_pid/1,
+	 unlink/2]).
 
 -export_type([lid/0]).
 
@@ -115,6 +116,13 @@ from_pid(Pid) ->
 	[{Pid, Lid}] -> Lid;
 	[] -> not_found
     end.
+
+%% Fold function Fun
+-spec fold_pids(fun(), term()) -> term().
+
+fold_pids(Fun, InitAcc) ->
+    NewFun = fun({P, _L}, Acc) -> Fun(P, Acc) end,
+    ets:foldl(NewFun, InitAcc, ?NT_PID).
 
 %% Return the LIDs of all processes monitoring process Lid.
 -spec get_monitored_by(lid()) -> set().

@@ -12,7 +12,7 @@
 -module(sched).
 
 %% UI related exports.
--export([analyze/2, driver/3, replay/1]).
+-export([analyze/2, driver/3, proc_cleanup/0, replay/1]).
 
 %% Instrumentation related exports.
 -export([rep_demonitor/1, rep_demonitor/2, rep_link/1,
@@ -190,11 +190,11 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
 	    Search = fun(C) -> search(C) end,
 	    %% Interleave using driver.
             Ret = driver(Search, Context, ReplayState),
-	    %% Cleanup.
+	    %% Cleanup of any remaining processes.
+	    proc_cleanup(),
             lid:stop(),
 	    ?debug_1("-----------------------~n"),
 	    ?debug_1("Run terminated.~n~n"),
-	    %% TODO: Proper cleanup of any remaining processes.
             case Ret of
                 ok -> interleave_loop(Target, RunCnt + 1, Tickets, Options);
                 {error, Error, ErrorState} ->
@@ -460,13 +460,12 @@ handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
-%% Print debug messages and send them to replay_logger if Det is true.
-log_details(Det, Action) ->
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
-    case Det of
-	true -> replay_logger:log(Action);
-	false -> continue
-    end.
+%% Kill any remaining process.
+-spec proc_cleanup() -> 'ok'.
+
+proc_cleanup() ->
+    lid:fold_pids(fun(P, Acc) -> exit(P, kill), Acc end, unused),
+    ok.
 
 %% Calculate and print elapsed time between T1 and T2.
 elapsed_time(T1, T2) ->
@@ -475,6 +474,14 @@ elapsed_time(T1, T2) ->
     Secs = (ElapsedTime rem 60000) / 1000,
     ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
     {Mins, Secs}.
+
+%% Print debug messages and send them to replay_logger if Det is true.
+log_details(Det, Action) ->
+    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    case Det of
+	true -> replay_logger:log(Action);
+	false -> continue
+    end.
 
 %% Run process Lid in context Context.
 run(Lid, #context{active = Active, state = State} = Context) ->
