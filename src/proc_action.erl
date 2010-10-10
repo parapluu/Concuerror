@@ -20,7 +20,7 @@
 		       {'process_flag', lid:lid(), 'trap_exit', boolean()} |
                        {'receive', lid:lid(), lid:lid(), term()} |
                        {'receive', lid:lid(), term()} |
-                       {'send', lid:lid(), lid:lid(), term()} |
+                       {'send', lid:lid(), lid:lid() | 'not_found', term()} |
                        {'spawn', lid:lid(), lid:lid()} |
 		       {'spawn_link', lid:lid(), lid:lid()} |
 		       {'spawn_monitor', lid:lid(), lid:lid()} |
@@ -59,6 +59,9 @@ to_string({'receive', Receiver, Sender, Msg}) ->
 to_string({'receive', Receiver, Msg}) ->
     io_lib:format("Process ~s receives message `~p`",
 		  [lid:to_string(Receiver), Msg]);
+to_string({send, Sender, not_found, Msg}) ->
+    io_lib:format("Process ~s sends message `~p` to a non-existing process",
+		  [lid:to_string(Sender), Msg]);
 to_string({send, Sender, Receiver, Msg}) ->
     io_lib:format("Process ~s sends message `~p` to process ~s",
 		  [lid:to_string(Sender), Msg, lid:to_string(Receiver)]);

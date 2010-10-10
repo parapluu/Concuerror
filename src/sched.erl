@@ -371,8 +371,7 @@ handler(process_flag, Pid, #context{details = Det} = Context, {Flag, Value}) ->
 %% Normal receive message handler.
 handler('receive', Pid, #context{details = Det} = Context, {From, Msg}) ->
     Lid = lid:from_pid(Pid),
-    SenderLid = lid:from_pid(From),
-    log_details(Det, {'receive', Lid, SenderLid, Msg}),
+    log_details(Det, {'receive', Lid, From, Msg}),
     dispatcher(Context);
 
 %% Receive message handler for special messages, like 'EXIT' and 'DOWN',
@@ -673,7 +672,7 @@ rep_receive_notify(Msg) ->
 -spec rep_send(dest(), term()) -> term().
 
 rep_send(Dest, Msg) ->
-    Dest ! {self(), Msg},
+    Dest ! {lid:from_pid(self()), Msg},
     NewDest = case is_atom(Dest) of
 		  true -> whereis(Dest);
 		  false -> Dest
