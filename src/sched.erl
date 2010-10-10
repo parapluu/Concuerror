@@ -463,7 +463,7 @@ handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
 
 %% Print debug messages and send them to replay_logger if Det is true.
 log_details(Det, Action) ->
-    ?debug_1(proc_action:to_string(Action)),
+    ?debug_1(proc_action:to_string(Action) ++ "~n"),
     case Det of
 	true -> replay_logger:log(Action);
 	false -> continue
