@@ -673,14 +673,14 @@ rep_receive_notify(Msg) ->
 -spec rep_send(dest(), term()) -> term().
 
 rep_send(Dest, Msg) ->
-    {_Self, RealMsg} = Dest ! Msg,
+    Dest ! {self(), Msg},
     NewDest = case is_atom(Dest) of
 		  true -> whereis(Dest);
 		  false -> Dest
 	      end,
-    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, RealMsg}},
+    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, Msg}},
     rep_yield(),
-    RealMsg.
+    Msg.
 
 %% @spec rep_spawn(function()) -> pid()
 %% @doc: Replacement for `spawn/1'.

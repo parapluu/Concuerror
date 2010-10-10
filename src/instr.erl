@@ -395,10 +395,9 @@ transform_receive_clause_special(Clause) ->
 instrument_send(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_send),
-    Pid = erl_syntax:infix_expr_left(Tree),
+    Dest = erl_syntax:infix_expr_left(Tree),
     Msg = erl_syntax:infix_expr_right(Tree),
-    Sender = erl_syntax:application(erl_syntax:atom(self), []),
-    Arguments = [Pid, erl_syntax:tuple([Sender, Msg])],
+    Arguments = [Dest, Msg],
     erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a process_flag/2 call.
