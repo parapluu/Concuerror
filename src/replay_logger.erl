@@ -104,23 +104,3 @@ code_change(_OldVsn, _State, _Extra) ->
 
 handle_info(_Info, _State) ->
     log:internal("~p:~p: handle_info~n", [?MODULE, ?LINE]).
-
-%%%----------------------------------------------------------------------
-%%% Unit tests
-%%%----------------------------------------------------------------------
-
--spec replay_test_() -> term().
-
-replay_test_() ->
-    [{"test1",
-      ?_test(begin
-		 start(),
-		 start_replay(),
-		 Msg1 = {spawn, "P1", "P1.1"},
-		 Msg2 = {send, "P1", "P1.1", ahoi},
-		 log(Msg1),
-		 log(Msg2),
-		 ?assertEqual(get_replay(), [Msg1, Msg2]),
-		 stop()
-	     end)}
-    ].

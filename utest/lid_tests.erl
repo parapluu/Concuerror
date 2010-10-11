@@ -43,21 +43,6 @@ parent_child_test() ->
     ?assertEqual(ChildPid, lid:get_pid(ChildLid)),
     lid:stop().
 
-%% NOTE: Implementation dependent.
--spec two_children_impl_test() -> term().
-
-two_children_impl_test() ->
-    lid:start(),
-    ParentPid = c:pid(0, 2, 3),
-    FirstChildPid = c:pid(0, 2, 4),
-    SecondChildPid = c:pid(0, 2, 5),
-    ParentLid = lid:new(ParentPid, noparent),
-    FirstChildLid = lid:new(FirstChildPid, ParentLid),
-    SecondChildLid = lid:new(SecondChildPid, ParentLid),
-    ?assertEqual(FirstChildLid, ParentLid ++ ".1"),
-    ?assertEqual(SecondChildLid, ParentLid ++ ".2"),
-    lid:stop().
-
 -spec link_test() -> term().
 
 link_test() ->
