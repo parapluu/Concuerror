@@ -12,7 +12,8 @@
 	 test09/0, test10/0, test11/0, test12/0,
          test13/0, test14/0, test15/0, test16/0,
 	 test17/0, test18/0, test19/0, test20/0,
-         test21/0, test22/0, test23/0]).
+         test21/0, test22/0, test23/0, test24/0,
+         test25/0, test26/0]).
 
 -include("ced.hrl").
 
@@ -322,3 +323,38 @@ test23() ->
     spawn_monitor(fun() -> ok end),
     N = flush_mailbox(0),
     ?assertEqual(2, N).
+
+%% Normal, 2 proc: Simple send-receive with registered process.
+-spec test24() -> 'ok'.
+
+test24() ->
+    ?assert(foo24() =:= ok).
+
+foo24() ->
+    register(self, self()),
+    spawn(fun() -> foo1_1(self) end),
+    receive _Any -> ok end.
+
+%% Normal, 2 proc: Simple send-receive with registered process.
+%% Same as above, but the message is sent using the pid
+%% instead of the registered name.
+-spec test25() -> 'ok'.
+
+test25() ->
+    ?assert(foo25() =:= ok).
+
+foo25() ->
+    register(self, self()),
+    spawn(fun() -> foo1_1(whereis(self)) end),
+    receive _Any -> ok end.
+
+
+%% Exception/Normal, 2 proc: Simple send-receive with registered process.
+%% Same as above, but the process is also unregistered.
+-spec test26() -> 'ok'.
+
+test26() ->
+    register(self, self()),
+    spawn(fun() -> foo1_1(whereis(self)) end),
+    unregister(self),
+    receive _Any -> ok end.

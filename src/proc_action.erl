@@ -22,11 +22,14 @@
 		       {'process_flag', lid:lid(), 'trap_exit', boolean()} |
                        {'receive', lid:lid(), lid:lid(), term()} |
                        {'receive', lid:lid(), term()} |
+                       {'register', lid:lid(), atom(), lid:lid()} |
                        {'send', lid:lid(), maybe_lid(), term()} |
                        {'spawn', lid:lid(), lid:lid()} |
 		       {'spawn_link', lid:lid(), lid:lid()} |
 		       {'spawn_monitor', lid:lid(), lid:lid()} |
-                       {'unlink', lid:lid(), maybe_lid()}.
+                       {'unlink', lid:lid(), maybe_lid()} |
+                       {'unregister', lid:lid(), atom()} |
+                       {'whereis', lid:lid(), atom()}.
 
 -spec to_string(proc_action()) -> string().
 
@@ -61,6 +64,9 @@ to_string({'receive', Receiver, Sender, Msg}) ->
 to_string({'receive', Receiver, Msg}) ->
     io_lib:format("Process ~s receives message `~p`",
 		  [lid:to_string(Receiver), Msg]);
+to_string({register, Proc, RegName, RegLid}) ->
+    io_lib:format("Process ~s registers process ~s as `~p`",
+                  [lid:to_string(Proc), lid:to_string(RegLid), RegName]);
 to_string({send, Sender, not_found, Msg}) ->
     io_lib:format("Process ~s sends message `~p` to nonexisting process",
 		  [lid:to_string(Sender), Msg]);
@@ -81,4 +87,10 @@ to_string({unlink, Proc, not_found}) ->
 		  [lid:to_string(Proc)]);
 to_string({unlink, Proc1, Proc2}) ->
     io_lib:format("Process ~s unlinks from process ~s",
-		  [lid:to_string(Proc1), lid:to_string(Proc2)]).
+		  [lid:to_string(Proc1), lid:to_string(Proc2)]);
+to_string({unregister, Proc, RegName}) ->
+    io_lib:format("Process ~s unregisters process `~p`",
+                  [lid:to_string(Proc), RegName]);
+to_string({whereis, Proc, RegName}) ->
+    io_lib:format("Process ~s obtains the pid of process `~p`",
+                  [lid:to_string(Proc), RegName]).

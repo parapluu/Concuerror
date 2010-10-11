@@ -150,6 +150,8 @@ instrument_term(Tree) ->
                             instrument_monitor(instrument_subtrees(Tree));
                         process_flag ->
                             instrument_process_flag(instrument_subtrees(Tree));
+                        register ->
+                            instrument_register(instrument_subtrees(Tree));
 			spawn ->
 			    instrument_spawn(instrument_subtrees(Tree));
 			spawn_link ->
@@ -158,6 +160,10 @@ instrument_term(Tree) ->
                             instrument_spawn_monitor(instrument_subtrees(Tree));
                         unlink ->
                             instrument_unlink(instrument_subtrees(Tree));
+                        unregister ->
+                            instrument_unregister(instrument_subtrees(Tree));
+                        whereis ->
+                            instrument_whereis(instrument_subtrees(Tree));
 			_Other -> instrument_subtrees(Tree)
 		    end;
                 module_qualifier ->
@@ -183,6 +189,9 @@ instrument_term(Tree) ->
                                         process_flag ->
                                             instrument_process_flag(
                                               instrument_subtrees(Tree));
+                                        register ->
+                                            instrument_register(
+                                              instrument_subtrees(Tree));
                                         spawn ->
                                             instrument_spawn(
                                               instrument_subtrees(Tree));
@@ -194,6 +203,12 @@ instrument_term(Tree) ->
                                               instrument_subtrees(Tree));
                                         unlink ->
                                             instrument_unlink(
+                                              instrument_subtrees(Tree));
+                                        unregister ->
+                                            instrument_unregister(
+                                              instrument_subtrees(Tree));
+                                        whereis ->
+                                            instrument_whereis(
                                               instrument_subtrees(Tree));
                                         yield -> instrument_yield();
                                         _Other -> instrument_subtrees(Tree)
@@ -401,16 +416,24 @@ instrument_send(Tree) ->
     erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a process_flag/2 call.
-%% `process_flag(Flag, Value) is transformed into
-%% `sched:rep_process_flag(Flag, Value).
+%% process_flag(Flag, Value) is transformed into
+%% sched:rep_process_flag(Flag, Value).
 instrument_process_flag(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_process_flag),
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
+%% Instrument a register/2 call.
+%% register(RegName, P) is transformed into sched:rep_register(RegName, P).
+instrument_register(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_register),
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
+
 %% Instrument a spawn/1 call.
-%% `spawn(Fun)' is transformed into `sched:rep_spawn(Fun)'.
+%% spawn(Fun) is transformed into sched:rep_spawn(Fun).
 instrument_spawn(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn),
@@ -419,7 +442,7 @@ instrument_spawn(Tree) ->
     erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a spawn_link/{1,3} call.
-%% `spawn_link(Args)' is transformed into `sched:rep_spawn_link(Args)'.
+%% spawn_link(Args) is transformed into sched:rep_spawn_link(Args).
 instrument_spawn_link(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn_link),
@@ -428,7 +451,7 @@ instrument_spawn_link(Tree) ->
     erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a spawn_monitor/{1,3} call.
-%% `spawn_monitor(Args)' is transformed into `sched:rep_spawn_monitor(Args)'.
+%% spawn_monitor(Args) is transformed into sched:rep_spawn_monitor(Args).
 instrument_spawn_monitor(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn_monitor),
@@ -436,7 +459,7 @@ instrument_spawn_monitor(Tree) ->
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
-%% Instrument a unlink/1 call.
+%% Instrument an unlink/1 call.
 %% unlink(Pid) is transformed into sched:rep_unlink(Pid).
 instrument_unlink(Tree) ->
     Module = erl_syntax:atom(sched),
@@ -444,8 +467,24 @@ instrument_unlink(Tree) ->
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
+%% Instrument an unregister/1 call.
+%% unregister(RegName) is transformed into sched:rep_unregister(RegName).
+instrument_unregister(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_unregister),
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
+
+%% Instrument a whereis/1 call.
+%% whereis(RegName) is transformed into sched:rep_whereis(RegName).
+instrument_whereis(Tree) ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_whereis),
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
+
 %% Instrument an erlang:yield/0 call.
-%% `erlang:yield' is transformed into `true'.
+%% erlang:yield is transformed into true.
 instrument_yield() ->
     erl_syntax:atom(true).
 

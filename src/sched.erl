@@ -18,10 +18,10 @@
 -export([rep_demonitor/1, rep_demonitor/2, rep_link/1,
          rep_monitor/2, rep_process_flag/2, rep_receive/1,
          rep_receive_notify/1, rep_receive_notify/2,
-	 rep_send/2, rep_spawn/1, rep_spawn_link/1,
-	 rep_spawn_link/3, rep_spawn_monitor/1,
-         rep_spawn_monitor/3, rep_unlink/1, rep_yield/0,
-         wait/0]).
+         rep_register/2, rep_send/2, rep_spawn/1,
+         rep_spawn_link/1, rep_spawn_link/3, rep_spawn_monitor/1,
+         rep_spawn_monitor/3, rep_unlink/1, rep_unregister/1,
+         rep_whereis/1, rep_yield/0, wait/0]).
 
 -export_type([analysis_target/0, analysis_ret/0]).
 
@@ -289,7 +289,6 @@ handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
         _Misc) ->
     Lid = lid:from_pid(Pid),
     NewBlocked = sets:add_element(Lid, Blocked),
-    ?debug_1("Process ~s blocks.~n", [lid:to_string(Lid)]),
     log_details(Det, {block, Lid}),
     Context#context{blocked = NewBlocked};
 
@@ -381,6 +380,12 @@ handler('receive', Pid, #context{details = Det} = Context, Msg) ->
     log_details(Det, {'receive', Lid, Msg}),
     dispatcher(Context);
 
+%% Register message handler.
+handler(register, Pid, #context{details = Det} = Context, {RegName, RegLid}) ->
+    Lid = lid:from_pid(Pid),
+    log_details(Det, {register, Lid, RegName, RegLid}),
+    dispatcher(Context);
+
 %% Send message handler.
 %% When a message is sent to a process, the receiving process has to be awaken
 %% if it is blocked on a receive.
@@ -438,6 +443,18 @@ handler(unlink, Pid, #context{details = Det} = Context, TargetPid) ->
         not_found -> continue;
         _ -> lid:unlink(Lid, TargetLid)
     end,
+    dispatcher(Context);
+
+%% Unregister message handler.
+handler(unregister, Pid, #context{details = Det} = Context, RegName) ->
+    Lid = lid:from_pid(Pid),
+    log_details(Det, {unregister, Lid, RegName}),
+    dispatcher(Context);
+
+%% Whereis message handler.
+handler(whereis, Pid, #context{details = Det} = Context, RegName) ->
+    Lid = lid:from_pid(Pid),
+    log_details(Det, {whereis, Lid, RegName}),
     dispatcher(Context);
 
 %% Yield message handler.
@@ -672,6 +689,19 @@ rep_receive_notify(Msg) ->
     rep_yield(),
     ok.
 
+%% @spec rep_register(atom(), pid() | port()) -> 'true'
+%% @doc: Replacement for `register/2'.
+%%
+%% Just yield after registering.
+-spec rep_register(atom(), pid() | port()) -> 'true'.
+
+rep_register(RegName, P) ->
+    Ret = register(RegName, P),
+    ?RP_SCHED ! #sched{msg = 'register', pid = self(),
+                       misc = {RegName, lid:from_pid(P)}},
+    rep_yield(),
+    Ret.
+
 %% @spec rep_send(dest(), term()) -> term()
 %% @doc: Replacement for `send/2' (and the equivalent `!' operator).
 %%
@@ -756,6 +786,30 @@ rep_unlink(Pid) ->
     ?RP_SCHED ! #sched{msg = unlink, pid = self(), misc = Pid},
     rep_yield(),
     Result.
+
+%% @spec rep_unregister(atom()) -> 'true'
+%% @doc: Replacement for `unregister/1'.
+%%
+%% Just yield after unregistering.
+-spec rep_unregister(atom()) -> 'true'.
+
+rep_unregister(RegName) ->
+    Ret = unregister(RegName),
+    ?RP_SCHED ! #sched{msg = 'unregister', pid = self(), misc = RegName},
+    rep_yield(),
+    Ret.
+
+%% @spec rep_whereis(atom()) -> pid() | port() | 'undefined'
+%% @doc: Replacement for `whereis/1'.
+%%
+%% Just yield after calling whereis/1.
+-spec rep_whereis(atom()) -> pid() | port() | 'undefined'.
+
+rep_whereis(RegName) ->
+    Ret = whereis(RegName),
+    ?RP_SCHED ! #sched{msg = 'whereis', pid = self(), misc = RegName},
+    rep_yield(),
+    Ret.
 
 %% @spec rep_yield() -> 'true'
 %% @doc: Replacement for `yield/0'.
