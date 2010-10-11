@@ -53,7 +53,7 @@
 %% The logical id (LID) for each process reflects the process' logical
 %% position in the program's "process creation tree" and doesn't change
 %% between different runs of the same program (as opposed to erlang pids).
--type lid() :: string().
+-type lid() :: integer().
 
 %%%----------------------------------------------------------------------
 %%% User interface
@@ -196,11 +196,6 @@ stop() ->
     ets:delete(?NT_LID),
     ets:delete(?NT_PID).
 
--spec to_string(lid()) -> string().
-
-to_string(Lid) ->
-    "P" ++ Lid.
-
 %% Unlink two LIDs.
 -spec unlink(lid(), lid()) -> boolean().
 
@@ -257,9 +252,13 @@ set_monitored(Lid, Monitored) ->
 %%%----------------------------------------------------------------------
 
 %% First process' LID.
-root_lid() ->
-    "1".
+root_lid() -> 1.
 
 %% Create new lid from parent and its number of children.
 next_lid(ParentLid, Children) ->
-    lists:concat([ParentLid, ".", Children + 1]).
+    100 * ParentLid + Children + 1.
+
+-spec to_string(lid()) -> string().
+
+to_string(Lid) ->
+    io_lib:format("P~p", [Lid]).
