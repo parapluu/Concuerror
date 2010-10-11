@@ -144,6 +144,7 @@ instrument_term(Tree) ->
 		    case Function of
                         demonitor ->
                             instrument_demonitor(instrument_subtrees(Tree));
+                        halt -> instrument_halt();
 			link ->
 			    instrument_link(instrument_subtrees(Tree));
                         monitor ->
@@ -180,6 +181,7 @@ instrument_term(Tree) ->
                                         demonitor ->
                                             instrument_demonitor(
                                               instrument_subtrees(Tree));
+                                        halt -> instrument_halt();
                                         link ->
                                             instrument_link(
                                               instrument_subtrees(Tree));
@@ -239,6 +241,13 @@ instrument_demonitor(Tree) ->
     Function = erl_syntax:atom(rep_demonitor),
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
+
+%% Instrument a halt/{0,1} call.
+%% halt(Args) is transformed into sched:rep_halt().
+instrument_halt() ->
+    Module = erl_syntax:atom(sched),
+    Function = erl_syntax:atom(rep_halt),
+    erl_syntax:application(Module, Function, []).
 
 %% Instrument a link/1 call.
 %% link(Pid) is transformed into sched:rep_link(Pid).

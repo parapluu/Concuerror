@@ -13,7 +13,7 @@
          test13/0, test14/0, test15/0, test16/0,
 	 test17/0, test18/0, test19/0, test20/0,
          test21/0, test22/0, test23/0, test24/0,
-         test25/0, test26/0]).
+         test25/0, test26/0, test27/0]).
 
 -include("ced.hrl").
 
@@ -357,4 +357,12 @@ test26() ->
     register(self, self()),
     spawn(fun() -> foo1_1(whereis(self)) end),
     unregister(self),
+    receive _Any -> ok end.
+
+-spec test27() -> no_return().
+
+test27() ->
+    Self = self(),
+    spawn(fun() -> foo1_1(Self) end),
+    erlang:halt(),
     receive _Any -> ok end.

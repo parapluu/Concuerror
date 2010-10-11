@@ -14,7 +14,8 @@
 -type maybe_lid() :: lid:lid() | 'not_found'.
 
 %% Tuples providing information about a process' action.
--type proc_action() :: {'block', lid:lid()} |
+-type proc_action() :: 'halt' |
+                       {'block', lid:lid()} |
 		       {'demonitor', lid:lid(), maybe_lid()} |
                        {'exit', lid:lid(), term()} |
                        {'link', lid:lid(), maybe_lid()} |
@@ -33,6 +34,8 @@
 
 -spec to_string(proc_action()) -> string().
 
+to_string(halt) ->
+    io_lib:format("System halted!", []);
 to_string({block, Proc}) ->
     io_lib:format("Process ~s blocks", [lid:to_string(Proc)]);
 to_string({demonitor, Proc, not_found}) ->

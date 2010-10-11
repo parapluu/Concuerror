@@ -15,13 +15,13 @@
 -export([analyze/2, driver/3, proc_cleanup/0, replay/1]).
 
 %% Instrumentation related exports.
--export([rep_demonitor/1, rep_demonitor/2, rep_link/1,
-         rep_monitor/2, rep_process_flag/2, rep_receive/1,
-         rep_receive_notify/1, rep_receive_notify/2,
-         rep_register/2, rep_send/2, rep_spawn/1,
-         rep_spawn_link/1, rep_spawn_link/3, rep_spawn_monitor/1,
-         rep_spawn_monitor/3, rep_unlink/1, rep_unregister/1,
-         rep_whereis/1, rep_yield/0, wait/0]).
+-export([rep_demonitor/1, rep_demonitor/2, rep_halt/0,
+         rep_link/1, rep_monitor/2, rep_process_flag/2,
+         rep_receive/1, rep_receive_notify/1, rep_receive_notify/2,
+         rep_register/2, rep_send/2, rep_spawn/1, rep_spawn_link/1,
+         rep_spawn_link/3, rep_spawn_monitor/1, rep_spawn_monitor/3,
+         rep_unlink/1, rep_unregister/1, rep_whereis/1, rep_yield/0,
+         wait/0]).
 
 -export_type([analysis_target/0, analysis_ret/0]).
 
@@ -263,8 +263,10 @@ driver(Search,
 			    %% is defined by ReplayState.
                             false -> state:trim(ReplayState)
                         end,
-		    NewContext = run(Next, Context),
-		    driver(Search, NewContext, Rest)
+		    case run(Next, Context) of
+                        halt -> ok;
+                        NewContext -> driver(Search, NewContext, Rest)
+                    end
 	    end;
         _Other -> {error, Error, State}
     end.
@@ -338,6 +340,11 @@ handler(exit, Pid,
                     NewContext#context{error = Error}
             end
     end;
+
+handler(halt, _Pid, #context{details = Det}, _Misc) ->
+    util:flush_mailbox(),
+    log_details(Det, halt),
+    halt;
 
 %% Link message handler.
 handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
@@ -584,6 +591,16 @@ rep_demonitor(Ref, Opts) ->
     ?RP_SCHED ! #sched{msg = demonitor, pid = self(), misc = Ref},
     rep_yield(),
     Result.
+
+%% @spec: rep_halt() -> 'ok'
+%% @doc: Replacement for `halt/{0,1}'.
+%%
+%% Just send halt message.
+-spec rep_halt() -> 'ok'.
+
+rep_halt() ->
+    ?RP_SCHED ! #sched{msg = halt},
+    ok.
 
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.

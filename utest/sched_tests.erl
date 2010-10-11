@@ -146,5 +146,9 @@ interleave_test_() ->
       {"test21",
        ?_assertMatch({ok, {test, test25, []}},
 		     sched:analyze({test, test25, []},
+                                   [{files, [?TEST_ERL_PATH]}]))},
+      {"test22",
+       ?_assertMatch({ok, {test, test27, []}},
+		     sched:analyze({test, test27, []},
                                    [{files, [?TEST_ERL_PATH]}]))}
      ]}.
