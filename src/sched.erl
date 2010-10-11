@@ -264,10 +264,8 @@ driver(Search,
 			    %% is defined by ReplayState.
                             false -> state:trim(ReplayState)
                         end,
-		    case run(Next, Context) of
-                        halt -> ok;
-                        NewContext -> driver(Search, NewContext, Rest)
-                    end
+		    NewContext = run(Next, Context),
+		    driver(Search, NewContext, Rest)
 	    end;
         _Other -> {error, Error, State}
     end.
@@ -342,10 +340,12 @@ handler(exit, Pid,
             end
     end;
 
-handler(halt, _Pid, #context{details = Det}, _Misc) ->
-    util:flush_mailbox(),
-    log_details(Det, halt),
-    halt;
+%% Halt message handler.
+%% Return empty active and blocked queues to force run termination.
+handler(halt, Pid, #context{details = Det} = Context, _Misc) ->
+    Lid = lid:from_pid(Pid),
+    log_details(Det, {halt, Lid}),
+    Context#context{active = sets:new(), blocked = sets:new()};
 
 %% Link message handler.
 handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
@@ -460,9 +460,10 @@ handler(unregister, Pid, #context{details = Det} = Context, RegName) ->
     dispatcher(Context);
 
 %% Whereis message handler.
-handler(whereis, Pid, #context{details = Det} = Context, RegName) ->
+handler(whereis, Pid, #context{details = Det} = Context, {RegName, Result}) ->
     Lid = lid:from_pid(Pid),
-    log_details(Det, {whereis, Lid, RegName}),
+    ResultLid =  lid:from_pid(Result),
+    log_details(Det, {whereis, Lid, RegName, ResultLid}),
     dispatcher(Context);
 
 %% Yield message handler.
@@ -593,15 +594,15 @@ rep_demonitor(Ref, Opts) ->
     rep_yield(),
     Result.
 
-%% @spec: rep_halt() -> 'ok'
+%% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/{0,1}'.
 %%
-%% Just send halt message.
--spec rep_halt() -> 'ok'.
+%% Just send halt message and yield.
+-spec rep_halt() -> no_return().
 
 rep_halt() ->
-    ?RP_SCHED ! #sched{msg = halt},
-    ok.
+    ?RP_SCHED ! #sched{msg = halt, pid = self()},
+    rep_yield().
 
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.
@@ -825,7 +826,7 @@ rep_unregister(RegName) ->
 
 rep_whereis(RegName) ->
     Ret = whereis(RegName),
-    ?RP_SCHED ! #sched{msg = 'whereis', pid = self(), misc = RegName},
+    ?RP_SCHED ! #sched{msg = 'whereis', pid = self(), misc = {RegName, Ret}},
     rep_yield(),
     Ret.
 

@@ -359,6 +359,7 @@ test26() ->
     unregister(self),
     receive _Any -> ok end.
 
+%% Normal, 2 proc: The first process halts before receiving.
 -spec test27() -> no_return().
 
 test27() ->

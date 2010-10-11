@@ -14,7 +14,7 @@
 -type maybe_lid() :: lid:lid() | 'not_found'.
 
 %% Tuples providing information about a process' action.
--type proc_action() :: 'halt' |
+-type proc_action() :: {'halt', lid:lid()} |
                        {'block', lid:lid()} |
 		       {'demonitor', lid:lid(), maybe_lid()} |
                        {'exit', lid:lid(), term()} |
@@ -30,12 +30,12 @@
 		       {'spawn_monitor', lid:lid(), lid:lid()} |
                        {'unlink', lid:lid(), maybe_lid()} |
                        {'unregister', lid:lid(), atom()} |
-                       {'whereis', lid:lid(), atom()}.
+                       {'whereis', lid:lid(), atom(), maybe_lid()}.
 
 -spec to_string(proc_action()) -> string().
 
-to_string(halt) ->
-    io_lib:format("System halted!", []);
+to_string({halt, Proc}) ->
+    io_lib:format("Process ~s halts the system", [lid:to_string(Proc)]);
 to_string({block, Proc}) ->
     io_lib:format("Process ~s blocks", [lid:to_string(Proc)]);
 to_string({demonitor, Proc, not_found}) ->
@@ -94,6 +94,10 @@ to_string({unlink, Proc1, Proc2}) ->
 to_string({unregister, Proc, RegName}) ->
     io_lib:format("Process ~s unregisters process `~p`",
                   [lid:to_string(Proc), RegName]);
-to_string({whereis, Proc, RegName}) ->
-    io_lib:format("Process ~s obtains the pid of process `~p`",
-                  [lid:to_string(Proc), RegName]).
+to_string({whereis, Proc, RegName, not_found}) ->
+    io_lib:format("Process ~s attempts to obtain the pid of unregistered "
+		  "process `~p` (undefined)",
+                  [lid:to_string(Proc), RegName]);
+to_string({whereis, Proc, RegName, RegLid}) ->
+    io_lib:format("Process ~s obtains the pid of process `~p` (~s)",
+                  [lid:to_string(Proc), RegName, lid:to_string(RegLid)]).
