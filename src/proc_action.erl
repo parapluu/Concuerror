@@ -11,20 +11,22 @@
 
 -export_type([proc_action/0]).
 
+-type maybe_lid() :: lid:lid() | 'not_found'.
+
 %% Tuples providing information about a process' action.
 -type proc_action() :: {'block', lid:lid()} |
-		       {'demonitor', lid:lid(), lid:lid() | 'not_found'} |
+		       {'demonitor', lid:lid(), maybe_lid()} |
                        {'exit', lid:lid(), term()} |
-                       {'link', lid:lid(), lid:lid() | 'not_found'} |
-		       {'monitor', lid:lid(), lid:lid() | 'not_found'} |
+                       {'link', lid:lid(), maybe_lid()} |
+		       {'monitor', lid:lid(), maybe_lid()} |
 		       {'process_flag', lid:lid(), 'trap_exit', boolean()} |
                        {'receive', lid:lid(), lid:lid(), term()} |
                        {'receive', lid:lid(), term()} |
-                       {'send', lid:lid(), lid:lid() | 'not_found', term()} |
+                       {'send', lid:lid(), maybe_lid(), term()} |
                        {'spawn', lid:lid(), lid:lid()} |
 		       {'spawn_link', lid:lid(), lid:lid()} |
 		       {'spawn_monitor', lid:lid(), lid:lid()} |
-                       {'unlink', lid:lid(), lid:lid() | 'not_found'}.
+                       {'unlink', lid:lid(), maybe_lid()}.
 
 -spec to_string(proc_action()) -> string().
 
@@ -60,7 +62,7 @@ to_string({'receive', Receiver, Msg}) ->
     io_lib:format("Process ~s receives message `~p`",
 		  [lid:to_string(Receiver), Msg]);
 to_string({send, Sender, not_found, Msg}) ->
-    io_lib:format("Process ~s sends message `~p` to a non-existing process",
+    io_lib:format("Process ~s sends message `~p` to nonexisting process",
 		  [lid:to_string(Sender), Msg]);
 to_string({send, Sender, Receiver, Msg}) ->
     io_lib:format("Process ~s sends message `~p` to process ~s",
