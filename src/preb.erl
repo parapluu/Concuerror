@@ -109,7 +109,7 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             end
     end.
 
-%% Returns the process to be run next.
+%% Stores states for later exploration and returns the process to be run next.
 search(#context{active = Active, state = State}) ->
     case state:is_empty(State) of
 	%% Handle first call to search (empty state, one active process).
@@ -122,18 +122,27 @@ search(#context{active = Active, state = State}) ->
 	    %% If that process is in the `active` set (i.e. has not blocked),
 	    %% remove it from the actives and make it next-to-run, else do
 	    %% that for another process from the actives.
-	    {Next, NewActive} =
-		case sets:is_element(LastLid, Active) of
-		    true -> {LastLid,
-			     sets:to_list(sets:del_element(LastLid, Active))};
-		    false ->
-			[INext|INewActive] = sets:to_list(Active),
-			{INext, INewActive}
-		end,
-	    %% io:format("Search - NewActive: ~p~n", [NewActive]),
-	    %% Store all other possible successor states for later exploration.
-	    [state_save(state:extend(State, Lid)) || Lid <- NewActive],
-	    Next
+	    %% In the former case, all other possible successor states are
+	    %% stored in the next state queue to be explored on the next
+	    %% preemption bound.
+	    %% In the latter case, all other possible successor states are
+	    %% stored in the current state queue, because a non-preemptive
+	    %% context switch is happening (the last process either exited
+	    %% or blocked).
+	    case sets:is_element(LastLid, Active) of
+		true ->
+		    NewActive = sets:del_element(LastLid, Active),
+		    Fun = fun(L, Acc) ->
+				  state_save_next(state:extend(State, L)),
+				  Acc
+			  end,
+		    sets:fold(Fun, unused, NewActive),
+		    LastLid;
+		false ->
+		    [Next|NewActive] = sets:to_list(Active),
+		    [state_save(state:extend(State, L)) || L <- NewActive],
+		    Next
+	    end
     end.
 
 %%%----------------------------------------------------------------------
@@ -158,9 +167,13 @@ state_peak() ->
 	State -> State
     end.
 
-%% Add a state to the `state` table.
-state_save(State) ->
+%% Add a state to the next `state` table.
+state_save_next(State) ->
     ets:insert(?NT_STATE2, {State}).
+
+%% Add a state to the current `state` table.
+state_save(State) ->
+    ets:insert(?NT_STATE1, {State}).
 
 %% Initialize state tables.
 state_start() ->
