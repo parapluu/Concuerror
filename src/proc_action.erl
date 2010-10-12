@@ -14,10 +14,10 @@
 -type maybe_lid() :: lid:lid() | 'not_found'.
 
 %% Tuples providing information about a process' action.
--type proc_action() :: {'halt', lid:lid()} |
-                       {'block', lid:lid()} |
+-type proc_action() :: {'block', lid:lid()} |
 		       {'demonitor', lid:lid(), maybe_lid()} |
                        {'exit', lid:lid(), term()} |
+                       {'halt', lid:lid()} |
                        {'link', lid:lid(), maybe_lid()} |
 		       {'monitor', lid:lid(), maybe_lid()} |
 		       {'process_flag', lid:lid(), 'trap_exit', boolean()} |
@@ -34,8 +34,6 @@
 
 -spec to_string(proc_action()) -> string().
 
-to_string({halt, Proc}) ->
-    io_lib:format("Process ~s halts the system", [lid:to_string(Proc)]);
 to_string({block, Proc}) ->
     io_lib:format("Process ~s blocks", [lid:to_string(Proc)]);
 to_string({demonitor, Proc, not_found}) ->
@@ -46,6 +44,8 @@ to_string({demonitor, Proc1, Proc2}) ->
 		  [lid:to_string(Proc1), lid:to_string(Proc2)]);
 to_string({exit, Proc, Reason}) ->
     io_lib:format("Process ~s exits (~p)", [lid:to_string(Proc), Reason]);
+to_string({halt, Proc}) ->
+    io_lib:format("Process ~s halts the system", [lid:to_string(Proc)]);
 to_string({link, Proc, not_found}) ->
     io_lib:format("Process ~s links to nonexisting process",
 		  [lid:to_string(Proc)]);
@@ -95,9 +95,9 @@ to_string({unregister, Proc, RegName}) ->
     io_lib:format("Process ~s unregisters process `~p`",
                   [lid:to_string(Proc), RegName]);
 to_string({whereis, Proc, RegName, not_found}) ->
-    io_lib:format("Process ~s attempts to obtain the pid of unregistered "
+    io_lib:format("Process ~s requests the pid of unregistered "
 		  "process `~p` (undefined)",
                   [lid:to_string(Proc), RegName]);
 to_string({whereis, Proc, RegName, RegLid}) ->
-    io_lib:format("Process ~s obtains the pid of process `~p` (~s)",
+    io_lib:format("Process ~s requests the pid of process `~p` (~s)",
                   [lid:to_string(Proc), RegName, lid:to_string(RegLid)]).
