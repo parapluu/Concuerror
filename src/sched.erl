@@ -603,16 +603,15 @@ rep_demonitor(Ref, Opts) ->
     rep_yield(),
     Result.
 
-%% @spec: rep_halt() -> 'ok'
+%% @spec: rep_halt() -> no_return().
 %% @doc: Replacement for `halt/{0,1}'.
 %%
 %% Just send halt message and yield.
--spec rep_halt() -> 'ok'.
+-spec rep_halt() -> no_return().
 
 rep_halt() ->
     ?RP_SCHED ! #sched{msg = halt, pid = self()},
-    rep_yield(),
-    ok.
+    rep_yield().
 
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.
