@@ -462,7 +462,11 @@ handler(unregister, Pid, #context{details = Det} = Context, RegName) ->
 %% Whereis message handler.
 handler(whereis, Pid, #context{details = Det} = Context, {RegName, Result}) ->
     Lid = lid:from_pid(Pid),
-    ResultLid =  lid:from_pid(Result),
+    ResultLid =
+        case Result of
+            undefined -> not_found;
+            _Other -> lid:from_pid(Result)
+        end,
     log_details(Det, {whereis, Lid, RegName, ResultLid}),
     dispatcher(Context);
 
@@ -594,15 +598,16 @@ rep_demonitor(Ref, Opts) ->
     rep_yield(),
     Result.
 
-%% @spec: rep_halt() -> no_return()
+%% @spec: rep_halt() -> 'ok'
 %% @doc: Replacement for `halt/{0,1}'.
 %%
 %% Just send halt message and yield.
--spec rep_halt() -> no_return().
+-spec rep_halt() -> 'ok'.
 
 rep_halt() ->
     ?RP_SCHED ! #sched{msg = halt, pid = self()},
-    rep_yield().
+    rep_yield(),
+    ok.
 
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.
