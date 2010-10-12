@@ -13,10 +13,10 @@
 
 -include("gen.hrl").
 
--define(OPT_T2B, [compressed]).
-
+%%-define(ENABLE_COMPRESSION, true).
 -ifdef(ENABLE_COMPRESSION).
 -type state() :: binary().
+-define(OPT_T2B, [compressed]).
 -define(BIN_TO_TERM(X), binary_to_term(X)).
 -define(TERM_TO_BIN(X), term_to_binary(X, ?OPT_T2B)).
 -else.
