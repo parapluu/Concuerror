@@ -99,14 +99,15 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             lid:stop(),
 	    ?debug_1("-----------------------~n"),
 	    ?debug_1("Run terminated.~n~n"),
-            case Ret of
-                ok -> interleave_loop(Target, RunCnt + 1, Tickets, Options);
-                {error, Error, ErrorState} ->
-		    {files, Files} = lists:keyfind(files, 1, Options),
-		    Ticket = ticket:new(Target, Files, Error, ErrorState),
-		    interleave_loop(Target, RunCnt + 1, [Ticket|Tickets],
-				    Options)
-            end
+            NewTickets =
+                case Ret of
+                    ok -> Tickets;
+                    {error, Error, ErrorState} ->
+                        {files, Files} = lists:keyfind(files, 1, Options),
+                        Ticket = ticket:new(Target, Files, Error, ErrorState),
+                        [Ticket|Tickets]
+                end,
+            interleave_loop(Target, RunCnt + 1, NewTickets, Options)
     end.
 
 %% Stores states for later exploration and returns the process to be run next.
