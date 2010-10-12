@@ -462,11 +462,7 @@ handler(unregister, Pid, #context{details = Det} = Context, RegName) ->
 %% Whereis message handler.
 handler(whereis, Pid, #context{details = Det} = Context, {RegName, Result}) ->
     Lid = lid:from_pid(Pid),
-    ResultLid =
-        case Result of
-            undefined -> not_found;
-            _Other -> lid:from_pid(Result)
-        end,
+    ResultLid = lid:from_pid(Result),
     log_details(Det, {whereis, Lid, RegName, ResultLid}),
     dispatcher(Context);
 
@@ -504,6 +500,15 @@ elapsed_time(T1, T2) ->
     Secs = (ElapsedTime rem 60000) / 1000,
     ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
     {Mins, Secs}.
+
+find_pid(Pid) when is_pid(Pid) ->
+    Pid;
+find_pid(Port) when is_port(Port) ->
+    erlang:port_info(Port, connected);
+find_pid(Atom) when is_atom(Atom) ->
+    whereis(Atom);
+find_pid({Atom, Node}) when is_atom(Atom) andalso is_atom(Node) ->
+    rpc:call(Node, erlang, whereis, [Atom]).
 
 %% Print debug messages and send them to replay_logger if Det is true.
 log_details(Det, Action) ->
@@ -631,7 +636,8 @@ rep_link(Pid) ->
 
 rep_monitor(Type, Item) ->
     Ref = monitor(Type, Item),
-    ?RP_SCHED ! #sched{msg = monitor, pid = self(), misc = {Item, Ref}},
+    NewItem = find_pid(Item),
+    ?RP_SCHED ! #sched{msg = monitor, pid = self(), misc = {NewItem, Ref}},
     rep_yield(),
     Ref.
 
@@ -734,10 +740,7 @@ rep_register(RegName, P) ->
 
 rep_send(Dest, Msg) ->
     Dest ! {lid:from_pid(self()), Msg},
-    NewDest = case is_atom(Dest) of
-		  true -> whereis(Dest);
-		  false -> Dest
-	      end,
+    NewDest = find_pid(Dest),
     ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, Msg}},
     rep_yield(),
     Msg.

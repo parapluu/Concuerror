@@ -109,13 +109,15 @@ demonitor(Lid, Ref) ->
     end.
 
 %% Return the LID of process Pid or 'not_found' if mapping not in table.
--spec from_pid(pid()) -> lid() | 'not_found'.
+-spec from_pid(term()) -> lid() | 'not_found'.
 
-from_pid(Pid) ->
+from_pid(Pid) when is_pid(Pid) ->
     case ets:lookup(?NT_PID, Pid) of
 	[{Pid, Lid}] -> Lid;
 	[] -> not_found
-    end.
+    end;
+from_pid(_Other) -> not_found.
+
 
 %% Fold function Fun
 -spec fold_pids(fun(), term()) -> term().
