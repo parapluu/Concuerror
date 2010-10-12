@@ -144,7 +144,8 @@ instrument_term(Tree) ->
 		    case Function of
                         demonitor ->
                             instrument_demonitor(instrument_subtrees(Tree));
-                        halt -> instrument_halt();
+                        halt ->
+			    instrument_halt(instrument_subtrees(Tree));
 			link ->
 			    instrument_link(instrument_subtrees(Tree));
                         monitor ->
@@ -181,7 +182,9 @@ instrument_term(Tree) ->
                                         demonitor ->
                                             instrument_demonitor(
                                               instrument_subtrees(Tree));
-                                        halt -> instrument_halt();
+                                        halt ->
+					    instrument_halt(
+					      instrument_subtrees(Tree));
                                         link ->
                                             instrument_link(
                                               instrument_subtrees(Tree));
@@ -244,10 +247,11 @@ instrument_demonitor(Tree) ->
 
 %% Instrument a halt/{0,1} call.
 %% halt(Args) is transformed into sched:rep_halt().
-instrument_halt() ->
+instrument_halt(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_halt),
-    erl_syntax:application(Module, Function, []).
+    Arguments = erl_syntax:application_arguments(Tree),
+    erl_syntax:application(Module, Function, Arguments).
 
 %% Instrument a link/1 call.
 %% link(Pid) is transformed into sched:rep_link(Pid).
@@ -441,21 +445,19 @@ instrument_register(Tree) ->
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
-%% Instrument a spawn/1 call.
+%% Instrument a spawn/{1,2,3,4} call.
 %% spawn(Fun) is transformed into sched:rep_spawn(Fun).
 instrument_spawn(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn),
-    %% Fun expression arguments of the (before instrumentation) spawn call.
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
-%% Instrument a spawn_link/{1,3} call.
+%% Instrument a spawn_link/{1,2,3,4} call.
 %% spawn_link(Args) is transformed into sched:rep_spawn_link(Args).
 instrument_spawn_link(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn_link),
-    %% Fun expression arguments of the (before instrumentation) spawn call.
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 
@@ -464,7 +466,6 @@ instrument_spawn_link(Tree) ->
 instrument_spawn_monitor(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_spawn_monitor),
-    %% Fun expression arguments of the (before instrumentation) spawn call.
     Arguments = erl_syntax:application_arguments(Tree),
     erl_syntax:application(Module, Function, Arguments).
 

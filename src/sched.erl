@@ -15,13 +15,13 @@
 -export([analyze/2, driver/3, proc_cleanup/0, replay/1]).
 
 %% Instrumentation related exports.
--export([rep_demonitor/1, rep_demonitor/2, rep_halt/0,
+-export([rep_demonitor/1, rep_demonitor/2, rep_halt/0, rep_halt/1,
          rep_link/1, rep_monitor/2, rep_process_flag/2,
          rep_receive/1, rep_receive_notify/1, rep_receive_notify/2,
-         rep_register/2, rep_send/2, rep_spawn/1, rep_spawn_link/1,
-         rep_spawn_link/3, rep_spawn_monitor/1, rep_spawn_monitor/3,
-         rep_unlink/1, rep_unregister/1, rep_whereis/1, rep_yield/0,
-         wait/0]).
+         rep_register/2, rep_send/2, rep_spawn/1, rep_spawn/3,
+	 rep_spawn_link/1, rep_spawn_link/3, rep_spawn_monitor/1,
+	 rep_spawn_monitor/3, rep_unlink/1, rep_unregister/1,
+	 rep_whereis/1, rep_yield/0, wait/0]).
 
 -export_type([analysis_target/0, analysis_ret/0]).
 
@@ -342,9 +342,12 @@ handler(exit, Pid,
 
 %% Halt message handler.
 %% Return empty active and blocked queues to force run termination.
-handler(halt, Pid, #context{details = Det} = Context, _Misc) ->
+handler(halt, Pid, #context{details = Det} = Context, Misc) ->
     Lid = lid:from_pid(Pid),
-    log_details(Det, {halt, Lid}),
+    case Misc of
+	empty -> log_details(Det, {halt, Lid});
+	Status -> log_details(Det, {halt, Lid, Status})
+    end,
     Context#context{active = sets:new(), blocked = sets:new()};
 
 %% Link message handler.
@@ -613,6 +616,16 @@ rep_halt() ->
     ?RP_SCHED ! #sched{msg = halt, pid = self()},
     rep_yield().
 
+%% @spec: rep_halt() -> no_return().
+%% @doc: Replacement for `halt/1'.
+%%
+%% Just send halt message and yield.
+-spec rep_halt(non_neg_integer() | string()) -> no_return().
+
+rep_halt(Status) ->
+    ?RP_SCHED ! #sched{msg = halt, pid = self(), misc = Status},
+    rep_yield().
+
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.
 %%
@@ -757,6 +770,16 @@ rep_spawn(Fun) ->
     rep_yield(),
     Pid.
 
+%% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
+%% @doc: Replacement for `spawn/3'.
+%%
+%% See `rep_spawn/1'.
+-spec rep_spawn(atom(), atom(), [term()]) -> pid().
+
+rep_spawn(Module, Function, Args) ->
+    Fun = fun() -> apply(Module, Function, Args) end,
+    rep_spawn(Fun).
+
 %% @spec rep_spawn_link(function()) -> pid()
 %% @doc: Replacement for `spawn_link/1'.
 %%
@@ -769,10 +792,10 @@ rep_spawn_link(Fun) ->
     rep_yield(),
     Pid.
 
-%% @spec rep_spawn_link(atom(), function(), [term()]) -> pid()
+%% @spec rep_spawn_link(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn_link/3'.
 %%
-%% When spawned, the new process has to yield.
+%% See `rep_spawn_link/1'.
 -spec rep_spawn_link(atom(), atom(), [term()]) -> pid().
 
 rep_spawn_link(Module, Function, Args) ->
@@ -791,10 +814,10 @@ rep_spawn_monitor(Fun) ->
     rep_yield(),
     Ret.
 
-%% @spec rep_spawn_monitor(atom(), function(), [term()]) -> pid()
+%% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn_monitor/3'.
 %%
-%% When spawned, the new process has to yield.
+%% See rep_spawn_monitor/1.
 -spec rep_spawn_monitor(atom(), atom(), [term()]) -> pid().
 
 rep_spawn_monitor(Module, Function, Args) ->
