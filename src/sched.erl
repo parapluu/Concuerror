@@ -344,10 +344,12 @@ handler(exit, Pid,
 %% Return empty active and blocked queues to force run termination.
 handler(halt, Pid, #context{details = Det} = Context, Misc) ->
     Lid = lid:from_pid(Pid),
-    case Misc of
-	empty -> log_details(Det, {halt, Lid});
-	Status -> log_details(Det, {halt, Lid, Status})
-    end,
+    Halt =
+        case Misc of
+            empty -> {halt, Lid};
+            Status -> {halt, Lid, Status}
+        end,
+    log_details(Det, Halt),
     Context#context{active = sets:new(), blocked = sets:new()};
 
 %% Link message handler.
