@@ -16,6 +16,17 @@
 
 -define(INCLUDE_DIR, filename:absname("include")).
 
+%% Instrumented auto-imported functions of 'erlang' module.
+-define(INSTR_ERLANG_NO_MOD,
+	[demonitor, halt, link, monitor, process_flag, register, spawn,
+	 spawn_link, spawn_monitor, unlink, unregister, whereis]).
+
+%% Instrumented functions called as erlang:FUNCTION.
+-define(INSTR_ERLANG,
+	[demonitor, halt, link, monitor, process_flag, register, send,
+	 spawn, spawn_link, spawn_monitor, unlink, unregister, whereis,
+	 yield]).
+
 %% Delete and purge all modules in Files.
 -spec delete_and_purge([file()]) -> 'ok'.
 
@@ -137,92 +148,10 @@ instrument_subtrees(Tree) ->
 instrument_term(Tree) ->
     case erl_syntax:type(Tree) of
 	application ->
-	    Qualifier = erl_syntax:application_operator(Tree),
-	    case erl_syntax:type(Qualifier) of
-		atom ->
-		    Function = erl_syntax:atom_value(Qualifier),
-		    case Function of
-                        demonitor ->
-                            instrument_demonitor(instrument_subtrees(Tree));
-                        halt ->
-			    instrument_halt(instrument_subtrees(Tree));
-			link ->
-			    instrument_link(instrument_subtrees(Tree));
-                        monitor ->
-                            instrument_monitor(instrument_subtrees(Tree));
-                        process_flag ->
-                            instrument_process_flag(instrument_subtrees(Tree));
-                        register ->
-                            instrument_register(instrument_subtrees(Tree));
-			spawn ->
-			    instrument_spawn(instrument_subtrees(Tree));
-			spawn_link ->
-			    instrument_spawn_link(instrument_subtrees(Tree));
-                        spawn_monitor ->
-                            instrument_spawn_monitor(instrument_subtrees(Tree));
-                        unlink ->
-                            instrument_unlink(instrument_subtrees(Tree));
-                        unregister ->
-                            instrument_unregister(instrument_subtrees(Tree));
-                        whereis ->
-                            instrument_whereis(instrument_subtrees(Tree));
-			_Other -> instrument_subtrees(Tree)
-		    end;
-                module_qualifier ->
-                    Argument = erl_syntax:module_qualifier_argument(Qualifier),
-                    Body = erl_syntax:module_qualifier_body(Qualifier),
-                    case erl_syntax:type(Argument) =:= atom andalso
-                        erl_syntax:type(Body) =:= atom of
-                        true ->
-                            Module = erl_syntax:atom_value(Argument),
-                            case Module of
-                                erlang ->
-                                    Function = erl_syntax:atom_value(Body),
-                                    case Function of
-                                        demonitor ->
-                                            instrument_demonitor(
-                                              instrument_subtrees(Tree));
-                                        halt ->
-					    instrument_halt(
-					      instrument_subtrees(Tree));
-                                        link ->
-                                            instrument_link(
-                                              instrument_subtrees(Tree));
-                                        monitor ->
-                                            instrument_monitor(
-                                              instrument_subtrees(Tree));
-                                        process_flag ->
-                                            instrument_process_flag(
-                                              instrument_subtrees(Tree));
-                                        register ->
-                                            instrument_register(
-                                              instrument_subtrees(Tree));
-                                        spawn ->
-                                            instrument_spawn(
-                                              instrument_subtrees(Tree));
-                                        spawn_link ->
-                                            instrument_spawn_link(
-                                              instrument_subtrees(Tree));
-                                        spawn_monitor ->
-                                            instrument_spawn_monitor(
-                                              instrument_subtrees(Tree));
-                                        unlink ->
-                                            instrument_unlink(
-                                              instrument_subtrees(Tree));
-                                        unregister ->
-                                            instrument_unregister(
-                                              instrument_subtrees(Tree));
-                                        whereis ->
-                                            instrument_whereis(
-                                              instrument_subtrees(Tree));
-                                        yield -> instrument_yield();
-                                        _Other -> instrument_subtrees(Tree)
-                                    end; 
-                                _Other -> instrument_subtrees(Tree)
-                            end;
-                        false -> instrument_subtrees(Tree)
-                    end;
-		_Other -> instrument_subtrees(Tree)
+	    NewTree = instrument_subtrees(Tree),
+	    case get_mfa(NewTree) of
+		no_instr -> NewTree;
+		Mfa -> instrument_application(Mfa)
 	    end;
 	infix_expr ->
 	    Operator = erl_syntax:infix_expr_operator(Tree),
@@ -230,44 +159,52 @@ instrument_term(Tree) ->
 		'!' -> instrument_send(instrument_subtrees(Tree));
 		_Other -> instrument_subtrees(Tree)
 	    end;
-	receive_expr ->
-	    instrument_receive(instrument_subtrees(Tree));
-	%% Replace every underscore with a new (underscore-prefixed) variable.
+	receive_expr -> instrument_receive(instrument_subtrees(Tree));
 	underscore -> new_underscore_variable();
 	_Other -> instrument_subtrees(Tree)
     end.
 
-%% Instrument a demonitor/{1,2} call.
-%% demonitor(Args) is transformed into sched:rep_demonitor(Args).
-instrument_demonitor(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_demonitor),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
+%% Return {ModuleAtom, FunctionAtom, ArgTree} for a function that is going
+%% to be instrumented or 'no_instr' otherwise.
+get_mfa(Tree) ->
+    Qualifier = erl_syntax:application_operator(Tree),
+    case erl_syntax:type(Qualifier) of
+	atom ->
+	    Function = erl_syntax:atom_value(Qualifier),
+	    ArgTree = erl_syntax:application_arguments(Tree),
+	    case lists:member(Function, ?INSTR_ERLANG_NO_MOD) of
+		true -> {erlang, Function, ArgTree};
+		false -> no_instr
+	    end;
+	module_qualifier ->
+	    ModTree = erl_syntax:module_qualifier_argument(Qualifier),
+	    FunTree = erl_syntax:module_qualifier_body(Qualifier),
+	    case erl_syntax:type(ModTree) =:= atom andalso
+		erl_syntax:type(FunTree) =:= atom of
+		true ->
+		    Module = erl_syntax:atom_value(ModTree),
+		    Function = erl_syntax:atom_value(FunTree),
+		    case Module of
+			erlang ->
+			    case lists:member(Function, ?INSTR_ERLANG) of
+				true ->
+				    ArgTree =
+					erl_syntax:application_arguments(Tree),
+				    {Module, Function, ArgTree};
+				false -> no_instr
+			    end;
+			_Other -> no_instr
+		    end;
+		false -> no_instr
+	    end;
+	_Other -> no_instr
+    end.
 
-%% Instrument a halt/{0,1} call.
-%% halt(Args) is transformed into sched:rep_halt().
-instrument_halt(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_halt),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument a link/1 call.
-%% link(Pid) is transformed into sched:rep_link(Pid).
-instrument_link(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_link),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument a monitor/1 call.
-%% monitor(Ref) is transformed into sched:rep_monitor(Ref).
-instrument_monitor(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_monitor),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
+%% Instrument an application (function call).
+instrument_application({erlang, Fun, ArgTree}) ->
+    ModTree = erl_syntax:atom(sched),
+    FunTree = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Fun))),
+    erl_syntax:application(ModTree, FunTree, ArgTree).
 
 %% Instrument a receive expression.
 %% -----------------------------------------------------------------------------
@@ -427,76 +364,6 @@ instrument_send(Tree) ->
     Msg = erl_syntax:infix_expr_right(Tree),
     Arguments = [Dest, Msg],
     erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument a process_flag/2 call.
-%% process_flag(Flag, Value) is transformed into
-%% sched:rep_process_flag(Flag, Value).
-instrument_process_flag(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_process_flag),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument a register/2 call.
-%% register(RegName, P) is transformed into sched:rep_register(RegName, P).
-instrument_register(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_register),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument a spawn/{1,2,3,4} call.
-%% spawn(Fun) is transformed into sched:rep_spawn(Fun).
-instrument_spawn(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_spawn),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument a spawn_link/{1,2,3,4} call.
-%% spawn_link(Args) is transformed into sched:rep_spawn_link(Args).
-instrument_spawn_link(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_spawn_link),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument a spawn_monitor/{1,3} call.
-%% spawn_monitor(Args) is transformed into sched:rep_spawn_monitor(Args).
-instrument_spawn_monitor(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_spawn_monitor),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument an unlink/1 call.
-%% unlink(Pid) is transformed into sched:rep_unlink(Pid).
-instrument_unlink(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_unlink),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument an unregister/1 call.
-%% unregister(RegName) is transformed into sched:rep_unregister(RegName).
-instrument_unregister(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_unregister),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument a whereis/1 call.
-%% whereis(RegName) is transformed into sched:rep_whereis(RegName).
-instrument_whereis(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_whereis),
-    Arguments = erl_syntax:application_arguments(Tree),
-    erl_syntax:application(Module, Function, Arguments).
-
-%% Instrument an erlang:yield/0 call.
-%% erlang:yield is transformed into true.
-instrument_yield() ->
-    erl_syntax:atom(true).
 
 %%%----------------------------------------------------------------------
 %%% Utilities
