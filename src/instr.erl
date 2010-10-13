@@ -23,9 +23,7 @@
 
 %% Instrumented functions called as erlang:FUNCTION.
 -define(INSTR_ERLANG,
-	[demonitor, halt, link, monitor, process_flag, register, send,
-	 spawn, spawn_link, spawn_monitor, unlink, unregister, whereis,
-	 yield]).
+	[send, yield] ++ ?INSTR_ERLANG_NO_MOD).
 
 %% Delete and purge all modules in Files.
 -spec delete_and_purge([file()]) -> 'ok'.
@@ -171,9 +169,10 @@ get_mfa(Tree) ->
     case erl_syntax:type(Qualifier) of
 	atom ->
 	    Function = erl_syntax:atom_value(Qualifier),
-	    ArgTree = erl_syntax:application_arguments(Tree),
 	    case lists:member(Function, ?INSTR_ERLANG_NO_MOD) of
-		true -> {erlang, Function, ArgTree};
+		true ->
+                    ArgTree = erl_syntax:application_arguments(Tree),
+                    {erlang, Function, ArgTree};
 		false -> no_instr
 	    end;
 	module_qualifier ->
@@ -183,9 +182,9 @@ get_mfa(Tree) ->
 		erl_syntax:type(FunTree) =:= atom of
 		true ->
 		    Module = erl_syntax:atom_value(ModTree),
-		    Function = erl_syntax:atom_value(FunTree),
 		    case Module of
 			erlang ->
+                            Function = erl_syntax:atom_value(FunTree),
 			    case lists:member(Function, ?INSTR_ERLANG) of
 				true ->
 				    ArgTree =
