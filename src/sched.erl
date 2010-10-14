@@ -17,7 +17,8 @@
 %% Instrumentation related exports.
 -export([rep_demonitor/1, rep_demonitor/2, rep_halt/0, rep_halt/1,
          rep_link/1, rep_monitor/2, rep_process_flag/2,
-         rep_receive/1, rep_receive_notify/1, rep_receive_notify/2,
+         rep_receive/1, rep_after_notify/0,
+	 rep_receive_notify/1, rep_receive_notify/2,
          rep_register/2, rep_send/2, rep_spawn/1, rep_spawn/3,
 	 rep_spawn_link/1, rep_spawn_link/3, rep_spawn_monitor/1,
 	 rep_spawn_monitor/3, rep_unlink/1, rep_unregister/1,
@@ -227,13 +228,10 @@ dispatcher(Context) ->
 %% and acts appropriately. The argument should be a blocked scheduler state,
 %% i.e. no process running when the driver is called.
 %% In the case of a normal (meaning non-terminal) state:
-%% - if the State list is empty, the search component is called to handle
+%% - if the ReplayState is empty, the search component is called to handle
 %% state expansion and returns a process for activation;
-%% - if the State list is not empty, the process to be activated is
-%% provided at each step by its head.
-%% After activating said process the dispatcher is called to delegate the
-%% messages received from the running process to the appropriate handler
-%% functions.
+%% - if the ReplayState is not empty, we are in replay mode and the process
+%% to be run next is provided by ReplayState.
 -spec driver(function(), context(), state:state()) -> driver_ret().
 
 driver(Search,
@@ -282,6 +280,12 @@ search(#context{active = Active, state = State}) ->
     %% Store all other possible successor states for later exploration.
     [state_save(state:extend(State, Lid)) || Lid <- NewActive],
     Next.
+
+%% After message handler.
+handler('after', Pid, #context{details = Det} = Context, _Misc) ->
+    Lid = lid:from_pid(Pid),
+    log_details(Det, {'after', Lid}),
+    dispatcher(Context);
 
 %% Block message handler.
 %% Receiving a `block` message means that the process cannot be scheduled
@@ -689,20 +693,39 @@ rep_process_flag(Flag, Value) ->
     process_flag(Flag, Value).
 
 %% @spec rep_receive(fun((function()) -> term())) -> term()
-%% @doc: Replacement for a `receive' statement.
+%% @doc: Function called right before a receive statement.
 %%
-%% The first time the process is scheduled it searches its mailbox. If no
-%% matching message is found, it blocks (i.e. is moved to the blocked set).
-%% When a new message arrives the process is woken up.
-%% The check mailbox - block - wakeup loop is repeated until a matching message
-%% arrives.
--spec rep_receive(fun((function()) -> term())) -> term().
+%% If a matching message is found in the process' message queue, continue
+%% to actual receive statement, else block and when unblocked do the same.
+
+-spec rep_receive(fun((term()) -> 'block' | 'continue')) -> term().
 
 rep_receive(Fun) ->
-    rep_receive_aux(Fun).
+    {messages, Mailbox} = process_info(self(), messages),
+    case rep_receive_match(Fun, Mailbox) of
+	block -> block(), rep_receive(Fun);
+	continue -> continue
+    end.
 
-rep_receive_aux(Fun) ->
-    Fun(fun() -> block(), rep_receive_aux(Fun) end).
+rep_receive_match(_Fun, []) ->
+    block;
+rep_receive_match(Fun, [H|T]) ->
+    case Fun(H) of
+	block -> rep_receive_match(Fun, T);
+	continue -> continue
+    end.
+
+%% @spec rep_after_notify() -> 'ok'
+%% @doc: Auxiliary function used in the `receive..after' statement
+%% instrumentation.
+%%
+%% Called first thing after an `after' clause has been entered.
+-spec rep_after_notify() -> 'ok'.
+
+rep_after_notify() ->
+    ?RP_SCHED ! #sched{msg = 'after', pid = self()},
+    rep_yield(),
+    ok.
 
 %% @spec rep_receive_notify(pid(), term()) -> 'ok'
 %% @doc: Auxiliary function used in the `receive' statement instrumentation.
@@ -719,8 +742,7 @@ rep_receive_notify(From, Msg) ->
 %% @spec rep_receive_notify(term()) -> 'ok'
 %% @doc: Auxiliary function used in the `receive' statement instrumentation.
 %%
-%% Called first thing after a message has been received, to inform the scheduler
-%% about the message received.
+%% Similar to rep_receive/2, but used to handle 'EXIT' and 'DOWN' messages.
 -spec rep_receive_notify(term()) -> 'ok'.
 
 rep_receive_notify(Msg) ->

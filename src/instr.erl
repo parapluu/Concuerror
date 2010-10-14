@@ -112,7 +112,7 @@ instrument(File) ->
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
 	    Abstract = erl_syntax:revert(Transformed),
-	    %% io:put_chars(erl_prettypr:format(Abstract)),
+	    io:put_chars(erl_prettypr:format(Abstract)),
 	    NewForms = erl_syntax:form_list_elements(Abstract),
 	    {ok, NewForms};
 	{error, Error} -> {error, Error}
@@ -208,19 +208,27 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %% Instrument a receive expression.
 %% -----------------------------------------------------------------------------
 %% receive
-%%    Patterns -> Actions
+%%   Patterns -> Actions
 %% end
 %%
 %% is transformed into
 %%
 %% sched:rep_receive(Fun),
+%% receive
+%%   NewPatterns -> NewActions
+%% end
+%%
 %% where Fun = fun(Aux) ->
 %%               receive
-%%                   NewPatterns -> NewActions
+%%                 NewPatterns -> continue
+%%                 [_Fresh -> block]
 %%               after 0 ->
 %%                 Aux()
 %%               end
 %%             end
+%%
+%% The additional _Fresh -> block pattern is only added, if there is no
+%% catch-all pattern among the original receive patterns.
 %%
 %% Pattern -> NewPattern maps are divided into the following categories:
 %%
@@ -236,23 +244,24 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %%   - All other patterns `Pattern' are transformed into {Fresh, Pattern}.
 %%
 %% `Action' is normally transformed into
-%% `sched:rep_receive(Fresh, Pattern), Action'.
+%% `sched:rep_receive_notify(Fresh, Pattern), Action'.
 %% In the case of size-3, size-5 and catch-all patterns, the patterns that
 %% are duplicated as they were originally, will have a NewAction of
-%% `sched:rep_receive(Pattern), Action'.
+%% `sched:rep_receive_notify(Pattern), Action'.
 %% -----------------------------------------------------------------------------
 %% receive
 %%   Patterns -> Actions
-%% after N -> AfterActions
+%% after N -> AfterAction
 %%
 %% is transformed into
 %%
 %% receive
 %%   NewPatterns -> NewActions
-%% after 0 -> AfterActions
+%% after 0 -> NewAfterAction
 %%
 %% Pattens and Actions are mapped into NewPatterns and NewActions as described
 %% previously for the case of a `receive' expression with no `after' clause.
+%% AfterAction is transformed into `sched:rep_after_notify(), AfterAction'.
 %% -----------------------------------------------------------------------------
 %% receive
 %% after N -> AfterActions
@@ -264,8 +273,6 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %% That is, the `receive' expression and the delay are dropped off completely.
 %% -----------------------------------------------------------------------------
 instrument_receive(Tree) ->
-    Module = erl_syntax:atom(sched),
-    Function = erl_syntax:atom(rep_receive),
     %% Get old receive expression's clauses.
     OldClauses = erl_syntax:receive_expr_clauses(Tree),
     case OldClauses of
@@ -275,34 +282,64 @@ instrument_receive(Tree) ->
             Action = erl_syntax:receive_expr_action(Tree),
             erl_syntax:block_expr(Action);
         _Other ->
-	    Fold = fun(Old, Acc) ->
-			   case transform_receive_clause(Old) of
-			       [One] -> [One|Acc];
-			       [One, Two] -> [One, Two|Acc]
-			   end
-		   end,
-	    NewClauses = lists:foldr(Fold, [], OldClauses),
+	    NewClauses = transform_receive_clauses(OldClauses),
             %% Create new receive expression adding the `after 0` part.
             Timeout = erl_syntax:integer(0),
             case erl_syntax:receive_expr_timeout(Tree) of
                 %% Instrument `receive` without `after` part.
                 none ->
-                    %% Create new variable to use as 'Aux'.
+		    %% Create fun(X) -> case X of ... end end.
                     FunVar = new_variable(),
-                    Action = [erl_syntax:application(FunVar, [])],
-                    NewRecv = erl_syntax:receive_expr(NewClauses, Timeout,
-                                                      Action),
-                    %% Create a new fun to be the argument of rep_receive.
-                    FunClause = erl_syntax:clause([FunVar], [], [NewRecv]),
+		    CaseClauses = transform_receive_case(NewClauses),
+		    Case = erl_syntax:case_expr(FunVar, CaseClauses),
+		    FunClause = erl_syntax:clause([FunVar], [], [Case]),
                     FunExpr = erl_syntax:fun_expr([FunClause]),
-                    %% Call sched:rep_receive.
-                    erl_syntax:application(Module, Function, [FunExpr]);
+                    %% Create sched:rep_receive(fun(X) -> ...).
+		    Module = erl_syntax:atom(sched),
+		    Function = erl_syntax:atom(rep_receive),
+                    RepReceive = erl_syntax:application(Module, Function,
+							[FunExpr]),
+		    %% Crete new receive expression.
+                    NewReceive = erl_syntax:receive_expr(NewClauses),
+		    %% Result is begin rep_receive(...), NewReceive end.
+		    erl_syntax:block_expr([RepReceive, NewReceive]);
                 %% Instrument `receive` with `after` part.
                 _Any ->
-                    Action = erl_syntax:receive_expr_action(Tree),
-                    erl_syntax:receive_expr(NewClauses, Timeout, Action)
+                    [Action] = erl_syntax:receive_expr_action(Tree),
+		    RepMod = erl_syntax:atom(sched),
+		    RepFun = erl_syntax:atom(rep_after_notify),
+		    RepArgs = [],
+		    RepApp = erl_syntax:application(RepMod, RepFun, RepArgs),
+		    NewAction = [RepApp, Action],
+                    erl_syntax:receive_expr(NewClauses, Timeout, NewAction)
             end
     end.
+
+transform_receive_case(Clauses) ->
+    Fun = fun(Clause, HasCatchall) ->
+		  [Pattern] = erl_syntax:clause_patterns(Clause),
+		  NewBody = erl_syntax:atom(continue),
+		  NewHasCatchall = HasCatchall orelse
+		      erl_syntax:type(Pattern) =:= variable,
+		  {erl_syntax:clause([Pattern], [], [NewBody]), NewHasCatchall}
+	  end,
+    case lists:mapfoldl(Fun, false, Clauses) of
+	{NewClauses, false} ->
+	    Pattern = new_underscore_variable(),
+	    Body = erl_syntax:atom(block),
+	    CatchallClause = erl_syntax:clause([Pattern], [], [Body]),
+	    NewClauses ++ [CatchallClause];
+	{NewClauses, true} -> NewClauses
+    end.
+
+transform_receive_clauses(Clauses) ->
+    Fold = fun(Old, Acc) ->
+		   case transform_receive_clause(Old) of
+		       [One] -> [One|Acc];
+		       [One, Two] -> [One, Two|Acc]
+		   end
+	   end,
+    lists:foldr(Fold, [], Clauses).
 
 %% Transform a Pattern -> Action clause, according to its Pattern.
 transform_receive_clause(Clause) ->

@@ -14,7 +14,8 @@
 -type maybe_lid() :: lid:lid() | 'not_found'.
 
 %% Tuples providing information about a process' action.
--type proc_action() :: {'block', lid:lid()} |
+-type proc_action() :: {'after', lid:lid()} |
+		       {'block', lid:lid()} |
 		       {'demonitor', lid:lid(), maybe_lid()} |
                        {'exit', lid:lid(), term()} |
                        {'halt', lid:lid()} |
@@ -35,6 +36,8 @@
 
 -spec to_string(proc_action()) -> string().
 
+to_string({'after', Proc}) ->
+    io_lib:format("Process ~s enters after clause", [lid:to_string(Proc)]);
 to_string({block, Proc}) ->
     io_lib:format("Process ~s blocks", [lid:to_string(Proc)]);
 to_string({demonitor, Proc, not_found}) ->
