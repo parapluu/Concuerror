@@ -3,7 +3,7 @@
 %%% Contributed by Jiri Isa
 
 -module(thread_ring).
--export([main/1, roundtrip/2, test/0]).
+-export([main/1, roundtrip/2, test1/0, test2/0]).
 
 -include("ced.hrl").
 
@@ -29,4 +29,5 @@ main([Arg]) ->
    Token = list_to_integer(Arg),
    start(Token).
    
-test() -> main(["3"]).
+test1() -> main(["3"]).
+test2() -> main(["4"]).

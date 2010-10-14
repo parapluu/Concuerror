@@ -13,7 +13,8 @@
          test13/0, test14/0, test15/0, test16/0,
 	 test17/0, test18/0, test19/0, test20/0,
          test21/0, test22/0, test23/0, test24/0,
-         test25/0, test26/0, test27/0, test28/0]).
+         test25/0, test26/0, test27/0, test28/0,
+	 test29/0]).
 
 -include("ced.hrl").
 
@@ -376,3 +377,21 @@ test28() ->
     spawn(fun() -> foo1_1(Self) end),
     erlang:halt("Halt!"),
     receive _Any -> ok end.
+
+%% Normal, 2 proc: Test instrumentation of assignment in receive pattern.
+-spec test29() -> 'ok'.
+
+test29() ->
+    Self = self(),
+    spawn(fun() -> foo29(Self) end),
+    receive
+	Foo = {bar, Baz} -> ok
+    end,
+    receive
+	Baz -> ok
+    end,
+    ?assertEqual(Foo, {bar, gazonk}).
+
+foo29(Parent) ->
+    Parent ! {bar, gazonk},
+    Parent ! gazonk.
