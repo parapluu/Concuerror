@@ -14,6 +14,21 @@
 
 -include("gen.hrl").
 
+%%%----------------------------------------------------------------------
+%%% Debug
+%%%----------------------------------------------------------------------
+
+%%-define(PRINT, true).
+-ifdef(PRINT).
+-define(debug(S_), io:put_chars(erl_prettypr:format(S_))).
+-else.
+-define(debug(S_), ok).
+-endif.
+
+%%%----------------------------------------------------------------------
+%%% Definitions
+%%%----------------------------------------------------------------------
+
 -define(INCLUDE_DIR, filename:absname("include")).
 
 %% Instrumented auto-imported functions of 'erlang' module.
@@ -24,6 +39,10 @@
 %% Instrumented functions called as erlang:FUNCTION.
 -define(INSTR_ERLANG,
 	[send, yield] ++ ?INSTR_ERLANG_NO_MOD).
+
+%%%----------------------------------------------------------------------
+%%% Instrumentation utilities
+%%%----------------------------------------------------------------------
 
 %% Delete and purge all modules in Files.
 -spec delete_and_purge([file()]) -> 'ok'.
@@ -112,7 +131,7 @@ instrument(File) ->
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
 	    Abstract = erl_syntax:revert(Transformed),
-	    io:put_chars(erl_prettypr:format(Abstract)),
+            ?debug(Abstract),
 	    NewForms = erl_syntax:form_list_elements(Abstract),
 	    {ok, NewForms};
 	{error, Error} -> {error, Error}
@@ -302,14 +321,13 @@ instrument_receive(Tree) ->
 		    %% Crete new receive expression.
                     NewReceive = erl_syntax:receive_expr(NewClauses),
 		    %% Result is begin rep_receive(...), NewReceive end.
-		    erl_syntax:block_expr([RepReceive, NewReceive]);
+                    erl_syntax:block_expr([RepReceive, NewReceive]);
                 %% Instrument `receive` with `after` part.
                 _Any ->
                     [Action] = erl_syntax:receive_expr_action(Tree),
 		    RepMod = erl_syntax:atom(sched),
 		    RepFun = erl_syntax:atom(rep_after_notify),
-		    RepArgs = [],
-		    RepApp = erl_syntax:application(RepMod, RepFun, RepArgs),
+		    RepApp = erl_syntax:application(RepMod, RepFun, []),
 		    NewAction = [RepApp, Action],
                     erl_syntax:receive_expr(NewClauses, Timeout, NewAction)
             end
@@ -402,7 +420,7 @@ instrument_send(Tree) ->
     erl_syntax:application(Module, Function, Arguments).
 
 %%%----------------------------------------------------------------------
-%%% Utilities
+%%% Helper functions
 %%%----------------------------------------------------------------------
 
 new_variable() ->

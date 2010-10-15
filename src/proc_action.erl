@@ -37,7 +37,8 @@
 -spec to_string(proc_action()) -> string().
 
 to_string({'after', Proc}) ->
-    io_lib:format("Process ~s enters after clause", [lid:to_string(Proc)]);
+    io_lib:format("Process ~s receives no matching messages",
+                  [lid:to_string(Proc)]);
 to_string({block, Proc}) ->
     io_lib:format("Process ~s blocks", [lid:to_string(Proc)]);
 to_string({demonitor, Proc, not_found}) ->
