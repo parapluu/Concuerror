@@ -236,10 +236,18 @@ dispatcher(Context) ->
 %% to be run next is provided by ReplayState.
 -spec driver(function(), context(), state:state()) -> driver_ret().
 
-driver(Search,
-       #context{active = Active, blocked = Blocked,
-		error = Error, state = State} = Context,
-       ReplayState) ->
+driver(Search, Context, ReplayState) ->
+    {Next, Rest} =
+	case state:is_empty(ReplayState) of
+	    %% If in normal mode, run search algorithm to
+	    %% find next process to be run.
+	    true -> {Search(Context), ReplayState};
+	    %% If in replay mode, next process to be run
+	    %% is defined by ReplayState.
+	    false -> state:trim_head(ReplayState)
+	end,
+    #context{active = Active, blocked = Blocked,
+	     error = Error, state = State} = NewContext = run(Next, Context),
     case error:type(Error) of
 	normal ->
 	    %% Deadlock/Termination check.
@@ -255,19 +263,9 @@ driver(Search,
                             {error, Deadlock, State}
 		    end;
 		_NonEmptyActive ->
-                    {Next, Rest} =
-                        case state:is_empty(ReplayState) of
-			    %% If in normal mode, run search algorithm to
-			    %% find next process to be run.
-                            true -> {Search(Context), ReplayState};
-			    %% If in replay mode, next process to be run
-			    %% is defined by ReplayState.
-                            false -> state:trim(ReplayState)
-                        end,
-		    NewContext = run(Next, Context),
 		    driver(Search, NewContext, Rest)
 	    end;
-        _Other -> {error, Error, State}
+	_OtherErrorType -> {error, Error, State}
     end.
 
 %% Implements the search logic (currently depth-first when looked at combined
