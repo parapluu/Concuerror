@@ -72,15 +72,17 @@
 
 analyze(Target, Options) ->
     %% List of files to instrument.
-    Files = case lists:keyfind(files, 1, Options) of
-		false -> [];
-	        {files, List} -> List
-	    end,
+    Files =
+	case lists:keyfind(files, 1, Options) of
+	    false -> [];
+	    {files, List} -> List
+	end,
     %% Set interleave function to be used.
-    Interleave = case lists:keyfind(preb, 1, Options) of
-		false -> fun(T, Opt) -> interleave(T, Opt) end;
-	        {preb, _Bound} -> fun(T, Opt) -> preb:interleave(T, Opt) end
-	    end,
+    Interleave =
+	case lists:keyfind(preb, 1, Options) of
+	    false -> fun(T, Opt) -> interleave(T, Opt) end;
+	    {preb, _Bound} -> fun(T, Opt) -> preb:interleave(T, Opt) end
+	end,
     %% Disable error logging messages.
     error_logger:tty(false),
     Ret =
