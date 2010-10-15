@@ -38,7 +38,7 @@ interleave_aux(Target, Options, Parent) ->
     {init_state, InitState} = lists:keyfind(init_state, 1, Options),
     state_save(InitState),
     {preb, Bound} = lists:keyfind(preb, 1, Options),
-    Result = interleave_outer_loop(Target, 0, [], -2, Bound, Options),
+    Result = interleave_outer_loop(Target, 0, [], -1, Bound, Options),
     state_stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
