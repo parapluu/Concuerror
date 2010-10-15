@@ -7,7 +7,7 @@
 
 -module(state).
 
--export([extend/2, empty/0, is_empty/1, trim/1]).
+-export([extend/2, empty/0, is_empty/1, trim_head/1, trim_tail/1]).
 
 -export_type([state/0]).
 
@@ -47,8 +47,16 @@ is_empty(State) ->
 
 %% Return a tuple containing the first Lid in the given state
 %% and a new state with that Lid removed.
--spec trim(state()) -> {lid:lid(), state()}.
+-spec trim_head(state()) -> {lid:lid(), state()}.
 
-trim(State) ->
+trim_head(State) ->
     {{value, Lid}, NewState} = queue:out(?BIN_TO_TERM(State)),
+    {Lid, ?TERM_TO_BIN(NewState)}.
+
+%% Return a tuple containing the last Lid in the given state
+%% and a new state with that Lid removed.
+-spec trim_tail(state()) -> {lid:lid(), state()}.
+
+trim_tail(State) ->
+    {{value, Lid}, NewState} = queue:out_r(?BIN_TO_TERM(State)),
     {Lid, ?TERM_TO_BIN(NewState)}.

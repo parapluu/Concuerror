@@ -12,14 +12,26 @@
 %% Spec for auto-generated test/0 function (eunit).
 -spec test() -> 'ok' | {'error', term()}.
 
--spec extend_trim_test() -> term().
+-spec extend_trim_head_test() -> term().
 
-extend_trim_test() ->
+extend_trim_head_test() ->
     lid:start(),
     Init = state:empty(),
     Lid = lid:new(c:pid(0, 2, 3), noparent),
     State = state:extend(Init, Lid),
-    {NewLid, NewState} = state:trim(State),
+    {NewLid, NewState} = state:trim_head(State),
+    ?assertEqual(NewLid, Lid),
+    ?assertEqual(true, state:is_empty(NewState)),
+    lid:stop().
+
+-spec extend_trim_tail_test() -> term().
+
+extend_trim_tail_test() ->
+    lid:start(),
+    Init = state:empty(),
+    Lid = lid:new(c:pid(0, 2, 3), noparent),
+    State = state:extend(Init, Lid),
+    {NewLid, NewState} = state:trim_tail(State),
     ?assertEqual(NewLid, Lid),
     ?assertEqual(true, state:is_empty(NewState)),
     lid:stop().

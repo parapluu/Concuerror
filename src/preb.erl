@@ -119,7 +119,7 @@ search(#context{active = Active, state = State}) ->
 	    Next;
 	false ->
 	    %% Get last process that was run by the driver.
-	    {LastLid, _Rest} = state:trim(State),
+	    {LastLid, _Rest} = state:trim_tail(State),
 	    %% If that process is in the `active` set (i.e. has not blocked),
 	    %% remove it from the actives and make it next-to-run, else do
 	    %% that for another process from the actives.
