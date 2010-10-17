@@ -24,6 +24,7 @@
 -define(RP_SCHED, '_._sched').
 
 %% Named ets table names.
+-define(NT_BLOCKED, '_._blocked').
 -define(NT_ERROR, '_._error').
 -define(NT_LID, '_._lid').
 -define(NT_PID, '_._pid').
@@ -91,8 +92,3 @@
 -type context() :: #context{}.
 
 -type file() :: file:filename().
-
--type options() :: ['details' |
-                    {'files', [file()]} |
-                    {'init_state', state:state()} |
-                    {'preb',  bound()}].

@@ -34,6 +34,11 @@
 
 -type analysis_info() :: analysis_target().
 
+-type analysis_options() :: ['details' |
+			     {'files', [file()]} |
+			     {'init_state', state:state()} |
+			     {'preb',  bound()}].
+
 %% Analysis result tuple.
 -type analysis_ret() :: {'ok', analysis_info()} |
                         {'error', 'instr', analysis_info()} |
@@ -47,7 +52,7 @@
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
 %% Driver return type.
--type driver_ret() :: 'ok' | {'error', error:error(), state:state()}.
+-type driver_ret() :: 'ok' | 'block' | {'error', error:error(), state:state()}.
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -68,7 +73,7 @@
 
 %% @spec: analyze(analysis_target(), options()) -> analysis_ret()
 %% @doc: Produce all interleavings of running `Target'.
--spec analyze(analysis_target(), options()) -> analysis_ret().
+-spec analyze(analysis_target(), analysis_options()) -> analysis_ret().
 
 analyze(Target, Options) ->
     %% List of files to instrument.
@@ -76,12 +81,6 @@ analyze(Target, Options) ->
 	case lists:keyfind(files, 1, Options) of
 	    false -> [];
 	    {files, List} -> List
-	end,
-    %% Set interleave function to be used.
-    Interleave =
-	case lists:keyfind(preb, 1, Options) of
-	    false -> fun(T, Opt) -> interleave(T, Opt) end;
-	    {preb, _Bound} -> fun(T, Opt) -> preb:interleave(T, Opt) end
 	end,
     %% Disable error logging messages.
     error_logger:tty(false),
@@ -91,7 +90,7 @@ analyze(Target, Options) ->
 		log:log("Running analysis...~n"),
 		{T1, _} = statistics(wall_clock),
 		ISOption = {init_state, state:empty()},
-		Result = Interleave(Target, [ISOption|Options]),
+		Result = interleave(Target, [ISOption|Options]),
 		{T2, _} = statistics(wall_clock),
 		{Mins, Secs} = elapsed_time(T1, T2),
 		case Result of
@@ -153,13 +152,41 @@ interleave_aux(Target, Options, Parent) ->
     process_flag(trap_exit, true),
     %% Initialize state table.
     state_start(),
+    blocked_start(),
     %% Save empty replay state for the first run.
     {init_state, InitState} = lists:keyfind(init_state, 1, Options),
     state_save(InitState),
-    Result = interleave_loop(Target, 1, [], Options),
+    PreBound =
+	case lists:keyfind(preb, 1, Options) of
+	    {preb, Bound} -> Bound;
+	    false -> 1000000
+	end,
+    Result = interleave_outer_loop(Target, 0, [], -1, PreBound, Options),
+    blocked_stop(),
     state_stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
+
+interleave_outer_loop(_T, RunCnt, Tickets, MaxBound, MaxBound, _Opt) ->
+    case Tickets of
+	[] -> {ok, RunCnt};
+	_Any -> {error, RunCnt, ticket:sort(Tickets)}
+    end;
+interleave_outer_loop(Target, RunCnt, Tickets, CurrBound, MaxBound, Options) ->
+    {NewRunCnt, NewTickets} = interleave_loop(Target, 1, [], Options),
+    TotalRunCnt = NewRunCnt + RunCnt,
+    TotalTickets = NewTickets ++ Tickets,
+    state_swap(),
+    case state_peak() of
+	no_state ->
+	    case TotalTickets of
+		[] -> {ok, TotalRunCnt};
+		_Any -> {error, TotalRunCnt, ticket:sort(TotalTickets)}	
+	    end;
+	_State ->
+	    interleave_outer_loop(Target, TotalRunCnt, TotalTickets,
+				  CurrBound + 1, MaxBound, Options)
+    end.
 
 %% Main loop for producing process interleavings.
 %% The first process (FirstPid) is created linked to the scheduler,
@@ -170,11 +197,7 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
     Det = lists:member(details, Options),
     %% Lookup state to replay.
     case state_load() of
-        no_state ->
-	    case Tickets of
-		[] -> {ok, RunCnt - 1};
-		_Any -> {error, RunCnt - 1, ticket:sort(Tickets)}
-	    end;
+        no_state -> {RunCnt - 1, Tickets};
         ReplayState ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
@@ -192,21 +215,30 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
                                state = State, details = Det},
 	    Search = fun(C) -> search(C) end,
 	    %% Interleave using driver.
-            Ret = driver(Search, Context, ReplayState),
+            Ret = sched:driver(Search, Context, ReplayState),
 	    %% Cleanup of any remaining processes.
-	    proc_cleanup(),
+	    sched:proc_cleanup(),
             lid:stop(),
-	    ?debug_1("-----------------------~n"),
-	    ?debug_1("Run terminated.~n~n"),
             NewTickets =
                 case Ret of
-                    ok -> Tickets;
                     {error, Error, ErrorState} ->
                         {files, Files} = lists:keyfind(files, 1, Options),
                         Ticket = ticket:new(Target, Files, Error, ErrorState),
-                        [Ticket|Tickets]
+                        [Ticket|Tickets];
+		    _OtherRet1 -> Tickets
                 end,
-            interleave_loop(Target, RunCnt + 1, NewTickets, Options)
+	    NewRunCnt = 
+		case Ret of
+		    block ->
+			?debug_1("-----------------------~n"),
+			?debug_1("Run aborted.~n~n"),
+			RunCnt;
+		    _OtherRet2 ->
+			?debug_1("-----------------------~n"),
+			?debug_1("Run terminated.~n~n"),
+			RunCnt + 1
+		end,
+            interleave_loop(Target, NewRunCnt, NewTickets, Options)
     end.
 
 %%%----------------------------------------------------------------------
@@ -236,50 +268,97 @@ dispatcher(Context) ->
 %% to be run next is provided by ReplayState.
 -spec driver(function(), context(), state:state()) -> driver_ret().
 
-driver(Search, Context, ReplayState) ->
-    {Next, Rest} =
+driver(Search, #context{state = OldState} = Context, ReplayState) ->
+    {Next, Rest, {_InsertMode, InsertLids} = Insert} =
 	case state:is_empty(ReplayState) of
 	    %% If in normal mode, run search algorithm to
 	    %% find next process to be run.
-	    true -> {Search(Context), ReplayState};
+	    true ->
+		{NextTemp, InsertLaterTemp} = Search(Context),
+		{NextTemp, ReplayState, InsertLaterTemp};
 	    %% If in replay mode, next process to be run
 	    %% is defined by ReplayState.
-	    false -> state:trim_head(ReplayState)
+	    false ->
+		{NextTemp, RestTemp} = state:trim_head(ReplayState),
+		{NextTemp, RestTemp, {current, []}}
 	end,
-    #context{active = Active, blocked = Blocked,
-	     error = Error, state = State} = NewContext = run(Next, Context),
+    #context{active = Active, blocked = Blocked, error = Error,
+	     state = State} = RunContext = run(Next, Context),
+    %% Update active and blocked sets, moving Lid from active to blocked,
+    %% in the case that if it was run next, it would block.
+    Fun = fun(L, Acc) ->
+		  case blocked_lookup(state:extend(State, L)) of
+		      true -> sets:add_element(L, Acc);
+		      false -> Acc
+		  end
+	  end,
+    BlockedOracle = sets:fold(Fun, sets:new(), Active),
+    NewActive = sets:subtract(Active, BlockedOracle),
+    NewBlocked = sets:union(Blocked, BlockedOracle),
+    NewContext = RunContext#context{active = NewActive, blocked = NewBlocked},
     case error:type(Error) of
 	normal ->
-	    %% Deadlock/Termination check.
-	    %% If the `active` set is empty and the `blocked` set is non-empty,
-	    %% report a deadlock, else if both sets are empty, report normal
-            %% program termination.
-	    case sets:size(Active) of
+	    case sets:size(NewActive) of
 		0 ->
-		    case sets:size(Blocked) of
-			0 -> ok;
+		    case sets:size(NewBlocked) of
+			0 ->
+			    insert_states(OldState, Insert),
+			    ok;
 			_NonEmptyBlocked ->
-                            Deadlock = error:deadlock(Blocked),
+			    insert_states(OldState, Insert),
+                            Deadlock = error:deadlock(NewBlocked),
                             {error, Deadlock, State}
 		    end;
 		_NonEmptyActive ->
-		    driver(Search, NewContext, Rest)
+		    case sets:is_element(Next, Blocked) of
+			true ->
+			    insert_states(OldState, {current, InsertLids}),
+			    blocked_save(State),
+			    block;
+			false ->
+			    insert_states(OldState, Insert),
+			    driver(Search, NewContext, Rest)
+		    end
 	    end;
-	_OtherErrorType -> {error, Error, State}
+	_OtherErrorType ->
+	    insert_states(OldState, Insert),
+	    {error, Error, State}
     end.
 
-%% Implements the search logic (currently depth-first when looked at combined
-%% with the replay logic).
-%% Given a blocked state (no process running when called), creates all
-%% possible next states, chooses one of them for running and inserts the rest
-%% of them into the `states` table.
-%% Returns the process to be run next.
+%% Stores states for later exploration and returns the process to be run next.
 search(#context{active = Active, state = State}) ->
-    %% Remove a process to be run next from the `actives` set.
-    [Next|NewActive] = sets:to_list(Active),
-    %% Store all other possible successor states for later exploration.
-    [state_save(state:extend(State, Lid)) || Lid <- NewActive],
-    Next.
+    case state:is_empty(State) of
+	%% Handle first call to search (empty state, one active process).
+	true ->
+	    [Next] = sets:to_list(Active),
+	    {Next, {current, []}};
+	false ->
+	    %% Get last process that was run by the driver.
+	    {LastLid, _Rest} = state:trim_tail(State),
+	    %% If that process is in the `active` set (i.e. has not blocked),
+	    %% remove it from the actives and make it next-to-run, else do
+	    %% that for another process from the actives.
+	    %% In the former case, all other possible successor states are
+	    %% stored in the next state queue to be explored on the next
+	    %% preemption bound.
+	    %% In the latter case, all other possible successor states are
+	    %% stored in the current state queue, because a non-preemptive
+	    %% context switch is happening (the last process either exited
+	    %% or blocked).
+	    case sets:is_element(LastLid, Active) of
+		true ->
+		    NewActive = sets:to_list(sets:del_element(LastLid, Active)),
+		    {LastLid, {next, NewActive}};
+		false ->
+		    [Next|NewActive] = sets:to_list(Active),
+		    {Next, {current, NewActive}}
+	    end
+    end.
+
+insert_states(State, {current, Lids}) ->
+    [state_save(state:extend(State, L)) || L <- Lids];
+insert_states(State, {next, Lids}) ->
+    [state_save_next(state:extend(State, L)) || L <- Lids].
 
 %% After message handler.
 handler('after', Pid, #context{details = Det} = Context, _Misc) ->
@@ -495,6 +574,21 @@ handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
+blocked_lookup(State) ->
+    case ets:lookup(?NT_BLOCKED, State) of
+	[] -> false;
+	[{State}] -> true
+    end.
+
+blocked_save(State) ->
+    ets:insert(?NT_BLOCKED, {State}).
+
+blocked_start() ->
+    ets:new(?NT_BLOCKED, [named_table]).
+
+blocked_stop() ->
+    ets:delete(?NT_BLOCKED).
+
 %% Kill any remaining process.
 -spec proc_cleanup() -> 'ok'.
 
@@ -556,24 +650,45 @@ wakeup(Lid, #context{active = Active, blocked = Blocked} = Context) ->
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
 state_load() ->
-    case ets:first(?NT_STATE) of
+    case ets:first(?NT_STATE1) of
 	'$end_of_table' -> no_state;
 	State ->
-	    ets:delete(?NT_STATE, State),
+	    ets:delete(?NT_STATE1, State),
 	    State
     end.
 
-%% Add a state to the `state` table.
-state_save(State) ->
-    ets:insert(?NT_STATE, {State}).
+%% Return a state without removing it.
+%% If no states available, return 'no_state'.
+state_peak() ->
+    case ets:first(?NT_STATE1) of
+	'$end_of_table' ->  no_state;
+	State -> State
+    end.
 
-%% Initialize state table.
+%% Add a state to the current `state` table.
+state_save(State) ->
+    ets:insert(?NT_STATE1, {State}).
+
+%% Add a state to the next `state` table.
+state_save_next(State) ->
+    ets:insert(?NT_STATE2, {State}).
+
+%% Initialize state tables.
 state_start() ->
-    ets:new(?NT_STATE, [named_table]).
+    ets:new(?NT_STATE1, [named_table]),
+    ets:new(?NT_STATE2, [named_table]).
 
 %% Clean up state table.
 state_stop() ->
-    ets:delete(?NT_STATE).
+    ets:delete(?NT_STATE1),
+    ets:delete(?NT_STATE2).
+
+%% Swap names of the two state tables and clear one of them.
+state_swap() ->
+    ets:rename(?NT_STATE1, ?NT_STATE_TEMP),
+    ets:rename(?NT_STATE2, ?NT_STATE1),
+    ets:rename(?NT_STATE_TEMP, ?NT_STATE2),
+    ets:delete_all_objects(?NT_STATE2).
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation interface

@@ -53,7 +53,6 @@ CORE_MODULES = \
 	error \
 	instr \
 	lid \
-	preb \
 	proc_action \
 	sched \
 	snapshot \
@@ -68,7 +67,6 @@ LOG_MODULES = \
 UTEST_MODULES = \
 	error_tests \
 	lid_tests \
-        preb_tests \
 	sched_tests \
 	state_tests \
 	ticket_tests
