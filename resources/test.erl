@@ -22,12 +22,10 @@
 -spec test01() -> 'ok'.
 
 test01() ->
-    ?assert(foo1() =:= ok).
-
-foo1() ->
     Self = self(),
     spawn(fun() -> foo1_1(Self) end),
-    receive _Any -> ok end.
+    Result = receive _Any -> ok end,
+    ?assertEqual(ok, Result).
 
 foo1_1(Pid) ->
     Pid ! 42.
@@ -36,9 +34,6 @@ foo1_1(Pid) ->
 -spec test02() -> 'ok'.
 
 test02() ->
-    ?assert(foo2() =:= ok).
-
-foo2() ->
     spawn(fun() -> foo2_1() end),
     spawn(fun() -> foo2_2() end),
     ok.
@@ -53,18 +48,17 @@ foo2_2() ->
 -spec test03() -> 'ok'.
 
 test03() ->
-    ?assert(foo3() =:= ok).
-
-foo3() ->
     Self = self(),
     spawn(fun() -> foo3_1(Self) end),
     spawn(fun() -> foo3_2(Self) end),
     receive
 	_Any1 -> ok
     end,
-    receive
-	_Any2 -> ok
-    end.
+    Result = 
+	receive
+	    _Any2 -> ok
+	end,
+    ?assertEqual(ok, Result).
 
 foo3_1(Pid) ->
     Pid ! msg1.
@@ -76,11 +70,9 @@ foo3_2(Pid) ->
 -spec test04() -> no_return().
 
 test04() ->
-    ?assert(foo4() =:= ok).
-
-foo4() ->
     spawn(fun() -> foo4_1() end),
-    receive _Any -> ok end.
+    Result = receive _Any -> ok end,
+    ?assertEqual(ok, Result).
 
 foo4_1() ->
     receive _Any -> ok end.
@@ -89,27 +81,25 @@ foo4_1() ->
 -spec test05() -> no_return().
 
 test05() ->
-    ?assert(foo5() =:= ok).
-
-foo5() ->
     Self = self(),
     spawn(fun() -> foo1_1(Self) end),
-    receive 43 -> ok end.
+    Result = 
+	receive 43 -> ok end,
+    ?assertEqual(ok, Result).
 
 %% Normal, 2 proc: Nested send.
 -spec test06() -> 'ok'.
 
 test06() ->
-    ?assert(foo6() =:= ok).
-
-foo6() ->
     Self = self(),
     spawn(fun() -> foo6_1(Self) end),
-    receive
-	Any -> receive
-		   Any -> ok
-	       end
-    end.
+    Result =
+	receive
+	    Any -> receive
+		       Any -> ok
+		   end
+	end,
+    ?assertEqual(ok, Result).
 
 foo6_1(Pid) ->
     Pid ! Pid ! 42.
@@ -118,16 +108,15 @@ foo6_1(Pid) ->
 -spec test07() -> 'ok'.
 
 test07() ->
-    ?assert(foo7() =:= ok).
-
-foo7() ->
     Self = self(),
     Pid = spawn(fun() -> foo7_1(Self) end),
     Msg = hello,
     Pid ! Msg,
-    receive
-	Msg -> ok
-    end.
+    Result = 
+	receive
+	    Msg -> ok
+	end,
+    ?assertEqual(ok, Result).
 
 foo7_1(Pid) ->
     Pid ! receive
@@ -138,26 +127,23 @@ foo7_1(Pid) ->
 -spec test08() -> 'ok'.
 
 test08() ->
-    ?assert(foo8() =:= ok).
-
-foo8() ->
     Self = self(),
     Pid = spawn(fun() -> foo1_1(Self) end),
     link(Pid),
-    receive
-	_Any -> ok
-    end.
+    Result = 
+	receive
+	    _Any -> ok
+	end,
+    ?assertEqual(ok, Result).
 
 %% Normal, 2 proc: Like test1/0, but using function from other file.
 -spec test09() -> 'ok'.
 
 test09() ->
-    ?assert(foo9() =:= ok).
-
-foo9() ->
     Self = self(),
     spawn(fun() -> test_aux:bar(Self) end),
-    receive _Any -> ok end.
+    Result = receive _Any -> ok end,
+    ?assertEqual(ok, Result).
 
 %% Assertion violation, 3 proc: 
 -spec test10() -> 'ok'.
@@ -167,58 +153,51 @@ test10() ->
     spawn(fun() -> foo3_1(Self) end),
     spawn(fun() -> foo3_2(Self) end),
     receive
-	Msg -> ?assert(Msg =:= msg1)
+	Msg -> ?assertEqual(msg1, Msg)
     end.
 
 %% Normal, 2 proc: Simple receive-after with no patterns.
 -spec test11() -> 'ok'.
 
 test11() ->
-    ?assert(foo11() =:= ok).
-
-foo11() ->
     Self = self(),
     spawn(fun() -> foo1_1(Self) end),
     receive after 42 -> ok end,
-    receive _Any -> ok end.
+    Result = receive _Any -> ok end,
+    ?assertEqual(ok, Result).
 
 %% Normal, 2 proc: Call to erlang:spawn.
 -spec test12() -> 'ok'.
 
 test12() ->
-    ?assert(foo12() =:= ok).
-
-foo12() ->
     Self = self(),
     erlang:spawn(fun() -> foo1_1(Self) end),
-    receive _Any -> ok end.
+    Result = receive _Any -> ok end,
+    ?assertEqual(ok, Result).
 
 %% Normal, 2 proc: Call to erlang:yield.
 -spec test13() -> 'ok'.
 
 test13() ->
-    ?assert(foo13() =:= ok).
-
-foo13() ->
     Self = self(),
     spawn(fun() -> foo1_1(Self) end),
     erlang:yield(),
-    receive _Any -> ok end.
+    Result = receive _Any -> ok end,
+    ?assertEqual(ok, Result).
 
-%% Normal, 2 proc: Simple send-receive/after.
+%% Assertion violation, 2 proc: Simple send-receive/after.
 -spec test14() -> 'ok'.
 
 test14() ->
-    ?assert(foo14() =:= ok).
-
-foo14() ->
     Self = self(),
     spawn(fun() -> foo1_1(Self) end),
-    receive
-        42 -> ok
-    after 42 ->
-            gazonk
-    end.
+    Result = 
+	receive
+	    42 -> ok
+	after 42 ->
+		gazonk
+	end,
+    ?assertEqual(ok, Result).
 
 %% Normal, 2 proc: Spawn link, trap_exit and receive exit message.
 -spec test15() -> 'ok'.
@@ -241,7 +220,7 @@ test16() ->
 	_Exit -> ok
     end.
 
-%% Deadlock/Normal, 2 proc: Spawn link, trap_exit and receive exit message.
+%% Deadlock, 2 proc: Spawn link, trap_exit and receive exit message.
 %% Same as above, but trap_exit is set to false before receive.
 -spec test17() -> 'ok'.
 
@@ -253,7 +232,7 @@ test17() ->
 	_Exit -> ok
     end.
 
-%% Assertion violation/Normal, 3 proc: Testing interleaving of process exits
+%% Assertion violation, 3 proc: Testing interleaving of process exits
 %% and trap_exit.
 test18() ->
     Self = self(),
@@ -273,8 +252,7 @@ flush_mailbox(N) ->
     after 0 -> N
     end.
 
-%% Deadlock/Normal, 2 proc: Spawn link, trap_exit, unlink
-%% and receive exit message.
+%% Deadlock, 2 proc: Spawn link, trap_exit, unlink and receive exit message.
 -spec test19() -> 'ok'.
 
 test19() ->
@@ -294,7 +272,7 @@ test20() ->
 	{'DOWN', Ref, process, Pid, _Info} -> ok
     end.
 
-%% Deadlock/Normal, 2 proc: Spawn, monitor and receive down message.
+%% Deadlock, 2 proc: Spawn, monitor and receive down message.
 %% Same as above, but demonitor is called before receive.
 -spec test21() -> 'ok'.
 
@@ -305,7 +283,7 @@ test21() ->
 	_Down -> ok
     end.
 
-%% Assertion violation/Normal, 3 proc: Testing interleaving of process deaths
+%% Assertion violation, 3 proc: Testing interleaving of process deaths
 %% and monitor.
 test22() ->
     Pid1 = spawn(fun() -> ok end),
@@ -315,7 +293,7 @@ test22() ->
     N = flush_mailbox(0),
     ?assertEqual(2, N).
 
-%% Assertion violation/Normal, 3 proc: Testing interleaving of process deaths
+%% Assertion violation, 3 proc: Testing interleaving of process deaths
 %% and monitor.
 %% Same as above, but spawn_monitor/1 is called instead of spawn/1
 %% and monitor/2.
@@ -329,12 +307,10 @@ test23() ->
 -spec test24() -> 'ok'.
 
 test24() ->
-    ?assert(foo24() =:= ok).
-
-foo24() ->
     register(self, self()),
     spawn(fun() -> foo1_1(self) end),
-    receive _Any -> ok end.
+    Result = receive _Any -> ok end,
+    ?assertEqual(ok, Result).
 
 %% Normal, 2 proc: Simple send-receive with registered process.
 %% Same as above, but the message is sent using the pid
@@ -342,15 +318,13 @@ foo24() ->
 -spec test25() -> 'ok'.
 
 test25() ->
-    ?assert(foo25() =:= ok).
-
-foo25() ->
     register(self, self()),
     spawn(fun() -> foo1_1(whereis(self)) end),
-    receive _Any -> ok end.
+    Result = receive _Any -> ok end,
+    ?assertEqual(ok, Result).
 
 
-%% Exception/Normal, 2 proc: Simple send-receive with registered process.
+%% Exception, 2 proc: Simple send-receive with registered process.
 %% Same as above, but the process is also unregistered.
 -spec test26() -> 'ok'.
 

@@ -1,6 +1,6 @@
 -module(rush_hour).
 -export([solve/3, solve/2, print/2, print_path/2, translate/1, toml/2,
-	 test/0, test/2]).
+	 test_2workers/0, test_3workers/0, test/2]).
 -export([next_entries/2, winning/2, reverse_step/2,
 	 compress/2, get_decomp_key/2, decompress/3]).
 % TODO: validate input? (in intermediate form?)
@@ -284,11 +284,18 @@ solve(Test, Opts) ->
     {Room, Cars} = translate(Test),
     solve(Room, Cars, Opts).
 
--spec test() -> answer() | answer_S().
-test() ->
+-spec test_2workers() -> answer() | answer_S().
+test_2workers() ->
     Target = {4, 4, {3, 2}},
     State = [{0, {{0, 2}, y, 2}}, {1, {{2, 0}, y, 2}}, {2, {{3, 1}, x, 2}}],
     Options = [],
+    solve(Target, State, Options).
+
+-spec test_3workers() -> answer() | answer_S().
+test_3workers() ->
+    Target = {4, 4, {3, 2}},
+    State = [{0, {{0, 2}, y, 2}}, {1, {{2, 0}, y, 2}}, {2, {{3, 1}, x, 2}}],
+    Options = [{workers, 3}],
     solve(Target, State, Options).
 
 -spec test(non_neg_integer(), [option()]) -> answer() | answer_S().
