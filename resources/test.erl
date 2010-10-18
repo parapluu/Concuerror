@@ -14,7 +14,7 @@
 	 test17/0, test18/0, test19/0, test20/0,
          test21/0, test22/0, test23/0, test24/0,
          test25/0, test26/0, test27/0, test28/0,
-	 test29/0]).
+	 test29/0, test30/0]).
 
 -include("ced.hrl").
 
@@ -35,7 +35,6 @@ foo1_1(Pid) ->
 
 test02() ->
     spawn(fun() -> foo2_1() end),
-    spawn(fun() -> foo2_2() end),
     ok.
 
 foo2_1() ->
@@ -369,3 +368,11 @@ test29() ->
 foo29(Parent) ->
     Parent ! {bar, gazonk},
     Parent ! gazonk.
+
+test30() ->
+    Pid = spawn(fun() -> foo30() end),
+    exit(Pid, kill),
+    foo30().
+
+foo30() ->
+    register(self, self()).
