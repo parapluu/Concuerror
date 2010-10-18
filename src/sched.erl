@@ -621,7 +621,11 @@ blocked_stop() ->
 -spec proc_cleanup() -> 'ok'.
 
 proc_cleanup() ->
-    lid:fold_pids(fun(P, Acc) -> exit(P, kill), Acc end, unused),
+    Fun = fun(P, Acc) ->
+		  exit(P, kill),
+		  receive {'EXIT', P, killed} -> Acc end
+	  end,
+    lid:fold_pids(Fun, unused),
     ok.
 
 %% Calculate and print elapsed time between T1 and T2.
