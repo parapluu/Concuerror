@@ -621,13 +621,16 @@ blocked_start() ->
 blocked_stop() ->
     ets:delete(?NT_BLOCKED).
 
-%% Kill any remaining process.
--spec proc_cleanup() -> 'ok'.
+%% Kill any remaining processes.
+%% If the run was terminated by an exception, processes linked to
+%% the one where the exception occurred could have been killed by the
+%% exit signal of the latter without having been deleted from the pid/lid
+%% tables. Thus, 'EXIT' messages with any reason are accepted.
 
 proc_cleanup() ->
     Fun = fun(P, Acc) ->
 		  exit(P, kill),
-		  receive {'EXIT', P, killed} -> Acc end
+		  receive {'EXIT', P, _Reason} -> Acc end
 	  end,
     lid:fold_pids(Fun, unused),
     ok.
