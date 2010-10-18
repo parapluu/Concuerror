@@ -429,8 +429,7 @@ handler(exit, Pid,
     Lid = lid:from_pid(Pid),
     case Lid of
 	not_found ->
-	    ?debug_2("Process ~s (pid = ~p) exits (~p).~n",
-		     [lid:to_string(Lid), Pid, Type]),
+	    ?debug_2("Unknown process (pid = ~p) exits (~p).~n", [Pid, Reason]),
 	    dispatcher(Context);
 	_Any ->
 	    %% Wake up all processes linked to/monitoring the one that just
@@ -535,36 +534,38 @@ handler(send, Pid, #context{details = Det} = Context, {DstPid, Msg}) ->
 %% The new process yields as soon as it gets spawned and the parent process
 %% yields as soon as it spawns. Therefore wait for two `yield` messages using
 %% two calls to the dispatcher.
-handler(spawn, ParentPid, #context{details = Det} = Context, ChildPid) ->
+handler(spawn, ParentPid,
+	#context{active = Active, details = Det} = Context, ChildPid) ->
     link(ChildPid),
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn, ParentLid, ChildLid}),
-    NewContext = dispatcher(Context),
-    dispatcher(NewContext);
+    NewActive = sets:add_element(ChildLid, Active),
+    dispatcher(Context#context{active = NewActive});
 
 %% Spawn_link message handler.
 %% Same as above, but save linked LIDs.
-handler(spawn_link, ParentPid, #context{details = Det} = Context, ChildPid) ->
+handler(spawn_link, ParentPid,
+	#context{active = Active, details = Det} = Context, ChildPid) ->
     link(ChildPid),
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn_link, ParentLid, ChildLid}),
     lid:link(ParentLid, ChildLid),
-    NewContext = dispatcher(Context),
-    dispatcher(NewContext);
+    NewActive = sets:add_element(ChildLid, Active),
+    dispatcher(Context#context{active = NewActive});
 
 %% Spawn_monitor message handler.
 %% Same as spawn, but save monitored LIDs.
-handler(spawn_monitor, ParentPid, #context{details = Det} = Context,
-        {ChildPid, Ref}) ->
+handler(spawn_monitor, ParentPid,
+	#context{active = Active, details = Det} = Context, {ChildPid, Ref}) ->
     link(ChildPid),
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn_monitor, ParentLid, ChildLid}),
     lid:monitor(ParentLid, ChildLid, Ref),
-    NewContext = dispatcher(Context),
-    dispatcher(NewContext);
+    NewActive = sets:add_element(ChildLid, Active),
+    dispatcher(Context#context{active = NewActive});
 
 %% Unlink message handler.
 handler(unlink, Pid, #context{details = Det} = Context, TargetPid) ->
@@ -591,20 +592,13 @@ handler(whereis, Pid, #context{details = Det} = Context, {RegName, Result}) ->
     dispatcher(Context);
 
 %% Yield message handler.
-%% Receiving a `yield` message means that the process is preempted, but
+%% Receiving a 'yield' message means that the process is preempted, but
 %% remains in the active set.
 handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
-    case lid:from_pid(Pid) of
-        %% This case clause avoids a possible race between `yield` message
-        %% of child and `spawn` message of parent.
-        not_found ->
-            ?RP_SCHED ! #sched{msg = yield, pid = Pid},
-            dispatcher(Context);
-        Lid ->
-            ?debug_2("Process ~s yields.~n", [Lid]),
-            NewActive = sets:add_element(Lid, Active),
-            Context#context{active = NewActive}
-    end.
+    Lid = lid:from_pid(Pid),
+    ?debug_2("Process ~s yields.~n", [lid:to_string(Lid)]),
+    NewActive = sets:add_element(Lid, Active),
+    Context#context{active = NewActive}.
 
 %%%----------------------------------------------------------------------
 %%% Helper functions
@@ -663,7 +657,7 @@ log_details(Det, Action) ->
 
 %% Run process Lid in context Context.
 run(Lid, #context{active = Active, state = State} = Context) ->
-    ?debug_2("Running process ~s.~n", [Lid]),
+    ?debug_2("Running process ~s.~n", [lid:to_string(Lid)]),
     %% Remove process from the `active` set.
     NewActive = sets:del_element(Lid, Active),
     %% Create new state by adding this process.
@@ -680,7 +674,7 @@ run(Lid, #context{active = Active, state = State} = Context) ->
 wakeup(Lid, #context{active = Active, blocked = Blocked} = Context) ->
     case sets:is_element(Lid, Blocked) of
 	true ->
-            ?debug_2("Process ~p wakes up.~n", [Lid]),
+            ?debug_2("Process ~s wakes up.~n", [lid:to_string(Lid)]),
 	    NewBlocked = sets:del_element(Lid, Blocked),
 	    NewActive = sets:add_element(Lid, Active),
 	    Context#context{active = NewActive, blocked = NewBlocked};
@@ -739,9 +733,7 @@ state_swap() ->
 %% scheduled, until awaken.
 block() ->
     ?RP_SCHED ! #sched{msg = block, pid = self()},
-    receive
-	#sched{msg = continue} -> true
-    end.
+    wait().
 
 %% @spec: rep_demonitor(reference()) -> 'true'
 %% @doc: Replacement for `demonitor/1'.
@@ -752,7 +744,7 @@ block() ->
 rep_demonitor(Ref) ->
     Result = demonitor(Ref),
     ?RP_SCHED ! #sched{msg = demonitor, pid = self(), misc = Ref},
-    rep_yield(),
+    yield(),
     Result.
 
 %% @spec: rep_demonitor(reference(), ['flush' | 'info']) -> 'true'
@@ -764,7 +756,7 @@ rep_demonitor(Ref) ->
 rep_demonitor(Ref, Opts) ->
     Result = demonitor(Ref, Opts),
     ?RP_SCHED ! #sched{msg = demonitor, pid = self(), misc = Ref},
-    rep_yield(),
+    yield(),
     Result.
 
 %% @spec: rep_exit(pid()) -> no_return()
@@ -785,7 +777,7 @@ rep_exit(Pid) ->
 rep_exit(Pid, Reason) ->
     exit(Pid, Reason),
     ?RP_SCHED ! #sched{msg = exit, pid = self(), misc = {Pid, Reason}},
-    rep_yield().
+    yield().
 
 %% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/{0,1}'.
@@ -795,7 +787,7 @@ rep_exit(Pid, Reason) ->
 
 rep_halt() ->
     ?RP_SCHED ! #sched{msg = halt, pid = self()},
-    rep_yield().
+    yield().
 
 %% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/1'.
@@ -805,7 +797,7 @@ rep_halt() ->
 
 rep_halt(Status) ->
     ?RP_SCHED ! #sched{msg = halt, pid = self(), misc = Status},
-    rep_yield().
+    yield().
 
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.
@@ -816,7 +808,7 @@ rep_halt(Status) ->
 rep_link(Pid) ->
     Result = link(Pid),
     ?RP_SCHED ! #sched{msg = link, pid = self(), misc = Pid},
-    rep_yield(),
+    yield(),
     Result.
 
 %% @spec: rep_monitor('process', pid() | {atom(), node()} | atom()) ->
@@ -831,7 +823,7 @@ rep_monitor(Type, Item) ->
     Ref = monitor(Type, Item),
     NewItem = find_pid(Item),
     ?RP_SCHED ! #sched{msg = monitor, pid = self(), misc = {NewItem, Ref}},
-    rep_yield(),
+    yield(),
     Ref.
 
 %% @spec: rep_process_flag('trap_exit', boolean()) -> boolean();
@@ -862,7 +854,7 @@ rep_monitor(Type, Item) ->
 rep_process_flag(trap_exit = Flag, Value) ->
     Result = process_flag(Flag, Value),
     ?RP_SCHED ! #sched{msg = process_flag, pid = self(), misc = {Flag, Value}},
-    rep_yield(),
+    yield(),
     Result;
 rep_process_flag(Flag, Value) ->
     process_flag(Flag, Value).
@@ -899,7 +891,7 @@ rep_receive_match(Fun, [H|T]) ->
 
 rep_after_notify() ->
     ?RP_SCHED ! #sched{msg = 'after', pid = self()},
-    rep_yield(),
+    yield(),
     ok.
 
 %% @spec rep_receive_notify(pid(), term()) -> 'ok'
@@ -911,7 +903,7 @@ rep_after_notify() ->
 
 rep_receive_notify(From, Msg) ->
     ?RP_SCHED ! #sched{msg = 'receive', pid = self(), misc = {From, Msg}},
-    rep_yield(),
+    yield(),
     ok.
 
 %% @spec rep_receive_notify(term()) -> 'ok'
@@ -927,7 +919,7 @@ rep_receive_notify(Msg) ->
 	Other -> log:internal("rep_receive_notify received ~p~n", [Other])
     end,
     ?RP_SCHED ! #sched{msg = 'receive', pid = self(), misc = Msg},
-    rep_yield(),
+    yield(),
     ok.
 
 %% @spec rep_register(atom(), pid() | port()) -> 'true'
@@ -940,7 +932,7 @@ rep_register(RegName, P) ->
     Ret = register(RegName, P),
     ?RP_SCHED ! #sched{msg = 'register', pid = self(),
                        misc = {RegName, lid:from_pid(P)}},
-    rep_yield(),
+    yield(),
     Ret.
 
 %% @spec rep_send(dest(), term()) -> term()
@@ -953,7 +945,7 @@ rep_send(Dest, Msg) ->
     Dest ! {lid:from_pid(self()), Msg},
     NewDest = find_pid(Dest),
     ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, Msg}},
-    rep_yield(),
+    yield(),
     Msg.
 
 %% @spec rep_spawn(function()) -> pid()
@@ -964,9 +956,9 @@ rep_send(Dest, Msg) ->
 -spec rep_spawn(function()) -> pid().
 
 rep_spawn(Fun) ->
-    Pid = spawn(fun() -> rep_yield(), Fun() end),
+    Pid = spawn(fun() -> wait(), Fun() end),
     ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
-    rep_yield(),
+    yield(),
     Pid.
 
 %% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
@@ -986,9 +978,9 @@ rep_spawn(Module, Function, Args) ->
 -spec rep_spawn_link(function()) -> pid().
 
 rep_spawn_link(Fun) ->
-    Pid = spawn_link(fun() -> rep_yield(), Fun() end),
+    Pid = spawn_link(fun() -> wait(), Fun() end),
     ?RP_SCHED ! #sched{msg = spawn_link, pid = self(), misc = Pid},
-    rep_yield(),
+    yield(),
     Pid.
 
 %% @spec rep_spawn_link(atom(), atom(), [term()]) -> pid()
@@ -1008,9 +1000,9 @@ rep_spawn_link(Module, Function, Args) ->
 -spec rep_spawn_monitor(function()) -> pid().
 
 rep_spawn_monitor(Fun) ->
-    Ret = spawn_monitor(fun() -> rep_yield(), Fun() end),
+    Ret = spawn_monitor(fun() -> wait(), Fun() end),
     ?RP_SCHED ! #sched{msg = spawn_monitor, pid = self(), misc = Ret},
-    rep_yield(),
+    yield(),
     Ret.
 
 %% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> pid()
@@ -1032,7 +1024,7 @@ rep_spawn_monitor(Module, Function, Args) ->
 rep_unlink(Pid) ->
     Result = unlink(Pid),
     ?RP_SCHED ! #sched{msg = unlink, pid = self(), misc = Pid},
-    rep_yield(),
+    yield(),
     Result.
 
 %% @spec rep_unregister(atom()) -> 'true'
@@ -1044,7 +1036,7 @@ rep_unlink(Pid) ->
 rep_unregister(RegName) ->
     Ret = unregister(RegName),
     ?RP_SCHED ! #sched{msg = 'unregister', pid = self(), misc = RegName},
-    rep_yield(),
+    yield(),
     Ret.
 
 %% @spec rep_whereis(atom()) -> pid() | port() | 'undefined'
@@ -1056,7 +1048,7 @@ rep_unregister(RegName) ->
 rep_whereis(RegName) ->
     Ret = whereis(RegName),
     ?RP_SCHED ! #sched{msg = 'whereis', pid = self(), misc = {RegName, Ret}},
-    rep_yield(),
+    yield(),
     Ret.
 
 %% @spec rep_yield() -> 'true'
@@ -1064,17 +1056,10 @@ rep_whereis(RegName) ->
 %%
 %% The calling process is preempted, but remains in the active set and awaits
 %% a message to continue.
-%%
-%% Note: Besides replacing `yield/0', this function is heavily used by other
-%%       functions of the instrumentation interface.
-
 -spec rep_yield() -> 'true'.
 
 rep_yield() ->
-    ?RP_SCHED ! #sched{msg = yield, pid = self()},
-    receive
-	#sched{msg = continue} -> true
-    end.
+    yield().
 
 %% Wait until the scheduler prompts to continue.
 -spec wait() -> 'true'.
@@ -1083,3 +1068,8 @@ wait() ->
     receive
 	#sched{msg = continue} -> true
     end.
+
+%% Inform the scheduler about yielding and then wait.
+yield() ->
+    ?RP_SCHED ! #sched{msg = yield, pid = self()},
+    wait().
