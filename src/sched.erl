@@ -12,7 +12,7 @@
 -module(sched).
 
 %% UI related exports.
--export([analyze/2, driver/3, proc_cleanup/0, replay/1]).
+-export([analyze/2, replay/1]).
 
 %% Instrumentation related exports.
 -export([rep_demonitor/1, rep_demonitor/2, rep_exit/1, rep_exit/2,
@@ -284,7 +284,6 @@ dispatcher(#context{current = Lid} = Context) ->
 	    handler(Type, Pid, Context, Misc);
 	{'EXIT', Pid, Reason} ->
 	    handler(exit, Pid, Context, Reason)
-    after 0 -> dispatcher(Context)
     end.
 
 %% Main scheduler component.
