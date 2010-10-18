@@ -43,18 +43,20 @@
 %% active  : A set containing all processes ready to be scheduled.
 %% blocked : A set containing all processes that cannot be scheduled next
 %%          (e.g. waiting for a message on a `receive`).
-%% error   : A term describing the error that occured.
-%% state   : The current state of the program.
+%% current : The LID of the currently running or last run process.
 %% details : A boolean being false when running a normal run and
 %%           true when running a replay and need to send detailed
 %%           info to the replay_logger.
--record(context, {active  :: set(),
-                  blocked :: set(),
+%% error   : A term describing the error that occured.
+%% state   : The current state of the program.
+-record(context, {active         :: set(),
+                  blocked        :: set(),
+		  current        :: lid:lid(),
+		  details        :: boolean(),
                   error = normal :: 'normal' | 
 				    error:assertion() |
 				    error:exception(),
-                  state   :: state:state(),
-                  details :: boolean()}).
+                  state          :: state:state()}).
 
 %% Internal message format
 %%
@@ -275,14 +277,14 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
 
 %% Delegates messages sent by instrumented client code to the appropriate
 %% handlers.
-dispatcher(Context) ->
+dispatcher(#context{current = Lid} = Context) ->
+    Pid = lid:get_pid(Lid),
     receive
 	#sched{msg = Type, pid = Pid, misc = Misc} ->
 	    handler(Type, Pid, Context, Misc);
 	{'EXIT', Pid, Reason} ->
-	    handler(exit, Pid, Context, Reason);
-	Other ->
-	    log:internal("Dispatcher received: ~p~n", [Other])
+	    handler(exit, Pid, Context, Reason)
+    after 0 -> dispatcher(Context)
     end.
 
 %% Main scheduler component.
@@ -310,8 +312,9 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
 		{NextTemp, RestTemp} = state:trim_head(ReplayState),
 		{NextTemp, RestTemp, {current, []}}
 	end,
+    ContextToRun = Context#context{current = Next},
     #context{active = Active, blocked = Blocked, error = Error,
-	     state = State} = RunContext = run(Next, Context),
+	     state = State} = RunContext = run(ContextToRun),
     %% Update active and blocked sets, moving Lid from active to blocked,
     %% in the case that if it was run next, it would block.
     Fun = fun(L, Acc) ->
@@ -354,18 +357,17 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
     end.
 
 %% Stores states for later exploration and returns the process to be run next.
-search(#context{active = Active, state = State}) ->
+search(#context{active = Active, current = LastLid, state = State}) ->
     case state:is_empty(State) of
 	%% Handle first call to search (empty state, one active process).
 	true ->
 	    [Next] = sets:to_list(Active),
 	    {Next, {current, []}};
 	false ->
-	    %% Get last process that was run by the driver.
-	    {LastLid, _Rest} = state:trim_tail(State),
-	    %% If that process is in the `active` set (i.e. has not blocked),
-	    %% remove it from the actives and make it next-to-run, else do
-	    %% that for another process from the actives.
+	    %% If the last process run is in the `active` set
+	    %% (i.e. has not blocked or exited), remove it from the actives
+	    %% and make it next-to-run, else do that for another process
+	    %% from the actives.
 	    %% In the former case, all other possible successor states are
 	    %% stored in the next state queue to be explored on the next
 	    %% preemption bound.
@@ -656,7 +658,7 @@ log_details(Det, Action) ->
     end.
 
 %% Run process Lid in context Context.
-run(Lid, #context{active = Active, state = State} = Context) ->
+run(#context{active = Active, current = Lid, state = State} = Context) ->
     ?debug_2("Running process ~s.~n", [lid:to_string(Lid)]),
     %% Remove process from the `active` set.
     NewActive = sets:del_element(Lid, Active),
