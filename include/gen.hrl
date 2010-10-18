@@ -29,7 +29,6 @@
 -define(NT_LID, '_._lid').
 -define(NT_PID, '_._pid').
 -define(NT_REF, '_._ref').
--define(NT_STATE, ?NT_STATE1).
 -define(NT_STATE1, '_._state1').
 -define(NT_STATE2, '_._state2').
 -define(NT_STATE_TEMP, '_._state_temp').
@@ -62,33 +61,7 @@
 -endif.
 
 %%%----------------------------------------------------------------------
-%%% Records
-%%%----------------------------------------------------------------------
-
-%% Scheduler state
-%%
-%% active  : A set containing all processes ready to be scheduled.
-%% blocked : A set containing all processes that cannot be scheduled next
-%%          (e.g. waiting for a message on a `receive`).
-%% error   : A term describing the error that occured.
-%% state   : The current state of the program.
-%% details : A boolean being false when running a normal run and
-%%           true when running a replay and need to send detailed
-%%           info to the replay_logger.
--record(context, {active  :: set(),
-                  blocked :: set(),
-                  error = normal :: 'normal' | 
-				    error:assertion() |
-				    error:exception(),
-                  state   :: state:state(),
-                  details :: boolean()}).
-
-%%%----------------------------------------------------------------------
 %%% Types
 %%%----------------------------------------------------------------------
-
--type bound() :: 'infinite' | non_neg_integer().
-
--type context() :: #context{}.
 
 -type file() :: file:filename().

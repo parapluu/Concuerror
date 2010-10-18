@@ -29,6 +29,43 @@
 -include("gen.hrl").
 
 %%%----------------------------------------------------------------------
+%%% Definitions
+%%%----------------------------------------------------------------------
+
+-define(INFINITY, 1000000).
+
+%%%----------------------------------------------------------------------
+%%% Records
+%%%----------------------------------------------------------------------
+
+%% Scheduler state
+%%
+%% active  : A set containing all processes ready to be scheduled.
+%% blocked : A set containing all processes that cannot be scheduled next
+%%          (e.g. waiting for a message on a `receive`).
+%% error   : A term describing the error that occured.
+%% state   : The current state of the program.
+%% details : A boolean being false when running a normal run and
+%%           true when running a replay and need to send detailed
+%%           info to the replay_logger.
+-record(context, {active  :: set(),
+                  blocked :: set(),
+                  error = normal :: 'normal' | 
+				    error:assertion() |
+				    error:exception(),
+                  state   :: state:state(),
+                  details :: boolean()}).
+
+%% Internal message format
+%%
+%% msg    : An atom describing the type of the message.
+%% pid    : The sender's pid.
+%% misc   : Optional arguments, depending on the message type.
+-record(sched, {msg  :: atom(),
+                pid  :: pid(),
+                misc  = empty :: term()}).
+
+%%%----------------------------------------------------------------------
 %%% Types
 %%%----------------------------------------------------------------------
 
@@ -48,24 +85,15 @@
 %% Module-Function-Arguments tuple.
 -type analysis_target() :: {module(), atom(), [term()]}.
 
+-type bound() :: 'infinite' | non_neg_integer().
+
+-type context() :: #context{}.
+
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
 %% Driver return type.
 -type driver_ret() :: 'ok' | 'block' | {'error', error:error(), state:state()}.
-
-%%%----------------------------------------------------------------------
-%%% Records
-%%%----------------------------------------------------------------------
-
-%% Internal message format
-%%
-%% msg    : An atom describing the type of the message.
-%% pid    : The sender's pid.
-%% misc   : Optional arguments, depending on the message type.
--record(sched, {msg  :: atom(),
-                pid  :: pid(),
-                misc  = empty :: term()}).
 
 %%%----------------------------------------------------------------------
 %%% User interface
@@ -159,7 +187,7 @@ interleave_aux(Target, Options, Parent) ->
     PreBound =
 	case lists:keyfind(preb, 1, Options) of
 	    {preb, Bound} -> Bound;
-	    false -> 1000000
+	    false -> ?INFINITY
 	end,
     Result = interleave_outer_loop(Target, 0, [], -1, PreBound, Options),
     blocked_stop(),
@@ -204,7 +232,7 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             lid:start(),
 	    %% Spawn initial process.
 	    {Mod, Fun, Args} = Target,
-	    NewFun = fun() -> sched:wait(), apply(Mod, Fun, Args) end,
+	    NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
             FirstPid = spawn_link(NewFun),
             FirstLid = lid:new(FirstPid, noparent),
 	    %% Initialize scheduler context.
@@ -215,9 +243,9 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
                                state = State, details = Det},
 	    Search = fun(C) -> search(C) end,
 	    %% Interleave using driver.
-            Ret = sched:driver(Search, Context, ReplayState),
+            Ret = driver(Search, Context, ReplayState),
 	    %% Cleanup of any remaining processes.
-	    sched:proc_cleanup(),
+	    proc_cleanup(),
             lid:stop(),
             NewTickets =
                 case Ret of
