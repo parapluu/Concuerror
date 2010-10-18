@@ -18,6 +18,7 @@
 		       {'block', lid:lid()} |
 		       {'demonitor', lid:lid(), maybe_lid()} |
                        {'exit', lid:lid(), term()} |
+		       {'fun_exit', lid:lid(), maybe_lid(), term()} |
                        {'halt', lid:lid()} |
                        {'halt', lid:lid(), non_neg_integer() | string()} |
                        {'link', lid:lid(), maybe_lid()} |
@@ -49,6 +50,12 @@ to_string({demonitor, Proc1, Proc2}) ->
 		  [lid:to_string(Proc1), lid:to_string(Proc2)]);
 to_string({exit, Proc, Reason}) ->
     io_lib:format("Process ~s exits (~p)", [lid:to_string(Proc), Reason]);
+to_string({fun_exit, Proc, not_found, Reason}) ->
+    io_lib:format("Process ~s sends exit signal (~p) to nonexisting process",
+		  [lid:to_string(Proc), Reason]);
+to_string({fun_exit, Proc, Target, Reason}) ->
+    io_lib:format("Process ~s sends exit signal (~p) to process ~s",
+		  [lid:to_string(Proc), Reason, lid:to_string(Target)]);
 to_string({halt, Proc}) ->
     io_lib:format("Process ~s halts the system", [lid:to_string(Proc)]);
 to_string({halt, Proc, Status}) ->

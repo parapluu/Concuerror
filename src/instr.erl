@@ -33,8 +33,9 @@
 
 %% Instrumented auto-imported functions of 'erlang' module.
 -define(INSTR_ERLANG_NO_MOD,
-	[demonitor, halt, link, monitor, process_flag, register, spawn,
-	 spawn_link, spawn_monitor, unlink, unregister, whereis]).
+	[demonitor, exit, halt, link, monitor, process_flag,
+	 register, spawn, spawn_link, spawn_monitor, unlink,
+	 unregister, whereis]).
 
 %% Instrumented functions called as erlang:FUNCTION.
 -define(INSTR_ERLANG,

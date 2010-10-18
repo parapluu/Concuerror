@@ -15,9 +15,9 @@
 -export([analyze/2, driver/3, proc_cleanup/0, replay/1]).
 
 %% Instrumentation related exports.
--export([rep_demonitor/1, rep_demonitor/2, rep_halt/0, rep_halt/1,
-         rep_link/1, rep_monitor/2, rep_process_flag/2,
-         rep_receive/1, rep_after_notify/0,
+-export([rep_demonitor/1, rep_demonitor/2, rep_exit/1, rep_exit/2,
+	 rep_halt/0, rep_halt/1, rep_link/1, rep_monitor/2,
+	 rep_process_flag/2, rep_receive/1, rep_after_notify/0,
 	 rep_receive_notify/1, rep_receive_notify/2,
          rep_register/2, rep_send/2, rep_spawn/1, rep_spawn/3,
 	 rep_spawn_link/1, rep_spawn_link/3, rep_spawn_monitor/1,
@@ -411,7 +411,15 @@ handler(demonitor, Pid, #context{details = Det} = Context, Ref) ->
     log_details(Det, {demonitor, Lid, TargetLid}),
     dispatcher(Context);
 
-%% Exit message handler.
+%% Exit handler (called when a process calls exit/2).
+handler(fun_exit, Pid, #context{details = Det} = Context,
+	{TargetPid, Reason}) ->
+    Lid = lid:from_pid(Pid),
+    TargetLid = lid:from_pid(TargetPid),
+    log_details(Det, {fun_exit, Lid, TargetLid, Reason}),
+    dispatcher(Context);
+
+%% Exit handler (called when a process has exited).
 %% Discard the exited process (don't add to any set).
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% do nothing and call the dispatcher.
@@ -759,7 +767,27 @@ rep_demonitor(Ref, Opts) ->
     rep_yield(),
     Result.
 
-%% @spec: rep_halt() -> no_return().
+%% @spec: rep_exit(pid()) -> no_return()
+%% @doc: Replacement for `exit/1'.
+%%
+%% Just exit (practically uninstrumented).
+-spec rep_exit(pid()) -> no_return().
+
+rep_exit(Pid) ->
+    exit(Pid).
+
+%% @spec: rep_exit(pid(), term()) -> true
+%% @doc: Replacement for `exit/2'.
+%%
+%% Just send exit signal and yield.
+-spec rep_exit(pid(), term()) -> 'true'.
+
+rep_exit(Pid, Reason) ->
+    exit(Pid, Reason),
+    ?RP_SCHED ! #sched{msg = exit, pid = self(), misc = {Pid, Reason}},
+    rep_yield().
+
+%% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/{0,1}'.
 %%
 %% Just send halt message and yield.
@@ -769,7 +797,7 @@ rep_halt() ->
     ?RP_SCHED ! #sched{msg = halt, pid = self()},
     rep_yield().
 
-%% @spec: rep_halt() -> no_return().
+%% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/1'.
 %%
 %% Just send halt message and yield.
@@ -792,7 +820,7 @@ rep_link(Pid) ->
     Result.
 
 %% @spec: rep_monitor('process', pid() | {atom(), node()} | atom()) ->
-%%                           reference().  
+%%                           reference()
 %% @doc: Replacement for `monitor/2'.
 %%
 %% Just yield after monitoring.
@@ -816,7 +844,7 @@ rep_monitor(Type, Item) ->
 %%                                process_priority_level();
 %%                        ('save_calls', non_neg_integer()) ->
 %%                                non_neg_integer();
-%%                        ('sensitive', boolean()) -> boolean().
+%%                        ('sensitive', boolean()) -> boolean()
 %% @doc: Replacement for `process_flag/2'.
 %%
 %% Just yield after altering the process flag.
