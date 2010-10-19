@@ -34,6 +34,10 @@
 -define(NT_STATE_TEMP, '_._state_temp').
 -define(NT_USED, '_._used').
 
+%% Set-like data structure used in sched, lid and error modules.
+-define(SETS, ordsets).
+-define(SET_TYPE, ordsets:ordered_set).
+
 %% Default export file.
 -define(EXPORT_FILE, "snapshot").
 

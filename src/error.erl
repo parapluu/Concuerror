@@ -20,6 +20,8 @@
 
 -export_type([error/0, assertion/0, exception/0]).
 
+-include("gen.hrl").
+
 %% Error type.
 -type error_type() :: 'assertion_violation' | 'deadlock' | 'exception'.
 
@@ -46,10 +48,10 @@ new(ErrorType, ErrorDescr) ->
     {ErrorType, ErrorDescr}.
 
 %% @doc: Create a new deadlock.
--spec deadlock(set()) -> deadlock().
+-spec deadlock(?SET_TYPE()) -> deadlock().
 
 deadlock(Blocked) ->
-    BlockedList = lists:sort(sets:to_list(Blocked)),
+    BlockedList = lists:sort(?SETS:to_list(Blocked)),
     {deadlock, BlockedList}.
 
 %% @doc: Convert the error reason to string.

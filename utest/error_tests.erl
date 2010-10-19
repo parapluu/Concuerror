@@ -10,6 +10,8 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+-include("gen.hrl").
+
 %% Spec for auto-generated test/0 function (eunit).
 -spec test() -> 'ok' | {'error', term()}.
 
@@ -20,10 +22,10 @@ deadlock_test() ->
     ErrorDescr = ["P1", "P1.1", "P1.2"],
     Error = error:new(ErrorType, ErrorDescr),
     Blocked =
-        sets:add_element("P1",
-                         sets:add_element("P1.1",
-                                          sets:add_element("P1.2",
-                                                           sets:new()))),
+        ?SETS:add_element("P1",
+			  ?SETS:add_element("P1.1",
+					    ?SETS:add_element("P1.2",
+							      ?SETS:new()))),
     Deadlock = error:deadlock(Blocked),
     ?assertEqual(Error, Deadlock).
 

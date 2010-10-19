@@ -34,7 +34,7 @@
 -record(info, {lid :: lid(),
 	       pid :: pid(),
 	       nch :: non_neg_integer(),
-	       lnk :: set(),
+	       lnk :: ?SET_TYPE(),
 	       mns :: dict(),
 	       mnd :: dict()}).
 
@@ -71,7 +71,7 @@ cleanup(Lid) ->
     ets:delete(?NT_PID, Pid),
     %% Delete all occurrences of Lid in other processes' link-sets.
     Fun1 = fun(L, Unused) -> delete_link(L, Lid), Unused end,
-    sets:fold(Fun1, ok, Linked),
+    ?SETS:fold(Fun1, ok, Linked),
     %% Delete all occurrences of Lid in other processes' monitored dicts.
     Fun2 = fun(R, L, Unused) ->
 		   M = get_monitored(L),
@@ -89,7 +89,7 @@ cleanup(Lid) ->
 
 delete_link(Lid1, Lid2) ->
     OldLinked = get_linked(Lid1),
-    NewLinked = sets:del_element(Lid2, OldLinked),
+    NewLinked = ?SETS:del_element(Lid2, OldLinked),
     set_linked(Lid1, NewLinked).
 
 %% Remove monitoring information from a LID.
@@ -127,21 +127,21 @@ fold_pids(Fun, InitAcc) ->
     ets:foldl(NewFun, InitAcc, ?NT_PID).
 
 %% Return the LIDs of all processes monitoring process Lid.
--spec get_monitored_by(lid()) -> set().
+-spec get_monitored_by(lid()) -> ?SET_TYPE().
 
 get_monitored_by(Lid) ->
     Monitors = get_monitors(Lid),
-    Fun = fun(_K, V, Set) -> sets:add_element(V, Set) end,
-    dict:fold(Fun, sets:new(), Monitors).
+    Fun = fun(_K, V, Set) -> ?SETS:add_element(V, Set) end,
+    dict:fold(Fun, ?SETS:new(), Monitors).
 
 %% Link two LIDs.
 -spec link(lid(), lid()) -> boolean().
 
 link(Lid1, Lid2) ->
     LinkedTo1 = get_linked(Lid1),
-    set_linked(Lid1, sets:add_element(Lid2, LinkedTo1)),
+    set_linked(Lid1, ?SETS:add_element(Lid2, LinkedTo1)),
     LinkedTo2 = get_linked(Lid2),
-    set_linked(Lid2, sets:add_element(Lid1, LinkedTo2)).
+    set_linked(Lid2, ?SETS:add_element(Lid1, LinkedTo2)).
 
 %% Add monitoring information to a LID.
 -spec monitor(lid(), lid(), reference()) -> boolean().
@@ -162,7 +162,7 @@ new(Pid, noparent) ->
     %% The first process has LID = "P1", has no children spawned at init,
     %% has the default list of flags and is not linked to any processes.
     Lid = root_lid(),
-    Info = #info{lid = Lid, pid = Pid, nch = 0, lnk = sets:new(),
+    Info = #info{lid = Lid, pid = Pid, nch = 0, lnk = ?SETS:new(),
 		 mns = dict:new(), mnd = dict:new()},
     ets:insert(?NT_LID, Info),
     ets:insert(?NT_PID, {Pid, Lid}),
@@ -174,7 +174,7 @@ new(Pid, ParentLid) ->
     %% Update parent info (increment children counter).
     set_children(ParentLid, Children + 1),
     %% Insert child, flag and linking info.
-    Info = #info{lid = Lid, pid = Pid, nch = 0, lnk = sets:new(),
+    Info = #info{lid = Lid, pid = Pid, nch = 0, lnk = ?SETS:new(),
 		 mns = dict:new(), mnd = dict:new()},
     ets:insert(?NT_LID, Info),
     ets:insert(?NT_PID, {Pid, Lid}),
@@ -223,7 +223,7 @@ get_children(Lid) ->
     Children.
 
 %% Return the LIDs of all processes linked to process Lid.
--spec get_linked(lid()) -> set().
+-spec get_linked(lid()) -> ?SET_TYPE().
 
 get_linked(Lid) ->
     [#info{lnk = Linked}] = ets:lookup(?NT_LID, Lid),

@@ -9,6 +9,8 @@
 
 -include_lib("eunit/include/eunit.hrl").
 
+-include("gen.hrl").
+
 %% Spec for auto-generated test/0 function (eunit).
 -spec test() -> 'ok' | {'error', term()}.
 
@@ -55,9 +57,9 @@ link_test() ->
     Lid3 = lid:new(Pid3, Lid1),
     lid:link(Lid1, Lid2),
     lid:link(Lid2, Lid3),
-    Set = sets:from_list([Lid1, Lid3]),
-    ISection = sets:subtract(Set, lid:get_linked(Lid2)),
-    ?assertEqual(0, sets:size(ISection)),
+    Set = ?SETS:from_list([Lid1, Lid3]),
+    ISection = ?SETS:subtract(Set, lid:get_linked(Lid2)),
+    ?assertEqual(0, ?SETS:size(ISection)),
     lid:stop().
 
 -spec unlink_test() -> term().
@@ -73,9 +75,9 @@ unlink_test() ->
     lid:link(Lid1, Lid2),
     lid:link(Lid2, Lid3),
     lid:unlink(Lid2, Lid1),
-    Set = sets:from_list([Lid3]),
-    ISection = sets:subtract(Set, lid:get_linked(Lid2)),
-    ?assertEqual(0, sets:size(ISection)),
+    Set = ?SETS:from_list([Lid3]),
+    ISection = ?SETS:subtract(Set, lid:get_linked(Lid2)),
+    ?assertEqual(0, ?SETS:size(ISection)),
     lid:stop().
 
 -spec monitor_test() -> term().
@@ -90,9 +92,9 @@ monitor_test() ->
     Lid3 = lid:new(Pid3, Lid1),
     lid:monitor(Lid1, Lid3, make_ref()),
     lid:monitor(Lid2, Lid3, make_ref()),
-    Set = sets:from_list([Lid1, Lid2]),
-    ISection = sets:subtract(Set, lid:get_monitored_by(Lid3)),
-    ?assertEqual(0, sets:size(ISection)),
+    Set = ?SETS:from_list([Lid1, Lid2]),
+    ISection = ?SETS:subtract(Set, lid:get_monitored_by(Lid3)),
+    ?assertEqual(0, ?SETS:size(ISection)),
     lid:stop().
 
 -spec demonitor_test() -> term().
@@ -108,9 +110,9 @@ demonitor_test() ->
     lid:monitor(Lid1, Lid3, Ref = make_ref()),
     lid:monitor(Lid2, Lid3, make_ref()),
     lid:demonitor(Lid1, Ref),
-    Set = sets:from_list([Lid2]),
-    ISection = sets:subtract(Set, lid:get_monitored_by(Lid3)),
-    ?assertEqual(0, sets:size(ISection)),
+    Set = ?SETS:from_list([Lid2]),
+    ISection = ?SETS:subtract(Set, lid:get_monitored_by(Lid3)),
+    ?assertEqual(0, ?SETS:size(ISection)),
     lid:stop().
 
 -spec cleanup_1_test() -> term().
@@ -137,7 +139,7 @@ cleanup_2_test() ->
     Lid2 = lid:new(Pid2, Lid1),
     lid:link(Lid1, Lid2),
     lid:cleanup(Lid1),
-    ?assertEqual(0, sets:size(lid:get_linked(Lid2))),
+    ?assertEqual(0, ?SETS:size(lid:get_linked(Lid2))),
     lid:stop().
 
 -spec cleanup_3_test() -> term().
@@ -150,7 +152,7 @@ cleanup_3_test() ->
     Lid2 = lid:new(Pid2, Lid1),
     lid:monitor(Lid1, Lid2, make_ref()),
     lid:cleanup(Lid1),
-    ?assertEqual(0, sets:size(lid:get_monitored_by(Lid2))),
+    ?assertEqual(0, ?SETS:size(lid:get_monitored_by(Lid2))),
     lid:stop().
 
 -spec fold_pids_test() -> term().

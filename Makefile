@@ -158,10 +158,18 @@ test.sh:
 # Dependencies
 # ----------------------------------------------------
 
-gui.beam: gui.hrl
-scheduler.beam: gui.hrl
+gui.beam           : gui.hrl
 
-instr.beam: gen.hrl
-log.beam: gen.hrl
-sched.beam: gen.hrl
-state.beam: gen.hrl
+error.beam         : gen.hrl
+error_tests.beam   : gen.hrl
+gui.beam           : gen.hrl
+instr.beam         : gen.hrl
+lid.beam           : gen.hrl
+lid_tests.beam     : gen.hrl
+log.beam           : gen.hrl
+replay_logger.beam : gen.hrl
+sched.beam         : gen.hrl
+snapshot.beam      : gen.hrl
+state.beam         : gen.hrl
+ticket.beam        : gen.hrl
+util.beam          : gen.hrl

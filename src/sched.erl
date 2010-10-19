@@ -49,8 +49,8 @@
 %%           info to the replay_logger.
 %% error   : A term describing the error that occured.
 %% state   : The current state of the program.
--record(context, {active         :: set(),
-                  blocked        :: set(),
+-record(context, {active         :: ?SET_TYPE(),
+                  blocked        :: ?SET_TYPE(),
 		  current        :: lid:lid(),
 		  details        :: boolean(),
                   error = normal :: 'normal' | 
@@ -238,8 +238,8 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             FirstPid = spawn_link(NewFun),
             FirstLid = lid:new(FirstPid, noparent),
 	    %% Initialize scheduler context.
-            Active = sets:add_element(FirstLid, sets:new()),
-            Blocked = sets:new(),
+            Active = ?SETS:add_element(FirstLid, ?SETS:new()),
+            Blocked = ?SETS:new(),
             State = state:empty(),
 	    Context = #context{active = Active, blocked = Blocked,
                                state = State, details = Det},
@@ -318,19 +318,19 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
     %% in the case that if it was run next, it would block.
     Fun = fun(L, Acc) ->
 		  case blocked_lookup(state:extend(State, L)) of
-		      true -> sets:add_element(L, Acc);
+		      true -> ?SETS:add_element(L, Acc);
 		      false -> Acc
 		  end
 	  end,
-    BlockedOracle = sets:fold(Fun, sets:new(), Active),
-    NewActive = sets:subtract(Active, BlockedOracle),
-    NewBlocked = sets:union(Blocked, BlockedOracle),
+    BlockedOracle = ?SETS:fold(Fun, ?SETS:new(), Active),
+    NewActive = ?SETS:subtract(Active, BlockedOracle),
+    NewBlocked = ?SETS:union(Blocked, BlockedOracle),
     NewContext = RunContext#context{active = NewActive, blocked = NewBlocked},
     case error:type(Error) of
 	normal ->
-	    case sets:size(NewActive) of
+	    case ?SETS:size(NewActive) of
 		0 ->
-		    case sets:size(NewBlocked) of
+		    case ?SETS:size(NewBlocked) of
 			0 ->
 			    insert_states(OldState, Insert),
 			    ok;
@@ -340,7 +340,7 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
                             {error, Deadlock, State}
 		    end;
 		_NonEmptyActive ->
-		    case sets:is_element(Next, Blocked) of
+		    case ?SETS:is_element(Next, Blocked) of
 			true ->
 			    insert_states(OldState, {current, InsertLids}),
 			    blocked_save(State),
@@ -360,7 +360,7 @@ search(#context{active = Active, current = LastLid, state = State}) ->
     case state:is_empty(State) of
 	%% Handle first call to search (empty state, one active process).
 	true ->
-	    [Next] = sets:to_list(Active),
+	    [Next] = ?SETS:to_list(Active),
 	    {Next, {current, []}};
 	false ->
 	    %% If the last process run is in the `active` set
@@ -374,12 +374,12 @@ search(#context{active = Active, current = LastLid, state = State}) ->
 	    %% stored in the current state queue, because a non-preemptive
 	    %% context switch is happening (the last process either exited
 	    %% or blocked).
-	    case sets:is_element(LastLid, Active) of
+	    case ?SETS:is_element(LastLid, Active) of
 		true ->
-		    NewActive = sets:to_list(sets:del_element(LastLid, Active)),
+		    NewActive = ?SETS:to_list(?SETS:del_element(LastLid, Active)),
 		    {LastLid, {next, NewActive}};
 		false ->
-		    [Next|NewActive] = sets:to_list(Active),
+		    [Next|NewActive] = ?SETS:to_list(Active),
 		    {Next, {current, NewActive}}
 	    end
     end.
@@ -401,7 +401,7 @@ handler('after', Pid, #context{details = Det} = Context, _Misc) ->
 handler(block, Pid, #context{blocked = Blocked, details = Det} = Context,
         _Misc) ->
     Lid = lid:from_pid(Pid),
-    NewBlocked = sets:add_element(Lid, Blocked),
+    NewBlocked = ?SETS:add_element(Lid, Blocked),
     log_details(Det, {block, Lid}),
     Context#context{blocked = NewBlocked};
 
@@ -437,8 +437,8 @@ handler(exit, Pid,
             %% exited.
 	    Linked = lid:get_linked(Lid),
             Monitors = lid:get_monitored_by(Lid),
-	    NewActive = sets:union(sets:union(Active, Linked), Monitors),
-	    NewBlocked = sets:subtract(sets:subtract(Blocked, Linked),
+	    NewActive = ?SETS:union(?SETS:union(Active, Linked), Monitors),
+	    NewBlocked = ?SETS:subtract(?SETS:subtract(Blocked, Linked),
                                        Monitors),
 	    NewContext = Context#context{active = NewActive,
 					 blocked = NewBlocked},
@@ -469,7 +469,7 @@ handler(halt, Pid, #context{details = Det} = Context, Misc) ->
             Status -> {halt, Lid, Status}
         end,
     log_details(Det, Halt),
-    Context#context{active = sets:new(), blocked = sets:new()};
+    Context#context{active = ?SETS:new(), blocked = ?SETS:new()};
 
 %% Link message handler.
 handler(link, Pid, #context{details = Det} = Context, TargetPid) ->
@@ -541,7 +541,7 @@ handler(spawn, ParentPid,
     ParentLid = lid:from_pid(ParentPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn, ParentLid, ChildLid}),
-    NewActive = sets:add_element(ChildLid, Active),
+    NewActive = ?SETS:add_element(ChildLid, Active),
     dispatcher(Context#context{active = NewActive});
 
 %% Spawn_link message handler.
@@ -553,7 +553,7 @@ handler(spawn_link, ParentPid,
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn_link, ParentLid, ChildLid}),
     lid:link(ParentLid, ChildLid),
-    NewActive = sets:add_element(ChildLid, Active),
+    NewActive = ?SETS:add_element(ChildLid, Active),
     dispatcher(Context#context{active = NewActive});
 
 %% Spawn_monitor message handler.
@@ -565,7 +565,7 @@ handler(spawn_monitor, ParentPid,
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn_monitor, ParentLid, ChildLid}),
     lid:monitor(ParentLid, ChildLid, Ref),
-    NewActive = sets:add_element(ChildLid, Active),
+    NewActive = ?SETS:add_element(ChildLid, Active),
     dispatcher(Context#context{active = NewActive});
 
 %% Unlink message handler.
@@ -598,7 +598,7 @@ handler(whereis, Pid, #context{details = Det} = Context, {RegName, Result}) ->
 handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
     Lid = lid:from_pid(Pid),
     ?debug_2("Process ~s yields.~n", [lid:to_string(Lid)]),
-    NewActive = sets:add_element(Lid, Active),
+    NewActive = ?SETS:add_element(Lid, Active),
     Context#context{active = NewActive}.
 
 %%%----------------------------------------------------------------------
@@ -663,7 +663,7 @@ log_details(Det, Action) ->
 run(#context{active = Active, current = Lid, state = State} = Context) ->
     ?debug_2("Running process ~s.~n", [lid:to_string(Lid)]),
     %% Remove process from the `active` set.
-    NewActive = sets:del_element(Lid, Active),
+    NewActive = ?SETS:del_element(Lid, Active),
     %% Create new state by adding this process.
     NewState = state:extend(State, Lid),
     %% Send message to "unblock" the process.
@@ -676,11 +676,11 @@ run(#context{active = Active, current = Lid, state = State} = Context) ->
 %% Wake up a process.
 %% If process is in `blocked` set, move to `active` set.
 wakeup(Lid, #context{active = Active, blocked = Blocked} = Context) ->
-    case sets:is_element(Lid, Blocked) of
+    case ?SETS:is_element(Lid, Blocked) of
 	true ->
             ?debug_2("Process ~s wakes up.~n", [lid:to_string(Lid)]),
-	    NewBlocked = sets:del_element(Lid, Blocked),
-	    NewActive = sets:add_element(Lid, Active),
+	    NewBlocked = ?SETS:del_element(Lid, Blocked),
+	    NewActive = ?SETS:add_element(Lid, Active),
 	    Context#context{active = NewActive, blocked = NewBlocked};
 	false -> Context
     end.
