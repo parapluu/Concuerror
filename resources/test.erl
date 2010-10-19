@@ -358,16 +358,19 @@ test29() ->
     Self = self(),
     spawn(fun() -> foo29(Self) end),
     receive
-	Foo = {bar, Baz} -> ok
+	Msg1 = {Bar1, _} -> ok
     end,
     receive
-	Baz -> ok
+	Msg2 = {Bar2, _} ->
+            ?assertEqual(Bar1, Bar2),
+            ok
     end,
-    ?assertEqual(Foo, {bar, gazonk}).
+    ?assertEqual(Msg1, {bar, gazonk}),
+    ?assertEqual(Msg2, Msg1).
 
 foo29(Parent) ->
     Parent ! {bar, gazonk},
-    Parent ! gazonk.
+    Parent ! {bar, gazonk}.
 
 test30() ->
     Pid = spawn(fun() -> foo30() end),
