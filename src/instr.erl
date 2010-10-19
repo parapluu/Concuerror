@@ -33,13 +33,15 @@
 
 %% Instrumented auto-imported functions of 'erlang' module.
 -define(INSTR_ERLANG_NO_MOD,
-	[demonitor, exit, halt, link, monitor, process_flag,
-	 register, spawn, spawn_link, spawn_monitor, unlink,
-	 unregister, whereis]).
+	[{demonitor, 1}, {demonitor, 2}, {exit, 2}, {halt, 0},
+         {halt, 1}, {link, 1}, {monitor, 2}, {process_flag, 2},
+         {register, 2}, {spawn, 1}, {spawn, 3}, {spawn_link, 1},
+         {spawn_link, 3}, {spawn_monitor, 1}, {spawn_monitor, 3},
+         {unlink, 1}, {unregister, 1}, {whereis, 1}]).
 
 %% Instrumented functions called as erlang:FUNCTION.
 -define(INSTR_ERLANG,
-	[send, yield] ++ ?INSTR_ERLANG_NO_MOD).
+	[{send, 2}, {yield, 0}] ++ ?INSTR_ERLANG_NO_MOD).
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation utilities
@@ -182,19 +184,15 @@ instrument_term(Tree) ->
 	_Other -> instrument_subtrees(Tree)
     end.
 
-%% Return {ModuleAtom, FunctionAtom, ArgTree} for a function that is going
+%% Return {ModuleAtom, FunctionAtom, ArgTree} for a function call that is going
 %% to be instrumented or 'no_instr' otherwise.
 get_mfa(Tree) ->
     Qualifier = erl_syntax:application_operator(Tree),
     case erl_syntax:type(Qualifier) of
 	atom ->
 	    Function = erl_syntax:atom_value(Qualifier),
-	    case lists:member(Function, ?INSTR_ERLANG_NO_MOD) of
-		true ->
-                    ArgTree = erl_syntax:application_arguments(Tree),
-                    {erlang, Function, ArgTree};
-		false -> no_instr
-	    end;
+            ArgTree = erl_syntax:application_arguments(Tree),
+            needs_instrument(erlang, Function, ArgTree, ?INSTR_ERLANG_NO_MOD);
 	module_qualifier ->
 	    ModTree = erl_syntax:module_qualifier_argument(Qualifier),
 	    FunTree = erl_syntax:module_qualifier_body(Qualifier),
@@ -205,18 +203,22 @@ get_mfa(Tree) ->
 		    case Module of
 			erlang ->
                             Function = erl_syntax:atom_value(FunTree),
-			    case lists:member(Function, ?INSTR_ERLANG) of
-				true ->
-				    ArgTree =
-					erl_syntax:application_arguments(Tree),
-				    {Module, Function, ArgTree};
-				false -> no_instr
-			    end;
+                            ArgTree = erl_syntax:application_arguments(Tree),
+                            needs_instrument(Module, Function, ArgTree,
+                                             ?INSTR_ERLANG);
 			_Other -> no_instr
 		    end;
 		false -> no_instr
 	    end;
 	_Other -> no_instr
+    end.
+
+%% Determine whether a function call needs instrumentation.
+needs_instrument(Module, Function, ArgTree, InstrList) ->
+    Arity = length(ArgTree),
+    case lists:member({Function, Arity}, InstrList) of
+        true -> {Module, Function, ArgTree};
+        false -> no_instr
     end.
 
 %% Instrument an application (function call).

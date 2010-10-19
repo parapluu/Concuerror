@@ -15,7 +15,7 @@
 -export([analyze/2, replay/1]).
 
 %% Instrumentation related exports.
--export([rep_demonitor/1, rep_demonitor/2, rep_exit/1, rep_exit/2,
+-export([rep_demonitor/1, rep_demonitor/2, rep_exit/2,
 	 rep_halt/0, rep_halt/1, rep_link/1, rep_monitor/2,
 	 rep_process_flag/2, rep_receive/1, rep_after_notify/0,
 	 rep_receive_notify/1, rep_receive_notify/2,
@@ -773,15 +773,6 @@ rep_demonitor(Ref, Opts) ->
     ?RP_SCHED ! #sched{msg = demonitor, pid = self(), misc = Ref},
     yield(),
     Result.
-
-%% @spec: rep_exit(pid()) -> no_return()
-%% @doc: Replacement for `exit/1'.
-%%
-%% Just exit (practically uninstrumented).
--spec rep_exit(pid()) -> no_return().
-
-rep_exit(Pid) ->
-    exit(Pid).
 
 %% @spec: rep_exit(pid(), term()) -> true
 %% @doc: Replacement for `exit/2'.
