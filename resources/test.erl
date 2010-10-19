@@ -14,7 +14,7 @@
 	 test17/0, test18/0, test19/0, test20/0,
          test21/0, test22/0, test23/0, test24/0,
          test25/0, test26/0, test27/0, test28/0,
-	 test29/0, test30/0]).
+	 test29/0, test30/0, test31/0]).
 
 -include("ced.hrl").
 
@@ -383,3 +383,12 @@ test30() ->
 foo30() ->
     register(self, self()),
     ok.
+
+%% Exception, 2 proc: Same as above, but exit/2 with reason normal
+%% shouldn't have any effect.
+-spec test31() -> 'ok'.
+
+test31() ->
+    Pid = spawn(fun() -> foo30() end),
+    exit(Pid, normal),
+    foo30().
