@@ -372,10 +372,14 @@ foo29(Parent) ->
     Parent ! {bar, gazonk},
     Parent ! {bar, gazonk}.
 
+%% Exception, 2 proc: Test instrumentation and handling of exit/2.
+-spec test30() -> 'ok'.
+
 test30() ->
     Pid = spawn(fun() -> foo30() end),
     exit(Pid, kill),
     foo30().
 
 foo30() ->
-    register(self, self()).
+    register(self, self()),
+    ok.
