@@ -49,8 +49,8 @@
 %%           info to the replay_logger.
 %% error   : A term describing the error that occured.
 %% state   : The current state of the program.
--record(context, {active         :: ?SET_TYPE(),
-                  blocked        :: ?SET_TYPE(),
+-record(context, {active         :: ?SET_TYPE,
+                  blocked        :: ?SET_TYPE,
 		  current        :: lid:lid(),
 		  details        :: boolean(),
                   error = normal :: 'normal' | 

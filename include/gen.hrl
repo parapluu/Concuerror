@@ -36,7 +36,7 @@
 
 %% Set-like data structure used in sched, lid and error modules.
 -define(SETS, ordsets).
--define(SET_TYPE, ordsets:ordered_set).
+-define(SET_TYPE, ordsets:ordered_set()).
 
 %% Default export file.
 -define(EXPORT_FILE, "snapshot").

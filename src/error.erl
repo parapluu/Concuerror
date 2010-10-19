@@ -48,7 +48,7 @@ new(ErrorType, ErrorDescr) ->
     {ErrorType, ErrorDescr}.
 
 %% @doc: Create a new deadlock.
--spec deadlock(?SET_TYPE()) -> deadlock().
+-spec deadlock(?SET_TYPE) -> deadlock().
 
 deadlock(Blocked) ->
     BlockedList = lists:sort(?SETS:to_list(Blocked)),
