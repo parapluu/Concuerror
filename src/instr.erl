@@ -18,11 +18,11 @@
 %%% Debug
 %%%----------------------------------------------------------------------
 
-%%-define(PRINT, true).
--ifdef(PRINT).
--define(debug(S_), io:put_chars(erl_prettypr:format(S_))).
+%%-define('_._PRINT', true).
+-ifdef('_._PRINT').
+-define(print(S_), io:put_chars(erl_prettypr:format(S_))).
 -else.
--define(debug(S_), ok).
+-define(print(S_), ok).
 -endif.
 
 %%%----------------------------------------------------------------------
@@ -132,7 +132,7 @@ instrument(File) ->
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
 	    Abstract = erl_syntax:revert(Transformed),
-            ?debug(Abstract),
+            ?print(Abstract),
 	    NewForms = erl_syntax:form_list_elements(Abstract),
 	    {ok, NewForms};
 	{error, Error} -> {error, Error}
