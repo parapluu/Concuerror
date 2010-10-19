@@ -780,7 +780,7 @@ rep_exit(Pid) ->
 
 rep_exit(Pid, Reason) ->
     exit(Pid, Reason),
-    ?RP_SCHED ! #sched{msg = exit, pid = self(), misc = {Pid, Reason}},
+    ?RP_SCHED ! #sched{msg = fun_exit, pid = self(), misc = {Pid, Reason}},
     yield().
 
 %% @spec: rep_halt() -> no_return()
