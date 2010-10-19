@@ -85,13 +85,13 @@ vpath %.hrl include
 vpath %.erl $(ERL_DIRS)
 vpath %.beam ebin
 
-include $(OPTS)
+include $(wildcard $(OPTS))
 
 all: 	$(TARGETS)
 
 clean:
-	printf "" > $(OPTS)
 	rm -f *.sh
+	rm -f $(OPTS)
 	rm -f $(EBIN)/*.beam
 	rm -f $(DOC)/*.html $(DOC)/*.css $(DOC)/edoc-info $(DOC)/*.png
 
