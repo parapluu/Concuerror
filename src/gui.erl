@@ -595,20 +595,10 @@ analysis_init() ->
     wxSizer:layout(AnalyzeSizer),
     start_pulsing(Gauge).
 
-
 %% Cleanup actions after completing analysis
 %% (reactivate `analyze` button, etc.).
-analysis_cleanup({error, analysis, _Info, Tickets}) ->
-    Errors = [ticket:get_error(Ticket) || Ticket <- Tickets],
-    ErrorItems = [io_lib:format("~s~n~s",
-                                [error:error_type_to_string(Error),
-                                 error:error_reason_to_string(Error, short)])
-                  || Error <- Errors],
-    setListItems(?ERROR_LIST, ErrorItems),
-    ListOfEmpty = lists:duplicate(length(Tickets), []),
-    setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty)),
-    analysis_cleanup_common();
-analysis_cleanup(_Result) ->
+analysis_cleanup(Result) ->
+    analysis_show_errors(Result),
     analysis_cleanup_common().
 
 analysis_cleanup_common() ->
@@ -621,6 +611,18 @@ analysis_cleanup_common() ->
     wxSizer:replace(AnalyzeSizer, Gauge, AnalyzeButton),
     wxWindow:destroy(Gauge),
     wxSizer:layout(AnalyzeSizer).
+
+analysis_show_errors({error, analysis, _Info, Tickets}) ->
+    Errors = [ticket:get_error(Ticket) || Ticket <- Tickets],
+    ErrorItems = [io_lib:format("~s~n~s",
+                                [error:error_type_to_string(Error),
+                                 error:error_reason_to_string(Error, short)])
+                  || Error <- Errors],
+    setListItems(?ERROR_LIST, ErrorItems),
+    ListOfEmpty = lists:duplicate(length(Tickets), []),
+    setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty));
+analysis_show_errors(_Result) ->
+    ok.
 
 start_pulsing(Gauge) ->
     Env = wx:get_env(),
@@ -1092,15 +1094,7 @@ snapshot_import(Import) ->
             wxControlWithItems:setSelection(FunctionList, FunctionID),
             refreshFun(),
             AnalysisRet = snapshot:get_analysis(Snapshot),
-            case AnalysisRet of
-                {ok, _Info} ->
-                    log:log("No errors found.~n");
-                {error, analysis, _Info, Tickets} ->
-                    log:log("Found ~p erroneous interleaving(s).~n",
-                            [length(Tickets)]);
-                _Other -> continue
-            end,
-            analysis_cleanup(AnalysisRet),
+            analysis_show_errors(AnalysisRet),
             ErrorList = ref_lookup(?ERROR_LIST),
             ErrorID = snapshot:get_error_id(Selection),
             wxControlWithItems:setSelection(ErrorList, ErrorID),
