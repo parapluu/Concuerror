@@ -18,7 +18,7 @@
 get_target_test() ->
     Target = {mymodule, myfunction, []},
     Files = [],
-    Error = error:stub(),
+    Error = error:mock(),
     ErrorState = state:empty(),
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Target, ticket:get_target(Ticket)).
@@ -28,7 +28,7 @@ get_target_test() ->
 get_files_test() ->
     Target = {mymodule, myfunction, []},
     Files = [],
-    Error = error:stub(),
+    Error = error:mock(),
     ErrorState = state:empty(),
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Files, ticket:get_files(Ticket)).
@@ -38,7 +38,7 @@ get_files_test() ->
 get_error_test() ->
     Target = {mymodule, myfunction, []},
     Files = [],
-    Error = error:stub(),
+    Error = error:mock(),
     ErrorState = state:empty(),
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Error, ticket:get_error(Ticket)).
@@ -48,7 +48,7 @@ get_error_test() ->
 get_state_test() ->
     Target = {mymodule, myfunction, []},
     Files = [],
-    Error = error:stub(),
+    Error = error:mock(),
     ErrorState = state:empty(),
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(ErrorState, ticket:get_state(Ticket)).

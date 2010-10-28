@@ -9,9 +9,9 @@
 -module(lid).
 
 -export([cleanup/1, demonitor/2, from_pid/1, get_linked/1,
-	 fold_pids/2, get_monitored_by/1, link/2, monitor/3,
-	 new/2, start/0, stop/0, to_string/1, get_pid/1,
-	 unlink/2]).
+	 fold_pids/2, get_monitored_by/1, link/2, mock/1,
+	 monitor/3, new/2, start/0, stop/0, to_string/1,
+	 get_pid/1, unlink/2]).
 
 -export_type([lid/0]).
 
@@ -143,6 +143,11 @@ link(Lid1, Lid2) ->
     LinkedTo2 = get_linked(Lid2),
     set_linked(Lid2, ?SETS:add_element(Lid1, LinkedTo2)).
 
+%% Return a mock LID (only to be used with to_string for now).
+-spec mock(integer()) -> lid().
+mock(Seed) ->
+    Seed.
+
 %% Add monitoring information to a LID.
 -spec monitor(lid(), lid(), reference()) -> boolean().
 
@@ -263,4 +268,4 @@ next_lid(ParentLid, Children) ->
 -spec to_string(lid()) -> string().
 
 to_string(Lid) ->
-    io_lib:format("P~p", [Lid]).
+    lists:flatten(io_lib:format("P~p", [Lid])).

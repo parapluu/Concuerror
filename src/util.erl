@@ -10,7 +10,8 @@
 %%%----------------------------------------------------------------------
 
 -module(util).
--export([doc/1, test/0, flush_mailbox/0, funs/1, funs/2, funLine/3]).
+-export([doc/1, test/0, flat_format/2, flush_mailbox/0,
+	 funs/1, funs/2, funLine/3]).
 
 -include("gen.hrl").
 
@@ -31,6 +32,13 @@ test() ->
     Modules = [lid, state, error, ticket, sched],
     Tests = lists:zip(lists:duplicate(length(Modules), module), Modules),
     eunit:test(Tests, [verbose]).
+
+%% @spec flat_format(string(), [term()]) -> string()
+%% @doc: Equivalent to lists:flatten(io_lib:format(String, Args)).
+-spec flat_format(string(), [term()]) -> string().
+
+flat_format(String, Args) ->
+    lists:flatten(io_lib:format(String, Args)).
 
 %% Flush a process' mailbox.
 -spec flush_mailbox() -> 'ok'.

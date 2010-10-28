@@ -43,7 +43,7 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual(deadlock, error:type(ticket:get_error(Ticket)))
+	      ?assertEqual("Deadlock", error:type(ticket:get_error(Ticket)))
 	  end)},
       {"test05",
        ?_test(
@@ -53,7 +53,7 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual(deadlock, error:type(ticket:get_error(Ticket)))
+	      ?assertEqual("Deadlock", error:type(ticket:get_error(Ticket)))
 	  end)},
       {"test06",
        ?_assertMatch({ok, {test, test06, []}},
@@ -71,7 +71,7 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual(exception, error:type(ticket:get_error(Ticket)))
+	      ?assertEqual("Exception", error:type(ticket:get_error(Ticket)))
 	  end)},
       {"test09",
        ?_assertMatch({ok, {test, test03, []}},
@@ -91,7 +91,7 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual(exception, error:type(ticket:get_error(Ticket)))
+	      ?assertEqual("Exception", error:type(ticket:get_error(Ticket)))
 	  end)},
       {"test12",
        ?_test(
@@ -101,7 +101,7 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual(assertion_violation,
+	      ?assertEqual("Assertion violation",
                            error:type(ticket:get_error(Ticket)))
 	  end)},
       {"test13",
@@ -124,7 +124,7 @@ interleave_test_() ->
 	      {error, analysis, Target, [Ticket|_Tickets]} =
 		  sched:analyze(Target, Options),
 	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual(assertion_violation,
+	      ?assertEqual("Assertion violation",
                            error:type(ticket:get_error(Ticket)))
 	  end)},
       {"test17",

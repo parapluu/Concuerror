@@ -16,7 +16,7 @@
          test25/0, test26/0, test27/0, test28/0,
 	 test29/0, test30/0, test31/0]).
 
--include("ced.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 %% Normal, 2 proc: Simple send-receive.
 -spec test01() -> 'ok'.

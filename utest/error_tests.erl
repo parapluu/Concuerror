@@ -15,107 +15,48 @@
 %% Spec for auto-generated test/0 function (eunit).
 -spec test() -> 'ok' | {'error', term()}.
 
--spec deadlock_test() -> term().
+-spec short_deadlock_test() -> term().
 
-deadlock_test() ->
-    ErrorType = deadlock,
-    ErrorDescr = ["P1", "P1.1", "P1.2"],
-    Error = error:new(ErrorType, ErrorDescr),
-    Blocked =
-        ?SETS:add_element("P1",
-			  ?SETS:add_element("P1.1",
-					    ?SETS:add_element("P1.2",
-							      ?SETS:new()))),
-    Deadlock = error:deadlock(Blocked),
-    ?assertEqual(Error, Deadlock).
+short_deadlock_test() ->
+    Lid1 = lid:mock(1),
+    Lid2 = lid:mock(2),
+    Blocked = ?SETS:add_element(Lid1, ?SETS:add_element(Lid2, ?SETS:new())),
+    Error = error:new({deadlock, Blocked}),
+    ?assertEqual("P1, P2", error:short(Error)).
 
--spec error_type_to_string_test() -> term().
+-spec short_system_exception_test() -> term().
 
-error_type_to_string_test() ->
-    Error = error:stub(),
-    ?assertEqual("Assertion violation", error:error_type_to_string(Error)).
+short_system_exception_test() ->
+    Stack = [{erlang,link,[c:pid(0, 2, 3)]},{sched,rep_link,1},{test,test08,0}],
+    Error = error:new({noproc, Stack}),
+    ?assertEqual("{noproc,[...]}", error:short(Error)).
 
--spec error_reason_to_string1_test() -> term().
+-spec short_user_exception_test() -> term().
 
-error_reason_to_string1_test() ->
-    Error = error:stub(),
-    ?assertEqual(io_lib:format("On line ~p of module ~p, "
-                               ++ "the expression ~s evaluates to ~p "
-                               ++ "instead of ~p",
-                               [42, mymodule, "true =:= false", false, true]),
-                 error:error_reason_to_string(Error, long)).
+short_user_exception_test() ->
+    Error = error:new(foobar),
+    ?assertEqual("foobar", error:short(Error)).
 
--spec error_reason_to_string2_test() -> term().
+-spec short_user_exception_similar_to_system_test() -> term().
 
-error_reason_to_string2_test() ->
-    ErrorType = exception,
-    ErrorDescr = foobar,
-    Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("~p", [ErrorDescr]),
-                 error:error_reason_to_string(Error, long)).
+short_user_exception_similar_to_system_test() ->
+    Error = error:new({foo, bar}),
+    ?assertEqual("{foo,bar}", error:short(Error)).
 
--spec error_reason_to_string3_test() -> term().
+-spec short_assert_equal_violation_test() -> term().
 
-error_reason_to_string3_test() ->
-    ErrorType = exception,
-    ErrorDescr = {badarg, []},
-    Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("~p", [badarg]),
-                 error:error_reason_to_string(Error, long)).
+short_assert_equal_violation_test() ->
+    Error = error:new({{assertEqual_failed,
+			[{module, mymodule}, {line, 42},
+			 {expression, "false"},
+			 {expected, true}, {value, false}]}, []}),
+    ?assertEqual("mymodule.erl:42", error:short(Error)).
 
--spec error_reason_to_string4_test() -> term().
+-spec short_assert_violation_test() -> term().
 
-error_reason_to_string4_test() ->
-    Error = error:stub(),
-    ?assertEqual(io_lib:format("Module: ~p, Line: ~p", [mymodule, 42]),
-                 error:error_reason_to_string(Error, short)).
-
--spec error_reason_to_string5_test() -> term().
-
-error_reason_to_string5_test() ->
-    ErrorType = exception,
-    ErrorDescr = foobar,
-    Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("Exit: ~p", [ErrorDescr]),
-                 error:error_reason_to_string(Error, short)).
-
--spec error_reason_to_string6_test() -> term().
-
-error_reason_to_string6_test() ->
-    ErrorType = exception,
-    ErrorDescr = {badarg, []},
-    Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("Exit: ~p", [badarg]),
-                 error:error_reason_to_string(Error, short)).
-
--spec error_stack_to_string1_test() -> term().
-
-error_stack_to_string1_test() ->
-    Error = error:stub(),
-    ?assertEqual(io_lib:format("~p", [[]]),
-                 error:error_stack_to_string(Error)).
-
--spec error_stack_to_string2_test() -> term().
-
-error_stack_to_string2_test() ->
-    ErrorType = deadlock,
-    ErrorDescr = ["P1"],
-    Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual("", error:error_stack_to_string(Error)).
-
--spec error_stack_to_string3_test() -> term().
-
-error_stack_to_string3_test() ->
-    ErrorType = exception,
-    ErrorDescr = foobar,
-    Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual("", error:error_stack_to_string(Error)).
-
--spec error_stack_to_string4_test() -> term().
-
-error_stack_to_string4_test() ->
-    ErrorType = exception,
-    ErrorDescr = {badarg, []},
-    Error = error:new(ErrorType, ErrorDescr),
-    ?assertEqual(io_lib:format("~p", [[]]),
-                 error:error_stack_to_string(Error)).
+short_assert_violation_test() ->
+    Error = error:new({{assertion_failed,
+			[{module, mymodule}, {line, 42},
+			 {expression, "true =:= false"},
+			 {expected, true}, {value, false}]}, []}),
+    ?assertEqual("mymodule.erl:42", error:short(Error)).

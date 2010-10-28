@@ -614,10 +614,9 @@ analysis_cleanup_common() ->
 
 analysis_show_errors({error, analysis, _Info, Tickets}) ->
     Errors = [ticket:get_error(Ticket) || Ticket <- Tickets],
-    ErrorItems = [io_lib:format("~s~n~s",
-                                [error:error_type_to_string(Error),
-                                 error:error_reason_to_string(Error, short)])
-                  || Error <- Errors],
+    ErrorItems = [util:flat_format("~s~n~s", [error:type(Error),
+					      error:short(Error)])
+		  || Error <- Errors],
     setListItems(?ERROR_LIST, ErrorItems),
     ListOfEmpty = lists:duplicate(length(Tickets), []),
     setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty));
@@ -1007,15 +1006,10 @@ show_details() ->
                         setListItems(?ILEAVE_LIST, details_to_strings(Cached)),
                         T
                 end,
-            Error = ticket:get_error(Ticket),
-            ErrorReason = error:error_reason_to_string(Error, long),
-            ErrorStack = error: error_stack_to_string(Error),
             clearProbs(),
-            Reason = io_lib:format("Reason: ~s~n", [ErrorReason]),
-            Stack = io_lib:format("Stack trace: ~s", [ErrorStack]),
             ErrorText = ref_lookup(?ERROR_TEXT),
-            wxTextCtrl:appendText(ErrorText, Reason),
-            wxTextCtrl:appendText(ErrorText, Stack)
+            Error = ticket:get_error(Ticket),
+            wxTextCtrl:appendText(ErrorText, error:long(Error))
     end.
 
 %% Function to be moved (to sched or util).

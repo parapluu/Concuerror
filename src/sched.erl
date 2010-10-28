@@ -58,15 +58,13 @@
 %% details : A boolean being false when running a normal run and
 %%           true when running a replay and need to send detailed
 %%           info to the replay_logger.
-%% error   : A term describing the error that occured.
+%% error   : A term describing the error that occurred.
 %% state   : The current state of the program.
 -record(context, {active         :: ?SET_TYPE,
                   blocked        :: ?SET_TYPE,
 		  current        :: lid:lid(),
 		  details        :: boolean(),
-                  error = normal :: 'normal' | 
-				    error:assertion() |
-				    error:exception(),
+                  error          :: error:error(),
                   state          :: state:state()}).
 
 %% Internal message format
@@ -337,8 +335,8 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
     NewActive = ?SETS:subtract(Active, BlockedOracle),
     NewBlocked = ?SETS:union(Blocked, BlockedOracle),
     NewContext = RunContext#context{active = NewActive, blocked = NewBlocked},
-    case error:type(Error) of
-	normal ->
+    case Error of
+	undefined ->
 	    case ?SETS:size(NewActive) of
 		0 ->
 		    case ?SETS:size(NewBlocked) of
@@ -347,7 +345,7 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
 			    ok;
 			_NonEmptyBlocked ->
 			    insert_states(OldState, Insert),
-                            Deadlock = error:deadlock(NewBlocked),
+                            Deadlock = error:new({deadlock, NewBlocked}),
                             {error, Deadlock, State}
 		    end;
 		_NonEmptyActive ->
@@ -361,7 +359,7 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
 			    driver(Search, NewContext, Rest)
 		    end
 	    end;
-	_OtherErrorType ->
+	_Other ->
 	    insert_states(OldState, Insert),
 	    {error, Error, State}
     end.
@@ -480,18 +478,15 @@ handler(exit, Pid,
 	    %% Cleanup LID stored info.
 	    lid:cleanup(Lid),
 	    %% Handle and propagate errors.
-	    Type =
-		case Reason of
-		    normal -> normal;
-		    _Else -> error:type_from_description(Reason)
-		end,
-	    log_details(Det, {exit, Lid, Type}),
-            case Type of
-                normal -> NewContext;
-                _Other ->
-                    Error = error:new(Type, Reason),
-                    NewContext#context{error = Error}
-            end
+	    case Reason of
+		normal ->
+		    log_details(Det, {exit, Lid, normal}),
+		    NewContext;
+		_Else ->
+		    Error = error:new(Reason),
+		    log_details(Det, {exit, Lid, error:type(Error)}),
+		    NewContext#context{error = Error}
+	    end
     end;
 
 %% Halt message handler.
