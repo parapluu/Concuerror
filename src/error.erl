@@ -15,10 +15,9 @@
 -include("gen.hrl").
 
 -type error_type()  :: 'assertion_violation' | 'deadlock' | 'exception'.
--type error_descr() :: term().
--type error()       :: {error_type(), error_descr()}.
+-type error()       :: {error_type(), term()}.
 
--spec new(error_descr()) -> error().
+-spec new(term()) -> error().
 
 new({deadlock, Set}) -> {deadlock, Set};
 new({{assertion_failed, Details}, _Any}) -> {assertion_violation, Details};

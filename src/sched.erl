@@ -32,8 +32,8 @@
 %%% Debug
 %%%----------------------------------------------------------------------
 
-%%-define('_._TTY', true).
--ifdef('_._TTY').
+%%-define(TTY, true).
+-ifdef(TTY).
 -define(tty(), ok).
 -else.
 -define(tty(), error_logger:tty(false)).
@@ -44,6 +44,7 @@
 %%%----------------------------------------------------------------------
 
 -define(INFINITY, 1000000).
+-define(undef, undef).
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -320,7 +321,7 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
 		{NextTemp, RestTemp} = state:trim_head(ReplayState),
 		{NextTemp, RestTemp, {current, []}}
 	end,
-    ContextToRun = Context#context{current = Next},
+    ContextToRun = Context#context{current = Next, error = ?undef},
     #context{active = Active, blocked = Blocked, error = Error,
 	     state = State} = RunContext = run(ContextToRun),
     %% Update active and blocked sets, moving Lid from active to blocked,
@@ -336,7 +337,7 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
     NewBlocked = ?SETS:union(Blocked, BlockedOracle),
     NewContext = RunContext#context{active = NewActive, blocked = NewBlocked},
     case Error of
-	undefined ->
+	?undef ->
 	    case ?SETS:size(NewActive) of
 		0 ->
 		    case ?SETS:size(NewBlocked) of

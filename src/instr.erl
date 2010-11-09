@@ -18,8 +18,8 @@
 %%% Debug
 %%%----------------------------------------------------------------------
 
-%%-define('_._PRINT', true).
--ifdef('_._PRINT').
+%%-define(PRINT, true).
+-ifdef(PRINT).
 -define(print(S_), io:put_chars(erl_prettypr:format(S_))).
 -else.
 -define(print(S_), ok).
