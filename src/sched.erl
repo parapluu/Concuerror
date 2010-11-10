@@ -65,7 +65,7 @@
                   blocked        :: ?SET_TYPE,
 		  current        :: lid:lid(),
 		  details        :: boolean(),
-                  error          :: error:error(),
+                  error          :: ?undef | error:error(),
                   state          :: state:state()}).
 
 %% Internal message format
