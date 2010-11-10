@@ -610,9 +610,9 @@ analysis_cleanup(Result) ->
     analysis_cleanup_common().
 
 analysis_cleanup_common() ->
-    stop_pulsing(ref_lookup(?ANALYZE_GAUGE)),
-    AnalyzeSizer = ref_lookup(?ANALYZE_SIZER),
     Gauge = ref_lookup(?ANALYZE_GAUGE),
+    stop_pulsing(Gauge),
+    AnalyzeSizer = ref_lookup(?ANALYZE_SIZER),
     Parent = wxWindow:getParent(Gauge),
     AnalyzeButton = wxButton:new(Parent, ?ANALYZE, [{label, "Ana&lyze"}]),
     ref_add(?ANALYZE, AnalyzeButton),
