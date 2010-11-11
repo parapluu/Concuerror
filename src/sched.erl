@@ -204,6 +204,7 @@ interleave_aux(Target, Options, Parent) ->
     Result = interleave_outer_loop(Target, 0, [], -1, PreBound, Options),
     blocked_stop(),
     state_stop(),
+    unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
 
 interleave_outer_loop(_T, RunCnt, Tickets, MaxBound, MaxBound, _Opt) ->

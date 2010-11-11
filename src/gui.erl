@@ -27,9 +27,9 @@
 %%% UI functions
 %%%----------------------------------------------------------------------
 
-%% @spec start() -> 'ok'
+%% @spec start() -> 'true'
 %% @doc: Start the CED GUI.
--spec start() -> 'ok'.
+-spec start() -> 'true'.
 
 start() ->
     register(?RP_GUI, self()),
@@ -54,7 +54,8 @@ start() ->
     %% Save possibly edited preferences to file.
     savePrefs(),
     ref_stop(),
-    wx:destroy().
+    wx:destroy(),
+    unregister(?RP_GUI).
 
 %%%----------------------------------------------------------------------
 %%% Log event handler callback functions
@@ -590,8 +591,9 @@ analyze() ->
 			_Other -> continue
 		    end
 	    end;
-       true -> continue
-    end.
+       true -> continue            
+    end,
+    unregister(?RP_GUI_ANALYSIS).
 
 analyze_aux(Module, Function, Args, Files) ->
     analysis_init(),
