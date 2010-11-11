@@ -19,6 +19,7 @@
 
 %% Registered process names.
 -define(RP_GUI, '_._gui').
+-define(RP_GUI_ANALYSIS, '_._gui_analysis').
 -define(RP_REPLAY_LOGGER, '_._replay_logger').
 -define(RP_SCHED, '_._sched').
 

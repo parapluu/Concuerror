@@ -27,9 +27,9 @@
 %%% UI functions
 %%%----------------------------------------------------------------------
 
-%% @spec start() -> 'true'
+%% @spec start() -> 'ok'
 %% @doc: Start the CED GUI.
--spec start() -> 'true'.
+-spec start() -> 'ok'.
 
 start() ->
     register(?RP_GUI, self()),
@@ -54,8 +54,7 @@ start() ->
     %% Save possibly edited preferences to file.
     savePrefs(),
     ref_stop(),
-    wx:destroy(),
-    unregister(?RP_GUI).
+    wx:destroy().
 
 %%%----------------------------------------------------------------------
 %%% Log event handler callback functions
@@ -139,16 +138,16 @@ setSplitterInitSizes() ->
 %% Setup left column of top-level panel, including module and function
 %% listboxes and several buttons.
 setupLeftColumn(Parent) ->
-    Splitter = wxSplitterWindow:new(Parent, [{id, ?MODFUN_SPLITTER}]),
-    ref_add(?MODFUN_SPLITTER, Splitter),
+    Splitter = wxSplitterWindow:new(Parent, [{id, ?MOD_FUN_SPLITTER}]),
+    ref_add(?MOD_FUN_SPLITTER, Splitter),
     ModulePanel = wxPanel:new(Splitter),
     ModuleSizer = setupModuleSizer(ModulePanel),
     wxWindow:setSizerAndFit(ModulePanel, ModuleSizer),
     FunctionPanel = wxPanel:new(Splitter),
     FunctionSizer = setupFunctionSizer(FunctionPanel),
     wxWindow:setSizerAndFit(FunctionPanel, FunctionSizer),
-    wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_MODFUN),
-    wxSplitterWindow:setSashGravity(Splitter, ?GRAV_MODFUN),
+    wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_MOD_FUN),
+    wxSplitterWindow:setSashGravity(Splitter, ?GRAV_MOD_FUN),
     wxSplitterWindow:splitHorizontally(Splitter, ModulePanel, FunctionPanel),
     %% Add padding to the whole sizer.
     LeftColumnSizerOuter = wxBoxSizer:new(?wxVERTICAL),
@@ -168,8 +167,7 @@ setupModuleSizer(Parent) ->
     wxSizer:add(AddRemSizer, AddButton,
 		[{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
     wxSizer:add(AddRemSizer, RemButton,
-		[{proportion, 1}, {flag, ?wxLEFT},
-		 {border, 5}]),
+		[{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
     ClrSizer = wxBoxSizer:new(?wxHORIZONTAL),
     wxSizer:add(ClrSizer, ClearButton,
      		[{proportion, 1}, {border, 5}]),
@@ -184,9 +182,7 @@ setupModuleSizer(Parent) ->
 		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
                  {border, 10}]),
     wxSizer:add(ModuleSizer, ClrSizer,
-		[{proportion, 0},
-		 {flag, ?wxEXPAND bor ?wxALL},
-                 {border, 10}]),
+		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
     %% Add padding to the whole sizer.
     ModuleSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(ModuleSizerOuter, ModuleSizer,
@@ -201,15 +197,23 @@ setupFunctionSizer(Parent) ->
     ref_add(?FUNCTION_LIST, FunctionList),
     AnalyzeButton = wxButton:new(Parent, ?ANALYZE, [{label, "Ana&lyze"}]),
     ref_add(?ANALYZE, AnalyzeButton),
-    %% Setup function sizers
+    StopButton = wxButton:new(Parent, ?STOP, [{label, "&Stop"}]),
+    ref_add(?STOP, StopButton),
+    %% Setup sizers
+    AnalStopSizer = wxBoxSizer:new(?wxHORIZONTAL),
+    wxSizer:add(AnalStopSizer, AnalyzeButton,
+		[{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
+    wxSizer:add(AnalStopSizer, StopButton,
+		[{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
+    ref_add(?ANAL_STOP_SIZER, AnalStopSizer),
     FunctionSizer = wxStaticBoxSizer:new(FunctionBox, ?wxVERTICAL),
-    ref_add(?ANALYZE_SIZER, FunctionSizer),
     wxSizer:add(FunctionSizer, FunctionList,
 		[{proportion, 1},
 		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
 		 {border, 10}]),
-    wxSizer:add(FunctionSizer, AnalyzeButton,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+    wxSizer:add(FunctionSizer, AnalStopSizer,
+		[{proportion, 0},
+		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
                  {border, 10}]),
     %% Add padding to the whole sizer.
     FunctionSizerOuter = wxBoxSizer:new(?wxVERTICAL),
@@ -460,18 +464,26 @@ setupMenu(MenuBar, [{Title, Items, Options}|Rest]) ->
 setupMenuItems(_Menu, []) ->
     ok;
 setupMenuItems(Menu, [Options|Rest]) ->
-    case lists:keytake(sub, 1, Options) of
-	{value, {_, SubItems}, NewOptions} ->
-	    Submenu = wxMenu:new(),
-	    setupMenuItems(Submenu, SubItems),
-	    Item = wxMenuItem:new(NewOptions),
-	    wxMenuItem:setSubMenu(Item, Submenu),
-	    wxMenu:append(Menu, Item),
-	    setupMenuItems(Menu, Rest);
-	false ->
-	    Item = wxMenuItem:new(Options),
-	    wxMenu:append(Menu, Item),
-	    setupMenuItems(Menu, Rest)
+    Item =
+        case lists:keytake(sub, 1, Options) of
+            {value, {sub, SubItems}, NewOptions} ->
+                Submenu = wxMenu:new(),
+                setupMenuItems(Submenu, SubItems),
+                I = createMenuItem(NewOptions),
+                wxMenuItem:setSubMenu(I, Submenu),
+                I;
+            false -> createMenuItem(Options)
+        end,
+    wxMenu:append(Menu, Item),
+    setupMenuItems(Menu, Rest).
+
+createMenuItem(Options) ->
+    case lists:keytake(label, 1, Options) of
+        {value, {label, Label}, NewOptions} ->
+            Item = wxMenuItem:new(NewOptions),
+            ref_add(Label, Item),
+            Item;
+        false -> wxMenuItem:new(Options)
     end.
 
 %%%----------------------------------------------------------------------
@@ -485,7 +497,7 @@ ref_lookup(Id) ->
     ets:lookup_element(?NT_REF, Id, 2).
 
 ref_start() ->
-    ets:new(?NT_REF, [set, named_table]).
+    ets:new(?NT_REF, [set, public, named_table]).
 
 ref_stop() ->
     ets:delete(?NT_REF).
@@ -546,8 +558,17 @@ addListItems(Id, Items) ->
 	_Other -> wxControlWithItems:setSelection(List, Count)
     end.
 
+analyze_proc() ->
+    Env = wx:get_env(),
+    spawn_link(fun() ->
+                       wx:set_env(Env),
+                       analyze(),
+                       send_event_msg_to_self(?ERROR_LIST)
+               end).
+
 %% Analyze selected function.
 analyze() ->
+    register(?RP_GUI_ANALYSIS, self()),
     Module = getModule(),
     {Function, Arity} = getFunction(),
     ModuleList = ref_lookup(?MODULE_LIST),
@@ -592,16 +613,17 @@ analysis_init() ->
     clearProbs(),
     clearErrors(),
     clearIleaves(),
-    AnalyzeSizer = ref_lookup(?ANALYZE_SIZER),
+    disableMenuItems(),
+    AnalStopSizer = ref_lookup(?ANAL_STOP_SIZER),
     AnalyzeButton = ref_lookup(?ANALYZE),
     Parent = wxWindow:getParent(AnalyzeButton),
-    Gauge = wxGauge:new(Parent, ?wxID_ANY, 100,
-			[{size, {200, 20}}, {style, ?wxGA_HORIZONTAL}]),
-    ref_add(?ANALYZE_GAUGE, Gauge),
-    wxSizer:replace(AnalyzeSizer, AnalyzeButton, Gauge),
+    AnalyzeGauge = wxGauge:new(Parent, ?wxID_ANY, 100,
+                               [{style, ?wxGA_HORIZONTAL}]),
+    ref_add(?ANALYZE_GAUGE, AnalyzeGauge),
+    wxSizer:replace(AnalStopSizer, AnalyzeButton, AnalyzeGauge),
     wxWindow:destroy(AnalyzeButton),
-    wxSizer:layout(AnalyzeSizer),
-    start_pulsing(Gauge).
+    wxSizer:layout(AnalStopSizer),
+    start_pulsing(AnalyzeGauge).
 
 %% Cleanup actions after completing analysis
 %% (reactivate `analyze` button, etc.).
@@ -610,15 +632,27 @@ analysis_cleanup(Result) ->
     analysis_cleanup_common().
 
 analysis_cleanup_common() ->
-    Gauge = ref_lookup(?ANALYZE_GAUGE),
-    stop_pulsing(Gauge),
-    AnalyzeSizer = ref_lookup(?ANALYZE_SIZER),
-    Parent = wxWindow:getParent(Gauge),
+    enableMenuItems(),
+    AnalyzeGauge = ref_lookup(?ANALYZE_GAUGE),
+    stop_pulsing(AnalyzeGauge),
+    AnalStopSizer = ref_lookup(?ANAL_STOP_SIZER),
+    Parent = wxWindow:getParent(AnalyzeGauge),
     AnalyzeButton = wxButton:new(Parent, ?ANALYZE, [{label, "Ana&lyze"}]),
     ref_add(?ANALYZE, AnalyzeButton),
-    wxSizer:replace(AnalyzeSizer, Gauge, AnalyzeButton),
-    wxWindow:destroy(Gauge),
-    wxSizer:layout(AnalyzeSizer).
+    wxSizer:replace(AnalStopSizer, AnalyzeGauge, AnalyzeButton),
+    wxWindow:destroy(AnalyzeGauge),
+    receive
+        analysis_stopped ->
+            wxMenuItem:enable(ref_lookup(?STOP_MENU_ITEM)),
+            StopGauge = ref_lookup(?STOP_GAUGE),
+            stop_pulsing(StopGauge),
+            StopButton = wxButton:new(Parent, ?STOP, [{label, "&Stop"}]),
+            ref_add(?STOP, StopButton),
+            wxSizer:replace(AnalStopSizer, StopGauge, StopButton),
+            wxWindow:destroy(StopGauge)
+    after 0 -> ok
+    end,
+    wxSizer:layout(AnalStopSizer).
 
 analysis_show_errors({error, analysis, _Info, Tickets}) ->
     Errors = [ticket:get_error(Ticket) || Ticket <- Tickets],
@@ -636,7 +670,7 @@ start_pulsing(Gauge) ->
     Pid = spawn(fun() -> wx:set_env(Env), pulse(Gauge) end),
     [Hash] = io_lib:format("~c", [erlang:phash2(Gauge)]),
     Reg = list_to_atom("_._GP_" ++ Hash),
-    register(Reg, Pid).		       
+    register(Reg, Pid).
 
 stop_pulsing(Gauge) ->
     [Hash] = io_lib:format("~c", [erlang:phash2(Gauge)]),
@@ -770,7 +804,7 @@ loadPrefs() ->
 %% Do nothing for now.
 savePrefs() ->
     ok.
-    
+
 clearAll() ->
     clearMods(),
     clearFuns(),
@@ -813,6 +847,16 @@ clearSrc() ->
     wxStyledTextCtrl:setReadOnly(SourceText, false),
     wxStyledTextCtrl:clearAll(SourceText),
     wxStyledTextCtrl:setReadOnly(SourceText, true).
+
+disableMenuItems() ->
+    wxMenuItem:enable(ref_lookup(?ANALYZE_MENU_ITEM), [{enable, false}]),
+    wxMenuItem:enable(ref_lookup(?EXPORT_MENU_ITEM), [{enable, false}]),
+    wxMenuItem:enable(ref_lookup(?IMPORT_MENU_ITEM), [{enable, false}]).
+
+enableMenuItems() ->
+    wxMenuItem:enable(ref_lookup(?ANALYZE_MENU_ITEM)),
+    wxMenuItem:enable(ref_lookup(?EXPORT_MENU_ITEM)),
+    wxMenuItem:enable(ref_lookup(?IMPORT_MENU_ITEM)).
 
 %% Export dialog
 exportDialog(Parent) ->
@@ -963,6 +1007,26 @@ remove() ->
 	       true ->
 		    wxControlWithItems:setSelection(ModuleList, Selection)
 	    end
+    end.
+
+%% Kill the analysis process.
+stop() ->
+    case whereis(?RP_SCHED) of
+        undefined -> ok;
+        _Pid ->
+            ?RP_SCHED ! stop_analysis,
+            wxMenuItem:enable(ref_lookup(?STOP_MENU_ITEM), [{enable, false}]),
+            AnalStopSizer = ref_lookup(?ANAL_STOP_SIZER),
+            StopButton = ref_lookup(?STOP),
+            Parent = wxWindow:getParent(StopButton),
+            StopGauge = wxGauge:new(Parent, ?wxID_ANY, 100,
+                                    [{style, ?wxGA_HORIZONTAL}]),
+            ref_add(?STOP_GAUGE, StopGauge),
+            wxSizer:replace(AnalStopSizer, StopButton, StopGauge),
+            wxWindow:destroy(StopButton),
+            wxSizer:layout(AnalStopSizer),
+            start_pulsing(StopGauge),
+            ?RP_GUI_ANALYSIS ! analysis_stopped
     end.
 
 %% XXX: hack (send event message to self)
@@ -1123,8 +1187,7 @@ loop() ->
             send_event_msg_to_self(?MODULE_LIST),
 	    loop();
 	#wx{id = ?ANALYZE, event = #wxCommand{type = command_button_clicked}} ->
-	    analyze(),
-            send_event_msg_to_self(?ERROR_LIST),
+            analyze_proc(),
 	    loop();
 	#wx{id = ?CLEAR, event = #wxCommand{type = command_button_clicked}} ->
             clearMods(),
@@ -1133,6 +1196,9 @@ loop() ->
 	    loop();
 	#wx{id = ?REMOVE, event = #wxCommand{type = command_button_clicked}} ->
 	    remove(),
+	    loop();
+        #wx{id = ?STOP, event = #wxCommand{type = command_button_clicked}} ->
+            stop(),
 	    loop();
 	%% -------------------- Listbox handlers --------------------- %%
 	#wx{id = ?ERROR_LIST,
@@ -1154,8 +1220,7 @@ loop() ->
 	    loop();
 	#wx{id = ?FUNCTION_LIST,
 	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
-	    analyze(),
-            send_event_msg_to_self(?ERROR_LIST),
+            analyze_proc(),
 	    loop();
 	#wx{id = ?FUNCTION_LIST,
 	    event = #wxCommand{type = command_listbox_selected}} ->
@@ -1185,14 +1250,15 @@ loop() ->
             send_event_msg_to_self(?MODULE_LIST),
 	    loop();
 	#wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
-	    analyze(),
-            send_event_msg_to_self(?ERROR_LIST),
+            analyze_proc(),
 	    loop();
 	#wx{id = ?CLEAR, event = #wxCommand{type = command_menu_selected}} ->
             clearMods(),
             clearFuns(),
             clearSrc(),
 	    loop();
+        #wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
+	    ok;
         #wx{id = ?EXPORT, event = #wxCommand{type = command_menu_selected}} ->
             Frame = ref_lookup(?FRAME),
             exportDialog(Frame),
@@ -1205,7 +1271,17 @@ loop() ->
 	    Frame = ref_lookup(?FRAME),
 	    prefsDialog(Frame),
 	    loop();
-	#wx{id = ?THEME_LIGHT,
+	#wx{id = ?REFRESH, event = #wxCommand{type = command_menu_selected}} ->
+	    refresh(),
+            send_event_msg_to_self(?FUNCTION_LIST),
+	    loop();
+	#wx{id = ?REMOVE, event = #wxCommand{type = command_menu_selected}} ->
+	    remove(),
+	    loop();
+        #wx{id = ?STOP, event = #wxCommand{type = command_menu_selected}} ->
+            stop(),
+	    loop();
+        #wx{id = ?THEME_LIGHT,
 	    event = #wxCommand{type = command_menu_selected}} ->
 	    SourceText = ref_lookup(?SOURCE_TEXT),
 	    setupSourceText(SourceText, light),
@@ -1215,15 +1291,6 @@ loop() ->
 	    SourceText = ref_lookup(?SOURCE_TEXT),
 	    setupSourceText(SourceText, dark),
 	    loop();
-	#wx{id = ?REFRESH, event = #wxCommand{type = command_menu_selected}} ->
-	    refresh(),
-            send_event_msg_to_self(?FUNCTION_LIST),
-	    loop();
-	#wx{id = ?REMOVE, event = #wxCommand{type = command_menu_selected}} ->
-	    remove(),
-	    loop();
-	#wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
-	    ok;
 	%% -------------------- Misc handlers -------------------- %%
 	%% Every time a splitter sash changes its position, refresh the whole
 	%% window to avoid annoying artifacts from the previous position of the

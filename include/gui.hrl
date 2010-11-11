@@ -1,6 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : gui.hrl
-%%% Author      : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <christakismaria@gmail.com>
 %%% Description : GUI header file
 %%% Created     : 31 Mar 2010
 %%%----------------------------------------------------------------------
@@ -17,9 +18,11 @@
 -define(MENU_SPEC,
 	[{"&File",
           [[{id, ?IMPORT}, {text, "&Import...\tCtrl-I"},
-            {help, "Import analysis information from file."}],
+            {help, "Import analysis information from file."},
+            {label, ?IMPORT_MENU_ITEM}],
            [{id, ?EXPORT}, {text, "&Export...\tCtrl-E"},
-            {help, "Export analysis information to file."}],
+            {help, "Export analysis information to file."},
+            {label, ?EXPORT_MENU_ITEM}],
 	   [{id, ?wxID_SEPARATOR}, {kind, ?wxITEM_SEPARATOR}],
            [{id, ?EXIT}, {help, "Quit CED."}]]},
 	 {"&Edit",
@@ -37,7 +40,11 @@
 	    {help, "Refresh selected module (reload file from disk)."}]]},
 	 {"&Run",
 	  [[{id, ?ANALYZE}, {text, "Ana&lyze\tCtrl-L"},
-	    {help, "Analyze selected function."}]]},
+	    {help, "Analyze selected function."},
+            {label, ?ANALYZE_MENU_ITEM}],
+           [{id, ?STOP}, {text, "&Stop\tCtrl-S"},
+            {help, "Stop analysis of selected function."},
+            {label, ?STOP_MENU_ITEM}]]},
 	 {"&View",
 	  [[{id, ?wxID_ANY}, {text, "Source viewer color theme"},
 	    {help, "Select a color theme for the source viewer."},
@@ -65,7 +72,7 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(ICON_PATH32, "img/icon32.png").
 -define(ICON_PATH64, "img/icon64.png").
 
-%% GUI compoenent definitions
+%% GUI component definitions
 -define(ABOUT, ?wxID_ABOUT).
 -define(ADD, ?wxID_ADD).
 -define(CLEAR, ?wxID_CLEAR).
@@ -73,52 +80,59 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(REMOVE, ?wxID_REMOVE).
 -define(SEPARATOR, ?wxID_SEPARATOR).
 -define(EXIT, ?wxID_EXIT).
--define(ANALYZE, 500).
--define(FRAME, 501).
--define(FUNCTION_LIST, 502).
--define(GRAPH_PANEL, 503).
--define(LOG_TEXT, 504).
--define(MODULE_LIST, 505).
--define(NOTEBOOK, 506).
--define(SCR_GRAPH, 507).
--define(SOURCE_TEXT, 508).
--define(STATIC_BMP, 509).
--define(STATUS_BAR, 510).
--define(THEME_LIGHT, 511).
--define(THEME_DARK, 512).
--define(REFRESH, 513).
--define(PROC_TEXT, 514).
+
+-define(ANAL_STOP_SIZER, 500).
+-define(ANALYZE, 501).
+-define(ANALYZE_GAUGE, 502).
+-define(ANALYZE_MENU_ITEM, 503).
+-define(ERROR_ILEAVE_SPLITTER, 504).
+-define(ERROR_LIST, 505).
+-define(ERROR_TEXT, 506).
+-define(EXPORT, 507).
+-define(EXPORT_MENU_ITEM, 508).
+-define(FRAME, 509).
+-define(FUNCTION_LIST, 510).
+-define(GRAPH_PANEL, 511).
+-define(ILEAVE_LIST, 512).
+-define(IMPORT, 513).
+-define(IMPORT_MENU_ITEM, 514).
 -define(LOG_NOTEBOOK, 515).
--define(ERROR_LIST, 516).
--define(ILEAVE_LIST, 517).
--define(ERROR_TEXT, 518).
--define(PREFS, 519).
--define(PREB_ENABLED_CBOX, 520).
+-define(LOG_TEXT, 516).
+-define(MOD_FUN_SPLITTER, 517).
+-define(MODULE_LIST, 518).
+-define(NOTEBOOK, 519).
+-define(NOTEBOOK_SPLITTER, 520).
 -define(PREB_BOUND_SPIN, 521).
--define(EXPORT, 522).
--define(IMPORT, 523).
--define(TOP_SPLITTER, 524).
--define(MODFUN_SPLITTER, 525).
--define(NOTEBOOK_SPLITTER, 526).
--define(ERROR_ILEAVE_SPLITTER, 527).
--define(ANALYZE_SIZER, 528).
--define(ANALYZE_GAUGE, 529).
+-define(PREB_ENABLED_CBOX, 522).
+-define(PREFS, 523).
+-define(PROC_TEXT, 524).
+-define(REFRESH, 525).
+-define(SCR_GRAPH, 526).
+-define(SOURCE_TEXT, 527).
+-define(STATIC_BMP, 528).
+-define(STATUS_BAR, 529).
+-define(STOP, 530).
+-define(STOP_GAUGE, 531).
+-define(STOP_MENU_ITEM, 532).
+-define(THEME_DARK, 533).
+-define(THEME_LIGHT, 534).
+-define(TOP_SPLITTER, 535).
 
 %% Splitter init-sizes
 -define(SPLITTER_INIT, [{?TOP_SPLITTER, 300},
-			{?MODFUN_SPLITTER, 300},
+			{?MOD_FUN_SPLITTER, 300},
 			{?NOTEBOOK_SPLITTER, 530},
 			{?ERROR_ILEAVE_SPLITTER, 250}]).
 
 %% Splitter min-sizes
 -define(MIN_TOP, 250).
--define(MIN_MODFUN, 50).
+-define(MIN_MOD_FUN, 50).
 -define(MIN_NOTEBOOK, 50).
 -define(MIN_ERROR_ILEAVE, 50).
 
 %% Splitter gravities
 -define(GRAV_TOP, 0.0).
--define(GRAV_MODFUN, 0.3).
+-define(GRAV_MOD_FUN, 0.3).
 -define(GRAV_NOTEBOOK, 0.8).
 -define(GRAV_ERROR_ILEAVE, 0.2).
 

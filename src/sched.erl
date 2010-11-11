@@ -204,29 +204,30 @@ interleave_aux(Target, Options, Parent) ->
     Result = interleave_outer_loop(Target, 0, [], -1, PreBound, Options),
     blocked_stop(),
     state_stop(),
-    unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
 
 interleave_outer_loop(_T, RunCnt, Tickets, MaxBound, MaxBound, _Opt) ->
-    case Tickets of
-	[] -> {ok, RunCnt};
-	_Any -> {error, RunCnt, ticket:sort(Tickets)}
-    end;
+    interleave_outer_loop_ret(Tickets, RunCnt);
 interleave_outer_loop(Target, RunCnt, Tickets, CurrBound, MaxBound, Options) ->
-    {NewRunCnt, NewTickets} = interleave_loop(Target, 1, [], Options),
+    {NewRunCnt, NewTickets, Stop} = interleave_loop(Target, 1, [], Options),
     TotalRunCnt = NewRunCnt + RunCnt,
     TotalTickets = NewTickets ++ Tickets,
     state_swap(),
     case state_peak() of
-	no_state ->
-	    case TotalTickets of
-		[] -> {ok, TotalRunCnt};
-		_Any -> {error, TotalRunCnt, ticket:sort(TotalTickets)}	
-	    end;
+	no_state -> interleave_outer_loop_ret(TotalTickets, TotalRunCnt);
 	_State ->
-	    interleave_outer_loop(Target, TotalRunCnt, TotalTickets,
-				  CurrBound + 1, MaxBound, Options)
+            case Stop of
+                true -> interleave_outer_loop_ret(TotalTickets, TotalRunCnt);
+                false ->
+                    interleave_outer_loop(Target, TotalRunCnt, TotalTickets,
+                                          CurrBound + 1, MaxBound, Options)
+            end
     end.
+
+interleave_outer_loop_ret([], RunCnt) ->
+    {ok, RunCnt};
+interleave_outer_loop_ret(Tickets, RunCnt) ->
+    {error, RunCnt, ticket:sort(Tickets)}.
 
 %% Main loop for producing process interleavings.
 %% The first process (FirstPid) is created linked to the scheduler,
@@ -237,7 +238,7 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
     Det = lists:member(details, Options),
     %% Lookup state to replay.
     case state_load() of
-        no_state -> {RunCnt - 1, Tickets};
+        no_state -> {RunCnt - 1, Tickets, false};
         ReplayState ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
@@ -267,7 +268,7 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
                         [Ticket|Tickets];
 		    _OtherRet1 -> Tickets
                 end,
-	    NewRunCnt = 
+	    NewRunCnt =
 		case Ret of
 		    block ->
 			?debug_1("-----------------------~n"),
@@ -278,7 +279,11 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
 			?debug_1("Run terminated.~n~n"),
 			RunCnt + 1
 		end,
-            interleave_loop(Target, NewRunCnt, NewTickets, Options)
+            receive
+                stop_analysis -> {NewRunCnt - 1, NewTickets, true}
+            after 0 ->
+                    interleave_loop(Target, NewRunCnt, NewTickets, Options)
+            end
     end.
 
 %%%----------------------------------------------------------------------
@@ -458,7 +463,7 @@ handler(fun_exit, Pid, #context{details = Det} = Context, {Target, Reason}) ->
 %% Discard the exited process (don't add to any set).
 %% If the exited process is irrelevant (i.e. has no LID assigned),
 %% do nothing and call the dispatcher.
-handler(exit, Pid, 
+handler(exit, Pid,
 	#context{active = Active, blocked = Blocked, details = Det} = Context,
 	Reason) ->
     Lid = lid:from_pid(Pid),
