@@ -178,8 +178,7 @@ replay(Ticket) ->
 %%   details: Produce detailed interleaving information (see `replay_logger`).
 interleave(Target, Options) ->
     Self = self(),
-    %% TODO: Need spawn_link?
-    spawn(fun() -> interleave_aux(Target, Options, Self) end),
+    spawn_link(fun() -> interleave_aux(Target, Options, Self) end),
     receive
 	{interleave_result, Result} -> Result
     end.

@@ -1038,14 +1038,14 @@ send_event_msg_to_self(Id) ->
 
 %% Set ListBox (Id) data (remove existing).
 setListData(Id, DataList) ->
-    setListData_aux(Id, DataList, 0).
-
-setListData_aux(_Id, [], _N) ->
-    ok;
-setListData_aux(Id, [Data|Rest], N) ->
     List = ref_lookup(Id),
+    setListData_aux(List, DataList, 0).
+
+setListData_aux(_List, [], _N) ->
+    ok;
+setListData_aux(List, [Data|Rest], N) ->
     wxControlWithItems:setClientData(List, N, Data),
-    setListData_aux(Id, Rest, N + 1).
+    setListData_aux(List, Rest, N + 1).
 
 %% Set ListBox (Id) items (remove existing).
 setListItems(Id, Items) ->
