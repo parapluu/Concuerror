@@ -584,7 +584,6 @@ analyze_proc() ->
 
 %% Analyze selected function.
 analyze() ->
-    register(?RP_GUI_ANALYSIS, self()),
     Module = getModule(),
     {Function, Arity} = getFunction(),
     ModuleList = ref_lookup(?MODULE_LIST),
@@ -607,8 +606,7 @@ analyze() ->
 		    end
 	    end;
        true -> continue            
-    end,
-    unregister(?RP_GUI_ANALYSIS).
+    end.
 
 analyze_aux(Module, Function, Args, Files) ->
     analysis_init(),
@@ -654,16 +652,16 @@ analysis_cleanup() ->
     ref_add(?ANALYZE, AnalyzeButton),
     wxSizer:replace(AnalStopSizer, AnalyzeGauge, AnalyzeButton),
     wxWindow:destroy(AnalyzeGauge),
-    receive
-        analysis_stopped ->
-            wxMenuItem:enable(ref_lookup(?STOP_MENU_ITEM)),
-            StopGauge = ref_lookup(?STOP_GAUGE),
-            stop_pulsing(StopGauge),
-            StopButton = wxButton:new(Parent, ?STOP, [{label, "&Stop"}]),
-            ref_add(?STOP, StopButton),
-            wxSizer:replace(AnalStopSizer, StopGauge, StopButton),
-            wxWindow:destroy(StopGauge)
-    after 0 -> ok
+    wxMenuItem:enable(ref_lookup(?STOP_MENU_ITEM)),
+    try
+        StopGauge = ref_lookup(?STOP_GAUGE),
+        stop_pulsing(StopGauge),
+        StopButton = wxButton:new(Parent, ?STOP, [{label, "&Stop"}]),
+        ref_add(?STOP, StopButton),
+        wxSizer:replace(AnalStopSizer, StopGauge, StopButton),
+        wxWindow:destroy(StopGauge)
+    catch
+        error:badarg -> continue
     end,
     wxSizer:layout(AnalStopSizer).
 
@@ -1024,22 +1022,21 @@ remove() ->
 
 %% Kill the analysis process.
 stop() ->
-    case whereis(?RP_SCHED) of
-        undefined -> ok;
-        _Pid ->
-            ?RP_SCHED ! stop_analysis,
-            wxMenuItem:enable(ref_lookup(?STOP_MENU_ITEM), [{enable, false}]),
-            AnalStopSizer = ref_lookup(?ANAL_STOP_SIZER),
-            StopButton = ref_lookup(?STOP),
-            Parent = wxWindow:getParent(StopButton),
-            StopGauge = wxGauge:new(Parent, ?wxID_ANY, 100,
-                                    [{style, ?wxGA_HORIZONTAL}]),
-            ref_add(?STOP_GAUGE, StopGauge),
-            wxSizer:replace(AnalStopSizer, StopButton, StopGauge),
-            wxWindow:destroy(StopButton),
-            wxSizer:layout(AnalStopSizer),
-            start_pulsing(StopGauge),
-            ?RP_GUI_ANALYSIS ! analysis_stopped
+    try
+        ?RP_SCHED ! stop_analysis,
+        wxMenuItem:enable(ref_lookup(?STOP_MENU_ITEM), [{enable, false}]),
+        StopButton = ref_lookup(?STOP),
+        Parent = wxWindow:getParent(StopButton),
+        StopGauge = wxGauge:new(Parent, ?wxID_ANY, 100,
+                                [{style, ?wxGA_HORIZONTAL}]),
+        ref_add(?STOP_GAUGE, StopGauge),
+        AnalStopSizer = ref_lookup(?ANAL_STOP_SIZER),
+        wxSizer:replace(AnalStopSizer, StopButton, StopGauge),
+        wxWindow:destroy(StopButton),
+        wxSizer:layout(AnalStopSizer),
+        start_pulsing(StopGauge)
+    catch
+        error:badarg -> continue
     end.
 
 %% XXX: hack (send event message to self)
