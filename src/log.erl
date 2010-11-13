@@ -13,7 +13,7 @@
 %% Non gen_evt exports.
 -export([internal/1, internal/2]).
 %% Log API exports.
--export([attach/2, detach/2, start/0, stop/0, log/1, log/2]).
+-export([attach/2, detach/2, start/0, stop/0, log/1, log/2, show_error/1]).
 %% Log callback exports.
 -export([init/1, terminate/2, handle_call/2, handle_info/2,
 	 handle_event/2, code_change/3]).
@@ -26,7 +26,7 @@
 %%% Callback types
 %%%----------------------------------------------------------------------
 
--type event() :: {'msg', string()} | {'result', term()}.
+-type event() :: {'msg', string()} | {'error', ticket:ticket()}.
 -type state() :: [].
 
 -export_type([event/0, state/0]).
@@ -100,6 +100,13 @@ log(String, Args) when is_list(String), is_list(Args) ->
     LogMsg = io_lib:format(String, Args),
     gen_event:notify(log, {msg, LogMsg}).
 
+%% @spec show_error(ticket:ticket()) -> 'ok'
+%% @doc: Shows an error.
+-spec show_error(ticket:ticket()) -> 'ok'.
+
+show_error(Ticket) ->
+    gen_event:notify(log, {error, Ticket}).
+
 %%%----------------------------------------------------------------------
 %%% Callback functions
 %%%----------------------------------------------------------------------
@@ -118,6 +125,8 @@ terminate(_Reason, _State) ->
 
 handle_event({msg, String}, State) ->
     io:format("~s", [String]),
+    {ok, State};
+handle_event({error, _Ticket}, State) ->
     {ok, State}.
 
 -spec code_change(term(), term(), term()) -> no_return().

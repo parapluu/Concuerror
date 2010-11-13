@@ -265,6 +265,10 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
                     {error, Error, ErrorState} ->
                         {files, Files} = lists:keyfind(files, 1, Options),
                         Ticket = ticket:new(Target, Files, Error, ErrorState),
+                        case Det of
+                            true -> continue;
+                            false -> log:show_error(Ticket)
+                        end,
                         [Ticket|Tickets];
 		    _OtherRet1 -> Tickets
                 end,

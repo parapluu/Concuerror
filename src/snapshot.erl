@@ -10,10 +10,9 @@
 
 -module(snapshot).
 
--export([export/4, get_analysis/1, get_error_id/1,
-         get_module_id/1, get_ileave_id/1, get_function_id/1,
-         get_modules/1, get_selection/1, import/1,
-         selection/4]).
+-export([export/4, get_analysis/1, get_module_id/1,
+         get_function_id/1, get_modules/1, get_selection/1,
+         import/1, selection/2]).
 
 -include("gen.hrl").
 
@@ -24,8 +23,7 @@
 -type analysis()  :: 'undef' | sched:analysis_ret().
 -type files()     :: [binary()].
 -type modules()   :: [string()].
--type selection() :: [{'module' | 'function' | 'error' | 'interleaving',
-                       integer()}].
+-type selection() :: [{'module' | 'function', integer()}].
 
 -record(snapshot, {analysis  :: analysis(),
                    files     :: files(),
@@ -76,18 +74,6 @@ from_file(File) ->
 get_analysis(#snapshot{analysis = Analysis}) ->
     Analysis.
 
--spec get_error_id(selection()) -> integer().
-
-get_error_id(Selection) ->
-    {error, ErrorID} = lists:keyfind(error, 1, Selection),
-    ErrorID.
-
--spec get_ileave_id(selection()) -> integer().
-
-get_ileave_id(Selection) ->
-    {interleaving, IleaveID} = lists:keyfind(interleaving, 1, Selection),
-    IleaveID.
-
 -spec get_module_id(selection()) -> integer().
 
 get_module_id(Selection) ->
@@ -131,11 +117,10 @@ new(Analysis, Files, Modules, Selection) ->
     #snapshot{analysis = Analysis, files = Files,
               modules = Modules, selection = Selection}.
 
--spec selection(integer(), integer(), integer(), integer()) -> selection().
+-spec selection(integer(), integer()) -> selection().
 
-selection(ModuleID, FunctionID, ErrorID, IleaveID) ->
-    [{module, ModuleID}, {function, FunctionID},
-     {error, ErrorID}, {interleaving, IleaveID}].
+selection(ModuleID, FunctionID) ->
+    [{module, ModuleID}, {function, FunctionID}].
 
 -spec to_file(file(), snapshot()) -> 'ok'.
 

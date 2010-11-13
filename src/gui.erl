@@ -84,6 +84,16 @@ terminate(_Reason, _State) ->
 handle_event({msg, String}, State) ->
     LogText = ref_lookup(?LOG_TEXT),
     wxTextCtrl:appendText(LogText, String),
+    {ok, State};
+handle_event({error, Ticket}, State) ->
+    Error = ticket:get_error(Ticket),
+    ErrorItem = util:flat_format("~s~n~s", [error:type(Error),
+                                            error:short(Error)]),
+    List = ref_lookup(?ERROR_LIST),
+    Count = wxControlWithItems:getCount(List),
+    wxListBox:insertItems(List, [ErrorItem], Count),
+    wxControlWithItems:setSelection(List, 0),
+    addListData(?ERROR_LIST, [{Ticket, []}]),
     {ok, State}.
 
 %%%----------------------------------------------------------------------
@@ -549,6 +559,11 @@ addDialog(Parent) ->
     end,
     wxDialog:destroy(Dialog).
 
+addListData(Id, DataList) ->
+    List = ref_lookup(Id),
+    Count = wxControlWithItems:getCount(List),
+    setListData_aux(List, DataList, Count - 1).
+
 %% Add items to ListBox (Id) and select first of newly added modules
 addListItems(Id, Items) ->
     List = ref_lookup(Id),
@@ -605,7 +620,7 @@ analyze_aux(Module, Function, Args, Files) ->
 	      end,
     Result = sched:analyze(Target, NewOpts),
     snapshot_add_analysis_ret(Result),
-    analysis_cleanup(Result).
+    analysis_cleanup().
 
 %% Initialization actions before starting analysis (clear log, etc.).
 analysis_init() ->
@@ -629,11 +644,7 @@ analysis_init() ->
 
 %% Cleanup actions after completing analysis
 %% (reactivate `analyze` button, etc.).
-analysis_cleanup(Result) ->
-    analysis_show_errors(Result),
-    analysis_cleanup_common().
-
-analysis_cleanup_common() ->
+analysis_cleanup() ->
     enableMenuItems(),
     AnalyzeGauge = ref_lookup(?ANALYZE_GAUGE),
     stop_pulsing(AnalyzeGauge),
@@ -1134,12 +1145,7 @@ snapshot_export(Export) ->
     ModuleID = wxListBox:getSelection(ModuleList),
     FunctionList = ref_lookup(?FUNCTION_LIST),
     FunctionID = wxListBox:getSelection(FunctionList),
-    ErrorList = ref_lookup(?ERROR_LIST),
-    ErrorID = wxListBox:getSelection(ErrorList),
-    IleaveList = ref_lookup(?ILEAVE_LIST),
-    IleaveID = wxListBox:getSelection(IleaveList),
-    Selection = snapshot:selection(ModuleID, FunctionID,
-                                   ErrorID, IleaveID),
+    Selection = snapshot:selection(ModuleID, FunctionID),
     snapshot:export(AnalysisRet, Files, Selection, Export).
 
 snapshot_import(Import) ->
@@ -1164,12 +1170,10 @@ snapshot_import(Import) ->
             AnalysisRet = snapshot:get_analysis(Snapshot),
             analysis_show_errors(AnalysisRet),
             ErrorList = ref_lookup(?ERROR_LIST),
-            ErrorID = snapshot:get_error_id(Selection),
-            wxControlWithItems:setSelection(ErrorList, ErrorID),
+            wxControlWithItems:setSelection(ErrorList, 0),
             show_details(),
             IleaveList = ref_lookup(?ILEAVE_LIST),
-            IleaveID = snapshot:get_ileave_id(Selection),
-            wxControlWithItems:setSelection(IleaveList, IleaveID)
+            wxControlWithItems:setSelection(IleaveList, 0)
     end.
 
 snapshot_init() ->
