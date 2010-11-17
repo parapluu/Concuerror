@@ -17,142 +17,94 @@
 -spec test() -> 'ok' | {'error', term()}.
 
 
--spec interleave_test_() -> term().
+-spec system_test_() -> term().
 
-interleave_test_() ->
-    {setup,
-     fun() -> log:start() end,
-     fun(_) -> log:stop() end,
-     [{"test01",
-       ?_assertMatch({ok, {test, test01, []}},
-		     sched:analyze({test, test01, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test02",
-       ?_assertMatch({ok, {test, test02, []}},
-		     sched:analyze({test, test02, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test03",
-       ?_assertMatch({ok, {test, test03, []}},
-		     sched:analyze({test, test03, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test04",
-       ?_test(
-	  begin
-	      Target = {test, test04, []},
-	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Target, [Ticket|_Tickets]} =
-		  sched:analyze(Target, Options),
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Deadlock", error:type(ticket:get_error(Ticket)))
-	  end)},
-      {"test05",
-       ?_test(
-	  begin
-	      Target = {test, test05, []},
-	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Target, [Ticket|_Tickets]} =
-		  sched:analyze(Target, Options),
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Deadlock", error:type(ticket:get_error(Ticket)))
-	  end)},
-      {"test06",
-       ?_assertMatch({ok, {test, test06, []}},
-		     sched:analyze({test, test06, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test07",
-       ?_assertMatch({ok, {test, test07, []}},
-		     sched:analyze({test, test07, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test08",
-       ?_test(
-	  begin
-	      Target = {test, test08, []},
-	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Target, [Ticket|_Tickets]} =
-		  sched:analyze(Target, Options),
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Exception", error:type(ticket:get_error(Ticket)))
-	  end)},
-      {"test09",
-       ?_assertMatch({ok, {test, test03, []}},
-		     sched:analyze({test, test03, []},
-			     [{files, [?TEST_ERL_PATH,
-				       ?TEST_AUX_ERL_PATH]}]))},
-      {"test10",
-       ?_assertMatch({ok, {test, test09, []}},
-		     sched:analyze({test, test09, []},
-			     [{files, [?TEST_ERL_PATH,
-				       ?TEST_AUX_ERL_PATH]}]))},
-      {"test11",
-       ?_test(
-	  begin
-	      Target = {test, test09, []},
-	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Target, [Ticket|_Tickets]} =
-		  sched:analyze(Target, Options),
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Exception", error:type(ticket:get_error(Ticket)))
-	  end)},
-      {"test12",
-       ?_test(
-	  begin
-	      Target = {test, test10, []},
-	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Target, [Ticket|_Tickets]} =
-		  sched:analyze(Target, Options),
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Assertion violation",
-                           error:type(ticket:get_error(Ticket)))
-	  end)},
-      {"test13",
-       ?_assertMatch({ok, {test, test11, []}},
-		     sched:analyze({test, test11, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test14",
-       ?_assertMatch({ok, {test, test12, []}},
-		     sched:analyze({test, test12, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test15",
-       ?_assertMatch({ok, {test, test13, []}},
-		     sched:analyze({test, test13, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test16",
-       ?_test(
-	  begin
-	      Target = {test, test14, []},
-	      Options = [{files, [?TEST_ERL_PATH]}],
-	      {error, analysis, Target, [Ticket|_Tickets]} =
-		  sched:analyze(Target, Options),
-	      ?assertEqual(Target, ticket:get_target(Ticket)),
-	      ?assertEqual("Assertion violation",
-                           error:type(ticket:get_error(Ticket)))
-	  end)},
-      {"test17",
-       ?_assertMatch({ok, {test, test15, []}},
-		     sched:analyze({test, test15, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test18",
-       ?_assertMatch({ok, {test, test16, []}},
-		     sched:analyze({test, test16, []},
-			     [{files, [?TEST_ERL_PATH]}]))},
-      {"test19",
-       ?_assertMatch({ok, {test, test20, []}},
-		     sched:analyze({test, test20, []},
-                                   [{files, [?TEST_ERL_PATH]}]))},
-      {"test20",
-       ?_assertMatch({ok, {test, test24, []}},
-		     sched:analyze({test, test24, []},
-                                   [{files, [?TEST_ERL_PATH]}]))},
-      {"test21",
-       ?_assertMatch({ok, {test, test25, []}},
-		     sched:analyze({test, test25, []},
-                                   [{files, [?TEST_ERL_PATH]}]))},
-      {"test22",
-       ?_assertMatch({ok, {test, test27, []}},
-		     sched:analyze({test, test27, []},
-                                   [{files, [?TEST_ERL_PATH]}]))},
-      {"test23",
-       ?_assertMatch({ok, {test, test29, []}},
-		     sched:analyze({test, test29, []},
-                                   [{files, [?TEST_ERL_PATH]}]))}
-     ]}.
+system_test_() ->
+    Setup = fun() -> log:start() end,
+    Cleanup = fun(_Any) -> log:stop() end,
+    Test01 = {"2 proc | spawn | normal",
+	      fun(_Any) -> test_ok(test_spawn,
+				   [{0, 1}, {1, 2}, {inf, 2}])
+	      end},
+    Test02 = {"2 proc | send (!) | normal",
+	      fun(_Any) -> test_ok(test_send,
+				   [{0, 1}, {1, 3}, {inf, 3}])
+	      end},
+    Test03 = {"2 proc | send (erlang:send) | normal",
+	      fun(_Any) -> test_ok(test_send_2,
+				   [{0, 1}, {1, 3}, {inf, 3}])
+	      end},
+    Test04 = {"1 proc | receive | deadlock",
+	      fun(_Any) -> test_error(test_receive,
+				      "Deadlock",
+				      [{0, 1, 1}, {inf, 1, 1}])
+	      end},
+    Test05 = {"2 proc | receive | deadlock",
+	      fun(_Any) -> test_error(test_receive_2,
+				      "Deadlock",
+				      [{0, 1, 1}, {inf, 1, 1}])
+	      end},
+    Test06 = {"2 proc | send - receive | normal",
+	      fun(_Any) -> test_ok(test_send_receive,
+				   [{0, 1}, {1, 2}, {2, 3}, {inf, 3}])
+	      end},
+    Test07 = {"2 proc | send - receive | normal",
+	      fun(_Any) -> test_ok(test_send_receive_2,
+				   [{0, 1}, {1, 2}, {2, 3}, {inf, 3}])
+	      end},
+    Test08 = {"2 proc | send - receive | normal",
+	      fun(_Any) -> test_ok(test_send_receive_2,
+				   [{0, 1}, {1, 2}, {2, 3}, {inf, 3}])
+	      end},
+    Test09 = {"2 proc | receive after - no patterns | normal",
+	      fun(_Any) -> test_ok(test_receive_after_no_patterns,
+				   [{0, 1}, {1, 2}, {2, 3}, {inf, 3}])
+	      end},
+    Test10 = {"2 proc | receive after - with pattern | assert",
+	      fun(_Any) -> test_error(test_receive_after_with_pattern,
+				      "Assertion violation",
+				      [{0, 1, 0}, {1, 3, 1}, {2, 5, 2},
+				       {3, 6, 3}, {inf, 6, 3}])
+	      end},
+    Test11 = {"2 proc | receive after - check after clause preemption) "
+	      "| assert",
+	      fun(_Any) -> test_error(test_after_clause_preemption,
+				      "Assertion violation",
+				      [{0, 1, 0}, {1, 4, 2}, {2, 7, 4},
+				       {3, 9, 6}, {inf, 9, 6}])
+	      end},
+    Test12 = {"2 proc | link after spawn race | assert",
+	      fun(_Any) -> test_error(test_spawn_link_race,
+				      "Exception",
+				      [{0, 1, 0}, {1, 3, 1}, {inf, 3, 1}])
+	      end},
+    Tests = [Test01, Test02, Test03, Test04, Test05, Test06,
+	     Test07, Test08, Test09, Test10, Test11, Test12],
+    Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
+    {foreach, local, Setup, Cleanup, [Inst]}.
+
+test_ok(Fun, PrebList) ->
+    Target = {test, Fun, []},
+    Path = {files, [?TEST_ERL_PATH]},
+    Test = fun(Preb, Cnt) ->
+		   Result = sched:analyze(Target, [Path, {preb, Preb}]),
+		   ?assertEqual({ok, {Target, Cnt}}, Result)
+	   end,
+    [Test(Preb, Cnt) || {Preb, Cnt} <- PrebList].
+
+test_error(Fun, Error, PrebList) ->
+    Target = {test, Fun, []},
+    Path = {files, [?TEST_ERL_PATH]},
+    Test = 
+	fun(Preb, Cnt, TicketCnt) ->
+		case TicketCnt of
+		    0 -> test_ok(Fun, [{Preb, Cnt}]);
+		    _Other ->
+			{error, analysis, {Target, Cnt}, Tickets} =
+			    sched:analyze(Target, [Path, {preb, Preb}]),
+			?assertEqual(TicketCnt, length(Tickets)),
+			[?assertEqual(Error, error:type(ticket:get_error(T))) ||
+			    T <- Tickets]
+		end
+	end,
+    [Test(Preb, Cnt, TicketCnt) || {Preb, Cnt, TicketCnt} <- PrebList].
