@@ -30,7 +30,7 @@ doc(AppDir) ->
 
 test() ->
     Modules = [lid, state, error, ticket, sched],
-    Tests = lists:zip([module || _ <- Modules], Modules),
+    Tests = [{module, M} || M <- Modules],
     eunit:test(Tests, [verbose]).
 
 %% @spec flat_format(string(), [term()]) -> string()
