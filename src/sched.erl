@@ -81,7 +81,7 @@
 %%% Types
 %%%----------------------------------------------------------------------
 
--type analysis_info() :: analysis_target().
+-type analysis_info() :: {analysis_target(), non_neg_integer()}.
 
 -type analysis_options() :: ['details' |
 			     {'files', [file()]} |
@@ -138,17 +138,17 @@ analyze(Target, Options) ->
 			log:log("Analysis complete (checked ~w interleavings "
 				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 			log:log("No errors found.~n"),
-			{ok, Target};
+			{ok, {Target, RunCount}};
 		    {error, RunCount, Tickets} ->
 			TicketCount = length(Tickets),
 			log:log("Analysis complete (checked ~w interleavings "
 				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 			log:log("Found ~p erroneous interleaving(s).~n",
 				[TicketCount]),
-			{error, analysis, Target, Tickets}
+			{error, analysis, {Target, RunCount}, Tickets}
 		end;
 	    error ->
-		{error, instr, Target}
+		{error, instr, {Target, 0}}
 	end,
     instr:delete_and_purge(Files),
     Ret.
