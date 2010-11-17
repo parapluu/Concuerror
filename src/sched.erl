@@ -97,7 +97,7 @@
 %% Module-Function-Arguments tuple.
 -type analysis_target() :: {module(), atom(), [term()]}.
 
--type bound() :: 'infinite' | non_neg_integer().
+-type bound() :: 'inf' | non_neg_integer().
 
 -type context() :: #context{}.
 
@@ -197,6 +197,7 @@ interleave_aux(Target, Options, Parent) ->
     state_save(InitState),
     PreBound =
 	case lists:keyfind(preb, 1, Options) of
+	    {preb, inf} -> ?INFINITY;
 	    {preb, Bound} -> Bound;
 	    false -> ?INFINITY
 	end,
