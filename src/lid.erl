@@ -268,4 +268,6 @@ next_lid(ParentLid, Children) ->
 -spec to_string(lid()) -> string().
 
 to_string(Lid) ->
-    lists:flatten(io_lib:format("P~p", [Lid])).
+    LidString = lists:flatten(io_lib:format("P~p", [Lid])),
+    NewLidString = re:replace(LidString, "0", ".", [global]),
+    lists:flatten(io_lib:format("~s", [NewLidString])).
