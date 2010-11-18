@@ -30,6 +30,8 @@ test_send() ->
     Pid ! foo,
     ok.
 
+-spec test_send_2() -> 'ok'.
+
 test_send_2() ->
     Pid = spawn(fun() -> ok end),
     erlang:send(Pid, foo),
@@ -65,7 +67,7 @@ test_send_receive_2() ->
 test_send_receive_3() ->
     Self = self(),
     Pid = spawn(fun() -> Self ! foo, receive bar -> ok end end),
-    receive foo -> Pid ! bar end.
+    receive foo -> Pid ! bar, ok end.
 
 -spec test_receive_after_no_patterns() -> 'ok'.
 
@@ -75,7 +77,7 @@ test_receive_after_no_patterns() ->
     Result = receive after 42 -> ok end,
     ?assertEqual(ok, Result).
 
--spec test_receive_after_with_pattern() -> 'result2'.
+-spec test_receive_after_with_pattern() -> 'ok'.
 
 test_receive_after_with_pattern() ->
     Self = self(),
@@ -83,7 +85,7 @@ test_receive_after_with_pattern() ->
     Result = receive _Any -> result1 after 42 -> result2 end,
     ?assertEqual(result2, Result).
 
--spec test_after_clause_preemption() -> 'result3'.
+-spec test_after_clause_preemption() -> 'ok'.
 
 test_after_clause_preemption() ->
     Self = self(),
