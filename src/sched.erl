@@ -357,18 +357,21 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
 			_NonEmptyBlocked ->
 			    insert_states(OldState, Insert),
                             Deadlock = error:new({deadlock, NewBlocked}),
-                            {error, Deadlock, State}
+			    case ?SETS:is_element(Next, Blocked) of
+				true -> {error, Deadlock, OldState};
+				false -> {error, Deadlock, State}
+			    end
 		    end;
 		_NonEmptyActive ->
                     case ?SETS:is_element(Next, Blocked) of
                         true ->
                             case Det of
-                                true -> driver(Search, NewContext, Rest);
-                                false ->
-                                    insert_states(OldState,
-                                                  {current, InsertLids}),
-                                    blocked_save(State),
-                                    block
+				true -> driver(Search, NewContext, Rest);
+				false ->
+				    insert_states(OldState,
+						  {current, InsertLids}),
+				    blocked_save(State),
+				    block
                             end;
                         false ->
                             insert_states(OldState, Insert),
