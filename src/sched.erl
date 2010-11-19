@@ -44,7 +44,7 @@
 %%%----------------------------------------------------------------------
 
 -define(INFINITY, 1000000).
--define(undef, undef).
+-define(ERROR_UNDEF, undef).
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -65,7 +65,7 @@
                   blocked        :: ?SET_TYPE(lid:lid()),
 		  current        :: lid:lid(),
 		  details        :: boolean(),
-                  error          :: ?undef | error:error(),
+                  error          :: ?ERROR_UNDEF | error:error(),
                   state          :: state:state()}).
 
 %% Internal message format
@@ -331,7 +331,7 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
 		{NextTemp, RestTemp} = state:trim_head(ReplayState),
 		{NextTemp, RestTemp, {current, []}}
 	end,
-    ContextToRun = Context#context{current = Next, error = ?undef},
+    ContextToRun = Context#context{current = Next, error = ?ERROR_UNDEF},
     #context{active = Active, blocked = Blocked, error = Error,
 	     state = State, details = Det} = RunContext = run(ContextToRun),
     %% Update active and blocked sets, moving Lid from active to blocked,
@@ -347,7 +347,7 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
     NewBlocked = ?SETS:union(Blocked, BlockedOracle),
     NewContext = RunContext#context{active = NewActive, blocked = NewBlocked},
     case Error of
-	?undef ->
+	?ERROR_UNDEF ->
 	    case ?SETS:size(NewActive) of
 		0 ->
 		    case ?SETS:size(NewBlocked) of
