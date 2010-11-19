@@ -61,8 +61,8 @@
 %%           info to the replay_logger.
 %% error   : A term describing the error that occurred.
 %% state   : The current state of the program.
--record(context, {active         :: ?SET_TYPE,
-                  blocked        :: ?SET_TYPE,
+-record(context, {active         :: ?SET_TYPE(lid:lid()),
+                  blocked        :: ?SET_TYPE(lid:lid()),
 		  current        :: lid:lid(),
 		  details        :: boolean(),
                   error          :: ?undef | error:error(),

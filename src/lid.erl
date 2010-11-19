@@ -34,7 +34,7 @@
 -record(info, {lid :: lid(),
 	       pid :: pid(),
 	       nch :: non_neg_integer(),
-	       lnk :: ?SET_TYPE,
+	       lnk :: ?SET_TYPE(lid()),
 	       mns :: dict(),
 	       mnd :: dict()}).
 
@@ -127,7 +127,7 @@ fold_pids(Fun, InitAcc) ->
     ets:foldl(NewFun, InitAcc, ?NT_PID).
 
 %% Return the LIDs of all processes monitoring process Lid.
--spec get_monitored_by(lid()) -> ?SET_TYPE.
+-spec get_monitored_by(lid()) -> ?SET_TYPE(lid()).
 
 get_monitored_by(Lid) ->
     Monitors = get_monitors(Lid),
@@ -228,7 +228,7 @@ get_children(Lid) ->
     Children.
 
 %% Return the LIDs of all processes linked to process Lid.
--spec get_linked(lid()) -> ?SET_TYPE.
+-spec get_linked(lid()) -> ?SET_TYPE(lid()).
 
 get_linked(Lid) ->
     [#info{lnk = Linked}] = ets:lookup(?NT_LID, Lid),
