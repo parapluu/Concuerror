@@ -333,7 +333,7 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
 	end,
     ContextToRun = Context#context{current = Next, error = ?undef},
     #context{active = Active, blocked = Blocked, error = Error,
-	     state = State} = RunContext = run(ContextToRun),
+	     state = State, details = Det} = RunContext = run(ContextToRun),
     %% Update active and blocked sets, moving Lid from active to blocked,
     %% in the case that if it was run next, it would block.
     Fun = fun(L, Acc) ->
@@ -360,15 +360,20 @@ driver(Search, #context{state = OldState} = Context, ReplayState) ->
                             {error, Deadlock, State}
 		    end;
 		_NonEmptyActive ->
-		    case ?SETS:is_element(Next, Blocked) of
-			true ->
-			    insert_states(OldState, {current, InsertLids}),
-			    blocked_save(State),
-			    block;
-			false ->
-			    insert_states(OldState, Insert),
-			    driver(Search, NewContext, Rest)
-		    end
+                    case ?SETS:is_element(Next, Blocked) of
+                        true ->
+                            case Det of
+                                true -> driver(Search, NewContext, Rest);
+                                false ->
+                                    insert_states(OldState,
+                                                  {current, InsertLids}),
+                                    blocked_save(State),
+                                    block
+                            end;
+                        false ->
+                            insert_states(OldState, Insert),
+                            driver(Search, NewContext, Rest)
+                    end
 	    end;
 	_Other ->
 	    insert_states(OldState, Insert),
