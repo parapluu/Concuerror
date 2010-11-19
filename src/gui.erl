@@ -223,9 +223,7 @@ setupFunctionSizer(Parent) ->
 		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
 		 {border, 10}]),
     wxSizer:add(FunctionSizer, AnalStopSizer,
-		[{proportion, 0},
-		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
-                 {border, 10}]),
+		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
     %% Add padding to the whole sizer.
     FunctionSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(FunctionSizerOuter, FunctionSizer,
