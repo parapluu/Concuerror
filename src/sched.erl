@@ -17,8 +17,8 @@
 %% Instrumentation related exports.
 -export([rep_demonitor/1, rep_demonitor/2, rep_exit/2,
 	 rep_halt/0, rep_halt/1, rep_link/1, rep_monitor/2,
-	 rep_process_flag/2, rep_receive/1, rep_after_notify/0,
-	 rep_receive_notify/1, rep_receive_notify/2,
+	 rep_process_flag/2, rep_receive/1, rep_receive_block/0,
+	 rep_after_notify/0, rep_receive_notify/1, rep_receive_notify/2,
          rep_register/2, rep_send/2, rep_spawn/1, rep_spawn/3,
 	 rep_spawn_link/1, rep_spawn_link/3, rep_spawn_monitor/1,
 	 rep_spawn_monitor/3, rep_unlink/1, rep_unregister/1,
@@ -908,7 +908,6 @@ rep_process_flag(Flag, Value) ->
 %%
 %% If a matching message is found in the process' message queue, continue
 %% to actual receive statement, else block and when unblocked do the same.
-
 -spec rep_receive(fun((term()) -> 'block' | 'continue')) -> term().
 
 rep_receive(Fun) ->
@@ -917,6 +916,13 @@ rep_receive(Fun) ->
 	block -> block(), rep_receive(Fun);
 	continue -> continue
     end.
+
+%% Blocks forever (used for 'receive after infinity -> ...' expressions).
+-spec rep_receive_block() -> no_return().
+
+rep_receive_block() ->
+    block(),
+    rep_receive_block().
 
 rep_receive_match(_Fun, []) ->
     block;
