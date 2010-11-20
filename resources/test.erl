@@ -15,7 +15,11 @@
 	 test_after_clause_preemption/0,
 	 test_spawn_link_race/0, test_link_receive_exit/0,
 	 test_spawn_link_receive_exit/0,
-	 test_link_unlink/0]).
+	 test_link_unlink/0, test_spawn_link_unlink/0,
+	 test_spawn_link_unlink_2/0, test_spawn_link_unlink_3/0,
+	 test_trap_exit_timing/0,
+	 test_spawn_register_race/0, test_register_unregister/0,
+	 test_whereis/0]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -139,10 +143,91 @@ test_link_unlink() ->
     Fun = fun() -> process_flag(trap_exit, true),
 		   Self ! foo,
 		   receive
-		       {'EXIT', _Pid, normal} -> ok
+		       {'EXIT', Self, normal} -> ok
 		   end
 	  end,
     Pid = spawn(Fun),
     link(Pid),
     unlink(Pid),
     receive foo -> ok end.
+
+-spec test_spawn_link_unlink() -> 'ok'.
+
+test_spawn_link_unlink() ->
+    Self = self(),
+    Fun = fun() -> process_flag(trap_exit, true),
+		   Self ! foo,
+		   receive
+		       {'EXIT', Self, normal} -> ok
+		   end
+	  end,
+    Pid = spawn_link(Fun),
+    unlink(Pid),
+    receive foo -> ok end.
+
+-spec test_spawn_link_unlink_2() -> 'ok'.
+
+test_spawn_link_unlink_2() ->
+    Pid = spawn_link(fun() -> foo end),
+    unlink(Pid),
+    Result = 
+	receive
+	    {'EXIT', Pid, normal} -> not_ok
+	after 0 -> ok
+	end,
+    ?assertEqual(ok, Result).
+
+-spec test_spawn_link_unlink_3() -> 'ok'.
+
+test_spawn_link_unlink_3() ->
+    process_flag(trap_exit, true),
+    Pid = spawn_link(fun() -> foo end),
+    unlink(Pid),
+    Result = 
+	receive
+	    {'EXIT', Pid, normal} -> not_ok
+	after 0 -> ok
+	end,
+    ?assertEqual(ok, Result).
+
+-spec test_trap_exit_timing() -> 'ok'.
+
+test_trap_exit_timing() ->
+    process_flag(trap_exit, true),
+    Pid = spawn_link(fun() -> foo end),
+    process_flag(trap_exit, false),
+    Result = 
+	receive
+	    {'EXIT', Pid, normal} -> not_ok
+	after 0 -> ok
+	end,
+    ?assertEqual(ok, Result).
+
+-spec test_spawn_register_race() -> 'ok'.
+
+test_spawn_register_race() ->
+    spawn(fun() -> foo ! bar end),
+    register(foo, self()),
+    receive
+	bar -> ok
+    end.
+
+-spec test_register_unregister() -> 'ok'.
+
+test_register_unregister() ->
+    register(foo, self()),
+    spawn(fun() -> foo ! bar end),
+    unregister(foo),
+    receive
+	bar -> ok
+    end.
+
+-spec test_whereis() -> 'ok'.
+
+test_whereis() ->
+    Self = self(),
+    Pid = spawn(fun() -> receive Any -> ?assertEqual(Self, whereis(Any)) end
+		end),
+    Reg = foo,
+    register(Reg, self()),
+    Pid ! Reg.

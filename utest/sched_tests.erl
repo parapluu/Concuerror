@@ -96,9 +96,48 @@ system_test_() ->
 				      [{0, 1, 1}, {1, 3, 3}, {2, 5, 5},
 				       {3, 6, 6}, {inf, 6, 6}])
 	      end},
+    Test16 = {"2 proc | spawn_link - unlink | deadlock",
+	      fun(_Any) -> test_error(test_spawn_link_unlink,
+				      "Deadlock",
+				      [{0, 1, 1}, {1, 2, 2}, {2, 3, 3},
+				       {inf, 3, 3}])
+	      end},
+    Test17 = {"2 proc | spawn_link - unlink | normal",
+	      fun(_Any) -> test_ok(test_spawn_link_unlink_2,
+				      [{0, 1}, {1, 4}, {inf, 4}])
+	      end},
+    Test18 = {"2 proc | spawn_link - unlink | assert",
+	      fun(_Any) -> test_error(test_spawn_link_unlink_3,
+				      "Assertion violation",
+				      [{0, 1, 0}, {1, 4, 1}, {inf, 4, 1}])
+	      end},
+    Test19 = {"2 proc | trap_exit timing | assert",
+	      fun(_Any) -> test_error(test_trap_exit_timing,
+				      "Assertion violation",
+				      [{0, 1, 0}, {1, 4, 1}, {inf, 4, 1}])
+	      end},
+    Test20 = {"2 proc | register after spawn race | exception",
+	      fun(_Any) -> test_error(test_spawn_register_race,
+				      "Exception",
+				      [{0, 1, 0}, {1, 3, 1}, {2, 4, 1},
+				       {inf, 4, 1}])
+	      end},
+    Test21 = {"2 proc | register - unregister | exception",
+	      fun(_Any) -> test_error(test_register_unregister,
+				      "Exception",
+				      [{0, 1, 1}, {1, 2, 1}, {2, 3, 1},
+				       {3, 5, 1}, {inf, 5, 1}])
+	      end},
+    Test22 = {"2 proc | register - whereis | assert",
+	      fun(_Any) -> test_error(test_whereis,
+				      "Assertion violation",
+				      [{0, 1, 1}, {1, 2, 1}, {2, 4, 2},
+				       {inf, 4, 2}])
+	      end},
     Tests = [Test01, Test02, Test03, Test04, Test05, Test06,
 	     Test07, Test08, Test09, Test10, Test11, Test12,
-	     Test13, Test14, Test15],
+	     Test13, Test14, Test15, Test16, Test17, Test18,
+	     Test19, Test20, Test21, Test22],
     Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
     {foreach, local, Setup, Cleanup, [Inst]}.
 
