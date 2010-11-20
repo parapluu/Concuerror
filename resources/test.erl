@@ -230,4 +230,5 @@ test_whereis() ->
 		end),
     Reg = foo,
     register(Reg, self()),
-    Pid ! Reg.
+    Pid ! Reg,
+    ok.
