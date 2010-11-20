@@ -13,6 +13,9 @@
 	 test_send_receive/0, test_send_receive_2/0, test_send_receive_3/0,
 	 test_receive_after_no_patterns/0, test_receive_after_with_pattern/0,
 	 test_after_clause_preemption/0,
+	 test_receive_after_infinity_with_pattern/0,
+	 test_receive_after_infinity_no_patterns/0,
+	 test_nested_send_receive_block_twice/0,
 	 test_spawn_link_race/0, test_link_receive_exit/0,
 	 test_spawn_link_receive_exit/0,
 	 test_link_unlink/0, test_spawn_link_unlink/0,
@@ -105,6 +108,37 @@ test_after_clause_preemption() ->
 		     end
 	     end,
     ?assertEqual(result3, Result).
+
+-spec test_receive_after_infinity_with_pattern() -> 'ok'.
+
+test_receive_after_infinity_with_pattern() ->
+    Timeout = infinity,
+    spawn_link(fun() -> ok end),
+    Result =
+	receive
+	    Any -> ok
+	after Timeout -> not_ok
+	end,
+    ?assertEqual(ok, Result).
+
+-spec test_receive_after_infinity_no_patterns() -> 'ok'.
+
+test_receive_after_infinity_no_patterns() ->
+    Timeout = infinity,
+    receive
+    after Timeout -> ok
+    end.
+
+-spec test_nested_send_receive_block_twice() -> 'ok'.
+
+test_nested_send_receive_block_twice() ->
+    Self = self(),
+    spawn(fun() -> (Self ! Self) ! bar end),
+    receive
+	bar -> receive
+		   Self -> ok
+	       end
+    end.
 
 -spec test_spawn_link_race() -> 'ok'.
 
