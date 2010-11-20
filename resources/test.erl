@@ -13,7 +13,9 @@
 	 test_send_receive/0, test_send_receive_2/0, test_send_receive_3/0,
 	 test_receive_after_no_patterns/0, test_receive_after_with_pattern/0,
 	 test_after_clause_preemption/0,
-	 test_spawn_link_race/0]).
+	 test_spawn_link_race/0, test_link_receive_exit/0,
+	 test_spawn_link_receive_exit/0,
+	 test_link_unlink/0]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -106,3 +108,41 @@ test_spawn_link_race() ->
     Pid = spawn(fun() -> ok end),
     link(Pid),
     ok.
+
+-spec test_link_receive_exit() -> 'ok'.
+
+test_link_receive_exit() ->
+    Fun = fun() -> process_flag(trap_exit, true),
+		   receive
+		       {'EXIT', _Pid, normal} -> ok
+		   end
+	  end,
+    Pid = spawn(Fun),
+    link(Pid),
+    ok.
+
+-spec test_spawn_link_receive_exit() -> 'ok'.
+
+test_spawn_link_receive_exit() ->
+    Fun = fun() -> process_flag(trap_exit, true),
+		   receive
+		       {'EXIT', _Pid, normal} -> ok
+		   end
+	  end,
+    spawn_link(Fun),
+    ok.
+
+-spec test_link_unlink() -> 'ok'.
+
+test_link_unlink() ->
+    Self = self(),
+    Fun = fun() -> process_flag(trap_exit, true),
+		   Self ! foo,
+		   receive
+		       {'EXIT', _Pid, normal} -> ok
+		   end
+	  end,
+    Pid = spawn(Fun),
+    link(Pid),
+    unlink(Pid),
+    receive foo -> ok end.

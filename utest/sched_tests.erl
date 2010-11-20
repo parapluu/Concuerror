@@ -73,13 +73,32 @@ system_test_() ->
 				      [{0, 1, 0}, {1, 4, 2}, {2, 7, 4},
 				       {3, 9, 6}, {inf, 9, 6}])
 	      end},
-    Test12 = {"2 proc | link after spawn race | assert",
+    Test12 = {"2 proc | link after spawn race | exception",
 	      fun(_Any) -> test_error(test_spawn_link_race,
 				      "Exception",
 				      [{0, 1, 0}, {1, 3, 1}, {inf, 3, 1}])
 	      end},
+    Test13 = {"2 proc | link, trap_exit and receive 'EXIT' message "
+	      "| deadlock",
+	      fun(_Any) -> test_error(test_link_receive_exit,
+				      "Deadlock",
+				      [{0, 1, 1}, {1, 3, 1}, {inf, 3, 1}])
+	      end},
+    Test14 = {"2 proc | spawn_link, trap_exit and receive 'EXIT' message "
+	      "| deadlock",
+	      fun(_Any) -> test_error(test_spawn_link_receive_exit,
+				      "Deadlock",
+				      [{0, 1, 1}, {1, 2, 1}, {inf, 2, 1}])
+	      end},
+    Test15 = {"2 proc | link - unlink | deadlock",
+	      fun(_Any) -> test_error(test_link_unlink,
+				      "Deadlock",
+				      [{0, 1, 1}, {1, 3, 3}, {2, 5, 5},
+				       {3, 6, 6}, {inf, 6, 6}])
+	      end},
     Tests = [Test01, Test02, Test03, Test04, Test05, Test06,
-	     Test07, Test08, Test09, Test10, Test11, Test12],
+	     Test07, Test08, Test09, Test10, Test11, Test12,
+	     Test13, Test14, Test15],
     Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
     {foreach, local, Setup, Cleanup, [Inst]}.
 
