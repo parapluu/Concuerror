@@ -116,7 +116,7 @@ test_receive_after_infinity_with_pattern() ->
     spawn_link(fun() -> ok end),
     Result =
 	receive
-	    Any -> ok
+	    _Any -> ok
 	after Timeout -> not_ok
 	end,
     ?assertEqual(ok, Result).

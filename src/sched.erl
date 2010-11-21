@@ -15,13 +15,14 @@
 -export([analyze/2, replay/1]).
 
 %% Instrumentation related exports.
--export([rep_demonitor/1, rep_demonitor/2, rep_exit/2,
-	 rep_halt/0, rep_halt/1, rep_link/1, rep_monitor/2,
-	 rep_process_flag/2, rep_receive/1, rep_receive_block/0,
-	 rep_after_notify/0, rep_receive_notify/1, rep_receive_notify/2,
-         rep_register/2, rep_send/2, rep_spawn/1, rep_spawn/3,
-	 rep_spawn_link/1, rep_spawn_link/3, rep_spawn_monitor/1,
-	 rep_spawn_monitor/3, rep_unlink/1, rep_unregister/1,
+-export([rep_after_notify/0, rep_demonitor/1, rep_demonitor/2,
+         rep_exit/2, rep_halt/0, rep_halt/1, rep_link/1,
+         rep_monitor/2, rep_process_flag/2, rep_receive/1,
+         rep_receive_block/0, rep_receive_notify/1,
+         rep_receive_notify/2, rep_register/2, rep_send/2,
+         rep_spawn/1, rep_spawn/3, rep_spawn_link/1,
+         rep_spawn_link/3, rep_spawn_monitor/1,
+         rep_spawn_monitor/3, rep_unlink/1, rep_unregister/1,
 	 rep_whereis/1, rep_yield/0, wait/0]).
 
 -export_type([analysis_target/0, analysis_ret/0]).

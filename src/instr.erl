@@ -310,24 +310,14 @@ instrument_receive(Tree) ->
     %% Get old receive expression's clauses.
     OldClauses = erl_syntax:receive_expr_clauses(Tree),
     case OldClauses of
-        %% Keep only the action of any `receive after' construct
-        %% without patterns.
         [] ->
 	    Timeout = erl_syntax:receive_expr_timeout(Tree),
             Action = erl_syntax:receive_expr_action(Tree),
             AfterBlock = erl_syntax:block_expr(Action),
-	    %% Create 'infinity -> ...' clause.
-	    InfPattern = erl_syntax:atom(infinity),
-	    ModTree = erl_syntax:atom(sched),
+            ModTree = erl_syntax:atom(sched),
 	    FunTree = erl_syntax:atom(rep_receive_block),
 	    Fun = erl_syntax:application(ModTree, FunTree, []),
-	    InfClause = erl_syntax:clause([InfPattern], [], [Fun]),
-	    %% Create 'Fresh -> ...' clause.
-	    FrPattern = new_underscore_variable(),
-	    FrClause = erl_syntax:clause([FrPattern], [], [AfterBlock]),
-	    %% Create 'case Timeout of ...' expression.
-	    AfterCaseClauses = [InfClause, FrClause],
-	    erl_syntax:case_expr(Timeout, AfterCaseClauses);
+            transform_receive_timeout(Fun, AfterBlock, Timeout);
         _Other ->
 	    NewClauses = transform_receive_clauses(OldClauses),
 	    %% Create fun(X) -> case X of ... end end.
@@ -339,8 +329,7 @@ instrument_receive(Tree) ->
 	    %% Create sched:rep_receive(fun(X) -> ...).
 	    Module = erl_syntax:atom(sched),
 	    Function = erl_syntax:atom(rep_receive),
-	    RepReceive = erl_syntax:application(Module, Function,
-						[FunExpr]),
+	    RepReceive = erl_syntax:application(Module, Function, [FunExpr]),
 	    %% Create new receive expression.
 	    NewReceive = erl_syntax:receive_expr(NewClauses),
 	    %% Result is begin rep_receive(...), NewReceive end.
@@ -360,15 +349,7 @@ instrument_receive(Tree) ->
 		    ZeroTimeout = erl_syntax:integer(0),
 		    AfterExpr = erl_syntax:receive_expr(NewClauses,
 							ZeroTimeout, NewAction),
-		    %% Create 'infinity -> ...' clause.
-		    InfPattern = erl_syntax:atom(infinity),
-		    InfClause = erl_syntax:clause([InfPattern], [], [Block]),
-		    %% Create 'Fresh -> ...' clause.
-		    FrPattern = new_underscore_variable(),
-		    FrClause = erl_syntax:clause([FrPattern], [], [AfterExpr]),
-		    %% Create 'case Timeout of ...' expression.
-		    AfterCaseClauses = [InfClause, FrClause],
-		    erl_syntax:case_expr(Timeout, AfterCaseClauses)
+                    transform_receive_timeout(Block, AfterExpr, Timeout)
 	    end
     end.
 
@@ -447,6 +428,17 @@ transform_receive_clause_special(Clause) ->
     Notify = erl_syntax:application(Module, Function, Arguments),
     NewBody = [Notify|OldBody],
     erl_syntax:clause([OldPattern], OldGuard, NewBody).
+
+transform_receive_timeout(InfBlock, FrBlock, Timeout) ->
+    %% Create 'infinity -> ...' clause.
+    InfPattern = erl_syntax:atom(infinity),
+    InfClause = erl_syntax:clause([InfPattern], [], [InfBlock]),
+    %% Create 'Fresh -> ...' clause.
+    FrPattern = new_underscore_variable(),
+    FrClause = erl_syntax:clause([FrPattern], [], [FrBlock]),
+    %% Create 'case Timeout of ...' expression.
+    AfterCaseClauses = [InfClause, FrClause],
+    erl_syntax:case_expr(Timeout, AfterCaseClauses).
 
 %% Instrument a Pid ! Msg expression.
 %% Pid ! Msg is transformed into rep:send(Pid, Msg).
