@@ -143,6 +143,7 @@ A tool for finding concurrency bugs in Erlang programs.
 %% Snapshot related definitions
 -define(ANALYSIS_RET, 563).
 -define(FILES, 564).
+-define(SNAPSHOT_PATH, 565).
 
 %% Other definitions
 -define(FILE_PATH, 560).

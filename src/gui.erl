@@ -871,7 +871,7 @@ enableMenuItems() ->
 exportDialog(Parent) ->
     Caption = "Export to " ++ ?APP_STRING ++ " file",
     Wildcard = ?APP_STRING ++ " files |*" ++ ?APP_FILE,
-    DefaultDir = ref_lookup(?FILE_PATH),
+    DefaultDir = ref_lookup(?SNAPSHOT_PATH),
     DefaultFile = "",
     Dialog = wxFileDialog:new(Parent, [{message, Caption},
                                        {defaultDir, DefaultDir},
@@ -941,7 +941,7 @@ getStrings(Ref, N, Count, Strings) ->
 importDialog(Parent) ->
     Caption = "Import from " ++ ?APP_STRING ++ " file",
     Wildcard = ?APP_STRING ++ " files |*" ++ ?APP_FILE,
-    DefaultDir = ref_lookup(?FILE_PATH),
+    DefaultDir = ref_lookup(?SNAPSHOT_PATH),
     DefaultFile = "",
     Dialog = wxFileDialog:new(Parent, [{message, Caption},
                                        {defaultDir, DefaultDir},
@@ -1173,7 +1173,8 @@ snapshot_import(Import) ->
 
 snapshot_init() ->
     ref_add(?ANALYSIS_RET, undef),
-    ref_add(?FILES, []).
+    ref_add(?FILES, []),
+    ref_add(?SNAPSHOT_PATH, "").
 
 %%%----------------------------------------------------------------------
 %%% Main event loop
