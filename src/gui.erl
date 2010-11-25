@@ -549,9 +549,9 @@ addDialog(Parent) ->
                                                ?wxFD_MULTIPLE}]),
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
-            Files = wxFileDialog:getPaths(Dialog),
-	    addListItems(?MODULE_LIST, Files),
-            snapshot_add_files(Files),
+            File = wxFileDialog:getPaths(Dialog),
+	    addListItems(?MODULE_LIST, File),
+            snapshot_add_file(File),
 	    ref_add(?FILE_PATH, getDirectory());
 	_Other -> continue
     end,
@@ -1127,15 +1127,15 @@ validateArgs(I, [Ref|Refs], Args, RefError) ->
 snapshot_add_analysis_ret(AnalysisRet) ->
     ref_add(?ANALYSIS_RET, AnalysisRet).
 
-snapshot_add_files(Files) ->
-    ref_add(?FILES, Files).
+snapshot_add_file(File) ->
+    ref_add(?FILES, File ++ ref_lookup(?FILES)).
 
 snapshot_cleanup() ->
     os:cmd("rm -rf " ++ ?IMPORT_DIR).
 
 snapshot_export(Export) ->
     AnalysisRet = ref_lookup(?ANALYSIS_RET),
-    Files = ref_lookup(?FILES),
+    Files = lists:reverse(ref_lookup(?FILES)),
     ModuleList = ref_lookup(?MODULE_LIST),
     ModuleID = wxListBox:getSelection(ModuleList),
     FunctionList = ref_lookup(?FUNCTION_LIST),
