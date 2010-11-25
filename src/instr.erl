@@ -340,11 +340,11 @@ instrument_receive(Tree) ->
 		%% Instrument `receive` with `after` part.
 		_Any ->
 		    Timeout = erl_syntax:receive_expr_timeout(Tree),
-		    [Action] = erl_syntax:receive_expr_action(Tree),
+		    Action = erl_syntax:receive_expr_action(Tree),
 		    RepMod = erl_syntax:atom(sched),
 		    RepFun = erl_syntax:atom(rep_after_notify),
 		    RepApp = erl_syntax:application(RepMod, RepFun, []),
-		    NewAction = [RepApp, Action],
+		    NewAction = [RepApp|Action],
 		    %% receive NewPatterns -> NewActions after 0 -> NewAfter end
 		    ZeroTimeout = erl_syntax:integer(0),
 		    AfterExpr = erl_syntax:receive_expr(NewClauses,

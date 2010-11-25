@@ -12,7 +12,7 @@
 	 test_receive/0, test_receive_2/0,
 	 test_send_receive/0, test_send_receive_2/0, test_send_receive_3/0,
 	 test_receive_after_no_patterns/0, test_receive_after_with_pattern/0,
-	 test_after_clause_preemption/0,
+	 test_receive_after_block_expr_action/0, test_after_clause_preemption/0,
 	 test_receive_after_infinity_with_pattern/0,
 	 test_receive_after_infinity_no_patterns/0,
 	 test_nested_send_receive_block_twice/0,
@@ -92,6 +92,18 @@ test_receive_after_with_pattern() ->
     Self = self(),
     spawn(fun() -> Self ! foo end),
     Result = receive _Any -> result1 after 42 -> result2 end,
+    ?assertEqual(result2, Result).
+
+-spec test_receive_after_block_expr_action() -> 'ok'.
+
+test_receive_after_block_expr_action() ->
+    Result = receive
+		 _Any -> result1
+	     after 42 ->
+		     foo,
+		     bar,
+		     result2
+	     end,
     ?assertEqual(result2, Result).
 
 -spec test_after_clause_preemption() -> 'ok'.
