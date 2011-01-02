@@ -22,7 +22,11 @@
 	 test_spawn_link_unlink_2/0, test_spawn_link_unlink_3/0,
 	 test_trap_exit_timing/0,
 	 test_spawn_register_race/0, test_register_unregister/0,
-	 test_whereis/0]).
+	 test_whereis/0,
+	 test_monitor_unexisting/0, test_spawn_monitor/0,
+	 test_spawn_monitor_demonitor/0, test_spawn_monitor_demonitor_2/0,
+	 test_spawn_monitor_demonitor_3/0, test_spawn_monitor_demonitor_4/0,
+	 test_spawn_monitor_demonitor_5/0]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -278,3 +282,73 @@ test_whereis() ->
     register(Reg, self()),
     Pid ! Reg,
     ok.
+
+-spec test_monitor_unexisting() -> 'ok'.
+
+test_monitor_unexisting() ->
+    Pid = spawn(fun() -> ok end),
+    Ref = monitor(process, Pid),
+    Result = 
+	receive
+	    {'DOWN', Ref, process, Pid, noproc} -> not_ok
+	after 0 -> ok
+	end,
+    ?assertEqual(ok, Result).
+
+-spec test_spawn_monitor() -> 'ok'.
+
+test_spawn_monitor() ->
+    {Pid, Ref} = spawn_monitor(fun() -> ok end),
+    receive
+	{'DOWN', Ref, process, Pid, normal} -> ok
+    end.
+
+-spec test_spawn_monitor_demonitor() -> 'ok'.
+
+test_spawn_monitor_demonitor() ->
+    {Pid, Ref} = spawn_monitor(fun() -> ok end),
+    demonitor(Ref),
+    Result =
+	receive
+	    {'DOWN', Ref, process, Pid, normal} -> result1
+	after 0 -> result2
+	end,
+    ?assertEqual(result2, Result).
+
+-spec test_spawn_monitor_demonitor_2() -> 'ok'.
+
+test_spawn_monitor_demonitor_2() ->
+    {Pid, Ref} = spawn_monitor(fun() -> ok end),
+    demonitor(Ref, []),
+    Result =
+	receive
+	    {'DOWN', Ref, process, Pid, normal} -> result1
+	after 0 -> result2
+	end,
+    ?assertEqual(result2, Result).
+
+-spec test_spawn_monitor_demonitor_3() -> 'ok'.
+
+test_spawn_monitor_demonitor_3() ->
+    {Pid, Ref} = spawn_monitor(fun() -> ok end),
+    demonitor(Ref, [flush]),
+    Result =
+	receive
+	    {'DOWN', Ref, process, Pid, normal} -> result1
+	after 0 -> result2
+	end,
+    ?assertEqual(result2, Result).
+
+-spec test_spawn_monitor_demonitor_4() -> 'ok'.
+
+test_spawn_monitor_demonitor_4() ->
+    {_Pid, Ref} = spawn_monitor(fun() -> ok end),
+    Result = demonitor(Ref, [info]),
+    ?assertEqual(true, Result).
+
+-spec test_spawn_monitor_demonitor_5() -> 'ok'.
+
+test_spawn_monitor_demonitor_5() ->
+    {_Pid, Ref} = spawn_monitor(fun() -> ok end),
+    Result = demonitor(Ref, [flush, info]),
+    ?assertEqual(true, Result).
