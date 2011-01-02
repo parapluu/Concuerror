@@ -537,7 +537,7 @@ addArgs(Parent, Sizer, I, Max, Refs) ->
 %% Module-adding dialog
 addDialog(Parent) ->
     Caption = "Open erlang module",
-    Wildcard = "Erlang source|*.erl;*.hrl| All files|*",
+    Wildcard = "Erlang source|*.erl| All files|*",
     DefaultDir = ref_lookup(?FILE_PATH),
     DefaultFile = "",
     Dialog = wxFileDialog:new(Parent, [{message, Caption},
