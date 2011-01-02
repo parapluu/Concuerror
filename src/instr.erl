@@ -29,8 +29,6 @@
 %%% Definitions
 %%%----------------------------------------------------------------------
 
--define(INCLUDE_DIR, filename:absname("include")).
-
 %% Instrumented auto-imported functions of 'erlang' module.
 -define(INSTR_ERLANG_NO_MOD,
 	[{demonitor, 1}, {demonitor, 2}, {exit, 2}, {halt, 0},
@@ -80,7 +78,7 @@ instrument_and_load_one(File) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
     log:log("Validating file ~p...~n", [File]),
-    PreOptions = [strong_validation, verbose, return, {i, ?INCLUDE_DIR}],
+    PreOptions = [strong_validation, verbose, return],
     case compile:file(File, PreOptions) of
 	{ok, Module, Warnings} ->
 	    %% Log warning messages.
@@ -128,7 +126,7 @@ instrument(File) ->
     %% TODO: For now using the default and the test directory include path.
     %%       In the future we have to provide a means for an externally
     %%       defined include path (like the erlc -I flag).
-    case epp:parse_file(File, [?INCLUDE_DIR, filename:dirname(File)], []) of
+    case epp:parse_file(File, [filename:dirname(File)], []) of
 	{ok, OldForms} ->
 	    ExpRecForms = erl_expand_records:module(OldForms, []),
 	    Tree = erl_recomment:recomment_forms(ExpRecForms, []),
