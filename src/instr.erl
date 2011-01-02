@@ -130,7 +130,8 @@ instrument(File) ->
     %%       defined include path (like the erlc -I flag).
     case epp:parse_file(File, [?INCLUDE_DIR, filename:dirname(File)], []) of
 	{ok, OldForms} ->
-	    Tree = erl_recomment:recomment_forms(OldForms, []),
+	    ExpRecForms = erl_expand_records:module(OldForms, []),
+	    Tree = erl_recomment:recomment_forms(ExpRecForms, []),
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
 	    Abstract = erl_syntax:revert(Transformed),
