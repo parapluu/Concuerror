@@ -29,7 +29,7 @@ doc(AppDir) ->
 -spec test() -> 'ok'.
 
 test() ->
-    Modules = [lid, state, error, ticket, sched],
+    Modules = [lid, state, error, ticket, instr, sched],
     Tests = [{module, M} || M <- Modules],
     eunit:test(Tests, [verbose]).
 
