@@ -20,9 +20,10 @@
          rep_monitor/2, rep_process_flag/2, rep_receive/1,
          rep_receive_block/0, rep_receive_notify/1,
          rep_receive_notify/2, rep_register/2, rep_send/2,
-         rep_spawn/1, rep_spawn/3, rep_spawn_link/1,
-         rep_spawn_link/3, rep_spawn_monitor/1,
-         rep_spawn_monitor/3, rep_unlink/1, rep_unregister/1,
+         rep_spawn/1, rep_spawn/3, rep_spawn_link/1, rep_spawn_link/3,
+	 rep_spawn_monitor/1, rep_spawn_monitor/3,
+	 rep_spawn_opt/2, rep_spawn_opt/4,
+	 rep_unlink/1, rep_unregister/1,
 	 rep_whereis/1, rep_yield/0, wait/0]).
 
 -export_type([analysis_target/0, analysis_ret/0]).
@@ -618,6 +619,32 @@ handler(spawn_monitor, ParentPid,
     NewActive = ?SETS:add_element(ChildLid, Active),
     dispatcher(Context#context{active = NewActive});
 
+%% Spawn_opt message handler.
+%% Similar to above depending on options.
+handler(spawn_opt, ParentPid,
+	#context{active = Active, details = Det} = Context, {Ret, Opt}) ->
+    {ChildPid, Ref} =
+	case Ret of
+	    {C, R} -> {C, R};
+	    C -> {C, noref}
+	end,
+    link(ChildPid),
+    ParentLid = lid:from_pid(ParentPid),
+    ChildLid = lid:new(ChildPid, ParentLid),
+    Opts = sets:to_list(sets:intersection(sets:from_list([link, monitor]),
+					  sets:from_list(Opt))),
+    log_details(Det, {spawn_opt, ParentLid, ChildLid, Opts}),
+    case lists:member(link, Opts) of
+	true -> lid:link(ParentLid, ChildLid);
+	false -> continue
+    end,
+    case lists:member(monitor, Opts) of
+	true -> lid:monitor(ParentLid, ChildLid, Ref);
+	false -> continue
+    end,
+    NewActive = ?SETS:add_element(ChildLid, Active),
+    dispatcher(Context#context{active = NewActive});
+
 %% Unlink message handler.
 handler(unlink, Pid, #context{details = Det} = Context, TargetPid) ->
     Lid = lid:from_pid(Pid),
@@ -1065,6 +1092,38 @@ rep_spawn_monitor(Fun) ->
 rep_spawn_monitor(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn_monitor(Fun).
+
+%% @spec rep_spawn_opt(atom()) -> pid()
+%% @doc: Replacement for `spawn_opt/2'.
+%%
+%% When spawned, the new process has to yield.
+-spec rep_spawn_opt(function(),
+		    [link | monitor | {priority, low | normal | high} |
+		     {fullsweep_after, integer()} |
+		     {min_heap_size, integer()} |
+		     {min_bin_vheap_size, integer()}]) ->
+			   pid() | {pid(), reference()}.
+
+rep_spawn_opt(Fun, Opt) ->
+    Ret = spawn_opt(fun() -> wait(), Fun() end, Opt),
+    ?RP_SCHED ! #sched{msg = spawn_opt, pid = self(), misc = {Ret, Opt}},
+    yield(),
+    Ret.
+
+%% @spec rep_spawn_opt(atom(), atom(), [term()], [term()]) -> pid()
+%% @doc: Replacement for `spawn_opt/4'.
+%%
+%% When spawned, the new process has to yield.
+-spec rep_spawn_opt(atom(), atom(), [term()],
+		    [link | monitor | {priority, low | normal | high} |
+		     {fullsweep_after, integer()} |
+		     {min_heap_size, integer()} |
+		     {min_bin_vheap_size, integer()}]) ->
+			   pid() | {pid(), reference()}.
+
+rep_spawn_opt(Module, Function, Args, Opt) ->
+    Fun = fun() -> apply(Module, Function, Args) end,
+    rep_spawn_opt(Fun, Opt).
 
 %% @spec: rep_unlink(pid() | port()) -> 'true'
 %% @doc: Replacement for `unlink/1'.

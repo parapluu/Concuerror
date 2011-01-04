@@ -26,7 +26,8 @@
 	 test_monitor_unexisting/0, test_spawn_monitor/0,
 	 test_spawn_monitor_demonitor/0, test_spawn_monitor_demonitor_2/0,
 	 test_spawn_monitor_demonitor_3/0, test_spawn_monitor_demonitor_4/0,
-	 test_spawn_monitor_demonitor_5/0]).
+	 test_spawn_monitor_demonitor_5/0,
+	 test_spawn_opt_link_receive_exit/0, test_spawn_opt_monitor/0]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -352,3 +353,22 @@ test_spawn_monitor_demonitor_5() ->
     {_Pid, Ref} = spawn_monitor(fun() -> ok end),
     Result = demonitor(Ref, [flush, info]),
     ?assertEqual(true, Result).
+
+-spec test_spawn_opt_link_receive_exit() -> 'ok'.
+
+test_spawn_opt_link_receive_exit() ->
+    Fun = fun() -> process_flag(trap_exit, true),
+		   receive
+		       {'EXIT', _Pid, normal} -> ok
+		   end
+	  end,
+    spawn_opt(Fun, [link]),
+    ok.
+
+-spec test_spawn_opt_monitor() -> 'ok'.
+
+test_spawn_opt_monitor() ->
+    {Pid, Ref} = spawn_opt(fun() -> ok end, [monitor]),
+    receive
+	{'DOWN', Ref, process, Pid, normal} -> ok
+    end.

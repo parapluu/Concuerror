@@ -187,12 +187,22 @@ system_test_() ->
 				      "Assertion violation",
 				      [{0, 1, 0}, {1, 3, 1}, {inf, 3, 1}])
 	      end},
+    Test34 = {"2 proc | spawn_opt (link), trap_exit and receive 'EXIT' message "
+	      "| deadlock",
+	      fun(_Any) -> test_error(test_spawn_opt_link_receive_exit,
+				      "Deadlock",
+				      [{0, 1, 1}, {1, 2, 1}, {inf, 2, 1}])
+	      end},
+    Test35 = {"2 proc | spawn_opt (monitor) | normal",
+	      fun(_Any) -> test_ok(test_spawn_opt_monitor,
+				   [{0, 1}, {inf, 1}])
+	      end},
     Tests = [Test01, Test02, Test03, Test04, Test05, Test06,
 	     Test07, Test08, Test09, Test10, Test11, Test12,
 	     Test13, Test14, Test15, Test16, Test17, Test18,
 	     Test19, Test20, Test21, Test22, Test23, Test24,
 	     Test25, Test26, Test27, Test28, Test29, Test30,
-	     Test31, Test32, Test33],
+	     Test31, Test32, Test33, Test34, Test35],
     Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
     {foreach, local, Setup, Cleanup, [Inst]}.
 

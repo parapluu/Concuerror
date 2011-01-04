@@ -31,6 +31,7 @@
                        {'spawn', lid:lid(), lid:lid()} |
 		       {'spawn_link', lid:lid(), lid:lid()} |
 		       {'spawn_monitor', lid:lid(), lid:lid()} |
+		       {'spawn_opt', lid:lid(), lid:lid(), [link | monitor]} |
                        {'unlink', lid:lid(), maybe_lid()} |
                        {'unregister', lid:lid(), atom()} |
                        {'whereis', lid:lid(), atom(), maybe_lid()}.
@@ -99,6 +100,15 @@ to_string({spawn_link, Parent, Child}) ->
 		  [lid:to_string(Parent), lid:to_string(Child)]);
 to_string({spawn_monitor, Parent, Child}) ->
     io_lib:format("Process ~s spawns and monitors process ~s",
+		  [lid:to_string(Parent), lid:to_string(Child)]);
+to_string({spawn_opt, Parent, Child, [link]}) ->
+    io_lib:format("Process ~s spawns and links to process ~s",
+		  [lid:to_string(Parent), lid:to_string(Child)]);
+to_string({spawn_opt, Parent, Child, [monitor]}) ->
+    io_lib:format("Process ~s spawns and monitors process ~s",
+		  [lid:to_string(Parent), lid:to_string(Child)]);
+to_string({spawn_opt, Parent, Child, [link]}) ->
+    io_lib:format("Process ~s spawns, monitors and links to process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
 to_string({unlink, Proc, not_found}) ->
     io_lib:format("Process ~s unlinks from nonexisting process",
