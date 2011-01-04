@@ -19,7 +19,7 @@
          rep_exit/2, rep_halt/0, rep_halt/1, rep_link/1,
          rep_monitor/2, rep_process_flag/2, rep_receive/1,
          rep_receive_block/0, rep_receive_notify/1,
-         rep_receive_notify/2, rep_register/2, rep_send/2,
+         rep_receive_notify/2, rep_register/2, rep_send/2, rep_send/3,
          rep_spawn/1, rep_spawn/3, rep_spawn_link/1, rep_spawn_link/3,
 	 rep_spawn_monitor/1, rep_spawn_monitor/3,
 	 rep_spawn_opt/2, rep_spawn_opt/4,
@@ -1025,6 +1025,15 @@ rep_send(Dest, Msg) ->
     ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, Msg}},
     yield(),
     Msg.
+
+%% @spec rep_send(dest(), term(), [nosuspend | noconnect]) -> term()
+%% @doc: Replacement for `send/3'.
+%%
+%% For now, ignore options and call rep_send/2.
+-spec rep_send(dest(), term(), [nosuspend | noconnect]) -> term().
+
+rep_send(Dest, Msg, _Opt) ->
+    rep_send(Dest, Msg).
 
 %% @spec rep_spawn(function()) -> pid()
 %% @doc: Replacement for `spawn/1'.

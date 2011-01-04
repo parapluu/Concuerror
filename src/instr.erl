@@ -40,7 +40,7 @@
 
 %% Instrumented functions called as erlang:FUNCTION.
 -define(INSTR_ERLANG,
-	[{send, 2}, {yield, 0}] ++ ?INSTR_ERLANG_NO_MOD).
+	[{send, 2}, {send, 3}, {yield, 0}] ++ ?INSTR_ERLANG_NO_MOD).
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation utilities
