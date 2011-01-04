@@ -1105,15 +1105,22 @@ rep_spawn_monitor(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn_monitor(Fun).
 
-%% @spec rep_spawn_opt(atom()) -> pid()
+%% @spec rep_spawn_opt(function(),
+%% 		    ['link' | 'monitor' |
+%%                   {'priority', process_priority_level()} |
+%% 		     {'fullsweep_after', integer()} |
+%% 		     {'min_heap_size', integer()} |
+%% 		     {'min_bin_vheap_size', integer()}]) ->
+%% 			   pid() | {pid(), reference()}
 %% @doc: Replacement for `spawn_opt/2'.
 %%
 %% When spawned, the new process has to yield.
 -spec rep_spawn_opt(function(),
-		    [link | monitor | {priority, low | normal | high} |
-		     {fullsweep_after, integer()} |
-		     {min_heap_size, integer()} |
-		     {min_bin_vheap_size, integer()}]) ->
+		    ['link' | 'monitor' |
+                     {'priority', process_priority_level()} |
+		     {'fullsweep_after', integer()} |
+		     {'min_heap_size', integer()} |
+		     {'min_bin_vheap_size', integer()}]) ->
 			   pid() | {pid(), reference()}.
 
 rep_spawn_opt(Fun, Opt) ->
@@ -1122,15 +1129,22 @@ rep_spawn_opt(Fun, Opt) ->
     yield(),
     Ret.
 
-%% @spec rep_spawn_opt(atom(), atom(), [term()], [term()]) -> pid()
+%% @spec rep_spawn_opt(atom(), atom(), [term()],
+%% 		    ['link' | 'monitor' |
+%%                   {'priority', process_priority_level()} |
+%% 		     {'fullsweep_after', integer()} |
+%% 		     {'min_heap_size', integer()} |
+%% 		     {'min_bin_vheap_size', integer()}]) ->
+%% 			   pid() | {pid(), reference()}
 %% @doc: Replacement for `spawn_opt/4'.
 %%
 %% When spawned, the new process has to yield.
 -spec rep_spawn_opt(atom(), atom(), [term()],
-		    [link | monitor | {priority, low | normal | high} |
-		     {fullsweep_after, integer()} |
-		     {min_heap_size, integer()} |
-		     {min_bin_vheap_size, integer()}]) ->
+		    ['link' | 'monitor' |
+                     {'priority', process_priority_level()} |
+		     {'fullsweep_after', integer()} |
+		     {'min_heap_size', integer()} |
+		     {'min_bin_vheap_size', integer()}]) ->
 			   pid() | {pid(), reference()}.
 
 rep_spawn_opt(Module, Function, Args, Opt) ->

@@ -13,6 +13,8 @@
 
 -type maybe_lid() :: lid:lid() | 'not_found'.
 
+-type spawn_opt_opts() :: ['link' | 'monitor'].
+
 %% Tuples providing information about a process' action.
 -type proc_action() :: {'after', lid:lid()} |
 		       {'block', lid:lid()} |
@@ -31,7 +33,7 @@
                        {'spawn', lid:lid(), lid:lid()} |
 		       {'spawn_link', lid:lid(), lid:lid()} |
 		       {'spawn_monitor', lid:lid(), lid:lid()} |
-		       {'spawn_opt', lid:lid(), lid:lid(), [link | monitor]} |
+		       {'spawn_opt', lid:lid(), lid:lid(), spawn_opt_opts()} |
                        {'unlink', lid:lid(), maybe_lid()} |
                        {'unregister', lid:lid(), atom()} |
                        {'whereis', lid:lid(), atom(), maybe_lid()}.
@@ -107,7 +109,7 @@ to_string({spawn_opt, Parent, Child, [link]}) ->
 to_string({spawn_opt, Parent, Child, [monitor]}) ->
     io_lib:format("Process ~s spawns and monitors process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
-to_string({spawn_opt, Parent, Child, [link]}) ->
+to_string({spawn_opt, Parent, Child, _Opts}) ->
     io_lib:format("Process ~s spawns, monitors and links to process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
 to_string({unlink, Proc, not_found}) ->
