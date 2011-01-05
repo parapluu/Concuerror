@@ -1083,11 +1083,11 @@ rep_spawn_link(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn_link(Fun).
 
-%% @spec rep_spawn_monitor(function()) -> pid()
+%% @spec rep_spawn_monitor(function()) -> {pid(), reference()}
 %% @doc: Replacement for `spawn_monitor/1'.
 %%
 %% When spawned, the new process has to yield.
--spec rep_spawn_monitor(function()) -> pid().
+-spec rep_spawn_monitor(function()) -> {pid(), reference()}.
 
 rep_spawn_monitor(Fun) ->
     Ret = spawn_monitor(fun() -> wait(), Fun() end),
@@ -1095,11 +1095,11 @@ rep_spawn_monitor(Fun) ->
     yield(),
     Ret.
 
-%% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> pid()
+%% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}
 %% @doc: Replacement for `spawn_monitor/3'.
 %%
 %% See rep_spawn_monitor/1.
--spec rep_spawn_monitor(atom(), atom(), [term()]) -> pid().
+-spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}.
 
 rep_spawn_monitor(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
