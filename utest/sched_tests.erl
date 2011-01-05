@@ -197,12 +197,16 @@ system_test_() ->
 	      fun(_Any) -> test_ok(test_spawn_opt_monitor,
 				   [{0, 1}, {inf, 1}])
 	      end},
+    Test36 = {"2 proc | erlang:send/3 (nosuspend) | normal",
+	      fun(_Any) -> test_ok(test_send_2,
+				   [{0, 1}, {1, 3}, {inf, 3}])
+	      end},
     Tests = [Test01, Test02, Test03, Test04, Test05, Test06,
 	     Test07, Test08, Test09, Test10, Test11, Test12,
 	     Test13, Test14, Test15, Test16, Test17, Test18,
 	     Test19, Test20, Test21, Test22, Test23, Test24,
 	     Test25, Test26, Test27, Test28, Test29, Test30,
-	     Test31, Test32, Test33, Test34, Test35],
+	     Test31, Test32, Test33, Test34, Test35, Test36],
     Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
     {foreach, local, Setup, Cleanup, [Inst]}.
 

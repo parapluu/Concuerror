@@ -27,7 +27,8 @@
 	 test_spawn_monitor_demonitor/0, test_spawn_monitor_demonitor_2/0,
 	 test_spawn_monitor_demonitor_3/0, test_spawn_monitor_demonitor_4/0,
 	 test_spawn_monitor_demonitor_5/0,
-	 test_spawn_opt_link_receive_exit/0, test_spawn_opt_monitor/0]).
+	 test_spawn_opt_link_receive_exit/0, test_spawn_opt_monitor/0,
+	 test_erlang_send_3/0]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -372,3 +373,10 @@ test_spawn_opt_monitor() ->
     receive
 	{'DOWN', Ref, process, Pid, normal} -> ok
     end.
+
+-spec test_erlang_send_3() -> 'ok'.
+
+test_erlang_send_3() ->
+    Pid = spawn(fun() -> receive foo -> ok end end),
+    erlang:send(Pid, foo, [nosuspend]),
+    ok.
