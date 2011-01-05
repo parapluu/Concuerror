@@ -1026,13 +1026,11 @@ rep_send(Dest, Msg) ->
     yield(),
     Msg.
 
-%% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
-%%                      'ok' | 'nosuspend' | 'noconnect'
+%% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) -> 'ok'
 %% @doc: Replacement for `send/3'.
 %%
 %% For now, ignore options and call rep_send/2.
--spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
-                      'ok' | 'nosuspend' | 'noconnect'.
+-spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) -> 'ok'.
 
 rep_send(Dest, Msg, _Opt) ->
     rep_send(Dest, Msg),
