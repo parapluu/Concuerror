@@ -441,7 +441,7 @@ transform_receive_timeout(InfBlock, FrBlock, Timeout) ->
     erl_syntax:case_expr(Timeout, AfterCaseClauses).
 
 %% Instrument a Pid ! Msg expression.
-%% Pid ! Msg is transformed into rep:send(Pid, Msg).
+%% Pid ! Msg is transformed into sched:rep_send(Pid, Msg).
 instrument_send(Tree) ->
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_send),
