@@ -1026,15 +1026,20 @@ rep_send(Dest, Msg) ->
     yield(),
     Msg.
 
-%% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) -> 'ok'
+%% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
+%%                      'ok' | 'nosuspend' | 'noconnect'
 %% @doc: Replacement for `send/3'.
 %%
-%% For now, ignore options and call rep_send/2.
--spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) -> 'ok'.
+%% For now, call erlang:send/3, but ignore options in internal handling.
+-spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
+                      'ok' | 'nosuspend' | 'noconnect'.
 
-rep_send(Dest, Msg, _Opt) ->
-    rep_send(Dest, Msg),
-    ok.
+rep_send(Dest, Msg, Opt) ->
+    Ret = erlang:send(Dest, {lid:from_pid(self()), Msg}, Opt),
+    NewDest = find_pid(Dest),
+    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, Msg}},
+    yield(),
+    Ret.
 
 %% @spec rep_spawn(function()) -> pid()
 %% @doc: Replacement for `spawn/1'.
