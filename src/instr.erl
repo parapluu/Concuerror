@@ -29,6 +29,9 @@
 %%% Definitions
 %%%----------------------------------------------------------------------
 
+%% List of attributes that should be stripped.
+-define(ATTR_STRIP, [type, spec, opaque, export_type, import_type]).
+
 %% Instrumented auto-imported functions of 'erlang' module.
 -define(INSTR_ERLANG_NO_MOD,
 	[{demonitor, 1}, {demonitor, 2}, {exit, 2}, {halt, 0},
@@ -129,7 +132,10 @@ instrument(File) ->
     %%       defined include path (like the erlc -I flag).
     case epp:parse_file(File, [filename:dirname(File)], []) of
 	{ok, OldForms} ->
-	    ExpRecForms = erl_expand_records:module(OldForms, []),
+	    %% Remove `type` and `spec` attributes to avoid errors
+	    %% due to record expansion below.
+	    StrippedForms = strip_attributes(OldForms, []),
+	    ExpRecForms = erl_expand_records:module(StrippedForms, []),
 	    Tree = erl_recomment:recomment_forms(ExpRecForms, []),
 	    MapFun = fun(T) -> instrument_toplevel(T) end,
 	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
@@ -139,6 +145,17 @@ instrument(File) ->
 	    {ok, NewForms};
 	{error, Error} -> {error, Error}
     end.
+
+%% XXX: Implementation dependent.
+strip_attributes([], Acc) -> lists:reverse(Acc);
+strip_attributes([{attribute, _Line, Name, _Misc} = Head|Rest], Acc) ->
+    case lists:member(Name, ?ATTR_STRIP) of
+	true -> strip_attributes(Rest, Acc);
+	false -> strip_attributes(Rest, [Head|Acc])
+    end;
+strip_attributes([Head|Rest], Acc) ->
+    strip_attributes(Rest, [Head|Acc]).
+
 
 %% Instrument a "top-level" element.
 %% Of the "top-level" elements, i.e. functions, specs, etc., only functions are
