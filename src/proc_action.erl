@@ -11,6 +11,9 @@
 
 -export_type([proc_action/0]).
 
+%% Printing depth of terms like messages or exit reasons.
+-define(PRINT_DEPTH, 4).
+
 -type maybe_lid() :: lid:lid() | 'not_found'.
 
 -type spawn_opt_opts() :: ['link' | 'monitor'].
@@ -52,10 +55,11 @@ to_string({demonitor, Proc1, Proc2}) ->
     io_lib:format("Process ~s demonitors process ~s",
 		  [lid:to_string(Proc1), lid:to_string(Proc2)]);
 to_string({exit, Proc, Reason}) ->
-    io_lib:format("Process ~s exits (~s)", [lid:to_string(Proc), Reason]);
+    io_lib:format("Process ~s exits (~W)",
+		  [lid:to_string(Proc), Reason, ?PRINT_DEPTH]);
 to_string({fun_exit, Proc, not_found, Reason}) ->
-    io_lib:format("Process ~s sends exit signal (~p) to nonexisting process",
-		  [lid:to_string(Proc), Reason]);
+    io_lib:format("Process ~s sends exit signal (~W) to nonexisting process",
+		  [lid:to_string(Proc), Reason, ?PRINT_DEPTH]);
 to_string({fun_exit, Proc, Target, Reason}) ->
     io_lib:format("Process ~s sends exit signal (~p) to process ~s",
 		  [lid:to_string(Proc), Reason, lid:to_string(Target)]);
@@ -80,20 +84,22 @@ to_string({'process_flag', Proc, Flag, Value}) ->
     io_lib:format("Process ~s sets flag `~p` to `~p`",
 		  [lid:to_string(Proc), Flag, Value]);
 to_string({'receive', Receiver, Sender, Msg}) ->
-    io_lib:format("Process ~s receives message `~p` from process ~s",
-		  [lid:to_string(Receiver), Msg, lid:to_string(Sender)]);
+    io_lib:format("Process ~s receives message `~W` from process ~s",
+		  [lid:to_string(Receiver), Msg, ?PRINT_DEPTH,
+		   lid:to_string(Sender)]);
 to_string({'receive', Receiver, Msg}) ->
-    io_lib:format("Process ~s receives message `~p`",
-		  [lid:to_string(Receiver), Msg]);
+    io_lib:format("Process ~s receives message `~W`",
+		  [lid:to_string(Receiver), Msg, ?PRINT_DEPTH]);
 to_string({register, Proc, RegName, RegLid}) ->
     io_lib:format("Process ~s registers process ~s as `~p`",
                   [lid:to_string(Proc), lid:to_string(RegLid), RegName]);
 to_string({send, Sender, not_found, Msg}) ->
-    io_lib:format("Process ~s sends message `~p` to nonexisting process",
-		  [lid:to_string(Sender), Msg]);
+    io_lib:format("Process ~s sends message `~W` to nonexisting process",
+		  [lid:to_string(Sender), Msg, ?PRINT_DEPTH]);
 to_string({send, Sender, Receiver, Msg}) ->
-    io_lib:format("Process ~s sends message `~p` to process ~s",
-		  [lid:to_string(Sender), Msg, lid:to_string(Receiver)]);
+    io_lib:format("Process ~s sends message `~W` to process ~s",
+		  [lid:to_string(Sender), Msg, ?PRINT_DEPTH,
+		   lid:to_string(Receiver)]);
 to_string({spawn, Parent, Child}) ->
     io_lib:format("Process ~s spawns process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
