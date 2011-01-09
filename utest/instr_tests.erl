@@ -27,7 +27,9 @@ syntax_test_() ->
 	      fun(_Any) -> test_ok("non_local_pat.erl") end},
     Test03 = {"Underscore in record creation",
 	      fun(_Any) -> test_ok("rec_uscore.erl") end},
-    Tests = [Test01, Test02, Test03],
+    Test04 = {"Strip types and specs",
+	      fun(_Any) -> test_ok("strip_attr.erl") end},
+    Tests = [Test01, Test02, Test03, Test04],
     Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
     {foreach, local, Setup, Cleanup, [Inst]}.
 
