@@ -219,7 +219,7 @@ unlink(Lid1, Lid2) ->
 
 get_pid(Lid) ->
     case ets:lookup(?NT_LID, Lid) of
-	[] -> 'not_found';
+	[] -> not_found;
 	[#info{pid = Pid}] -> Pid
     end.
 
