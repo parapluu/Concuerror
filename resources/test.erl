@@ -386,7 +386,6 @@ test_erlang_send_3() ->
 
 test_3_proc_receive_exit() ->
     process_flag(trap_exit, true),
-    Self = self(),
     Pid1 = spawn_link(fun() -> ok end),
     Pid2 = spawn_link(fun() -> ok end),
     receive
