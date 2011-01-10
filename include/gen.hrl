@@ -34,6 +34,9 @@
 -define(NT_STATE_TEMP, '_._state_temp').
 -define(NT_USED, '_._used').
 
+%% Instrumented message atom.
+-define(INSTR_MSG, '_._instr_msg').
+
 %% Set-like data structure used in sched, lid and error modules.
 -define(SETS, ordsets).
 -define(SET_TYPE(X), [X]). %% XXX: bad -- ordsets does not export the type!

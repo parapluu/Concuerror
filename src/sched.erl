@@ -1016,14 +1016,20 @@ rep_register(RegName, P) ->
 %% @spec rep_send(dest(), term()) -> term()
 %% @doc: Replacement for `send/2' (and the equivalent `!' operator).
 %%
-%% Just yield after sending.
+%% If the target has a registered LID then instrument the message
+%% and yield after sending. Otherwise, send the original message
+%% and continue without yielding.
 -spec rep_send(dest(), term()) -> term().
 
 rep_send(Dest, Msg) ->
-    Dest ! {lid:from_pid(self()), Msg},
     NewDest = find_pid(Dest),
-    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, Msg}},
-    yield(),
+    case lid:from_pid(NewDest) of
+	not_found -> Dest ! Msg;
+	_Lid ->
+	    Dest ! {?INSTR_MSG, lid:from_pid(self()), Msg},
+	    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, Msg}},
+	    yield()
+    end,
     Msg.
 
 %% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->

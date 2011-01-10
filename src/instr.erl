@@ -245,7 +245,7 @@ instrument_application({erlang, Fun, ArgTree}) ->
     erl_syntax:application(ModTree, FunTree, ArgTree).
 
 %% Instrument a receive expression.
-%% -----------------------------------------------------------------------------
+%% ----------------------------------------------------------------------
 %% receive
 %%   Patterns -> Actions
 %% end
@@ -266,28 +266,20 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %%               end
 %%             end
 %%
-%% The additional _Fresh -> block pattern is only added, if there is no
-%% catch-all pattern among the original receive patterns.
+%% The additional _Fresh -> block pattern is only added, if there
+%% is no catch-all pattern among the original receive patterns.
 %%
-%% Pattern -> NewPattern maps are divided into the following categories:
+%% For each Pattern-Action pair two new pairs are added:
+%%   - The first pair is added to handle instrumented messages:
+%%       {?INSTR_MSG, Fresh, Pattern} ->
+%%           sched:rep_receive_notify(Fresh, Pattern),
+%%           Action
 %%
-%%   - Patterns consisting of size-3 tuples, i.e. `{X, Y, Z}' are kept as
-%%     they are and additionally a pattern `{Fresh, {X, Y, Z}}' is added.
-%%     That way possible `{'EXIT', Pid, Reason}' messages are caught
-%%     if the receiver has trap_exit set to true.
-%%
-%%   - Same as above for size-5 tuples, to catch possible 'DOWN' messages.
-%%
-%%   - Same as above for catch-all patterns, i.e. `Var' or `_' patterns.
-%%
-%%   - All other patterns `Pattern' are transformed into {Fresh, Pattern}.
-%%
-%% `Action' is normally transformed into
-%% `sched:rep_receive_notify(Fresh, Pattern), Action'.
-%% In the case of size-3, size-5 and catch-all patterns, the patterns that
-%% are duplicated as they were originally, will have a NewAction of
-%% `sched:rep_receive_notify(Pattern), Action'.
-%% -----------------------------------------------------------------------------
+%%   - The second pair is added to handle uninstrumented messages:
+%%       Pattern ->
+%%           sched:rep_receive_notify(Pattern),
+%%           Action
+%% ----------------------------------------------------------------------
 %% receive
 %%   Patterns -> Actions
 %% after N -> AfterAction
@@ -305,13 +297,14 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %%               after 0 -> NewAfterAction
 %% end
 %%
-%% That is, if the timeout equals infinity then the expression is equivalent to
-%% a normal receive expression as above. Otherwise, any positive timeout is
-%% transformed to 0.
-%% Pattens and Actions are mapped into NewPatterns and NewActions as described
-%% previously for the case of a `receive' expression with no `after' clause.
-%% AfterAction is transformed into `sched:rep_after_notify(), AfterAction'.
-%% -----------------------------------------------------------------------------
+%% That is, if the timeout equals infinity then the expression is
+%% equivalent to a normal receive expression as above. Otherwise,
+%% any positive timeout is transformed into 0.
+%% Pattens and Actions are mapped into NewPatterns and NewActions
+%% as described previously for the case of a `receive' expression
+%% with no `after' clause. AfterAction is transformed into
+%% `sched:rep_after_notify(), AfterAction'.
+%% ----------------------------------------------------------------------
 %% receive
 %% after N -> AfterActions
 %% end
@@ -322,7 +315,7 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %%   infinity -> sched:rep_receive_block();
 %%   Fresh    -> AfterActions
 %% end
-%% -----------------------------------------------------------------------------
+%% ----------------------------------------------------------------------
 instrument_receive(Tree) ->
     %% Get old receive expression's clauses.
     OldClauses = erl_syntax:receive_expr_clauses(Tree),
@@ -388,31 +381,15 @@ transform_receive_case(Clauses) ->
     end.
 
 transform_receive_clauses(Clauses) ->
-    Fold = fun(Old, Acc) ->
-		   case transform_receive_clause(Old) of
-		       [One] -> [One|Acc];
+    Trans = fun(P) -> [transform_receive_clause_regular(P),
+		       transform_receive_clause_special(P)]
+	    end,
+    Fold = fun(Clause, Acc) ->
+		   case Trans(Clause) of
 		       [One, Two] -> [One, Two|Acc]
 		   end
 	   end,
     lists:foldr(Fold, [], Clauses).
-
-%% Transform a Pattern -> Action clause, according to its Pattern.
-transform_receive_clause(Clause) ->
-    [Pattern] = erl_syntax:clause_patterns(Clause),
-    Fnormal = fun(P) -> [transform_receive_clause_regular(P)] end,
-    Fspecial = fun(P) -> [transform_receive_clause_regular(P),
-     			  transform_receive_clause_special(P)]
-    	       end,
-    case erl_syntax:type(Pattern) of
-	tuple ->
-	    case erl_syntax:tuple_size(Pattern) of
-		3 -> Fspecial(Clause);
-		5 -> Fspecial(Clause);
-		_OtherSize -> Fnormal(Clause)
-	    end;
-	variable -> Fspecial(Clause);
-	_OtherType -> Fnormal(Clause)
-    end.    
 
 %% Tranform a clause
 %%   Pattern -> Action
@@ -422,8 +399,9 @@ transform_receive_clause_regular(Clause) ->
     [OldPattern] = erl_syntax:clause_patterns(Clause),
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
+    InstrAtom = erl_syntax:atom(?INSTR_MSG),
     PidVar = new_variable(),
-    NewPattern = [erl_syntax:tuple([PidVar, OldPattern])],
+    NewPattern = [erl_syntax:tuple([InstrAtom, PidVar, OldPattern])],
     Module = erl_syntax:atom(sched),
     Function = erl_syntax:atom(rep_receive_notify),
     Arguments = [PidVar, OldPattern],
