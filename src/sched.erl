@@ -790,7 +790,7 @@ state_swap() ->
 
 %% Used by functions where the process is required to block, i.e. moved to
 %% the `blocked` set and stop being scheduled, until awaken.
--spec block() -> 'true'.
+-spec block() -> 'ok'.
 
 block() ->
     ?RP_SCHED ! #sched{msg = block, pid = self()},
@@ -800,24 +800,32 @@ block() ->
 continue(Pid) ->
     Pid ! #sched{msg = continue}.
 
-%% Notify scheduler of an event.
+%% Notify the scheduler of an event.
+%% If the calling user process has an associated LID, then send
+%% a notification and yield. Otherwise, for an unknown process
+%% running instrumented code completely ignore this call.
 -spec notify(atom(), any()) -> 'ok'.
 
 notify(Msg, Misc) ->
-    ?RP_SCHED ! #sched{msg = Msg, pid = self(), misc = Misc},
-    ok.
+    Self = self(),
+    case lid:from_pid(Self) of
+	not_found -> ok;
+	_Lid ->
+	    ?RP_SCHED ! #sched{msg = Msg, pid = self(), misc = Misc},
+	    yield()
+    end.
 
 %% Wait until the scheduler prompts to continue.
--spec wait() -> 'true'.
+-spec wait() -> 'ok'.
 
 wait() ->
     receive
-	#sched{msg = continue} -> true
+	#sched{msg = continue} -> ok
     end.
 
 %% Functionally same as block. Used when a process is scheduled out, but
 %% remains in the `active` set.
--spec yield() -> 'true'.
+-spec yield() -> 'ok'.
 
 yield() ->
     ?RP_SCHED ! #sched{msg = yield, pid = self()},

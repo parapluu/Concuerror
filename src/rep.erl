@@ -16,7 +16,7 @@
 	 rep_send/3, rep_spawn/1, rep_spawn/3, rep_spawn_link/1,
 	 rep_spawn_link/3, rep_spawn_monitor/1, rep_spawn_monitor/3,
 	 rep_spawn_opt/2, rep_spawn_opt/4, rep_unlink/1,
-	 rep_unregister/1, rep_whereis/1, rep_yield/0]).
+	 rep_unregister/1, rep_whereis/1]).
 
 -include("gen.hrl").
 
@@ -34,7 +34,6 @@
 rep_demonitor(Ref) ->
     Result = demonitor(Ref),
     sched:notify(demonitor, Ref),
-    sched:yield(),
     Result.
 
 %% @spec: rep_demonitor(reference(), ['flush' | 'info']) -> 'true'
@@ -46,7 +45,6 @@ rep_demonitor(Ref) ->
 rep_demonitor(Ref, Opts) ->
     Result = demonitor(Ref, Opts),
     sched:notify(demonitor, Ref),
-    sched:yield(),
     Result.
 
 %% @spec: rep_exit(pid(), term()) -> true
@@ -56,9 +54,9 @@ rep_demonitor(Ref, Opts) ->
 -spec rep_exit(pid(), term()) -> 'true'.
 
 rep_exit(Pid, Reason) ->
-    exit(Pid, Reason),
+    Result = exit(Pid, Reason),
     sched:notify(fun_exit, {Pid, Reason}),
-    sched:yield().
+    Result.
 
 %% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/0'.
@@ -67,8 +65,7 @@ rep_exit(Pid, Reason) ->
 -spec rep_halt() -> no_return().
 
 rep_halt() ->
-    sched:notify(halt, empty),
-    sched:yield().
+    sched:notify(halt, empty).
 
 %% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/1'.
@@ -77,8 +74,7 @@ rep_halt() ->
 -spec rep_halt(non_neg_integer() | string()) -> no_return().
 
 rep_halt(Status) ->
-    sched:notify(halt, Status),
-    sched:yield().
+    sched:notify(halt, Status).
 
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.
@@ -89,7 +85,6 @@ rep_halt(Status) ->
 rep_link(Pid) ->
     Result = link(Pid),
     sched:notify(link, Pid),
-    sched:yield(),
     Result.
 
 %% @spec: rep_monitor('process', pid() | {atom(), node()} | atom()) ->
@@ -104,7 +99,6 @@ rep_monitor(Type, Item) ->
     Ref = monitor(Type, Item),
     NewItem = find_pid(Item),
     sched:notify(monitor, {NewItem, Ref}),
-    sched:yield(),
     Ref.
 
 %% @spec: rep_process_flag('trap_exit', boolean()) -> boolean();
@@ -135,7 +129,6 @@ rep_monitor(Type, Item) ->
 rep_process_flag(trap_exit = Flag, Value) ->
     Result = process_flag(Flag, Value),
     sched:notify(process_flag, {Flag, Value}),
-    sched:yield(),
     Result;
 rep_process_flag(Flag, Value) ->
     process_flag(Flag, Value).
@@ -184,7 +177,6 @@ rep_receive_match(Fun, [H|T]) ->
 
 rep_after_notify() ->
     sched:notify('after', empty),
-    sched:yield(),
     ok.
 
 %% @spec rep_receive_notify(pid(), term()) -> 'ok'
@@ -196,7 +188,6 @@ rep_after_notify() ->
 
 rep_receive_notify(From, Msg) ->
     sched:notify('receive', {From, Msg}),
-    sched:yield(),
     ok.
 
 %% @spec rep_receive_notify(term()) -> 'ok'
@@ -213,7 +204,6 @@ rep_receive_notify(Msg) ->
 	Other -> io:format("rep_receive_notify received ~p~n", [Other])
     end,
     sched:notify('receive', Msg),
-    sched:yield(),
     ok.
 
 %% @spec rep_register(atom(), pid() | port()) -> 'true'
@@ -225,7 +215,6 @@ rep_receive_notify(Msg) ->
 rep_register(RegName, P) ->
     Ret = register(RegName, P),
     sched:notify(register, {RegName, lid:from_pid(P)}),
-    sched:yield(),
     Ret.
 
 %% @spec rep_send(dest(), term()) -> term()
@@ -237,17 +226,18 @@ rep_register(RegName, P) ->
 -spec rep_send(dest(), term()) -> term().
 
 rep_send(Dest, Msg) ->
-    NewDest = find_pid(Dest),
-    case lid:from_pid(NewDest) of
-	not_found ->
-	    Dest ! Msg,
-	    sched:notify(send, {NewDest, Msg}),
-	    Msg;
-	_Lid ->
-	    Dest ! {?INSTR_MSG, lid:from_pid(self()), Msg},
-	    sched:notify(send, {NewDest, Msg}),
-	    sched:yield(),
-	    Msg
+    Self = self(),
+    case lid:from_pid(Self) of
+	not_found -> Dest ! Msg;
+	_SelfLid ->
+	    NewDest = find_pid(Dest),
+	    case lid:from_pid(NewDest) of
+		not_found -> Dest ! Msg;
+		_DestLid ->
+		    Dest ! {?INSTR_MSG, lid:from_pid(self()), Msg},
+		    sched:notify(send, {NewDest, Msg}),
+		    Msg
+	    end
     end.
 
 %% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
@@ -259,17 +249,18 @@ rep_send(Dest, Msg) ->
                       'ok' | 'nosuspend' | 'noconnect'.
 
 rep_send(Dest, Msg, Opt) ->
-    NewDest = find_pid(Dest),
-    case lid:from_pid(NewDest) of
-	not_found ->
-	    Ret = erlang:send(Dest, Msg, Opt),
-	    sched:notify(send, {NewDest, Msg}),
-	    Ret;
-	_Lid ->
-	    Ret = erlang:send(Dest, {lid:from_pid(self()), Msg}, Opt),
-	    sched:notify(send, {NewDest, Msg}),
-	    sched:yield(),
-	    Ret
+    Self = self(),
+    case lid:from_pid(Self) of
+	not_found -> erlang:send(Dest, Msg, Opt);
+	_SelfLid ->
+	    NewDest = find_pid(Dest),
+	    case lid:from_pid(NewDest) of
+		not_found -> erlang:send(Dest, Msg, Opt);
+		_Lid ->
+		    Ret = erlang:send(Dest, {lid:from_pid(self()), Msg}, Opt),
+		    sched:notify(send, {NewDest, Msg}),
+		    Ret
+	    end
     end.
 
 %% @spec rep_spawn(function()) -> pid()
@@ -282,7 +273,6 @@ rep_send(Dest, Msg, Opt) ->
 rep_spawn(Fun) ->
     Pid = spawn(fun() -> sched:wait(), Fun() end),
     sched:notify(spawn, Pid),
-    sched:yield(),
     Pid.
 
 %% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
@@ -304,7 +294,6 @@ rep_spawn(Module, Function, Args) ->
 rep_spawn_link(Fun) ->
     Pid = spawn_link(fun() -> sched:wait(), Fun() end),
     sched:notify(spawn_link, Pid),
-    sched:yield(),
     Pid.
 
 %% @spec rep_spawn_link(atom(), atom(), [term()]) -> pid()
@@ -326,7 +315,6 @@ rep_spawn_link(Module, Function, Args) ->
 rep_spawn_monitor(Fun) ->
     Ret = spawn_monitor(fun() -> sched:wait(), Fun() end),
     sched:notify(spawn_monitor, Ret),
-    sched:yield(),
     Ret.
 
 %% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}
@@ -360,7 +348,6 @@ rep_spawn_monitor(Module, Function, Args) ->
 rep_spawn_opt(Fun, Opt) ->
     Ret = spawn_opt(fun() -> sched:wait(), Fun() end, Opt),
     sched:notify(spawn_opt, {Ret, Opt}),
-    sched:yield(),
     Ret.
 
 %% @spec rep_spawn_opt(atom(), atom(), [term()],
@@ -394,7 +381,6 @@ rep_spawn_opt(Module, Function, Args, Opt) ->
 rep_unlink(Pid) ->
     Result = unlink(Pid),
     sched:notify(unlink, Pid),
-    sched:yield(),
     Result.
 
 %% @spec rep_unregister(atom()) -> 'true'
@@ -406,7 +392,6 @@ rep_unlink(Pid) ->
 rep_unregister(RegName) ->
     Ret = unregister(RegName),
     sched:notify(unregister, RegName),
-    sched:yield(),
     Ret.
 
 %% @spec rep_whereis(atom()) -> pid() | port() | 'undefined'
@@ -418,18 +403,7 @@ rep_unregister(RegName) ->
 rep_whereis(RegName) ->
     Ret = whereis(RegName),
     sched:notify(whereis, {RegName, Ret}),
-    sched:yield(),
     Ret.
-
-%% @spec rep_sched:yield() -> 'true'
-%% @doc: Replacement for `yield/0'.
-%%
-%% The calling process is preempted, but remains in the active set and awaits
-%% a message to continue.
--spec rep_yield() -> 'true'.
-
-rep_yield() ->
-    sched:yield().
 
 %%%----------------------------------------------------------------------
 %%% Helper functions
