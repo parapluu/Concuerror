@@ -45,6 +45,9 @@
 -define(INSTR_ERLANG,
 	[{send, 2}, {send, 3}, {yield, 0}] ++ ?INSTR_ERLANG_NO_MOD).
 
+%% Module containing replacement functions.
+-define(REP_MOD, rep).
+
 %%%----------------------------------------------------------------------
 %%% Instrumentation utilities
 %%%----------------------------------------------------------------------
@@ -240,7 +243,7 @@ needs_instrument(Module, Function, ArgTree, InstrList) ->
 
 %% Instrument an application (function call).
 instrument_application({erlang, Fun, ArgTree}) ->
-    ModTree = erl_syntax:atom(sched),
+    ModTree = erl_syntax:atom(?REP_MOD),
     FunTree = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Fun))),
     erl_syntax:application(ModTree, FunTree, ArgTree).
 
@@ -252,7 +255,7 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %%
 %% is transformed into
 %%
-%% sched:rep_receive(Fun),
+%% ?REP_MOD:rep_receive(Fun),
 %% receive
 %%   NewPatterns -> NewActions
 %% end
@@ -272,12 +275,12 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %% For each Pattern-Action pair two new pairs are added:
 %%   - The first pair is added to handle instrumented messages:
 %%       {?INSTR_MSG, Fresh, Pattern} ->
-%%           sched:rep_receive_notify(Fresh, Pattern),
+%%           ?REP_MOD:rep_receive_notify(Fresh, Pattern),
 %%           Action
 %%
 %%   - The second pair is added to handle uninstrumented messages:
 %%       Pattern ->
-%%           sched:rep_receive_notify(Pattern),
+%%           ?REP_MOD:rep_receive_notify(Pattern),
 %%           Action
 %% ----------------------------------------------------------------------
 %% receive
@@ -288,7 +291,7 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %% is transformed into
 %%
 %% case N of
-%%   infinity -> sched:rep_receive(Fun),
+%%   infinity -> ?REP_MOD:rep_receive(Fun),
 %%               receive
 %%                 NewPatterns -> NewActions
 %%               end;
@@ -303,7 +306,7 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %% Pattens and Actions are mapped into NewPatterns and NewActions
 %% as described previously for the case of a `receive' expression
 %% with no `after' clause. AfterAction is transformed into
-%% `sched:rep_after_notify(), AfterAction'.
+%% `?REP_MOD:rep_after_notify(), AfterAction'.
 %% ----------------------------------------------------------------------
 %% receive
 %% after N -> AfterActions
@@ -312,7 +315,7 @@ instrument_application({erlang, Fun, ArgTree}) ->
 %% is transformed into
 %%
 %% case N of
-%%   infinity -> sched:rep_receive_block();
+%%   infinity -> ?REP_MOD:rep_receive_block();
 %%   Fresh    -> AfterActions
 %% end
 %% ----------------------------------------------------------------------
@@ -324,7 +327,7 @@ instrument_receive(Tree) ->
 	    Timeout = erl_syntax:receive_expr_timeout(Tree),
             Action = erl_syntax:receive_expr_action(Tree),
             AfterBlock = erl_syntax:block_expr(Action),
-            ModTree = erl_syntax:atom(sched),
+            ModTree = erl_syntax:atom(?REP_MOD),
 	    FunTree = erl_syntax:atom(rep_receive_block),
 	    Fun = erl_syntax:application(ModTree, FunTree, []),
             transform_receive_timeout(Fun, AfterBlock, Timeout);
@@ -336,8 +339,8 @@ instrument_receive(Tree) ->
 	    Case = erl_syntax:case_expr(FunVar, CaseClauses),
 	    FunClause = erl_syntax:clause([FunVar], [], [Case]),
 	    FunExpr = erl_syntax:fun_expr([FunClause]),
-	    %% Create sched:rep_receive(fun(X) -> ...).
-	    Module = erl_syntax:atom(sched),
+	    %% Create ?REP_MOD:rep_receive(fun(X) -> ...).
+	    Module = erl_syntax:atom(?REP_MOD),
 	    Function = erl_syntax:atom(rep_receive),
 	    RepReceive = erl_syntax:application(Module, Function, [FunExpr]),
 	    %% Create new receive expression.
@@ -351,7 +354,7 @@ instrument_receive(Tree) ->
 		_Any ->
 		    Timeout = erl_syntax:receive_expr_timeout(Tree),
 		    Action = erl_syntax:receive_expr_action(Tree),
-		    RepMod = erl_syntax:atom(sched),
+		    RepMod = erl_syntax:atom(?REP_MOD),
 		    RepFun = erl_syntax:atom(rep_after_notify),
 		    RepApp = erl_syntax:application(RepMod, RepFun, []),
 		    NewAction = [RepApp|Action],
@@ -394,7 +397,7 @@ transform_receive_clauses(Clauses) ->
 %% Tranform a clause
 %%   Pattern -> Action
 %% into
-%%   {Fresh, Pattern} -> sched:rep_receive_notify(Fresh, Pattern), Action
+%%   {Fresh, Pattern} -> ?REP_MOD:rep_receive_notify(Fresh, Pattern), Action
 transform_receive_clause_regular(Clause) ->
     [OldPattern] = erl_syntax:clause_patterns(Clause),
     OldGuard = erl_syntax:clause_guard(Clause),
@@ -402,7 +405,7 @@ transform_receive_clause_regular(Clause) ->
     InstrAtom = erl_syntax:atom(?INSTR_MSG),
     PidVar = new_variable(),
     NewPattern = [erl_syntax:tuple([InstrAtom, PidVar, OldPattern])],
-    Module = erl_syntax:atom(sched),
+    Module = erl_syntax:atom(?REP_MOD),
     Function = erl_syntax:atom(rep_receive_notify),
     Arguments = [PidVar, OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),
@@ -412,12 +415,12 @@ transform_receive_clause_regular(Clause) ->
 %% Transform a clause
 %%   Pattern -> Action
 %% into
-%%   Pattern -> sched:rep_receive_notify(Pattern), Action
+%%   Pattern -> ?REP_MOD:rep_receive_notify(Pattern), Action
 transform_receive_clause_special(Clause) ->
     [OldPattern] = erl_syntax:clause_patterns(Clause),
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
-    Module = erl_syntax:atom(sched),
+    Module = erl_syntax:atom(?REP_MOD),
     Function = erl_syntax:atom(rep_receive_notify),
     Arguments = [OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),
@@ -436,9 +439,9 @@ transform_receive_timeout(InfBlock, FrBlock, Timeout) ->
     erl_syntax:case_expr(Timeout, AfterCaseClauses).
 
 %% Instrument a Pid ! Msg expression.
-%% Pid ! Msg is transformed into sched:rep_send(Pid, Msg).
+%% Pid ! Msg is transformed into ?REP_MOD:rep_send(Pid, Msg).
 instrument_send(Tree) ->
-    Module = erl_syntax:atom(sched),
+    Module = erl_syntax:atom(?REP_MOD),
     Function = erl_syntax:atom(rep_send),
     Dest = erl_syntax:infix_expr_left(Tree),
     Msg = erl_syntax:infix_expr_right(Tree),

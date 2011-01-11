@@ -11,20 +11,11 @@
 
 -module(sched).
 
-%% UI related exports.
+%% UI related exports
 -export([analyze/2, replay/1]).
 
-%% Instrumentation related exports.
--export([rep_after_notify/0, rep_demonitor/1, rep_demonitor/2,
-         rep_exit/2, rep_halt/0, rep_halt/1, rep_link/1,
-         rep_monitor/2, rep_process_flag/2, rep_receive/1,
-         rep_receive_block/0, rep_receive_notify/1,
-         rep_receive_notify/2, rep_register/2, rep_send/2, rep_send/3,
-         rep_spawn/1, rep_spawn/3, rep_spawn_link/1, rep_spawn_link/3,
-	 rep_spawn_monitor/1, rep_spawn_monitor/3,
-	 rep_spawn_opt/2, rep_spawn_opt/4,
-	 rep_unlink/1, rep_unregister/1,
-	 rep_whereis/1, rep_yield/0, wait/0]).
+%% Internal exports
+-export([block/0, notify/2, wait/0, yield/0]).
 
 -export_type([analysis_target/0, analysis_ret/0]).
 
@@ -102,9 +93,6 @@
 -type bound() :: 'inf' | non_neg_integer().
 
 -type context() :: #context{}.
-
-%% The destination of a `send' operation.
--type dest() :: pid() | port() | atom() | {atom(), node()}.
 
 %% Driver return type.
 -type driver_ret() :: 'ok' | 'block' | {'error', error:error(), state:state()}.
@@ -719,15 +707,6 @@ elapsed_time(T1, T2) ->
     ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
     {Mins, Secs}.
 
-find_pid(Pid) when is_pid(Pid) ->
-    Pid;
-find_pid(Port) when is_port(Port) ->
-    erlang:port_info(Port, connected);
-find_pid(Atom) when is_atom(Atom) ->
-    whereis(Atom);
-find_pid({Atom, Node}) when is_atom(Atom) andalso is_atom(Node) ->
-    rpc:call(Node, erlang, whereis, [Atom]).
-
 %% Print debug messages and send them to replay_logger if Det is true.
 log_details(Det, Action) ->
     ?debug_1(proc_action:to_string(Action) ++ "~n"),
@@ -745,7 +724,7 @@ run(#context{active = Active, current = Lid, state = State} = Context) ->
     NewState = state:extend(State, Lid),
     %% Send message to "unblock" the process.
     Pid = lid:get_pid(Lid),
-    Pid ! #sched{msg = continue},
+    continue(Pid),
     %% Call the dispatcher to handle incoming actions from the process
     %% we just "unblocked".
     dispatcher(Context#context{active = NewActive, state = NewState}).
@@ -809,402 +788,24 @@ state_swap() ->
 %%% Instrumentation interface
 %%%----------------------------------------------------------------------
 
-%% Not actually a replacement function, but used by functions where the process
-%% is required to block, i.e. moved to the `blocked` set and stop being
-%% scheduled, until awaken.
+%% Used by functions where the process is required to block, i.e. moved to
+%% the `blocked` set and stop being scheduled, until awaken.
+-spec block() -> 'true'.
+
 block() ->
     ?RP_SCHED ! #sched{msg = block, pid = self()},
     wait().
 
-%% @spec: rep_demonitor(reference()) -> 'true'
-%% @doc: Replacement for `demonitor/1'.
-%%
-%% Just yield after demonitoring.
--spec rep_demonitor(reference()) -> 'true'.
+%% Prompt process Pid to continue running.
+continue(Pid) ->
+    Pid ! #sched{msg = continue}.
 
-rep_demonitor(Ref) ->
-    Result = demonitor(Ref),
-    ?RP_SCHED ! #sched{msg = demonitor, pid = self(), misc = Ref},
-    yield(),
-    Result.
+%% Notify scheduler of an event.
+-spec notify(atom(), any()) -> 'ok'.
 
-%% @spec: rep_demonitor(reference(), ['flush' | 'info']) -> 'true'
-%% @doc: Replacement for `demonitor/2'.
-%%
-%% Just yield after demonitoring.
--spec rep_demonitor(reference(), ['flush' | 'info']) -> 'true'.
-
-rep_demonitor(Ref, Opts) ->
-    Result = demonitor(Ref, Opts),
-    ?RP_SCHED ! #sched{msg = demonitor, pid = self(), misc = Ref},
-    yield(),
-    Result.
-
-%% @spec: rep_exit(pid(), term()) -> true
-%% @doc: Replacement for `exit/2'.
-%%
-%% Just send exit signal and yield.
--spec rep_exit(pid(), term()) -> 'true'.
-
-rep_exit(Pid, Reason) ->
-    exit(Pid, Reason),
-    ?RP_SCHED ! #sched{msg = fun_exit, pid = self(), misc = {Pid, Reason}},
-    yield().
-
-%% @spec: rep_halt() -> no_return()
-%% @doc: Replacement for `halt/{0,1}'.
-%%
-%% Just send halt message and yield.
--spec rep_halt() -> no_return().
-
-rep_halt() ->
-    ?RP_SCHED ! #sched{msg = halt, pid = self()},
-    yield().
-
-%% @spec: rep_halt() -> no_return()
-%% @doc: Replacement for `halt/1'.
-%%
-%% Just send halt message and yield.
--spec rep_halt(non_neg_integer() | string()) -> no_return().
-
-rep_halt(Status) ->
-    ?RP_SCHED ! #sched{msg = halt, pid = self(), misc = Status},
-    yield().
-
-%% @spec: rep_link(pid() | port()) -> 'true'
-%% @doc: Replacement for `link/1'.
-%%
-%% Just yield after linking.
--spec rep_link(pid() | port()) -> 'true'.
-
-rep_link(Pid) ->
-    Result = link(Pid),
-    ?RP_SCHED ! #sched{msg = link, pid = self(), misc = Pid},
-    yield(),
-    Result.
-
-%% @spec: rep_monitor('process', pid() | {atom(), node()} | atom()) ->
-%%                           reference()
-%% @doc: Replacement for `monitor/2'.
-%%
-%% Just yield after monitoring.
--spec rep_monitor('process', pid() | {atom(), node()} | atom()) ->
-                         reference().
-
-rep_monitor(Type, Item) ->
-    Ref = monitor(Type, Item),
-    NewItem = find_pid(Item),
-    ?RP_SCHED ! #sched{msg = monitor, pid = self(), misc = {NewItem, Ref}},
-    yield(),
-    Ref.
-
-%% @spec: rep_process_flag('trap_exit', boolean()) -> boolean();
-%%                        ('error_handler', atom()) -> atom();
-%%                        ('min_heap_size', non_neg_integer()) ->
-%%                                non_neg_integer();
-%%                        ('min_bin_vheap_size', non_neg_integer()) ->
-%%                                non_neg_integer();
-%%                        ('priority', process_priority_level()) ->
-%%                                process_priority_level();
-%%                        ('save_calls', non_neg_integer()) ->
-%%                                non_neg_integer();
-%%                        ('sensitive', boolean()) -> boolean()
-%% @doc: Replacement for `process_flag/2'.
-%%
-%% Just yield after altering the process flag.
--type process_priority_level() :: 'max' | 'high' | 'normal' | 'low'.
--spec rep_process_flag('trap_exit', boolean()) -> boolean();
-                      ('error_handler', atom()) -> atom();
-                      ('min_heap_size', non_neg_integer()) -> non_neg_integer();
-                      ('min_bin_vheap_size', non_neg_integer()) ->
-                              non_neg_integer();
-                      ('priority', process_priority_level()) ->
-                              process_priority_level();
-                      ('save_calls', non_neg_integer()) -> non_neg_integer();
-                      ('sensitive', boolean()) -> boolean().
-
-rep_process_flag(trap_exit = Flag, Value) ->
-    Result = process_flag(Flag, Value),
-    ?RP_SCHED ! #sched{msg = process_flag, pid = self(), misc = {Flag, Value}},
-    yield(),
-    Result;
-rep_process_flag(Flag, Value) ->
-    process_flag(Flag, Value).
-
-%% @spec rep_receive(fun((function()) -> term())) -> term()
-%% @doc: Function called right before a receive statement.
-%%
-%% If a matching message is found in the process' message queue, continue
-%% to actual receive statement, else block and when unblocked do the same.
--spec rep_receive(fun((term()) -> 'block' | 'continue')) -> term().
-
-rep_receive(Fun) ->
-    {messages, Mailbox} = process_info(self(), messages),
-    case rep_receive_match(Fun, Mailbox) of
-	block -> block(), rep_receive(Fun);
-	continue -> continue
-    end.
-
-%% Blocks forever (used for 'receive after infinity -> ...' expressions).
--spec rep_receive_block() -> no_return().
-
-rep_receive_block() ->
-    block(),
-    rep_receive_block().
-
-rep_receive_match(_Fun, []) ->
-    block;
-rep_receive_match(Fun, [H|T]) ->
-    case Fun(H) of
-	block -> rep_receive_match(Fun, T);
-	continue -> continue
-    end.
-
-%% @spec rep_after_notify() -> 'ok'
-%% @doc: Auxiliary function used in the `receive..after' statement
-%% instrumentation.
-%%
-%% Called first thing after an `after' clause has been entered.
--spec rep_after_notify() -> 'ok'.
-
-rep_after_notify() ->
-    ?RP_SCHED ! #sched{msg = 'after', pid = self()},
-    yield(),
+notify(Msg, Misc) ->
+    ?RP_SCHED ! #sched{msg = Msg, pid = self(), misc = Misc},
     ok.
-
-%% @spec rep_receive_notify(pid(), term()) -> 'ok'
-%% @doc: Auxiliary function used in the `receive' statement instrumentation.
-%%
-%% Called first thing after a message has been received, to inform the scheduler
-%% about the message received and the sender.
--spec rep_receive_notify(pid(), term()) -> 'ok'.
-
-rep_receive_notify(From, Msg) ->
-    ?RP_SCHED ! #sched{msg = 'receive', pid = self(), misc = {From, Msg}},
-    yield(),
-    ok.
-
-%% @spec rep_receive_notify(term()) -> 'ok'
-%% @doc: Auxiliary function used in the `receive' statement instrumentation.
-%%
-%% Similar to rep_receive/2, but used to handle 'EXIT' and 'DOWN' messages.
--spec rep_receive_notify(term()) -> 'ok'.
-
-rep_receive_notify(Msg) ->
-    case Msg of
-	{'EXIT', _Pid, _Reason} -> continue;
-	{'DOWN', _Ref, process, _Pid, _Reason} -> continue;
-	Other -> log:internal("rep_receive_notify received ~p~n", [Other])
-    end,
-    ?RP_SCHED ! #sched{msg = 'receive', pid = self(), misc = Msg},
-    yield(),
-    ok.
-
-%% @spec rep_register(atom(), pid() | port()) -> 'true'
-%% @doc: Replacement for `register/2'.
-%%
-%% Just yield after registering.
--spec rep_register(atom(), pid() | port()) -> 'true'.
-
-rep_register(RegName, P) ->
-    Ret = register(RegName, P),
-    ?RP_SCHED ! #sched{msg = 'register', pid = self(),
-                       misc = {RegName, lid:from_pid(P)}},
-    yield(),
-    Ret.
-
-%% @spec rep_send(dest(), term()) -> term()
-%% @doc: Replacement for `send/2' (and the equivalent `!' operator).
-%%
-%% If the target has a registered LID then instrument the message
-%% and yield after sending. Otherwise, send the original message
-%% and continue without yielding.
--spec rep_send(dest(), term()) -> term().
-
-rep_send(Dest, Msg) ->
-    NewDest = find_pid(Dest),
-    case lid:from_pid(NewDest) of
-	not_found -> Dest ! Msg;
-	_Lid ->
-	    Dest ! {?INSTR_MSG, lid:from_pid(self()), Msg},
-	    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, Msg}},
-	    yield()
-    end,
-    Msg.
-
-%% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
-%%                      'ok' | 'nosuspend' | 'noconnect'
-%% @doc: Replacement for `send/3'.
-%%
-%% For now, call erlang:send/3, but ignore options in internal handling.
--spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
-                      'ok' | 'nosuspend' | 'noconnect'.
-
-rep_send(Dest, Msg, Opt) ->
-    Ret = erlang:send(Dest, {lid:from_pid(self()), Msg}, Opt),
-    NewDest = find_pid(Dest),
-    ?RP_SCHED ! #sched{msg = send, pid = self(), misc = {NewDest, Msg}},
-    yield(),
-    Ret.
-
-%% @spec rep_spawn(function()) -> pid()
-%% @doc: Replacement for `spawn/1'.
-%%
-%% The argument provided is the argument of the original spawn call.
-%% When spawned, the new process has to yield.
--spec rep_spawn(function()) -> pid().
-
-rep_spawn(Fun) ->
-    Pid = spawn(fun() -> wait(), Fun() end),
-    ?RP_SCHED ! #sched{msg = spawn, pid = self(), misc = Pid},
-    yield(),
-    Pid.
-
-%% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
-%% @doc: Replacement for `spawn/3'.
-%%
-%% See `rep_spawn/1'.
--spec rep_spawn(atom(), atom(), [term()]) -> pid().
-
-rep_spawn(Module, Function, Args) ->
-    Fun = fun() -> apply(Module, Function, Args) end,
-    rep_spawn(Fun).
-
-%% @spec rep_spawn_link(function()) -> pid()
-%% @doc: Replacement for `spawn_link/1'.
-%%
-%% When spawned, the new process has to yield.
--spec rep_spawn_link(function()) -> pid().
-
-rep_spawn_link(Fun) ->
-    Pid = spawn_link(fun() -> wait(), Fun() end),
-    ?RP_SCHED ! #sched{msg = spawn_link, pid = self(), misc = Pid},
-    yield(),
-    Pid.
-
-%% @spec rep_spawn_link(atom(), atom(), [term()]) -> pid()
-%% @doc: Replacement for `spawn_link/3'.
-%%
-%% See `rep_spawn_link/1'.
--spec rep_spawn_link(atom(), atom(), [term()]) -> pid().
-
-rep_spawn_link(Module, Function, Args) ->
-    Fun = fun() -> apply(Module, Function, Args) end,
-    rep_spawn_link(Fun).
-
-%% @spec rep_spawn_monitor(function()) -> {pid(), reference()}
-%% @doc: Replacement for `spawn_monitor/1'.
-%%
-%% When spawned, the new process has to yield.
--spec rep_spawn_monitor(function()) -> {pid(), reference()}.
-
-rep_spawn_monitor(Fun) ->
-    Ret = spawn_monitor(fun() -> wait(), Fun() end),
-    ?RP_SCHED ! #sched{msg = spawn_monitor, pid = self(), misc = Ret},
-    yield(),
-    Ret.
-
-%% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}
-%% @doc: Replacement for `spawn_monitor/3'.
-%%
-%% See rep_spawn_monitor/1.
--spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}.
-
-rep_spawn_monitor(Module, Function, Args) ->
-    Fun = fun() -> apply(Module, Function, Args) end,
-    rep_spawn_monitor(Fun).
-
-%% @spec rep_spawn_opt(function(),
-%% 		    ['link' | 'monitor' |
-%%                   {'priority', process_priority_level()} |
-%% 		     {'fullsweep_after', integer()} |
-%% 		     {'min_heap_size', integer()} |
-%% 		     {'min_bin_vheap_size', integer()}]) ->
-%% 			   pid() | {pid(), reference()}
-%% @doc: Replacement for `spawn_opt/2'.
-%%
-%% When spawned, the new process has to yield.
--spec rep_spawn_opt(function(),
-		    ['link' | 'monitor' |
-                     {'priority', process_priority_level()} |
-		     {'fullsweep_after', integer()} |
-		     {'min_heap_size', integer()} |
-		     {'min_bin_vheap_size', integer()}]) ->
-			   pid() | {pid(), reference()}.
-
-rep_spawn_opt(Fun, Opt) ->
-    Ret = spawn_opt(fun() -> wait(), Fun() end, Opt),
-    ?RP_SCHED ! #sched{msg = spawn_opt, pid = self(), misc = {Ret, Opt}},
-    yield(),
-    Ret.
-
-%% @spec rep_spawn_opt(atom(), atom(), [term()],
-%% 		    ['link' | 'monitor' |
-%%                   {'priority', process_priority_level()} |
-%% 		     {'fullsweep_after', integer()} |
-%% 		     {'min_heap_size', integer()} |
-%% 		     {'min_bin_vheap_size', integer()}]) ->
-%% 			   pid() | {pid(), reference()}
-%% @doc: Replacement for `spawn_opt/4'.
-%%
-%% When spawned, the new process has to yield.
--spec rep_spawn_opt(atom(), atom(), [term()],
-		    ['link' | 'monitor' |
-                     {'priority', process_priority_level()} |
-		     {'fullsweep_after', integer()} |
-		     {'min_heap_size', integer()} |
-		     {'min_bin_vheap_size', integer()}]) ->
-			   pid() | {pid(), reference()}.
-
-rep_spawn_opt(Module, Function, Args, Opt) ->
-    Fun = fun() -> apply(Module, Function, Args) end,
-    rep_spawn_opt(Fun, Opt).
-
-%% @spec: rep_unlink(pid() | port()) -> 'true'
-%% @doc: Replacement for `unlink/1'.
-%%
-%% Just yield after unlinking.
--spec rep_unlink(pid() | port()) -> 'true'.
-
-rep_unlink(Pid) ->
-    Result = unlink(Pid),
-    ?RP_SCHED ! #sched{msg = unlink, pid = self(), misc = Pid},
-    yield(),
-    Result.
-
-%% @spec rep_unregister(atom()) -> 'true'
-%% @doc: Replacement for `unregister/1'.
-%%
-%% Just yield after unregistering.
--spec rep_unregister(atom()) -> 'true'.
-
-rep_unregister(RegName) ->
-    Ret = unregister(RegName),
-    ?RP_SCHED ! #sched{msg = 'unregister', pid = self(), misc = RegName},
-    yield(),
-    Ret.
-
-%% @spec rep_whereis(atom()) -> pid() | port() | 'undefined'
-%% @doc: Replacement for `whereis/1'.
-%%
-%% Just yield after calling whereis/1.
--spec rep_whereis(atom()) -> pid() | port() | 'undefined'.
-
-rep_whereis(RegName) ->
-    Ret = whereis(RegName),
-    ?RP_SCHED ! #sched{msg = 'whereis', pid = self(), misc = {RegName, Ret}},
-    yield(),
-    Ret.
-
-%% @spec rep_yield() -> 'true'
-%% @doc: Replacement for `yield/0'.
-%%
-%% The calling process is preempted, but remains in the active set and awaits
-%% a message to continue.
--spec rep_yield() -> 'true'.
-
-rep_yield() ->
-    yield().
 
 %% Wait until the scheduler prompts to continue.
 -spec wait() -> 'true'.
@@ -1214,7 +815,10 @@ wait() ->
 	#sched{msg = continue} -> true
     end.
 
-%% Inform the scheduler about yielding and then wait.
+%% Functionally same as block. Used when a process is scheduled out, but
+%% remains in the `active` set.
+-spec yield() -> 'true'.
+
 yield() ->
     ?RP_SCHED ! #sched{msg = yield, pid = self()},
     wait().

@@ -54,6 +54,7 @@ CORE_MODULES = \
 	instr \
 	lid \
 	proc_action \
+	rep \
 	sched \
 	snapshot \
 	state \
@@ -168,6 +169,7 @@ instr.beam         : gen.hrl
 lid.beam           : gen.hrl
 lid_tests.beam     : gen.hrl
 log.beam           : gen.hrl
+rep.beam	   : gen.hrl
 replay_logger.beam : gen.hrl
 sched.beam         : gen.hrl
 snapshot.beam      : gen.hrl
