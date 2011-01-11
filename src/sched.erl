@@ -97,6 +97,12 @@
 %% Driver return type.
 -type driver_ret() :: 'ok' | 'block' | {'error', error:error(), state:state()}.
 
+%% Scheduler notification.
+-type notification() :: 'after' | 'demonitor' | 'fun_exit' | 'halt' | 'link' |
+                        'monitor' | 'process_flag' | 'receive' | 'register' |
+                        'spawn' | 'spawn_link' | 'spawn_monitor' |
+                        'spawn_opt' | 'unlink' | 'unregister' | 'whereis'.
+
 %%%----------------------------------------------------------------------
 %%% User interface
 %%%----------------------------------------------------------------------
@@ -804,7 +810,7 @@ continue(Pid) ->
 %% If the calling user process has an associated LID, then send
 %% a notification and yield. Otherwise, for an unknown process
 %% running instrumented code completely ignore this call.
--spec notify(atom(), any()) -> 'ok'.
+-spec notify(notification(), any()) -> 'ok'.
 
 notify(Msg, Misc) ->
     Self = self(),

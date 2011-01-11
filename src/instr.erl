@@ -387,11 +387,7 @@ transform_receive_clauses(Clauses) ->
     Trans = fun(P) -> [transform_receive_clause_regular(P),
 		       transform_receive_clause_special(P)]
 	    end,
-    Fold = fun(Clause, Acc) ->
-		   case Trans(Clause) of
-		       [One, Two] -> [One, Two|Acc]
-		   end
-	   end,
+    Fold = fun(Clause, Acc) -> Trans(Clause) ++ Acc end,
     lists:foldr(Fold, [], Clauses).
 
 %% Tranform a clause

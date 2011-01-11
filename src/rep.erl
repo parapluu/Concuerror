@@ -138,18 +138,17 @@ rep_process_flag(Flag, Value) ->
 %%
 %% If a matching message is found in the process' message queue, continue
 %% to actual receive statement, else block and when unblocked do the same.
--spec rep_receive(fun((term()) -> 'block' | 'continue')) -> term().
+-spec rep_receive(fun((term()) -> 'block' | 'continue')) -> 'ok'.
 
 -ifdef(NOBLOCK).
 rep_receive(_Fun) ->
-    io:format("sched:rep_receive (~p) -> continue~n", [self()]),
-    continue.
+    ok.
 -else.
 rep_receive(Fun) ->
     {messages, Mailbox} = process_info(self(), messages),
     case rep_receive_match(Fun, Mailbox) of
 	block -> sched:block(), rep_receive(Fun);
-	continue -> continue
+	continue -> ok
     end.
 -endif.
 
@@ -197,14 +196,7 @@ rep_receive_notify(From, Msg) ->
 -spec rep_receive_notify(term()) -> 'ok'.
 
 rep_receive_notify(Msg) ->
-    io:format("Entered sched:rep_receive_notify/1~n"),
-    case Msg of
-	{'EXIT', _Pid, _Reason} -> continue;
-	{'DOWN', _Ref, process, _Pid, _Reason} -> continue;
-	Other -> io:format("rep_receive_notify received ~p~n", [Other])
-    end,
-    sched:notify('receive', Msg),
-    ok.
+    sched:notify('receive', Msg).
 
 %% @spec rep_register(atom(), pid() | port()) -> 'true'
 %% @doc: Replacement for `register/2'.
