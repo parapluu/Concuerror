@@ -37,7 +37,7 @@
 %%%----------------------------------------------------------------------
 
 -define(INFINITY, 1000000).
--define(ERROR_UNDEF, undef).
+-define(NO_ERROR, undef).
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -58,7 +58,7 @@
                   blocked        :: ?SET_TYPE(lid:lid()),
 		  current        :: lid:lid(),
 		  details        :: boolean(),
-                  error          :: ?ERROR_UNDEF | error:error(),
+                  error          :: ?NO_ERROR | error:error(),
                   state          :: state:state()}).
 
 %% Internal message format
@@ -91,11 +91,6 @@
 -type analysis_target() :: {module(), atom(), [term()]}.
 
 -type bound() :: 'inf' | non_neg_integer().
-
--type context() :: #context{}.
-
-%% Driver return type.
--type driver_ret() :: 'ok' | 'block' | {'error', error:error(), state:state()}.
 
 %% Scheduler notification.
 -type notification() :: 'after' | 'demonitor' | 'fun_exit' | 'halt' | 'link' |
@@ -187,7 +182,6 @@ interleave_aux(Target, Options, Parent) ->
     process_flag(trap_exit, true),
     %% Initialize state table.
     state_start(),
-    blocked_start(),
     %% Save empty replay state for the first run.
     {init_state, InitState} = lists:keyfind(init_state, 1, Options),
     state_save(InitState),
@@ -198,7 +192,6 @@ interleave_aux(Target, Options, Parent) ->
 	    false -> ?INFINITY
 	end,
     Result = interleave_outer_loop(Target, 0, [], -1, PreBound, Options),
-    blocked_stop(),
     state_stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
@@ -251,9 +244,8 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             State = state:empty(),
 	    Context = #context{active = Active, blocked = Blocked,
                                state = State, details = Det},
-	    Search = fun(C) -> search(C) end,
 	    %% Interleave using driver.
-            Ret = driver(Search, Context, ReplayState),
+            Ret = driver(Context, ReplayState),
 	    %% Cleanup of any remaining processes.
 	    proc_cleanup(),
             lid:stop(),
@@ -271,7 +263,7 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
                 end,
 	    NewRunCnt =
 		case Ret of
-		    block ->
+		    abort ->
 			?debug_1("-----------------------~n"),
 			?debug_1("Run aborted.~n~n"),
 			RunCnt;
@@ -302,115 +294,75 @@ dispatcher(#context{current = Lid} = Context) ->
 	    handler(exit, Pid, Context, Reason)
     end.
 
-%% Main scheduler component.
-%% Checks for different program states (normal, deadlock, termination, etc.)
-%% and acts appropriately. The argument should be a blocked scheduler state,
-%% i.e. no process running when the driver is called.
-%% In the case of a normal (meaning non-terminal) state:
-%% - if the ReplayState is empty, the search component is called to handle
-%% state expansion and returns a process for activation;
-%% - if the ReplayState is not empty, we are in replay mode and the process
-%% to be run next is provided by ReplayState.
--spec driver(function(), context(), state:state()) -> driver_ret().
+driver(Context, ReplayState) ->
+    case state:is_empty(ReplayState) of
+	true -> driver_normal(Context);
+	false -> driver_replay(Context, ReplayState)
+    end.
 
-driver(Search, #context{state = OldState} = Context, ReplayState) ->
-    {Next, Rest, {_InsertMode, InsertLids} = Insert} =
-	case state:is_empty(ReplayState) of
-	    %% If in normal mode, run search algorithm to
-	    %% find next process to be run.
+driver_replay(Context, ReplayState) ->
+    {Next, Rest} = state:trim_head(ReplayState),
+    NewContext = run(Context#context{current = Next, error = ?NO_ERROR}),
+    #context{blocked = NewBlocked} = NewContext,
+    case state:is_empty(Rest) of
+	true ->
+	    case ?SETS:is_element(Next, NewBlocked) of
+		true -> abort;
+		false -> check_for_errors(NewContext)
+	    end;
+	false -> driver_replay(NewContext, Rest)
+    end.	    
+
+driver_normal(#context{active = Active, current = LastLid,
+		       state = State} = Context) ->
+    %% TODO: check wakeups (and spawned)
+    Next =
+	case ?SETS:is_element(LastLid, Active) of
 	    true ->
-		{NextTemp, InsertLaterTemp} = Search(Context),
-		{NextTemp, ReplayState, InsertLaterTemp};
-	    %% If in replay mode, next process to be run
-	    %% is defined by ReplayState.
+		TmpActive = ?SETS:to_list(?SETS:del_element(LastLid, Active)),
+		{LastLid,TmpActive, next};
 	    false ->
-		{NextTemp, RestTemp} = state:trim_head(ReplayState),
-		{NextTemp, RestTemp, {current, []}}
+		[Head|TmpActive] = ?SETS:to_list(Active),
+		{Head, TmpActive, current}
 	end,
-    ContextToRun = Context#context{current = Next, error = ?ERROR_UNDEF},
-    #context{active = Active, blocked = Blocked, error = Error,
-	     state = State, details = Det} = RunContext = run(ContextToRun),
-    %% Update active and blocked sets, moving Lid from active to blocked,
-    %% in the case that if it was run next, it would block.
-    Fun = fun(L, Acc) ->
-		  case blocked_lookup(state:extend(State, L)) of
-		      true -> ?SETS:add_element(L, Acc);
-		      false -> Acc
-		  end
-	  end,
-    BlockedOracle = ?SETS:fold(Fun, ?SETS:new(), Active),
-    NewActive = ?SETS:subtract(Active, BlockedOracle),
-    NewBlocked = ?SETS:union(Blocked, BlockedOracle),
-    NewContext = RunContext#context{active = NewActive, blocked = NewBlocked},
-    case Error of
-	?ERROR_UNDEF ->
+    {NewContext, Insert} = run_no_block(Context, Next),
+    insert_states(State, Insert),
+    check_for_errors(NewContext).
+
+check_for_errors(#context{active = NewActive, blocked = NewBlocked,
+			  error = NewError, state = NewState} = NewContext) ->
+    case NewError of
+	?NO_ERROR ->
 	    case ?SETS:size(NewActive) of
 		0 ->
 		    case ?SETS:size(NewBlocked) of
-			0 ->
-			    insert_states(OldState, Insert),
-			    ok;
+			0 -> ok;
 			_NonEmptyBlocked ->
-			    insert_states(OldState, Insert),
-                            Deadlock = error:new({deadlock, NewBlocked}),
-			    case ?SETS:is_element(Next, Blocked) of
-				true -> {error, Deadlock, OldState};
-				false -> {error, Deadlock, State}
-			    end
+			    Deadlock = error:new({deadlock, NewBlocked}),
+			    {error, Deadlock, NewState}
 		    end;
-		_NonEmptyActive ->
-                    case ?SETS:is_element(Next, Blocked) of
-                        true ->
-                            case Det of
-				true -> driver(Search, NewContext, Rest);
-				false ->
-				    insert_states(OldState,
-						  {current, InsertLids}),
-				    blocked_save(State),
-				    block
-                            end;
-                        false ->
-                            insert_states(OldState, Insert),
-                            driver(Search, NewContext, Rest)
-                    end
+		_NonEmptyActive -> driver_normal(NewContext)
 	    end;
-	_Other ->
-	    insert_states(OldState, Insert),
-	    {error, Error, State}
+	_Other -> {error, NewError, NewState}
     end.
 
-%% Stores states for later exploration and returns the process to be run next.
-search(#context{active = Active, current = LastLid, state = State}) ->
-    case state:is_empty(State) of
-	%% Handle first call to search (empty state, one active process).
+run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
+    NewContext = run(Context#context{current = Next, error = ?NO_ERROR}),
+    #context{blocked = NewBlocked} = NewContext,
+    case ?SETS:is_element(Next, NewBlocked) of
 	true ->
-	    [Next] = ?SETS:to_list(Active),
-	    {Next, {current, []}};
-	false ->
-	    %% If the last process run is in the `active` set
-	    %% (i.e. has not blocked or exited), remove it from the actives
-	    %% and make it next-to-run, else do that for another process
-	    %% from the actives.
-	    %% In the former case, all other possible successor states are
-	    %% stored in the next state queue to be explored on the next
-	    %% preemption bound.
-	    %% In the latter case, all other possible successor states are
-	    %% stored in the current state queue, because a non-preemptive
-	    %% context switch is happening (the last process either exited
-	    %% or blocked).
-	    case ?SETS:is_element(LastLid, Active) of
-		true ->
-		    NewActive = ?SETS:to_list(?SETS:del_element(LastLid, Active)),
-		    {LastLid, {next, NewActive}};
-		false ->
-		    [Next|NewActive] = ?SETS:to_list(Active),
-		    {Next, {current, NewActive}}
-	    end
+	    case Rest of
+		[] -> {NewContext, {[], W}};
+		[RH|RT] ->
+		    NextContext = NewContext#context{state = State},
+		    run_no_block(NextContext, {RH, RT, current})
+	    end;
+	false -> {NewContext, {Rest, W}}
     end.
 
-insert_states(State, {current, Lids}) ->
+insert_states(State, {Lids, current}) ->
     [state_save(state:extend(State, L)) || L <- Lids];
-insert_states(State, {next, Lids}) ->
+insert_states(State, {Lids, next}) ->
     [state_save_next(state:extend(State, L)) || L <- Lids].
 
 %% After message handler.
@@ -676,27 +628,11 @@ handler(yield, Pid, #context{active = Active} = Context, _Misc) ->
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
-blocked_lookup(State) ->
-    case ets:lookup(?NT_BLOCKED, State) of
-	[] -> false;
-	[{State}] -> true
-    end.
-
-blocked_save(State) ->
-    ets:insert(?NT_BLOCKED, {State}).
-
-blocked_start() ->
-    ets:new(?NT_BLOCKED, [named_table]).
-
-blocked_stop() ->
-    ets:delete(?NT_BLOCKED).
-
 %% Kill any remaining processes.
 %% If the run was terminated by an exception, processes linked to
 %% the one where the exception occurred could have been killed by the
 %% exit signal of the latter without having been deleted from the pid/lid
 %% tables. Thus, 'EXIT' messages with any reason are accepted.
-
 proc_cleanup() ->
     Fun = fun(P, Acc) ->
 		  exit(P, kill),
