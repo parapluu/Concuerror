@@ -226,10 +226,10 @@ rep_send(Dest, Msg) ->
 	    case lid:from_pid(NewDest) of
 		not_found -> Dest ! Msg;
 		_DestLid ->
-		    Dest ! {?INSTR_MSG, lid:from_pid(self()), Msg},
-		    sched:notify(send, {NewDest, Msg}),
-		    Msg
-	    end
+		    Dest ! {?INSTR_MSG, lid:from_pid(self()), Msg}
+	    end,
+	    sched:notify(send, {NewDest, Msg}),
+	    Msg
     end.
 
 %% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
