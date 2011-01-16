@@ -139,12 +139,16 @@ rep_process_flag(Flag, Value) ->
 -spec rep_receive(fun((term()) -> 'block' | 'continue')) -> 'ok'.
 
 rep_receive(Fun) ->
-    {messages, Mailbox} = process_info(self(), messages),
-    case rep_receive_match(Fun, Mailbox) of
-	block ->
-	    sched:block(),
-	    rep_receive_loop(Fun);
-	continue -> ok
+    case lid:from_pid(self()) of
+	not_found -> ok;
+	_Lid ->
+	    {messages, Mailbox} = process_info(self(), messages),
+	    case rep_receive_match(Fun, Mailbox) of
+		block ->
+		    sched:block(),
+		    rep_receive_loop(Fun);
+		continue -> ok
+	    end
     end.
 
 rep_receive_loop(Fun) ->
@@ -162,6 +166,7 @@ rep_receive_loop(Fun) ->
 
 rep_receive_block() ->
     sched:block(),
+    sched:wait(),
     rep_receive_block().
 
 rep_receive_match(_Fun, []) ->
