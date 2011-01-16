@@ -20,8 +20,6 @@
 
 -include("gen.hrl").
 
-%%-define(NOBLOCK, true).
-
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
@@ -140,17 +138,24 @@ rep_process_flag(Flag, Value) ->
 %% to actual receive statement, else block and when unblocked do the same.
 -spec rep_receive(fun((term()) -> 'block' | 'continue')) -> 'ok'.
 
--ifdef(NOBLOCK).
-rep_receive(_Fun) ->
-    ok.
--else.
 rep_receive(Fun) ->
     {messages, Mailbox} = process_info(self(), messages),
     case rep_receive_match(Fun, Mailbox) of
-	block -> sched:block(), rep_receive(Fun);
+	block ->
+	    sched:block(),
+	    rep_receive_loop(Fun);
 	continue -> ok
     end.
--endif.
+
+rep_receive_loop(Fun) ->
+    {messages, Mailbox} = process_info(self(), messages),
+    case rep_receive_match(Fun, Mailbox) of
+	block -> rep_receive_loop(Fun);
+	continue ->
+	    sched:wakeup(),
+	    sched:wait(),
+	    ok
+    end.
 
 %% Blocks forever (used for 'receive after infinity -> ...' expressions).
 -spec rep_receive_block() -> no_return().

@@ -57,66 +57,11 @@ two_proc_test_() ->
 		     ?assertEqual([Pid2, Pid1], Result)
 	     end},
     Test2 = {"Cleanup",
-	     fun({Pid1, _Pid2, Lid1, Lid2}) ->
-		     lid:link(Lid1, Lid2),
-		     lid:monitor(Lid1, Lid2, make_ref()),
+	     fun({Pid1, _Pid2, Lid1, _Lid2}) ->
 		     lid:cleanup(Lid1),
 		     ?assertEqual(not_found, lid:from_pid(Pid1)),
-		     ?assertEqual(not_found, lid:get_pid(Lid1)),
-		     ?assertEqual(0, ?SETS:size(lid:get_linked(Lid2))),
-		     ?assertEqual(0, ?SETS:size(lid:get_monitored_by(Lid2)))
+		     ?assertEqual(not_found, lid:get_pid(Lid1))
 	     end},
     Tests = [Test1, Test2],
-    Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
-    {foreach, local, Setup, Cleanup, [Inst]}.
-
--spec three_proc_test_() -> term().
-
-three_proc_test_() ->
-    Setup = fun() -> lid:start(),
- 		     Pid1 = c:pid(0, 2, 3),
-		     Pid2 = c:pid(0, 2, 4),
-		     Pid3 = c:pid(0, 2, 5),
- 		     Lid1 = lid:new(Pid1, noparent),
- 		     Lid2 = lid:new(Pid2, Lid1),
-		     Lid3 = lid:new(Pid3, Lid1),
- 		     {Pid1, Pid2, Pid3, Lid1, Lid2, Lid3}
- 	    end,
-    Cleanup = fun(_Any) -> lid:stop() end,
-    Test1 = {"Link",
-	     fun({_Pid1, _Pid2, _Pid3, Lid1, Lid2, Lid3}) ->
-		     lid:link(Lid1, Lid2),
-		     lid:link(Lid2, Lid3),
-		     Set = ?SETS:from_list([Lid1, Lid3]),
-		     ISection = ?SETS:subtract(Set, lid:get_linked(Lid2)),
-		     ?assertEqual(0, ?SETS:size(ISection))
-	     end},
-    Test2 = {"Unlink",
-	     fun({_Pid1, _Pid2, _Pid3, Lid1, Lid2, Lid3}) ->
-		     lid:link(Lid1, Lid2),
-		     lid:link(Lid2, Lid3),
-		     lid:unlink(Lid2, Lid1),
-		     Set = ?SETS:from_list([Lid3]),
-		     ISection = ?SETS:subtract(Set, lid:get_linked(Lid2)),
-		     ?assertEqual(0, ?SETS:size(ISection))
-	     end},
-    Test3 = {"Monitor",
-	     fun({_Pid1, _Pid2, _Pid3, Lid1, Lid2, Lid3}) ->
-		     lid:monitor(Lid1, Lid3, make_ref()),
-		     lid:monitor(Lid2, Lid3, make_ref()),
-		     Set = ?SETS:from_list([Lid1, Lid2]),
-		     ISection = ?SETS:subtract(Set, lid:get_monitored_by(Lid3)),
-		     ?assertEqual(0, ?SETS:size(ISection))
-	     end},
-    Test4 = {"Demonitor",
-	     fun({_Pid1, _Pid2, _Pid3, Lid1, Lid2, Lid3}) ->
-		     lid:monitor(Lid1, Lid3, Ref = make_ref()),
-		     lid:monitor(Lid2, Lid3, make_ref()),
-		     lid:demonitor(Lid1, Ref),
-		     Set = ?SETS:from_list([Lid2]),
-		     ISection = ?SETS:subtract(Set, lid:get_monitored_by(Lid3)),
-		     ?assertEqual(0, ?SETS:size(ISection))
-	     end},
-    Tests = [Test1, Test2, Test3, Test4],
     Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
     {foreach, local, Setup, Cleanup, [Inst]}.

@@ -218,7 +218,10 @@ system_test_() ->
 	     Test25, Test26, Test27, Test28, Test29, Test30,
 	     Test31, Test32, Test33, Test34, Test35, Test36,
 	     Test37, Test38],
-    Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
+    %% Maximum time per test
+    Timeout = 20,
+    Inst = fun(X) -> [{timeout, Timeout, {D, fun() -> T(X) end}} ||
+			 {D, T} <- Tests] end,
     {foreach, local, Setup, Cleanup, [Inst]}.
 
 test_ok(Fun, PrebList) ->

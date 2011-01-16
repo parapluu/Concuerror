@@ -41,10 +41,10 @@
                        {'receive', lid:lid(), term()} |
                        {'register', lid:lid(), atom(), lid:lid()} |
                        {'send', lid:lid(), maybe_lid(), term()} |
-                       {'spawn', lid:lid(), lid:lid()} |
-		       {'spawn_link', lid:lid(), lid:lid()} |
-		       {'spawn_monitor', lid:lid(), lid:lid()} |
-		       {'spawn_opt', lid:lid(), lid:lid(), spawn_opt_opts()} |
+                       {'spawn', maybe_lid(), lid:lid()} |
+		       {'spawn_link', maybe_lid(), lid:lid()} |
+		       {'spawn_monitor', maybe_lid(), lid:lid()} |
+		       {'spawn_opt', maybe_lid(), lid:lid(), spawn_opt_opts()} |
                        {'unlink', lid:lid(), maybe_lid()} |
                        {'unregister', lid:lid(), atom()} |
                        {'whereis', lid:lid(), atom(), maybe_lid()}.
@@ -112,21 +112,38 @@ to_string({send, Sender, Receiver, Msg}) ->
     io_lib:format("Process ~s sends message `~W` to process ~s",
 		  [lid:to_string(Sender), Msg, ?PRINT_DEPTH,
 		   lid:to_string(Receiver)]);
+to_string({spawn, not_found, Child}) ->
+    io_lib:format("Unknown process spawns process ~s", [lid:to_string(Child)]);
 to_string({spawn, Parent, Child}) ->
     io_lib:format("Process ~s spawns process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
+to_string({spawn_link, not_found, Child}) ->
+    io_lib:format("Unknown process spawns and links to process ~s",
+		  [lid:to_string(Child)]);
 to_string({spawn_link, Parent, Child}) ->
     io_lib:format("Process ~s spawns and links to process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
+to_string({spawn_monitor, not_found, Child}) ->
+    io_lib:format("Unknown process spawns and monitors process ~s",
+		  [lid:to_string(Child)]);
 to_string({spawn_monitor, Parent, Child}) ->
     io_lib:format("Process ~s spawns and monitors process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
+to_string({spawn_opt, not_found, Child, [link]}) ->
+    io_lib:format("Unknown process spawns and links to process ~s",
+		  [lid:to_string(Child)]);
 to_string({spawn_opt, Parent, Child, [link]}) ->
     io_lib:format("Process ~s spawns and links to process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
+to_string({spawn_opt, not_found, Child, [monitor]}) ->
+    io_lib:format("Unknown process spawns and monitors process ~s",
+		  [lid:to_string(Child)]);
 to_string({spawn_opt, Parent, Child, [monitor]}) ->
     io_lib:format("Process ~s spawns and monitors process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
+to_string({spawn_opt, not_found, Child, _Opts}) ->
+    io_lib:format("Unknown process spawns, monitors and links to process ~s",
+		  [lid:to_string(Child)]);
 to_string({spawn_opt, Parent, Child, _Opts}) ->
     io_lib:format("Process ~s spawns, monitors and links to process ~s",
 		  [lid:to_string(Parent), lid:to_string(Child)]);
