@@ -29,7 +29,7 @@
 	 test_spawn_monitor_demonitor_5/0,
 	 test_spawn_opt_link_receive_exit/0, test_spawn_opt_monitor/0,
 	 test_erlang_send_3/0,
-	 test_3_proc_receive_exit/0]).
+	 test_3_proc_receive_exit/0, test_3_proc_send_receive/0]).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -393,4 +393,17 @@ test_3_proc_receive_exit() ->
 	    receive
 		{'EXIT', Pid2, normal} -> ok
 	    end
+    end.
+
+-spec test_3_proc_send_receive() -> 'ok'.
+
+test_3_proc_send_receive() ->
+    Self = self(),
+    spawn(fun() -> Self ! {self(), bar}, receive bar -> ok end end),
+    spawn(fun() -> Self ! {self(), baz}, receive baz -> ok end end),
+    receive
+	{Who1, bar} -> Who1 ! bar
+    end,
+    receive
+	{Who2, baz} -> Who2 ! baz
     end.
