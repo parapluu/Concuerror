@@ -98,19 +98,22 @@ new(Pid, Parent) ->
 
 %% Initialize LID tables.
 %% Must be called before any other call to lid interface functions.
--spec start() -> ets:tid() | atom().
+-spec start() -> 'ok'.
 
 start() ->
     %% Table for storing process info.
     ets:new(?NT_LID, [named_table, {keypos, 2}]),
     %% Table for reverse lookup (Pid -> Lid) purposes.
     %% Its elements are of the form {Pid, Lid}.
-    ets:new(?NT_PID, [named_table]).
+    ets:new(?NT_PID, [named_table]),
+    start_root(),
+    ok.
 
 %% Clean up LID tables.
 -spec stop() -> 'true'.
 
 stop() ->
+    stop_root(),
     ets:delete(?NT_LID),
     ets:delete(?NT_PID).
 
@@ -138,8 +141,30 @@ set_children(Lid, Children) ->
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
-%% First process' LID.
-root_lid() -> 1.
+root_lid() ->
+    ?RP_ROOT_LID ! {request, self()},
+    receive
+	{response, Lid} -> Lid
+    end.
+
+start_root() ->
+    Pid = spawn(fun() -> root(1) end),
+    register(?RP_ROOT_LID, Pid).
+
+stop_root() ->
+    ?RP_ROOT_LID ! {stop, self()},
+    receive
+	{response, ok} -> ok
+    end.
+
+root(N) ->
+    receive
+	{request, Pid} ->
+	    Pid ! {response, N},
+	    root(N + 1);
+	{stop, Pid} -> Pid ! {response, ok}
+    end.
+
 
 %% Create new lid from parent and its number of children.
 next_lid(ParentLid, Children) ->
