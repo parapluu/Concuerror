@@ -38,6 +38,9 @@
 
 -define(INFINITY, 1000000).
 -define(NO_ERROR, undef).
+%% How much time to wait when all processes are blocked,
+%% before reporting a deadlock.
+-define(TIME_BEFORE_DEADLOCK, 500).
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -358,7 +361,7 @@ all_blocked(#context{blocked = Blocked, state = State} = Context) ->
 	#special{msg = Type, lid = Lid, misc = Misc} ->
 	    NewContext = special_handler(Type, Lid, Context, Misc),
 	    driver_normal(NewContext)
-    after 500 ->
+    after ?TIME_BEFORE_DEADLOCK ->
 	    Deadlock = error:new({deadlock, Blocked}),
 	    {error, Deadlock, State}
     end.
