@@ -39,25 +39,19 @@ start() ->
 init_percept_db() ->
     % Proc and Port information
     ets:new(pdb_info, [named_table, private, {keypos, #information.id}, set]),
-%    sched:rep_yield(),
 
     % Scheduler runnability
     ets:new(pdb_scheduler, [named_table, private, {keypos, #activity.timestamp}, ordered_set]),
-%    sched:rep_yield(),
     
     % Process and Port runnability
     ets:new(pdb_activity, [named_table, private, {keypos, #activity.timestamp}, ordered_set]),
-%    sched:rep_yield(),
     
     % System status
     ets:new(pdb_system, [named_table, private, {keypos, 1}, set]),
-%    sched:rep_yield(),
     
     % System warnings
     ets:new(pdb_warnings, [named_table, private, {keypos, 1}, ordered_set]),
-%    sched:rep_yield(),
     put(debug, 0),
-%    sched:rep_yield(),
     loop_percept_db(1).
 
 loop_percept_db(0) -> stopped;
