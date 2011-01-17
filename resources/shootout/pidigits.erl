@@ -24,7 +24,7 @@ safe({Q, R, T}, N) -> N == (Q*4 + R) div T.
 
 prod({Z11, Z12, Z22}, N) -> {10*Z11, 10*(Z12 - N*Z22), Z22}.
 
-stream(Z, K, N, N) -> ok;
+stream(_Z, _K, N, N) -> ok;
 stream(Z, K, P, N) ->
     Y = next(Z),
     case safe(Z, Y) of

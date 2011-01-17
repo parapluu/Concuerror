@@ -20,7 +20,7 @@ bug2() ->
 bug3() ->
     dets:close(dets_table),
     file:delete(dets_table),
-    {ok,T} = dets:open_file(dets_table,[{type,bag}]),
+    {ok,_T} = dets:open_file(dets_table,[{type,bag}]),
     spawn(fun() -> dets:open_file(dets_table,[{type,bag}]) end),
     spawn(fun() ->
                   dets:insert(dets_table,[{0,0}]),
@@ -31,7 +31,7 @@ bug3() ->
 bug4() ->
     dets:close(dets_table),
     file:delete(dets_table),
-    {ok,T} = dets:open_file(dets_table,[{type,bag}]),
+    {ok,_T} = dets:open_file(dets_table,[{type,bag}]),
     dets:insert(dets_table,{7,0}),
     spawn(fun() -> dets:open_file(dets_table,[{type,bag}]) end),
     spawn(fun() ->
@@ -46,7 +46,7 @@ bug5() ->
                   [dets:close(dets_table) || _ <- "abcdefghijkl"],
                   file:delete(dets_table),
                   Parent = self(),
-                  {ok,T} = dets:open_file(dets_table,[{type,bag}]),
+                  {ok,_T} = dets:open_file(dets_table,[{type,bag}]),
                   spawn(fun() -> dets:open_file(dets_table,[{type,bag}]),
                                  Parent ! done
                         end),
