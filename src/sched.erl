@@ -750,7 +750,8 @@ notify(Msg, Misc) ->
 	    SpawnFamily = [spawn, spawn_link, spawn_monitor, spawn_opt],
 	    case lists:member(Msg, SpawnFamily) of
 		true ->
-		    ?RP_SCHED ! #special{msg = Msg, misc = Misc},
+		    ?RP_SCHED ! #special{msg = Msg, lid = not_found,
+					 misc = Misc},
 		    ok;
 		false -> ok
 	    end;
