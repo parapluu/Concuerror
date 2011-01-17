@@ -3,9 +3,9 @@
 %%% Contributed by Jiri Isa
 
 -module(thread_ring).
--export([main/1, roundtrip/2, test1/0, test2/0]).
+-export([main/1, roundtrip/2, test1/0]).
 
--define(RING, 3).
+-define(RING, 5).
 
 start(Token) ->
    H = lists:foldl(
@@ -27,5 +27,4 @@ main([Arg]) ->
    Token = list_to_integer(Arg),
    start(Token).
    
-test1() -> main(["3"]).
-test2() -> main(["4"]).
+test1() -> main(["10"]).

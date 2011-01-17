@@ -13,6 +13,7 @@
 -define(TEST_ERL_PATH, ["./resources/test.erl"]).
 -define(RH_PATH, ["./resources/manolis/rush_hour.erl",
 		  "./resources/manolis/search.erl"]).
+-define(TR_PATH, ["./resources/shootout/thread_ring.erl"]).
 
 %% Spec for auto-generated test/0 function (eunit).
 -spec test() -> 'ok' | {'error', term()}.
@@ -227,13 +228,17 @@ system_test_() ->
 	      fun(_Any) -> test_ok({rush_hour, test_2workers, []},
 				   [{0, 768}], ?RH_PATH)
 	      end},
+    Test40 = {"5 proc | Shootout thread ring | normal",
+	      fun(_Any) -> test_ok({thread_ring, test1, []},
+				   [{0, 1}, {inf, 1}], ?TR_PATH)
+	      end},
     Tests = [Test01, Test02, Test03, Test04, Test05, Test06,
 	     Test07, Test08, Test09, Test10, Test11, Test12,
 	     Test13, Test14, Test15, Test16, Test17, Test18,
 	     Test19, Test20, Test21, Test22, Test23, Test24,
 	     Test25, Test26, Test27, Test28, Test29, Test30,
 	     Test31, Test32, Test33, Test34, Test35, Test36,
-	     Test37, Test38, Test39],
+	     Test37, Test38, Test39, Test40],
     %% Maximum time per test
     Timeout = 20,
     Inst = fun(X) -> [{timeout, Timeout, {D, fun() -> T(X) end}} ||
