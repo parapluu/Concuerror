@@ -744,6 +744,14 @@ continue(Lid) ->
 %% running instrumented code completely ignore this call.
 -spec notify(notification(), any()) -> 'ok'.
 
+notify(halt, Misc) ->
+    case lid:from_pid(self()) of
+	not_found -> ok;
+	Lid ->
+	    ?RP_SCHED ! #sched{msg = halt, lid = Lid, misc = Misc},
+	    %% Wait instead of yield to avoid yield message to scheduler.
+	    wait()
+    end;
 notify(Msg, Misc) ->
     case lid:from_pid(self()) of
 	not_found ->
