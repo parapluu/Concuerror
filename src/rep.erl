@@ -152,9 +152,12 @@ rep_receive(Fun) ->
     end.
 
 rep_receive_loop(Fun) ->
+    sched:wait(),
     {messages, Mailbox} = process_info(self(), messages),
     case rep_receive_match(Fun, Mailbox) of
-	block -> rep_receive_loop(Fun);
+	block ->
+	    sched:no_wakeup(),
+	    rep_receive_loop(Fun);
 	continue ->
 	    sched:wakeup(),
 	    sched:wait(),
@@ -166,8 +169,12 @@ rep_receive_loop(Fun) ->
 
 rep_receive_block() ->
     sched:block(),
+    rep_receive_block_loop().
+
+rep_receive_block_loop() ->
     sched:wait(),
-    rep_receive_block().
+    sched:no_wakeup(),
+    rep_receive_block_loop().
 
 rep_receive_match(_Fun, []) ->
     block;

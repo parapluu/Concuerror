@@ -15,7 +15,7 @@
 -export([analyze/2, replay/1]).
 
 %% Internal exports
--export([block/0, notify/2, wait/0, wakeup/0, yield/0]).
+-export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, yield/0]).
 
 -export_type([analysis_target/0, analysis_ret/0]).
 
@@ -40,7 +40,8 @@
 -define(NO_ERROR, undef).
 %% How much time to wait when all processes are blocked,
 %% before reporting a deadlock.
--define(TIME_BEFORE_DEADLOCK, 500).
+-define(TIME_BEFORE_DEADLOCK, 100).
+-define(LOOPS_BEFORE_DEADLOCK, 3).
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -356,21 +357,37 @@ check_for_errors(#context{active = NewActive, blocked = NewBlocked,
 	_Other -> {error, NewError, NewState}
     end.
 
-all_blocked(#context{blocked = Blocked, state = State} = Context) ->
-    receive
-	#special{msg = Type, lid = Lid, misc = Misc} ->
-	    NewContext = special_handler(Type, Lid, Context, Misc),
-	    driver_normal(NewContext)
-    after ?TIME_BEFORE_DEADLOCK ->
-	    Deadlock = error:new({deadlock, Blocked}),
-	    {error, Deadlock, State}
+all_blocked(Context) ->
+    all_blocked_aux(Context, ?LOOPS_BEFORE_DEADLOCK).
+
+all_blocked_aux(#context{blocked = Blocked, state = State}, 0) ->
+    Deadlock = error:new({deadlock, Blocked}),
+    {error, Deadlock, State};
+all_blocked_aux(Context, N) ->
+    case update_context(Context) of
+	Context ->
+	    receive after ?TIME_BEFORE_DEADLOCK -> ok end,
+	    all_blocked_aux(Context, N - 1);
+	NewContext -> driver_normal(NewContext)
     end.
 
-update_context(Context) ->
+update_context(#context{blocked = Blocked} = Context) ->
+    NewContext = ?SETS:fold(fun update_one/2, Context, Blocked),
+    update_context_loop(NewContext).
+
+update_one(Lid, Context) ->
+    continue(Lid),
+    receive
+	#special{msg = wakeup, misc = Misc} ->
+	    special_handler(wakeup, Lid, Context, Misc);
+	#special{msg = no_wakeup} -> Context
+    end.
+
+update_context_loop(Context) ->
     receive
 	#special{msg = Type, lid = Lid, misc = Misc} ->
 	    NewContext = special_handler(Type, Lid, Context, Misc),
-	    update_context(NewContext)
+	    update_context_loop(NewContext)
     after 0 -> Context
     end.
 
@@ -656,8 +673,7 @@ run(#context{active = Active, current = Lid, state = State} = Context) ->
     %% Create new state by adding this process.
     NewState = state:extend(State, Lid),
     %% Send message to "unblock" the process.
-    Pid = lid:get_pid(Lid),
-    continue(Pid),
+    continue(Lid),
     %% Call the dispatcher to handle incoming actions from the process
     %% we just "unblocked".
     dispatcher(Context#context{active = NewActive, state = NewState}).
@@ -719,7 +735,8 @@ block() ->
     ok.
 
 %% Prompt process Pid to continue running.
-continue(Pid) ->
+continue(Lid) ->
+    Pid = lid:get_pid(Lid),
     Pid ! #sched{msg = continue}.
 
 %% Notify the scheduler of an event.
@@ -748,7 +765,15 @@ notify(Msg, Misc) ->
 wakeup() ->
     %% TODO: Depending on how 'receive' is instrumented, a check for
     %% whether the caller is a known process might be needed here.
-    ?RP_SCHED ! #special{msg = wakeup, lid = lid:from_pid(self())},
+    ?RP_SCHED ! #special{msg = wakeup},
+    ok.
+
+-spec no_wakeup() -> 'ok'.
+
+no_wakeup() ->
+    %% TODO: Depending on how 'receive' is instrumented, a check for
+    %% whether the caller is a known process might be needed here.
+    ?RP_SCHED ! #special{msg = no_wakeup},
     ok.
 
 %% Wait until the scheduler prompts to continue.
