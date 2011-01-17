@@ -223,13 +223,17 @@ system_test_() ->
 				    {4, 392}, {5, 458}, {6, 481}, {7, 483},
 				    {inf, 483}])
 	      end},
+    Test39 = {"2 proc | Manolis' RushHour - workers = 2, pb = 0 | normal",
+	      fun(_Any) -> test_ok({rush_hour, test_2workers, []},
+				   [{0, 768}], ?RH_PATH)
+	      end},
     Tests = [Test01, Test02, Test03, Test04, Test05, Test06,
 	     Test07, Test08, Test09, Test10, Test11, Test12,
 	     Test13, Test14, Test15, Test16, Test17, Test18,
 	     Test19, Test20, Test21, Test22, Test23, Test24,
 	     Test25, Test26, Test27, Test28, Test29, Test30,
 	     Test31, Test32, Test33, Test34, Test35, Test36,
-	     Test37, Test38],
+	     Test37, Test38, Test39],
     %% Maximum time per test
     Timeout = 20,
     Inst = fun(X) -> [{timeout, Timeout, {D, fun() -> T(X) end}} ||
