@@ -439,8 +439,7 @@ insert_states(State, {Lids, next}) ->
     [state_save_next(state:extend(State, L)) || L <- Lids].
 
 %% After message handler.
-handler('after', Pid, #context{details = Det} = Context, _Misc) ->
-    Lid = lid:from_pid(Pid),
+handler('after', Lid, #context{details = Det} = Context, _Misc) ->
     log_details(Det, {'after', Lid}),
     dispatcher(Context);
 

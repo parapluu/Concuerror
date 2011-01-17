@@ -266,10 +266,11 @@ rep_send(Dest, Msg, Opt) ->
 	    case lid:from_pid(NewDest) of
 		not_found -> erlang:send(Dest, Msg, Opt);
 		_Lid ->
-		    Ret = erlang:send(Dest, {lid:from_pid(self()), Msg}, Opt),
-		    sched:notify(send, {NewDest, Msg}),
-		    Ret
-	    end
+		    erlang:send(Dest,
+				{?INSTR_MSG, lid:from_pid(self()), Msg}, Opt)
+	    end,
+	    sched:notify(send, {NewDest, Msg}),
+	    Msg
     end.
 
 %% @spec rep_spawn(function()) -> pid()
