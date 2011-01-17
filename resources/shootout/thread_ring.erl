@@ -5,8 +5,6 @@
 -module(thread_ring).
 -export([main/1, roundtrip/2, test1/0, test2/0]).
 
--include("ced.hrl").
-
 -define(RING, 3).
 
 start(Token) ->
