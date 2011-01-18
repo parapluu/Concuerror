@@ -541,8 +541,8 @@ handler('receive', Lid, #context{details = Det} = Context, {From, Msg}) ->
 
 %% Receive message handler for special messages, like 'EXIT' and 'DOWN',
 %% which don't have an associated sender process.
-handler('receive', Lid, #context{details = Det} = Context, Msg) ->
-    log_details(Det, {'receive', Lid, Msg}),
+handler('receive_no_instr', Lid, #context{details = Det} = Context, Msg) ->
+    log_details(Det, {'receive_no_instr', Lid, Msg}),
     dispatcher(Context);
 
 %% Register message handler.

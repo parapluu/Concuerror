@@ -38,7 +38,7 @@
 		       {'monitor', lid:lid(), maybe_lid()} |
 		       {'process_flag', lid:lid(), 'trap_exit', boolean()} |
                        {'receive', lid:lid(), lid:lid(), term()} |
-                       {'receive', lid:lid(), term()} |
+                       {'receive_no_instr', lid:lid(), term()} |
                        {'register', lid:lid(), atom(), lid:lid()} |
                        {'send', lid:lid(), maybe_lid(), term()} |
                        {'spawn', maybe_lid(), lid:lid()} |
@@ -99,8 +99,8 @@ to_string({'receive', Receiver, Sender, Msg}) ->
     io_lib:format("Process ~s receives message `~W` from process ~s",
 		  [lid:to_string(Receiver), Msg, ?PRINT_DEPTH,
 		   lid:to_string(Sender)]);
-to_string({'receive', Receiver, Msg}) ->
-    io_lib:format("Process ~s receives message `~W`",
+to_string({'receive_no_instr', Receiver, Msg}) ->
+    io_lib:format("Process ~s receives message `~W` from unknown process",
 		  [lid:to_string(Receiver), Msg, ?PRINT_DEPTH]);
 to_string({register, Proc, RegName, RegLid}) ->
     io_lib:format("Process ~s registers process ~s as `~p`",

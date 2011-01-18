@@ -213,7 +213,7 @@ rep_receive_notify(From, Msg) ->
 -spec rep_receive_notify(term()) -> 'ok'.
 
 rep_receive_notify(Msg) ->
-    sched:notify('receive', Msg).
+    sched:notify('receive_no_instr', Msg).
 
 %% @spec rep_register(atom(), pid() | port()) -> 'true'
 %% @doc: Replacement for `register/2'.
