@@ -297,11 +297,8 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
 %% handlers.
 dispatcher(Context) ->
     receive
-	#sched{msg = Type, lid = Pid, misc = Misc} ->
-	    case lid:from_pid(Pid) of
-		not_found -> continue(Pid), dispatcher(Context);
-		Lid -> handler(Type, Lid, Context, Misc)
-	    end;
+	#sched{msg = Type, lid = Lid, misc = Misc} ->
+	    handler(Type, Lid, Context, Misc);
 	%% Ignore unknown processes.
 	{'EXIT', Pid, Reason} ->
 	    case lid:from_pid(Pid) of
@@ -708,8 +705,12 @@ state_swap() ->
 -spec block() -> 'ok'.
 
 block() ->
-    ?RP_SCHED_SEND ! #sched{msg = block, lid = self()},
-    ok.
+    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+	not_found -> ok;
+	Lid ->
+	    ?RP_SCHED_SEND ! #sched{msg = block, lid = Lid},
+	    ok
+    end.
 
 %% Prompt process Pid to continue running.
 continue(Pid) when is_pid(Pid) ->
@@ -725,8 +726,12 @@ continue(Lid) ->
 -spec notify(notification(), any()) -> 'ok'.
 
 notify(Msg, Misc) ->
-    ?RP_SCHED_SEND ! #sched{msg = Msg, lid = self(), misc = Misc},
-    wait().
+    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+	not_found -> ok;
+	Lid ->
+	    ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc},
+	    wait()
+    end.
 
 -spec wakeup() -> 'ok'.
 
