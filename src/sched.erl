@@ -71,7 +71,7 @@
 %% pid    : The sender's LID.
 %% misc   : Optional arguments, depending on the message type.
 -record(sched, {msg  :: atom(),
-                lid  :: lid:lid(),
+                lid  :: pid(),
                 misc  = empty :: term()}).
 
 %% Special internal message format (fields same as above).
@@ -297,8 +297,11 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
 %% handlers.
 dispatcher(Context) ->
     receive
-	#sched{msg = Type, lid = Lid, misc = Misc} ->
-	    handler(Type, Lid, Context, Misc);
+	#sched{msg = Type, lid = Pid, misc = Misc} ->
+	    case lid:from_pid(Pid) of
+		not_found -> continue(Pid), dispatcher(Context);
+		Lid -> handler(Type, Lid, Context, Misc)
+	    end;
 	%% Ignore unknown processes.
 	{'EXIT', Pid, Reason} ->
 	    case lid:from_pid(Pid) of
@@ -705,13 +708,12 @@ state_swap() ->
 -spec block() -> 'ok'.
 
 block() ->
-    %% TODO: Depending on how 'receive' is instrumented, a check for
-    %% whether the caller is a known process might be needed here.
-    Lid = rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]),
-    ?RP_SCHED_SEND ! #sched{msg = block, lid = Lid},
+    ?RP_SCHED_SEND ! #sched{msg = block, lid = self()},
     ok.
 
 %% Prompt process Pid to continue running.
+continue(Pid) when is_pid(Pid) ->
+    Pid ! #sched{msg = continue};
 continue(Lid) ->
     Pid = lid:get_pid(Lid),
     Pid ! #sched{msg = continue}.
@@ -722,21 +724,9 @@ continue(Lid) ->
 %% running instrumented code completely ignore this call.
 -spec notify(notification(), any()) -> 'ok'.
 
-notify(halt, Misc) ->
-    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
-	not_found -> ok;
-	Lid ->
-	    ?RP_SCHED_SEND ! #sched{msg = halt, lid = Lid, misc = Misc},
-	    %% Wait instead of yield to avoid yield message to scheduler.
-	    wait()
-    end;
 notify(Msg, Misc) ->
-    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
-	not_found -> ok;
-	Lid ->
-	    ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc},
-	    wait()
-    end.
+    ?RP_SCHED_SEND ! #sched{msg = Msg, lid = self(), misc = Misc},
+    wait().
 
 -spec wakeup() -> 'ok'.
 
