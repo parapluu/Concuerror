@@ -281,9 +281,13 @@ rep_send(Dest, Msg, Opt) ->
 -spec rep_spawn(function()) -> pid().
 
 rep_spawn(Fun) ->
-    Pid = spawn(fun() -> sched:wait(), Fun() end),
-    sched:notify(spawn, Pid),
-    Pid.
+    case lid:from_pid(self()) of
+	not_found -> spawn(Fun);
+	_Lid ->
+	    Pid = spawn(fun() -> sched:wait(), Fun() end),
+	    sched:notify(spawn, Pid),
+	    Pid
+    end.
 
 %% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn/3'.
@@ -302,9 +306,13 @@ rep_spawn(Module, Function, Args) ->
 -spec rep_spawn_link(function()) -> pid().
 
 rep_spawn_link(Fun) ->
-    Pid = spawn_link(fun() -> sched:wait(), Fun() end),
-    sched:notify(spawn_link, Pid),
-    Pid.
+    case lid:from_pid(self()) of
+	not_found -> spawn_link(Fun);
+	_Lid ->
+	    Pid = spawn_link(fun() -> sched:wait(), Fun() end),
+	    sched:notify(spawn_link, Pid),
+	    Pid
+    end.
 
 %% @spec rep_spawn_link(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn_link/3'.
@@ -323,9 +331,13 @@ rep_spawn_link(Module, Function, Args) ->
 -spec rep_spawn_monitor(function()) -> {pid(), reference()}.
 
 rep_spawn_monitor(Fun) ->
-    Ret = spawn_monitor(fun() -> sched:wait(), Fun() end),
-    sched:notify(spawn_monitor, Ret),
-    Ret.
+    case lid:from_pid(self()) of
+	not_found -> spawn_monitor(Fun);
+	_Lid ->
+	    Ret = spawn_monitor(fun() -> sched:wait(), Fun() end),
+	    sched:notify(spawn_monitor, Ret),
+	    Ret
+    end.
 
 %% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}
 %% @doc: Replacement for `spawn_monitor/3'.
@@ -356,9 +368,13 @@ rep_spawn_monitor(Module, Function, Args) ->
 			   pid() | {pid(), reference()}.
 
 rep_spawn_opt(Fun, Opt) ->
-    Ret = spawn_opt(fun() -> sched:wait(), Fun() end, Opt),
-    sched:notify(spawn_opt, {Ret, Opt}),
-    Ret.
+    case lid:from_pid(self()) of
+	not_found -> spawn_opt(Fun, Opt);
+	_Lid ->
+	    Ret = spawn_opt(fun() -> sched:wait(), Fun() end, Opt),
+	    sched:notify(spawn_opt, {Ret, Opt}),
+	    Ret
+    end.
 
 %% @spec rep_spawn_opt(atom(), atom(), [term()],
 %% 		    ['link' | 'monitor' |

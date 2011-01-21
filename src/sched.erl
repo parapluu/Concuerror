@@ -767,15 +767,7 @@ notify(halt, Misc) ->
     end;
 notify(Msg, Misc) ->
     case lid:from_pid(self()) of
-	not_found ->
-	    SpawnFamily = [spawn, spawn_link, spawn_monitor, spawn_opt],
-	    case lists:member(Msg, SpawnFamily) of
-		true ->
-		    ?RP_SCHED ! #special{msg = Msg, lid = not_found,
-					 misc = Misc},
-		    ok;
-		false -> ok
-	    end;
+	not_found -> ok;
 	Lid ->
 	    ?RP_SCHED ! #sched{msg = Msg, lid = Lid, misc = Misc},
 	    yield()
