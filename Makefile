@@ -6,6 +6,12 @@
 #=============================================================================
 
 # ----------------------------------------------------
+# Application info
+# ----------------------------------------------------
+
+APP_STRING = "CED"
+
+# ----------------------------------------------------
 # Orientation information
 # ----------------------------------------------------
 
@@ -142,19 +148,19 @@ scripts: run.sh test.sh
 
 run.sh:
 	printf "#%c/bin/bash\n \
-	        erl -noinput -nostick -sname ced -pa $(EBIN) -s gui start -s init stop" ! \
+	        erl -noinput -nostick -name $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
 	      > run.sh
 	chmod +x run.sh
 
 test.sh:
 	printf "#%c/bin/bash\n \
 		dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam\n \
-	        erl -noinput -sname ced -pa $(EBIN) -s util test -s init stop" ! \
+	        erl -noinput -name $(APP_STRING) -pa $(EBIN) -s util test -s init stop" ! \
 	      > test.sh
 	chmod +x test.sh
 
 %.beam: %.erl
-	erlc -W $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -o $(EBIN) $<
+	erlc -W $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -o $(EBIN) $<
 
 # ----------------------------------------------------
 # Dependencies

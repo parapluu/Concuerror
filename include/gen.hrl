@@ -11,8 +11,7 @@
 %%%----------------------------------------------------------------------
 
 %% Application name (atom and string).
--define(APP_ATOM, 'CED').
--define(APP_STRING, "CED").
+-define(APP_ATOM, list_to_atom(?APP_STRING)).
 
 %% Application file.
 -define(APP_FILE, ".ced").
@@ -22,7 +21,7 @@
 -define(RP_GUI_ANALYSIS, '_._gui_analysis').
 -define(RP_REPLAY_LOGGER, '_._replay_logger').
 -define(RP_SCHED, '_._sched').
--define(RP_SCHED_SEND, {?RP_SCHED, 'ced@alkis-desktop'}).
+-define(RP_SCHED_SEND, {?RP_SCHED, ?CED_NODE}).
 -define(RP_ROOT_LID, '_._root_lid').
 
 %% Named ets table names.
@@ -51,6 +50,10 @@
 
 %% Internal error return code.
 -define(RET_INTERNAL_ERROR, 1).
+
+%% Host - Node names.
+-define(HOST, net_adm:localhost()).
+-define(CED_NODE, list_to_atom(?APP_STRING ++ "@" ++ net_adm:localhost())).
 
 %% Debug macros.
 -ifdef(DEBUG_LEVEL_1).
