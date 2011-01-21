@@ -9,7 +9,7 @@
 -module(rep).
 
 -export([rep_after_notify/0, rep_demonitor/1, rep_demonitor/2,
-	 rep_exit/2, rep_halt/0, rep_halt/1, rep_link/1,
+	 rep_halt/0, rep_halt/1, rep_link/1,
 	 rep_monitor/2, rep_process_flag/2, rep_receive/1,
          rep_receive_block/0, rep_receive_notify/1,
          rep_receive_notify/2, rep_register/2, rep_send/2,
@@ -43,17 +43,6 @@ rep_demonitor(Ref) ->
 rep_demonitor(Ref, Opts) ->
     Result = demonitor(Ref, Opts),
     sched:notify(demonitor, Ref),
-    Result.
-
-%% @spec: rep_exit(pid(), term()) -> true
-%% @doc: Replacement for `exit/2'.
-%%
-%% Just send exit signal and yield.
--spec rep_exit(pid(), term()) -> 'true'.
-
-rep_exit(Pid, Reason) ->
-    Result = exit(Pid, Reason),
-    sched:notify(fun_exit, {Pid, Reason}),
     Result.
 
 %% @spec: rep_halt() -> no_return()

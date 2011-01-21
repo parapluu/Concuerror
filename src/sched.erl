@@ -473,37 +473,6 @@ handler(demonitor, Lid, #context{details = Det} = Context, _Ref) ->
     log_details(Det, {demonitor, Lid, TargetLid}),
     dispatcher(Context);
 
-%% Exit handler (called when a process calls exit/2).
-handler(fun_exit, Lid, #context{details = Det} = Context, {Target, Reason}) ->
-    TargetLid = lid:from_pid(Target),
-    log_details(Det, {fun_exit, Lid, TargetLid, Reason}),
-    NewContext = dispatcher(Context),
-    case TargetLid of
-	not_found -> NewContext;
-	_Found ->
-	    %% If Reason is kill or Target is not trapping exits and
-	    %% Reason is not normal, call the dispatcher a second
-	    %% time to handle the exit of Target.
-	    %% NOTE: If Target gets killed, this is not recorded as
-	    %% a seperate action in the state queue, but rather is
-	    %% seen as one action together with the exit/2 call
-	    %% (although it is logged as a seperate event).
-	    TempContext = NewContext#context{current = TargetLid},
-	    case Reason of
-		kill ->
-		    NewerContext = dispatcher(TempContext),
-		    NewerContext#context{current = Lid};
-		normal -> NewContext;
-		_OtherReason ->
-		    case process_info(Target, trap_exit) of
-			{trap_exit, false} ->
-			    NewerContext = dispatcher(TempContext),
-			    NewerContext#context{current = Lid};
-			_OtherInfo -> NewContext
-		    end
-	    end
-    end;
-
 %% Exit handler (called when a process has exited).
 %% Discard the exited process (don't add to any set).
 handler(exit, Lid, #context{details = Det} = Context, Reason) ->
