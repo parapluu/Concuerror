@@ -301,7 +301,7 @@ dispatcher(Context) ->
 	%% Ignore unknown processes.
 	{'EXIT', Pid, Reason} ->
 	    case lid:from_pid(Pid) of
-		not_found -> Context;
+		not_found -> dispatcher(Context);
 		Lid -> handler(exit, Lid, Context, Reason)
 	    end
     end.
