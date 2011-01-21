@@ -240,11 +240,13 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
             lid:start(),
-	    %% Load code and spawn initial user process.
-	    instr:load(Bin),
+	    %% Create slave node, load code and spawn initial user process.
+	    SlaveArg = "-pa /home/alkis/Chess/ebin",
+	    {ok, Node} = slave:start('alkis-desktop', user, SlaveArg),
+	    ok = rpc:block_call(Node, instr, load, [Bin]),
 	    {Mod, Fun, Args} = Target,
 	    NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
-            FirstPid = spawn_link(NewFun),
+            FirstPid = spawn_link(Node, NewFun),
 	    %% Initialize scheduler context.
             FirstLid = lid:new(FirstPid, noparent),
             Active = ?SETS:add_element(FirstLid, ?SETS:new()),
@@ -254,8 +256,8 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
                                state = State, details = Det},
 	    %% Interleave using driver.
             Ret = driver(Context, ReplayState),
-	    %% Cleanup of any remaining processes.
-	    proc_cleanup(),
+	    %% Shutdown slave node
+	    slave:stop(Node),
             lid:stop(),
             NewTickets =
                 case Ret of
@@ -652,13 +654,13 @@ handler(yield, Lid, #context{active = Active} = Context, _Misc) ->
 %% the one where the exception occurred could have been killed by the
 %% exit signal of the latter without having been deleted from the pid/lid
 %% tables. Thus, 'EXIT' messages with any reason are accepted.
-proc_cleanup() ->
-    Fun = fun(P, Acc) ->
-		  exit(P, kill),
-		  receive {'EXIT', P, _Reason} -> Acc end
-	  end,
-    lid:fold_pids(Fun, unused),
-    ok.
+%% proc_cleanup() ->
+%%     Fun = fun(P, Acc) ->
+%% 		  exit(P, kill),
+%% 		  receive {'EXIT', P, _Reason} -> Acc end
+%% 	  end,
+%%     lid:fold_pids(Fun, unused),
+%%     ok.
 
 %% Calculate and print elapsed time between T1 and T2.
 elapsed_time(T1, T2) ->
@@ -742,7 +744,8 @@ state_swap() ->
 block() ->
     %% TODO: Depending on how 'receive' is instrumented, a check for
     %% whether the caller is a known process might be needed here.
-    ?RP_SCHED ! #sched{msg = block, lid = lid:from_pid(self())},
+    Lid = rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]),
+    ?RP_SCHED_SEND ! #sched{msg = block, lid = Lid},
     ok.
 
 %% Prompt process Pid to continue running.
@@ -757,18 +760,18 @@ continue(Lid) ->
 -spec notify(notification(), any()) -> 'ok'.
 
 notify(halt, Misc) ->
-    case lid:from_pid(self()) of
+    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
 	not_found -> ok;
 	Lid ->
-	    ?RP_SCHED ! #sched{msg = halt, lid = Lid, misc = Misc},
+	    ?RP_SCHED_SEND ! #sched{msg = halt, lid = Lid, misc = Misc},
 	    %% Wait instead of yield to avoid yield message to scheduler.
 	    wait()
     end;
 notify(Msg, Misc) ->
-    case lid:from_pid(self()) of
+    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
 	not_found -> ok;
 	Lid ->
-	    ?RP_SCHED ! #sched{msg = Msg, lid = Lid, misc = Misc},
+	    ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc},
 	    yield()
     end.
 
@@ -777,7 +780,7 @@ notify(Msg, Misc) ->
 wakeup() ->
     %% TODO: Depending on how 'receive' is instrumented, a check for
     %% whether the caller is a known process might be needed here.
-    ?RP_SCHED ! #special{msg = wakeup},
+    ?RP_SCHED_SEND ! #special{msg = wakeup},
     ok.
 
 -spec no_wakeup() -> 'ok'.
@@ -785,7 +788,7 @@ wakeup() ->
 no_wakeup() ->
     %% TODO: Depending on how 'receive' is instrumented, a check for
     %% whether the caller is a known process might be needed here.
-    ?RP_SCHED ! #special{msg = no_wakeup},
+    ?RP_SCHED_SEND ! #special{msg = no_wakeup},
     ok.
 
 %% Wait until the scheduler prompts to continue.
@@ -801,5 +804,6 @@ wait() ->
 -spec yield() -> 'ok'.
 
 yield() ->
-    ?RP_SCHED ! #sched{msg = yield, lid = lid:from_pid(self())},
+    Lid = rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]),
+    ?RP_SCHED_SEND ! #sched{msg = yield, lid = Lid},
     wait().

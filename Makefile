@@ -142,14 +142,14 @@ scripts: run.sh test.sh
 
 run.sh:
 	printf "#%c/bin/bash\n \
-	        erl -noinput -nostick -pa $(EBIN) -s gui start -s init stop" ! \
+	        erl -noinput -nostick -sname ced -pa $(EBIN) -s gui start -s init stop" ! \
 	      > run.sh
 	chmod +x run.sh
 
 test.sh:
 	printf "#%c/bin/bash\n \
 		dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam\n \
-	        erl -noinput -pa $(EBIN) -s util test -s init stop" ! \
+	        erl -noinput -sname ced -pa $(EBIN) -s util test -s init stop" ! \
 	      > test.sh
 	chmod +x test.sh
 

@@ -139,7 +139,7 @@ rep_process_flag(Flag, Value) ->
 -spec rep_receive(fun((term()) -> 'block' | 'continue')) -> 'ok'.
 
 rep_receive(Fun) ->
-    case lid:from_pid(self()) of
+    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
 	not_found -> ok;
 	_Lid ->
 	    {messages, Mailbox} = process_info(self(), messages),
@@ -213,7 +213,8 @@ rep_receive_notify(From, Msg) ->
 -spec rep_receive_notify(term()) -> 'ok'.
 
 rep_receive_notify(Msg) ->
-    sched:notify('receive_no_instr', Msg).
+    sched:notify('receive_no_instr', Msg),
+    ok.
 
 %% @spec rep_register(atom(), pid() | port()) -> 'true'
 %% @doc: Replacement for `register/2'.
@@ -223,7 +224,9 @@ rep_receive_notify(Msg) ->
 
 rep_register(RegName, P) ->
     Ret = register(RegName, P),
-    sched:notify(register, {RegName, lid:from_pid(P)}),
+    %% TODO: Maybe send Pid instead to avoid rpc.
+    PLid = rpc:block_call('ced@alkis-desktop', lid, from_pid, [P]),
+    sched:notify(register, {RegName, PLid}),
     Ret.
 
 %% @spec rep_send(dest(), term()) -> term()
@@ -235,15 +238,13 @@ rep_register(RegName, P) ->
 -spec rep_send(dest(), term()) -> term().
 
 rep_send(Dest, Msg) ->
-    Self = self(),
-    case lid:from_pid(Self) of
+    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
 	not_found -> Dest ! Msg;
-	_SelfLid ->
+	SelfLid ->
 	    NewDest = find_pid(Dest),
-	    case lid:from_pid(NewDest) of
+	    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [NewDest]) of
 		not_found -> Dest ! Msg;
-		_DestLid ->
-		    Dest ! {?INSTR_MSG, lid:from_pid(self()), Msg}
+		_DestLid -> Dest ! {?INSTR_MSG, SelfLid, Msg}
 	    end,
 	    sched:notify(send, {NewDest, Msg}),
 	    Msg
@@ -258,16 +259,15 @@ rep_send(Dest, Msg) ->
                       'ok' | 'nosuspend' | 'noconnect'.
 
 rep_send(Dest, Msg, Opt) ->
-    Self = self(),
-    case lid:from_pid(Self) of
+    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
 	not_found -> erlang:send(Dest, Msg, Opt);
-	_SelfLid ->
+	SelfLid ->
 	    NewDest = find_pid(Dest),
-	    case lid:from_pid(NewDest) of
+	    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [NewDest]) of
 		not_found -> erlang:send(Dest, Msg, Opt);
 		_Lid ->
 		    erlang:send(Dest,
-				{?INSTR_MSG, lid:from_pid(self()), Msg}, Opt)
+				{?INSTR_MSG, SelfLid, Msg}, Opt)
 	    end,
 	    sched:notify(send, {NewDest, Msg}),
 	    Msg
@@ -281,7 +281,7 @@ rep_send(Dest, Msg, Opt) ->
 -spec rep_spawn(function()) -> pid().
 
 rep_spawn(Fun) ->
-    case lid:from_pid(self()) of
+    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
 	not_found -> spawn(Fun);
 	_Lid ->
 	    Pid = spawn(fun() -> sched:wait(), Fun() end),
@@ -306,7 +306,7 @@ rep_spawn(Module, Function, Args) ->
 -spec rep_spawn_link(function()) -> pid().
 
 rep_spawn_link(Fun) ->
-    case lid:from_pid(self()) of
+    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
 	not_found -> spawn_link(Fun);
 	_Lid ->
 	    Pid = spawn_link(fun() -> sched:wait(), Fun() end),
@@ -331,7 +331,7 @@ rep_spawn_link(Module, Function, Args) ->
 -spec rep_spawn_monitor(function()) -> {pid(), reference()}.
 
 rep_spawn_monitor(Fun) ->
-    case lid:from_pid(self()) of
+    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
 	not_found -> spawn_monitor(Fun);
 	_Lid ->
 	    Ret = spawn_monitor(fun() -> sched:wait(), Fun() end),
@@ -368,7 +368,7 @@ rep_spawn_monitor(Module, Function, Args) ->
 			   pid() | {pid(), reference()}.
 
 rep_spawn_opt(Fun, Opt) ->
-    case lid:from_pid(self()) of
+    case rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]) of
 	not_found -> spawn_opt(Fun, Opt);
 	_Lid ->
 	    Ret = spawn_opt(fun() -> sched:wait(), Fun() end, Opt),

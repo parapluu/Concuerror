@@ -22,6 +22,7 @@
 -define(RP_GUI_ANALYSIS, '_._gui_analysis').
 -define(RP_REPLAY_LOGGER, '_._replay_logger').
 -define(RP_SCHED, '_._sched').
+-define(RP_SCHED_SEND, {?RP_SCHED, 'ced@alkis-desktop'}).
 -define(RP_ROOT_LID, '_._root_lid').
 
 %% Named ets table names.
