@@ -124,34 +124,31 @@ analyze(Target, Options) ->
 	end,
     %% Disable error logging messages.
     ?tty(),
-    Ret =
-	case instr:instrument_and_load(Files) of
-	    ok ->
-		log:log("Running analysis...~n"),
-		{T1, _} = statistics(wall_clock),
-		ISOption = {init_state, state:empty()},
-		Result = interleave(Target, [ISOption|Options]),
-		{T2, _} = statistics(wall_clock),
-		{Mins, Secs} = elapsed_time(T1, T2),
-		case Result of
-		    {ok, RunCount} ->
-			log:log("Analysis complete (checked ~w interleavings "
-				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-			log:log("No errors found.~n"),
-			{ok, {Target, RunCount}};
-		    {error, RunCount, Tickets} ->
-			TicketCount = length(Tickets),
-			log:log("Analysis complete (checked ~w interleavings "
-				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-			log:log("Found ~p erroneous interleaving(s).~n",
-				[TicketCount]),
-			{error, analysis, {Target, RunCount}, Tickets}
-		end;
-	    error ->
-		{error, instr, {Target, 0}}
-	end,
-    instr:delete_and_purge(Files),
-    Ret.
+    case instr:instrument_and_compile(Files) of
+	{ok, Bin} ->
+	    log:log("Running analysis...~n"),
+	    {T1, _} = statistics(wall_clock),
+	    ISOption = {init_state, state:empty()},
+	    BinOption = {bin, Bin},
+	    Result = interleave(Target, [BinOption, ISOption|Options]),
+	    {T2, _} = statistics(wall_clock),
+	    {Mins, Secs} = elapsed_time(T1, T2),
+	    case Result of
+		{ok, RunCount} ->
+		    log:log("Analysis complete (checked ~w interleavings "
+			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
+		    log:log("No errors found.~n"),
+		    {ok, {Target, RunCount}};
+		{error, RunCount, Tickets} ->
+		    TicketCount = length(Tickets),
+		    log:log("Analysis complete (checked ~w interleavings "
+			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
+		    log:log("Found ~p erroneous interleaving(s).~n",
+			    [TicketCount]),
+		    {error, analysis, {Target, RunCount}, Tickets}
+	    end;
+	error -> {error, instr, {Target, 0}}
+    end.
 
 %% @spec: replay(analysis_target(), state()) -> [proc_action()]
 %% @doc: Replay the given state and return detailed information about the
@@ -164,10 +161,10 @@ replay(Ticket) ->
     Target = ticket:get_target(Ticket),
     State = ticket:get_state(Ticket),
     Files = ticket:get_files(Ticket),
-    Options = [details, {init_state, State}, {files, Files}],
-    instr:instrument_and_load(Files),
+    %% Note: No error checking here.
+    {ok, Bin} = instr:instrument_and_compile(Files),
+    Options = [details, {bin, Bin}, {init_state, State}, {files, Files}],
     interleave(Target, Options),
-    instr:delete_and_purge(Files),
     Result = replay_logger:get_replay(),
     replay_logger:stop(),
     Result.
@@ -235,6 +232,7 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
 %% the course of the program shall be linked to the scheduler process.
 interleave_loop(Target, RunCnt, Tickets, Options) ->
     Det = lists:member(details, Options),
+    {bin, Bin} = lists:keyfind(bin, 1, Options),
     %% Lookup state to replay.
     case state_load() of
         no_state -> {RunCnt - 1, Tickets, false};
@@ -242,12 +240,13 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
             lid:start(),
-	    %% Spawn initial process.
+	    %% Load code and spawn initial user process.
+	    instr:load(Bin),
 	    {Mod, Fun, Args} = Target,
 	    NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
             FirstPid = spawn_link(NewFun),
-            FirstLid = lid:new(FirstPid, noparent),
 	    %% Initialize scheduler context.
+            FirstLid = lid:new(FirstPid, noparent),
             Active = ?SETS:add_element(FirstLid, ?SETS:new()),
             Blocked = ?SETS:new(),
             State = state:empty(),

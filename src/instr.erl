@@ -10,7 +10,7 @@
 %%%----------------------------------------------------------------------
 
 -module(instr).
--export([delete_and_purge/1, instrument_and_load/1]).
+-export([instrument_and_compile/1, load/1]).
 
 -include("gen.hrl").
 
@@ -52,36 +52,26 @@
 %%% Instrumentation utilities
 %%%----------------------------------------------------------------------
 
-%% Delete and purge all modules in Files.
--spec delete_and_purge([file()]) -> 'ok'.
-
-delete_and_purge(Files) ->
-    ModsToPurge = [list_to_atom(filename:basename(F, ".erl")) || F <- Files],
-    [begin code:delete(M), code:purge(M) end || M <- ModsToPurge],
-    ok.
-
-%% @spec instrument_and_load(Files::[file()]) -> 'ok' | 'error'
-%% @doc: Instrument, compile and load a list of files.
+%% @spec instrument(Files::[file()]) -> 'ok' | 'error'
+%% @doc: Instrument and compile a list of files.
 %%
 %% Each file is first validated (i.e. checked whether it will compile
-%% successfully). If no errors are encountered, the file gets instrumented,
-%% compiled and loaded. If all of these actions are successfull, the function
-%% returns `ok', otherwise `error' is returned. No `.beam' files are produced.
--spec instrument_and_load([file()]) -> 'ok' | 'error'.
+%% successfully). If no errors are encountered, the file gets instrumented and
+%% compiled. If these actions are successfull, the function returns `{ok, Bin}',
+%% otherwise `error' is returned. No `.beam' files are produced.
+-spec instrument_and_compile([file()]) -> {'ok', [binary()]} | 'error'.
 
-instrument_and_load([]) ->
-    log:log("No files instrumented~n"),
-    ok;
-instrument_and_load([File]) ->
-    instrument_and_load_one(File);
-instrument_and_load([File | Rest]) ->
-    case instrument_and_load_one(File) of
-	ok -> instrument_and_load(Rest);
-	error -> error
+instrument_and_compile(Files) -> instrument_and_compile_aux(Files, []).
+
+instrument_and_compile_aux([], Acc) -> {ok, lists:reverse(Acc)};
+instrument_and_compile_aux([File|Rest], Acc) ->
+    case instrument_and_compile_one(File) of
+	error -> error;
+	Result -> instrument_and_compile_aux(Rest, [Result|Acc])
     end.
 
-%% Instrument and load a single file.
-instrument_and_load_one(File) ->
+%% Instrument and compile a single file.
+instrument_and_compile_one(File) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
     log:log("Validating file ~p...~n", [File]),
@@ -103,18 +93,8 @@ instrument_and_load_one(File) ->
 		    log:log("Compiling instrumented code...~n"),
 		    CompOptions = [binary],
 		    case compile:forms(NewForms, CompOptions) of
-			{ok, Module, Binary} ->
-			    log:log("Loading module `~p`...~n", [Module]),
-			    case code:load_binary(Module, File, Binary) of
-				{module, Module} ->
-				    ok;
-				{error, Error} ->
-				    log:log("error~n~p~n", [Error]),
-				    error
-			    end;
-			error ->
-			    log:log("error~n"),
-			    error
+			{ok, Module, Binary} -> {Module, File, Binary};
+			error -> log:log("error~n"), error
 		    end;
 		{error, Error} ->
 		    log:log("error: ~p~n", [Error]),
@@ -126,6 +106,23 @@ instrument_and_load_one(File) ->
 	    log_error_list(Errors),
 	    log_warning_list(Warnings),
 	    log:log("error~n"),
+	    error
+    end.
+
+-spec load([{module(), file(), binary()}]) -> 'ok' | 'error'.
+
+load([]) -> ok;
+load([MFB|Rest]) ->
+    case load_one(MFB) of
+	ok -> load(Rest);
+	error -> error
+    end.
+
+load_one({Module, File, Binary}) ->
+    case code:load_binary(Module, File, Binary) of
+	{module, Module} -> ok;
+	{error, Error} ->
+	    log:log("error~n~p~n", [Error]),
 	    error
     end.
 

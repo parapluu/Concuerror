@@ -35,7 +35,5 @@ syntax_test_() ->
 
 test_ok(File) ->
     Path = filename:join([?TEST_PATH, File]),
-    io:format("~p~n", [Path]),
-    Result = instr:instrument_and_load([Path]),
-    instr:delete_and_purge([Path]),
-    ?assertEqual(ok, Result).
+    Result = instr:instrument_and_compile([Path]),
+    ?assertMatch({ok, _Bin}, Result).
