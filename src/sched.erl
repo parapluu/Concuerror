@@ -323,8 +323,21 @@ driver_replay(OldContext, ReplayState) ->
 		true -> abort;
 		false -> check_for_errors(NewContext)
 	    end;
-	false -> driver_replay(NewContext, Rest)
-    end.	    
+	false ->
+	    case ?SETS:is_element(Next, NewBlocked) of
+		true ->
+		    wait_for_wakeup(Next),
+		    driver_replay(OldContext, ReplayState);
+		false -> driver_replay(NewContext, Rest)
+	    end
+    end.
+
+wait_for_wakeup(Lid) ->
+    continue(Lid),
+    receive
+	#special{msg = wakeup} -> ok;
+	#special{msg = no_wakeup} -> wait_for_wakeup(Lid)
+    end.
 
 driver_normal(OldContext) ->
     #context{active = Active, current = LastLid,
@@ -425,7 +438,7 @@ run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
     case ?SETS:is_element(Next, NewBlocked) of
 	true ->
 	    case Rest of
-		[] -> {NewContext, {[], W}};
+		[] -> {NewContext#context{state = State}, {[], W}};
 		[RH|RT] ->
 		    NextContext = NewContext#context{state = State},
 		    run_no_block(NextContext, {RH, RT, current})
