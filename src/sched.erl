@@ -15,7 +15,7 @@
 -export([analyze/2, replay/1]).
 
 %% Internal exports
--export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, yield/0]).
+-export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0]).
 
 -export_type([analysis_target/0, analysis_ret/0]).
 
@@ -455,38 +455,42 @@ insert_states(State, {Lids, next}) ->
 %% After message handler.
 handler('after', Lid, #context{details = Det} = Context, _Misc) ->
     log_details(Det, {'after', Lid}),
-    dispatcher(Context);
+    Context;
 
 %% Block message handler.
 %% Receiving a `block` message means that the process cannot be scheduled
 %% next and must be moved to the blocked set.
-handler(block, Lid, #context{blocked = Blocked, details = Det} = Context,
+handler(block, Lid,
+	#context{active = Active, blocked = Blocked, details = Det} = Context,
         _Misc) ->
+    NewActive = ?SETS:del_element(Lid, Active),
     NewBlocked = ?SETS:add_element(Lid, Blocked),
     log_details(Det, {block, Lid}),
-    Context#context{blocked = NewBlocked};
+    Context#context{active = NewActive, blocked = NewBlocked};
 
 %% Demonitor message handler.
 handler(demonitor, Lid, #context{details = Det} = Context, _Ref) ->
     %% TODO: Get LID from Ref?
     TargetLid = lid:mock(0),
     log_details(Det, {demonitor, Lid, TargetLid}),
-    dispatcher(Context);
+    Context;
 
 %% Exit handler (called when a process has exited).
-%% Discard the exited process (don't add to any set).
-handler(exit, Lid, #context{details = Det} = Context, Reason) ->
+%% Remove the exited process from the actives.
+handler(exit, Lid, #context{active = Active, details = Det} = Context,
+	Reason) ->
+    NewActive = ?SETS:del_element(Lid, Active),
     %% Cleanup LID stored info.
     lid:cleanup(Lid),
     %% Handle and propagate errors.
     case Reason of
 	normal ->
 	    log_details(Det, {exit, Lid, normal}),
-	    Context;
+	    Context#context{active = NewActive};
 	_Else ->
 	    Error = error:new(Reason),
 	    log_details(Det, {exit, Lid, error:type(Error)}),
-	    Context#context{error = Error}
+	    Context#context{active = NewActive, error = Error}
     end;
 
 %% Halt message handler.
@@ -504,40 +508,40 @@ handler(halt, Lid, #context{details = Det} = Context, Misc) ->
 handler(link, Lid, #context{details = Det} = Context, TargetPid) ->
     TargetLid = lid:from_pid(TargetPid),
     log_details(Det, {link, Lid, TargetLid}),
-    dispatcher(Context);
+    Context;
 
 %% Monitor message handler.
 handler(monitor, Lid, #context{details = Det} = Context, {Item, _Ref}) ->
     TargetLid = lid:from_pid(Item),
     log_details(Det, {monitor, Lid, TargetLid}),
-    dispatcher(Context);
+    Context;
 
 %% Process_flag message handler.
 handler(process_flag, Lid, #context{details = Det} = Context, {Flag, Value}) ->
     log_details(Det, {process_flag, Lid, Flag, Value}),
-    dispatcher(Context);
+    Context;
 
 %% Normal receive message handler.
 handler('receive', Lid, #context{details = Det} = Context, {From, Msg}) ->
     log_details(Det, {'receive', Lid, From, Msg}),
-    dispatcher(Context);
+    Context;
 
 %% Receive message handler for special messages, like 'EXIT' and 'DOWN',
 %% which don't have an associated sender process.
 handler('receive_no_instr', Lid, #context{details = Det} = Context, Msg) ->
     log_details(Det, {'receive_no_instr', Lid, Msg}),
-    dispatcher(Context);
+    Context;
 
 %% Register message handler.
 handler(register, Lid, #context{details = Det} = Context, {RegName, RegLid}) ->
     log_details(Det, {register, Lid, RegName, RegLid}),
-    dispatcher(Context);
+    Context;
 
 %% Send message handler.
 handler(send, Lid, #context{details = Det} = Context, {DstPid, Msg}) ->
     DstLid = lid:from_pid(DstPid),
     log_details(Det, {send, Lid, DstLid, Msg}),
-    dispatcher(Context);
+    Context;
 
 %% Spawn message handler.
 %% First, link the newly spawned process to the scheduler process.
@@ -550,7 +554,7 @@ handler(spawn, ParentLid,
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn, ParentLid, ChildLid}),
     NewActive = ?SETS:add_element(ChildLid, Active),
-    dispatcher(Context#context{active = NewActive});
+    Context#context{active = NewActive};
 
 %% Spawn_link message handler.
 %% Same as above, but save linked LIDs.
@@ -560,7 +564,7 @@ handler(spawn_link, ParentLid,
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn_link, ParentLid, ChildLid}),
     NewActive = ?SETS:add_element(ChildLid, Active),
-    dispatcher(Context#context{active = NewActive});
+    Context#context{active = NewActive};
 
 %% Spawn_monitor message handler.
 %% Same as spawn, but save monitored LIDs.
@@ -570,7 +574,7 @@ handler(spawn_monitor, ParentLid,
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn_monitor, ParentLid, ChildLid}),
     NewActive = ?SETS:add_element(ChildLid, Active),
-    dispatcher(Context#context{active = NewActive});
+    Context#context{active = NewActive};
 
 %% Spawn_opt message handler.
 %% Similar to above depending on options.
@@ -587,32 +591,24 @@ handler(spawn_opt, ParentLid,
 					  sets:from_list(Opt))),
     log_details(Det, {spawn_opt, ParentLid, ChildLid, Opts}),
     NewActive = ?SETS:add_element(ChildLid, Active),
-    dispatcher(Context#context{active = NewActive});
+    Context#context{active = NewActive};
 
 %% Unlink message handler.
 handler(unlink, Lid, #context{details = Det} = Context, TargetPid) ->
     TargetLid = lid:from_pid(TargetPid),
     log_details(Det, {unlink, Lid, TargetLid}),
-    dispatcher(Context);
+    Context;
 
 %% Unregister message handler.
 handler(unregister, Lid, #context{details = Det} = Context, RegName) ->
     log_details(Det, {unregister, Lid, RegName}),
-    dispatcher(Context);
+    Context;
 
 %% Whereis message handler.
 handler(whereis, Lid, #context{details = Det} = Context, {RegName, Result}) ->
     ResultLid = lid:from_pid(Result),
     log_details(Det, {whereis, Lid, RegName, ResultLid}),
-    dispatcher(Context);
-
-%% Yield message handler.
-%% Receiving a 'yield' message means that the process is preempted, but
-%% remains in the active set.
-handler(yield, Lid, #context{active = Active} = Context, _Misc) ->
-    ?debug_2("Process ~s yields.~n", [lid:to_string(Lid)]),
-    NewActive = ?SETS:add_element(Lid, Active),
-    Context#context{active = NewActive}.
+    Context.
 
 %%%----------------------------------------------------------------------
 %%% Helper functions
@@ -648,17 +644,15 @@ log_details(Det, Action) ->
     end.
 
 %% Run process Lid in context Context.
-run(#context{active = Active, current = Lid, state = State} = Context) ->
+run(#context{current = Lid, state = State} = Context) ->
     ?debug_2("Running process ~s.~n", [lid:to_string(Lid)]),
-    %% Remove process from the `active` set.
-    NewActive = ?SETS:del_element(Lid, Active),
     %% Create new state by adding this process.
     NewState = state:extend(State, Lid),
     %% Send message to "unblock" the process.
     continue(Lid),
     %% Call the dispatcher to handle incoming actions from the process
     %% we just "unblocked".
-    dispatcher(Context#context{active = NewActive, state = NewState}).
+    dispatcher(Context#context{state = NewState}).
 
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
@@ -741,7 +735,7 @@ notify(Msg, Misc) ->
 	not_found -> ok;
 	Lid ->
 	    ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc},
-	    yield()
+	    wait()
     end.
 
 -spec wakeup() -> 'ok'.
@@ -767,12 +761,3 @@ wait() ->
     receive
 	#sched{msg = continue} -> ok
     end.
-
-%% Functionally same as block. Used when a process is scheduled out, but
-%% remains in the `active` set.
--spec yield() -> 'ok'.
-
-yield() ->
-    Lid = rpc:block_call('ced@alkis-desktop', lid, from_pid, [self()]),
-    ?RP_SCHED_SEND ! #sched{msg = yield, lid = Lid},
-    wait().
