@@ -104,16 +104,16 @@ start() ->
     %% Table for storing process info.
     ets:new(?NT_LID, [named_table, {keypos, 2}]),
     %% Table for reverse lookup (Pid -> Lid) purposes.
-    %% Its elements are of the form {Pid, Lid}.
     ets:new(?NT_PID, [named_table]),
-    start_root(),
+    %% Process for handling root LID state and user node requests.
+    start_lid(),
     ok.
 
 %% Clean up LID tables.
 -spec stop() -> 'true'.
 
 stop() ->
-    stop_root(),
+    stop_lid(),
     ets:delete(?NT_LID),
     ets:delete(?NT_PID).
 
@@ -142,29 +142,31 @@ set_children(Lid, Children) ->
 %%%----------------------------------------------------------------------
 
 root_lid() ->
-    ?RP_ROOT_LID ! {request, self()},
+    ?RP_LID ! {root, self()},
     receive
-	{response, Lid} -> Lid
+	{root, Lid} -> Lid
     end.
 
-start_root() ->
-    Pid = spawn(fun() -> root(1) end),
-    register(?RP_ROOT_LID, Pid).
+start_lid() ->
+    Pid = spawn(fun() -> lid_loop(1) end),
+    register(?RP_LID, Pid).
 
-stop_root() ->
-    ?RP_ROOT_LID ! {stop, self()},
+stop_lid() ->
+    ?RP_LID ! {stop, self()},
     receive
-	{response, ok} -> ok
+	{stop, ok} -> ok
     end.
 
-root(N) ->
+lid_loop(N) ->
     receive
-	{request, Pid} ->
-	    Pid ! {response, N},
-	    root(N + 1);
-	{stop, Pid} -> Pid ! {response, ok}
+	{root, From} ->
+	    From ! {root, N},
+	    lid_loop(N + 1);
+	{lid_from_pid, From, Pid} ->
+	    From ! {lid_from_pid, from_pid(Pid)},
+	    lid_loop(N);
+	{stop, Pid} -> Pid ! {stop, ok}
     end.
-
 
 %% Create new lid from parent and its number of children.
 next_lid(ParentLid, Children) ->

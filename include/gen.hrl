@@ -22,7 +22,8 @@
 -define(RP_REPLAY_LOGGER, '_._replay_logger').
 -define(RP_SCHED, '_._sched').
 -define(RP_SCHED_SEND, {?RP_SCHED, ?CED_NODE}).
--define(RP_ROOT_LID, '_._root_lid').
+-define(RP_LID, '_._lid').
+-define(RP_LID_SEND, {?RP_LID, ?CED_NODE}).
 
 %% Named ets table names.
 -define(NT_BLOCKED, '_._blocked').

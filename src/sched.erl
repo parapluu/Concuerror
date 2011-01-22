@@ -15,7 +15,7 @@
 -export([analyze/2, replay/1]).
 
 %% Internal exports
--export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0]).
+-export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, lid_from_pid/1]).
 
 -export_type([analysis_target/0, analysis_ret/0]).
 
@@ -705,7 +705,7 @@ state_swap() ->
 -spec block() -> 'ok'.
 
 block() ->
-    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+    case lid_from_pid(self()) of
 	not_found -> ok;
 	Lid ->
 	    ?RP_SCHED_SEND ! #sched{msg = block, lid = Lid},
@@ -726,13 +726,22 @@ continue(Lid) ->
 -spec notify(notification(), any()) -> 'ok'.
 
 notify(Msg, Misc) ->
-    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+    case lid_from_pid(self()) of
 	not_found -> ok;
 	Lid ->
 	    ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc},
 	    wait()
     end.
 
+%% TODO: Maybe move into lid module.
+-spec lid_from_pid(pid()) -> lid:lid() | 'not_found'.
+
+lid_from_pid(Pid) ->
+    ?RP_LID_SEND ! {lid_from_pid, self(), Pid},
+    receive
+	{lid_from_pid, Lid} -> Lid
+    end.
+	    
 -spec wakeup() -> 'ok'.
 
 wakeup() ->

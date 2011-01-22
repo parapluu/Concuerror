@@ -20,6 +20,9 @@
 
 -include("gen.hrl").
 
+%% Return the calling process' LID.
+-define(LID_FROM_PID(Pid), sched:lid_from_pid(Pid)).
+
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
@@ -128,7 +131,7 @@ rep_process_flag(Flag, Value) ->
 -spec rep_receive(fun((term()) -> 'block' | 'continue')) -> 'ok'.
 
 rep_receive(Fun) ->
-    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+    case ?LID_FROM_PID(self()) of
 	not_found -> ok;
 	_Lid ->
 	    {messages, Mailbox} = process_info(self(), messages),
@@ -214,7 +217,7 @@ rep_receive_notify(Msg) ->
 rep_register(RegName, P) ->
     Ret = register(RegName, P),
     %% TODO: Maybe send Pid instead to avoid rpc.
-    PLid = rpc:block_call(?CED_NODE, lid, from_pid, [P]),
+    PLid = ?LID_FROM_PID(P),
     sched:notify(register, {RegName, PLid}),
     Ret.
 
@@ -227,11 +230,11 @@ rep_register(RegName, P) ->
 -spec rep_send(dest(), term()) -> term().
 
 rep_send(Dest, Msg) ->
-    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+    case ?LID_FROM_PID(self()) of
 	not_found -> Dest ! Msg;
 	SelfLid ->
 	    NewDest = find_pid(Dest),
-	    case rpc:block_call(?CED_NODE, lid, from_pid, [NewDest]) of
+	    case ?LID_FROM_PID(NewDest) of
 		not_found -> Dest ! Msg;
 		_DestLid -> Dest ! {?INSTR_MSG, SelfLid, Msg}
 	    end,
@@ -248,11 +251,11 @@ rep_send(Dest, Msg) ->
                       'ok' | 'nosuspend' | 'noconnect'.
 
 rep_send(Dest, Msg, Opt) ->
-    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+    case ?LID_FROM_PID(self()) of
 	not_found -> erlang:send(Dest, Msg, Opt);
 	SelfLid ->
 	    NewDest = find_pid(Dest),
-	    case rpc:block_call(?CED_NODE, lid, from_pid, [NewDest]) of
+	    case ?LID_FROM_PID(NewDest) of
 		not_found -> erlang:send(Dest, Msg, Opt);
 		_Lid ->
 		    erlang:send(Dest,
@@ -270,7 +273,7 @@ rep_send(Dest, Msg, Opt) ->
 -spec rep_spawn(function()) -> pid().
 
 rep_spawn(Fun) ->
-    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+    case ?LID_FROM_PID(self()) of
 	not_found -> spawn(Fun);
 	_Lid ->
 	    Pid = spawn(fun() -> sched:wait(), Fun() end),
@@ -295,7 +298,7 @@ rep_spawn(Module, Function, Args) ->
 -spec rep_spawn_link(function()) -> pid().
 
 rep_spawn_link(Fun) ->
-    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+    case ?LID_FROM_PID(self()) of
 	not_found -> spawn_link(Fun);
 	_Lid ->
 	    Pid = spawn_link(fun() -> sched:wait(), Fun() end),
@@ -320,7 +323,7 @@ rep_spawn_link(Module, Function, Args) ->
 -spec rep_spawn_monitor(function()) -> {pid(), reference()}.
 
 rep_spawn_monitor(Fun) ->
-    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+    case ?LID_FROM_PID(self()) of
 	not_found -> spawn_monitor(Fun);
 	_Lid ->
 	    Ret = spawn_monitor(fun() -> sched:wait(), Fun() end),
@@ -357,7 +360,7 @@ rep_spawn_monitor(Module, Function, Args) ->
 			   pid() | {pid(), reference()}.
 
 rep_spawn_opt(Fun, Opt) ->
-    case rpc:block_call(?CED_NODE, lid, from_pid, [self()]) of
+    case ?LID_FROM_PID(self()) of
 	not_found -> spawn_opt(Fun, Opt);
 	_Lid ->
 	    Ret = spawn_opt(fun() -> sched:wait(), Fun() end, Opt),
@@ -426,9 +429,5 @@ rep_whereis(RegName) ->
 
 find_pid(Pid) when is_pid(Pid) ->
     Pid;
-find_pid(Port) when is_port(Port) ->
-    erlang:port_info(Port, connected);
 find_pid(Atom) when is_atom(Atom) ->
-    whereis(Atom);
-find_pid({Atom, Node}) when is_atom(Atom) andalso is_atom(Node) ->
-    rpc:call(Node, erlang, whereis, [Atom]).
+    whereis(Atom).
