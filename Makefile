@@ -148,7 +148,7 @@ scripts: run.sh test.sh
 
 run.sh:
 	printf "#%c/bin/bash\n \
-	        erl -noinput -nostick -name $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
+	        erl -noinput -name $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
 	      > run.sh
 	chmod +x run.sh
 
