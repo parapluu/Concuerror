@@ -71,7 +71,7 @@
 %% pid    : The sender's LID.
 %% misc   : Optional arguments, depending on the message type.
 -record(sched, {msg  :: atom(),
-                lid  :: pid(),
+                lid  :: lid:lid(),
                 misc  = empty :: term()}).
 
 %% Special internal message format (fields same as above).
