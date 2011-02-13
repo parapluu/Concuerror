@@ -36,8 +36,7 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
--spec export(analysis(), [file()], selection(), file()) ->
-                    'ok'.
+-spec export(analysis(), [file()], selection(), file()) -> 'ok'.
 
 export(Analysis, Files, Selection, Export) ->
     Modules = [filename:basename(F) || F <- Files],
@@ -142,5 +141,5 @@ write_code([], [], Acc) ->
     lists:reverse(Acc);
 write_code([M|Modules], [F|Files], Acc) ->
     NewM = filename:join([?IMPORT_DIR, M]),
-    file:write_file(NewM, F),
+    ok = file:write_file(NewM, F),
     write_code(Modules, Files, [NewM|Acc]).
