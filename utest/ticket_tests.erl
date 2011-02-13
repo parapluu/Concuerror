@@ -13,7 +13,7 @@
 %% Spec for auto-generated test/0 function (eunit).
 -spec test() -> 'ok' | {'error', term()}.
 
--spec get_target_test() -> term().
+-spec get_target_test() -> 'ok'.
 
 get_target_test() ->
     Target = {mymodule, myfunction, []},
@@ -23,7 +23,7 @@ get_target_test() ->
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Target, ticket:get_target(Ticket)).
 
--spec get_files_test() -> term().
+-spec get_files_test() -> 'ok'.
 
 get_files_test() ->
     Target = {mymodule, myfunction, []},
@@ -33,7 +33,7 @@ get_files_test() ->
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Files, ticket:get_files(Ticket)).
 
--spec get_error_test() -> term().
+-spec get_error_test() -> 'ok'.
 
 get_error_test() ->
     Target = {mymodule, myfunction, []},
@@ -43,7 +43,7 @@ get_error_test() ->
     Ticket = ticket:new(Target, Files, Error, ErrorState),
     ?assertEqual(Error, ticket:get_error(Ticket)).
 
--spec get_state_test() -> term().
+-spec get_state_test() -> 'ok'.
 
 get_state_test() ->
     Target = {mymodule, myfunction, []},

@@ -12,7 +12,7 @@
 %% Spec for auto-generated test/0 function (eunit).
 -spec test() -> 'ok' | {'error', term()}.
 
--spec extend_trim_head_test() -> term().
+-spec extend_trim_head_test() -> 'ok'.
 
 extend_trim_head_test() ->
     lid:start(),
@@ -24,7 +24,7 @@ extend_trim_head_test() ->
     ?assertEqual(true, state:is_empty(NewState)),
     lid:stop().
 
--spec extend_trim_tail_test() -> term().
+-spec extend_trim_tail_test() -> 'ok'.
 
 extend_trim_tail_test() ->
     lid:start(),
