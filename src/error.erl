@@ -24,13 +24,13 @@ new({{assertion_failed, Details}, _Any}) -> {assertion_violation, Details};
 new({{assertEqual_failed, Details}, _Any}) -> {assertion_violation, Details};
 new(Reason) -> {exception, Reason}.
 
--spec type(error()) -> string().
+-spec type(error()) -> nonempty_string().
 
 type({deadlock, _Blocked}) -> "Deadlock";
 type({assertion_violation, _Details}) -> "Assertion violation";
 type({exception, _Details}) -> "Exception".
 
--spec short(error()) -> string().
+-spec short(error()) -> nonempty_string().
 
 short({deadlock, Blocked}) ->
     OldList = lists:sort(?SETS:to_list(Blocked)),
@@ -42,7 +42,7 @@ short({assertion_violation, [{module, Module}, {line, Line}|_Rest]}) ->
 short({exception, Reason}) ->
     lists:flatten(io_lib:format("~W", [Reason, 3])).
 
--spec long(error()) -> string().
+-spec long(error()) -> nonempty_string().
 
 long({deadlock, _Blocked} = Error) ->
     Format = "Error type        : Deadlock~n"
