@@ -81,7 +81,7 @@ instrument_and_compile_one(File) ->
 	    %% Log warning messages.
 	    log_warning_list(Warnings),
 	    %% A table for holding used variable names.
-	    ets:new(?NT_USED, [named_table, private]),
+	    ?NT_USED = ets:new(?NT_USED, [named_table, private]),
 	    %% Instrument given source file.
 	    log:log("Instrumenting file ~p...~n", [File]),
 	    case instrument(File) of
@@ -143,7 +143,7 @@ instrument(File) ->
             ?print(Abstract),
 	    NewForms = erl_syntax:form_list_elements(Abstract),
 	    {ok, NewForms};
-	{error, Error} -> {error, Error}
+	{error, _} = Error -> Error
     end.
 
 %% XXX: Implementation dependent.
@@ -485,6 +485,7 @@ log_warning_list(List) ->
 %% Log a list of error or warning descriptors, as returned by compile:file/2.
 log_list(List, Pre) ->
     LogFun = fun(String) -> log:log(String) end,
-    [LogFun(io_lib:format("~s:~p: ~s ", [File, Line, Pre]) ++
-                Mod:format_error(Descr) ++ "\n") || {File, Info} <- List,
-                                                    {Line, Mod, Descr} <- Info].
+    _ = [LogFun(io_lib:format("~s:~p: ~s ~s\n",
+			      [File, Line, Pre, Mod:format_error(Descr)]))
+	 || {File, Info} <- List, {Line, Mod, Descr} <- Info],
+    ok.

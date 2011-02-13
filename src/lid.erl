@@ -102,20 +102,21 @@ new(Pid, Parent) ->
 
 start() ->
     %% Table for storing process info.
-    ets:new(?NT_LID, [named_table, {keypos, 2}]),
+    ?NT_LID = ets:new(?NT_LID, [named_table, {keypos, 2}]),
     %% Table for reverse lookup (Pid -> Lid) purposes.
-    ets:new(?NT_PID, [named_table]),
+    ?NT_PID = ets:new(?NT_PID, [named_table]),
     %% Process for handling root LID state and user node requests.
     start_lid(),
     ok.
 
 %% Clean up LID tables.
--spec stop() -> 'true'.
+-spec stop() -> 'ok'.
 
 stop() ->
     stop_lid(),
     ets:delete(?NT_LID),
-    ets:delete(?NT_PID).
+    ets:delete(?NT_PID),
+    ok.
 
 %%%----------------------------------------------------------------------
 %%% Getter and setter functions

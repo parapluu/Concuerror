@@ -118,7 +118,7 @@ setupFrame() ->
     wxEvtHandler:connect(Frame, command_listbox_selected),
     wxEvtHandler:connect(Frame, command_listbox_doubleclicked),
     wxEvtHandler:connect(Frame, command_splitter_sash_pos_changed),
-    setupTopSplitter(Frame),
+    _ = setupTopSplitter(Frame),
     wxWindow:setSize(Frame, ?FRAME_SIZE_INIT),
     %% wxWindow:fit(Frame),
     wxFrame:center(Frame),
@@ -144,7 +144,7 @@ setupTopSplitter(Parent) ->
 setSplitterInitSizes() ->
     Fun = fun(S, V) -> wxSplitterWindow:setSashPosition(ref_lookup(S), V)
 	  end,
-    [Fun(S, V) || {S, V} <- ?SPLITTER_INIT].
+    lists:foreach(fun ({S, V}) -> Fun(S, V) end, ?SPLITTER_INIT).
 
 %% Setup left column of top-level panel, including module and function
 %% listboxes and several buttons.
@@ -405,7 +405,7 @@ setupSourceText(Ref, Theme) ->
 		  wxStyledTextCtrl:styleSetForeground(Ref, Style, Color),
 		  wxStyledTextCtrl:styleSetBackground(Ref, Style, BgColor)
 		end,
-    [SetStyles(Style) || Style <- Styles],
+    lists:foreach(fun(Style) -> SetStyles(Style) end, Styles),
     wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
 %% Setup a notebook for displaying log messages.
@@ -506,7 +506,8 @@ ref_lookup(Id) ->
     ets:lookup_element(?NT_REF, Id, 2).
 
 ref_start() ->
-    ets:new(?NT_REF, [set, public, named_table]).
+    ?NT_REF = ets:new(?NT_REF, [set, public, named_table]),
+    ok.
 
 ref_stop() ->
     ets:delete(?NT_REF).
@@ -722,7 +723,7 @@ argDialog(Parent, Argnum) ->
 	    ValResult = validateArgs(0, Refs, [], ref_lookup(?ERROR_TEXT)),
 	    wxDialog:destroy(Dialog),
 	    case ValResult of
-		{ok, Args} -> {ok, Args};
+		{ok, _Args} = Ok -> Ok;
 		_Other -> argDialog(Parent, Argnum)
 	    end;
 	_Other -> wxDialog:destroy(Dialog), continue
@@ -808,7 +809,7 @@ prefsDialog(Parent) ->
 
 %% For now always load default preferences on startup.
 loadPrefs() ->
-    [ref_add(Id, Value) || {Id, Value} <- ?DEFAULT_PREFS].
+    lists:foreach(fun ({Id, Value}) -> ref_add(Id, Value) end, ?DEFAULT_PREFS).
 
 %% Do nothing for now.
 savePrefs() ->
@@ -858,9 +859,10 @@ clearSrc() ->
     wxStyledTextCtrl:setReadOnly(SourceText, true).
 
 disableMenuItems() ->
-    wxMenuItem:enable(ref_lookup(?ANALYZE_MENU_ITEM), [{enable, false}]),
-    wxMenuItem:enable(ref_lookup(?EXPORT_MENU_ITEM), [{enable, false}]),
-    wxMenuItem:enable(ref_lookup(?IMPORT_MENU_ITEM), [{enable, false}]).
+    Opts = [{enable, false}],
+    wxMenuItem:enable(ref_lookup(?ANALYZE_MENU_ITEM), Opts),
+    wxMenuItem:enable(ref_lookup(?EXPORT_MENU_ITEM), Opts),
+    wxMenuItem:enable(ref_lookup(?IMPORT_MENU_ITEM), Opts).
 
 enableMenuItems() ->
     wxMenuItem:enable(ref_lookup(?ANALYZE_MENU_ITEM)),
@@ -1039,8 +1041,9 @@ stop() ->
 
 %% XXX: hack (send event message to self)
 send_event_msg_to_self(Id) ->
-    ?RP_GUI ! #wx{id = Id,
-                  event = #wxCommand{type = command_listbox_selected}}.
+    Cmd = #wxCommand{type = command_listbox_selected},
+    ?RP_GUI ! #wx{id = Id, event = Cmd},
+    ok.
 
 %% Set ListBox (Id) data (remove existing).
 setListData(Id, DataList) ->
@@ -1131,7 +1134,8 @@ snapshot_add_file(File) ->
     ref_add(?FILES, File ++ ref_lookup(?FILES)).
 
 snapshot_cleanup() ->
-    os:cmd("rm -rf " ++ ?IMPORT_DIR).
+    _ = os:cmd("rm -rf " ++ ?IMPORT_DIR),
+    ok.
 
 snapshot_export(Export) ->
     AnalysisRet = ref_lookup(?ANALYSIS_RET),

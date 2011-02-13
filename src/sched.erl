@@ -422,7 +422,7 @@ special_handler(spawn_opt, not_found,
 		{Ret, Opt}) ->
     {ChildPid, _Ref} =
 	case Ret of
-	    {C, R} -> {C, R};
+	    {_C, _R} = CR -> CR;
 	    C -> {C, noref}
 	end,
     link(ChildPid),
@@ -448,9 +448,9 @@ run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
     end.
 
 insert_states(State, {Lids, current}) ->
-    [state_save(state:extend(State, L)) || L <- Lids];
+    lists:foreach(fun (L) -> state_save(state:extend(State, L)) end, Lids);
 insert_states(State, {Lids, next}) ->
-    [state_save_next(state:extend(State, L)) || L <- Lids].
+    lists:foreach(fun (L) -> state_save_next(state:extend(State, L)) end, Lids).
 
 %% After message handler.
 handler('after', Lid, #context{details = Det} = Context, _Misc) ->
@@ -582,7 +582,7 @@ handler(spawn_opt, ParentLid,
 	#context{active = Active, details = Det} = Context, {Ret, Opt}) ->
     {ChildPid, _Ref} =
 	case Ret of
-	    {C, R} -> {C, R};
+	    {_C, _R} = CR -> CR;
 	    C -> {C, noref}
 	end,
     link(ChildPid),
@@ -682,8 +682,9 @@ state_save_next(State) ->
 
 %% Initialize state tables.
 state_start() ->
-    ets:new(?NT_STATE1, [named_table]),
-    ets:new(?NT_STATE2, [named_table]).
+    ?NT_STATE1 = ets:new(?NT_STATE1, [named_table]),
+    ?NT_STATE2 = ets:new(?NT_STATE2, [named_table]),
+    ok.
 
 %% Clean up state table.
 state_stop() ->
@@ -714,10 +715,12 @@ block() ->
 
 %% Prompt process Pid to continue running.
 continue(Pid) when is_pid(Pid) ->
-    Pid ! #sched{msg = continue};
+    Pid ! #sched{msg = continue},
+    ok;
 continue(Lid) ->
     Pid = lid:get_pid(Lid),
-    Pid ! #sched{msg = continue}.
+    Pid ! #sched{msg = continue},
+    ok.
 
 %% Notify the scheduler of an event.
 %% If the calling user process has an associated LID, then send
