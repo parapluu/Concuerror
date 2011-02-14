@@ -54,7 +54,7 @@
 
 %% Host - Node names.
 -define(HOST, net_adm:localhost()).
--define(CED_NODE, list_to_atom(?APP_STRING ++ "@" ++ net_adm:localhost())).
+-define(CED_NODE, list_to_atom(?APP_STRING ++ "@" ++ ?HOST)).
 
 %% Debug macros.
 -ifdef(DEBUG_LEVEL_1).
