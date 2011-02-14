@@ -148,14 +148,14 @@ scripts: run.sh test.sh
 
 run.sh:
 	printf "#%c/bin/bash\n \
-	        erl -noinput -name $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
+	        erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
 	      > run.sh
 	chmod +x run.sh
 
 test.sh:
 	printf "#%c/bin/bash\n \
 		dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam\n \
-	        erl -noinput -name $(APP_STRING) -pa $(EBIN) -s util test -s init stop" ! \
+	        erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop" ! \
 	      > test.sh
 	chmod +x test.sh
 
