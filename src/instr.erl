@@ -49,6 +49,12 @@
 -define(REP_MOD, rep).
 
 %%%----------------------------------------------------------------------
+%%% Types
+%%%----------------------------------------------------------------------
+
+-type mfb() :: {module(), file(), binary()}.
+
+%%%----------------------------------------------------------------------
 %%% Instrumentation utilities
 %%%----------------------------------------------------------------------
 
@@ -59,7 +65,7 @@
 %% successfully). If no errors are encountered, the file gets instrumented and
 %% compiled. If these actions are successfull, the function returns `{ok, Bin}',
 %% otherwise `error' is returned. No `.beam' files are produced.
--spec instrument_and_compile([file()]) -> {'ok', [binary()]} | 'error'.
+-spec instrument_and_compile([file()]) -> {'ok', [mfb()]} | 'error'.
 
 instrument_and_compile(Files) -> instrument_and_compile_aux(Files, []).
 
@@ -109,7 +115,7 @@ instrument_and_compile_one(File) ->
 	    error
     end.
 
--spec load([{module(), file(), binary()}]) -> 'ok' | 'error'.
+-spec load([mfb()]) -> 'ok' | 'error'.
 
 load([]) -> ok;
 load([MFB|Rest]) ->
