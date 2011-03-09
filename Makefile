@@ -39,8 +39,6 @@ DEBUG1_ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS) -DDEBUG_LEVEL_1
 
 DEBUG2_ERL_COMPILE_FLAGS = $(DEBUG1_ERL_COMPILE_FLAGS) -DDEBUG_LEVEL_2
 
-DIALYZER_FLAGS = -Wbehaviours
-
 # ----------------------------------------------------
 # Targets
 # ----------------------------------------------------
@@ -154,7 +152,7 @@ run.sh:
 
 test.sh:
 	printf "#%c/bin/bash\n \
-		dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam\n \
+		dialyzer $(EBIN)/*.beam\n \
 	        erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop" ! \
 	      > test.sh
 	chmod +x test.sh
