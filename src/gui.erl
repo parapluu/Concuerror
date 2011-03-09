@@ -551,9 +551,18 @@ addDialog(Parent) ->
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
             File = wxFileDialog:getPaths(Dialog),
-	    addListItems(?MODULE_LIST, File),
-            snapshot_add_file(File),
-	    ref_add(?FILE_PATH, getDirectory());
+            case checkDuplicates(?FILES, File) of
+                false ->
+                    addListItems(?MODULE_LIST, File),
+                    snapshot_add_file(File),
+                    ref_add(?FILE_PATH, getDirectory());
+                Duplicates ->
+                    wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT),
+					  io_lib:format("Duplicate modules: "
+                                                        "~p~n",
+							[Duplicates])),
+                    continue
+            end;
 	_Other -> continue
     end,
     wxDialog:destroy(Dialog).
@@ -674,6 +683,16 @@ analysis_show_errors({error, analysis, _Info, Tickets}) ->
     setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty));
 analysis_show_errors(_Result) ->
     ok.
+
+checkDuplicates(OldId, New) ->
+    Old = ref_lookup(OldId),
+    OldBase = [filename:basename(O, ".erl") || O <- Old],
+    NewBase = [filename:basename(N, ".erl") || N <- New],
+    IBase = sets:intersection(sets:from_list(OldBase), sets:from_list(NewBase)),
+    case sets:size(IBase) of
+        0 -> false;
+        _ -> sets:to_list(IBase)
+    end.
 
 start_pulsing(Gauge) ->
     Env = wx:get_env(),
