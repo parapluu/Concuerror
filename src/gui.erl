@@ -554,7 +554,7 @@ addDialog(Parent) ->
             case checkDuplicates(?FILES, File) of
                 false ->
                     addListItems(?MODULE_LIST, File),
-                    snapshot_add_file(File),
+                    add_file(File),
                     ref_add(?FILE_PATH, getDirectory());
                 Duplicates ->
                     wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT),
@@ -865,7 +865,8 @@ clearLog() ->
 clearMods() ->
     ModuleList = ref_lookup(?MODULE_LIST),
     wxListBox:setSelection(ModuleList, ?wxNOT_FOUND),
-    wxControlWithItems:clear(ModuleList).
+    wxControlWithItems:clear(ModuleList),
+    init_files().
 
 clearProbs() ->
     ErrorText = ref_lookup(?ERROR_TEXT),
@@ -1021,6 +1022,7 @@ refreshFun() ->
 remove() ->
     ModuleList = ref_lookup(?MODULE_LIST),
     Selection = wxListBox:getSelection(ModuleList),
+    File = wxListBox:getStringSelection(ModuleList),
     SourceText = ref_lookup(?SOURCE_TEXT),
     if Selection =:= ?wxNOT_FOUND ->
 	    continue;
@@ -1037,7 +1039,8 @@ remove() ->
 	       true ->
 		    wxControlWithItems:setSelection(ModuleList, Selection)
 	    end
-    end.
+    end,
+    remove_file(File).
 
 %% Kill the analysis process.
 stop() ->
@@ -1142,15 +1145,21 @@ validateArgs(I, [Ref|Refs], Args, RefError) ->
 	    error
     end.
 
+add_file(File) ->
+    ref_add(?FILES, File ++ ref_lookup(?FILES)).
+
+init_files() ->
+    ref_add(?FILES, []).
+
+remove_file(File) ->
+    ref_add(?FILES, ref_lookup(?FILES) -- [File]).
+
 %%%----------------------------------------------------------------------
 %%% Snapshot utilities
 %%%----------------------------------------------------------------------
 
 snapshot_add_analysis_ret(AnalysisRet) ->
     ref_add(?ANALYSIS_RET, AnalysisRet).
-
-snapshot_add_file(File) ->
-    ref_add(?FILES, File ++ ref_lookup(?FILES)).
 
 snapshot_cleanup() ->
     _ = os:cmd("rm -rf " ++ ?IMPORT_DIR),
@@ -1196,7 +1205,7 @@ snapshot_import(Import) ->
 
 snapshot_init() ->
     ref_add(?ANALYSIS_RET, undef),
-    ref_add(?FILES, []),
+    init_files(),
     ref_add(?SNAPSHOT_PATH, "").
 
 %%%----------------------------------------------------------------------
