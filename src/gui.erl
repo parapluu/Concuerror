@@ -622,8 +622,8 @@ analyze_aux(Module, Function, Args, Files) ->
 %% Initialization actions before starting analysis (clear log, etc.).
 analysis_init() ->
     LogText = ref_lookup(?LOG_TEXT),
-    Seperator = "----o----o----o----o----o----o----o----o----o----o----o----o\n",
-    wxTextCtrl:appendText(LogText, Seperator),
+    Separator = "----o----o----o----o----o----o----o----o----o----o----o----o\n",
+    wxTextCtrl:appendText(LogText, Separator),
     clearProbs(),
     clearErrors(),
     clearIleaves(),
