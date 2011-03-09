@@ -117,6 +117,10 @@ A tool for finding concurrency bugs in Erlang programs.
 -define(THEME_DARK, 533).
 -define(THEME_LIGHT, 534).
 -define(TOP_SPLITTER, 535).
+-define(LOG_PANEL, 536).
+-define(ERROR_PANEL, 537).
+-define(LOG_PANEL_PAGE_NO, 538).
+-define(ERROR_PANEL_PAGE_NO, 539).
 
 %% Splitter init-sizes
 -define(SPLITTER_INIT, [{?TOP_SPLITTER, 300},
