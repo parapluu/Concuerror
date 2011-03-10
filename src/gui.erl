@@ -33,7 +33,7 @@
 
 start() ->
     register(?RP_GUI, self()),
-    wx:new(),
+    _ = wx:new(),
     %% Start the object reference mapping service.
     ref_start(),
     %% Set initial file load path (used by the module addition dialog).
@@ -45,8 +45,8 @@ start() ->
     wxFrame:show(Frame),
     setSplitterInitSizes(),
     %% Start the log manager and attach the event handler below.
-    log:start(),
-    log:attach(?MODULE, wx:get_env()),
+    _ = log:start(),
+    _ = log:attach(?MODULE, wx:get_env()),
     %% Start the replay server.
     loop(),
     snapshot_cleanup(),
@@ -1096,9 +1096,9 @@ show_details() ->
                 case wxControlWithItems:getClientData(ErrorList, Id) of
                     {T, []} ->
 			%% Disable log event handler while replaying.
-			log:detach(?MODULE, []),
+			_ = log:detach(?MODULE, []),
                         Details = sched:replay(T),
-			log:attach(?MODULE, wx:get_env()),
+			_ = log:attach(?MODULE, wx:get_env()),
                         NewData = {T, Details},
                         wxControlWithItems:setClientData(ErrorList, Id,
                                                          NewData),

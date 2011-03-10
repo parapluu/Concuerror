@@ -19,7 +19,7 @@
 -spec syntax_test_() -> term().
 
 syntax_test_() ->
-    Setup = fun() -> log:start(), log:attach(log, []) end,
+    Setup = fun() -> _ = log:start(), log:attach(log, []) end,
     Cleanup = fun(_Any) -> log:stop() end,
     Test01 = {"Block expression in after clause",
 	      fun(_Any) -> test_ok("block_after.erl") end},

@@ -156,7 +156,7 @@ analyze(Target, Options) ->
 -spec replay(ticket:ticket()) -> [proc_action:proc_action()].
 
 replay(Ticket) ->
-    replay_logger:start(),
+    _ = replay_logger:start(),
     replay_logger:start_replay(),
     Target = ticket:get_target(Ticket),
     State = ticket:get_state(Ticket),
