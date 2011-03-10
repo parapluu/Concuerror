@@ -82,7 +82,7 @@ terminate(_Reason, _State) ->
 -spec handle_event(log:event(), state()) -> {'ok', state()}.
 
 handle_event({msg, String}, State) ->
-    appendText(?LOG_TEXT, String),
+    wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), String),
     {ok, State};
 handle_event({error, Ticket}, State) ->
     Error = ticket:get_error(Ticket),
@@ -415,16 +415,10 @@ setupLogNotebookSizer(Parent) ->
     ref_add(?LOG_NOTEBOOK, Notebook),
     %% Setup tab panels
     LogPanel = setupLogPanel(Notebook),
-    ref_add(?LOG_PANEL, LogPanel),
     ErrorPanel = setupErrorPanel(Notebook),
-    ref_add(?ERROR_PANEL, ErrorPanel),
     %% Add tabs to log notebook.
     wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
-    ref_add(?LOG_PANEL_PAGE_NO, wxNotebook:getSelection(Notebook)),
-    wxNotebook:addPage(Notebook, ErrorPanel, "Problems",
-                       [{bSelect, true}]),
-    ref_add(?ERROR_PANEL_PAGE_NO, wxNotebook:getSelection(Notebook)),
-    wxNotebook:changeSelection(Notebook, ref_lookup(?LOG_PANEL_PAGE_NO)),
+    wxNotebook:addPage(Notebook, ErrorPanel, "Problems", [{bSelect, false}]),
     NotebookSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     wxSizer:add(NotebookSizerOuter, Notebook,
 		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
@@ -561,9 +555,10 @@ addDialog(Parent) ->
                     add_file(File),
                     ref_add(?FILE_PATH, getDirectory());
                 Duplicates ->
-                    appendText(?ERROR_TEXT,
-                               io_lib:format("Duplicate modules: ~p~n",
-                                             [Duplicates])),
+                    wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT),
+                                          io_lib:format("Duplicate modules: "
+                                                        "~p~n",
+                                                        [Duplicates])),
                     continue
             end;
 	_Other -> continue
@@ -634,7 +629,7 @@ analyze_aux(Module, Function, Args, Files) ->
 %% Initialization actions before starting analysis (clear log, etc.).
 analysis_init() ->
     Separator = "----o----o----o----o----o----o----o----o----o----o----o----o\n",
-    appendText(?LOG_TEXT, Separator),
+    wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), Separator),
     clearProbs(),
     clearErrors(),
     clearIleaves(),
@@ -685,18 +680,6 @@ analysis_show_errors({error, analysis, _Info, Tickets}) ->
     setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty));
 analysis_show_errors(_Result) ->
     ok.
-
-appendText(Id, Text) ->
-    wxTextCtrl:appendText(ref_lookup(Id), Text),
-    Notebook = ref_lookup(?LOG_NOTEBOOK),
-    case Id of
-        ?LOG_TEXT ->
-            LogPanelPageNo = ref_lookup(?LOG_PANEL_PAGE_NO),
-            wxNotebook:changeSelection(Notebook, LogPanelPageNo);
-        ?ERROR_TEXT ->
-            ErrorPanelPageNo = ref_lookup(?ERROR_PANEL_PAGE_NO),
-            wxNotebook:changeSelection(Notebook, ErrorPanelPageNo)
-    end.
 
 checkDuplicates(OldId, New) ->
     Old = ref_lookup(OldId),
@@ -1127,7 +1110,7 @@ show_details() ->
                 end,
             clearProbs(),
             Error = ticket:get_error(Ticket),
-            appendText(?ERROR_TEXT, error:long(Error))
+            wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT), error:long(Error))
     end.
 
 %% Function to be moved (to sched or util).
@@ -1148,12 +1131,13 @@ validateArgs(I, [Ref|Refs], Args, ErrorId) ->
 	    case erl_parse:parse_term(T) of
 		{ok, Arg} -> validateArgs(I + 1, Refs, [Arg|Args], ErrorId);
 		{error, {_, _, Info}} ->
-                    appendText(?ERROR_TEXT,
-                               io_lib:format("Arg ~p - ~s~n", [I + 1, Info])),
+                    wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT),
+                                          io_lib:format("Arg ~p - ~s~n",
+                                                        [I + 1, Info])),
 		    error
 	    end;
 	{error, {_, _, Info}, _} ->
-            appendText(?ERROR_TEXT, Info ++ "\n"),
+            wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT), Info ++ "\n"),
 	    error
     end.
 
