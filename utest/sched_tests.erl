@@ -214,21 +214,29 @@ system_test_() ->
 	      fun(_Any) -> test_ok({test, test_send_2, []},
 				   [{0, 1}, {1, 3}, {inf, 3}])
 	      end},
-    Test37 = {"3 proc | 2 available procs after block  | normal",
+    Test37 = {"1 proc | halt/0 | normal",
+	      fun(_Any) -> test_ok({test, test_halt_0, []},
+				   [{0, 1}, {inf, 1}])
+	      end},
+    Test38 = {"1 proc | halt/1 | normal",
+	      fun(_Any) -> test_ok({test, test_halt_1, []},
+				   [{0, 1}, {inf, 1}])
+	      end},
+    Test39 = {"3 proc | 2 available procs after block  | normal",
 	      fun(_Any) -> test_ok({test, test_3_proc_receive_exit, []},
 				   [{0, 3}, {1, 4}, {2, 5}, {inf, 5}])
 	      end},
-    Test38 = {"3 proc | 3 proc send receive (check complex blocks) | normal",
+    Test40 = {"3 proc | 3 proc send receive (check complex blocks) | normal",
 	      fun(_Any) -> test_ok({test, test_3_proc_send_receive, []},
 				   [{0, 8}, {1, 44}, {2, 136}, {3, 275},
 				    {4, 392}, {5, 458}, {6, 481}, {7, 483},
 				    {inf, 483}])
 	      end},
-    Test39 = {"2 proc | Manolis' RushHour - workers = 2, pb = 0 | normal",
+    Test41 = {"2 proc | Manolis' RushHour - workers = 2, pb = 0 | normal",
 	      fun(_Any) -> test_ok({rush_hour, test_2workers, []},
 				   [{0, 768}], ?RH_PATH)
 	      end},
-    Test40 = {"5 proc | Shootout thread ring | normal",
+    Test42 = {"5 proc | Shootout thread ring | normal",
 	      fun(_Any) -> test_ok({thread_ring, test1, []},
 				   [{0, 1}, {inf, 1}], ?TR_PATH)
 	      end},
@@ -238,9 +246,9 @@ system_test_() ->
 	     Test19, Test20, Test21, Test22, Test23, Test24,
 	     Test25, Test26, Test27, Test28, Test29, Test30,
 	     Test31, Test32, Test33, Test34, Test35, Test36,
-	     Test37, Test38, Test39, Test40],
+	     Test37, Test38, Test39, Test40, Test41, Test42],
     %% Maximum time per test
-    Timeout = 20,
+    Timeout = 400,
     Inst = fun(X) -> [{timeout, Timeout, {D, fun() -> T(X) end}} ||
 			 {D, T} <- Tests] end,
     {foreach, local, Setup, Cleanup, [Inst]}.

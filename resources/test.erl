@@ -29,6 +29,7 @@
 	 test_spawn_monitor_demonitor_5/0,
 	 test_spawn_opt_link_receive_exit/0, test_spawn_opt_monitor/0,
 	 test_erlang_send_3/0,
+	 test_halt_0/0, test_halt_1/0,
 	 test_3_proc_receive_exit/0, test_3_proc_send_receive/0]).
 
 -include_lib("eunit/include/eunit.hrl").
@@ -381,6 +382,18 @@ test_erlang_send_3() ->
     Pid = spawn(fun() -> receive foo -> ok end end),
     erlang:send(Pid, foo, [nosuspend]),
     ok.
+
+-spec test_halt_0() -> 'ok'.
+
+test_halt_0() ->
+    halt(),
+    ?assertEqual(0, 1).
+
+-spec test_halt_1() -> 'ok'.
+
+test_halt_1() ->
+    halt("But, it's a talking dooog!"),
+    ?assertEqual(0, 1).
 
 -spec test_3_proc_receive_exit() -> 'ok'.
 
