@@ -33,7 +33,7 @@
 -define(ATTR_STRIP, [type, spec, opaque, export_type, import_type]).
 
 %% Instrumented auto-imported functions of 'erlang' module.
--define(INSTR_ERLANG_NO_MOD,
+-define(INSTR_ERL_FUN,
 	[{demonitor, 1}, {demonitor, 2}, {exit, 2}, {halt, 0},
          {halt, 1}, {link, 1}, {monitor, 2}, {process_flag, 2},
          {register, 2}, {spawn, 1}, {spawn, 3}, {spawn_link, 1},
@@ -42,8 +42,12 @@
 	 {whereis, 1}]).
 
 %% Instrumented functions called as erlang:FUNCTION.
--define(INSTR_ERLANG,
-	[{send, 2}, {send, 3}] ++ ?INSTR_ERLANG_NO_MOD).
+-define(INSTR_ERL_MOD_FUN,
+	[{erlang, send, 2}, {erlang, send, 3}] ++ 
+	[{erlang, F, A} || {F, A} <- ?INSTR_ERL_FUN]).
+
+%% Instrumented mod:fun.
+-define(INSTR_MOD_FUN, ?INSTR_ERL_MOD_FUN).
 
 %% Module containing replacement functions.
 -define(REP_MOD, rep).
@@ -207,15 +211,15 @@ instrument_term(Tree) ->
 	_Other -> instrument_subtrees(Tree)
     end.
 
-%% Return {ModuleAtom, FunctionAtom, ArgTree} for a function call that is going
-%% to be instrumented or 'no_instr' otherwise.
+%% Return {ModuleAtom, FunctionAtom, [ArgTree]} for a function call that
+%% is going to be instrumented or 'no_instr' otherwise.
 get_mfa(Tree) ->
     Qualifier = erl_syntax:application_operator(Tree),
     case erl_syntax:type(Qualifier) of
 	atom ->
 	    Function = erl_syntax:atom_value(Qualifier),
             ArgTree = erl_syntax:application_arguments(Tree),
-            needs_instrument(erlang, Function, ArgTree, ?INSTR_ERLANG_NO_MOD);
+            needs_instrument(Function, ArgTree);
 	module_qualifier ->
 	    ModTree = erl_syntax:module_qualifier_argument(Qualifier),
 	    FunTree = erl_syntax:module_qualifier_body(Qualifier),
@@ -223,32 +227,34 @@ get_mfa(Tree) ->
 		erl_syntax:type(FunTree) =:= atom of
 		true ->
 		    Module = erl_syntax:atom_value(ModTree),
-		    case Module of
-			erlang ->
-                            Function = erl_syntax:atom_value(FunTree),
-                            ArgTree = erl_syntax:application_arguments(Tree),
-                            needs_instrument(Module, Function, ArgTree,
-                                             ?INSTR_ERLANG);
-			_Other -> no_instr
-		    end;
+		    Function = erl_syntax:atom_value(FunTree),
+		    ArgTrees = erl_syntax:application_arguments(Tree),
+		    needs_instrument(Module, Function, ArgTrees);
 		false -> no_instr
 	    end;
 	_Other -> no_instr
     end.
 
-%% Determine whether a function call needs instrumentation.
-needs_instrument(Module, Function, ArgTree, InstrList) ->
-    Arity = length(ArgTree),
-    case lists:member({Function, Arity}, InstrList) of
-        true -> {Module, Function, ArgTree};
+%% Determine whether an auto-exported BIF call needs instrumentation.
+needs_instrument(Function, ArgTrees) ->
+    Arity = length(ArgTrees),
+    case lists:member({Function, Arity}, ?INSTR_ERL_FUN) of
+        true -> {erlang, Function, ArgTrees};
         false -> no_instr
     end.
 
-%% Instrument an application (function call).
-instrument_application({erlang, Fun, ArgTree}) ->
+%% Determine whether a `foo:bar(...)` call needs instrumentation.
+needs_instrument(Module, Function, ArgTrees) ->
+    Arity = length(ArgTrees),
+    case lists:member({Module, Function, Arity}, ?INSTR_MOD_FUN) of
+        true -> {Module, Function, ArgTrees};
+        false -> no_instr
+    end.
+
+instrument_application({erlang, Function, ArgTrees}) ->
     ModTree = erl_syntax:atom(?REP_MOD),
-    FunTree = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Fun))),
-    erl_syntax:application(ModTree, FunTree, ArgTree).
+    FunTree = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Function))),
+    erl_syntax:application(ModTree, FunTree, ArgTrees).
 
 %% Instrument a receive expression.
 %% ----------------------------------------------------------------------
