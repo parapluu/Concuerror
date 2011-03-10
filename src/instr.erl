@@ -198,7 +198,8 @@ instrument_term(Tree) ->
 	    NewTree = instrument_subtrees(Tree),
 	    case get_mfa(NewTree) of
 		no_instr -> NewTree;
-		Mfa -> instrument_application(Mfa)
+		{normal, Mfa} -> instrument_application(Mfa);
+		{var, Mfa} -> instrument_var_application(Mfa)
 	    end;
 	infix_expr ->
 	    Operator = erl_syntax:infix_expr_operator(Tree),
@@ -215,31 +216,39 @@ instrument_term(Tree) ->
 %% is going to be instrumented or 'no_instr' otherwise.
 get_mfa(Tree) ->
     Qualifier = erl_syntax:application_operator(Tree),
+    ArgTrees = erl_syntax:application_arguments(Tree),
     case erl_syntax:type(Qualifier) of
 	atom ->
 	    Function = erl_syntax:atom_value(Qualifier),
-            ArgTree = erl_syntax:application_arguments(Tree),
-            needs_instrument(Function, ArgTree);
+            needs_instrument(Function, ArgTrees);
 	module_qualifier ->
 	    ModTree = erl_syntax:module_qualifier_argument(Qualifier),
 	    FunTree = erl_syntax:module_qualifier_body(Qualifier),
-	    case erl_syntax:type(ModTree) =:= atom andalso
-		erl_syntax:type(FunTree) =:= atom of
+	    case has_atoms_only(ModTree) andalso
+		 has_atoms_only(FunTree) of
 		true ->
 		    Module = erl_syntax:atom_value(ModTree),
 		    Function = erl_syntax:atom_value(FunTree),
-		    ArgTrees = erl_syntax:application_arguments(Tree),
 		    needs_instrument(Module, Function, ArgTrees);
-		false -> no_instr
+		false -> {var, {ModTree, FunTree, ArgTrees}}
 	    end;
 	_Other -> no_instr
     end.
 
+%% Returns true if Tree is an atom or a qualified name containing only atoms.
+has_atoms_only(Tree) ->
+    Type = erl_syntax:type(Tree),
+    IsAtom = fun(T) -> erl_syntax:type(T) =:= atom end,
+    IsAtom(Tree) orelse
+      (Type =:= qualified_name andalso
+       lists:all(IsAtom, erl_syntax:qualified_name_segments(Tree))).
+		       
+			       
 %% Determine whether an auto-exported BIF call needs instrumentation.
 needs_instrument(Function, ArgTrees) ->
     Arity = length(ArgTrees),
     case lists:member({Function, Arity}, ?INSTR_ERL_FUN) of
-        true -> {erlang, Function, ArgTrees};
+        true -> {normal, {erlang, Function, ArgTrees}};
         false -> no_instr
     end.
 
@@ -247,14 +256,20 @@ needs_instrument(Function, ArgTrees) ->
 needs_instrument(Module, Function, ArgTrees) ->
     Arity = length(ArgTrees),
     case lists:member({Module, Function, Arity}, ?INSTR_MOD_FUN) of
-        true -> {Module, Function, ArgTrees};
+        true -> {normal, {Module, Function, ArgTrees}};
         false -> no_instr
     end.
 
 instrument_application({erlang, Function, ArgTrees}) ->
-    ModTree = erl_syntax:atom(?REP_MOD),
-    FunTree = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Function))),
-    erl_syntax:application(ModTree, FunTree, ArgTrees).
+    RepMod = erl_syntax:atom(?REP_MOD),
+    RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Function))),
+    erl_syntax:application(RepMod, RepFun, ArgTrees).
+
+instrument_var_application({ModTree, FunTree, ArgTrees}) ->
+    RepMod = erl_syntax:atom(?REP_MOD),
+    RepFun = erl_syntax:atom(rep_var),
+    ArgList = erl_syntax:list(ArgTrees),
+    erl_syntax:application(RepMod, RepFun, [ModTree, FunTree, ArgList]).
 
 %% Instrument a receive expression.
 %% ----------------------------------------------------------------------

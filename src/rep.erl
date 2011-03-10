@@ -16,15 +16,55 @@
 	 rep_send/3, rep_spawn/1, rep_spawn/3, rep_spawn_link/1,
 	 rep_spawn_link/3, rep_spawn_monitor/1, rep_spawn_monitor/3,
 	 rep_spawn_opt/2, rep_spawn_opt/4, rep_unlink/1,
-	 rep_unregister/1, rep_whereis/1]).
+	 rep_unregister/1, rep_whereis/1, rep_var/3]).
 
 -include("gen.hrl").
+
+%%%----------------------------------------------------------------------
+%%% Definitions and Types
+%%%----------------------------------------------------------------------
 
 %% Return the calling process' LID.
 -define(LID_FROM_PID(Pid), sched:lid_from_pid(Pid)).
 
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
+
+%% Callback function mapping.
+-define(INSTR_MOD_FUN,
+	[{{erlang, demonitor, 1}, fun rep_demonitor/1},
+	 {{erlang, demonitor, 2}, fun rep_demonitor/2},
+	 {{erlang, halt, 0}, fun rep_halt/0},
+	 {{erlang, halt, 1}, fun rep_halt/1},
+	 {{erlang, link, 1}, fun rep_link/1},
+	 {{erlang, monitor, 2}, fun rep_monitor/2},
+	 {{erlang, process_flag, 2}, fun rep_process_flag/2},
+	 {{erlang, register, 2}, fun rep_register/2},
+	 {{erlang, spawn, 1}, fun rep_spawn/1},
+	 {{erlang, spawn, 3}, fun rep_spawn/3},
+	 {{erlang, spawn_link, 1}, fun rep_spawn_link/1},
+	 {{erlang, spawn_link, 3}, fun rep_spawn_link/3},
+	 {{erlang, spawn_monitor, 1}, fun rep_spawn_monitor/1},
+	 {{erlang, spawn_monitor, 3}, fun rep_spawn_monitor/3},
+	 {{erlang, spawn_opt, 2}, fun rep_spawn_opt/2},
+	 {{erlang, spawn_opt, 4}, fun rep_spawn_opt/4},
+	 {{erlang, unlink, 1}, fun rep_unlink/1},
+	 {{erlang, unregister, 1}, fun rep_unregister/1},
+	 {{erlang, whereis, 1}, fun rep_whereis/1}]).
+
+%%%----------------------------------------------------------------------
+%%% Callbacks
+%%%----------------------------------------------------------------------
+
+%% Handle Mod:Fun(Args) calls.
+-spec rep_var(module(), atom(), [term()]) -> term().
+
+rep_var(Mod, Fun, Args) ->
+    Key = {Mod, Fun, length(Args)},
+    case lists:keyfind(Key, 1, ?INSTR_MOD_FUN) of
+	{Key, Callback} -> apply(Callback, Args);
+	false -> apply(Mod, Fun, Args)
+    end.
 
 %% @spec: rep_demonitor(reference()) -> 'true'
 %% @doc: Replacement for `demonitor/1'.
