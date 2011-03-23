@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : lid.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : LID interface
 %%% Created     : 25 Sep 2010
 %%%----------------------------------------------------------------------

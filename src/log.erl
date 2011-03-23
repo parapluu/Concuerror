@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : log.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Logging and error reporting interface
 %%% Created     : 16 May 2010
 %%%

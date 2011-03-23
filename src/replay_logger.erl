@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : replay_logger.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Replay logger
 %%% Created     : 1 Jun 2010
 %%%

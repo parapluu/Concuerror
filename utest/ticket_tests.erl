@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : ticket_tests.erl
 %%% Author      : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Ticket interface unit tests
 %%% Created     : 25 Sep 2010
 %%%----------------------------------------------------------------------

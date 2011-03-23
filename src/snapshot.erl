@@ -1,6 +1,6 @@
 %%%----------------------------------------------------------------------
 %%% File        : snapshot.erl
-%%% Author      : Maria Christakis <christakismaria@gmail.com>
+%%% Author      : Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Snapshot utilities
 %%% Created     : 30 Sep 2010
 %%%

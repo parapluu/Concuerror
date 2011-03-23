@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : instr_tests.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Instrumenter unit tests
 %%% Created     : 3 Jan 2011
 %%%----------------------------------------------------------------------

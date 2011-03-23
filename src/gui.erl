@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : gui.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Graphical User Interface
 %%% Created     : 31 Mar 2010
 %%%

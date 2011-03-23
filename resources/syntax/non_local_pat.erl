@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : non_local_pat.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Test assignment to non-local variables in patterns
 %%% Created     : 3 Jan 2010
 %%%----------------------------------------------------------------------

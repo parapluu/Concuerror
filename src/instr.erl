@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : instr.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Instrumenter
 %%% Created     : 16 May 2010
 %%%

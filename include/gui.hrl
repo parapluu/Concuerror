@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : gui.hrl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : GUI header file
 %%% Created     : 31 Mar 2010
 %%%----------------------------------------------------------------------

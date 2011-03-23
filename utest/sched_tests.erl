@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : sched_tests.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Scheduler unit tests
 %%% Created     : 25 Sep 2010
 %%%----------------------------------------------------------------------

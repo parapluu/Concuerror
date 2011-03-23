@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : gen.hrl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : General header file
 %%% Created     : 16 May 2010
 %%%----------------------------------------------------------------------

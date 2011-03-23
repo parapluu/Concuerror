@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : rep.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Replacement BIFs
 %%% Created     : 11 Jan 2010
 %%%----------------------------------------------------------------------
