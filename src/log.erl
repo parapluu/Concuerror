@@ -1,12 +1,15 @@
 %%%----------------------------------------------------------------------
-%%% File        : log.erl
+%%% Copyright (c) 2011, Alkis Gotovos <el3ctrologos@hotmail.com>,
+%%%                     Maria Christakis <mchrista@softlab.ntua.gr>
+%%%                 and Kostis Sagonas <kostis@cs.ntua.gr>.
+%%% All rights reserved.
+%%%
+%%% This file is distributed under the Simplified BSD License.
+%%% Details can be found in the LICENSE file.
+%%%----------------------------------------------------------------------
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
 %%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Logging and error reporting interface
-%%% Created     : 16 May 2010
-%%%
-%%% @doc: Logging and error reporting interface
-%%% @end
 %%%----------------------------------------------------------------------
 
 -module(log).
