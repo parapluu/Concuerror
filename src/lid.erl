@@ -21,14 +21,14 @@
 
 %% Information kept in the NT_LID table
 %%
-%% lid      : The process' LID.
-%% pid      : The process' pid.
-%% nch      : The number of processes spawned by this process.
+%% lid : The logical identifier of a process.
+%% pid : The process identifier of a process.
+%% nch : The number of processes spawned by this process.
 -record(info, {lid :: lid(),
 	       pid :: pid(),
 	       nch :: non_neg_integer()}).
 
-%% Record element positions, only to be used by ets:update_element.
+%% Record element positions, only to be used by ets:update_element/3.
 -define(POS_LID, 2).
 -define(POS_PID, 3).
 -define(POS_NCH, 4).
@@ -67,7 +67,7 @@ from_pid(Pid) when is_pid(Pid) ->
     end;
 from_pid(_Other) -> not_found.
 
-%% Fold function Fun over all know processes (by Pid).
+%% Fold function Fun over all known processes (by Pid).
 -spec fold_pids(fun(), term()) -> term().
 
 fold_pids(Fun, InitAcc) ->
@@ -76,6 +76,7 @@ fold_pids(Fun, InitAcc) ->
 
 %% Return a mock LID (only to be used with to_string for now).
 -spec mock(integer()) -> lid().
+
 mock(Seed) ->
     Seed.
 
@@ -83,6 +84,7 @@ mock(Seed) ->
 %% If called without a `noparent' argument, "register" the first process.
 %% Return the LID of the newly "registered" process.
 -spec new(pid(), lid() | 'noparent') -> lid().
+
 new(Pid, Parent) ->
     Lid =
 	case Parent of
