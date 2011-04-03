@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : rec_uscore.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Test underscore in record creation
 %%% Created     : 3 Jan 2010
 %%%----------------------------------------------------------------------

@@ -1,12 +1,15 @@
 %%%----------------------------------------------------------------------
-%%% File        : sched.erl
-%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
-%%% Description : Scheduler
-%%% Created     : 16 May 2010
+%%% Copyright (c) 2011, Alkis Gotovos <el3ctrologos@hotmail.com>,
+%%%                     Maria Christakis <mchrista@softlab.ntua.gr>
+%%%                 and Kostis Sagonas <kostis@cs.ntua.gr>.
+%%% All rights reserved.
 %%%
-%%% @doc: Scheduler
-%%% @end
+%%% This file is distributed under the Simplified BSD License.
+%%% Details can be found in the LICENSE file.
+%%%----------------------------------------------------------------------
+%%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
+%%% Description : Scheduler
 %%%----------------------------------------------------------------------
 
 -module(sched).

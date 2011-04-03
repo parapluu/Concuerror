@@ -1,9 +1,15 @@
 %%%----------------------------------------------------------------------
-%%% File        : lid.erl
+%%% Copyright (c) 2011, Alkis Gotovos <el3ctrologos@hotmail.com>,
+%%%                     Maria Christakis <mchrista@softlab.ntua.gr>
+%%%                 and Kostis Sagonas <kostis@cs.ntua.gr>.
+%%% All rights reserved.
+%%%
+%%% This file is distributed under the Simplified BSD License.
+%%% Details can be found in the LICENSE file.
+%%%----------------------------------------------------------------------
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : LID interface
-%%% Created     : 25 Sep 2010
 %%%----------------------------------------------------------------------
 
 -module(lid).

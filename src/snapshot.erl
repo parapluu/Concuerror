@@ -1,11 +1,14 @@
 %%%----------------------------------------------------------------------
-%%% File        : snapshot.erl
-%%% Author      : Maria Christakis <christakismaria@gmail.com>
-%%% Description : Snapshot utilities
-%%% Created     : 30 Sep 2010
+%%% Copyright (c) 2011, Alkis Gotovos <el3ctrologos@hotmail.com>,
+%%%                     Maria Christakis <mchrista@softlab.ntua.gr>
+%%%                 and Kostis Sagonas <kostis@cs.ntua.gr>.
+%%% All rights reserved.
 %%%
-%%% @doc: Snapshot utilities
-%%% @end
+%%% This file is distributed under the Simplified BSD License.
+%%% Details can be found in the LICENSE file.
+%%%----------------------------------------------------------------------
+%%% Author      : Maria Christakis <mchrista@softlab.ntua.gr>
+%%% Description : Snapshot utilities
 %%%----------------------------------------------------------------------
 
 -module(snapshot).

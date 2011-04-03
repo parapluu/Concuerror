@@ -1,7 +1,7 @@
 %%%----------------------------------------------------------------------
 %%% File        : strip_attr.erl
 %%% Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-%%%               Maria Christakis <christakismaria@gmail.com>
+%%%               Maria Christakis <mchrista@softlab.ntua.gr>
 %%% Description : Test stripping type and spec related attributes
 %%%               (type, spec, opaque, export_type, import_type)
 %%%               before instrumentation (import_type not tested).
