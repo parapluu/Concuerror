@@ -20,7 +20,7 @@ comp({Q, R, T}, {U, V, X}) -> {Q*U, Q*V + R*X, T*X}.
 
 next({Q, R, T}) -> (Q*3 + R) div T.
 
-safe({Q, R, T}, N) -> N == (Q*4 + R) div T.
+safe({Q, R, T}, N) -> N =:= (Q*4 + R) div T.
 
 prod({Z11, Z12, Z22}, N) -> {10*Z11, 10*(Z12 - N*Z22), Z22}.
 
@@ -40,7 +40,7 @@ io_worker() ->
 	    Spaces = (10 - N rem 10) rem 10,
 	    io:fwrite("~w~.*c\t:~w~n", [Y, Spaces, $ , N]),
 	    erlang:halt(0);
-	{Y, P, _N} when P rem 10 == 0 ->
+	{Y, P, _N} when P rem 10 =:= 0 ->
 	    io:fwrite("~w\t:~w~n", [Y, P]),
 	    io_worker();
 	{Y, _P, _N} ->
