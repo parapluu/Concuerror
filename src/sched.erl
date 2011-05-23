@@ -245,7 +245,7 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             lid:start(),
 	    %% Create slave node, load code and spawn initial user process.
 	    SlaveArg = "-noinput -nostick -pa " ++ ?EBIN,
-	    {ok, Node} = slave:start(?HOST, user, SlaveArg),
+	    {ok, Node} = slave:start(list_to_atom(?HOST), user, SlaveArg),
 	    ok = rpc:block_call(Node, instr, load, [Bin]),
 	    {Mod, Fun, Args} = Target,
 	    NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
