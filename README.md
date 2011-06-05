@@ -1,5 +1,6 @@
-CED
-====
+Concuerror
+==========
+Concuerror is a systematic testing tool for concurrent Erlang programs.
 
 Copyright and License
 ----------------------
@@ -9,13 +10,13 @@ Maria Christakis (<mchrista@softlab.ntua.gr>) and
 Kostis Sagonas (<kostis@cs.ntua.gr>).    
 All rights reserved.
 
-CED is distributed under the Simplified BSD License.    
+Concuerror is distributed under the Simplified BSD License.    
 Details can be found in the LICENSE file.
 
 Howto
 ------
 
-* Build CED      : make
-* Cleanup        : make clean
-* Run CED GUI    : run.sh
-* Run unit tests : test.sh
+* Build Concuerror   : make
+* Cleanup            : make clean
+* Run Concuerror GUI : run.sh
+* Run unit tests     : test.sh
