@@ -31,7 +31,7 @@
 %%%----------------------------------------------------------------------
 
 %% @spec start() -> 'true'
-%% @doc: Start the CED GUI.
+%% @doc: Start the GUI.
 -spec start() -> 'true'.
 
 start() ->

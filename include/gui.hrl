@@ -30,10 +30,10 @@
             {help, "Export analysis information to file."},
             {label, ?EXPORT_MENU_ITEM}],
 	   [{id, ?wxID_SEPARATOR}, {kind, ?wxITEM_SEPARATOR}],
-           [{id, ?EXIT}, {help, "Quit CED."}]]},
+           [{id, ?EXIT}, {help, "Quit Concuerror."}]]},
 	 {"&Edit",
 	  [[{id, ?PREFS}, {text, "&Preferences...\tCtrl-P"},
-	    {help, "Edit CED preferences."}]]},
+	    {help, "Edit Concuerror preferences."}]]},
         {"&Module",
 	  [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
 	    {help, "Add an existing erlang module."}],
@@ -68,7 +68,7 @@
 %% 'About' message
 -define(INFO_MSG,
 "
-                                    CED
+                                Concuerror 
 A tool for finding concurrency bugs in Erlang programs.
                                 Version 0.1
 ").
