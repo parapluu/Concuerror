@@ -509,8 +509,8 @@ log_error_list(List) ->
     log_list(List, "").
 
 %% Log a list of warnings, as returned by compile:file/2.
-log_warning_list(List) ->
-    log_list(List, "Warning:").
+log_warning_list(List) -> ok.
+    %log_list(List, "Warning:").
 
 %% Log a list of error or warning descriptors, as returned by compile:file/2.
 log_list(List, Pre) ->

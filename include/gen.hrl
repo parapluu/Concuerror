@@ -27,9 +27,9 @@
 -define(RP_GUI_ANALYSIS, '_._gui_analysis').
 -define(RP_REPLAY_LOGGER, '_._replay_logger').
 -define(RP_SCHED, '_._sched').
--define(RP_SCHED_SEND, {?RP_SCHED, ?CED_NODE}).
+-define(RP_SCHED_SEND, ?RP_SCHED).
 -define(RP_LID, '_._lid').
--define(RP_LID_SEND, {?RP_LID, ?CED_NODE}).
+-define(RP_LID_SEND, ?RP_LID).
 
 %% Named ets table names.
 -define(NT_BLOCKED, '_._blocked').

@@ -138,13 +138,13 @@ analyze(Target, Options) ->
 	    {Mins, Secs} = elapsed_time(T1, T2),
 	    case Result of
 		{ok, RunCount} ->
-		    log:log("Analysis complete (checked ~w interleavings "
+		    log:log("Analysis complete (checked ~w interleaving(s) "
 			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 		    log:log("No errors found.~n"),
 		    {ok, {Target, RunCount}};
 		{error, RunCount, Tickets} ->
 		    TicketCount = length(Tickets),
-		    log:log("Analysis complete (checked ~w interleavings "
+		    log:log("Analysis complete (checked ~w interleaving(s) "
 			    "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
 		    log:log("Found ~p erroneous interleaving(s).~n",
 			    [TicketCount]),
@@ -244,12 +244,10 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             ?debug_1("----------------------~n"),
             lid:start(),
 	    %% Create slave node, load code and spawn initial user process.
-	    SlaveArg = "-noinput -nostick -pa " ++ ?EBIN,
-	    {ok, Node} = slave:start(list_to_atom(?HOST), user, SlaveArg),
-	    ok = rpc:block_call(Node, instr, load, [Bin]),
+	    ok = instr:load(Bin),
 	    {Mod, Fun, Args} = Target,
 	    NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
-            FirstPid = spawn_link(Node, NewFun),
+            FirstPid = spawn_link(NewFun),
 	    %% Initialize scheduler context.
             FirstLid = lid:new(FirstPid, noparent),
             Active = ?SETS:add_element(FirstLid, ?SETS:new()),
@@ -260,7 +258,7 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
 	    %% Interleave using driver.
             Ret = driver(Context, ReplayState),
 	    %% Shutdown slave node
-	    slave:stop(Node),
+	    proc_cleanup(),
             lid:stop(),
             NewTickets =
                 case Ret of
@@ -622,13 +620,13 @@ handler(whereis, Lid, #context{details = Det} = Context, {RegName, Result}) ->
 %% the one where the exception occurred could have been killed by the
 %% exit signal of the latter without having been deleted from the pid/lid
 %% tables. Thus, 'EXIT' messages with any reason are accepted.
-%% proc_cleanup() ->
-%%     Fun = fun(P, Acc) ->
-%% 		  exit(P, kill),
-%% 		  receive {'EXIT', P, _Reason} -> Acc end
-%% 	  end,
-%%     lid:fold_pids(Fun, unused),
-%%     ok.
+proc_cleanup() ->
+    Fun = fun(P, Acc) ->
+ 		  exit(P, kill),
+ 		  receive {'EXIT', P, _Reason} -> Acc end
+ 	  end,
+    lid:fold_pids(Fun, unused),
+    ok.
 
 %% Calculate and print elapsed time between T1 and T2.
 elapsed_time(T1, T2) ->
@@ -743,10 +741,7 @@ notify(Msg, Misc) ->
 -spec lid_from_pid(pid()) -> lid:lid() | 'not_found'.
 
 lid_from_pid(Pid) ->
-    ?RP_LID_SEND ! {lid_from_pid, self(), Pid},
-    receive
-	{lid_from_pid, Lid} -> Lid
-    end.
+    lid:from_pid(Pid).
 	    
 -spec wakeup() -> 'ok'.
 

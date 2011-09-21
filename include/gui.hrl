@@ -68,9 +68,9 @@
 %% 'About' message
 -define(INFO_MSG,
 "
-                                Concuerror 
-A tool for finding concurrency bugs in Erlang programs.
-                                Version 0.1
+                           Concuerror
+A systematic testing tool for concurrent Erlang programs.
+                           Version 0.9
 ").
 
 %% File paths

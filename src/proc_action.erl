@@ -23,6 +23,7 @@
 
 %% Printing depth of terms like messages or exit reasons.
 -define(PRINT_DEPTH, 4).
+-define(PRINT_DEPTH_EXIT, 10).
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -73,8 +74,8 @@ to_string({demonitor, Proc1, Proc2}) ->
     io_lib:format("Process ~s demonitors process ~s",
 		  [lid:to_string(Proc1), lid:to_string(Proc2)]);
 to_string({exit, Proc, Reason}) ->
-    io_lib:format("Process ~s exits (~W)",
-		  [lid:to_string(Proc), Reason, ?PRINT_DEPTH]);
+    io_lib:format("Process ~s exits (~P)",
+		  [lid:to_string(Proc), Reason, ?PRINT_DEPTH_EXIT]);
 to_string({fun_exit, Proc, not_found, Reason}) ->
     io_lib:format("Process ~s sends exit signal (~W) to nonexisting process",
 		  [lid:to_string(Proc), Reason, ?PRINT_DEPTH]);

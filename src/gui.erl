@@ -31,7 +31,7 @@
 %%%----------------------------------------------------------------------
 
 %% @spec start() -> 'true'
-%% @doc: Start the GUI.
+%% @doc: Start the CED GUI.
 -spec start() -> 'true'.
 
 start() ->
@@ -107,11 +107,11 @@ setupFrame() ->
     ref_add(?FRAME, Frame),
     MenuBar = wxMenuBar:new(),
     setupMenu(MenuBar, ?MENU_SPEC),
-    Icons = wxIconBundle:new(),
-    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH16)),
-    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH32)),
-    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH64)),
-    wxFrame:setIcons(Frame, Icons),
+%    Icons = wxIconBundle:new(),
+%    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH16)),
+%    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH32)),
+%    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH64)),
+%    wxFrame:setIcons(Frame, Icons),
     wxFrame:setMenuBar(Frame, MenuBar),
     wxFrame:createStatusBar(Frame, [{id, ?STATUS_BAR}]),
     wxEvtHandler:connect(Frame, close_window),
