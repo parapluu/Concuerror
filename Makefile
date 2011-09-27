@@ -155,7 +155,7 @@ scripts: run.sh test.sh
 
 run.sh:
 	printf "#%c/bin/bash\n \
-	        erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
+	        erl -smp enable -noinput -sname $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
 	      > run.sh
 	chmod +x run.sh
 
