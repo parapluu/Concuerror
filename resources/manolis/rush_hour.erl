@@ -139,7 +139,7 @@
 % Compression functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec compress(state(), CompLevel :: comp_level()) -> Ret when is_subtype(Ret,comp_state()).
+-spec compress(state(), CompLevel :: comp_level()) -> comp_state().
 compress(State, 0) ->
     State;
 compress(State, 1) ->
@@ -255,7 +255,7 @@ move_one_car(TCar, Cars, Move) ->
 next_entries_by_one(TCar, Room, Cars) ->
     {Tag,_Car} = TCar,
     Moves = all_moves(max_move(TCar, Room, Cars)),
-    lists:map(fun(M) -> {move_one_car(TCar, Cars, M), {Tag, -M}} end, Moves).
+    [{move_one_car(TCar, Cars, M), {Tag, -M}} || M <- Moves].
 
 -spec next_entries(room(), state()) -> [hashentry()].
 next_entries(Room, Cars) ->

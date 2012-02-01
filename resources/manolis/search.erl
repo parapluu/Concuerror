@@ -99,14 +99,12 @@ hash_lookup(CompState) ->
 
 -spec hash_exists(comp_state()) -> boolean().
 hash_exists(CompState) ->
-    case hash_lookup(CompState) of
-	[] -> false;
-	_  -> true
-    end.
+    hash_lookup(CompState) =/= [].
 
--spec hash_insert([any_hashentry()]) -> _.
+-spec hash_insert([any_hashentry()]) -> 'ok'.
 hash_insert(Entries) ->
-    ets:insert(closed_set, Entries).
+    ets:insert(closed_set, Entries),
+    ok.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Compression functions
@@ -232,12 +230,12 @@ bfs_serial(Moves, Env, [State | Rest], NextOpen, Opts) ->
 	    Entries = next_entries(Env, State, Opts),
 	    Entries2 = case Opts#opts.solution of
 			   true  -> Entries;
-			   false -> lists:map(fun trim_backstep/1, Entries)
+			   false -> [trim_backstep(E) || E <- Entries]
 		       end,
 	    NewEntries = lists:filter(IsNew, Entries2),
 	    CompNewEntries = lists:map(CompressEntry, NewEntries),
 	    hash_insert(CompNewEntries),
-	    NewStates = lists:map(fun get_state/1, NewEntries),
+	    NewStates = [get_state(E) || E <- NewEntries],
 	    bfs_serial(Moves, Env, Rest, NewStates ++ NextOpen, Opts)
     end.
 
@@ -330,7 +328,7 @@ coordinator_loop(Left, States, NextLeft, NextStates, NextWorker, Moves, Workers,
 	    NewEntries = lists:filter(IsNew, Entries),
 	    PrepedNewEntries = lists:map(Prepare, NewEntries),
 	    hash_insert(PrepedNewEntries),
-	    NewStates = lists:map(fun get_state/1, NewEntries),
+	    NewStates = [get_state(E) || E <- NewEntries],
 	    NumNewStates = length(NewStates),
 	    case Opts#opts.balancing of
 		true ->
@@ -449,9 +447,9 @@ send_states_tr([State | States], [Worker | Workers], AllWorkers) ->
     Worker ! {state, State},
     send_states_tr(States, Workers, AllWorkers).
 
--spec send_to_all([pid()], _) -> _.
+-spec send_to_all([pid()], term()) -> 'ok'.
 send_to_all(Pids, Message) ->
-    lists:map(fun(Pid) -> Pid ! Message end, Pids).
+    lists:foreach(fun(Pid) -> Pid ! Message end, Pids).
 
 -spec spawn_link_n(non_neg_integer(), atom(), atom(), [_]) -> [pid()].
 spawn_link_n(N, Module, Name, Args) ->
