@@ -1,16 +1,18 @@
 -module(rush_hour).
+
 -export([solve/3, solve/2, print/2, print_path/2, translate/1, toml/2,
 	 test_2workers/0, test_3workers/0, test/2]).
 -export([next_entries/2, winning/2, reverse_step/2,
 	 compress/2, get_decomp_key/2, decompress/3]).
-% TODO: validate input? (in intermediate form?)
-% TODO: visible hash?
-% TODO: separate hash handling from closed set name
-% TODO: Astar
-% TODO: distributed hash table (closed + open set)
-% TODO: batch assign work
-% TODO: open set as hashtable (easy to find duplicates)
-% TODO: use a queue from stdlib for open set(s)
+
+%% TODO: validate input? (in intermediate form?)
+%% TODO: visible hash?
+%% TODO: separate hash handling from closed set name
+%% TODO: Astar
+%% TODO: distributed hash table (closed + open set)
+%% TODO: batch assign work
+%% TODO: open set as hashtable (easy to find duplicates)
+%% TODO: use a queue from stdlib for open set(s)
 
 -type direction() :: 'x' | 'y'.
 -type position() :: 0..1023.
@@ -48,7 +50,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PropEr predicates
+%% PropEr predicates
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% -include_lib("proper/include/proper.hrl").
@@ -136,7 +138,7 @@
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Compression functions
+%% Compression functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec compress(state(), CompLevel :: comp_level()) -> comp_state().
@@ -173,7 +175,7 @@ binary_to_points(<<X:12,Y:12,Rest/binary>>, Acc) ->
     binary_to_points(Rest, [{X,Y} | Acc]).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Game Logic
+%% Game Logic
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec rev_dir(direction()) -> direction().
@@ -272,7 +274,7 @@ reverse_step(Cars, {Tag, Move}) ->
     move_one_car(TCar, Cars, Move).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% General Invocation
+%% General Invocation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec solve(room(), state(), [option()]) -> answer() | answer_S().
@@ -311,14 +313,14 @@ test(4, Opts) ->
     solve({12,12,{11,5}}, [{0,{{1,5},y,3}}, {1,{{0,5},x,7}}, {2,{{5,3},x,4}}, {3,{{3,2},y,3}}, {4,{{2,1},x,4}}, {5,{{1,0},y,2}}, {6,{{3,7},x,3}}, {7,{{4,8},y,4}}, {8,{{8,7},x,4}}, {9,{{7,0},x,5}}, {10,{{8,4},y,4}}, {11,{{1,10},y,4}}, {12,{{5,9},x,3}}, {13,{{7,11},y,4}}, {14,{{9,5},x,6}}], Opts).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Input/Output
+%% Input/Output
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec print(room(), state()) -> _.
+-spec print(room(), state()) -> 'ok'.
 print(Room, Cars) ->
     print({0,-1}, Room, Cars).
 
--spec print({0..1 | length(),-1..1 | length()}, room(), state()) -> _.
+-spec print({0..1 | length(),-1..1 | length()}, room(), state()) -> 'ok'.
 print({_X,_Height}, {_Width,_Height,_Exit}, _Cars) ->
     io:format("~n", []);
 print({Width,Y}, {Width,Height,Exit}, Cars) ->
@@ -339,7 +341,7 @@ print({X,Y}, Room, Cars) ->
 	    end;
 	[{Num,_Coords}] ->
 	    io:format("~2b", [Num])
-	    % TODO: allow more digits
+	    %% TODO: allow more digits
     end,
     print({X + 1,Y}, Room, Cars).
 
