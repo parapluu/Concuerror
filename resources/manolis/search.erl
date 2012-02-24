@@ -1,6 +1,7 @@
 -module(search).
+
 -export([bfs/4, worker/2]).
-% CAUTION: worker needs to be exported if it is to be called from the shell
+%% CAUTION: worker needs to be exported if it is to be called from the shell
 
 -type state() :: _.
 -type environment() :: _.
@@ -36,11 +37,11 @@
 	       solution   = 'false' :: boolean(),
 	       workers    = 2       :: pos_integer(),
 	       balancing  = 'true'  :: boolean(),
-	       buffer     = 10       :: pos_integer(),
+	       buffer     = 10      :: pos_integer(),
 	       limit      = -1      :: -1 | non_neg_integer()}).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% General Invocation
+%% General Invocation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% @doc Breadth-First Search. Searches breadth-first.
@@ -82,16 +83,17 @@ parse_options_tr([Opt | Rest], Opts) ->
     parse_options_tr(Rest, NewOpts).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Hashtable functions
+%% Hashtable functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--spec hash_init() -> _.
+-spec hash_init() -> 'ok'.
 hash_init() ->
-    ets:new(closed_set, [named_table]).
+    closed_set = ets:new(closed_set, [named_table]),
+    ok.
 
--spec hash_destroy() -> _.
+-spec hash_destroy() -> 'true'.
 hash_destroy() ->
-    ets:delete(closed_set).
+    true = ets:delete(closed_set).
 
 -spec hash_lookup(comp_state()) -> [any_hashentry()].
 hash_lookup(CompState) ->
@@ -107,7 +109,7 @@ hash_insert(Entries) ->
     ok.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Compression functions
+%% Compression functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec compress(state(), #opts{}) -> comp_state().
@@ -137,7 +139,7 @@ get_state({State})           -> State.
 trim_backstep(Entry) -> {get_state(Entry)}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Utility functions
+%% Utility functions
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec worker_prep(imm_hashentry(), #opts{}) -> any_entry().
@@ -180,11 +182,11 @@ next_entries(Env, State, Opts) ->
 winning(Env, State, Opts) ->
     (Opts#opts.module):winning(Env, State).
 
--spec reverse_path(state(), #opts{}) -> [state()].
+-spec reverse_path(state(), #opts{}) -> [state(),...].
 reverse_path(State, Opts) ->
     reverse_path(State, [], Opts).
 
--spec reverse_path(state(), [state()], #opts{}) -> [state()].
+-spec reverse_path(state(), [state()], #opts{}) -> [state(),...].
 reverse_path(State, Path, Opts) ->
     case hash_lookup(compress(State, Opts)) of
 	[{_S,none}] ->
@@ -195,7 +197,7 @@ reverse_path(State, Path, Opts) ->
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Serial Run
+%% Serial Run
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec bfs_serial(environment(), state(), #opts{}) -> answer() | answer_S().
@@ -240,7 +242,7 @@ bfs_serial(Moves, Env, [State | Rest], NextOpen, Opts) ->
     end.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Parallel Run
+%% Parallel Run
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 -spec bfs_paral(environment(), state(), #opts{}) -> answer() | answer_S().
@@ -263,8 +265,8 @@ coordinator(Env, State, Opts) ->
 		  lists:nth(1, Workers) ! {state, StateToSend},
 		  coordinator_outer(1, [], 0, Workers, Opts)
 	  end,
-    % There are still messages left in the message queue - we need to wait for
-    % the children to exit, then clean the mailbox just to be sure.
+    %% There are still messages left in the message queue - we need to wait for
+    %% the children to exit, then clean the mailbox just to be sure.
     wait_for_children(Opts#opts.workers),
     empty_mailbox(),
     process_flag(trap_exit, false),
@@ -427,11 +429,11 @@ wake_workers_tr(Load, Overflow, [Pid | Rest]) ->
     Pid ! {continue, Load + 1},
     wake_workers_tr(Load, Overflow - 1, Rest).
 
--spec stop_workers([pid()]) -> _.
+-spec stop_workers([pid()]) -> 'ok'.
 stop_workers(Workers) ->
-    send_to_all(Workers, {stop}).
+    lists:foreach(fun(Pid) -> Pid ! {stop} end, Workers).
 
--spec send_states([any_state()], non_neg_integer(), [pid()]) ->
+-spec send_states([any_state()], non_neg_integer(), [pid(),...]) ->
 	  non_neg_integer().
 send_states(States, Next, Workers) ->
     send_states_tr(States, lists:nthtail(Next, Workers), Workers).
@@ -447,15 +449,11 @@ send_states_tr([State | States], [Worker | Workers], AllWorkers) ->
     Worker ! {state, State},
     send_states_tr(States, Workers, AllWorkers).
 
--spec send_to_all([pid()], term()) -> 'ok'.
-send_to_all(Pids, Message) ->
-    lists:foreach(fun(Pid) -> Pid ! Message end, Pids).
-
--spec spawn_link_n(non_neg_integer(), atom(), atom(), [_]) -> [pid()].
+-spec spawn_link_n(non_neg_integer(), atom(), atom(), [_,...]) -> [pid()].
 spawn_link_n(N, Module, Name, Args) ->
     spawn_link_n_tr(N, Module, Name, Args, []).
 
--spec spawn_link_n_tr(non_neg_integer(), atom(), atom(), [_], [pid()]) ->
+-spec spawn_link_n_tr(non_neg_integer(), atom(), atom(), [_,...], [pid()]) ->
 	  [pid()].
 spawn_link_n_tr(0, _Module, _Name, _Args, Pids) ->
     Pids;
