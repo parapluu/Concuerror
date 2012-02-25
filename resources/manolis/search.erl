@@ -357,7 +357,7 @@ worker_wait(Env, Opts) ->
 	    worker_loop(-1, Env, Opts);
 	false ->
 	    receive
-		{stop}           -> exit(normal);
+		stop             -> exit(normal);
 		{continue, Load} -> worker_loop(Load, Env, Opts)
 	    end
     end.
@@ -367,12 +367,12 @@ worker_loop(0, Env, Opts) ->
     worker_wait(Env, Opts);
 worker_loop(Load, Env, Opts) ->
     receive
-	{stop} -> exit(normal)
+	stop -> exit(normal)
     after
 	0 -> ok
     end,
     receive
-	{stop} ->
+	stop ->
 	    exit(normal);
 	{state, State} ->
 	    FilteredState = worker_filter(State, Opts),
@@ -380,7 +380,7 @@ worker_loop(Load, Env, Opts) ->
 		true ->
 		    coordinator ! {winning, FilteredState},
 		    receive
-			{stop} -> exit(normal)
+			stop -> exit(normal)
 		    end;
 		false ->
 		    Prepare = fun(E) -> worker_prep(E, Opts) end,
@@ -431,7 +431,7 @@ wake_workers_tr(Load, Overflow, [Pid | Rest]) ->
 
 -spec stop_workers([pid()]) -> 'ok'.
 stop_workers(Workers) ->
-    lists:foreach(fun(Pid) -> Pid ! {stop} end, Workers).
+    lists:foreach(fun(Pid) -> Pid ! stop end, Workers).
 
 -spec send_states([any_state()], non_neg_integer(), [pid(),...]) ->
 	  non_neg_integer().
