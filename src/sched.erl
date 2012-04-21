@@ -127,6 +127,7 @@ analyze(Target, Options) ->
 	end,
     %% Disable error logging messages.
     ?tty(),
+    io:format("~p~n", [erlang:processes()]),
     case instr:instrument_and_compile(Files) of
 	{ok, Bin} ->
 	    log:log("Running analysis...~n"),
@@ -243,22 +244,26 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
             lid:start(),
-	    %% Create slave node, load code and spawn initial user process.
+	    %% Load code
 	    ok = instr:load(Bin),
+	    %% Save current process list (any process created after
+	    %% this will be cleaned up at the end of the run)
+	    ProcBefore = processes(),
+	    %% Spawn initial user process
 	    {Mod, Fun, Args} = Target,
 	    NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
             FirstPid = spawn_link(NewFun),
-	    %% Initialize scheduler context.
+	    %% Initialize scheduler context
             FirstLid = lid:new(FirstPid, noparent),
             Active = ?SETS:add_element(FirstLid, ?SETS:new()),
             Blocked = ?SETS:new(),
             State = state:empty(),
 	    Context = #context{active = Active, blocked = Blocked,
                                state = State, details = Det},
-	    %% Interleave using driver.
+	    %% Interleave using driver
             Ret = driver(Context, ReplayState),
-	    %% Shutdown slave node
-	    proc_cleanup(),
+	    %% Cleanup
+	    proc_cleanup(processes() -- ProcBefore),
             lid:stop(),
             NewTickets =
                 case Ret of
@@ -620,13 +625,14 @@ handler(whereis, Lid, #context{details = Det} = Context, {RegName, Result}) ->
 %% the one where the exception occurred could have been killed by the
 %% exit signal of the latter without having been deleted from the pid/lid
 %% tables. Thus, 'EXIT' messages with any reason are accepted.
-proc_cleanup() ->
-    Fun = fun(P, Acc) ->
- 		  exit(P, kill),
- 		  receive {'EXIT', P, _Reason} -> Acc end
- 	  end,
-    lid:fold_pids(Fun, unused),
-    ok.
+proc_cleanup(ProcList) ->
+    Link_and_kill = fun(P) -> link(P), exit(P, kill) end,
+    [Link_and_kill(P) || P <- ProcList],
+    wait_for_exit(ProcList).
+
+wait_for_exit([]) -> ok;
+wait_for_exit([P|Rest]) ->
+    receive {'EXIT', P, _Reason} -> wait_for_exit(Rest) end.
 
 %% Calculate and print elapsed time between T1 and T2.
 elapsed_time(T1, T2) ->
