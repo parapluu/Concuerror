@@ -28,7 +28,7 @@
 %%% Debug
 %%%----------------------------------------------------------------------
 
-%%-define(TTY, true).
+%-define(TTY, true).
 -ifdef(TTY).
 -define(tty(), ok).
 -else.
@@ -127,9 +127,11 @@ analyze(Target, Options) ->
 	end,
     %% Disable error logging messages.
     ?tty(),
-    io:format("~p~n", [erlang:processes()]),
+    Ret = 
     case instr:instrument_and_compile(Files) of
 	{ok, Bin} ->
+	    %% Note: No error checking for load
+	    ok = instr:load(Bin),
 	    log:log("Running analysis...~n"),
 	    {T1, _} = statistics(wall_clock),
 	    ISOption = {init_state, state:empty()},
@@ -152,7 +154,9 @@ analyze(Target, Options) ->
 		    {error, analysis, {Target, RunCount}, Tickets}
 	    end;
 	error -> {error, instr, {Target, 0}}
-    end.
+    end,
+    instr:delete_and_purge(Files),
+    Ret.
 
 %% @spec: replay(analysis_target(), state()) -> [proc_action()]
 %% @doc: Replay the given state and return detailed information about the
@@ -167,8 +171,10 @@ replay(Ticket) ->
     Files = ticket:get_files(Ticket),
     %% Note: No error checking here.
     {ok, Bin} = instr:instrument_and_compile(Files),
+    ok = instr:load(Bin),
     Options = [details, {bin, Bin}, {init_state, State}, {files, Files}],
     interleave(Target, Options),
+    instr:delete_and_purge(Files),
     Result = replay_logger:get_replay(),
     replay_logger:stop(),
     Result.
@@ -236,7 +242,6 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
 %% the course of the program shall be linked to the scheduler process.
 interleave_loop(Target, RunCnt, Tickets, Options) ->
     Det = lists:member(details, Options),
-    {bin, Bin} = lists:keyfind(bin, 1, Options),
     %% Lookup state to replay.
     case state_load() of
         no_state -> {RunCnt - 1, Tickets, false};
@@ -244,8 +249,6 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
             lid:start(),
-	    %% Load code
-	    ok = instr:load(Bin),
 	    %% Save current process list (any process created after
 	    %% this will be cleaned up at the end of the run)
 	    ProcBefore = processes(),

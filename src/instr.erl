@@ -13,7 +13,7 @@
 %%%----------------------------------------------------------------------
 
 -module(instr).
--export([instrument_and_compile/1, load/1]).
+-export([delete_and_purge/1, instrument_and_compile/1, load/1]).
 
 -include("gen.hrl").
 
@@ -64,6 +64,14 @@
 %%%----------------------------------------------------------------------
 %%% Instrumentation utilities
 %%%----------------------------------------------------------------------
+
+%% Delete and purge all modules in Files.
+-spec delete_and_purge([file()]) -> 'ok'.
+
+delete_and_purge(Files) ->
+    ModsToPurge = [list_to_atom(filename:basename(F, ".erl")) || F <- Files],
+    [begin code:purge(M), code:delete(M), code:purge(M) end || M <- ModsToPurge],
+    ok.
 
 %% @spec instrument(Files::[file()]) -> 'ok' | 'error'
 %% @doc: Instrument and compile a list of files.
