@@ -37,11 +37,26 @@
 
 %% Instrumented auto-imported functions of 'erlang' module.
 -define(INSTR_ERL_FUN,
-	[{demonitor, 1}, {demonitor, 2}, {exit, 2}, {halt, 0},
-         {halt, 1}, {link, 1}, {monitor, 2}, {process_flag, 2},
-         {register, 2}, {spawn, 1}, {spawn, 3}, {spawn_link, 1},
-         {spawn_link, 3}, {spawn_monitor, 1}, {spawn_monitor, 3},
-	 {spawn_opt, 2}, {spawn_opt, 4}, {unlink, 1}, {unregister, 1},
+	[{demonitor, 1},
+	 {demonitor, 2},
+	 {exit, 2},
+	 {halt, 0},
+         {halt, 1},
+	 {is_process_alive, 1},
+	 {link, 1},
+	 {monitor, 2},
+	 {process_flag, 2},
+         {register, 2},
+	 {spawn, 1},
+	 {spawn, 3},
+	 {spawn_link, 1},
+         {spawn_link, 3},
+	 {spawn_monitor, 1},
+	 {spawn_monitor, 3},
+	 {spawn_opt, 2},
+	 {spawn_opt, 4},
+	 {unlink, 1},
+	 {unregister, 1},
 	 {whereis, 1}]).
 
 %% Instrumented functions called as erlang:FUNCTION.

@@ -15,7 +15,7 @@
 -module(rep).
 
 -export([rep_after_notify/0, rep_demonitor/1, rep_demonitor/2,
-	 rep_halt/0, rep_halt/1, rep_link/1,
+	 rep_halt/0, rep_halt/1, rep_is_process_alive/1, rep_link/1,
 	 rep_monitor/2, rep_process_flag/2, rep_receive/1,
          rep_receive_block/0, rep_receive_notify/1,
          rep_receive_notify/2, rep_register/2, rep_send/2,
@@ -42,6 +42,7 @@
 	 {{erlang, demonitor, 2}, fun rep_demonitor/2},
 	 {{erlang, halt, 0}, fun rep_halt/0},
 	 {{erlang, halt, 1}, fun rep_halt/1},
+	 {{erlang, is_process_alive, 1}, fun rep_is_process_alive/1},
 	 {{erlang, link, 1}, fun rep_link/1},
 	 {{erlang, monitor, 2}, fun rep_monitor/2},
 	 {{erlang, process_flag, 2}, fun rep_process_flag/2},
@@ -111,6 +112,15 @@ rep_halt() ->
 
 rep_halt(Status) ->
     sched:notify(halt, Status).
+
+%% @spec: rep_is_process_alive(pid()) -> boolean()
+%% @doc: Replacement for `is_process_alive/1'.
+-spec rep_is_process_alive(pid()) -> boolean().
+
+rep_is_process_alive(Pid) ->
+    Result = is_process_alive(Pid),
+    sched:notify(is_process_alive, Pid),
+    Result.
 
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.

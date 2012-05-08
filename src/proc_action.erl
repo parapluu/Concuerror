@@ -41,6 +41,7 @@
 		       {'fun_exit', lid:lid(), maybe_lid(), term()} |
                        {'halt', lid:lid()} |
                        {'halt', lid:lid(), non_neg_integer() | string()} |
+		       {'is_process_alive', lid:lid(), maybe_lid()} |
                        {'link', lid:lid(), maybe_lid()} |
 		       {'monitor', lid:lid(), maybe_lid()} |
 		       {'process_flag', lid:lid(), 'trap_exit', boolean()} |
@@ -87,6 +88,12 @@ to_string({halt, Proc}) ->
 to_string({halt, Proc, Status}) ->
     io_lib:format("Process ~s halts the system with status ~p",
 		  [lid:to_string(Proc), Status]);
+to_string({is_process_alive, Proc, not_found}) ->
+    io_lib:format("Process ~s checks if nonexisting process is alive",
+		  [lid:to_string(Proc)]);
+to_string({is_process_alive, Proc1, Proc2}) ->
+    io_lib:format("Process ~s checks if process ~s is alive",
+		  [lid:to_string(Proc1), lid:to_string(Proc2)]);
 to_string({link, Proc, not_found}) ->
     io_lib:format("Process ~s links to nonexisting process",
 		  [lid:to_string(Proc)]);

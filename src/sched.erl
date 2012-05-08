@@ -513,6 +513,12 @@ handler(halt, Lid, #context{details = Det} = Context, Misc) ->
     log_details(Det, Halt),
     Context#context{active = ?SETS:new(), blocked = ?SETS:new()};
 
+%% Is_process_alive message handler.
+handler(is_process_alive, Lid, #context{details = Det} = Context, TargetPid) ->
+    TargetLid = lid:from_pid(TargetPid),
+    log_details(Det, {is_process_alive, Lid, TargetLid}),
+    Context;
+
 %% Link message handler.
 handler(link, Lid, #context{details = Det} = Context, TargetPid) ->
     TargetLid = lid:from_pid(TargetPid),
