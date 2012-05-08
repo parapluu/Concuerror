@@ -623,6 +623,14 @@ handler(unregister, Lid, #context{details = Det} = Context, RegName) ->
 handler(whereis, Lid, #context{details = Det} = Context, {RegName, Result}) ->
     ResultLid = lid:from_pid(Result),
     log_details(Det, {whereis, Lid, RegName, ResultLid}),
+    Context;
+
+%% Handler for anything "non-special". It just passes the arguments
+%% for logging.
+%% TODO: We may be able to delete some of the above that can be handled
+%%       by this generic handler.
+handler(CallMsg, Lid, #context{details = Det} = Context, Args) ->
+    log_details(Det, {CallMsg, Lid, Args}),
     Context.
 
 %%%----------------------------------------------------------------------

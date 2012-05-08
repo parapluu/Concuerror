@@ -24,6 +24,11 @@
 	 rep_spawn_opt/2, rep_spawn_opt/4, rep_unlink/1,
 	 rep_unregister/1, rep_whereis/1, rep_var/3]).
 
+-export([rep_ets_insert_new/2, rep_ets_lookup/2, rep_ets_select_delete/2,
+	 rep_ets_insert/2, rep_ets_delete/1, rep_ets_delete/2,
+	 rep_ets_match_object/1, rep_ets_match_object/3,
+	 rep_ets_match_delete/2, rep_ets_foldl/3]).
+
 -include("gen.hrl").
 
 %%%----------------------------------------------------------------------
@@ -57,7 +62,17 @@
 	 {{erlang, spawn_opt, 4}, fun rep_spawn_opt/4},
 	 {{erlang, unlink, 1}, fun rep_unlink/1},
 	 {{erlang, unregister, 1}, fun rep_unregister/1},
-	 {{erlang, whereis, 1}, fun rep_whereis/1}]).
+	 {{erlang, whereis, 1}, fun rep_whereis/1},
+	 {{ets, insert_new, 2}, fun rep_ets_insert_new/2},
+	 {{ets, lookup, 2}, fun rep_ets_lookup/2},
+	 {{ets, select_delete, 2}, fun rep_ets_select_delete/2},
+	 {{ets, insert, 2}, fun rep_ets_insert/2},
+	 {{ets, delete, 1}, fun rep_ets_delete/1},
+	 {{ets, delete, 2}, fun rep_ets_delete/2},
+	 {{ets, match_object, 1}, fun rep_ets_match_object/1},
+	 {{ets, match_object, 3}, fun rep_ets_match_object/3},
+	 {{ets, match_delete, 2}, fun rep_ets_match_delete/2},
+	 {{ets, foldl, 3}, fun rep_ets_foldl/3}]).
 
 %%%----------------------------------------------------------------------
 %%% Callbacks
@@ -477,6 +492,60 @@ rep_unregister(RegName) ->
 rep_whereis(RegName) ->
     Ret = whereis(RegName),
     sched:notify(whereis, {RegName, Ret}),
+    Ret.
+
+%%%----------------------------------------------------------------------
+%%% ETS replacements
+%%%----------------------------------------------------------------------
+%% FIXME: A lot of repeated code here.
+rep_ets_insert_new(Tab, Obj) ->
+    Ret = ets:insert_new(Tab, Obj),
+    sched:notify(ets_insert_new, {Tab, Obj}),
+    Ret.
+
+rep_ets_lookup(Tab, Key) ->
+    Ret = ets:lookup(Tab, Key),
+    sched:notify(ets_lookup, {Tab, Key}),
+    Ret.
+
+rep_ets_select_delete(Tab, MatchSpec) ->
+    Ret = ets:select_delete(Tab, MatchSpec),
+    sched:notify(ets_select_delete, {Tab, MatchSpec}),
+    Ret.
+
+rep_ets_insert(Tab, Obj) ->
+    Ret = ets:insert(Tab, Obj),
+    sched:notify(ets_insert, {Tab, Obj}),
+    Ret.
+
+rep_ets_delete(Tab) ->
+    Ret = ets:delete(Tab),
+    sched:notify(ets_delete, Tab),
+    Ret.
+
+rep_ets_delete(Tab, Key) ->
+    Ret = ets:delete(Tab, Key),
+    sched:notify(ets_delete, {Tab, Key}),
+    Ret.
+
+rep_ets_match_object(Continuation) ->
+    Ret = ets:match_object(Continuation),
+    sched:notify(ets_match_object, {Continuation}),
+    Ret.
+
+rep_ets_match_object(Tab, Pattern, Limit) ->
+    Ret = ets:match_object(Tab, Pattern, Limit),
+    sched:notify(ets_match_object, {Tab, Pattern, Limit}),
+    Ret.
+
+rep_ets_match_delete(Tab, Pattern) ->
+    Ret = ets:match_delete(Tab, Pattern),
+    sched:notify(ets_match_delete, {Tab, Pattern}),
+    Ret.
+
+rep_ets_foldl(Function, Acc0, Tab) ->
+    Ret = ets:foldl(Function, Acc0, Tab),
+    sched:notify(ets_foldl, {Function, Acc0, Tab}),
     Ret.
 
 %%%----------------------------------------------------------------------

@@ -64,8 +64,21 @@
 	[{erlang, send, 2}, {erlang, send, 3}] ++ 
 	[{erlang, F, A} || {F, A} <- ?INSTR_ERL_FUN]).
 
+%% Instrumented functions from ets module.
+-define(INSTR_ETS_FUN,
+	[{ets, insert_new, 2},
+	 {ets, lookup, 2},
+	 {ets, select_delete, 2},
+	 {ets, insert, 2},
+	 {ets, delete, 1},
+	 {ets, delete, 2},
+	 {ets, match_object, 1},
+	 {ets, match_object, 3},
+	 {ets, match_delete, 2},
+	 {ets, foldl, 3}]).
+
 %% Instrumented mod:fun.
--define(INSTR_MOD_FUN, ?INSTR_ERL_MOD_FUN).
+-define(INSTR_MOD_FUN, ?INSTR_ERL_MOD_FUN ++ ?INSTR_ETS_FUN).
 
 %% Module containing replacement functions.
 -define(REP_MOD, rep).
@@ -192,7 +205,6 @@ strip_attributes([{attribute, _Line, Name, _Misc} = Head|Rest], Acc) ->
 strip_attributes([Head|Rest], Acc) ->
     strip_attributes(Rest, [Head|Acc]).
 
-
 %% Instrument a "top-level" element.
 %% Of the "top-level" elements, i.e. functions, specs, etc., only functions are
 %% transformed, so leave everything else as is.
@@ -289,6 +301,12 @@ needs_instrument(Module, Function, ArgTrees) ->
 instrument_application({erlang, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
     RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Function))),
+    erl_syntax:application(RepMod, RepFun, ArgTrees);
+instrument_application({Module, Function, ArgTrees}) ->
+    RepMod = erl_syntax:atom(?REP_MOD),
+    RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Module)
+					         ++ "_"
+					         ++ atom_to_list(Function))),
     erl_syntax:application(RepMod, RepFun, ArgTrees).
 
 instrument_var_application({ModTree, FunTree, ArgTrees}) ->
