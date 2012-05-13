@@ -617,7 +617,7 @@ handler(CallMsg, Lid, #context{details = Det} = Context, Args) ->
 %% tables. Thus, 'EXIT' messages with any reason are accepted.
 proc_cleanup(ProcList) ->
     Link_and_kill = fun(P) -> link(P), exit(P, kill) end,
-    [Link_and_kill(P) || P <- ProcList],
+    lists:foreach(Link_and_kill, ProcList),
     wait_for_exit(ProcList).
 
 wait_for_exit([]) -> ok;

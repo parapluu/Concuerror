@@ -97,8 +97,8 @@
 
 delete_and_purge(Files) ->
     ModsToPurge = [list_to_atom(filename:basename(F, ".erl")) || F <- Files],
-    [begin code:purge(M), code:delete(M), code:purge(M) end || M <- ModsToPurge],
-    ok.
+    Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
+    lists:foreach(Fun, ModsToPurge).
 
 %% @spec instrument(Files::[file()]) -> 'ok' | 'error'
 %% @doc: Instrument and compile a list of files.
