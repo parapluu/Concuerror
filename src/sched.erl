@@ -404,29 +404,7 @@ special_handler(wakeup, Lid,
 		#context{active = Active, blocked = Blocked} = Context, _M) ->
     NewBlocked = ?SETS:del_element(Lid, Blocked),
     NewActive = ?SETS:add_element(Lid, Active),
-    Context#context{active = NewActive, blocked = NewBlocked};
-special_handler(spawn, not_found,
-		#context{active = Active, details = Det} = Context, ChildPid) ->
-    link(ChildPid),
-    ChildLid = lid:new(ChildPid, noparent),
-    log_details(Det, {spawn, not_found, ChildLid}),
-    NewActive = ?SETS:add_element(ChildLid, Active),
-    Context#context{active = NewActive};
-special_handler(spawn_opt, not_found,
-		#context{active = Active, details = Det} = Context,
-		{Ret, Opt}) ->
-    {ChildPid, _Ref} =
-	case Ret of
-	    {_C, _R} = CR -> CR;
-	    C -> {C, noref}
-	end,
-    link(ChildPid),
-    ChildLid = lid:new(ChildPid, noparent),
-    Opts = sets:to_list(sets:intersection(sets:from_list([link, monitor]),
-					  sets:from_list(Opt))),
-    log_details(Det, {spawn_opt, not_found, ChildLid, Opts}),
-    NewActive = ?SETS:add_element(ChildLid, Active),
-    Context#context{active = NewActive}.
+    Context#context{active = NewActive, blocked = NewBlocked}.
 
 run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
     NewContext = run(Context#context{current = Next, error = ?NO_ERROR}),
