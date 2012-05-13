@@ -692,12 +692,7 @@ state_swap() ->
 -spec block() -> 'ok'.
 
 block() ->
-    case lid_from_pid(self()) of
-	not_found -> ok;
-	Lid ->
-	    ?RP_SCHED_SEND ! #sched{msg = block, lid = Lid},
-	    ok
-    end.
+    notify(block, []).
 
 %% Prompt process Pid to continue running.
 continue(Pid) when is_pid(Pid) ->
@@ -734,7 +729,7 @@ wakeup() ->
     %% TODO: Depending on how 'receive' is instrumented, a check for
     %% whether the caller is a known process might be needed here.
     ?RP_SCHED_SEND ! #special{msg = wakeup},
-    ok.
+    wait().
 
 -spec no_wakeup() -> 'ok'.
 
@@ -742,7 +737,7 @@ no_wakeup() ->
     %% TODO: Depending on how 'receive' is instrumented, a check for
     %% whether the caller is a known process might be needed here.
     ?RP_SCHED_SEND ! #special{msg = no_wakeup},
-    ok.
+    wait().
 
 %% Wait until the scheduler prompts to continue.
 -spec wait() -> 'ok'.

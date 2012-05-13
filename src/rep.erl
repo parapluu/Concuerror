@@ -203,7 +203,8 @@ rep_process_flag(Flag, Value) ->
 
 rep_receive(Fun) ->
     case ?LID_FROM_PID(self()) of
-	not_found -> ok;
+	not_found ->
+	    log:internal("Uninstrumented process enters instrumented receive");
 	_Lid ->
 	    {messages, Mailbox} = process_info(self(), messages),
 	    case rep_receive_match(Fun, Mailbox) of
@@ -215,16 +216,13 @@ rep_receive(Fun) ->
     end.
 
 rep_receive_loop(Fun) ->
-    sched:wait(),
     {messages, Mailbox} = process_info(self(), messages),
     case rep_receive_match(Fun, Mailbox) of
 	block ->
 	    sched:no_wakeup(),
 	    rep_receive_loop(Fun);
 	continue ->
-	    sched:wakeup(),
-	    sched:wait(),
-	    ok
+	    sched:wakeup()
     end.
 
 %% Blocks forever (used for 'receive after infinity -> ...' expressions).
@@ -235,7 +233,6 @@ rep_receive_block() ->
     rep_receive_block_loop().
 
 rep_receive_block_loop() ->
-    sched:wait(),
     sched:no_wakeup(),
     rep_receive_block_loop().
 
