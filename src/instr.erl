@@ -39,7 +39,6 @@
 -define(INSTR_ERL_FUN,
 	[{demonitor, 1},
 	 {demonitor, 2},
-	 {exit, 2},
 	 {halt, 0},
          {halt, 1},
 	 {is_process_alive, 1},
