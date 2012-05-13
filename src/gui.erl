@@ -113,7 +113,7 @@ setupFrame() ->
 %    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH64)),
 %    wxFrame:setIcons(Frame, Icons),
     wxFrame:setMenuBar(Frame, MenuBar),
-    wxFrame:createStatusBar(Frame, [{id, ?STATUS_BAR}]),
+    _ = wxFrame:createStatusBar(Frame, [{id, ?STATUS_BAR}]),
     wxEvtHandler:connect(Frame, close_window),
     wxEvtHandler:connect(Frame, command_menu_selected),
     wxEvtHandler:connect(Frame, command_button_clicked),
@@ -132,11 +132,11 @@ setupTopSplitter(Parent) ->
     LeftPanel = wxPanel:new(Splitter),
     LeftSizer = setupLeftColumn(LeftPanel),
     wxWindow:setSizer(LeftPanel, LeftSizer),
-    wxSizer:fit(LeftSizer, LeftPanel),
+    _ = wxSizer:fit(LeftSizer, LeftPanel),
     RightPanel = wxPanel:new(Splitter),
     RightSizer = setupRightColumn(RightPanel),
     wxWindow:setSizer(RightPanel, RightSizer),
-    wxSizer:fit(RightSizer, RightPanel),
+    _ = wxSizer:fit(RightSizer, RightPanel),
     wxSplitterWindow:setMinimumPaneSize(Splitter, ?MIN_TOP),
     wxSplitterWindow:setSashGravity(Splitter, ?GRAV_TOP),
     wxSplitterWindow:splitVertically(Splitter, LeftPanel, RightPanel),
@@ -164,8 +164,9 @@ setupLeftColumn(Parent) ->
     wxSplitterWindow:splitHorizontally(Splitter, ModulePanel, FunctionPanel),
     %% Add padding to the whole sizer.
     LeftColumnSizerOuter = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(LeftColumnSizerOuter, Splitter,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+    _ = wxSizer:add(LeftColumnSizerOuter, Splitter,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     LeftColumnSizerOuter.
 
 setupModuleSizer(Parent) ->
@@ -177,30 +178,31 @@ setupModuleSizer(Parent) ->
     ClearButton = wxButton:new(Parent, ?CLEAR),
     %% Setup button sizers
     AddRemSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(AddRemSizer, AddButton,
-		[{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
-    wxSizer:add(AddRemSizer, RemButton,
-		[{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
+    _ = wxSizer:add(AddRemSizer, AddButton,
+		    [{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
+    _ = wxSizer:add(AddRemSizer, RemButton,
+		    [{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
     ClrSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(ClrSizer, ClearButton,
-     		[{proportion, 1}, {border, 5}]),
+    _ = wxSizer:add(ClrSizer, ClearButton,
+		    [{proportion, 1}, {border, 5}]),
     %% Setup module sizers
     ModuleSizer = wxStaticBoxSizer:new(ModuleBox, ?wxVERTICAL),
-    wxSizer:add(ModuleSizer, ModuleList,
-		[{proportion, 1},
-		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
-		 {border, 10}]),
-    wxSizer:add(ModuleSizer, AddRemSizer,
-		[{proportion, 0},
-		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
-                 {border, 10}]),
-    wxSizer:add(ModuleSizer, ClrSizer,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+    _ = wxSizer:add(ModuleSizer, ModuleList,
+		    [{proportion, 1},
+		     {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
+		     {border, 10}]),
+    _ = wxSizer:add(ModuleSizer, AddRemSizer,
+		    [{proportion, 0},
+		     {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
+		     {border, 10}]),
+    _ = wxSizer:add(ModuleSizer, ClrSizer,
+		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     %% Add padding to the whole sizer.
     ModuleSizerOuter = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(ModuleSizerOuter, ModuleSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
-		 {border, 5}]),
+    _ = wxSizer:add(ModuleSizerOuter, ModuleSizer,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+		     {border, 5}]),
     ModuleSizerOuter.
 
 setupFunctionSizer(Parent) ->
@@ -214,23 +216,24 @@ setupFunctionSizer(Parent) ->
     ref_add(?STOP, StopButton),
     %% Setup sizers
     AnalStopSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(AnalStopSizer, AnalyzeButton,
-		[{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
-    wxSizer:add(AnalStopSizer, StopButton,
-		[{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
+    _ = wxSizer:add(AnalStopSizer, AnalyzeButton,
+		    [{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
+    _ = wxSizer:add(AnalStopSizer, StopButton,
+		    [{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
     ref_add(?ANAL_STOP_SIZER, AnalStopSizer),
     FunctionSizer = wxStaticBoxSizer:new(FunctionBox, ?wxVERTICAL),
-    wxSizer:add(FunctionSizer, FunctionList,
-		[{proportion, 1},
-		 {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
-		 {border, 10}]),
-    wxSizer:add(FunctionSizer, AnalStopSizer,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+    _ = wxSizer:add(FunctionSizer, FunctionList,
+		    [{proportion, 1},
+		     {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
+		     {border, 10}]),
+    _ = wxSizer:add(FunctionSizer, AnalStopSizer,
+		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     %% Add padding to the whole sizer.
     FunctionSizerOuter = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(FunctionSizerOuter, FunctionSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
-		 {border, 0}]),
+    _ = wxSizer:add(FunctionSizerOuter, FunctionSizer,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
+		     {border, 0}]),
     FunctionSizerOuter.
 
 %% Setup right column of top-level panel, including a notebook for displaying
@@ -250,8 +253,9 @@ setupRightColumn(Parent) ->
     wxSplitterWindow:splitHorizontally(Splitter, TopPanel, BottomPanel),
     %% Add padding to the whole sizer.
     RightColumnSizerOuter = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(RightColumnSizerOuter, Splitter,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL}, {border, 10}]),
+    _ = wxSizer:add(RightColumnSizerOuter, Splitter,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     RightColumnSizerOuter.
 
 %% Setup main notebook, containing 3 tabs:
@@ -276,9 +280,9 @@ setupMainNotebookSizer(Parent) ->
     wxNotebook:addPage(Notebook, SourcePanel, "Source", [{bSelect, false}]),
     %% Add padding to the notebook.
     NotebookSizerOuter = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(NotebookSizerOuter, Notebook,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
-		 {border, 5}]),
+    _ = wxSizer:add(NotebookSizerOuter, Notebook,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+		     {border, 5}]),
     NotebookSizerOuter.
 
 setupMainPanel(Parent) ->
@@ -296,9 +300,9 @@ setupMainPanel(Parent) ->
     wxSplitterWindow:splitVertically(Splitter, ErrorPanel, IleavePanel),
     %% Add padding to the panel.
     MainPanelSizerOuter = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(MainPanelSizerOuter, Splitter,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
+    _ = wxSizer:add(MainPanelSizerOuter, Splitter,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     wxWindow:setSizer(MainPanel, MainPanelSizerOuter),
     MainPanel.
 
@@ -308,15 +312,14 @@ setupErrorListSizer(Parent) ->
     ref_add(?ERROR_LIST, ErrorList),
     %% Setup sizers.
     ErrorSizer = wxStaticBoxSizer:new(ErrorBox, ?wxVERTICAL),
-    wxSizer:add(ErrorSizer, ErrorList,
-		[{proportion, 1},
-		 {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-   %% Add padding to the whole sizer.
+    _ = wxSizer:add(ErrorSizer, ErrorList,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
+    %% Add padding to the whole sizer.
     ErrorSizerOuter = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(ErrorSizerOuter, ErrorSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxRIGHT},
-		 {border, 5}]),
+    _ = wxSizer:add(ErrorSizerOuter, ErrorSizer,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxRIGHT},
+		     {border, 5}]),
     ErrorSizerOuter.
 
 setupIleaveListSizer(Parent) ->
@@ -325,15 +328,14 @@ setupIleaveListSizer(Parent) ->
     ref_add(?ILEAVE_LIST, IleaveList),
     %% Setup sizers.
     IleaveSizer = wxStaticBoxSizer:new(IleaveBox, ?wxVERTICAL),
-    wxSizer:add(IleaveSizer, IleaveList,
-		[{proportion, 1},
-		 {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-   %% Add padding to the whole sizer.
+    _ = wxSizer:add(IleaveSizer, IleaveList,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
+    %% Add padding to the whole sizer.
     IleaveSizerOuter = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(IleaveSizerOuter, IleaveSizer,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxLEFT},
-		 {border, 5}]),
+    _ = wxSizer:add(IleaveSizerOuter, IleaveSizer,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxLEFT},
+		     {border, 5}]),
     IleaveSizerOuter.
 
 %% Setup the graph panel.
@@ -350,9 +352,9 @@ setupGraphPanel(Parent) ->
     ref_add(?STATIC_BMP, StaticBmp),
     %% Setup sizer.
     PanelSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(PanelSizer, ScrGraph,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
+    _ = wxSizer:add(PanelSizer, ScrGraph,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     wxWindow:setSizer(Panel, PanelSizer),
     Panel.
 
@@ -363,9 +365,9 @@ setupSourcePanel(Parent) ->
     setupSourceText(SourceText, light),
     %% Setup sizer.
     PanelSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(PanelSizer, SourceText,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
+    _ = wxSizer:add(PanelSizer, SourceText,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     wxWindow:setSizer(Panel, PanelSizer),
     Panel.
 
@@ -423,9 +425,9 @@ setupLogNotebookSizer(Parent) ->
     wxNotebook:addPage(Notebook, LogPanel, "Log", [{bSelect, true}]),
     wxNotebook:addPage(Notebook, ErrorPanel, "Problems", [{bSelect, false}]),
     NotebookSizerOuter = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(NotebookSizerOuter, Notebook,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
-		 {border, 0}]),
+    _ = wxSizer:add(NotebookSizerOuter, Notebook,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+		     {border, 0}]),
     NotebookSizerOuter.
 
 setupLogPanel(Parent) ->
@@ -438,9 +440,9 @@ setupLogPanel(Parent) ->
 					 ?wxFONTSTYLE_NORMAL, -1)),
     wxTextCtrl:setDefaultStyle(LogText, Style),
     PanelSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(PanelSizer, LogText,
-		[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
+    _ = wxSizer:add(PanelSizer, LogText,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     wxWindow:setSizer(Panel, PanelSizer),
     Panel.
 
@@ -454,9 +456,9 @@ setupErrorPanel(Parent) ->
 					 ?wxFONTSTYLE_NORMAL, -1)),
     wxTextCtrl:setDefaultStyle(ErrorText, Style),
     PanelSizer = wxBoxSizer:new(?wxVERTICAL),
-    wxSizer:add(PanelSizer, ErrorText,
-        	[{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-        	 {border, 10}]),
+    _ = wxSizer:add(PanelSizer, ErrorText,
+		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     wxWindow:setSizer(Panel, PanelSizer),
     Panel.
 
@@ -484,7 +486,7 @@ setupMenuItems(Menu, [Options|Rest]) ->
                 I;
             false -> createMenuItem(Options)
         end,
-    wxMenu:append(Menu, Item),
+    _ = wxMenu:append(Menu, Item),
     setupMenuItems(Menu, Rest).
 
 createMenuItem(Options) ->
@@ -523,17 +525,17 @@ addArgs(Parent, Sizer, I, Max, Refs) ->
     %% XXX: semi-hack, custom width, default height (-1)
     Ref =  wxTextCtrl:new(Parent, ?wxID_ANY, [{size, {170, -1}}]),
     HorizSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(HorizSizer,
-                wxStaticText:new(Parent, ?wxID_ANY,
-                                 io_lib:format("Arg~p: ", [I + 1])),
-		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxRIGHT},
-                 {border, 5}]),
-    wxSizer:add(HorizSizer, Ref, [{proportion, 1},
-                                  {flag, ?wxALIGN_CENTER bor ?wxALL},
-                                  {border, 0}]),
-    wxSizer:add(Sizer, HorizSizer, [{proportion, 0},
-                                    {flag, ?wxEXPAND bor ?wxALL},
-                                    {border, 10}]),
+    _ = wxSizer:add(HorizSizer,
+		    wxStaticText:new(Parent, ?wxID_ANY,
+				     io_lib:format("Arg~p: ", [I + 1])),
+		    [{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxRIGHT},
+		     {border, 5}]),
+    _ = wxSizer:add(HorizSizer, Ref, [{proportion, 1},
+				      {flag, ?wxALIGN_CENTER bor ?wxALL},
+				      {border, 0}]),
+    _ = wxSizer:add(Sizer, HorizSizer, [{proportion, 0},
+					{flag, ?wxEXPAND bor ?wxALL},
+					{border, 10}]),
     addArgs(Parent, Sizer, I + 1, Max, [Ref|Refs]).
 
 %% Module-adding dialog
@@ -722,20 +724,20 @@ argDialog(Parent, Argnum) ->
     InSizer = wxStaticBoxSizer:new(Box, ?wxVERTICAL),
     Refs = addArgs(Dialog, InSizer, 0, Argnum, []),
     ButtonSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_OK),
-		[{proportion, 0}, {flag, ?wxRIGHT}, {border, 5}]),
-    wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_CANCEL),
-		[{proportion, 0}, {flag, ?wxLEFT}, {border, 5}]),
-    wxSizer:add(TopSizer, InSizer,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxSizer:add(TopSizer, ButtonSizer,
-                [{proportion, 0},
-		 {flag, ?wxALIGN_CENTER bor
-		        ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
-		 {border, 10}]),
+    _ = wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_OK),
+		    [{proportion, 0}, {flag, ?wxRIGHT}, {border, 5}]),
+    _ = wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_CANCEL),
+		    [{proportion, 0}, {flag, ?wxLEFT}, {border, 5}]),
+    _ = wxSizer:add(TopSizer, InSizer,
+		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
+    _ = wxSizer:add(TopSizer, ButtonSizer,
+		    [{proportion, 0},
+		     {flag, ?wxALIGN_CENTER bor
+			  ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
+		     {border, 10}]),
     wxWindow:setSizer(Dialog, TopSizer),
-    wxSizer:fit(TopSizer, Dialog),
+    _ = wxSizer:fit(TopSizer, Dialog),
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
             clearProbs(),
@@ -766,54 +768,51 @@ prefsDialog(Parent) ->
 					 [{style, ?wxALIGN_RIGHT}]),
     ref_add(?PREB_ENABLED_CBOX, PrebEnabledCheckBox),
     wxCheckBox:setValue(PrebEnabledCheckBox, PrebEnabled),
-    wxSizer:add(HorizSizer1,
-		wxStaticText:new(Dialog, ?wxID_ANY,
-				 "Enable preemption bounding:"),
-		[{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
-		 {border, 0}]),
-    wxSizer:add(HorizSizer1,
-		PrebEnabledCheckBox,
-		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
-                 {border, 0}]),
+    _ = wxSizer:add(HorizSizer1,
+		    wxStaticText:new(Dialog, ?wxID_ANY,
+				     "Enable preemption bounding:"),
+		    [{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+		     {border, 0}]),
+    _ = wxSizer:add(HorizSizer1, PrebEnabledCheckBox,
+		    [{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+		     {border, 0}]),
     HorizSizer2 = wxBoxSizer:new(?wxHORIZONTAL),
     PrebBoundSpinCtrl = wxSpinCtrl:new(Dialog, [{id, ?PREB_BOUND_SPIN},
 						{size, {50, -1}},
 						{min, 0},
 						{initial, PrebBound}]),
-    wxSizer:add(HorizSizer2,
-		wxStaticText:new(Dialog, ?wxID_ANY, "Preemption bound:"),
-		[{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
-                 {border, 0}]),
-    wxSizer:add(HorizSizer2,
-		PrebBoundSpinCtrl,
-		[{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
-                 {border, 0}]),
-    wxSizer:add(PrebBoxSizer,
-		HorizSizer1,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxSizer:add(PrebBoxSizer,
-		HorizSizer2,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
+    _ = wxSizer:add(HorizSizer2,
+		    wxStaticText:new(Dialog, ?wxID_ANY, "Preemption bound:"),
+		    [{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+		     {border, 0}]),
+    _ = wxSizer:add(HorizSizer2, PrebBoundSpinCtrl,
+		    [{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+		     {border, 0}]),
+    _ = wxSizer:add(PrebBoxSizer, HorizSizer1,
+		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
+    _ = wxSizer:add(PrebBoxSizer, HorizSizer2,
+		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
     %% Buttons.
     ButtonSizer = wxBoxSizer:new(?wxHORIZONTAL),
-    wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_CANCEL),
-		[{proportion, 3}, {flag, ?wxLEFT}, {border, 0}]),
-    wxSizer:addStretchSpacer(ButtonSizer),
-    wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_OK, [{label, "&Save"}]),
-		[{proportion, 4}, {flag, ?wxRIGHT}, {border, 0}]),
+    _ = wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_CANCEL),
+		    [{proportion, 3}, {flag, ?wxLEFT}, {border, 0}]),
+    _ = wxSizer:addStretchSpacer(ButtonSizer),
+    _ = wxSizer:add(ButtonSizer,
+		    wxButton:new(Dialog, ?wxID_OK, [{label, "&Save"}]),
+		    [{proportion, 4}, {flag, ?wxRIGHT}, {border, 0}]),
     %% Top level sizer.
-    wxSizer:add(TopSizer, PrebBoxSizer,
-		[{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		 {border, 10}]),
-    wxSizer:add(TopSizer, ButtonSizer,
-                [{proportion, 0},
-		 {flag, ?wxALIGN_CENTER bor ?wxEXPAND bor
-		        ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
-		 {border, 10}]),
+    _ = wxSizer:add(TopSizer, PrebBoxSizer,
+		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+		     {border, 10}]),
+    _ = wxSizer:add(TopSizer, ButtonSizer,
+		    [{proportion, 0},
+		     {flag, ?wxALIGN_CENTER bor ?wxEXPAND bor
+			  ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
+		     {border, 10}]),
     wxWindow:setSizer(Dialog, TopSizer),
-    wxSizer:fit(TopSizer, Dialog),
+    _ = wxSizer:fit(TopSizer, Dialog),
     %% Show dialog.
     case wxDialog:showModal(Dialog) of
 	?wxID_OK ->
