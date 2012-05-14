@@ -102,10 +102,12 @@ vpath %.beam ebin
 
 include $(wildcard $(OPTS))
 
+.PHONY: clean doc test run
+
 all: 	$(TARGETS)
 
 clean:
-	rm -f *.sh
+	rm -f run
 	rm -f $(OPTS)
 	rm -f $(EBIN)/*.beam
 	rm -f $(DOC)/*.html $(DOC)/*.css $(DOC)/edoc-info $(DOC)/*.png
@@ -139,7 +141,6 @@ debug2:
 	make
 endif
 
-.PHONY: doc
 doc:	util.beam
 	erl -noinput -pa $(EBIN) -s util doc $(TOP) -s init stop
 
@@ -151,27 +152,19 @@ log:	$(LOG_MODULES:%=%.beam)
 
 utest:	$(UTEST_MODULES:%=%.beam)
 
-scripts: run.sh test.sh
+scripts: run
 
-run.sh:
-	printf "\
-	#%c/bin/bash\n\
-	\n\
-	erl -smp enable -noinput -sname $(APP_STRING) -pa $(EBIN) -s gui start -s init stop\n" ! \
-	      > run.sh
-	chmod +x run.sh
+test: 	all
+	erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop
 
-test.sh:
-	printf "\
-	#%c/bin/bash\n\
-	\n\
-	dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam\n\
-	erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop\n" ! \
-	      > test.sh
-	chmod +x test.sh
+run:
+	printf "#%c/bin/bash\n \
+	        erl -smp enable -noinput -sname $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
+	      > run
+	chmod +x run
 
 %.beam: %.erl
-	erlc -W $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -o $(EBIN) $<
+	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -o $(EBIN) $<
 
 ###----------------------------------------------------------------------
 ### Dependencies
