@@ -154,15 +154,19 @@ utest:	$(UTEST_MODULES:%=%.beam)
 scripts: run.sh test.sh
 
 run.sh:
-	printf "#%c/bin/bash\n \
-	        erl -smp enable -noinput -sname $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
+	printf "\
+	#%c/bin/bash\n\
+	\n\
+	erl -smp enable -noinput -sname $(APP_STRING) -pa $(EBIN) -s gui start -s init stop\n" ! \
 	      > run.sh
 	chmod +x run.sh
 
 test.sh:
-	printf "#%c/bin/bash\n \
-		dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam\n \
-	        erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop" ! \
+	printf "\
+	#%c/bin/bash\n\
+	\n\
+	dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam\n\
+	erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop\n" ! \
 	      > test.sh
 	chmod +x test.sh
 
