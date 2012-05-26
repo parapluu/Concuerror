@@ -16,7 +16,8 @@ Details can be found in the LICENSE file.
 Howto
 ------
 
-* Build Concuerror   : make
-* Cleanup            : make clean
-* Run Concuerror GUI : run.sh
-* Run unit tests     : test.sh
+* Build Concuerror   : `make`
+* Run Concuerror GUI : `concuerror`
+* Run unit tests     : `make test`
+* Dialyze            : `make dialyze`
+* Cleanup            : `make clean`
