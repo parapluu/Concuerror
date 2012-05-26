@@ -15,19 +15,19 @@
 -module(rep).
 
 -export([rep_after_notify/0, rep_demonitor/1, rep_demonitor/2,
-	 rep_halt/0, rep_halt/1, rep_is_process_alive/1, rep_link/1,
-	 rep_monitor/2, rep_process_flag/2, rep_receive/1,
+         rep_halt/0, rep_halt/1, rep_is_process_alive/1, rep_link/1,
+         rep_monitor/2, rep_process_flag/2, rep_receive/1,
          rep_receive_block/0, rep_receive_notify/1,
          rep_receive_notify/2, rep_register/2, rep_send/2,
-	 rep_send/3, rep_spawn/1, rep_spawn/3, rep_spawn_link/1,
-	 rep_spawn_link/3, rep_spawn_monitor/1, rep_spawn_monitor/3,
-	 rep_spawn_opt/2, rep_spawn_opt/4, rep_unlink/1,
-	 rep_unregister/1, rep_whereis/1, rep_var/3]).
+         rep_send/3, rep_spawn/1, rep_spawn/3, rep_spawn_link/1,
+         rep_spawn_link/3, rep_spawn_monitor/1, rep_spawn_monitor/3,
+         rep_spawn_opt/2, rep_spawn_opt/4, rep_unlink/1,
+         rep_unregister/1, rep_whereis/1, rep_var/3]).
 
 -export([rep_ets_insert_new/2, rep_ets_lookup/2, rep_ets_select_delete/2,
-	 rep_ets_insert/2, rep_ets_delete/1, rep_ets_delete/2,
-	 rep_ets_match_object/1, rep_ets_match_object/3,
-	 rep_ets_match_delete/2, rep_ets_foldl/3]).
+         rep_ets_insert/2, rep_ets_delete/1, rep_ets_delete/2,
+         rep_ets_match_object/1, rep_ets_match_object/3,
+         rep_ets_match_delete/2, rep_ets_foldl/3]).
 
 -include("gen.hrl").
 
@@ -43,36 +43,36 @@
 
 %% Callback function mapping.
 -define(INSTR_MOD_FUN,
-	[{{erlang, demonitor, 1}, fun rep_demonitor/1},
-	 {{erlang, demonitor, 2}, fun rep_demonitor/2},
-	 {{erlang, halt, 0}, fun rep_halt/0},
-	 {{erlang, halt, 1}, fun rep_halt/1},
-	 {{erlang, is_process_alive, 1}, fun rep_is_process_alive/1},
-	 {{erlang, link, 1}, fun rep_link/1},
-	 {{erlang, monitor, 2}, fun rep_monitor/2},
-	 {{erlang, process_flag, 2}, fun rep_process_flag/2},
-	 {{erlang, register, 2}, fun rep_register/2},
-	 {{erlang, spawn, 1}, fun rep_spawn/1},
-	 {{erlang, spawn, 3}, fun rep_spawn/3},
-	 {{erlang, spawn_link, 1}, fun rep_spawn_link/1},
-	 {{erlang, spawn_link, 3}, fun rep_spawn_link/3},
-	 {{erlang, spawn_monitor, 1}, fun rep_spawn_monitor/1},
-	 {{erlang, spawn_monitor, 3}, fun rep_spawn_monitor/3},
-	 {{erlang, spawn_opt, 2}, fun rep_spawn_opt/2},
-	 {{erlang, spawn_opt, 4}, fun rep_spawn_opt/4},
-	 {{erlang, unlink, 1}, fun rep_unlink/1},
-	 {{erlang, unregister, 1}, fun rep_unregister/1},
-	 {{erlang, whereis, 1}, fun rep_whereis/1},
-	 {{ets, insert_new, 2}, fun rep_ets_insert_new/2},
-	 {{ets, lookup, 2}, fun rep_ets_lookup/2},
-	 {{ets, select_delete, 2}, fun rep_ets_select_delete/2},
-	 {{ets, insert, 2}, fun rep_ets_insert/2},
-	 {{ets, delete, 1}, fun rep_ets_delete/1},
-	 {{ets, delete, 2}, fun rep_ets_delete/2},
-	 {{ets, match_object, 1}, fun rep_ets_match_object/1},
-	 {{ets, match_object, 3}, fun rep_ets_match_object/3},
-	 {{ets, match_delete, 2}, fun rep_ets_match_delete/2},
-	 {{ets, foldl, 3}, fun rep_ets_foldl/3}]).
+        [{{erlang, demonitor, 1}, fun rep_demonitor/1},
+         {{erlang, demonitor, 2}, fun rep_demonitor/2},
+         {{erlang, halt, 0}, fun rep_halt/0},
+         {{erlang, halt, 1}, fun rep_halt/1},
+         {{erlang, is_process_alive, 1}, fun rep_is_process_alive/1},
+         {{erlang, link, 1}, fun rep_link/1},
+         {{erlang, monitor, 2}, fun rep_monitor/2},
+         {{erlang, process_flag, 2}, fun rep_process_flag/2},
+         {{erlang, register, 2}, fun rep_register/2},
+         {{erlang, spawn, 1}, fun rep_spawn/1},
+         {{erlang, spawn, 3}, fun rep_spawn/3},
+         {{erlang, spawn_link, 1}, fun rep_spawn_link/1},
+         {{erlang, spawn_link, 3}, fun rep_spawn_link/3},
+         {{erlang, spawn_monitor, 1}, fun rep_spawn_monitor/1},
+         {{erlang, spawn_monitor, 3}, fun rep_spawn_monitor/3},
+         {{erlang, spawn_opt, 2}, fun rep_spawn_opt/2},
+         {{erlang, spawn_opt, 4}, fun rep_spawn_opt/4},
+         {{erlang, unlink, 1}, fun rep_unlink/1},
+         {{erlang, unregister, 1}, fun rep_unregister/1},
+         {{erlang, whereis, 1}, fun rep_whereis/1},
+         {{ets, insert_new, 2}, fun rep_ets_insert_new/2},
+         {{ets, lookup, 2}, fun rep_ets_lookup/2},
+         {{ets, select_delete, 2}, fun rep_ets_select_delete/2},
+         {{ets, insert, 2}, fun rep_ets_insert/2},
+         {{ets, delete, 1}, fun rep_ets_delete/1},
+         {{ets, delete, 2}, fun rep_ets_delete/2},
+         {{ets, match_object, 1}, fun rep_ets_match_object/1},
+         {{ets, match_object, 3}, fun rep_ets_match_object/3},
+         {{ets, match_delete, 2}, fun rep_ets_match_delete/2},
+         {{ets, foldl, 3}, fun rep_ets_foldl/3}]).
 
 %%%----------------------------------------------------------------------
 %%% Callbacks
@@ -84,8 +84,8 @@
 rep_var(Mod, Fun, Args) ->
     Key = {Mod, Fun, length(Args)},
     case lists:keyfind(Key, 1, ?INSTR_MOD_FUN) of
-	{Key, Callback} -> apply(Callback, Args);
-	false -> apply(Mod, Fun, Args)
+        {Key, Callback} -> apply(Callback, Args);
+        false -> apply(Mod, Fun, Args)
     end.
 
 %% @spec: rep_demonitor(reference()) -> 'true'
@@ -203,26 +203,26 @@ rep_process_flag(Flag, Value) ->
 
 rep_receive(Fun) ->
     case ?LID_FROM_PID(self()) of
-	not_found ->
-	    log:internal("Uninstrumented process enters instrumented receive");
-	_Lid ->
-	    {messages, Mailbox} = process_info(self(), messages),
-	    case rep_receive_match(Fun, Mailbox) of
-		block ->
-		    sched:block(),
-		    rep_receive_loop(Fun);
-		continue -> ok
-	    end
+        not_found ->
+            log:internal("Uninstrumented process enters instrumented receive");
+        _Lid ->
+            {messages, Mailbox} = process_info(self(), messages),
+            case rep_receive_match(Fun, Mailbox) of
+                block ->
+                    sched:block(),
+                    rep_receive_loop(Fun);
+                continue -> ok
+            end
     end.
 
 rep_receive_loop(Fun) ->
     {messages, Mailbox} = process_info(self(), messages),
     case rep_receive_match(Fun, Mailbox) of
-	block ->
-	    sched:no_wakeup(),
-	    rep_receive_loop(Fun);
-	continue ->
-	    sched:wakeup()
+        block ->
+            sched:no_wakeup(),
+            rep_receive_loop(Fun);
+        continue ->
+            sched:wakeup()
     end.
 
 %% Blocks forever (used for 'receive after infinity -> ...' expressions).
@@ -240,8 +240,8 @@ rep_receive_match(_Fun, []) ->
     block;
 rep_receive_match(Fun, [H|T]) ->
     case Fun(H) of
-	block -> rep_receive_match(Fun, T);
-	continue -> continue
+        block -> rep_receive_match(Fun, T);
+        continue -> continue
     end.
 
 %% @spec rep_after_notify() -> 'ok'
@@ -299,15 +299,15 @@ rep_register(RegName, P) ->
 
 rep_send(Dest, Msg) ->
     case ?LID_FROM_PID(self()) of
-	not_found -> Dest ! Msg;
-	SelfLid ->
-	    NewDest = find_pid(Dest),
-	    case ?LID_FROM_PID(NewDest) of
-		not_found -> Dest ! Msg;
-		_DestLid -> Dest ! {?INSTR_MSG, SelfLid, Msg}
-	    end,
-	    sched:notify(send, {NewDest, Msg}),
-	    Msg
+        not_found -> Dest ! Msg;
+        SelfLid ->
+            NewDest = find_pid(Dest),
+            case ?LID_FROM_PID(NewDest) of
+                not_found -> Dest ! Msg;
+                _DestLid -> Dest ! {?INSTR_MSG, SelfLid, Msg}
+            end,
+            sched:notify(send, {NewDest, Msg}),
+            Msg
     end.
 
 %% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
@@ -320,17 +320,17 @@ rep_send(Dest, Msg) ->
 
 rep_send(Dest, Msg, Opt) ->
     case ?LID_FROM_PID(self()) of
-	not_found -> erlang:send(Dest, Msg, Opt);
-	SelfLid ->
-	    NewDest = find_pid(Dest),
-	    case ?LID_FROM_PID(NewDest) of
-		not_found -> erlang:send(Dest, Msg, Opt);
-		_Lid ->
-		    erlang:send(Dest,
-				{?INSTR_MSG, SelfLid, Msg}, Opt)
-	    end,
-	    sched:notify(send, {NewDest, Msg}),
-	    Msg
+        not_found -> erlang:send(Dest, Msg, Opt);
+        SelfLid ->
+            NewDest = find_pid(Dest),
+            case ?LID_FROM_PID(NewDest) of
+                not_found -> erlang:send(Dest, Msg, Opt);
+                _Lid ->
+                    erlang:send(Dest,
+                                {?INSTR_MSG, SelfLid, Msg}, Opt)
+            end,
+            sched:notify(send, {NewDest, Msg}),
+            Msg
     end.
 
 %% @spec rep_spawn(function()) -> pid()
@@ -342,11 +342,11 @@ rep_send(Dest, Msg, Opt) ->
 
 rep_spawn(Fun) ->
     case ?LID_FROM_PID(self()) of
-	not_found -> spawn(Fun);
-	_Lid ->
-	    Pid = spawn(fun() -> sched:wait(), Fun() end),
-	    sched:notify(spawn, Pid),
-	    Pid
+        not_found -> spawn(Fun);
+        _Lid ->
+            Pid = spawn(fun() -> sched:wait(), Fun() end),
+            sched:notify(spawn, Pid),
+            Pid
     end.
 
 %% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
@@ -367,11 +367,11 @@ rep_spawn(Module, Function, Args) ->
 
 rep_spawn_link(Fun) ->
     case ?LID_FROM_PID(self()) of
-	not_found -> spawn_link(Fun);
-	_Lid ->
-	    Pid = spawn_link(fun() -> sched:wait(), Fun() end),
-	    sched:notify(spawn_link, Pid),
-	    Pid
+        not_found -> spawn_link(Fun);
+        _Lid ->
+            Pid = spawn_link(fun() -> sched:wait(), Fun() end),
+            sched:notify(spawn_link, Pid),
+            Pid
     end.
 
 %% @spec rep_spawn_link(atom(), atom(), [term()]) -> pid()
@@ -392,11 +392,11 @@ rep_spawn_link(Module, Function, Args) ->
 
 rep_spawn_monitor(Fun) ->
     case ?LID_FROM_PID(self()) of
-	not_found -> spawn_monitor(Fun);
-	_Lid ->
-	    Ret = spawn_monitor(fun() -> sched:wait(), Fun() end),
-	    sched:notify(spawn_monitor, Ret),
-	    Ret
+        not_found -> spawn_monitor(Fun);
+        _Lid ->
+            Ret = spawn_monitor(fun() -> sched:wait(), Fun() end),
+            sched:notify(spawn_monitor, Ret),
+            Ret
     end.
 
 %% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}
@@ -410,49 +410,49 @@ rep_spawn_monitor(Module, Function, Args) ->
     rep_spawn_monitor(Fun).
 
 %% @spec rep_spawn_opt(function(),
-%% 		    ['link' | 'monitor' |
+%%       ['link' | 'monitor' |
 %%                   {'priority', process_priority_level()} |
-%% 		     {'fullsweep_after', integer()} |
-%% 		     {'min_heap_size', integer()} |
-%% 		     {'min_bin_vheap_size', integer()}]) ->
-%% 			   pid() | {pid(), reference()}
+%%        {'fullsweep_after', integer()} |
+%%        {'min_heap_size', integer()} |
+%%        {'min_bin_vheap_size', integer()}]) ->
+%%       pid() | {pid(), reference()}
 %% @doc: Replacement for `spawn_opt/2'.
 %%
 %% When spawned, the new process has to yield.
 -spec rep_spawn_opt(function(),
-		    ['link' | 'monitor' |
+                    ['link' | 'monitor' |
                      {'priority', process_priority_level()} |
-		     {'fullsweep_after', integer()} |
-		     {'min_heap_size', integer()} |
-		     {'min_bin_vheap_size', integer()}]) ->
-			   pid() | {pid(), reference()}.
+                     {'fullsweep_after', integer()} |
+                     {'min_heap_size', integer()} |
+                     {'min_bin_vheap_size', integer()}]) ->
+                           pid() | {pid(), reference()}.
 
 rep_spawn_opt(Fun, Opt) ->
     case ?LID_FROM_PID(self()) of
-	not_found -> spawn_opt(Fun, Opt);
-	_Lid ->
-	    Ret = spawn_opt(fun() -> sched:wait(), Fun() end, Opt),
-	    sched:notify(spawn_opt, {Ret, Opt}),
-	    Ret
+        not_found -> spawn_opt(Fun, Opt);
+        _Lid ->
+            Ret = spawn_opt(fun() -> sched:wait(), Fun() end, Opt),
+            sched:notify(spawn_opt, {Ret, Opt}),
+            Ret
     end.
 
 %% @spec rep_spawn_opt(atom(), atom(), [term()],
-%% 		    ['link' | 'monitor' |
+%%       ['link' | 'monitor' |
 %%                   {'priority', process_priority_level()} |
-%% 		     {'fullsweep_after', integer()} |
-%% 		     {'min_heap_size', integer()} |
-%% 		     {'min_bin_vheap_size', integer()}]) ->
-%% 			   pid() | {pid(), reference()}
+%%        {'fullsweep_after', integer()} |
+%%        {'min_heap_size', integer()} |
+%%        {'min_bin_vheap_size', integer()}]) ->
+%%       pid() | {pid(), reference()}
 %% @doc: Replacement for `spawn_opt/4'.
 %%
 %% When spawned, the new process has to yield.
 -spec rep_spawn_opt(atom(), atom(), [term()],
-		    ['link' | 'monitor' |
+                    ['link' | 'monitor' |
                      {'priority', process_priority_level()} |
-		     {'fullsweep_after', integer()} |
-		     {'min_heap_size', integer()} |
-		     {'min_bin_vheap_size', integer()}]) ->
-			   pid() | {pid(), reference()}.
+                     {'fullsweep_after', integer()} |
+                     {'min_heap_size', integer()} |
+                     {'min_bin_vheap_size', integer()}]) ->
+                           pid() | {pid(), reference()}.
 
 rep_spawn_opt(Module, Function, Args, Opt) ->
     Fun = fun() -> apply(Module, Function, Args) end,

@@ -59,8 +59,8 @@
 %% state   : The current state of the program.
 -record(context, {active         :: ?SET_TYPE(lid:lid()),
                   blocked        :: ?SET_TYPE(lid:lid()),
-		  current        :: lid:lid(),
-		  details        :: boolean(),
+                  current        :: lid:lid(),
+                  details        :: boolean(),
                   error          :: ?NO_ERROR | error:error(),
                   state          :: state:state()}).
 
@@ -75,8 +75,8 @@
 
 %% Special internal message format (fields same as above).
 -record(special, {msg :: atom(),
-		  lid :: lid:lid() | 'not_found',
-		  misc = empty :: term()}).
+                  lid :: lid:lid() | 'not_found',
+                  misc = empty :: term()}).
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -85,14 +85,15 @@
 -type analysis_info() :: {analysis_target(), non_neg_integer()}.
 
 -type analysis_options() :: ['details' |
-			     {'files', [file()]} |
-			     {'init_state', state:state()} |
-			     {'preb', bound()}].
+                             {'files', [file()]} |
+                             {'init_state', state:state()} |
+                             {'preb',  bound()}].
 
 %% Analysis result tuple.
 -type analysis_ret() :: {'ok', analysis_info()} |
                         {'error', 'instr', analysis_info()} |
-                        {'error', 'analysis', analysis_info(), [ticket:ticket()]}.
+                        {'error', 'analysis', analysis_info(),
+                         [ticket:ticket()]}.
 
 %% Module-Function-Arguments tuple.
 -type analysis_target() :: {module(), atom(), [term()]}.
@@ -116,40 +117,40 @@
 analyze(Target, Options) ->
     %% List of files to instrument.
     Files =
-	case lists:keyfind(files, 1, Options) of
-	    false -> [];
-	    {files, List} -> List
-	end,
+        case lists:keyfind(files, 1, Options) of
+            false -> [];
+            {files, List} -> List
+        end,
     %% Disable error logging messages.
     ?tty(),
-    Ret = 
-	case instr:instrument_and_compile(Files) of
-	    {ok, Bin} ->
-		%% Note: No error checking for load
-		ok = instr:load(Bin),
-		log:log("Running analysis...~n"),
-		{T1, _} = statistics(wall_clock),
-		ISOption = {init_state, state:empty()},
-		BinOption = {bin, Bin},
-		Result = interleave(Target, [BinOption, ISOption|Options]),
-		{T2, _} = statistics(wall_clock),
-		{Mins, Secs} = elapsed_time(T1, T2),
-		case Result of
-		    {ok, RunCount} ->
-			log:log("Analysis complete (checked ~w interleaving(s) "
-				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-			log:log("No errors found.~n"),
-			{ok, {Target, RunCount}};
-		    {error, RunCount, Tickets} ->
-			TicketCount = length(Tickets),
-			log:log("Analysis complete (checked ~w interleaving(s) "
-				"in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-			log:log("Found ~p erroneous interleaving(s).~n",
-				[TicketCount]),
-			{error, analysis, {Target, RunCount}, Tickets}
-		end;
-	    error -> {error, instr, {Target, 0}}
-	end,
+    Ret =
+        case instr:instrument_and_compile(Files) of
+            {ok, Bin} ->
+                %% Note: No error checking for load
+                ok = instr:load(Bin),
+                log:log("Running analysis...~n"),
+                {T1, _} = statistics(wall_clock),
+                ISOption = {init_state, state:empty()},
+                BinOption = {bin, Bin},
+                Result = interleave(Target, [BinOption, ISOption|Options]),
+                {T2, _} = statistics(wall_clock),
+                {Mins, Secs} = elapsed_time(T1, T2),
+                case Result of
+                    {ok, RunCount} ->
+                        log:log("Analysis complete (checked ~w interleaving(s) "
+                                "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
+                        log:log("No errors found.~n"),
+                        {ok, {Target, RunCount}};
+                    {error, RunCount, Tickets} ->
+                        TicketCount = length(Tickets),
+                        log:log("Analysis complete (checked ~w interleaving(s) "
+                                "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
+                        log:log("Found ~p erroneous interleaving(s).~n",
+                                [TicketCount]),
+                        {error, analysis, {Target, RunCount}, Tickets}
+                end;
+            error -> {error, instr, {Target, 0}}
+        end,
     instr:delete_and_purge(Files),
     Ret.
 
@@ -182,7 +183,7 @@ interleave(Target, Options) ->
     Self = self(),
     spawn_link(fun() -> interleave_aux(Target, Options, Self) end),
     receive
-	{interleave_result, Result} -> Result
+        {interleave_result, Result} -> Result
     end.
 
 interleave_aux(Target, Options, Parent) ->
@@ -197,11 +198,11 @@ interleave_aux(Target, Options, Parent) ->
     {init_state, InitState} = lists:keyfind(init_state, 1, Options),
     state_save(InitState),
     PreBound =
-	case lists:keyfind(preb, 1, Options) of
-	    {preb, inf} -> ?INFINITY;
-	    {preb, Bound} -> Bound;
-	    false -> ?INFINITY
-	end,
+        case lists:keyfind(preb, 1, Options) of
+            {preb, inf} -> ?INFINITY;
+            {preb, Bound} -> Bound;
+            false -> ?INFINITY
+        end,
     Result = interleave_outer_loop(Target, 0, [], -1, PreBound, Options),
     state_stop(),
     unregister(?RP_SCHED),
@@ -215,8 +216,8 @@ interleave_outer_loop(Target, RunCnt, Tickets, CurrBound, MaxBound, Options) ->
     TotalTickets = NewTickets ++ Tickets,
     state_swap(),
     case state_peak() of
-	no_state -> interleave_outer_loop_ret(TotalTickets, TotalRunCnt);
-	_State ->
+        no_state -> interleave_outer_loop_ret(TotalTickets, TotalRunCnt);
+        _State ->
             case Stop of
                 true -> interleave_outer_loop_ret(TotalTickets, TotalRunCnt);
                 false ->
@@ -244,24 +245,24 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
             lid:start(),
-	    %% Save current process list (any process created after
-	    %% this will be cleaned up at the end of the run)
-	    ProcBefore = processes(),
-	    %% Spawn initial user process
-	    {Mod, Fun, Args} = Target,
-	    NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
+            %% Save current process list (any process created after
+            %% this will be cleaned up at the end of the run)
+            ProcBefore = processes(),
+            %% Spawn initial user process
+            {Mod, Fun, Args} = Target,
+            NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
             FirstPid = spawn_link(NewFun),
-	    %% Initialize scheduler context
+            %% Initialize scheduler context
             FirstLid = lid:new(FirstPid, noparent),
             Active = ?SETS:add_element(FirstLid, ?SETS:new()),
             Blocked = ?SETS:new(),
             State = state:empty(),
-	    Context = #context{active = Active, blocked = Blocked,
+            Context = #context{active = Active, blocked = Blocked,
                                state = State, details = Det},
-	    %% Interleave using driver
+            %% Interleave using driver
             Ret = driver(Context, ReplayState),
-	    %% Cleanup
-	    proc_cleanup(processes() -- ProcBefore),
+            %% Cleanup
+            proc_cleanup(processes() -- ProcBefore),
             lid:stop(),
             NewTickets =
                 case Ret of
@@ -273,19 +274,19 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
                             false -> log:show_error(Ticket)
                         end,
                         [Ticket|Tickets];
-		    _OtherRet1 -> Tickets
+                    _OtherRet1 -> Tickets
                 end,
-	    NewRunCnt =
-		case Ret of
-		    abort ->
-			?debug_1("-----------------------~n"),
-			?debug_1("Run aborted.~n~n"),
-			RunCnt;
-		    _OtherRet2 ->
-			?debug_1("-----------------------~n"),
-			?debug_1("Run terminated.~n~n"),
-			RunCnt + 1
-		end,
+            NewRunCnt =
+                case Ret of
+                    abort ->
+                        ?debug_1("-----------------------~n"),
+                        ?debug_1("Run aborted.~n~n"),
+                        RunCnt;
+                    _OtherRet2 ->
+                        ?debug_1("-----------------------~n"),
+                        ?debug_1("Run terminated.~n~n"),
+                        RunCnt + 1
+                end,
             receive
                 stop_analysis -> {NewRunCnt - 1, NewTickets, true}
             after 0 ->
@@ -299,8 +300,8 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
 
 driver(Context, ReplayState) ->
     case state:is_empty(ReplayState) of
-	true -> driver_normal(Context);
-	false -> driver_replay(Context, ReplayState)
+        true -> driver_normal(Context);
+        false -> driver_replay(Context, ReplayState)
     end.
 
 driver_replay(Context, ReplayState) ->
@@ -308,33 +309,33 @@ driver_replay(Context, ReplayState) ->
     NewContext = run(Context#context{current = Next, error = ?NO_ERROR}),
     #context{blocked = NewBlocked} = NewContext,
     case state:is_empty(Rest) of
-	true ->
-	    case ?SETS:is_element(Next, NewBlocked) of
-		%% If the last action of the replayed state prefix is a block,
-		%% we can safely abort.
-		true -> abort;
-		%% Replay has finished; proceed in normal mode, after checking
-		%% for errors during the last replayed action.
-		false -> check_for_errors(NewContext)
-	    end;
-	false ->
-	    case ?SETS:is_element(Next, NewBlocked) of
-		true -> log:internal("Proc. ~p should be active.", [Next]);
-		false -> driver_replay(NewContext, Rest)
-	    end
+        true ->
+            case ?SETS:is_element(Next, NewBlocked) of
+                %% If the last action of the replayed state prefix is a block,
+                %% we can safely abort.
+                true -> abort;
+                %% Replay has finished; proceed in normal mode, after checking
+                %% for errors during the last replayed action.
+                false -> check_for_errors(NewContext)
+            end;
+        false ->
+            case ?SETS:is_element(Next, NewBlocked) of
+                true -> log:internal("Proc. ~p should be active.", [Next]);
+                false -> driver_replay(NewContext, Rest)
+            end
     end.
 
 driver_normal(#context{active = Active, current = LastLid,
-		       state = State} = Context) ->
+                       state = State} = Context) ->
     Next =
-	case ?SETS:is_element(LastLid, Active) of
-	    true ->
-		TmpActive = ?SETS:to_list(?SETS:del_element(LastLid, Active)),
-		{LastLid,TmpActive, next};
-	    false ->
-		[Head|TmpActive] = ?SETS:to_list(Active),
-		{Head, TmpActive, current}
-	end,
+        case ?SETS:is_element(LastLid, Active) of
+            true ->
+                TmpActive = ?SETS:to_list(?SETS:del_element(LastLid, Active)),
+                {LastLid,TmpActive, next};
+            false ->
+                [Head|TmpActive] = ?SETS:to_list(Active),
+                {Head, TmpActive, current}
+        end,
     {NewContext, Insert} = run_no_block(Context, Next),
     insert_states(State, Insert),
     check_for_errors(NewContext).
@@ -349,34 +350,34 @@ driver_normal(#context{active = Active, current = LastLid,
 %% - There exists at least one active process =>
 %%   Continue run.
 check_for_errors(#context{active = NewActive, blocked = NewBlocked,
-			  error = NewError, state = NewState} = NewContext) ->
+                          error = NewError, state = NewState} = NewContext) ->
     case NewError of
-	?NO_ERROR ->
-	    case ?SETS:size(NewActive) of
-		0 ->
-		    case ?SETS:size(NewBlocked) of
-			0 -> ok;
-			_NonEmptyBlocked ->
-			    Deadlock = error:new({deadlock, NewBlocked}),
-			    {error, Deadlock, NewState}
-		    end;
-		_NonEmptyActive -> driver_normal(NewContext)
-	    end;
-	_Other -> {error, NewError, NewState}
+        ?NO_ERROR ->
+            case ?SETS:size(NewActive) of
+                0 ->
+                    case ?SETS:size(NewBlocked) of
+                        0 -> ok;
+                        _NonEmptyBlocked ->
+                            Deadlock = error:new({deadlock, NewBlocked}),
+                            {error, Deadlock, NewState}
+                    end;
+                _NonEmptyActive -> driver_normal(NewContext)
+            end;
+        _Other -> {error, NewError, NewState}
     end.
 
 run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
     NewContext = run(Context#context{current = Next, error = ?NO_ERROR}),
     #context{blocked = NewBlocked} = NewContext,
     case ?SETS:is_element(Next, NewBlocked) of
-	true ->
-	    case Rest of
-		[] -> {NewContext#context{state = State}, {[], W}};
-		[RH|RT] ->
-		    NextContext = NewContext#context{state = State},
-		    run_no_block(NextContext, {RH, RT, current})
-	    end;
-	false -> {NewContext, {Rest, W}}
+        true ->
+            case Rest of
+                [] -> {NewContext#context{state = State}, {[], W}};
+                [RH|RT] ->
+                    NextContext = NewContext#context{state = State},
+                    run_no_block(NextContext, {RH, RT, current})
+            end;
+        false -> {NewContext, {Rest, W}}
     end.
 
 insert_states(State, {Lids, current}) ->
@@ -399,25 +400,25 @@ run(#context{current = Lid, state = State} = Context) ->
 check_wakeup(Lid, #context{active = Active, blocked = Blocked} = Context) ->
     continue(Lid),
     receive
-	#special{msg = wakeup} ->
-	    NewBlocked = ?SETS:del_element(Lid, Blocked),
-	    NewActive = ?SETS:add_element(Lid, Active),
-	    Context#context{active = NewActive, blocked = NewBlocked};
-	#special{msg = no_wakeup} -> Context
+        #special{msg = wakeup} ->
+            NewBlocked = ?SETS:del_element(Lid, Blocked),
+            NewActive = ?SETS:add_element(Lid, Active),
+            Context#context{active = NewActive, blocked = NewBlocked};
+        #special{msg = no_wakeup} -> Context
     end.
 
 %% Delegate notifications sent by instrumented client code to the appropriate
 %% handlers.
 dispatch(Context) ->
     receive
-	#sched{msg = Type, lid = Lid, misc = Misc} ->
-	    handler(Type, Lid, Context, Misc);
-	%% Ignore unknown processes.
-	{'EXIT', Pid, Reason} ->
-	    case lid:from_pid(Pid) of
-		not_found -> dispatch(Context);
-		Lid -> handler(exit, Lid, Context, Reason)
-	    end
+        #sched{msg = Type, lid = Lid, misc = Misc} ->
+            handler(Type, Lid, Context, Misc);
+        %% Ignore unknown processes.
+        {'EXIT', Pid, Reason} ->
+            case lid:from_pid(Pid) of
+                not_found -> dispatch(Context);
+                Lid -> handler(exit, Lid, Context, Reason)
+            end
     end.
 
 %%%----------------------------------------------------------------------
@@ -430,7 +431,7 @@ handler('after', Lid, #context{details = Det} = Context, _Misc) ->
 
 %% Move the process to the blocked set.
 handler(block, Lid,
-	#context{active = Active, blocked = Blocked, details = Det} = Context,
+        #context{active = Active, blocked = Blocked, details = Det} = Context,
         _Misc) ->
     NewActive = ?SETS:del_element(Lid, Active),
     NewBlocked = ?SETS:add_element(Lid, Blocked),
@@ -447,19 +448,19 @@ handler(demonitor, Lid, #context{details = Det} = Context, _Ref) ->
 %% NOTE: This is called after a process has exited, not when it calls
 %%       exit/1 or exit/2.
 handler(exit, Lid, #context{active = Active, details = Det} = Context,
-	Reason) ->
+        Reason) ->
     NewActive = ?SETS:del_element(Lid, Active),
     %% Cleanup LID stored info.
     lid:cleanup(Lid),
     %% Handle and propagate errors.
     case Reason of
-	normal ->
-	    log_details(Det, {exit, Lid, normal}),
-	    Context#context{active = NewActive};
-	_Else ->
-	    Error = error:new(Reason),
-	    log_details(Det, {exit, Lid, error:type(Error)}),
-	    Context#context{active = NewActive, error = Error}
+        normal ->
+            log_details(Det, {exit, Lid, normal}),
+            Context#context{active = NewActive};
+        _Else ->
+            Error = error:new(Reason),
+            log_details(Det, {exit, Lid, error:type(Error)}),
+            Context#context{active = NewActive, error = Error}
     end;
 
 %% Return empty active and blocked queues to force run termination.
@@ -514,7 +515,7 @@ handler(send, Lid, #context{details = Det} = Context, {DstPid, Msg}) ->
 %% Link the newly spawned process to the scheduler process and add it to the
 %% active set.
 handler(spawn, ParentLid,
-	#context{active = Active, details = Det} = Context, ChildPid) ->
+        #context{active = Active, details = Det} = Context, ChildPid) ->
     link(ChildPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn, ParentLid, ChildLid}),
@@ -523,7 +524,7 @@ handler(spawn, ParentLid,
 
 %% FIXME: Refactor this (it's exactly the same as 'spawn')
 handler(spawn_link, ParentLid,
-	#context{active = Active, details = Det} = Context, ChildPid) ->
+        #context{active = Active, details = Det} = Context, ChildPid) ->
     link(ChildPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn_link, ParentLid, ChildLid}),
@@ -532,7 +533,7 @@ handler(spawn_link, ParentLid,
 
 %% FIXME: Refactor this (it's almost the same as 'spawn')
 handler(spawn_monitor, ParentLid,
-	#context{active = Active, details = Det} = Context, {ChildPid, _Ref}) ->
+        #context{active = Active, details = Det} = Context, {ChildPid, _Ref}) ->
     link(ChildPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     log_details(Det, {spawn_monitor, ParentLid, ChildLid}),
@@ -541,16 +542,16 @@ handler(spawn_monitor, ParentLid,
 
 %% Similar to above depending on options.
 handler(spawn_opt, ParentLid,
-	#context{active = Active, details = Det} = Context, {Ret, Opt}) ->
+        #context{active = Active, details = Det} = Context, {Ret, Opt}) ->
     {ChildPid, _Ref} =
-	case Ret of
-	    {_C, _R} = CR -> CR;
-	    C -> {C, noref}
-	end,
+        case Ret of
+            {_C, _R} = CR -> CR;
+            C -> {C, noref}
+        end,
     link(ChildPid),
     ChildLid = lid:new(ChildPid, ParentLid),
     Opts = sets:to_list(sets:intersection(sets:from_list([link, monitor]),
-					  sets:from_list(Opt))),
+                                          sets:from_list(Opt))),
     log_details(Det, {spawn_opt, ParentLid, ChildLid, Opts}),
     NewActive = ?SETS:add_element(ChildLid, Active),
     Context#context{active = NewActive};
@@ -607,26 +608,26 @@ elapsed_time(T1, T2) ->
 log_details(Det, Action) ->
     ?debug_1(proc_action:to_string(Action) ++ "~n"),
     case Det of
-		true -> replay_logger:log(Action);
-	false -> continue
+        true -> replay_logger:log(Action);
+        false -> continue
     end.
 
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
 state_load() ->
     case ets:first(?NT_STATE1) of
-	'$end_of_table' -> no_state;
-	State ->
-	    ets:delete(?NT_STATE1, State),
-	    State
+        '$end_of_table' -> no_state;
+        State ->
+            ets:delete(?NT_STATE1, State),
+            State
     end.
 
 %% Return a state without removing it.
 %% If no states available, return 'no_state'.
 state_peak() ->
     case ets:first(?NT_STATE1) of
-	'$end_of_table' ->  no_state;
-	State -> State
+        '$end_of_table' ->  no_state;
+        State -> State
     end.
 
 %% Add a state to the current `state` table.
@@ -682,10 +683,10 @@ continue(Lid) ->
 
 notify(Msg, Misc) ->
     case lid_from_pid(self()) of
-	not_found -> ok;
-	Lid ->
-	    ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc},
-	    wait()
+        not_found -> ok;
+        Lid ->
+            ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc},
+            wait()
     end.
 
 %% TODO: Maybe move into lid module.
@@ -715,5 +716,5 @@ no_wakeup() ->
 
 wait() ->
     receive
-	#sched{msg = continue} -> ok
+        #sched{msg = continue} -> ok
     end.

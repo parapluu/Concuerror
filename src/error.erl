@@ -52,18 +52,18 @@ short({exception, Reason}) ->
 
 long({deadlock, _Blocked} = Error) ->
     Format = "Error type        : Deadlock~n"
-	     "Blocked processes : ~s",
+        "Blocked processes : ~s",
     util:flat_format(Format, [short(Error)]);
 long({assertion_violation,
       [{module, Module}, {line, Line}, _Xpr, {expected, Exp}, {value, Val}]}) ->
     Format = "Error type        : Assertion violation~n"
-	     "Module:Line       : ~p.erl:~p~n"
-	     "Expected          : ~p~n"
-	     "Value             : ~p",
+        "Module:Line       : ~p.erl:~p~n"
+        "Expected          : ~p~n"
+        "Value             : ~p",
     util:flat_format(Format, [Module, Line, Exp, Val]);
 long({exception, Details}) ->
     Format = "Error type        : Exception~n"
-             "Details           : ~p",
+        "Details           : ~p",
     util:flat_format(Format, [Details]).
 
 -spec mock() -> {'exception', 'foobar'}.

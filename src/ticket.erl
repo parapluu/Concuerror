@@ -23,11 +23,11 @@
 %% An error ticket containing all necessary information needed to replay the
 %% interleaving that caused it.
 -type ticket() :: {sched:analysis_target(), [file()],
-		   error:error(), state:state()}.
+                   error:error(), state:state()}.
 
 %% @doc: Create a new error ticket.
 -spec new(sched:analysis_target(), [file()], error:error(), state:state()) ->
-		 ticket().
+                 ticket().
 
 new(Target, Files, Error, ErrorState) ->
     {Target, Files, Error, ErrorState}.
@@ -44,7 +44,7 @@ get_files({_Target, Files, _Error, _ErrorState}) ->
 -spec get_error(ticket()) -> error:error().
 
 get_error({_Target, _Files, Error, _ErrorState}) ->
-   Error.
+    Error.
 
 -spec get_state(ticket()) -> state:state().
 

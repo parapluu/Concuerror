@@ -14,7 +14,7 @@
 
 -module(util).
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0,
-	 funs/1, funs/2, funLine/3]).
+         funs/1, funs/2, funLine/3]).
 
 -include("gen.hrl").
 
@@ -48,7 +48,7 @@ flat_format(String, Args) ->
 
 flush_mailbox() ->
     receive
-	_Any -> flush_mailbox()
+        _Any -> flush_mailbox()
     after 0 -> ok
     end.
 
@@ -59,7 +59,7 @@ flush_mailbox() ->
 funs(File) ->
     funs(File, tuple).
 
-%% @type: funs_options() = 'tuple' | 'string'. 
+%% @type: funs_options() = 'tuple' | 'string'.
 %% @spec funs(string(), Options::funs_options()) ->
 %%              [{atom(), non_neg_integer()}] | [string()]
 %% @doc: Scan a file for exported functions.
@@ -82,22 +82,22 @@ getFuns([], Funs) ->
     Funs;
 getFuns([Node|Rest] = L, Funs) ->
     case erl_syntax:type(Node) of
-	attribute ->
-	    Name = erl_syntax:atom_name(erl_syntax:attribute_name(Node)),
-	    case Name of
-		"export" ->
-		    [List] = erl_syntax:attribute_arguments(Node),
-		    Args = erl_syntax:list_elements(List),
-		    NewFuns = getExports(Args, []),
-		    getFuns(Rest, NewFuns ++ Funs);
-		_Other -> getFuns(Rest, Funs)
-	    end;
-	function ->
-	    case Funs of
-		[] -> getAllFuns(L, []);
-		_Other -> Funs
-	    end;
-	_Other -> getFuns(Rest, Funs)
+        attribute ->
+            Name = erl_syntax:atom_name(erl_syntax:attribute_name(Node)),
+            case Name of
+                "export" ->
+                    [List] = erl_syntax:attribute_arguments(Node),
+                    Args = erl_syntax:list_elements(List),
+                    NewFuns = getExports(Args, []),
+                    getFuns(Rest, NewFuns ++ Funs);
+                _Other -> getFuns(Rest, Funs)
+            end;
+        function ->
+            case Funs of
+                [] -> getAllFuns(L, []);
+                _Other -> Funs
+            end;
+        _Other -> getFuns(Rest, Funs)
     end.
 
 getExports([], Exp) ->
@@ -111,11 +111,11 @@ getAllFuns([], Funs) ->
     Funs;
 getAllFuns([Node|Rest], Funs) ->
     case erl_syntax:type(Node) of
-	function ->
-	    Name = erl_syntax:atom_name(erl_syntax:function_name(Node)),
-	    Arity = erl_syntax:function_arity(Node),
-	    getAllFuns(Rest, [{list_to_atom(Name), Arity}|Funs]);
-	_Other -> getAllFuns(Rest, Funs)
+        function ->
+            Name = erl_syntax:atom_name(erl_syntax:function_name(Node)),
+            Arity = erl_syntax:function_arity(Node),
+            getAllFuns(Rest, [{list_to_atom(Name), Arity}|Funs]);
+        _Other -> getAllFuns(Rest, Funs)
     end.
 
 -spec funLine(string(), atom(), arity()) -> integer().
@@ -128,12 +128,12 @@ getFunLine([], _Function, _Arity) ->
     -1;
 getFunLine([Node|Rest], Function, Arity) ->
     case erl_syntax:type(Node) of
-	function ->
-	    F = erl_syntax:atom_name(erl_syntax:function_name(Node)),
-	    A = erl_syntax:function_arity(Node),
+        function ->
+            F = erl_syntax:atom_name(erl_syntax:function_name(Node)),
+            A = erl_syntax:function_arity(Node),
             case (Function =:= list_to_atom(F)) andalso (Arity =:= A) of
                 true -> erl_syntax:get_pos(Node);
                 false -> getFunLine(Rest, Function, Arity)
             end;
-	_Other -> getFunLine(Rest, Function, Arity)
+        _Other -> getFunLine(Rest, Function, Arity)
     end.

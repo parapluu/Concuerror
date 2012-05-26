@@ -107,11 +107,11 @@ setupFrame() ->
     ref_add(?FRAME, Frame),
     MenuBar = wxMenuBar:new(),
     setupMenu(MenuBar, ?MENU_SPEC),
-%    Icons = wxIconBundle:new(),
-%    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH16)),
-%    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH32)),
-%    wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH64)),
-%    wxFrame:setIcons(Frame, Icons),
+    %% Icons = wxIconBundle:new(),
+    %% wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH16)),
+    %% wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH32)),
+    %% wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH64)),
+    %% wxFrame:setIcons(Frame, Icons),
     wxFrame:setMenuBar(Frame, MenuBar),
     _ = wxFrame:createStatusBar(Frame, [{id, ?STATUS_BAR}]),
     wxEvtHandler:connect(Frame, close_window),
@@ -145,7 +145,7 @@ setupTopSplitter(Parent) ->
 %% Sets initial sizes for all splitters.
 setSplitterInitSizes() ->
     Fun = fun(S, V) -> wxSplitterWindow:setSashPosition(ref_lookup(S), V)
-	  end,
+          end,
     lists:foreach(fun ({S, V}) -> Fun(S, V) end, ?SPLITTER_INIT).
 
 %% Setup left column of top-level panel, including module and function
@@ -165,8 +165,8 @@ setupLeftColumn(Parent) ->
     %% Add padding to the whole sizer.
     LeftColumnSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(LeftColumnSizerOuter, Splitter,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     LeftColumnSizerOuter.
 
 setupModuleSizer(Parent) ->
@@ -179,30 +179,30 @@ setupModuleSizer(Parent) ->
     %% Setup button sizers
     AddRemSizer = wxBoxSizer:new(?wxHORIZONTAL),
     _ = wxSizer:add(AddRemSizer, AddButton,
-		    [{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
+                    [{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
     _ = wxSizer:add(AddRemSizer, RemButton,
-		    [{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
+                    [{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
     ClrSizer = wxBoxSizer:new(?wxHORIZONTAL),
     _ = wxSizer:add(ClrSizer, ClearButton,
-		    [{proportion, 1}, {border, 5}]),
+                    [{proportion, 1}, {border, 5}]),
     %% Setup module sizers
     ModuleSizer = wxStaticBoxSizer:new(ModuleBox, ?wxVERTICAL),
     _ = wxSizer:add(ModuleSizer, ModuleList,
-		    [{proportion, 1},
-		     {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
-		     {border, 10}]),
+                    [{proportion, 1},
+                     {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
+                     {border, 10}]),
     _ = wxSizer:add(ModuleSizer, AddRemSizer,
-		    [{proportion, 0},
-		     {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
-		     {border, 10}]),
+                    [{proportion, 0},
+                     {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
+                     {border, 10}]),
     _ = wxSizer:add(ModuleSizer, ClrSizer,
-		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     %% Add padding to the whole sizer.
     ModuleSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(ModuleSizerOuter, ModuleSizer,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
-		     {border, 5}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+                     {border, 5}]),
     ModuleSizerOuter.
 
 setupFunctionSizer(Parent) ->
@@ -217,23 +217,23 @@ setupFunctionSizer(Parent) ->
     %% Setup sizers
     AnalStopSizer = wxBoxSizer:new(?wxHORIZONTAL),
     _ = wxSizer:add(AnalStopSizer, AnalyzeButton,
-		    [{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
+                    [{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
     _ = wxSizer:add(AnalStopSizer, StopButton,
-		    [{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
+                    [{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
     ref_add(?ANAL_STOP_SIZER, AnalStopSizer),
     FunctionSizer = wxStaticBoxSizer:new(FunctionBox, ?wxVERTICAL),
     _ = wxSizer:add(FunctionSizer, FunctionList,
-		    [{proportion, 1},
-		     {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
-		     {border, 10}]),
+                    [{proportion, 1},
+                     {flag, ?wxEXPAND bor ?wxTOP bor ?wxLEFT bor ?wxRIGHT},
+                     {border, 10}]),
     _ = wxSizer:add(FunctionSizer, AnalStopSizer,
-		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     %% Add padding to the whole sizer.
     FunctionSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(FunctionSizerOuter, FunctionSizer,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
-		     {border, 0}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxTOP},
+                     {border, 0}]),
     FunctionSizerOuter.
 
 %% Setup right column of top-level panel, including a notebook for displaying
@@ -254,8 +254,8 @@ setupRightColumn(Parent) ->
     %% Add padding to the whole sizer.
     RightColumnSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(RightColumnSizerOuter, Splitter,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     RightColumnSizerOuter.
 
 %% Setup main notebook, containing 3 tabs:
@@ -281,8 +281,8 @@ setupMainNotebookSizer(Parent) ->
     %% Add padding to the notebook.
     NotebookSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(NotebookSizerOuter, Notebook,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
-		     {border, 5}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+                     {border, 5}]),
     NotebookSizerOuter.
 
 setupMainPanel(Parent) ->
@@ -301,8 +301,8 @@ setupMainPanel(Parent) ->
     %% Add padding to the panel.
     MainPanelSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(MainPanelSizerOuter, Splitter,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     wxWindow:setSizer(MainPanel, MainPanelSizerOuter),
     MainPanel.
 
@@ -313,13 +313,13 @@ setupErrorListSizer(Parent) ->
     %% Setup sizers.
     ErrorSizer = wxStaticBoxSizer:new(ErrorBox, ?wxVERTICAL),
     _ = wxSizer:add(ErrorSizer, ErrorList,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     %% Add padding to the whole sizer.
     ErrorSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(ErrorSizerOuter, ErrorSizer,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxRIGHT},
-		     {border, 5}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxRIGHT},
+                     {border, 5}]),
     ErrorSizerOuter.
 
 setupIleaveListSizer(Parent) ->
@@ -329,13 +329,13 @@ setupIleaveListSizer(Parent) ->
     %% Setup sizers.
     IleaveSizer = wxStaticBoxSizer:new(IleaveBox, ?wxVERTICAL),
     _ = wxSizer:add(IleaveSizer, IleaveList,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     %% Add padding to the whole sizer.
     IleaveSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(IleaveSizerOuter, IleaveSizer,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxLEFT},
-		     {border, 5}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxLEFT},
+                     {border, 5}]),
     IleaveSizerOuter.
 
 %% Setup the graph panel.
@@ -353,8 +353,8 @@ setupGraphPanel(Parent) ->
     %% Setup sizer.
     PanelSizer = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(PanelSizer, ScrGraph,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     wxWindow:setSizer(Panel, PanelSizer),
     Panel.
 
@@ -366,8 +366,8 @@ setupSourcePanel(Parent) ->
     %% Setup sizer.
     PanelSizer = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(PanelSizer, SourceText,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     wxWindow:setSizer(Panel, PanelSizer),
     Panel.
 
@@ -380,12 +380,12 @@ setupSourceText(Ref, Theme) ->
     BoldFont = wxFont:new(10, ?wxFONTFAMILY_TELETYPE, ?wxNORMAL,
                           ?wxBOLD, []),
     case Theme of
-	dark ->
-	    Styles = ?SOURCE_STYLES_DARK,
-	    BgColor = ?SOURCE_BG_DARK;
-	light ->
-	    Styles = ?SOURCE_STYLES_LIGHT,
-	    BgColor = ?SOURCE_BG_LIGHT
+        dark ->
+            Styles = ?SOURCE_STYLES_DARK,
+            BgColor = ?SOURCE_BG_DARK;
+        light ->
+            Styles = ?SOURCE_STYLES_LIGHT,
+            BgColor = ?SOURCE_BG_LIGHT
     end,
     wxStyledTextCtrl:styleClearAll(Ref),
     wxStyledTextCtrl:styleSetFont(Ref, ?wxSTC_STYLE_DEFAULT, NormalFont),
@@ -400,15 +400,19 @@ setupSourceText(Ref, Theme) ->
     wxStyledTextCtrl:setReadOnly(Ref, true),
     wxStyledTextCtrl:setWrapMode(Ref, ?wxSTC_WRAP_WORD),
     SetStyles = fun({Style, Color, Option}) ->
-		  case Option of
-		      bold ->
-			  wxStyledTextCtrl:styleSetFont(Ref, Style, BoldFont);
-		      _Other ->
-			  wxStyledTextCtrl:styleSetFont(Ref, Style, NormalFont)
-		  end,
-		  wxStyledTextCtrl:styleSetForeground(Ref, Style, Color),
-		  wxStyledTextCtrl:styleSetBackground(Ref, Style, BgColor)
-		end,
+                        case Option of
+                            bold ->
+                                wxStyledTextCtrl:styleSetFont(Ref,
+                                                              Style,
+                                                              BoldFont);
+                            _Other ->
+                                wxStyledTextCtrl:styleSetFont(Ref,
+                                                              Style,
+                                                              NormalFont)
+                        end,
+                        wxStyledTextCtrl:styleSetForeground(Ref, Style, Color),
+                        wxStyledTextCtrl:styleSetBackground(Ref, Style, BgColor)
+                end,
     lists:foreach(fun(Style) -> SetStyles(Style) end, Styles),
     wxStyledTextCtrl:setKeyWords(Ref, 0, ?KEYWORDS).
 
@@ -416,7 +420,7 @@ setupSourceText(Ref, Theme) ->
 setupLogNotebookSizer(Parent) ->
     %% Log notebook widgets (notebook -> panel -> textcontrol).
     Notebook = wxNotebook:new(Parent, ?LOG_NOTEBOOK,
-			      [{style, ?wxNB_NOPAGETHEME}]),
+                              [{style, ?wxNB_NOPAGETHEME}]),
     ref_add(?LOG_NOTEBOOK, Notebook),
     %% Setup tab panels
     LogPanel = setupLogPanel(Notebook),
@@ -426,8 +430,8 @@ setupLogNotebookSizer(Parent) ->
     wxNotebook:addPage(Notebook, ErrorPanel, "Problems", [{bSelect, false}]),
     NotebookSizerOuter = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(NotebookSizerOuter, Notebook,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
-		     {border, 0}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxBOTTOM},
+                     {border, 0}]),
     NotebookSizerOuter.
 
 setupLogPanel(Parent) ->
@@ -437,12 +441,12 @@ setupLogPanel(Parent) ->
     ref_add(?LOG_TEXT, LogText),
     Style = wxTextAttr:new(),
     wxTextAttr:setFont(Style, wxFont:new(10, ?wxFONTFAMILY_MODERN,
-					 ?wxFONTSTYLE_NORMAL, -1)),
+                                         ?wxFONTSTYLE_NORMAL, -1)),
     wxTextCtrl:setDefaultStyle(LogText, Style),
     PanelSizer = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(PanelSizer, LogText,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     wxWindow:setSizer(Panel, PanelSizer),
     Panel.
 
@@ -453,12 +457,12 @@ setupErrorPanel(Parent) ->
     ref_add(?ERROR_TEXT, ErrorText),
     Style = wxTextAttr:new(),
     wxTextAttr:setFont(Style, wxFont:new(10, ?wxFONTFAMILY_MODERN,
-					 ?wxFONTSTYLE_NORMAL, -1)),
+                                         ?wxFONTSTYLE_NORMAL, -1)),
     wxTextCtrl:setDefaultStyle(ErrorText, Style),
     PanelSizer = wxBoxSizer:new(?wxVERTICAL),
     _ = wxSizer:add(PanelSizer, ErrorText,
-		    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 1}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     wxWindow:setSizer(Panel, PanelSizer),
     Panel.
 
@@ -526,16 +530,16 @@ addArgs(Parent, Sizer, I, Max, Refs) ->
     Ref =  wxTextCtrl:new(Parent, ?wxID_ANY, [{size, {170, -1}}]),
     HorizSizer = wxBoxSizer:new(?wxHORIZONTAL),
     _ = wxSizer:add(HorizSizer,
-		    wxStaticText:new(Parent, ?wxID_ANY,
-				     io_lib:format("Arg~p: ", [I + 1])),
-		    [{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxRIGHT},
-		     {border, 5}]),
+                    wxStaticText:new(Parent, ?wxID_ANY,
+                                     io_lib:format("Arg~p: ", [I + 1])),
+                    [{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxRIGHT},
+                     {border, 5}]),
     _ = wxSizer:add(HorizSizer, Ref, [{proportion, 1},
-				      {flag, ?wxALIGN_CENTER bor ?wxALL},
-				      {border, 0}]),
+                                      {flag, ?wxALIGN_CENTER bor ?wxALL},
+                                      {border, 0}]),
     _ = wxSizer:add(Sizer, HorizSizer, [{proportion, 0},
-					{flag, ?wxEXPAND bor ?wxALL},
-					{border, 10}]),
+                                        {flag, ?wxEXPAND bor ?wxALL},
+                                        {border, 10}]),
     addArgs(Parent, Sizer, I + 1, Max, [Ref|Refs]).
 
 %% Module-adding dialog
@@ -549,10 +553,10 @@ addDialog(Parent) ->
                                        {defaultFile, DefaultFile},
                                        {wildCard, Wildcard},
                                        {style, ?wxFD_OPEN bor
-                                               ?wxFD_FILE_MUST_EXIST bor
-                                               ?wxFD_MULTIPLE}]),
+                                            ?wxFD_FILE_MUST_EXIST bor
+                                            ?wxFD_MULTIPLE}]),
     case wxDialog:showModal(Dialog) of
-	?wxID_OK ->
+        ?wxID_OK ->
             File = wxFileDialog:getPaths(Dialog),
             case checkDuplicates(?FILES, File) of
                 false ->
@@ -566,7 +570,7 @@ addDialog(Parent) ->
                                                         [Duplicates])),
                     continue
             end;
-	_Other -> continue
+        _Other -> continue
     end,
     wxDialog:destroy(Dialog).
 
@@ -581,8 +585,8 @@ addListItems(Id, Items) ->
     Count = wxControlWithItems:getCount(List),
     wxListBox:insertItems(List, Items, Count),
     case Count of
-	0 -> wxControlWithItems:setSelection(List, 0);
-	_Other -> wxControlWithItems:setSelection(List, Count)
+        0 -> wxControlWithItems:setSelection(List, 0);
+        _Other -> wxControlWithItems:setSelection(List, Count)
     end.
 
 analyze_proc() ->
@@ -602,21 +606,21 @@ analyze() ->
     Files = getStrings(ModuleList),
     %% Check if a module and function is selected.
     if Module =/= '', Function =/= '' ->
-	    case Arity of
-		0 -> analyze_aux(Module, Function, [], Files);
-		%% If the function to be analyzed is of non-zero arity,
-		%% a dialog window is displayed prompting the user to enter
-		%% the function's arguments.
-		Count ->
-		    Frame = ref_lookup(?FRAME),
-		    case argDialog(Frame, Count) of
-			{ok, Args} ->
+            case Arity of
+                0 -> analyze_aux(Module, Function, [], Files);
+                %% If the function to be analyzed is of non-zero arity,
+                %% a dialog window is displayed prompting the user to enter
+                %% the function's arguments.
+                Count ->
+                    Frame = ref_lookup(?FRAME),
+                    case argDialog(Frame, Count) of
+                        {ok, Args} ->
                             analyze_aux(Module, Function, Args, Files);
-			%% User pressed 'cancel' or closed dialog window.
-			_Other -> continue
-		    end
-	    end;
-       true -> continue            
+                        %% User pressed 'cancel' or closed dialog window.
+                        _Other -> continue
+                    end
+            end;
+       true -> continue
     end.
 
 analyze_aux(Module, Function, Args, Files) ->
@@ -624,16 +628,16 @@ analyze_aux(Module, Function, Args, Files) ->
     Target = {Module, Function, Args},
     Opts = [{files, Files}],
     NewOpts = case ref_lookup(?PREF_PREB_ENABLED) of
-		  true -> Opts ++ [{preb, ref_lookup(?PREF_PREB_BOUND)}];
-		  false -> Opts
-	      end,
+                  true -> Opts ++ [{preb, ref_lookup(?PREF_PREB_BOUND)}];
+                  false -> Opts
+              end,
     Result = sched:analyze(Target, NewOpts),
     snapshot_add_analysis_ret(Result),
     analysis_cleanup().
 
 %% Initialization actions before starting analysis (clear log, etc.).
 analysis_init() ->
-    Separator = "----o----o----o----o----o----o----o----o----o----o----o----o\n",
+    Separator = "----o----o----o----o----o----o----o----o----o----o----o\n",
     wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), Separator),
     clearProbs(),
     clearErrors(),
@@ -678,8 +682,8 @@ analysis_cleanup() ->
 analysis_show_errors({error, analysis, _Info, Tickets}) ->
     Errors = [ticket:get_error(Ticket) || Ticket <- Tickets],
     ErrorItems = [util:flat_format("~s~n~s", [error:type(Error),
-					      error:short(Error)])
-		  || Error <- Errors],
+                                              error:short(Error)])
+                  || Error <- Errors],
     setListItems(?ERROR_LIST, ErrorItems),
     ListOfEmpty = lists:duplicate(length(Tickets), []),
     setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty));
@@ -711,7 +715,7 @@ stop_pulsing(Gauge) ->
 pulse(Gauge) ->
     wxGauge:pulse(Gauge),
     receive
-	stop -> ok
+        stop -> ok
     after 200 -> pulse(Gauge)
     end.
 
@@ -725,29 +729,29 @@ argDialog(Parent, Argnum) ->
     Refs = addArgs(Dialog, InSizer, 0, Argnum, []),
     ButtonSizer = wxBoxSizer:new(?wxHORIZONTAL),
     _ = wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_OK),
-		    [{proportion, 0}, {flag, ?wxRIGHT}, {border, 5}]),
+                    [{proportion, 0}, {flag, ?wxRIGHT}, {border, 5}]),
     _ = wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_CANCEL),
-		    [{proportion, 0}, {flag, ?wxLEFT}, {border, 5}]),
+                    [{proportion, 0}, {flag, ?wxLEFT}, {border, 5}]),
     _ = wxSizer:add(TopSizer, InSizer,
-		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     _ = wxSizer:add(TopSizer, ButtonSizer,
-		    [{proportion, 0},
-		     {flag, ?wxALIGN_CENTER bor
-			  ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
-		     {border, 10}]),
+                    [{proportion, 0},
+                     {flag, ?wxALIGN_CENTER bor
+                          ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
+                     {border, 10}]),
     wxWindow:setSizer(Dialog, TopSizer),
     _ = wxSizer:fit(TopSizer, Dialog),
     case wxDialog:showModal(Dialog) of
-	?wxID_OK ->
+        ?wxID_OK ->
             clearProbs(),
-	    ValResult = validateArgs(0, Refs, [], ?ERROR_TEXT),
-	    wxDialog:destroy(Dialog),
-	    case ValResult of
-		{ok, _Args} = Ok -> Ok;
-		_Other -> argDialog(Parent, Argnum)
-	    end;
-	_Other -> wxDialog:destroy(Dialog), continue
+            ValResult = validateArgs(0, Refs, [], ?ERROR_TEXT),
+            wxDialog:destroy(Dialog),
+            case ValResult of
+                {ok, _Args} = Ok -> Ok;
+                _Other -> argDialog(Parent, Argnum)
+            end;
+        _Other -> wxDialog:destroy(Dialog), continue
     end.
 
 %% Preferences dialog.
@@ -764,65 +768,65 @@ prefsDialog(Parent) ->
     HorizSizer1 = wxBoxSizer:new(?wxHORIZONTAL),
     %% Semi-hack: Custom width, default height.
     PrebEnabledCheckBox = wxCheckBox:new(Dialog, ?PREB_ENABLED_CBOX,
-					 "",
-					 [{style, ?wxALIGN_RIGHT}]),
+                                         "",
+                                         [{style, ?wxALIGN_RIGHT}]),
     ref_add(?PREB_ENABLED_CBOX, PrebEnabledCheckBox),
     wxCheckBox:setValue(PrebEnabledCheckBox, PrebEnabled),
     _ = wxSizer:add(HorizSizer1,
-		    wxStaticText:new(Dialog, ?wxID_ANY,
-				     "Enable preemption bounding:"),
-		    [{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
-		     {border, 0}]),
+                    wxStaticText:new(Dialog, ?wxID_ANY,
+                                     "Enable preemption bounding:"),
+                    [{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+                     {border, 0}]),
     _ = wxSizer:add(HorizSizer1, PrebEnabledCheckBox,
-		    [{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
-		     {border, 0}]),
+                    [{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+                     {border, 0}]),
     HorizSizer2 = wxBoxSizer:new(?wxHORIZONTAL),
     PrebBoundSpinCtrl = wxSpinCtrl:new(Dialog, [{id, ?PREB_BOUND_SPIN},
-						{size, {50, -1}},
-						{min, 0},
-						{initial, PrebBound}]),
+                                                {size, {50, -1}},
+                                                {min, 0},
+                                                {initial, PrebBound}]),
     _ = wxSizer:add(HorizSizer2,
-		    wxStaticText:new(Dialog, ?wxID_ANY, "Preemption bound:"),
-		    [{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
-		     {border, 0}]),
+                    wxStaticText:new(Dialog, ?wxID_ANY, "Preemption bound:"),
+                    [{proportion, 1}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+                     {border, 0}]),
     _ = wxSizer:add(HorizSizer2, PrebBoundSpinCtrl,
-		    [{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
-		     {border, 0}]),
+                    [{proportion, 0}, {flag, ?wxALIGN_CENTER bor ?wxALL},
+                     {border, 0}]),
     _ = wxSizer:add(PrebBoxSizer, HorizSizer1,
-		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     _ = wxSizer:add(PrebBoxSizer, HorizSizer2,
-		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     %% Buttons.
     ButtonSizer = wxBoxSizer:new(?wxHORIZONTAL),
     _ = wxSizer:add(ButtonSizer, wxButton:new(Dialog, ?wxID_CANCEL),
-		    [{proportion, 3}, {flag, ?wxLEFT}, {border, 0}]),
+                    [{proportion, 3}, {flag, ?wxLEFT}, {border, 0}]),
     _ = wxSizer:addStretchSpacer(ButtonSizer),
     _ = wxSizer:add(ButtonSizer,
-		    wxButton:new(Dialog, ?wxID_OK, [{label, "&Save"}]),
-		    [{proportion, 4}, {flag, ?wxRIGHT}, {border, 0}]),
+                    wxButton:new(Dialog, ?wxID_OK, [{label, "&Save"}]),
+                    [{proportion, 4}, {flag, ?wxRIGHT}, {border, 0}]),
     %% Top level sizer.
     _ = wxSizer:add(TopSizer, PrebBoxSizer,
-		    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
-		     {border, 10}]),
+                    [{proportion, 0}, {flag, ?wxEXPAND bor ?wxALL},
+                     {border, 10}]),
     _ = wxSizer:add(TopSizer, ButtonSizer,
-		    [{proportion, 0},
-		     {flag, ?wxALIGN_CENTER bor ?wxEXPAND bor
-			  ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
-		     {border, 10}]),
+                    [{proportion, 0},
+                     {flag, ?wxALIGN_CENTER bor ?wxEXPAND bor
+                          ?wxRIGHT bor ?wxLEFT bor ?wxBOTTOM},
+                     {border, 10}]),
     wxWindow:setSizer(Dialog, TopSizer),
     _ = wxSizer:fit(TopSizer, Dialog),
     %% Show dialog.
     case wxDialog:showModal(Dialog) of
-	?wxID_OK ->
-	    %% Save preferences.
-	    ref_add(?PREF_PREB_ENABLED,
-		    wxCheckBox:getValue(PrebEnabledCheckBox)),
-	    ref_add(?PREF_PREB_BOUND,
-		    wxSpinCtrl:getValue(PrebBoundSpinCtrl));
-	_Other ->
-	    continue
+        ?wxID_OK ->
+            %% Save preferences.
+            ref_add(?PREF_PREB_ENABLED,
+                    wxCheckBox:getValue(PrebEnabledCheckBox)),
+            ref_add(?PREF_PREB_BOUND,
+                    wxSpinCtrl:getValue(PrebBoundSpinCtrl));
+        _Other ->
+            continue
     end.
 
 %% For now always load default preferences on startup.
@@ -902,8 +906,8 @@ exportDialog(Parent) ->
                                             ?wxFD_OVERWRITE_PROMPT}]),
     wxFileDialog:setFilename(Dialog, ?EXPORT_FILE ++ ?APP_FILE),
     case wxDialog:showModal(Dialog) of
-	?wxID_OK -> snapshot_export(wxFileDialog:getPath(Dialog));
-	_Other -> continue
+        ?wxID_OK -> snapshot_export(wxFileDialog:getPath(Dialog));
+        _Other -> continue
     end,
     wxDialog:destroy(Dialog).
 
@@ -914,8 +918,8 @@ getDirectory() ->
     Match =  re:run(Path, "(?<PATH>.*)/*?\.erl\$",
                     [dotall, {capture, ['PATH'], list}]),
     case Match of
-	{match, [Dir]} -> Dir;
-	nomatch -> ""
+        {match, [Dir]} -> Dir;
+        nomatch -> ""
     end.
 
 %% Return the selected function and arity from the function list.
@@ -927,9 +931,9 @@ getFunction() ->
     Match = re:run(Expr, "(?<FUN>.*)/(?<ARITY>.*)\$",
                    [dotall, {capture, ['FUN', 'ARITY'], list}]),
     case Match of
-	{match, [Fun, Arity]} ->
-	    {list_to_atom(Fun), list_to_integer(Arity)};
-	nomatch -> {'', 0}
+        {match, [Fun, Arity]} ->
+            {list_to_atom(Fun), list_to_integer(Arity)};
+        nomatch -> {'', 0}
     end.
 
 %% Return the selected module from the module list.
@@ -940,8 +944,8 @@ getModule() ->
     Match =  re:run(Path, ".*/(?<MODULE>.*?)\.erl\$",
                     [dotall, {capture, ['MODULE'], list}]),
     case Match of
-	{match, [Module]} -> list_to_atom(Module);
-	nomatch -> ''
+        {match, [Module]} -> list_to_atom(Module);
+        nomatch -> ''
     end.
 
 %% wxControlWithItems:getStrings (function missing from wxErlang lib).
@@ -971,8 +975,8 @@ importDialog(Parent) ->
                                        {style, ?wxFD_OPEN bor
                                             ?wxFD_FILE_MUST_EXIST}]),
     case wxDialog:showModal(Dialog) of
-	?wxID_OK -> snapshot_import(wxFileDialog:getPath(Dialog));
-	_Other -> continue
+        ?wxID_OK -> snapshot_import(wxFileDialog:getPath(Dialog));
+        _Other -> continue
     end,
     wxDialog:destroy(Dialog).
 
@@ -983,17 +987,17 @@ importDialog(Parent) ->
 refresh() ->
     ModuleList = ref_lookup(?MODULE_LIST),
     case wxListBox:getSelection(ModuleList) of
-	?wxNOT_FOUND -> continue;
-	_Other ->
-	    Module = wxListBox:getStringSelection(ModuleList),
-	    %% Scan selected module for exported functions.
-	    Funs = util:funs(Module, string),
-	    setListItems(?FUNCTION_LIST, Funs),
-	    %% Update source viewer.
-	    SourceText = ref_lookup(?SOURCE_TEXT),
-	    wxStyledTextCtrl:setReadOnly(SourceText, false),
-	    wxStyledTextCtrl:loadFile(SourceText, Module),
-	    wxStyledTextCtrl:setReadOnly(SourceText, true)
+        ?wxNOT_FOUND -> continue;
+        _Other ->
+            Module = wxListBox:getStringSelection(ModuleList),
+            %% Scan selected module for exported functions.
+            Funs = util:funs(Module, string),
+            setListItems(?FUNCTION_LIST, Funs),
+            %% Update source viewer.
+            SourceText = ref_lookup(?SOURCE_TEXT),
+            wxStyledTextCtrl:setReadOnly(SourceText, false),
+            wxStyledTextCtrl:loadFile(SourceText, Module),
+            wxStyledTextCtrl:setReadOnly(SourceText, true)
     end.
 
 %% Refresh source code (show selected function).
@@ -1024,20 +1028,20 @@ remove() ->
     File = wxListBox:getStringSelection(ModuleList),
     SourceText = ref_lookup(?SOURCE_TEXT),
     if Selection =:= ?wxNOT_FOUND ->
-	    continue;
+            continue;
        true ->
-	    wxControlWithItems:delete(ModuleList, Selection),
-	    Count = wxControlWithItems:getCount(ModuleList),
-	    if Count =:= 0 ->
+            wxControlWithItems:delete(ModuleList, Selection),
+            Count = wxControlWithItems:getCount(ModuleList),
+            if Count =:= 0 ->
                     clearFuns(),
-		    wxStyledTextCtrl:setReadOnly(SourceText, false),
-		    wxStyledTextCtrl:clearAll(SourceText),
-		    wxStyledTextCtrl:setReadOnly(SourceText, true);
-	       Selection =:= Count ->
-		    wxControlWithItems:setSelection(ModuleList, Selection - 1);
-	       true ->
-		    wxControlWithItems:setSelection(ModuleList, Selection)
-	    end
+                    wxStyledTextCtrl:setReadOnly(SourceText, false),
+                    wxStyledTextCtrl:clearAll(SourceText),
+                    wxStyledTextCtrl:setReadOnly(SourceText, true);
+               Selection =:= Count ->
+                    wxControlWithItems:setSelection(ModuleList, Selection - 1);
+               true ->
+                    wxControlWithItems:setSelection(ModuleList, Selection)
+            end
     end,
     remove_file(File).
 
@@ -1080,9 +1084,9 @@ setListData_aux(List, [Data|Rest], N) ->
 %% Set ListBox (Id) items (remove existing).
 setListItems(Id, Items) ->
     if Items =/= [], Items =/= [[]] ->
-	    List = ref_lookup(Id),
-	    wxListBox:set(List, Items),
-	    wxControlWithItems:setSelection(List, 0);
+            List = ref_lookup(Id),
+            wxListBox:set(List, Items),
+            wxControlWithItems:setSelection(List, 0);
        true -> continue
     end.
 
@@ -1091,16 +1095,16 @@ show_details() ->
     ErrorList = ref_lookup(?ERROR_LIST),
     IleaveList = ref_lookup(?ILEAVE_LIST),
     case wxControlWithItems:getSelection(ErrorList) of
-	?wxNOT_FOUND -> continue;
-	Id ->
-	    wxControlWithItems:clear(IleaveList),
+        ?wxNOT_FOUND -> continue;
+        Id ->
+            wxControlWithItems:clear(IleaveList),
             Ticket =
                 case wxControlWithItems:getClientData(ErrorList, Id) of
                     {T, []} ->
-			%% Disable log event handler while replaying.
-			_ = log:detach(?MODULE, []),
+                        %% Disable log event handler while replaying.
+                        _ = log:detach(?MODULE, []),
                         Details = sched:replay(T),
-			_ = log:attach(?MODULE, wx:get_env()),
+                        _ = log:attach(?MODULE, wx:get_env()),
                         NewData = {T, Details},
                         wxControlWithItems:setClientData(ErrorList, Id,
                                                          NewData),
@@ -1129,18 +1133,18 @@ validateArgs(_I, [], Args, _ErrorId) ->
 validateArgs(I, [Ref|Refs], Args, ErrorId) ->
     String = wxTextCtrl:getValue(Ref) ++ ".",
     case erl_scan:string(String) of
-	{ok, T, _} ->
-	    case erl_parse:parse_term(T) of
-		{ok, Arg} -> validateArgs(I + 1, Refs, [Arg|Args], ErrorId);
-		{error, {_, _, Info}} ->
+        {ok, T, _} ->
+            case erl_parse:parse_term(T) of
+                {ok, Arg} -> validateArgs(I + 1, Refs, [Arg|Args], ErrorId);
+                {error, {_, _, Info}} ->
                     wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT),
                                           io_lib:format("Arg ~p - ~s~n",
                                                         [I + 1, Info])),
-		    error
-	    end;
-	{error, {_, _, Info}, _} ->
+                    error
+            end;
+        {error, {_, _, Info}, _} ->
             wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT), Info ++ "\n"),
-	    error
+            error
     end.
 
 add_file(File) ->
@@ -1212,134 +1216,134 @@ snapshot_init() ->
 
 loop() ->
     receive
-	%% -------------------- Button handlers -------------------- %%
-	#wx{id = ?ADD, event = #wxCommand{type = command_button_clicked}} ->
-	    Frame = ref_lookup(?FRAME),
-	    addDialog(Frame),
+        %% -------------------- Button handlers -------------------- %%
+        #wx{id = ?ADD, event = #wxCommand{type = command_button_clicked}} ->
+            Frame = ref_lookup(?FRAME),
+            addDialog(Frame),
             send_event_msg_to_self(?MODULE_LIST),
-	    loop();
-	#wx{id = ?ANALYZE, event = #wxCommand{type = command_button_clicked}} ->
+            loop();
+        #wx{id = ?ANALYZE, event = #wxCommand{type = command_button_clicked}} ->
             analyze_proc(),
-	    loop();
-	#wx{id = ?CLEAR, event = #wxCommand{type = command_button_clicked}} ->
+            loop();
+        #wx{id = ?CLEAR, event = #wxCommand{type = command_button_clicked}} ->
             clearMods(),
             clearFuns(),
             clearSrc(),
-	    loop();
-	#wx{id = ?REMOVE, event = #wxCommand{type = command_button_clicked}} ->
-	    remove(),
-	    loop();
+            loop();
+        #wx{id = ?REMOVE, event = #wxCommand{type = command_button_clicked}} ->
+            remove(),
+            loop();
         #wx{id = ?STOP, event = #wxCommand{type = command_button_clicked}} ->
             stop(),
-	    loop();
-	%% -------------------- Listbox handlers --------------------- %%
-	#wx{id = ?ERROR_LIST,
-	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
-	    %% do nothing
-	    loop();
-	#wx{id = ?ERROR_LIST,
+            loop();
+        %% -------------------- Listbox handlers --------------------- %%
+        #wx{id = ?ERROR_LIST,
+            event = #wxCommand{type = command_listbox_doubleclicked}} ->
+            %% do nothing
+            loop();
+        #wx{id = ?ERROR_LIST,
             event = #wxCommand{type = command_listbox_selected}} ->
-	    show_details(),
+            show_details(),
             send_event_msg_to_self(?ILEAVE_LIST),
-	    loop();
-	#wx{id = ?ILEAVE_LIST,
-	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
-	    %% do nothing
-	    loop();
-	#wx{id = ?ILEAVE_LIST,
+            loop();
+        #wx{id = ?ILEAVE_LIST,
+            event = #wxCommand{type = command_listbox_doubleclicked}} ->
+            %% do nothing
+            loop();
+        #wx{id = ?ILEAVE_LIST,
             event = #wxCommand{type = command_listbox_selected}} ->
-	    %% do nothing
-	    loop();
-	#wx{id = ?FUNCTION_LIST,
-	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
+            %% do nothing
+            loop();
+        #wx{id = ?FUNCTION_LIST,
+            event = #wxCommand{type = command_listbox_doubleclicked}} ->
             analyze_proc(),
-	    loop();
-	#wx{id = ?FUNCTION_LIST,
-	    event = #wxCommand{type = command_listbox_selected}} ->
+            loop();
+        #wx{id = ?FUNCTION_LIST,
+            event = #wxCommand{type = command_listbox_selected}} ->
             refreshFun(),
-	    loop();
-	#wx{id = ?MODULE_LIST,
-	    event = #wxCommand{type = command_listbox_doubleclicked}} ->
-	    %% do nothing
-	    loop();
-	#wx{id = ?MODULE_LIST,
+            loop();
+        #wx{id = ?MODULE_LIST,
+            event = #wxCommand{type = command_listbox_doubleclicked}} ->
+            %% do nothing
+            loop();
+        #wx{id = ?MODULE_LIST,
             event = #wxCommand{type = command_listbox_selected}} ->
-	    refresh(),
+            refresh(),
             send_event_msg_to_self(?FUNCTION_LIST),
-	    loop();
-	%% -------------------- Menu handlers -------------------- %%
-	#wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
-	    Caption = "About" ++ ?APP_STRING,
-	    Frame = ref_lookup(?FRAME),
-	    Dialog = wxMessageDialog:new(Frame, ?INFO_MSG,
+            loop();
+        %% -------------------- Menu handlers -------------------- %%
+        #wx{id = ?ABOUT, event = #wxCommand{type = command_menu_selected}} ->
+            Caption = "About" ++ ?APP_STRING,
+            Frame = ref_lookup(?FRAME),
+            Dialog = wxMessageDialog:new(Frame, ?INFO_MSG,
                                          [{style, ?wxOK}, {caption, Caption}]),
-	    wxDialog:showModal(Dialog),
-	    wxWindow:destroy(Dialog),
-	    loop();
-	#wx{id = ?ADD, event = #wxCommand{type = command_menu_selected}} ->
-	    Frame = ref_lookup(?FRAME),
-	    addDialog(Frame),
+            wxDialog:showModal(Dialog),
+            wxWindow:destroy(Dialog),
+            loop();
+        #wx{id = ?ADD, event = #wxCommand{type = command_menu_selected}} ->
+            Frame = ref_lookup(?FRAME),
+            addDialog(Frame),
             send_event_msg_to_self(?MODULE_LIST),
-	    loop();
-	#wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
+            loop();
+        #wx{id = ?ANALYZE, event = #wxCommand{type = command_menu_selected}} ->
             analyze_proc(),
-	    loop();
-	#wx{id = ?CLEAR, event = #wxCommand{type = command_menu_selected}} ->
+            loop();
+        #wx{id = ?CLEAR, event = #wxCommand{type = command_menu_selected}} ->
             clearMods(),
             clearFuns(),
             clearSrc(),
-	    loop();
+            loop();
         #wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
-	    ok;
+            ok;
         #wx{id = ?EXPORT, event = #wxCommand{type = command_menu_selected}} ->
             Frame = ref_lookup(?FRAME),
             exportDialog(Frame),
-	    loop();
+            loop();
         #wx{id = ?IMPORT, event = #wxCommand{type = command_menu_selected}} ->
             Frame = ref_lookup(?FRAME),
             importDialog(Frame),
-	    loop();
-	#wx{id = ?PREFS, event = #wxCommand{type = command_menu_selected}} ->
-	    Frame = ref_lookup(?FRAME),
-	    prefsDialog(Frame),
-	    loop();
-	#wx{id = ?REFRESH, event = #wxCommand{type = command_menu_selected}} ->
-	    refresh(),
+            loop();
+        #wx{id = ?PREFS, event = #wxCommand{type = command_menu_selected}} ->
+            Frame = ref_lookup(?FRAME),
+            prefsDialog(Frame),
+            loop();
+        #wx{id = ?REFRESH, event = #wxCommand{type = command_menu_selected}} ->
+            refresh(),
             send_event_msg_to_self(?FUNCTION_LIST),
-	    loop();
-	#wx{id = ?REMOVE, event = #wxCommand{type = command_menu_selected}} ->
-	    remove(),
-	    loop();
+            loop();
+        #wx{id = ?REMOVE, event = #wxCommand{type = command_menu_selected}} ->
+            remove(),
+            loop();
         #wx{id = ?STOP, event = #wxCommand{type = command_menu_selected}} ->
             stop(),
-	    loop();
+            loop();
         #wx{id = ?THEME_LIGHT,
-	    event = #wxCommand{type = command_menu_selected}} ->
-	    SourceText = ref_lookup(?SOURCE_TEXT),
-	    setupSourceText(SourceText, light),
-	    loop();
-	#wx{id = ?THEME_DARK,
-	    event = #wxCommand{type = command_menu_selected}} ->
-	    SourceText = ref_lookup(?SOURCE_TEXT),
-	    setupSourceText(SourceText, dark),
-	    loop();
-	%% -------------------- Misc handlers -------------------- %%
-	%% Every time a splitter sash changes its position, refresh the whole
-	%% window to avoid annoying artifacts from the previous position of the
-	%% sash.
-	#wx{event = #wxSplitter{type = command_splitter_sash_pos_changed}} ->
-	    Frame = ref_lookup(?FRAME),
-	    wxWindow:refresh(Frame),
-	    loop();
-	#wx{event = #wxClose{type = close_window}} ->
-	    ok;
-	%% Ignore normal 'EXIT' messages from linked processes.
-	%% (Added to ignore exit messages coming from calls to compile:file
-	%% and compile:forms)
-	{'EXIT', _Pid, normal} ->
-	    loop();
-	%% -------------------- Catchall -------------------- %%
-	Other ->
-	    io:format("main loop unimplemented: ~p~n", [Other]),
-	    loop()
+            event = #wxCommand{type = command_menu_selected}} ->
+            SourceText = ref_lookup(?SOURCE_TEXT),
+            setupSourceText(SourceText, light),
+            loop();
+        #wx{id = ?THEME_DARK,
+            event = #wxCommand{type = command_menu_selected}} ->
+            SourceText = ref_lookup(?SOURCE_TEXT),
+            setupSourceText(SourceText, dark),
+            loop();
+        %% -------------------- Misc handlers -------------------- %%
+        %% Every time a splitter sash changes its position, refresh the whole
+        %% window to avoid annoying artifacts from the previous position of the
+        %% sash.
+        #wx{event = #wxSplitter{type = command_splitter_sash_pos_changed}} ->
+            Frame = ref_lookup(?FRAME),
+            wxWindow:refresh(Frame),
+            loop();
+        #wx{event = #wxClose{type = close_window}} ->
+            ok;
+        %% Ignore normal 'EXIT' messages from linked processes.
+        %% (Added to ignore exit messages coming from calls to compile:file
+        %% and compile:forms)
+        {'EXIT', _Pid, normal} ->
+            loop();
+        %% -------------------- Catchall -------------------- %%
+        Other ->
+            io:format("main loop unimplemented: ~p~n", [Other]),
+            loop()
     end.

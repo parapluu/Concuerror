@@ -15,7 +15,7 @@
 -module(lid).
 
 -export([cleanup/1, from_pid/1, fold_pids/2, get_pid/1, mock/1,
-	 new/2, start/0, stop/0, to_string/1]).
+         new/2, start/0, stop/0, to_string/1]).
 
 -export_type([lid/0]).
 
@@ -31,8 +31,8 @@
 %% pid : The process identifier of a process.
 %% nch : The number of processes spawned by this process.
 -record(info, {lid :: lid(),
-	       pid :: pid(),
-	       nch :: non_neg_integer()}).
+               pid :: pid(),
+               nch :: non_neg_integer()}).
 
 %% Record element positions, only to be used by ets:update_element/3.
 -define(POS_LID, 2).
@@ -68,8 +68,8 @@ cleanup(Lid) ->
 
 from_pid(Pid) when is_pid(Pid) ->
     case ets:lookup(?NT_PID, Pid) of
-	[{Pid, Lid}] -> Lid;
-	[] -> not_found
+        [{Pid, Lid}] -> Lid;
+        [] -> not_found
     end;
 from_pid(_Other) -> not_found.
 
@@ -93,13 +93,13 @@ mock(Seed) ->
 
 new(Pid, Parent) ->
     Lid =
-	case Parent of
-	    noparent -> root_lid();
-	    _Other ->
-		Children = get_children(Parent),
-		set_children(Parent, Children + 1),
-		next_lid(Parent, Children)
-	end,
+        case Parent of
+            noparent -> root_lid();
+            _Other ->
+                Children = get_children(Parent),
+                set_children(Parent, Children + 1),
+                next_lid(Parent, Children)
+        end,
     ets:insert(?NT_LID, #info{lid = Lid, pid = Pid, nch = 0}),
     ets:insert(?NT_PID, {Pid, Lid}),
     Lid.
@@ -133,8 +133,8 @@ stop() ->
 
 get_pid(Lid) ->
     case ets:lookup(?NT_LID, Lid) of
-	[] -> not_found;
-	[#info{pid = Pid}] -> Pid
+        [] -> not_found;
+        [#info{pid = Pid}] -> Pid
     end.
 
 get_children(Lid) ->

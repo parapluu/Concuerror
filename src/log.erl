@@ -19,7 +19,7 @@
 -export([attach/2, detach/2, start/0, stop/0, log/1, log/2, show_error/1]).
 %% Log callback exports.
 -export([init/1, terminate/2, handle_call/2, handle_info/2,
-	 handle_event/2, code_change/3]).
+         handle_event/2, code_change/3]).
 
 -behaviour(gen_event).
 

@@ -37,44 +37,44 @@
 
 %% Instrumented auto-imported functions of 'erlang' module.
 -define(INSTR_ERL_FUN,
-	[{demonitor, 1},
-	 {demonitor, 2},
-	 {halt, 0},
+        [{demonitor, 1},
+         {demonitor, 2},
+         {halt, 0},
          {halt, 1},
-	 {is_process_alive, 1},
-	 {link, 1},
-	 {monitor, 2},
-	 {process_flag, 2},
+         {is_process_alive, 1},
+         {link, 1},
+         {monitor, 2},
+         {process_flag, 2},
          {register, 2},
-	 {spawn, 1},
-	 {spawn, 3},
-	 {spawn_link, 1},
+         {spawn, 1},
+         {spawn, 3},
+         {spawn_link, 1},
          {spawn_link, 3},
-	 {spawn_monitor, 1},
-	 {spawn_monitor, 3},
-	 {spawn_opt, 2},
-	 {spawn_opt, 4},
-	 {unlink, 1},
-	 {unregister, 1},
-	 {whereis, 1}]).
+         {spawn_monitor, 1},
+         {spawn_monitor, 3},
+         {spawn_opt, 2},
+         {spawn_opt, 4},
+         {unlink, 1},
+         {unregister, 1},
+         {whereis, 1}]).
 
 %% Instrumented functions called as erlang:FUNCTION.
 -define(INSTR_ERL_MOD_FUN,
-	[{erlang, send, 2}, {erlang, send, 3}] ++ 
-	[{erlang, F, A} || {F, A} <- ?INSTR_ERL_FUN]).
+        [{erlang, send, 2}, {erlang, send, 3}] ++
+            [{erlang, F, A} || {F, A} <- ?INSTR_ERL_FUN]).
 
 %% Instrumented functions from ets module.
 -define(INSTR_ETS_FUN,
-	[{ets, insert_new, 2},
-	 {ets, lookup, 2},
-	 {ets, select_delete, 2},
-	 {ets, insert, 2},
-	 {ets, delete, 1},
-	 {ets, delete, 2},
-	 {ets, match_object, 1},
-	 {ets, match_object, 3},
-	 {ets, match_delete, 2},
-	 {ets, foldl, 3}]).
+        [{ets, insert_new, 2},
+         {ets, lookup, 2},
+         {ets, select_delete, 2},
+         {ets, insert, 2},
+         {ets, delete, 1},
+         {ets, delete, 2},
+         {ets, match_object, 1},
+         {ets, match_object, 3},
+         {ets, match_delete, 2},
+         {ets, foldl, 3}]).
 
 %% Instrumented mod:fun.
 -define(INSTR_MOD_FUN, ?INSTR_ERL_MOD_FUN ++ ?INSTR_ETS_FUN).
@@ -114,8 +114,8 @@ instrument_and_compile(Files) -> instrument_and_compile_aux(Files, []).
 instrument_and_compile_aux([], Acc) -> {ok, lists:reverse(Acc)};
 instrument_and_compile_aux([File|Rest], Acc) ->
     case instrument_and_compile_one(File) of
-	error -> error;
-	Result -> instrument_and_compile_aux(Rest, [Result|Acc])
+        error -> error;
+        Result -> instrument_and_compile_aux(Rest, [Result|Acc])
     end.
 
 %% Instrument and compile a single file.
@@ -125,36 +125,36 @@ instrument_and_compile_one(File) ->
     log:log("Validating file ~p...~n", [File]),
     PreOptions = [strong_validation, verbose, return],
     case compile:file(File, PreOptions) of
-	{ok, Module, Warnings} ->
-	    %% Log warning messages.
-	    log_warning_list(Warnings),
-	    %% A table for holding used variable names.
-	    ?NT_USED = ets:new(?NT_USED, [named_table, private]),
-	    %% Instrument given source file.
-	    log:log("Instrumenting file ~p...~n", [File]),
-	    case instrument(File) of
-		{ok, NewForms} ->
-		    %% Delete `used` table.
-		    ets:delete(?NT_USED),
-		    %% Compile instrumented code.
-		    %% TODO: More compile options?
-		    log:log("Compiling instrumented code...~n"),
-		    CompOptions = [binary],
-		    case compile:forms(NewForms, CompOptions) of
-			{ok, Module, Binary} -> {Module, File, Binary};
-			error -> log:log("error~n"), error
-		    end;
-		{error, Error} ->
-		    log:log("error: ~p~n", [Error]),
-		    %% Delete `used` table.
-		    ets:delete(?NT_USED),
-		    error
-	    end;
-	{error, Errors, Warnings} ->
-	    log_error_list(Errors),
-	    log_warning_list(Warnings),
-	    log:log("error~n"),
-	    error
+        {ok, Module, Warnings} ->
+            %% Log warning messages.
+            log_warning_list(Warnings),
+            %% A table for holding used variable names.
+            ?NT_USED = ets:new(?NT_USED, [named_table, private]),
+            %% Instrument given source file.
+            log:log("Instrumenting file ~p...~n", [File]),
+            case instrument(File) of
+                {ok, NewForms} ->
+                    %% Delete `used` table.
+                    ets:delete(?NT_USED),
+                    %% Compile instrumented code.
+                    %% TODO: More compile options?
+                    log:log("Compiling instrumented code...~n"),
+                    CompOptions = [binary],
+                    case compile:forms(NewForms, CompOptions) of
+                        {ok, Module, Binary} -> {Module, File, Binary};
+                        error -> log:log("error~n"), error
+                    end;
+                {error, Error} ->
+                    log:log("error: ~p~n", [Error]),
+                    %% Delete `used` table.
+                    ets:delete(?NT_USED),
+                    error
+            end;
+        {error, Errors, Warnings} ->
+            log_error_list(Errors),
+            log_warning_list(Warnings),
+            log:log("error~n"),
+            error
     end.
 
 -spec load([mfb()]) -> 'ok' | 'error'.
@@ -162,16 +162,16 @@ instrument_and_compile_one(File) ->
 load([]) -> ok;
 load([MFB|Rest]) ->
     case load_one(MFB) of
-	ok -> load(Rest);
-	error -> error
+        ok -> load(Rest);
+        error -> error
     end.
 
 load_one({Module, File, Binary}) ->
     case code:load_binary(Module, File, Binary) of
-	{module, Module} -> ok;
-	{error, Error} ->
-	    log:log("error~n~p~n", [Error]),
-	    error
+        {module, Module} -> ok;
+        {error, Error} ->
+            log:log("error~n~p~n", [Error]),
+            error
     end.
 
 instrument(File) ->
@@ -179,27 +179,27 @@ instrument(File) ->
     %%       In the future we have to provide a means for an externally
     %%       defined include path (like the erlc -I flag).
     case epp:parse_file(File, [filename:dirname(File)], []) of
-	{ok, OldForms} ->
-	    %% Remove `type` and `spec` attributes to avoid errors
-	    %% due to record expansion below.
-	    StrippedForms = strip_attributes(OldForms, []),
-	    ExpRecForms = erl_expand_records:module(StrippedForms, []),
-	    Tree = erl_recomment:recomment_forms(ExpRecForms, []),
-	    MapFun = fun(T) -> instrument_toplevel(T) end,
-	    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
-	    Abstract = erl_syntax:revert(Transformed),
+        {ok, OldForms} ->
+            %% Remove `type` and `spec` attributes to avoid errors
+            %% due to record expansion below.
+            StrippedForms = strip_attributes(OldForms, []),
+            ExpRecForms = erl_expand_records:module(StrippedForms, []),
+            Tree = erl_recomment:recomment_forms(ExpRecForms, []),
+            MapFun = fun(T) -> instrument_toplevel(T) end,
+            Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
+            Abstract = erl_syntax:revert(Transformed),
             ?print(Abstract),
-	    NewForms = erl_syntax:form_list_elements(Abstract),
-	    {ok, NewForms};
-	{error, _} = Error -> Error
+            NewForms = erl_syntax:form_list_elements(Abstract),
+            {ok, NewForms};
+        {error, _} = Error -> Error
     end.
 
 %% XXX: Implementation dependent.
 strip_attributes([], Acc) -> lists:reverse(Acc);
 strip_attributes([{attribute, _Line, Name, _Misc} = Head|Rest], Acc) ->
     case lists:member(Name, ?ATTR_STRIP) of
-	true -> strip_attributes(Rest, Acc);
-	false -> strip_attributes(Rest, [Head|Acc])
+        true -> strip_attributes(Rest, Acc);
+        false -> strip_attributes(Rest, [Head|Acc])
     end;
 strip_attributes([Head|Rest], Acc) ->
     strip_attributes(Rest, [Head|Acc]).
@@ -209,8 +209,8 @@ strip_attributes([Head|Rest], Acc) ->
 %% transformed, so leave everything else as is.
 instrument_toplevel(Tree) ->
     case erl_syntax:type(Tree) of
-	function -> instrument_function(Tree);
-	_Other -> Tree
+        function -> instrument_function(Tree);
+        _Other -> Tree
     end.
 
 %% Instrument a function.
@@ -231,22 +231,22 @@ instrument_subtrees(Tree) ->
 %% Instrument a term.
 instrument_term(Tree) ->
     case erl_syntax:type(Tree) of
-	application ->
-	    NewTree = instrument_subtrees(Tree),
-	    case get_mfa(NewTree) of
-		no_instr -> NewTree;
-		{normal, Mfa} -> instrument_application(Mfa);
-		{var, Mfa} -> instrument_var_application(Mfa)
-	    end;
-	infix_expr ->
-	    Operator = erl_syntax:infix_expr_operator(Tree),
-	    case erl_syntax:operator_name(Operator) of
-		'!' -> instrument_send(instrument_subtrees(Tree));
-		_Other -> instrument_subtrees(Tree)
-	    end;
-	receive_expr -> instrument_receive(instrument_subtrees(Tree));
-	underscore -> new_underscore_variable();
-	_Other -> instrument_subtrees(Tree)
+        application ->
+            NewTree = instrument_subtrees(Tree),
+            case get_mfa(NewTree) of
+                no_instr -> NewTree;
+                {normal, Mfa} -> instrument_application(Mfa);
+                {var, Mfa} -> instrument_var_application(Mfa)
+            end;
+        infix_expr ->
+            Operator = erl_syntax:infix_expr_operator(Tree),
+            case erl_syntax:operator_name(Operator) of
+                '!' -> instrument_send(instrument_subtrees(Tree));
+                _Other -> instrument_subtrees(Tree)
+            end;
+        receive_expr -> instrument_receive(instrument_subtrees(Tree));
+        underscore -> new_underscore_variable();
+        _Other -> instrument_subtrees(Tree)
     end.
 
 %% Return {ModuleAtom, FunctionAtom, [ArgTree]} for a function call that
@@ -255,32 +255,33 @@ get_mfa(Tree) ->
     Qualifier = erl_syntax:application_operator(Tree),
     ArgTrees = erl_syntax:application_arguments(Tree),
     case erl_syntax:type(Qualifier) of
-	atom ->
-	    Function = erl_syntax:atom_value(Qualifier),
+        atom ->
+            Function = erl_syntax:atom_value(Qualifier),
             needs_instrument(Function, ArgTrees);
-	module_qualifier ->
-	    ModTree = erl_syntax:module_qualifier_argument(Qualifier),
-	    FunTree = erl_syntax:module_qualifier_body(Qualifier),
-	    case has_atoms_only(ModTree) andalso
-		 has_atoms_only(FunTree) of
-		true ->
-		    Module = erl_syntax:atom_value(ModTree),
-		    Function = erl_syntax:atom_value(FunTree),
-		    needs_instrument(Module, Function, ArgTrees);
-		false -> {var, {ModTree, FunTree, ArgTrees}}
-	    end;
-	_Other -> no_instr
+        module_qualifier ->
+            ModTree = erl_syntax:module_qualifier_argument(Qualifier),
+            FunTree = erl_syntax:module_qualifier_body(Qualifier),
+            case has_atoms_only(ModTree) andalso
+                has_atoms_only(FunTree) of
+                true ->
+                    Module = erl_syntax:atom_value(ModTree),
+                    Function = erl_syntax:atom_value(FunTree),
+                    needs_instrument(Module, Function, ArgTrees);
+                false -> {var, {ModTree, FunTree, ArgTrees}}
+            end;
+        _Other -> no_instr
     end.
 
 %% Returns true if Tree is an atom or a qualified name containing only atoms.
 has_atoms_only(Tree) ->
     Type = erl_syntax:type(Tree),
     IsAtom = fun(T) -> erl_syntax:type(T) =:= atom end,
-    IsAtom(Tree) orelse
-      (Type =:= qualified_name andalso
-       lists:all(IsAtom, erl_syntax:qualified_name_segments(Tree))).
-		       
-			       
+    IsAtom(Tree)
+        orelse
+          (Type =:= qualified_name andalso
+           lists:all(IsAtom, erl_syntax:qualified_name_segments(Tree))).
+
+
 %% Determine whether an auto-exported BIF call needs instrumentation.
 needs_instrument(Function, ArgTrees) ->
     Arity = length(ArgTrees),
@@ -304,8 +305,8 @@ instrument_application({erlang, Function, ArgTrees}) ->
 instrument_application({Module, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
     RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Module)
-					         ++ "_"
-					         ++ atom_to_list(Function))),
+                                          ++ "_"
+                                          ++ atom_to_list(Function))),
     erl_syntax:application(RepMod, RepFun, ArgTrees).
 
 instrument_var_application({ModTree, FunTree, ArgTrees}) ->
@@ -391,69 +392,69 @@ instrument_receive(Tree) ->
     OldClauses = erl_syntax:receive_expr_clauses(Tree),
     case OldClauses of
         [] ->
-	    Timeout = erl_syntax:receive_expr_timeout(Tree),
+            Timeout = erl_syntax:receive_expr_timeout(Tree),
             Action = erl_syntax:receive_expr_action(Tree),
             AfterBlock = erl_syntax:block_expr(Action),
             ModTree = erl_syntax:atom(?REP_MOD),
-	    FunTree = erl_syntax:atom(rep_receive_block),
-	    Fun = erl_syntax:application(ModTree, FunTree, []),
+            FunTree = erl_syntax:atom(rep_receive_block),
+            Fun = erl_syntax:application(ModTree, FunTree, []),
             transform_receive_timeout(Fun, AfterBlock, Timeout);
         _Other ->
-	    NewClauses = transform_receive_clauses(OldClauses),
-	    %% Create fun(X) -> case X of ... end end.
-	    FunVar = new_variable(),
-	    CaseClauses = transform_receive_case(NewClauses),
-	    Case = erl_syntax:case_expr(FunVar, CaseClauses),
-	    FunClause = erl_syntax:clause([FunVar], [], [Case]),
-	    FunExpr = erl_syntax:fun_expr([FunClause]),
-	    %% Create ?REP_MOD:rep_receive(fun(X) -> ...).
-	    Module = erl_syntax:atom(?REP_MOD),
-	    Function = erl_syntax:atom(rep_receive),
-	    RepReceive = erl_syntax:application(Module, Function, [FunExpr]),
-	    %% Create new receive expression.
-	    NewReceive = erl_syntax:receive_expr(NewClauses),
-	    %% Result is begin rep_receive(...), NewReceive end.
-	    Block = erl_syntax:block_expr([RepReceive, NewReceive]),
-	    case erl_syntax:receive_expr_timeout(Tree) of
-		%% Instrument `receive` without `after` part.
-		none -> Block;
-		%% Instrument `receive` with `after` part.
-		_Any ->
-		    Timeout = erl_syntax:receive_expr_timeout(Tree),
-		    Action = erl_syntax:receive_expr_action(Tree),
-		    RepMod = erl_syntax:atom(?REP_MOD),
-		    RepFun = erl_syntax:atom(rep_after_notify),
-		    RepApp = erl_syntax:application(RepMod, RepFun, []),
-		    NewAction = [RepApp|Action],
-		    %% receive NewPatterns -> NewActions after 0 -> NewAfter end
-		    ZeroTimeout = erl_syntax:integer(0),
-		    AfterExpr = erl_syntax:receive_expr(NewClauses,
-							ZeroTimeout, NewAction),
+            NewClauses = transform_receive_clauses(OldClauses),
+            %% Create fun(X) -> case X of ... end end.
+            FunVar = new_variable(),
+            CaseClauses = transform_receive_case(NewClauses),
+            Case = erl_syntax:case_expr(FunVar, CaseClauses),
+            FunClause = erl_syntax:clause([FunVar], [], [Case]),
+            FunExpr = erl_syntax:fun_expr([FunClause]),
+            %% Create ?REP_MOD:rep_receive(fun(X) -> ...).
+            Module = erl_syntax:atom(?REP_MOD),
+            Function = erl_syntax:atom(rep_receive),
+            RepReceive = erl_syntax:application(Module, Function, [FunExpr]),
+            %% Create new receive expression.
+            NewReceive = erl_syntax:receive_expr(NewClauses),
+            %% Result is begin rep_receive(...), NewReceive end.
+            Block = erl_syntax:block_expr([RepReceive, NewReceive]),
+            case erl_syntax:receive_expr_timeout(Tree) of
+                %% Instrument `receive` without `after` part.
+                none -> Block;
+                %% Instrument `receive` with `after` part.
+                _Any ->
+                    Timeout = erl_syntax:receive_expr_timeout(Tree),
+                    Action = erl_syntax:receive_expr_action(Tree),
+                    RepMod = erl_syntax:atom(?REP_MOD),
+                    RepFun = erl_syntax:atom(rep_after_notify),
+                    RepApp = erl_syntax:application(RepMod, RepFun, []),
+                    NewAction = [RepApp|Action],
+                    %% receive NewPatterns -> NewActions after 0 -> NewAfter end
+                    ZeroTimeout = erl_syntax:integer(0),
+                    AfterExpr = erl_syntax:receive_expr(NewClauses,
+                                                        ZeroTimeout, NewAction),
                     transform_receive_timeout(Block, AfterExpr, Timeout)
-	    end
+            end
     end.
 
 transform_receive_case(Clauses) ->
     Fun = fun(Clause, HasCatchall) ->
-		  [Pattern] = erl_syntax:clause_patterns(Clause),
-		  NewBody = erl_syntax:atom(continue),
-		  NewHasCatchall = HasCatchall orelse
-		      erl_syntax:type(Pattern) =:= variable,
-		  {erl_syntax:clause([Pattern], [], [NewBody]), NewHasCatchall}
-	  end,
+                  [Pattern] = erl_syntax:clause_patterns(Clause),
+                  NewBody = erl_syntax:atom(continue),
+                  NewHasCatchall = HasCatchall orelse
+                      erl_syntax:type(Pattern) =:= variable,
+                  {erl_syntax:clause([Pattern], [], [NewBody]), NewHasCatchall}
+          end,
     case lists:mapfoldl(Fun, false, Clauses) of
-	{NewClauses, false} ->
-	    Pattern = new_underscore_variable(),
-	    Body = erl_syntax:atom(block),
-	    CatchallClause = erl_syntax:clause([Pattern], [], [Body]),
-	    NewClauses ++ [CatchallClause];
-	{NewClauses, true} -> NewClauses
+        {NewClauses, false} ->
+            Pattern = new_underscore_variable(),
+            Body = erl_syntax:atom(block),
+            CatchallClause = erl_syntax:clause([Pattern], [], [Body]),
+            NewClauses ++ [CatchallClause];
+        {NewClauses, true} -> NewClauses
     end.
 
 transform_receive_clauses(Clauses) ->
     Trans = fun(P) -> [transform_receive_clause_regular(P),
-		       transform_receive_clause_special(P)]
-	    end,
+                       transform_receive_clause_special(P)]
+            end,
     Fold = fun(Clause, Acc) -> Trans(Clause) ++ Acc end,
     lists:foldr(Fold, [], Clauses).
 
@@ -550,12 +551,12 @@ log_error_list(List) ->
 
 %% Log a list of warnings, as returned by compile:file/2.
 log_warning_list(List) -> ok.
-    %log_list(List, "Warning:").
+                                                %log_list(List, "Warning:").
 
 %% Log a list of error or warning descriptors, as returned by compile:file/2.
 log_list(List, Pre) ->
     LogFun = fun(String) -> log:log(String) end,
     _ = [LogFun(io_lib:format("~s:~p: ~s ~s\n",
-			      [File, Line, Pre, Mod:format_error(Descr)]))
-	 || {File, Info} <- List, {Line, Mod, Descr} <- Info],
+                              [File, Line, Pre, Mod:format_error(Descr)]))
+         || {File, Info} <- List, {Line, Mod, Descr} <- Info],
     ok.

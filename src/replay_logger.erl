@@ -18,7 +18,7 @@
 -export([start/0, stop/0, start_replay/0, log/1, get_replay/0]).
 %% Callback exports
 -export([init/1, terminate/2, handle_cast/2, handle_call/3,
-	 code_change/3, handle_info/2]).
+         code_change/3, handle_info/2]).
 
 -behaviour(gen_server).
 
@@ -80,9 +80,9 @@ terminate(_Reason, _State) ->
     ok.
 
 -spec handle_cast('start_replay' | 'stop' |
-		  {'log_replay', proc_action:proc_action()},
+                  {'log_replay', proc_action:proc_action()},
                   state()) ->
-			 {'noreply', state()}.
+                         {'noreply', state()}.
 
 handle_cast(start_replay, _State) ->
     {noreply, []};
@@ -92,7 +92,7 @@ handle_cast(stop, State) ->
     {stop, normal, State}.
 
 -spec handle_call('get_replay', {pid(), term()}, state()) ->
-			 {'reply', state(), state()}.
+                         {'reply', state(), state()}.
 
 handle_call(get_replay, _From, State) ->
     Details = lists:reverse(State),
