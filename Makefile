@@ -98,16 +98,15 @@ ERL_DIRS = \
 
 vpath %.hrl include
 vpath %.erl $(ERL_DIRS)
-vpath %.beam ebin
 
 include $(wildcard $(OPTS))
 
-.PHONY: clean doc test run
+.PHONY: clean dialyze doc test
 
 all: 	$(TARGETS)
 
 clean:
-	rm -f run
+	rm -f concuerror
 	rm -f $(OPTS)
 	rm -f $(EBIN)/*.beam
 	rm -f $(DOC)/*.html $(DOC)/*.css $(DOC)/edoc-info $(DOC)/*.png
@@ -141,48 +140,37 @@ debug2:
 	make
 endif
 
-doc:	util.beam
+dialyze: all
+	dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam
+
+doc:	$(EBIN)/util.beam
 	erl -noinput -pa $(EBIN) -s util doc $(TOP) -s init stop
 
-core:	$(CORE_MODULES:%=%.beam)
+core:	$(CORE_MODULES:%=$(EBIN)/%.beam)
 
-gui:	$(GUI_MODULES:%=%.beam)
+gui:	$(GUI_MODULES:%=$(EBIN)/%.beam)
 
-log:	$(LOG_MODULES:%=%.beam)
+log:	$(LOG_MODULES:%=$(EBIN)/%.beam)
 
-utest:	$(UTEST_MODULES:%=%.beam)
+utest:	$(UTEST_MODULES:%=$(EBIN)/%.beam)
 
-scripts: run
+scripts: concuerror
 
 test: 	all
 	erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop
 
-run:
+concuerror:
 	printf "#%c/bin/bash\n \
+		\n\
 	        erl -smp enable -noinput -sname $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
-	      > run
-	chmod +x run
+	      > concuerror
+	chmod +x concuerror
 
-%.beam: %.erl
+$(EBIN)/%.beam: %.erl
 	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -o $(EBIN) $<
 
 ###----------------------------------------------------------------------
 ### Dependencies
 ###----------------------------------------------------------------------
 
-gui.beam           : gui.hrl
-
-error.beam         : gen.hrl
-error_tests.beam   : gen.hrl
-gui.beam           : gen.hrl
-instr.beam         : gen.hrl
-lid.beam           : gen.hrl
-lid_tests.beam     : gen.hrl
-log.beam           : gen.hrl
-rep.beam	   : gen.hrl
-replay_logger.beam : gen.hrl
-sched.beam         : gen.hrl
-snapshot.beam      : gen.hrl
-state.beam         : gen.hrl
-ticket.beam        : gen.hrl
-util.beam          : gen.hrl
+# FIXME: Automatically generate these.
