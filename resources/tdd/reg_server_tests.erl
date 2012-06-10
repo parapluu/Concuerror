@@ -11,9 +11,10 @@
 -export([start_stop_test/0, ping_test/0, multiple_stops_test/0,
 	 multiple_concurrent_stops_test/0, ping_failure_test/0,
 	 ping_concurrent_failure_test/0, multiple_starts_test/0,
-	 multiple_concurrent_starts_test/0, attach_test/0,
-	 max_attached_proc_test/0, detach_test/0, detach_attach_test/0,
-	 detach_non_attached_test/0, detach_on_exit_test/0]).
+	 multiple_concurrent_starts_test/0, attach_noping_test/0,
+         attach_test/0, max_attached_proc_test/0, detach_test/0,
+         detach_attach_test/0, detach_non_attached_test/0,
+         detach_on_exit_test/0]).
 
 
 start_stop_test() ->
@@ -79,6 +80,13 @@ attach_test() ->
 	  end),
     ?assertEqual(RegNum1, reg_server:ping()),
     receive done -> reg_server:stop() end.
+
+attach_noping_test() ->
+    Self = self(),
+    reg_server:start(),
+    reg_server:attach(),
+    spawn(fun() -> reg_server:attach() end),
+    reg_server:stop().
 
 already_attached_test() ->
     reg_server:start(),
