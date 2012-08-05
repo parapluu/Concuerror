@@ -13,7 +13,7 @@
 
 -module(state).
 
--export([extend/2, empty/0, is_empty/1, trim_head/1, trim_tail/1]).
+-export([extend/2, empty/0, is_empty/1, pack/1, trim_head/1, trim_tail/1]).
 
 -export_type([state/0]).
 
@@ -26,7 +26,9 @@
 -define(BIN_TO_TERM(X), binary_to_term(X)).
 -define(TERM_TO_BIN(X), term_to_binary(X, ?OPT_T2B)).
 -else.
--type state() :: queue().
+-type state() :: {{lid:lid(),pos_integer()} | 'undefined',
+                  queue(),
+                  {lid:lid(),pos_integer()} | 'undefined'}.
 -define(BIN_TO_TERM(X), X).
 -define(TERM_TO_BIN(X), X).
 -endif.
@@ -36,33 +38,91 @@
 -spec extend(state(), lid:lid()) -> state().
 
 extend(State, Lid) ->
-    NewState = queue:in(Lid, ?BIN_TO_TERM(State)),
-    ?TERM_TO_BIN(NewState).
+    {Front, Queue, Rear} = ?BIN_TO_TERM(State),
+    case Rear of
+        {RLid, N} when RLid==Lid ->
+            NewState = {Front, Queue, {RLid, N+1}},
+            ?TERM_TO_BIN(NewState);
+        {_RLid, _N} ->
+            NewQueue = queue:in(Rear, Queue),
+            NewState = {Front, NewQueue, {Lid, 1}},
+            ?TERM_TO_BIN(NewState);
+        undefined ->
+            NewState = {Front, Queue, {Lid, 1}},
+            ?TERM_TO_BIN(NewState)
+    end.
 
 %% Return initial (empty) state.
 -spec empty() -> state().
 
 empty() ->
-    ?TERM_TO_BIN(queue:new()).
+    NewState = {undefined, queue:new(), undefined},
+    ?TERM_TO_BIN(NewState).
 
 %% Check if State is an empty state.
 -spec is_empty(state()) -> boolean().
 
 is_empty(State) ->
-    queue:is_empty(?BIN_TO_TERM(State)).
+    case ?BIN_TO_TERM(State) of
+        {undefined, Queue, undefined} ->
+            queue:is_empty(Queue);
+        _ -> false
+    end.
+
+%% Pack out state.
+-spec pack(state()) -> state().
+
+pack(State) ->
+    {Front, Queue, Rear} = ?BIN_TO_TERM(State),
+    Queue1 =
+        case Front of
+            undefined -> Queue;
+            _ -> queue:in_r(Front, Queue)
+        end,
+    Queue2 =
+        case Rear of
+            undefined -> Queue1;
+            _ -> queue:in(Rear, Queue1)
+        end,
+    NewState = {undefined, Queue2, undefined},
+    ?TERM_TO_BIN(NewState).
 
 %% Return a tuple containing the first Lid in the given state
 %% and a new state with that Lid removed.
+%% Assume the State is packed and not empty.
 -spec trim_head(state()) -> {lid:lid(), state()}.
 
 trim_head(State) ->
-    {{value, Lid}, NewState} = queue:out(?BIN_TO_TERM(State)),
-    {Lid, ?TERM_TO_BIN(NewState)}.
+    {Front, Queue, Rear} = ?BIN_TO_TERM(State),
+    case Front of
+        {Lid, N} when N>1  ->
+            NewState = {{Lid, N-1}, Queue, Rear},
+            {Lid, ?TERM_TO_BIN(NewState)};
+        {Lid, N} when N==1 ->
+            NewState = {undefined, Queue, Rear},
+            {Lid, ?TERM_TO_BIN(NewState)};
+        undefined ->
+            {{value, NewFront}, NewQueue} = queue:out(Queue),
+            NewState = {NewFront, NewQueue, Rear},
+            trim_head(?TERM_TO_BIN(NewState))
+    end.
 
 %% Return a tuple containing the last Lid in the given state
 %% and a new state with that Lid removed.
+%% Assume the State is packed and not empty.
 -spec trim_tail(state()) -> {lid:lid(), state()}.
 
 trim_tail(State) ->
-    {{value, Lid}, NewState} = queue:out_r(?BIN_TO_TERM(State)),
-    {Lid, ?TERM_TO_BIN(NewState)}.
+    {Front, Queue, Rear} = ?BIN_TO_TERM(State),
+    case Rear of
+        {Lid, N} when N>1  ->
+            NewState = {Front, Queue, {Lid, N-1}},
+            {Lid, ?TERM_TO_BIN(NewState)};
+        {Lid, N} when N==1 ->
+            NewState = {Front, Queue, undefined},
+            {Lid, ?TERM_TO_BIN(NewState)};
+        undefined ->
+            {{value, NewRear}, NewQueue} = queue:out_r(Queue),
+            NewState = {Front, NewQueue, NewRear},
+            trim_tail(?TERM_TO_BIN(NewState))
+    end.

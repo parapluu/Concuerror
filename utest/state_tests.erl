@@ -24,8 +24,9 @@ extend_trim_head_test() ->
     lid:start(),
     Init = state:empty(),
     Lid = lid:new(c:pid(0, 2, 3), noparent),
-    State = state:extend(Init, Lid),
-    {NewLid, NewState} = state:trim_head(State),
+    State1 = state:extend(Init, Lid),
+    State2 = state:pack(State1),
+    {NewLid, NewState} = state:trim_head(State2),
     ?assertEqual(NewLid, Lid),
     ?assertEqual(true, state:is_empty(NewState)),
     lid:stop().
@@ -36,8 +37,9 @@ extend_trim_tail_test() ->
     lid:start(),
     Init = state:empty(),
     Lid = lid:new(c:pid(0, 2, 3), noparent),
-    State = state:extend(Init, Lid),
-    {NewLid, NewState} = state:trim_tail(State),
+    State1 = state:extend(Init, Lid),
+    State2 = state:pack(State1),
+    {NewLid, NewState} = state:trim_tail(State2),
     ?assertEqual(NewLid, Lid),
     ?assertEqual(true, state:is_empty(NewState)),
     lid:stop().
