@@ -621,46 +621,42 @@ log_details(Det, Action) ->
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
 state_load() ->
-    case ets:first(?NT_STATE1) of
-        '$end_of_table' -> no_state;
-        State ->
-            ets:delete(?NT_STATE1, State),
-            state:pack(State)
+    case get(?NT_STATE1) of
+        [State|Rest] ->
+            put(?NT_STATE1, Rest),
+            state:pack(State);
+        [] -> no_state
     end.
 
 %% Return a state without removing it.
 %% If no states available, return 'no_state'.
 state_peak() ->
-    case ets:first(?NT_STATE1) of
-        '$end_of_table' ->  no_state;
-        State -> State
+    case get(?NT_STATE1) of
+        [State|_] -> State;
+        [] -> no_state
     end.
 
 %% Add a state to the current `state` table.
 state_save(State) ->
-    ets:insert(?NT_STATE1, {State}).
+    put(?NT_STATE1, [State | get(?NT_STATE1)]).
 
 %% Add a state to the next `state` table.
 state_save_next(State) ->
-    ets:insert(?NT_STATE2, {State}).
+    put(?NT_STATE2, [State | get(?NT_STATE2)]).
 
 %% Initialize state tables.
 state_start() ->
-    ?NT_STATE1 = ets:new(?NT_STATE1, [named_table]),
-    ?NT_STATE2 = ets:new(?NT_STATE2, [named_table]),
+    put(?NT_STATE1, []),
+    put(?NT_STATE2, []),
     ok.
 
 %% Clean up state table.
 state_stop() ->
-    ets:delete(?NT_STATE1),
-    ets:delete(?NT_STATE2).
+    ok.
 
 %% Swap names of the two state tables and clear one of them.
 state_swap() ->
-    ets:rename(?NT_STATE1, ?NT_STATE_TEMP),
-    ets:rename(?NT_STATE2, ?NT_STATE1),
-    ets:rename(?NT_STATE_TEMP, ?NT_STATE2),
-    ets:delete_all_objects(?NT_STATE2).
+    put(?NT_STATE1, put(?NT_STATE2, [])).
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation interface
