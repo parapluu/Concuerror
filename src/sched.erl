@@ -202,7 +202,7 @@ interleave_aux(Target, Options, Parent) ->
     state_start(),
     %% Save empty replay state for the first run.
     {init_state, InitState} = lists:keyfind(init_state, 1, Options),
-    state_save(InitState),
+    state_save({InitState, []}),
     PreBound =
         case lists:keyfind(preb, 1, Options) of
             {preb, inf} -> ?INFINITY;
@@ -386,10 +386,12 @@ run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
         false -> {NewContext, {Rest, W}}
     end.
 
+insert_states(_State, {[], _}) ->
+    ok;
 insert_states(State, {Lids, current}) ->
-    lists:foreach(fun (L) -> state_save(state:extend(State, L)) end, Lids);
+    state_save({State, Lids});
 insert_states(State, {Lids, next}) ->
-    lists:foreach(fun (L) -> state_save_next(state:extend(State, L)) end, Lids).
+    state_save_next({State, Lids}).
 
 %% Run process Lid in context Context until it encounters a preemption point.
 run(#context{current = Lid, state = State} = Context) ->
@@ -622,9 +624,18 @@ log_details(Det, Action) ->
 %% If no states available, return 'no_state'.
 state_load() ->
     case get(?NT_STATE1) of
-        [State|Rest] ->
-            put(?NT_STATE1, Rest),
-            state:pack(State);
+        [Head|Tail] ->
+            case Head of
+                {State, [L]} ->
+                    put(?NT_STATE1, Tail),
+                    state:pack(state:extend(State, L));
+                {State, [L|Lids]} ->
+                    put(?NT_STATE1, [{State,Lids} | Tail]),
+                    state:pack(state:extend(State, L));
+                {State, []} ->
+                    put(?NT_STATE1, Tail),
+                    state:pack(State)
+            end;
         [] -> no_state
     end.
 
