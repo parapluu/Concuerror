@@ -101,10 +101,16 @@
 -type bound() :: 'inf' | non_neg_integer().
 
 %% Scheduler notification.
--type notification() :: 'after' | 'demonitor' | 'fun_exit' | 'halt' | 'link' |
-                        'monitor' | 'process_flag' | 'receive' | 'register' |
-                        'spawn' | 'spawn_link' | 'spawn_monitor' |
-                        'spawn_opt' | 'unlink' | 'unregister' | 'whereis'.
+
+-type notification() :: 'after' | 'block' | 'demonitor' | 'ets_delete' |
+                        'ets_foldl' | 'ets_insert' | 'ets_insert_new' |
+                        'ets_lookup' | 'ets_match_delete' | 'ets_match_object' |
+                        'ets_select_delete' | 'fun_exit' | 'halt' |
+                        'is_process_alive' | 'link' | 'monitor' |
+                        'process_flag' | 'receive' | 'receive_no_instr' |
+                        'register' | 'send' | 'spawn' | 'spawn_link' |
+                        'spawn_monitor' | 'spawn_opt' | 'unlink' |
+                        'unregister' | 'whereis'.
 
 %%%----------------------------------------------------------------------
 %%% User interface
