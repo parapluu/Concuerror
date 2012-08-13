@@ -20,7 +20,7 @@
 %% Internal exports
 -export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, lid_from_pid/1]).
 
--export_type([analysis_target/0, analysis_ret/0]).
+-export_type([analysis_target/0, analysis_ret/0, bound/0]).
 
 -include("gen.hrl").
 

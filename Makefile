@@ -54,15 +54,16 @@ DIALYZER_FLAGS = -Wunmatched_returns
 
 TARGETS = \
 	core \
-	gui \
+	main \
 	log \
 	utest \
 	scripts
 
-GUI_MODULES = \
-	gui
+MAIN_MODULES = \
+	concuerror
 
 CORE_MODULES = \
+	gui \
 	error \
 	instr \
 	lid \
@@ -87,7 +88,7 @@ UTEST_MODULES = \
 	ticket_tests
 
 MODULES = \
-	$(GUI_MODULES) \
+	$(MAIN_MODULES) \
 	$(CORE_MODULES) \
 	$(LOG_MODULES) \
 	$(UTEST_MODULES)
@@ -148,7 +149,7 @@ doc:	$(EBIN)/util.beam
 
 core:	$(CORE_MODULES:%=$(EBIN)/%.beam)
 
-gui:	$(GUI_MODULES:%=$(EBIN)/%.beam)
+main:	$(MAIN_MODULES:%=$(EBIN)/%.beam)
 
 log:	$(LOG_MODULES:%=$(EBIN)/%.beam)
 
@@ -160,11 +161,15 @@ test: 	all
 	erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop
 
 concuerror:
-	printf "#%c/bin/bash\n \
-		\n\
-	        erl -smp enable -noinput -sname $(APP_STRING) -pa $(EBIN) -s gui start -s init stop" ! \
-	      > concuerror
-	chmod +x concuerror
+	printf "\
+	#%c/bin/bash\n\
+	\n\
+	erl -smp enable -noinput -sname $(APP_STRING) \\\\\n\
+	    -pa $(EBIN) \\\\\n\
+	    -s concuerror cli -s init stop \\\\\n\
+	    -concuerror_options -- \\\\\n\
+	    \"\$$@\"\n" ! > $@
+	chmod +x $@
 
 $(EBIN)/%.beam: %.erl
 	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -o $(EBIN) $<
