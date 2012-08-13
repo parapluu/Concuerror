@@ -202,7 +202,7 @@ interleave_aux(Target, Options, Parent) ->
     state_start(),
     %% Save empty replay state for the first run.
     {init_state, InitState} = lists:keyfind(init_state, 1, Options),
-    state_save({InitState, []}),
+    state_save({InitState, undefined}),
     PreBound =
         case lists:keyfind(preb, 1, Options) of
             {preb, inf} -> ?INFINITY;
@@ -624,18 +624,15 @@ log_details(Det, Action) ->
 %% If no states available, return 'no_state'.
 state_load() ->
     case get(?NT_STATE1) of
-        [Head|Tail] ->
-            case Head of
-                {State, [L]} ->
-                    put(?NT_STATE1, Tail),
-                    state:pack(state:extend(State, L));
-                {State, [L|Lids]} ->
-                    put(?NT_STATE1, [{State,Lids} | Tail]),
-                    state:pack(state:extend(State, L));
-                {State, []} ->
-                    put(?NT_STATE1, Tail),
-                    state:pack(State)
-            end;
+        [{State, [L]} | Rest] ->
+            put(?NT_STATE1, Rest),
+            state:pack(state:extend(State, L));
+        [{State, [L|Lids]} | Rest] ->
+            put(?NT_STATE1, [{State,Lids} | Rest]),
+            state:pack(state:extend(State, L));
+        [{State, undefined} | Rest] ->
+            put(?NT_STATE1, Rest),
+            state:pack(State);
         [] -> no_state
     end.
 
