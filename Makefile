@@ -164,11 +164,18 @@ concuerror:
 	printf "\
 	#%c/bin/bash\n\
 	\n\
-	erl -smp enable -noinput -sname $(APP_STRING) \\\\\n\
+	trap ctrl_c INT\n\
+	function ctrl_c() {\n\
+	    erl -sname $(APP_STRING)_Stop -noinput \\\\\n\
+	        -pa $(EBIN) \\\\\n\
+	        -s concuerror stop -s init stop\n\
+	}\n\
+	\n\
+	erl +Bi -smp enable -noinput -sname $(APP_STRING) \\\\\n\
 	    -pa $(EBIN) \\\\\n\
 	    -s concuerror cli -s init stop \\\\\n\
-	    -concuerror_options -- \\\\\n\
-	    \"\$$@\"\n" ! > $@
+	    -concuerror_options -- \"\$$@\" &\n\
+	wait \$$!\n" ! > $@
 	chmod +x $@
 
 $(EBIN)/%.beam: %.erl

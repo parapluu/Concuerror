@@ -14,7 +14,7 @@
 -module(concuerror).
 
 %% UI exports.
--export([gui/0, cli/0, analyze/1, show/1]).
+-export([gui/0, cli/0, analyze/1, show/1, stop/0]).
 %% Log server callback exports.
 -export([init/1, terminate/2, handle_event/2]).
 
@@ -41,6 +41,29 @@
 %%%----------------------------------------------------------------------
 %%% UI functions
 %%%----------------------------------------------------------------------
+
+%% @spec stop() -> ok
+%% @doc: Stop the Concuerror analysis
+-spec stop() -> ok.
+stop() ->
+    %% XXX: Erlang nodes is erroneous with Concuerror right
+    %% now and there is times this approach may crash.
+    %% Get the hostname
+    Temp1 = atom_to_list(node()),
+    Host = lists:dropwhile(fun(E) -> E /= $@ end, Temp1),
+    %% Set Concuerror Node
+    Node = list_to_atom("Concuerror" ++ Host),
+    %% Connect to node
+    case net_adm:ping(Node) of
+        pong ->
+            %% Stop analysis
+            spawn(Node, fun() -> ?RP_SCHED ! stop_analysis end);
+        _ ->
+            %% Well some times we could not connect with the
+            %% first try so for now just repeat
+            stop()
+    end,
+    ok.
 
 %% @spec gui() -> 'true'
 %% @doc: Start the CED GUI.
@@ -73,7 +96,7 @@ cli() ->
     true.
 
 %% We don't allow any options for action `gui'
-action_gui([]) -> gui:start();
+action_gui([]) -> gui();
 action_gui([Op|_]) ->
     io:format("~s: unrecognised flag: ~s\n", [?APP_STRING, Op]),
     halt(1).
