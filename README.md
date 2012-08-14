@@ -17,7 +17,8 @@ Howto
 ------
 
 * Build Concuerror   : `make`
-* Run Concuerror GUI : `concuerror`
+* Run Concuerror     : `concuerror help`
+* Run Concuerror GUI : `concuerror gui`
 * Run unit tests     : `make test`
 * Dialyze            : `make dialyze`
 * Cleanup            : `make clean`
