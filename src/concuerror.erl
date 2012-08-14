@@ -29,7 +29,7 @@
 -type options() ::
     [ {'target',  sched:analysis_target()}
     | {'files',   [file()]}
-    | {'output',  file()}
+    | {'snapshot',  file()}
     | {'include', [file()]}
     | {'preb',    sched:bound()}
     | {'number', [pos_integer() | {pos_integer(), pos_integer()|'end'}]}
@@ -126,18 +126,12 @@ action_analyze([{Opt, []} | _Args], _Options)
 action_analyze([{Opt, Files} | Args], Options)
         when (Opt =:= 'f') orelse (Opt =:= '-files') ->
     %% Found --files option
-    NewOptions =
-        case lists:keytake(files, 1, Options) of
-            {value, {files, PrevFiles}, Options2} ->
-                [{files, Files++PrevFiles} | Options2];
-            false ->
-                [{files, Files} | Options]
-        end,
+    NewOptions = keyAppend(files, 1, Options, Files),
     action_analyze(Args, NewOptions);
 action_analyze([{Opt, [File]} | Args], Options)
         when (Opt =:= 'o') orelse (Opt =:= '-output') ->
     %% Found --output option
-    NewOptions = lists:keystore(output, 1, Options, {output, File}),
+    NewOptions = lists:keystore(snapshot, 1, Options, {snapshot, File}),
     action_analyze(Args, NewOptions);
 action_analyze([{Opt, _Files} | _Args], _Options)
         when (Opt =:= 'o') orelse (Opt =:= '-output') ->
@@ -167,13 +161,7 @@ action_analyze([{Opt, _Prebs} | _Args], _Options)
     halt(1);
 action_analyze([{'I', Includes} | Args], Options) ->
     %% Found -I option
-    NewOptions =
-        case lists:keytake(include, 1, Options) of
-            {value, {include, PrevIncludes}, Options2} ->
-                [{include, Includes++PrevIncludes} | Options2];
-            false ->
-                [{include, Includes} | Options]
-        end,
+    NewOptions = keyAppend(include, 1, Options, Includes),
     action_analyze(Args, NewOptions);
 action_analyze([], Options) ->
     analyze(Options);
@@ -183,7 +171,71 @@ action_analyze([Arg | _Args], _Options) ->
 
 
 %% Parse options for show command and call `show/1'
-action_show(_Options, []) -> ok.
+action_show([{'-snapshot', [File]} | Args], Options) ->
+    %% Found --snapshot option
+    NewOptions = lists:keystore(snapshot, 1, Options, {snapshot, File}),
+    action_show(Args, NewOptions);
+action_show([{'-snapshot', _Files} | _Args], _Options) ->
+    %% Found --snapshot with wrong paramemters
+    io:format("~s: wrong number of arguments for option --snapshot\n",
+        [?APP_STRING]),
+    halt(1);
+action_show([{'n', Numbers} | Args], Options) ->
+    %% Found -n option
+    Fun = fun(Nr) ->
+            case string:to_integer(Nr) of
+                {N, []} when N>0 -> N;
+                {N1, [$.,$.|N2]} when N1>0 ->
+                    case string:to_integer(N2) of
+                        {N3, []} when (N3>0) andalso (N1<N3) -> {N1, N3};
+                        _ when (N2=:="end") -> {N1, 'end'};
+                        _ ->
+                            io:format("~s: wrong type of number ~s\n",
+                                [?APP_STRING, N2]),
+                            halt(1)
+                    end;
+                _ ->
+                    io:format("~s: wrong type of number ~s\n",
+                        [?APP_STRING, Nr]),
+                    halt(1)
+            end
+          end,
+    NewNumbers = lists:map(Fun, Numbers),
+    NewOptions = keyAppend(number, 1, Options, NewNumbers),
+    action_show(Args, NewOptions);
+action_show([{'-all', []} | Args], Options) ->
+    %% Found --all option
+    NewOptions = lists:keystore(all, 1, Options, {all}),
+    action_show(Args, NewOptions);
+action_show([{'-all', _Param} | _Args], _Options) ->
+    %% Found --all option with wrong parameters
+    io:format("~s: wrong number of arguments for option --all\n",
+        [?APP_STRING]),
+    halt(1);
+action_show([{'-details', []} | Args], Options) ->
+    %% Found --details options
+    NewOptions = lists:keystore(details, 1, Options, {details}),
+    action_show(Args, NewOptions);
+action_show([{'-details', _Params} | _Args], _Options) ->
+    %% Found --details option with wrong parameters
+    io:format("~s: wrong number of arguments for option --details\n",
+        [?APP_STRING]),
+    halt(1);
+action_show([], Options) ->
+    show(Options);
+action_show([Arg | _Args], _Options) ->
+    io:format("~s: unrecognised concuerror flag: ~p\n", [?APP_STRING, Arg]),
+    halt(1).
+
+
+keyAppend(Key, Pos, TupleList, Value) ->
+    case lists:keytake(Key, Pos, TupleList) of
+        {value, {Key, PrevValue}, TupleList2} ->
+            [{Key, Value ++ PrevValue} | TupleList2];
+        false ->
+            [{Key, Value} | TupleList]
+    end.
+
 
 help() ->
     io:format(
@@ -206,8 +258,8 @@ help() ->
      "  -I          include_dir Pass the include_dir to concuerror\n"
      "\n"
      "Show options:\n"
-     "  -s|--snapshot  file     Specify input (snapshot) file\n"
-     "  -n   from..to           Specify which errors we want (default -all)\n"
+     "  --snapshot   file       Specify input (snapshot) file\n"
+     "  -n           from..to   Specify which errors we want (default -all)\n"
      "  --all                   Show all errors\n"
      "  -d|--details            Show details about each error\n"
      "\n"
@@ -215,7 +267,7 @@ help() ->
      "  concuerror analyze --target foo bar arg1 arg2 "
             "--files \"temp/foo.erl\" -o out.ced\n"
      "  concuerror show --snapshot out.ced --all\n"
-     "  concuerror show -snapshot out.ced -n 1 4..end --details\n\n").
+     "  concuerror show --snapshot out.ced -n 1 4..end --details\n\n").
 
 
 %%%----------------------------------------------------------------------
@@ -244,8 +296,8 @@ analyze(Options) ->
         end,
     %% Set output file
     Output =
-        case lists:keyfind(output, 1, Options) of
-            {output, O} -> O;
+        case lists:keyfind(snapshot, 1, Options) of
+            {snapshot, O} -> O;
             false -> "results.ced"
         end,
     %% Set include dirs
