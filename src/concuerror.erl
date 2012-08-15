@@ -91,7 +91,7 @@ cli() ->
         [Action] ->
             io:format("~s: unrecognised command: ~s\n", [?APP_STRING, Action]),
             halt(1);
-        [] -> help()
+        _ -> help()
     end,
     true.
 
@@ -336,8 +336,99 @@ analyze(Options) ->
 %% @doc: Examine Concuerror results with the given options.
 -spec show(options()) -> 'true'.
 show(Options) ->
-    io:format("~p\n", [Options]),
+    %% Get snapshot file
+    File =
+        case lists:keyfind(snapshot, 1, Options) of
+            {snapshot, S} -> S;
+            false ->
+                io:format("~s: no snapshot file specified\n", [?APP_STRING]),
+                halt(1)
+        end,
+    %% Get index of errors to examine
+    Indexes1 =
+        case lists:keyfind(number, 1, Options) of
+            {number, N} -> N;
+            false -> all
+        end,
+    Indexes2 =
+        case lists:keyfind(all, 1, Options) of
+            {all} -> all;
+            false -> Indexes1
+        end,
+    %% Get details option
+    Details =
+        case lists:keyfind(details, 1, Options) of
+            {details} -> true;
+            false -> false
+        end,
+    %% Start the log manager and attach the event handler below.
+    _ = log:start(),
+    _ = log:attach(?MODULE, []),
+    %% Load snapshot
+    snapshot:cleanup(),
+    case snapshot:import(File) of
+        ok -> continue;
+        Snapshot ->
+            AnalysisRet = snapshot:get_analysis(Snapshot),
+            showAux(AnalysisRet, Indexes2, Details)
+    end,
+    snapshot:cleanup(),
+    %% Stop event handler
+    log:stop(),
     true.
+
+showAux({error, analysis, {_Target, _RunCount}, Tickets}, Indexes, Details) ->
+    TickLen = length(Tickets),
+    NewIndexes = uIndex(Indexes, TickLen),
+    KeyTickets = lists:zip(lists:seq(1, TickLen), Tickets),
+    NewTickets = selectKeys(NewIndexes, KeyTickets, []),
+    log:log("\n"),
+    lists:foreach(fun(T) -> showDetails(Details, T) end, NewTickets);
+showAux(_Result, _Indexes, _Details) ->
+    log:log("No errors found.\n").
+
+%% Take the indexes from command line and create a sorted list
+uIndex(all, TickLen) ->
+    lists:seq(1, TickLen);
+uIndex(Indexes, TickLen) ->
+    Fun = fun(I) ->
+            case I of
+                {From, 'end'} -> lists:seq(From, TickLen);
+                {From, To}  -> lists:seq(From, To);
+                Number -> Number
+            end
+          end,
+    Indexes1 = lists:map(Fun, Indexes),
+    Indexes2 = lists:flatten(Indexes1),
+    lists:usort(Indexes2).
+
+%% Keep only this elements whose keys are in Keys list
+%% Both lists are sorted by keys
+selectKeys(_Indexes, [], Acc) ->
+    lists:reverse(Acc);
+selectKeys([], _Tickets, Acc) ->
+    lists:reverse(Acc);
+selectKeys([I | Is], [{I,_T}=Tick | Tickets], Acc) ->
+    selectKeys(Is, Tickets, [Tick | Acc]);
+selectKeys(Indexes, [_ | Tickets], Acc) ->
+    selectKeys(Indexes, Tickets, Acc).
+
+%% Show details about each ticket
+showDetails(false, {I, Ticket}) ->
+    Error = ticket:get_error(Ticket),
+    ErrorItem = io_lib:format("~p\t~s: ~s\n",
+        [I, error:type(Error), error:short(Error)]),
+    log:log(ErrorItem);
+showDetails(true, {_I, T}=Ticket) ->
+    showDetails(false, Ticket),
+    Details = sched:replay(T),
+    lists:foreach(fun(Detail) ->
+                D1 = proc_action:to_string(Detail),
+                D2 = io_lib:format("  ~s\n", [D1]),
+                log:log(D2) end,
+        Details),
+    log:log("\n\n").
+
 
 
 %%%----------------------------------------------------------------------

@@ -15,7 +15,7 @@
 
 -export([export/4, get_analysis/1, get_module_id/1,
          get_function_id/1, get_modules/1, get_selection/1,
-         import/1, selection/2]).
+         import/1, selection/2, cleanup/0]).
 
 -include("gen.hrl").
 
@@ -123,6 +123,12 @@ new(Analysis, Files, Modules, Selection) ->
 
 selection(ModuleID, FunctionID) ->
     [{module, ModuleID}, {function, FunctionID}].
+
+-spec cleanup() -> ok.
+
+cleanup() ->
+    _ = os:cmd("rm -rf " ++ ?IMPORT_DIR),
+    ok.
 
 -spec to_file(file(), snapshot()) -> 'ok'.
 

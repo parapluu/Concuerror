@@ -52,7 +52,7 @@ start() ->
     _ = log:attach(?MODULE, wx:get_env()),
     %% Start the replay server.
     loop(),
-    snapshot_cleanup(),
+    snapshot:cleanup(),
     log:stop(),
     %% Save possibly edited preferences to file.
     savePrefs(),
@@ -1163,10 +1163,6 @@ remove_file(File) ->
 snapshot_add_analysis_ret(AnalysisRet) ->
     ref_add(?ANALYSIS_RET, AnalysisRet).
 
-snapshot_cleanup() ->
-    _ = os:cmd("rm -rf " ++ ?IMPORT_DIR),
-    ok.
-
 snapshot_export(Export) ->
     AnalysisRet = ref_lookup(?ANALYSIS_RET),
     Files = lists:reverse(ref_lookup(?FILES)),
@@ -1179,7 +1175,7 @@ snapshot_export(Export) ->
 
 snapshot_import(Import) ->
     clearAll(),
-    snapshot_cleanup(),
+    snapshot:cleanup(),
     case snapshot:import(Import) of
         ok -> continue;
         Snapshot ->
