@@ -15,7 +15,7 @@
 -module(sched).
 
 %% UI related exports
--export([analyze/2, replay/1]).
+-export([analyze/3, replay/1]).
 
 %% Internal exports
 -export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, lid_from_pid/1]).
@@ -74,7 +74,6 @@
 -type analysis_info() :: {analysis_target(), non_neg_integer()}.
 
 -type analysis_options() :: ['details' |
-                             {'files', [file()]} |
                              {'init_state', state:state()} |
                              {'preb',  bound()}].
 
@@ -105,17 +104,11 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
-%% @spec: analyze(analysis_target(), options()) -> analysis_ret()
+%% @spec: analyze(analysis_target(), [file()], options()) -> analysis_ret()
 %% @doc: Produce all interleavings of running `Target'.
--spec analyze(analysis_target(), analysis_options()) -> analysis_ret().
+-spec analyze(analysis_target(), [file()], analysis_options()) -> analysis_ret().
 
-analyze(Target, Options) ->
-    %% List of files to instrument.
-    Files =
-        case lists:keyfind(files, 1, Options) of
-            false -> [];
-            {files, List} -> List
-        end,
+analyze(Target, Files, Options) ->
     Ret =
         case instr:instrument_and_compile(Files) of
             {ok, Bin} ->
@@ -124,8 +117,7 @@ analyze(Target, Options) ->
                 log:log("Running analysis...~n"),
                 {T1, _} = statistics(wall_clock),
                 ISOption = {init_state, state:empty()},
-                BinOption = {bin, Bin},
-                Result = interleave(Target, [BinOption, ISOption|Options]),
+                Result = interleave(Target, [ISOption|Options]),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = elapsed_time(T1, T2),
                 case Result of
@@ -144,7 +136,6 @@ analyze(Target, Options) ->
                 end;
             error -> {error, instr, {Target, 0}}
         end,
-    instr:delete_and_purge(Files),
     Ret.
 
 %% @spec: replay(analysis_target(), state()) -> [proc_action()]
@@ -157,13 +148,8 @@ replay(Ticket) ->
     replay_logger:start_replay(),
     Target = ticket:get_target(Ticket),
     State = ticket:get_state(Ticket),
-    Files = ticket:get_files(Ticket),
-    %% Note: No error checking here.
-    {ok, Bin} = instr:instrument_and_compile(Files),
-    ok = instr:load(Bin),
-    Options = [details, {bin, Bin}, {init_state, State}, {files, Files}],
+    Options = [details, {init_state, State}],
     interleave(Target, Options),
-    instr:delete_and_purge(Files),
     Result = replay_logger:get_replay(),
     replay_logger:stop(),
     Result.
@@ -260,8 +246,7 @@ interleave_loop(Target, RunCnt, Tickets, Options) ->
             NewTickets =
                 case Ret of
                     {error, Error, ErrorState} ->
-                        {files, Files} = lists:keyfind(files, 1, Options),
-                        Ticket = ticket:new(Target, Files, Error, ErrorState),
+                        Ticket = ticket:new(Target, Error, ErrorState),
                         case Det of
                             true -> continue;
                             false -> log:show_error(Ticket)

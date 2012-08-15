@@ -150,6 +150,7 @@ A systematic testing tool for concurrent Erlang programs.
 -define(ANALYSIS_RET, 563).
 -define(FILES, 564).
 -define(SNAPSHOT_PATH, 565).
+-define(LOADED_FILES, 566).
 
 %% Other definitions
 -define(FILE_PATH, 560).

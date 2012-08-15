@@ -335,12 +335,12 @@ analyze(Options) ->
             false -> 2
         end,
     %% Create analysis_options
-    AnalysisOptions = [{files, Files}, {preb, Preb}, {include, Include}],
+    AnalysisOptions = [{preb, Preb}, {include, Include}],
     %% Start the log manager and attach the event handler below.
     _ = log:start(),
     _ = log:attach(?MODULE, []),
     %% Start the analysis
-    AnalysisRet = sched:analyze(Target, AnalysisOptions),
+    AnalysisRet = sched:analyze(Target, Files, AnalysisOptions),
     %% Save result to a snapshot
     Selection = snapshot:selection(1, 1),
     snapshot:export(AnalysisRet, Files, Selection, Output),
@@ -392,9 +392,15 @@ show(Options) ->
     case snapshot:import(File) of
         ok -> continue;
         Snapshot ->
+            Modules = snapshot:get_modules(Snapshot),
             AnalysisRet = snapshot:get_analysis(Snapshot),
+            %% Instrument and load the files
+            %% Note: No error checking here.
+            {ok, Bin} = instr:instrument_and_compile(Modules),
+            ok = instr:load(Bin),
             log:log("\n"),
-            showAux(AnalysisRet, Indexes2, Details)
+            showAux(AnalysisRet, Indexes2, Details),
+            instr:delete_and_purge(Modules)
     end,
     snapshot:cleanup(),
     %% Stop event handler
@@ -446,7 +452,10 @@ showDetails(false, {I, Ticket}) ->
     log:log(ErrorItem);
 showDetails(true, {_I, T}=Ticket) ->
     showDetails(false, Ticket),
+    %% Disable log event handler while replaying.
+    _ = log:detach(?MODULE, []),
     Details = sched:replay(T),
+    _ = log:attach(?MODULE, []),
     lists:foreach(fun(Detail) ->
                 D1 = proc_action:to_string(Detail),
                 D2 = io_lib:format("  ~s\n", [D1]),
