@@ -25,17 +25,6 @@
 -include("gen.hrl").
 
 %%%----------------------------------------------------------------------
-%%% Debug
-%%%----------------------------------------------------------------------
-
-%%-define(TTY, true).
--ifdef(TTY).
--define(tty(), ok).
--else.
--define(tty(), error_logger:tty(false)).
--endif.
-
-%%%----------------------------------------------------------------------
 %%% Definitions
 %%%----------------------------------------------------------------------
 
@@ -127,8 +116,6 @@ analyze(Target, Options) ->
             false -> [];
             {files, List} -> List
         end,
-    %% Disable error logging messages.
-    ?tty(),
     Ret =
         case instr:instrument_and_compile(Files) of
             {ok, Bin} ->

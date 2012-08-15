@@ -1,5 +1,5 @@
 %%%----------------------------------------------------------------------
-%%% Copyright (c) 2011, Alkis Gotovos <el3ctrologos@hotmail.com>,
+%%% Copyright (c) 2012, Alkis Gotovos <el3ctrologos@hotmail.com>,
 %%%                     Maria Christakis <mchrista@softlab.ntua.gr>
 %%%                 and Kostis Sagonas <kostis@cs.ntua.gr>.
 %%% All rights reserved.
@@ -21,6 +21,21 @@
 -export_type([options/0]).
 
 -include("gen.hrl").
+
+%%%----------------------------------------------------------------------
+%%% Debug
+%%%----------------------------------------------------------------------
+
+%%-define(TTY, true).
+-ifdef(TTY).
+-define(tty(), ok).
+-else.
+-define(tty(), error_logger:tty(false)).
+-endif.
+
+%%%----------------------------------------------------------------------
+%%% Types
+%%%----------------------------------------------------------------------
 
 %% Log event handler internal state.
 -type state() :: [].
@@ -69,12 +84,16 @@ stop() ->
 %% @doc: Start the CED GUI.
 -spec gui() -> 'true'.
 gui() ->
+    %% Disable error logging messages.
+    ?tty(),
     gui:start().
 
 %% @spec cli() -> 'true'
 %% @doc: Parse the command line arguments and start Concuerror.
 -spec cli() -> 'true'.
 cli() ->
+    %% Disable error logging messages.
+    ?tty(),
     %% First get the command line options
     Args1 = init:get_arguments(),
     %% And keep only this referring to Concuerror
@@ -278,6 +297,8 @@ help() ->
 %% @doc: Run Concuerror analysis with the given options.
 -spec analyze(options()) -> 'true'.
 analyze(Options) ->
+    %% Disable error logging messages.
+    ?tty(),
     %% Get target
     Target =
         case lists:keyfind(target, 1, Options) of
@@ -336,6 +357,8 @@ analyze(Options) ->
 %% @doc: Examine Concuerror results with the given options.
 -spec show(options()) -> 'true'.
 show(Options) ->
+    %% Disable error logging messages.
+    ?tty(),
     %% Get snapshot file
     File =
         case lists:keyfind(snapshot, 1, Options) of
@@ -370,6 +393,7 @@ show(Options) ->
         ok -> continue;
         Snapshot ->
             AnalysisRet = snapshot:get_analysis(Snapshot),
+            log:log("\n"),
             showAux(AnalysisRet, Indexes2, Details)
     end,
     snapshot:cleanup(),
@@ -382,9 +406,10 @@ showAux({error, analysis, {_Target, _RunCount}, Tickets}, Indexes, Details) ->
     NewIndexes = uIndex(Indexes, TickLen),
     KeyTickets = lists:zip(lists:seq(1, TickLen), Tickets),
     NewTickets = selectKeys(NewIndexes, KeyTickets, []),
-    log:log("\n"),
     lists:foreach(fun(T) -> showDetails(Details, T) end, NewTickets);
-showAux(_Result, _Indexes, _Details) ->
+showAux({error, instr, {_Target, _RunCount}}, _Indexes, _Details) ->
+    log:log("Instrumentation error.");
+showAux({ok, _RunCount}, _Indexes, _Details) ->
     log:log("No errors found.\n").
 
 %% Take the indexes from command line and create a sorted list
