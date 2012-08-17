@@ -46,6 +46,7 @@
     | {'files',   [file()]}
     | {'snapshot',  file()}
     | {'include', [file()]}
+    | {'no_progress'}
     | {'preb',    sched:bound()}
     | {'number', [pos_integer() | {pos_integer(), pos_integer()|'end'}]}
     | {'details'}
@@ -182,6 +183,15 @@ action_analyze([{'I', Includes} | Args], Options) ->
     %% Found -I option
     NewOptions = keyAppend(include, 1, Options, Includes),
     action_analyze(Args, NewOptions);
+action_analyze([{'-no_progress', []} | Args], Options) ->
+    %% Found --no_progress option
+    NewOptions = lists:keystore(no_progress, 1, Options, {no_progress}),
+    action_analyze(Args, NewOptions);
+action_analyze([{'-no_progress', _} | _Args], _Options) ->
+    %% Found --no_progress option with wrong parameters
+    io:format("~s: wrong number of arguments for option --no_progress\n",
+        [?APP_STRING]),
+    halt(1);
 action_analyze([], Options) ->
     analyze(Options);
 action_analyze([Arg | _Args], _Options) ->
@@ -231,11 +241,13 @@ action_show([{'-all', _Param} | _Args], _Options) ->
     io:format("~s: wrong number of arguments for option --all\n",
         [?APP_STRING]),
     halt(1);
-action_show([{'-details', []} | Args], Options) ->
+action_show([{Opt, []} | Args], Options)
+        when (Opt =:= 'd') orelse (Opt =:= '-details') ->
     %% Found --details options
     NewOptions = lists:keystore(details, 1, Options, {details}),
     action_show(Args, NewOptions);
-action_show([{'-details', _Params} | _Args], _Options) ->
+action_show([{Opt, _Params} | _Args], _Options)
+        when (Opt =:= 'd') orelse (Opt =:= '-details') ->
     %% Found --details option with wrong parameters
     io:format("~s: wrong number of arguments for option --details\n",
         [?APP_STRING]),
@@ -275,6 +287,7 @@ help() ->
      "  -o|--output file        Specify the output file (default results.ced)\n"
      "  -p|--preb   number|inf  Set preemption bound (default is 2)\n"
      "  -I          include_dir Pass the include_dir to concuerror\n"
+     "  --no-progress           Disable progress bar\n"
      "\n"
      "Show options:\n"
      "  --snapshot   file       Specify input (snapshot) file\n"
@@ -338,7 +351,7 @@ analyze(Options) ->
     AnalysisOptions = [{preb, Preb}, {include, Include}],
     %% Start the log manager and attach the event handler below.
     _ = log:start(),
-    _ = log:attach(?MODULE, []),
+    _ = log:attach(?MODULE, Options),
     %% Start the analysis
     AnalysisRet = sched:analyze(Target, Files, AnalysisOptions),
     %% Save result to a snapshot
@@ -386,7 +399,7 @@ show(Options) ->
         end,
     %% Start the log manager and attach the event handler below.
     _ = log:start(),
-    _ = log:attach(?MODULE, []),
+    _ = log:attach(?MODULE, [{no_progress}]),
     %% Load snapshot
     snapshot:cleanup(),
     case snapshot:import(File) of
@@ -455,7 +468,7 @@ showDetails(true, {_I, T}=Ticket) ->
     %% Disable log event handler while replaying.
     _ = log:detach(?MODULE, []),
     Details = sched:replay(T),
-    _ = log:attach(?MODULE, []),
+    _ = log:attach(?MODULE, [{no_progress}]),
     lists:foreach(fun(Detail) ->
                 D1 = proc_action:to_string(Detail),
                 D2 = io_lib:format("  ~s\n", [D1]),
@@ -472,7 +485,11 @@ showDetails(true, {_I, T}=Ticket) ->
 -spec init(term()) -> {'ok', state()}.
 
 %% @doc: Initialize the event handler.
-init(_Env) -> {ok, {0,0,1}}.
+init(Options) ->
+    case lists:keyfind(no_progress, 1, Options) of
+        {no_progress} -> {ok, no_progress};
+        false -> {ok, {0,0,1}}
+    end.
 
 -spec terminate(term(), state()) -> 'ok'.
 terminate(_Reason, _State) -> ok.
@@ -492,12 +509,16 @@ handle_event({progress_log, Remain}, {Bound,Progress,Total}=State) ->
         false ->
             {ok, State}
     end;
+handle_event({progress_log, _Remain}, no_progress) ->
+    {ok, no_progress};
 handle_event({progress_swap, NewTotal}, {Bound,_Progress,_Total}) ->
     %% Clear last two lines from screen
     io:format("\r\033[K\033[1A\033[K"),
     NewBound = Bound+1,
     io:format("Preemption: ~p\n", [NewBound]),
-    {ok, {NewBound,0,NewTotal}}.
+    {ok, {NewBound,0,NewTotal}};
+handle_event({progress_swap, _NewTotal}, no_progress) ->
+    {ok, no_progress}.
 
 progress_bar(PerCent) ->
     Bar = string:chars($=, PerCent div 2, ">"),
