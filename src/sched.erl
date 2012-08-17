@@ -114,7 +114,7 @@ analyze(Target, Files, Options) ->
             {ok, Bin} ->
                 %% Note: No error checking for load
                 ok = instr:load(Bin),
-                log:log("Running analysis...~n"),
+                log:log("Running analysis...~n~n~n"),
                 {T1, _} = statistics(wall_clock),
                 ISOption = {init_state, state:empty()},
                 Result = interleave(Target, [ISOption|Options]),
@@ -175,7 +175,7 @@ interleave_aux(Target, Options, Parent) ->
     state_start(),
     %% Save empty replay state for the first run.
     {init_state, InitState} = lists:keyfind(init_state, 1, Options),
-    state_save({InitState, undefined}),
+    state_save([InitState]),
     PreBound =
         case lists:keyfind(preb, 1, Options) of
             {preb, inf} -> ?INFINITY;
@@ -358,12 +358,12 @@ run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
         false -> {NewContext, {Rest, W}}
     end.
 
-insert_states(_State, {[], _}) ->
-    ok;
 insert_states(State, {Lids, current}) ->
-    state_save({State, Lids});
+    Extend = lists:map(fun(L) -> state:extend(State, L) end, Lids),
+    state_save(Extend);
 insert_states(State, {Lids, next}) ->
-    state_save_next({State, Lids}).
+    Extend = lists:map(fun(L) -> state:extend(State, L) end, Lids),
+    state_save_next(Extend).
 
 %% Run process Lid in context Context until it encounters a preemption point.
 run(#context{current = Lid, state = State} = Context) ->
@@ -595,15 +595,12 @@ log_details(Det, Action) ->
 %% Remove and return a state.
 %% If no states available, return 'no_state'.
 state_load() ->
+    {Len1, Len2} = get(?NT_STATELEN),
     case get(?NT_STATE1) of
-        [{State, [L]} | Rest] ->
+        [State | Rest] ->
             put(?NT_STATE1, Rest),
-            state:pack(state:extend(State, L));
-        [{State, [L|Lids]} | Rest] ->
-            put(?NT_STATE1, [{State,Lids} | Rest]),
-            state:pack(state:extend(State, L));
-        [{State, undefined} | Rest] ->
-            put(?NT_STATE1, Rest),
+            log:progress(log, Len1-1),
+            put(?NT_STATELEN, {Len1-1, Len2}),
             state:pack(State);
         [] -> no_state
     end.
@@ -616,18 +613,25 @@ state_peak() ->
         [] -> no_state
     end.
 
-%% Add a state to the current `state` table.
+%% Add some states to the current `state` table.
 state_save(State) ->
-    put(?NT_STATE1, [State | get(?NT_STATE1)]).
+    Size = length(State),
+    {Len1, Len2} = get(?NT_STATELEN),
+    put(?NT_STATELEN, {Len1+Size, Len2}),
+    put(?NT_STATE1, State ++ get(?NT_STATE1)).
 
-%% Add a state to the next `state` table.
+%% Add some states to the next `state` table.
 state_save_next(State) ->
-    put(?NT_STATE2, [State | get(?NT_STATE2)]).
+    Size = length(State),
+    {Len1, Len2} = get(?NT_STATELEN),
+    put(?NT_STATELEN, {Len1, Len2+Size}),
+    put(?NT_STATE2, State ++ get(?NT_STATE2)).
 
 %% Initialize state tables.
 state_start() ->
     put(?NT_STATE1, []),
     put(?NT_STATE2, []),
+    put(?NT_STATELEN, {0, 0}),
     ok.
 
 %% Clean up state table.
@@ -636,7 +640,11 @@ state_stop() ->
 
 %% Swap names of the two state tables and clear one of them.
 state_swap() ->
+    {_Len1, Len2} = get(?NT_STATELEN),
+    log:progress(swap, Len2),
+    put(?NT_STATELEN, {Len2, 0}),
     put(?NT_STATE1, put(?NT_STATE2, [])).
+
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation interface

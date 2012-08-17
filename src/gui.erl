@@ -98,6 +98,10 @@ handle_event({error, Ticket}, State) ->
     wxListBox:insertItems(List, [ErrorItem], Count),
     wxControlWithItems:setSelection(List, 0),
     addListData(?ERROR_LIST, [{Ticket, []}]),
+    {ok, State};
+handle_event({progress_log, _Remain}, State) ->
+    {ok, State};
+handle_event({progress_swap, _NewState}, State) ->
     {ok, State}.
 
 %%%----------------------------------------------------------------------

@@ -39,6 +39,7 @@
 -define(NT_REF, '_._ref').
 -define(NT_STATE1, '_._state1').
 -define(NT_STATE2, '_._state2').
+-define(NT_STATELEN, '_._state_len').
 -define(NT_STATE_TEMP, '_._state_temp').
 -define(NT_USED, '_._used').
 

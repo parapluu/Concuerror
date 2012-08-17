@@ -38,7 +38,7 @@
 %%%----------------------------------------------------------------------
 
 %% Log event handler internal state.
--type state() :: [].
+-type state() :: {non_neg_integer(), non_neg_integer(), non_neg_integer()}.
 
 %% Command line options
 -type options() ::
@@ -472,7 +472,7 @@ showDetails(true, {_I, T}=Ticket) ->
 -spec init(term()) -> {'ok', state()}.
 
 %% @doc: Initialize the event handler.
-init(_Env) -> {ok, []}.
+init(_Env) -> {ok, {0,0,1}}.
 
 -spec terminate(term(), state()) -> 'ok'.
 terminate(_Reason, _State) -> ok.
@@ -482,4 +482,24 @@ handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};
 handle_event({error, _Ticket}, State) ->
-    {ok, State}.
+    {ok, State};
+handle_event({progress_log, Remain}, {Bound,Progress,Total}=State) ->
+    NewProgress = erlang:trunc(100 - Remain*100/Total),
+    case NewProgress > Progress of
+        true ->
+            progress_bar(NewProgress),
+            {ok, {Bound,NewProgress,Total}};
+        false ->
+            {ok, State}
+    end;
+handle_event({progress_swap, NewTotal}, {Bound,_Progress,_Total}) ->
+    %% Clear last two lines from screen
+    io:format("\r\033[K\033[1A\033[K"),
+    NewBound = Bound+1,
+    io:format("Preemption: ~p\n", [NewBound]),
+    {ok, {NewBound,0,NewTotal}}.
+
+progress_bar(PerCent) ->
+    Bar = string:chars($=, PerCent div 2, ">"),
+    StrPerCent = io_lib:format("~p", [PerCent]),
+    io:format("\r\033[K ~3s% [~.51s]", [StrPerCent, Bar]).
