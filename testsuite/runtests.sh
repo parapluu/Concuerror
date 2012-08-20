@@ -10,7 +10,13 @@ mkdir temp
 # Compile scenarios.erl
 erlc scenarios.erl
 
-tests=(`ls -d suites/*/src/*`)
+# If we have arguments we should use this as
+# tests, otherwise check them all
+if [ $# -eq 0 ]; then
+    tests=(`ls -d suites/*/src/*`)
+else
+    tests=("$@")
+fi
 
 # For every test do
 for test in "${tests[@]}"; do
