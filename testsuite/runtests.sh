@@ -1,11 +1,12 @@
 #!/bin/bash
 
 concuerror="../concuerror"
+results="./results"
 
 # Cleanup temp files
 find . -name '*.beam' -exec rm {} \;
-rm -rf temp
-mkdir temp
+rm -rf $results
+mkdir $results
 
 # Compile scenarios.erl
 erlc scenarios.erl
@@ -26,17 +27,18 @@ for test in "${tests[@]}"; do
     suite="${temp[0]}"
     name="${temp[1]}"
     if [ -d $test ]; then
-        # Our test is a multi module test
+        # Our test is a multi module directory
         dir=$test
         mod="test"
         files=(`ls $dir/*.erl`)
     else
-        # Our test is a single module test
+        # Our test is a single module file
         dir=${test%/*}
         mod=$name
         files=$test
     fi
-    mkdir -p temp/$suite
+    # Create a dir to save the results
+    mkdir -p $results/$suite
     # Compile it
     erlc -W0 -o $dir $dir/$mod.erl
     # And extract scenarios from it
@@ -47,14 +49,19 @@ for test in "${tests[@]}"; do
         temp=(`echo $line | sed -e 's/{\w\+,\(\w\+\),\([0-9]\+\)}/\1 \2/'`)
         fun="${temp[0]}"
         preb="${temp[1]}"
-        printf "Running test %s-%s (%s, %s)..\n" $suite $name $fun $preb
+        printf "Running test %s-%s (%s, %s).." $suite $name $fun $preb
         # And run concuerror
         $concuerror analyze --target $mod $fun --files "${files[@]}" \
-            --output temp/results.ced --preb $preb --no_progress > /dev/null
-        $concuerror show --snapshot temp/results.ced \
-            --details --all > temp/$suite/$name-$fun-$preb.txt
+            --output $results/results.ced --preb $preb --no_progress > /dev/null
+        $concuerror show --snapshot $results/results.ced \
+            --details --all > $results/$suite/$name-$fun-$preb.txt
         diff -uw suites/$suite/results/$name-$fun-$preb.txt \
-            temp/$suite/$name-$fun-$preb.txt
+            $results/$suite/$name-$fun-$preb.txt &> /dev/null
+        if [ $? -eq 0 ]; then
+            printf "\033[01;32mok\033[00m\n"
+        else
+            printf "\033[01;31mfailed\033[00m\n"
+        fi
     done
 done
 
