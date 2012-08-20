@@ -38,7 +38,14 @@
 %%%----------------------------------------------------------------------
 
 %% Log event handler internal state.
--type state() :: {non_neg_integer(), non_neg_integer(), non_neg_integer()}.
+%% The state (if we want have progress bar) contains
+%% the current preemption number,
+%% the progress in per cent,
+%% the number of interleaving contained in this preemption number,
+%% the number of errors we have found so far.
+-type state() :: {non_neg_integer(), non_neg_integer(),
+                  non_neg_integer(), non_neg_integer()}
+                 | 'no_progress'.
 
 %% Command line options
 -type options() ::
@@ -507,7 +514,7 @@ showDetails(true, {_I, T}=Ticket) ->
 init(Options) ->
     case lists:keyfind(no_progress, 1, Options) of
         {no_progress} -> {ok, no_progress};
-        false -> {ok, {0,0,1}}
+        false -> {ok, {0,0,1,0}}
     end.
 
 -spec terminate(term(), state()) -> 'ok'.
@@ -517,29 +524,33 @@ terminate(_Reason, _State) -> ok.
 handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};
-handle_event({error, _Ticket}, State) ->
-    {ok, State};
-handle_event({progress_log, Remain}, {Bound,Progress,Total}=State) ->
+handle_event({error, _Ticket}, {Bound,Progress,Total,Errors}) ->
+    progress_bar(Progress, Errors+1),
+    {ok, {Bound,Progress,Total,Errors+1}};
+handle_event({error, _Ticket}, no_progress) ->
+    {ok, no_progress};
+handle_event({progress_log, Remain}, {Bound,Progress,Total,Errors}=State) ->
     NewProgress = erlang:trunc(100 - Remain*100/Total),
     case NewProgress > Progress of
         true ->
-            progress_bar(NewProgress),
-            {ok, {Bound,NewProgress,Total}};
+            progress_bar(NewProgress, Errors),
+            {ok, {Bound,NewProgress,Total,Errors}};
         false ->
             {ok, State}
     end;
 handle_event({progress_log, _Remain}, no_progress) ->
     {ok, no_progress};
-handle_event({progress_swap, NewTotal}, {Bound,_Progress,_Total}) ->
+handle_event({progress_swap, NewTotal}, {Bound,_Progress,_Total,Errors}) ->
     %% Clear last two lines from screen
     io:format("\r\033[K\033[1A\033[K"),
     NewBound = Bound+1,
     io:format("Preemption: ~p\n", [NewBound]),
-    {ok, {NewBound,0,NewTotal}};
+    {ok, {NewBound,0,NewTotal,Errors}};
 handle_event({progress_swap, _NewTotal}, no_progress) ->
     {ok, no_progress}.
 
-progress_bar(PerCent) ->
+progress_bar(PerCent, Errors) ->
     Bar = string:chars($=, PerCent div 2, ">"),
     StrPerCent = io_lib:format("~p", [PerCent]),
-    io:format("\r\033[K ~3s% [~.51s]", [StrPerCent, Bar]).
+    io:format("\r\033[K ~3s% [~.51s]  ~p errors found",
+        [StrPerCent, Bar, Errors]).
