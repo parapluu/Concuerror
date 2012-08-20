@@ -110,7 +110,7 @@ cli() ->
         ["help"]    -> help();
         [Action] ->
             io:format("~s: unrecognised command: ~s\n", [?APP_STRING, Action]),
-            halt(1);
+            init:stop(1);
         _ -> help()
     end,
     true.
@@ -119,7 +119,7 @@ cli() ->
 action_gui([]) -> gui();
 action_gui([Op|_]) ->
     io:format("~s: unrecognised flag: ~s\n", [?APP_STRING, Op]),
-    halt(1).
+    init:stop(1).
 
 %% Parse options for analyze command and call `analyze/1'
 action_analyze([{Opt, [Module,Func|Params]} | Args], Options)
@@ -127,7 +127,7 @@ action_analyze([{Opt, [Module,Func|Params]} | Args], Options)
     %% Found --target option
     AtomModule = erlang:list_to_atom(Module),
     AtomFunc   = erlang:list_to_atom(Func),
-    AtomParams = lists:map(fun erlang:list_to_atom/1, Params),
+    AtomParams = validateParams(Params, []),
     Target = {AtomModule, AtomFunc, AtomParams},
     NewOptions = lists:keystore(target, 1, Options, {target, Target}),
     action_analyze(Args, NewOptions);
@@ -136,17 +136,18 @@ action_analyze([{Opt, _} | _Args], _Options)
     %% Found --target option with wrong parameters
     io:format("~s: wrong number of arguments for option -~s\n",
         [?APP_STRING, Opt]),
-    halt(1);
+    init:stop(1);
 action_analyze([{Opt, []} | _Args], _Options)
         when (Opt =:= 'f') orelse (Opt =:= '-files') ->
     %% Found --files options without parameters
     io:format("~s: wrong number of arguments for option -~s\n",
         [?APP_STRING, Opt]),
-    halt(1);
+    init:stop(1);
 action_analyze([{Opt, Files} | Args], Options)
         when (Opt =:= 'f') orelse (Opt =:= '-files') ->
     %% Found --files option
-    NewOptions = keyAppend(files, 1, Options, Files),
+    AbsFiles = lists:map(fun filename:absname/1, Files),
+    NewOptions = keyAppend(files, 1, Options, AbsFiles),
     action_analyze(Args, NewOptions);
 action_analyze([{Opt, [File]} | Args], Options)
         when (Opt =:= 'o') orelse (Opt =:= '-output') ->
@@ -158,7 +159,7 @@ action_analyze([{Opt, _Files} | _Args], _Options)
     %% Found --output option with wrong parameters
     io:format("~s: wrong number of arguments for option -~s\n",
         [?APP_STRING, Opt]),
-    halt(1);
+    init:stop(1);
 action_analyze([{Opt, [Preb]} | Args], Options)
         when (Opt =:= 'p') orelse (Opt =:= '-preb') ->
     %% Found --preb option
@@ -169,7 +170,7 @@ action_analyze([{Opt, [Preb]} | Args], Options)
             _ ->
                 io:format("~s: wrong type of argument for option -~s\n",
                     [?APP_STRING, Opt]),
-                halt(1)
+                init:stop(1)
         end,
     NewOptions = lists:keystore(preb, 1, Options, {preb, NewPreb}),
     action_analyze(Args, NewOptions);
@@ -178,7 +179,7 @@ action_analyze([{Opt, _Prebs} | _Args], _Options)
     %% Found --preb option with wrong parameters
     io:format("~s: wrong number of arguments for option -~s\n",
         [?APP_STRING, Opt]),
-    halt(1);
+    init:stop(1);
 action_analyze([{'I', Includes} | Args], Options) ->
     %% Found -I option
     NewOptions = keyAppend(include, 1, Options, Includes),
@@ -191,13 +192,30 @@ action_analyze([{'-no_progress', _} | _Args], _Options) ->
     %% Found --no_progress option with wrong parameters
     io:format("~s: wrong number of arguments for option --no_progress\n",
         [?APP_STRING]),
-    halt(1);
+    init:stop(1);
 action_analyze([], Options) ->
     analyze(Options);
 action_analyze([Arg | _Args], _Options) ->
     io:format("~s: unrecognised concuerror flag: ~p\n", [?APP_STRING, Arg]),
-    halt(1).
+    init:stop(1).
 
+%% Validate user provided function parameters.
+validateParams([], Params) ->
+    lists:reverse(Params);
+validateParams([String|Strings], Params) ->
+    case erl_scan:string(String ++ ".") of
+        {ok, T, _} ->
+            case erl_parse:parse_term(T) of
+                {ok, Param} -> validateParams(Strings, [Param|Params]);
+                {error, {_, _, Info}} ->
+                    io:format("~s: arg ~s - ~s\n",
+                        [?APP_STRING, String, Info]),
+                    init:stop(1)
+            end;
+        {error, {_, _, Info}, _} ->
+            io:format("~s: info ~s\n", [?APP_STRING, Info]),
+            init:stop(1)
+    end.
 
 %% Parse options for show command and call `show/1'
 action_show([{'-snapshot', [File]} | Args], Options) ->
@@ -208,7 +226,7 @@ action_show([{'-snapshot', _Files} | _Args], _Options) ->
     %% Found --snapshot with wrong paramemters
     io:format("~s: wrong number of arguments for option --snapshot\n",
         [?APP_STRING]),
-    halt(1);
+    init:stop(1);
 action_show([{'n', Numbers} | Args], Options) ->
     %% Found -n option
     Fun = fun(Nr) ->
@@ -221,12 +239,12 @@ action_show([{'n', Numbers} | Args], Options) ->
                         _ ->
                             io:format("~s: wrong type of number ~s\n",
                                 [?APP_STRING, N2]),
-                            halt(1)
+                            init:stop(1)
                     end;
                 _ ->
                     io:format("~s: wrong type of number ~s\n",
                         [?APP_STRING, Nr]),
-                    halt(1)
+                    init:stop(1)
             end
           end,
     NewNumbers = lists:map(Fun, Numbers),
@@ -240,7 +258,7 @@ action_show([{'-all', _Param} | _Args], _Options) ->
     %% Found --all option with wrong parameters
     io:format("~s: wrong number of arguments for option --all\n",
         [?APP_STRING]),
-    halt(1);
+    init:stop(1);
 action_show([{Opt, []} | Args], Options)
         when (Opt =:= 'd') orelse (Opt =:= '-details') ->
     %% Found --details options
@@ -251,12 +269,12 @@ action_show([{Opt, _Params} | _Args], _Options)
     %% Found --details option with wrong parameters
     io:format("~s: wrong number of arguments for option --details\n",
         [?APP_STRING]),
-    halt(1);
+    init:stop(1);
 action_show([], Options) ->
     show(Options);
 action_show([Arg | _Args], _Options) ->
     io:format("~s: unrecognised concuerror flag: ~p\n", [?APP_STRING, Arg]),
-    halt(1).
+    init:stop(1).
 
 
 keyAppend(Key, Pos, TupleList, Value) ->
@@ -318,7 +336,7 @@ analyze(Options) ->
             {target, T} -> T;
             false ->
                 io:format("~s: no target specified\n", [?APP_STRING]),
-                halt(1)
+                init:stop(1)
         end,
     %% Get input files
     Files =
@@ -326,7 +344,7 @@ analyze(Options) ->
             {files, F} -> F;
             false ->
                 io:format("~s: no input files specified\n", [?APP_STRING]),
-                halt(1)
+                init:stop(1)
         end,
     %% Set output file
     Output =
@@ -378,7 +396,7 @@ show(Options) ->
             {snapshot, S} -> S;
             false ->
                 io:format("~s: no snapshot file specified\n", [?APP_STRING]),
-                halt(1)
+                init:stop(1)
         end,
     %% Get index of errors to examine
     Indexes1 =
@@ -406,14 +424,15 @@ show(Options) ->
         ok -> continue;
         Snapshot ->
             Modules = snapshot:get_modules(Snapshot),
+            Files = lists:map(fun filename:absname/1, Modules),
             AnalysisRet = snapshot:get_analysis(Snapshot),
             %% Instrument and load the files
             %% Note: No error checking here.
-            {ok, Bin} = instr:instrument_and_compile(Modules),
+            {ok, Bin} = instr:instrument_and_compile(Files),
             ok = instr:load(Bin),
             log:log("\n"),
             showAux(AnalysisRet, Indexes2, Details),
-            instr:delete_and_purge(Modules)
+            instr:delete_and_purge(Files)
     end,
     snapshot:cleanup(),
     %% Stop event handler
