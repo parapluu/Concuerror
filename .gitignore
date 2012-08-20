@@ -13,6 +13,5 @@
 *.dump
 !/img/*.png
 clean.sh
-*.sh
 *.mk
 concuerror
