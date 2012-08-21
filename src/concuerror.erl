@@ -43,9 +43,11 @@
 %% the progress in per cent,
 %% the number of interleaving contained in this preemption number,
 %% the number of errors we have found so far.
--type state() :: {non_neg_integer(), non_neg_integer(),
-                  non_neg_integer(), non_neg_integer()}
-                 | 'no_progress'.
+-type progress() :: {non_neg_integer(), non_neg_integer(),
+                     non_neg_integer(), non_neg_integer()}.
+
+-type state() :: {progress() | 'noprogress',
+                  'log' | 'nolog'}.
 
 %% Command line options
 -type options() ::
@@ -53,7 +55,8 @@
     | {'files',   [file()]}
     | {'snapshot',  file()}
     | {'include', [file()]}
-    | {'no_progress'}
+    | {'noprogress'}
+    | {'nolog'}
     | {'preb',    sched:bound()}
     | {'number', [pos_integer() | {pos_integer(), pos_integer()|'end'}]}
     | {'details'}
@@ -141,15 +144,11 @@ action_analyze([{Opt, [Module,Func|Params]} | Args], Options)
 action_analyze([{Opt, _} | _Args], _Options)
         when (Opt =:= 't') orelse (Opt =:= '-target') ->
     %% Found --target option with wrong parameters
-    io:format("~s: wrong number of arguments for option -~s\n",
-        [?APP_STRING, Opt]),
-    init:stop(1);
+    wrongArgument('number', Opt);
 action_analyze([{Opt, []} | _Args], _Options)
         when (Opt =:= 'f') orelse (Opt =:= '-files') ->
     %% Found --files options without parameters
-    io:format("~s: wrong number of arguments for option -~s\n",
-        [?APP_STRING, Opt]),
-    init:stop(1);
+    wrongArgument('number', Opt);
 action_analyze([{Opt, Files} | Args], Options)
         when (Opt =:= 'f') orelse (Opt =:= '-files') ->
     %% Found --files option
@@ -164,9 +163,7 @@ action_analyze([{Opt, [File]} | Args], Options)
 action_analyze([{Opt, _Files} | _Args], _Options)
         when (Opt =:= 'o') orelse (Opt =:= '-output') ->
     %% Found --output option with wrong parameters
-    io:format("~s: wrong number of arguments for option -~s\n",
-        [?APP_STRING, Opt]),
-    init:stop(1);
+    wrongArgument('number', Opt);
 action_analyze([{Opt, [Preb]} | Args], Options)
         when (Opt =:= 'p') orelse (Opt =:= '-preb') ->
     %% Found --preb option
@@ -174,32 +171,32 @@ action_analyze([{Opt, [Preb]} | Args], Options)
         case string:to_integer(Preb) of
             {P, []} when P>=0 -> P;
             _ when (Preb=:="inf") orelse (Preb=:="off") -> inf;
-            _ ->
-                io:format("~s: wrong type of argument for option -~s\n",
-                    [?APP_STRING, Opt]),
-                init:stop(1)
+            _ -> wrongArgument('type', Opt)
         end,
     NewOptions = lists:keystore(preb, 1, Options, {preb, NewPreb}),
     action_analyze(Args, NewOptions);
 action_analyze([{Opt, _Prebs} | _Args], _Options)
         when (Opt =:= 'p') orelse (Opt =:= '-preb') ->
     %% Found --preb option with wrong parameters
-    io:format("~s: wrong number of arguments for option -~s\n",
-        [?APP_STRING, Opt]),
-    init:stop(1);
+    wrongArgument('number', Opt);
 action_analyze([{'I', Includes} | Args], Options) ->
     %% Found -I option
     NewOptions = keyAppend(include, 1, Options, Includes),
     action_analyze(Args, NewOptions);
-action_analyze([{'-no_progress', []} | Args], Options) ->
-    %% Found --no_progress option
-    NewOptions = lists:keystore(no_progress, 1, Options, {no_progress}),
+action_analyze([{'-noprogress', []} | Args], Options) ->
+    %% Found --noprogress option
+    NewOptions = lists:keystore(noprogress, 1, Options, {noprogress}),
     action_analyze(Args, NewOptions);
-action_analyze([{'-no_progress', _} | _Args], _Options) ->
-    %% Found --no_progress option with wrong parameters
-    io:format("~s: wrong number of arguments for option --no_progress\n",
-        [?APP_STRING]),
-    init:stop(1);
+action_analyze([{'-noprogress', _} | _Args], _Options) ->
+    %% Found --noprogress option with wrong parameters
+    wrongArgument('number', '-noprogress');
+action_analyze([{'-nolog', []} | Args], Options) ->
+    %% Found --nolog option
+    NewOptions = lists:keystore(nolog, 1, Options, {nolog}),
+    action_analyze(Args, NewOptions);
+action_analyze([{'-nolog', _} | _Args], _Options) ->
+    %% Found --nolog option with wrong parameters
+    wrongArgument('number', '-nolog');
 action_analyze([], Options) ->
     analyze(Options);
 action_analyze([Arg | _Args], _Options) ->
@@ -231,9 +228,7 @@ action_show([{'-snapshot', [File]} | Args], Options) ->
     action_show(Args, NewOptions);
 action_show([{'-snapshot', _Files} | _Args], _Options) ->
     %% Found --snapshot with wrong paramemters
-    io:format("~s: wrong number of arguments for option --snapshot\n",
-        [?APP_STRING]),
-    init:stop(1);
+    wrongArgument('number', '-snapshot');
 action_show([{'n', Numbers} | Args], Options) ->
     %% Found -n option
     Fun = fun(Nr) ->
@@ -243,15 +238,9 @@ action_show([{'n', Numbers} | Args], Options) ->
                     case string:to_integer(N2) of
                         {N3, []} when (N3>0) andalso (N1<N3) -> {N1, N3};
                         _ when (N2=:="end") -> {N1, 'end'};
-                        _ ->
-                            io:format("~s: wrong type of number ~s\n",
-                                [?APP_STRING, N2]),
-                            init:stop(1)
+                        _ -> wrongArgument('type', 'n')
                     end;
-                _ ->
-                    io:format("~s: wrong type of number ~s\n",
-                        [?APP_STRING, Nr]),
-                    init:stop(1)
+                _ -> wrongArgument('type', 'n')
             end
           end,
     NewNumbers = lists:map(Fun, Numbers),
@@ -263,9 +252,7 @@ action_show([{'-all', []} | Args], Options) ->
     action_show(Args, NewOptions);
 action_show([{'-all', _Param} | _Args], _Options) ->
     %% Found --all option with wrong parameters
-    io:format("~s: wrong number of arguments for option --all\n",
-        [?APP_STRING]),
-    init:stop(1);
+    wrongArgument('number', '-all');
 action_show([{Opt, []} | Args], Options)
         when (Opt =:= 'd') orelse (Opt =:= '-details') ->
     %% Found --details options
@@ -274,9 +261,14 @@ action_show([{Opt, []} | Args], Options)
 action_show([{Opt, _Params} | _Args], _Options)
         when (Opt =:= 'd') orelse (Opt =:= '-details') ->
     %% Found --details option with wrong parameters
-    io:format("~s: wrong number of arguments for option --details\n",
-        [?APP_STRING]),
-    init:stop(1);
+    wrongArgument('number', '-details');
+action_show([{'-nolog', []} | Args], Options) ->
+    %% Found --nolog option
+    NewOptions = lists:keystore(nolog, 1, Options, {nolog}),
+    action_show(Args, NewOptions);
+action_show([{'-nolog', _} | _Args], _Options) ->
+    %% Found --nolog option with wrong parameters
+    wrongArgument('number', '-nolog');
 action_show([], Options) ->
     show(Options);
 action_show([Arg | _Args], _Options) ->
@@ -292,6 +284,14 @@ keyAppend(Key, Pos, TupleList, Value) ->
             [{Key, Value} | TupleList]
     end.
 
+wrongArgument('number', Option) ->
+    io:format("~s: wrong number of arguments for option -~s\n",
+        [?APP_STRING, Option]),
+    init:stop(1);
+wrongArgument('type', Option) ->
+    io:format("~s: wrong type of argument for option -~s\n",
+        [?APP_STRING, Option]),
+    init:stop(1).
 
 help() ->
     io:format(
@@ -424,7 +424,7 @@ show(Options) ->
         end,
     %% Start the log manager and attach the event handler below.
     _ = log:start(),
-    _ = log:attach(?MODULE, [{no_progress}]),
+    _ = log:attach(?MODULE, ['noprogress' | Options]),
     %% Load snapshot
     snapshot:cleanup(),
     case snapshot:import(File) of
@@ -438,6 +438,8 @@ show(Options) ->
             {ok, Bin} = instr:instrument_and_compile(Files),
             ok = instr:load(Bin),
             log:log("\n"),
+            %% Detach event handler
+            log:detach(?MODULE, []),
             showAux(AnalysisRet, Indexes2, Details),
             instr:delete_and_purge(Files)
     end,
@@ -446,16 +448,18 @@ show(Options) ->
     log:stop(),
     true.
 
-showAux({error, analysis, {_Target, _RunCount}, Tickets}, Indexes, Details) ->
+showAux({error, analysis, {_Target, RunCount}, Tickets}, Indexes, Details) ->
     TickLen = length(Tickets),
+    io:format("Checked ~w interleaving(s). ~w errors found.\n\n",
+        [RunCount, TickLen]),
     NewIndexes = uIndex(Indexes, TickLen),
     KeyTickets = lists:zip(lists:seq(1, TickLen), Tickets),
     NewTickets = selectKeys(NewIndexes, KeyTickets, []),
     lists:foreach(fun(T) -> showDetails(Details, T) end, NewTickets);
 showAux({error, instr, {_Target, _RunCount}}, _Indexes, _Details) ->
-    log:log("Instrumentation error.");
-showAux({ok, _RunCount}, _Indexes, _Details) ->
-    log:log("No errors found.\n").
+    io:format("Instrumentation error.\n");
+showAux({ok, {_Target, RunCount}}, _Indexes, _Details) ->
+    io:format("Checked ~w interleaving(s). No errors found.\n", [RunCount]).
 
 %% Take the indexes from command line and create a sorted list
 uIndex(all, TickLen) ->
@@ -486,21 +490,17 @@ selectKeys(Indexes, [_ | Tickets], Acc) ->
 %% Show details about each ticket
 showDetails(false, {I, Ticket}) ->
     Error = ticket:get_error(Ticket),
-    ErrorItem = io_lib:format("~p\t~s: ~s\n",
-        [I, error:type(Error), error:short(Error)]),
-    log:log(ErrorItem);
-showDetails(true, {_I, T}=Ticket) ->
-    showDetails(false, Ticket),
+    io:format("~p\t~s: ~s\n", [I, error:type(Error), error:short(Error)]);
+showDetails(true, {I, Ticket}) ->
+    Error = ticket:get_error(Ticket),
+    io:format("~p\n~s\n", [I, error:long(Error)]),
     %% Disable log event handler while replaying.
-    _ = log:detach(?MODULE, []),
-    Details = sched:replay(T),
-    _ = log:attach(?MODULE, [{no_progress}]),
+    Details = sched:replay(Ticket),
     lists:foreach(fun(Detail) ->
-                D1 = proc_action:to_string(Detail),
-                D2 = io_lib:format("  ~s\n", [D1]),
-                log:log(D2) end,
+                D = proc_action:to_string(Detail),
+                io:format("  ~s\n", [D]) end,
         Details),
-    log:log("\n\n").
+    io:format("\n\n").
 
 
 
@@ -512,42 +512,51 @@ showDetails(true, {_I, T}=Ticket) ->
 
 %% @doc: Initialize the event handler.
 init(Options) ->
-    case lists:keyfind(no_progress, 1, Options) of
-        {no_progress} -> {ok, no_progress};
-        false -> {ok, {0,0,1,0}}
-    end.
+    Log =
+        case lists:keyfind(nolog, 1, Options) of
+            {nolog} -> nolog;
+            false -> log
+        end,
+    Progress =
+        case lists:keyfind(noprogress, 1, Options) of
+            {noprogress} -> noprogress;
+            false -> {0,0,1,0}
+        end,
+    {ok, {Log, Progress}}.
 
 -spec terminate(term(), state()) -> 'ok'.
 terminate(_Reason, _State) -> ok.
 
 -spec handle_event(log:event(), state()) -> {'ok', state()}.
-handle_event({msg, String}, State) ->
+handle_event({msg, String}, {log,_Prog}=State) ->
     io:format("~s", [String]),
     {ok, State};
-handle_event({error, _Ticket}, {Bound,Progress,Total,Errors}) ->
+handle_event({msg, _String}, {nolog,_Prog}=State) ->
+    {ok, State};
+handle_event({error, _Ticket}, {Log, {Bound,Progress,Total,Errors}}) ->
     progress_bar(Progress, Errors+1),
-    {ok, {Bound,Progress,Total,Errors+1}};
-handle_event({error, _Ticket}, no_progress) ->
-    {ok, no_progress};
-handle_event({progress_log, Remain}, {Bound,Progress,Total,Errors}=State) ->
+    {ok, {Log, {Bound,Progress,Total,Errors+1}}};
+handle_event({error, _Ticket}, {_Log, noprogress}=State) ->
+    {ok, State};
+handle_event({progress_log, Remain}, {Log, {Bound,Progress,Total,Errors}}=State) ->
     NewProgress = erlang:trunc(100 - Remain*100/Total),
     case NewProgress > Progress of
         true ->
             progress_bar(NewProgress, Errors),
-            {ok, {Bound,NewProgress,Total,Errors}};
+            {ok, {Log, {Bound,NewProgress,Total,Errors}}};
         false ->
             {ok, State}
     end;
-handle_event({progress_log, _Remain}, no_progress) ->
-    {ok, no_progress};
-handle_event({progress_swap, NewTotal}, {Bound,_Progress,_Total,Errors}) ->
+handle_event({progress_log, _Remain}, {_Log, noprogress}=State) ->
+    {ok, State};
+handle_event({progress_swap, NewTotal}, {Log, {Bound,_Progress,_Total,Errors}}) ->
     %% Clear last two lines from screen
     io:format("\r\033[K\033[1A\033[K"),
     NewBound = Bound+1,
     io:format("Preemption: ~p\n", [NewBound]),
-    {ok, {NewBound,0,NewTotal,Errors}};
-handle_event({progress_swap, _NewTotal}, no_progress) ->
-    {ok, no_progress}.
+    {ok, {Log, {NewBound,0,NewTotal,Errors}}};
+handle_event({progress_swap, _NewTotal}, {_Log, noprogress}=State) ->
+    {ok, State}.
 
 progress_bar(PerCent, Errors) ->
     Bar = string:chars($=, PerCent div 2, ">"),
