@@ -2,11 +2,12 @@
 
 concuerror="../concuerror"
 results="./results"
+prevDir=`pwd`
 
 # Cleanup temp files
+cd `dirname $0`
 find . -name '*.beam' -exec rm {} \;
-rm -rf $results
-mkdir $results
+rm -rf $results/*
 
 # Compile scenarios.erl
 erlc scenarios.erl
@@ -46,14 +47,14 @@ for test in "${tests[@]}"; do
     while read line; do
         # Get function and preemption bound
         unset temp
-        temp=(`echo $line | sed -e 's/{\w\+,\(\w\+\),\([0-9]\+\)}/\1 \2/'`)
+        temp=(`echo $line | sed -e 's/{\w\+,\(\w\+\),\(\w\+\)}/\1 \2/'`)
         fun="${temp[0]}"
         preb="${temp[1]}"
         printf "Running test %s-%s (%s, %s).." $suite $name $fun $preb
         # And run concuerror
         $concuerror analyze --target $mod $fun --files "${files[@]}" \
-            --output $results/results.ced --preb $preb --no_progress > /dev/null
-        $concuerror show --snapshot $results/results.ced \
+            --output $results/results.ced --preb $preb --noprogress --nolog
+        $concuerror show --snapshot $results/results.ced --nolog \
             --details --all > $results/$suite/$name-$fun-$preb.txt
         diff -uw suites/$suite/results/$name-$fun-$preb.txt \
             $results/$suite/$name-$fun-$preb.txt &> /dev/null
@@ -67,3 +68,5 @@ done
 
 # Cleanup temp files
 find . -name '*.beam' -exec rm {} \;
+rm $results/results.ced
+cd $prevDir
