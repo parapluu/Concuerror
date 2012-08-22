@@ -83,7 +83,6 @@ UTEST_MODULES = \
 	error_tests \
 	instr_tests \
 	lid_tests \
-	sched_tests \
 	state_tests \
 	ticket_tests
 

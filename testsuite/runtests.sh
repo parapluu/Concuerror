@@ -56,7 +56,9 @@ for test in "${tests[@]}"; do
             --output $results/results.ced --preb $preb --noprogress --nolog
         $concuerror show --snapshot $results/results.ced --nolog \
             --details --all > $results/$suite/$name-$fun-$preb.txt
-        diff -uw suites/$suite/results/$name-$fun-$preb.txt \
+        diff -I '<[0-9]\+\.[0-9]\+\.[0-9]\+>' \
+            -I '#Ref<[0-9\.]\+>' \
+            -uw suites/$suite/results/$name-$fun-$preb.txt \
             $results/$suite/$name-$fun-$preb.txt &> /dev/null
         if [ $? -eq 0 ]; then
             printf "\033[01;32mok\033[00m\n"
