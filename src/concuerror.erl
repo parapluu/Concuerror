@@ -43,7 +43,7 @@
 %% the progress in per cent,
 %% the number of interleaving contained in this preemption number,
 %% the number of errors we have found so far.
--type progress() :: {non_neg_integer(), non_neg_integer(),
+-type progress() :: {non_neg_integer(), -1..100,
                      non_neg_integer(), non_neg_integer()}.
 
 -type state() :: {progress() | 'noprogress',
@@ -520,7 +520,7 @@ init(Options) ->
     Progress =
         case lists:keyfind(noprogress, 1, Options) of
             {noprogress} -> noprogress;
-            false -> {0,0,1,0}
+            false -> {0,-1,1,0}
         end,
     {ok, {Log, Progress}}.
 
@@ -533,33 +533,36 @@ handle_event({msg, String}, {log,_Prog}=State) ->
     {ok, State};
 handle_event({msg, _String}, {nolog,_Prog}=State) ->
     {ok, State};
-handle_event({error, _Ticket}, {Log, {Bound,Progress,Total,Errors}}) ->
-    progress_bar(Progress, Errors+1),
-    {ok, {Log, {Bound,Progress,Total,Errors+1}}};
+handle_event({error, _Ticket}, {Log, {CurrPreb,Progress,Total,Errors}}) ->
+    progress_bar(CurrPreb, Progress, Errors+1),
+    {ok, {Log, {CurrPreb,Progress,Total,Errors+1}}};
 handle_event({error, _Ticket}, {_Log, noprogress}=State) ->
     {ok, State};
-handle_event({progress_log, Remain}, {Log, {Bound,Progress,Total,Errors}}=State) ->
+handle_event({progress_log, Remain},
+        {Log, {CurrPreb,Progress,Total,Errors}}=State) ->
     NewProgress = erlang:trunc(100 - Remain*100/Total),
     case NewProgress > Progress of
         true ->
-            progress_bar(NewProgress, Errors),
-            {ok, {Log, {Bound,NewProgress,Total,Errors}}};
+            progress_bar(CurrPreb, NewProgress, Errors),
+            {ok, {Log, {CurrPreb,NewProgress,Total,Errors}}};
         false ->
             {ok, State}
     end;
 handle_event({progress_log, _Remain}, {_Log, noprogress}=State) ->
     {ok, State};
-handle_event({progress_swap, NewTotal}, {Log, {Bound,_Progress,_Total,Errors}}) ->
+handle_event({progress_swap, NewTotal},
+        {Log, {CurrPreb,_Progress,_Total,Errors}}) ->
     %% Clear last two lines from screen
-    io:format("\r\033[K\033[1A\033[K"),
-    NewBound = Bound+1,
-    io:format("Preemption: ~p\n", [NewBound]),
-    {ok, {Log, {NewBound,0,NewTotal,Errors}}};
+    io:format("\033[J"),
+    NextPreb = CurrPreb + 1,
+    {ok, {Log, {NextPreb,-1,NewTotal,Errors}}};
 handle_event({progress_swap, _NewTotal}, {_Log, noprogress}=State) ->
     {ok, State}.
 
-progress_bar(PerCent, Errors) ->
+progress_bar(CurrPreb, PerCent, Errors) ->
     Bar = string:chars($=, PerCent div 2, ">"),
     StrPerCent = io_lib:format("~p", [PerCent]),
-    io:format("\r\033[K ~3s% [~.51s]  ~p errors found",
-        [StrPerCent, Bar, Errors]).
+    io:format("Preemption: ~p\n"
+        " ~3s% [~.51s]  ~p errors found"
+        "\033[1A\r",
+        [CurrPreb, StrPerCent, Bar, Errors]).

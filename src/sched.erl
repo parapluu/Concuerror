@@ -114,7 +114,7 @@ analyze(Target, Files, Options) ->
             {ok, Bin} ->
                 %% Note: No error checking for load
                 ok = instr:load(Bin),
-                log:log("Running analysis...~n~n~n"),
+                log:log("Running analysis...~n~n"),
                 {T1, _} = statistics(wall_clock),
                 ISOption = {init_state, state:empty()},
                 Result = interleave(Target, [ISOption|Options]),
