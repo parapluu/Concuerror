@@ -64,7 +64,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -147,7 +147,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -174,7 +174,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -201,7 +201,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -441,7 +441,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -468,7 +468,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -724,7 +724,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -751,7 +751,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -778,7 +778,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -892,7 +892,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -919,7 +919,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1109,7 +1109,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1136,7 +1136,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1291,7 +1291,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1503,7 +1503,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1549,7 +1549,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1572,7 +1572,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1656,7 +1656,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1683,7 +1683,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1709,7 +1709,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1736,7 +1736,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1763,7 +1763,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1790,7 +1790,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1817,7 +1817,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1843,7 +1843,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1869,7 +1869,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1896,7 +1896,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1923,7 +1923,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1950,7 +1950,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2104,7 +2104,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2131,7 +2131,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2281,7 +2281,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2366,7 +2366,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2463,7 +2463,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2750,7 +2750,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2773,7 +2773,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2798,7 +2798,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2904,7 +2904,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2930,7 +2930,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2957,7 +2957,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2984,7 +2984,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
@@ -3011,7 +3011,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3038,7 +3038,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3065,7 +3065,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3092,7 +3092,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
@@ -3119,7 +3119,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3145,7 +3145,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3171,7 +3171,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3198,7 +3198,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3225,7 +3225,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3252,7 +3252,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3317,7 +3317,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3340,7 +3340,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3386,7 +3386,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3412,7 +3412,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3439,7 +3439,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3465,7 +3465,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3491,7 +3491,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3518,7 +3518,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3583,7 +3583,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3606,7 +3606,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3651,7 +3651,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3677,7 +3677,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3704,7 +3704,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
@@ -3731,7 +3731,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3757,7 +3757,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -3783,7 +3783,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -5930,7 +5930,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -5957,7 +5957,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -5984,7 +5984,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6049,7 +6049,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6072,7 +6072,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6117,7 +6117,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6143,7 +6143,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6170,7 +6170,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6196,7 +6196,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6222,7 +6222,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6249,7 +6249,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6314,7 +6314,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6337,7 +6337,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6383,7 +6383,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6409,7 +6409,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6436,7 +6436,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
@@ -6463,7 +6463,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6489,7 +6489,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -6515,7 +6515,7 @@ Details           : {badarg,
                              []},
                          {percept,init_percept_db,0,
                              [{file,
-                                  "/home/ilias/erlang/Concuerror/testsuite/suites/resources/src/percept.erl"},
+                                  "./suites/resources/src/percept.erl"},
                               {line,48}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2

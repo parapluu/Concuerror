@@ -58,6 +58,7 @@ for test in "${tests[@]}"; do
             --details --all > $results/$suite/$name-$fun-$preb.txt
         diff -I '<[0-9]\+\.[0-9]\+\.[0-9]\+>' \
             -I '#Ref<[0-9\.]\+>' \
+            -I "/suites/$suite/src/$name" \
             -uw suites/$suite/results/$name-$fun-$preb.txt \
             $results/$suite/$name-$fun-$preb.txt &> /dev/null
         if [ $? -eq 0 ]; then
