@@ -2,10 +2,15 @@
 
 -module(flanagan).
 
--export([test/0, explore/2]).
+-export([test/1, explore/2]).
 
 %% -define(DEBUG, true).
 %% -define(STEPWISE, true).
+%% -define(STATS, true).
+
+-ifdef(DEBUG).
+-define(STACK, true).
+-endif.
 
 %%------------------------------------------------------------------------------
 
@@ -24,10 +29,12 @@
 
 %%------------------------------------------------------------------------------
 
-%% Sample Input
+%% Sample Inputs
 
-%% The following program has 5 processes: m (main), a & b (sender), c & d
-%% (receiver).
+%% M1 : INDEPENDENT SENDER RECEIVER PAIRS
+
+%% The following program has 5 processes: m1 (main), a & b (sender), c & d
+%% (receiver). Run with test(m1).
 
 %% main() ->
 %%     Parent = self(),
@@ -50,12 +57,26 @@
 %%         ok -> Parent ! ok
 %%     end.
 
-test() ->
-  InitPStates = dict:store(m, new_pstate(m), dict:new()),
-  put(interleavings, 0),
+
+-ifdef(STATS).
+-define(stats_start, put(interleavings, 0)).
+-define(stats_report, io:format("Interleavings: ~p\n", [get(interleavings)])).
+-define(stats_inc, begin
+                     I = get(interleavings) + 1,
+                     put(interleavings, I)
+                   end).
+-else.
+-define(stats_start, ok).
+-define(stats_report, ok).
+-define(stats_inc, ok).
+-endif.
+
+test(M) ->
+  InitPStates = dict:store(M, new_pstate(M), dict:new()),
+  ?stats_start,
   Trace = init_trace(InitPStates),
   explore(Trace, new_clock_vector_dict()),
-  io:format("Interleavings: ~p\n", [get(interleavings)]).
+  ?stats_report.
 
 new_pstate(P) -> #pstate{commands = p(P)}.
 
@@ -63,7 +84,7 @@ init_trace(InitPStates) -> [#state{i = 0, last = init, pstates = InitPStates}].
 
 new_clock_vector_dict() -> dict:new().
 
-p(m) ->
+p(m1) ->
   [{spawn, c},
    {spawn, d},
    {spawn, a},
@@ -80,11 +101,11 @@ p(b) ->
    exit];
 p(c) ->
   [rec,
-   {send, m},
+   {send, m1},
    exit];
 p(d) ->
   [rec,
-   {send, m},
+   {send, m1},
    exit].
 
 
@@ -169,12 +190,7 @@ explore(Trace, ClockMap) ->
     case pick_random_enabled(Trace) of
       none ->
         %% TODO: Report Check for deadlocks
-        I = get(interleavings) + 1,
-        put(interleavings, I),
-        io:format("~p\n", [I]),
-        %% Stack = get_stack(Trace),
-        %% io:format("~s\n",[lists:map(fun map/1, Stack)]),
-        %% io:format("~p\n", [Stack]),
+        ?stats_inc,
         UpdatedTrace;
       {ok, P} ->
         ?debug("Picking ~p for new step.\n", [P]),
@@ -185,7 +201,7 @@ explore(Trace, ClockMap) ->
 
 add_old_backtracks([#state{pstates=PStates}|_] = Trace, ClockMap) ->
   Nexts = get_all_nexts(PStates),
-  ?debug("Backtrack points: For all processes: ~p\n", [Nexts]),
+  ?debug("Backtrack points: Forall processes: ~p\n", [Nexts]),
   add_old_backtracks(Nexts, Trace, ClockMap).
 
 get_all_nexts(PStates) ->
@@ -202,12 +218,11 @@ add_old_backtracks([], Trace, _ClockMap) ->
   ?debug("Done adding backtrack points\n"),
   Trace;
 add_old_backtracks([Command|Rest], Trace, ClockMap) ->
-  ?debug("  For ~p:\n",[Command]),
+  ?debug("  ~p:\n",[Command]),
   NewTrace = add_old_backtracks_for_p(Command, Trace, [], ClockMap),
   add_old_backtracks(Rest, NewTrace, ClockMap).
 
 add_old_backtracks_for_p(_Cmd1, [], Acc, _ClockMap) ->
-  ?debug("  No backtracks.\n"),
   lists:reverse(Acc);
 add_old_backtracks_for_p({ProcNext, _} = Next, [StateI|Rest], Acc, ClockMap) ->
   case StateI of
@@ -215,16 +230,16 @@ add_old_backtracks_for_p({ProcNext, _} = Next, [StateI|Rest], Acc, ClockMap) ->
       Dependent = dependent(Next, Si),
       Clock = lookup_clock_value(ProcSi, lookup_clock(ProcNext, ClockMap)),
       ?debug("    ~p: ~p (Dep: ~p C: ~p)\n",
-             [I, Cmd2] ++ [Dependent] ++ [Clock]),
+             [I, Si] ++ [Dependent] ++ [Clock]),
       case Dependent andalso I > Clock of
         false ->
-          ?debug("      No backtrack here\n",[]),
           add_old_backtracks_for_p(Next, Rest, [StateI|Acc], ClockMap);
         true ->
           ?debug("      Dependent and i < Clock. Backtracking.\n"),
           [#state{pstates = PStates, backtrack = Backtrack} = Spi|Rest2] = Rest,
           ?debug("      Old backtrack: ~p\n", [Backtrack]),
-          NewBacktrack = add_one_from_E(ProcNext, PStates, Backtrack),
+          NewBacktrack =
+            add_from_E(ProcNext, PStates, [StateI|Acc], ClockMap, Backtrack),
           ?debug("      New backtrack: ~p\n", [NewBacktrack]),
           lists:reverse(Acc, [StateI,Spi#state{backtrack = NewBacktrack}|Rest2])
       end;
@@ -232,27 +247,46 @@ add_old_backtracks_for_p({ProcNext, _} = Next, [StateI|Rest], Acc, ClockMap) ->
       add_old_backtracks_for_p(Next, Rest, [StateI|Acc], ClockMap)
   end.
 
-add_one_from_E(P, PStates, Backtrack) ->
+add_from_E(P, PStates, ForwardTrace, ClockMap, Backtrack) ->
   %% This is an overapproximation, as instead of the E set described in the
   %% algorithm we look only whether the process in question is enabled.
-  Enabled =
-    case dict:find(P, PStates) of
-      {ok, PState} ->
-        case is_p_enabled(PState) of
-          {true, _C} -> true;
-          false -> false
-        end;
-      error -> false
-    end,
-  case Enabled of
+  Enabled = all_enabled(PStates),
+  case lists:member(P, Enabled) of
     true ->
       ?debug("        Enabled.\n"),
       ordsets:add_element(P, Backtrack);
     false ->
       ?debug("        Not Enabled.\n"),
-      Elements = all_enabled(PStates),
-      ?debug("        All enabled: ~p\n", [Elements]),
-      ordsets:union(Backtrack, ordsets:from_list(Elements))
+      ClockVector = lookup_clock(P, ClockMap),
+      case find_one_from_E(P, ClockVector, Enabled, ForwardTrace) of
+        {true, Q} ->
+          ?debug("        Q needs to happen: ~p\n", [Q]),
+          ordsets:add_element(Q, Backtrack);
+        false ->
+          ?debug("        Adding all enabled: ~p\n", [Enabled]),
+          ordsets:union(Backtrack, ordsets:from_list(Enabled))
+      end
+  end.
+
+find_one_from_E(_P, _ClockVector, _Enabled, []) -> false;
+find_one_from_E(P, ClockVector, Enabled, [Sj|Rest]) ->
+  #state{i = J, last = _Sj = {ProcSj, _}} = Sj,
+  ?debug("          ~p: ~p\n", [J, ProcSj]),
+  Satisfies =
+    case lists:member(ProcSj, Enabled) of
+      false ->
+        ?debug("          Was not enabled\n"),
+        false;
+      true -> 
+        ClockValue = lookup_clock_value(ProcSj, ClockVector),
+        ?debug("          Clock is: ~p\n", [ClockValue]),
+        J =< ClockValue
+    end,
+  case Satisfies of
+    true ->
+      ?debug("            Found ~p\n", [ProcSj]),
+      {true, ProcSj};
+    false -> find_one_from_E(P, ClockVector, Enabled, Rest)
   end.
 
 lookup_clock(PorS, ClockMap) ->
@@ -357,7 +391,7 @@ max_dependent(Cmd1, [#state{i = N, last = Cmd2}|Trace], ClockMap, Acc) ->
       max_dependent(Cmd1, Trace, ClockMap, Acc)
   end.
 
--ifdef(DEBUG).
+-ifdef(STACK).
 
 get_stack(Trace) ->
   get_stack(Trace, []).
