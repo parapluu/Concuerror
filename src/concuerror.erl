@@ -14,7 +14,7 @@
 -module(concuerror).
 
 %% UI exports.
--export([gui/1, cli/0, analyze/1, stop/0]).
+-export([gui/1, cli/0, analyze/1, export/2, stop/0]).
 %% Log server callback exports.
 -export([init/1, terminate/2, handle_event/2]).
 
@@ -116,16 +116,41 @@ cli() ->
     %% which separates erlang from concuerror options
     Pred = fun(P) -> {concuerror_options, []} /= P end,
     [_ | Args2] = lists:dropwhile(Pred, Args1),
-    Res =
-        %% There should be no plain_arguments
-        case init:get_plain_arguments() of
-            [] -> Options = parse(Args2, []), cliAux(Options);
-            [Arg|_] ->
-                Msg = io_lib:format("unrecognised argument: ~s", [Arg]),
-                {'error', 'arguments', Msg}
+    %% There should be no plain_arguments
+    case init:get_plain_arguments() of
+        [Arg|_] ->
+            io:format("~s: unrecognised argument: ~s", [?APP_STRING, Arg]),
+            init:stop(1);
+        [] -> continue
+    end,
+    Options =
+        case parse(Args2, []) of
+            {'error', 'arguments', Msg1} ->
+                io:format("~s: ~s\n", [?APP_STRING, Msg1]),
+                init:stop(1);
+            Opts -> Opts
         end,
-    Res,
-    true.
+    case cliAux(Options) of
+        {'ok', 'gui'} ->
+            true;
+        {'error', 'arguments', Msg2} ->
+            io:format("~s: ~s\n", [?APP_STRING, Msg2]),
+            init:stop(1);
+        Result ->
+            %% Set output file
+            Output =
+                case lists:keyfind(output, 1, Options) of
+                    {output, O} -> O;
+                    false -> "results.txt"
+                end,
+            case export(Result, Output) of
+                {'error', Msg3} ->
+                    io:format("~s: ~s\n",
+                        [?APP_STRING, file:format_error(Msg3)]),
+                    init:stop(1);
+                ok -> true
+            end
+    end.
 
 cliAux(Options) ->
     case lists:keyfind('gui', 1, Options) of
@@ -304,12 +329,6 @@ analyzeAux(Options) ->
                 Msg2 = "no input files specified",
                 {'error', 'arguments', Msg2}
         end,
-    %% Set output file
-    Output =
-        case lists:keyfind(output, 1, Options) of
-            {output, O} -> O;
-            false -> "results.txt"
-        end,
     %% Set include dirs
     Include =
         case lists:keyfind(include, 1, Options) of
@@ -327,23 +346,52 @@ analyzeAux(Options) ->
     %% Start the analysis
     sched:analyze(Target, Files, AnalysisOptions).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%----------------------------------------------------------------------
+%%% Export Analysis results into a file
+%%%----------------------------------------------------------------------
+
+%% @spec export(sched:analysis_ret(), file()) ->
+%%              'ok' | {'error', file:posix() | badarg | system_limit}
+%% @doc: Export the analysis results into a text file.
+-spec export(sched:analysis_ret(), file()) ->
+    'ok' | {'error', file:posix() | badarg | system_limit}.
+export(Results, File) ->
+    case file:open(File, ['write']) of
+        {ok, IoDevice} ->
+            exportAux(Results, IoDevice),
+            file:close(IoDevice);
+        Error -> Error
+    end.
+
+exportAux({'ok', {_Target, RunCount}}, IoDevice) ->
+    Msg = io_lib:format("Checked ~w interleaving(s). No errors found.\n",
+        [RunCount]),
+    file:write(IoDevice, Msg);
+exportAux({error, instr, {_Target, _RunCount}}, IoDevice) ->
+    Msg = io_lib:format("Instrumentation error.\n"),
+    file:write(IoDevice, Msg);
+exportAux({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
+    TickLen = length(Tickets),
+    Msg1 = io_lib:format("Checked ~w interleaving(s). ~w errors found.\n\n",
+        [RunCount, TickLen]),
+    file:write(IoDevice, Msg1),
+    showDetails(1, ticket:sort(Tickets), IoDevice).
 
 %% Show details about each ticket
-showDetails(false, {I, Ticket}) ->
+showDetails(Count, [Ticket|Tickets], IoDevice) ->
     Error = ticket:get_error(Ticket),
-    io:format("~p\t~s: ~s\n", [I, error:type(Error), error:short(Error)]);
-showDetails(true, {I, Ticket}) ->
-    Error = ticket:get_error(Ticket),
-    io:format("~p\n~s\n", [I, error:long(Error)]),
-    %% Disable log event handler while replaying.
-    Details = sched:replay(Ticket),
+    Msg1 = io_lib:format("~p\n~s\n", [Count, error:long(Error)]),
+    file:write(IoDevice, Msg1),
+    Details = ticket:get_state(Ticket),
     lists:foreach(fun(Detail) ->
                 D = proc_action:to_string(Detail),
-                io:format("  ~s\n", [D]) end,
+                Msg2 = io_lib:format("  ~s\n", [D]),
+                file:write(IoDevice, Msg2) end,
         Details),
-    io:format("\n\n").
-
+    file:write(IoDevice, "\n\n"),
+    showDetails(Count+1, Tickets, IoDevice);
+showDetails(_Count, [], _IoDevice) -> ok.
 
 
 %%%----------------------------------------------------------------------
