@@ -4,9 +4,11 @@ Checked 7 interleaving(s). 4 errors found.
 Error type        : Assertion violation
 Module:Line       : sched_tests.erl:224
 Expected          : result3
-Value             : result1
+Value             : result2
   Process P1 spawns process P1.1
+  Process P1 receives no matching messages
   Process P1.1 sends message `foo` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `foo` from process P1.1
   Process P1 exits ("Assertion violation")
 
@@ -39,11 +41,9 @@ Value             : result1
 Error type        : Assertion violation
 Module:Line       : sched_tests.erl:224
 Expected          : result3
-Value             : result2
+Value             : result1
   Process P1 spawns process P1.1
-  Process P1 receives no matching messages
   Process P1.1 sends message `foo` to process P1
-  Process P1.1 exits (normal)
   Process P1 receives message `foo` from process P1.1
   Process P1 exits ("Assertion violation")
 

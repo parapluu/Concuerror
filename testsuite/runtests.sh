@@ -52,13 +52,11 @@ for test in "${tests[@]}"; do
         preb="${temp[1]}"
         printf "Running test %s-%s (%s, %s).." $suite $name $fun $preb
         # And run concuerror
-        $concuerror analyze --target $mod $fun --files "${files[@]}" \
-            --output $results/results.ced --preb $preb --noprogress --nolog
-        $concuerror show --snapshot $results/results.ced --nolog \
-            --details --all > $results/$suite/$name-$fun-$preb.txt
+        $concuerror --target $mod $fun --files "${files[@]}" \
+            --output $results/$suite/$name-$fun-$preb.txt \
+            --preb $preb --noprogress --nolog
         diff -I '<[0-9]\+\.[0-9]\+\.[0-9]\+>' \
             -I '#Ref<[0-9\.]\+>' \
-            -I "/suites/$suite/src/$name" \
             -uw suites/$suite/results/$name-$fun-$preb.txt \
             $results/$suite/$name-$fun-$preb.txt &> /dev/null
         if [ $? -eq 0 ]; then
@@ -71,5 +69,4 @@ done
 
 # Cleanup temp files
 find . -name '*.beam' -exec rm {} \;
-rm $results/results.ced
 cd $prevDir

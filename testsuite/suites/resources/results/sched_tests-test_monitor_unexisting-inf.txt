@@ -8,7 +8,7 @@ Value             : not_ok
   Process P1 spawns process P1.1
   Process P1.1 exits (normal)
   Process P1 monitors nonexisting process
-  Process P1 receives message `{'DOWN',#Ref<0.0.0.720>,process,...}` from unknown process
+  Process P1 receives message `{'DOWN',#Ref<0.0.0.711>,process,...}` from unknown process
   Process P1 exits ("Assertion violation")
 
 

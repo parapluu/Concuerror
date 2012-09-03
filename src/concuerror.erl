@@ -187,8 +187,7 @@ parse([{Opt, []} | _Args], _Options)
 parse([{Opt, Files} | Args], Options)
         when (Opt =:= 'f') orelse (Opt =:= '-files') ->
     %% Found --files option
-    AbsFiles = lists:map(fun filename:absname/1, Files),
-    NewOptions = keyAppend(files, 1, Options, AbsFiles),
+    NewOptions = keyAppend(files, 1, Options, Files),
     parse(Args, NewOptions);
 parse([{Opt, [File]} | Args], Options)
         when (Opt =:= 'o') orelse (Opt =:= '-output') ->

@@ -76,8 +76,7 @@ CORE_MODULES = \
 	util
 
 LOG_MODULES = \
-	log \
-	replay_logger
+	log
 
 UTEST_MODULES = \
 	error_tests \
