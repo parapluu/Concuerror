@@ -13,7 +13,7 @@
 %%%----------------------------------------------------------------------
 
 -module(instr).
--export([delete_and_purge/1, instrument_and_compile/1, load/1]).
+-export([delete_and_purge/1, instrument_and_compile/3, load/1]).
 
 -include("gen.hrl").
 
@@ -100,30 +100,36 @@ delete_and_purge(Files) ->
     Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
     lists:foreach(Fun, ModsToPurge).
 
-%% @spec instrument(Files::[file()]) -> 'ok' | 'error'
+%% @spec instrument(Files::[file()], Includes::[file:name()],
+%%              Defines::epp:macros()) -> 'ok' | 'error'
 %% @doc: Instrument and compile a list of files.
 %%
 %% Each file is first validated (i.e. checked whether it will compile
 %% successfully). If no errors are encountered, the file gets instrumented and
 %% compiled. If these actions are successfull, the function returns `{ok, Bin}',
 %% otherwise `error' is returned. No `.beam' files are produced.
--spec instrument_and_compile([file()]) -> {'ok', [mfb()]} | 'error'.
+-spec instrument_and_compile([file()], [file:name()], epp:macros()) ->
+    {'ok', [mfb()]} | 'error'.
 
-instrument_and_compile(Files) -> instrument_and_compile_aux(Files, []).
+instrument_and_compile(Files, Includes, Defines) ->
+    instrument_and_compile_aux(Files, Includes, Defines, []).
 
-instrument_and_compile_aux([], Acc) -> {ok, lists:reverse(Acc)};
-instrument_and_compile_aux([File|Rest], Acc) ->
-    case instrument_and_compile_one(File) of
+instrument_and_compile_aux([], _Includes, _Defines, Acc) ->
+    {ok, lists:reverse(Acc)};
+instrument_and_compile_aux([File|Rest], Includes, Defines, Acc) ->
+    case instrument_and_compile_one(File, Includes, Defines) of
         error -> error;
-        Result -> instrument_and_compile_aux(Rest, [Result|Acc])
+        Result -> instrument_and_compile_aux(Rest,Includes,Defines,[Result|Acc])
     end.
 
 %% Instrument and compile a single file.
-instrument_and_compile_one(File) ->
+instrument_and_compile_one(File, Includes, Defines) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
     log:log("Validating file ~p...~n", [File]),
-    PreOptions = [strong_validation, verbose, return],
+    OptIncludes = lists:map(fun(I) -> {i, I} end, Includes),
+    OptDefines  = lists:map(fun({M,V}) -> {d,M,V} end, Defines),
+    PreOptions = [strong_validation,verbose,return | OptIncludes++OptDefines],
     case compile:file(File, PreOptions) of
         {ok, Module, Warnings} ->
             %% Log warning messages.
@@ -132,7 +138,7 @@ instrument_and_compile_one(File) ->
             ?NT_USED = ets:new(?NT_USED, [named_table, private]),
             %% Instrument given source file.
             log:log("Instrumenting file ~p...~n", [File]),
-            case instrument(File) of
+            case instrument(File, Includes, Defines) of
                 {ok, NewForms} ->
                     %% Delete `used` table.
                     ets:delete(?NT_USED),
@@ -174,11 +180,9 @@ load_one({Module, File, Binary}) ->
             error
     end.
 
-instrument(File) ->
-    %% TODO: For now using the default and the test directory include path.
-    %%       In the future we have to provide a means for an externally
-    %%       defined include path (like the erlc -I flag).
-    case epp:parse_file(File, [filename:dirname(File)], []) of
+instrument(File, Includes, Defines) ->
+    NewIncludes = [filename:dirname(File) | Includes],
+    case epp:parse_file(File, NewIncludes, Defines) of
         {ok, OldForms} ->
             %% Remove `type` and `spec` attributes to avoid errors
             %% due to record expansion below.
@@ -550,7 +554,7 @@ log_error_list(List) ->
     log_list(List, "").
 
 %% Log a list of warnings, as returned by compile:file/2.
-log_warning_list(List) -> ok.
+log_warning_list(_List) -> ok.
                                                 %log_list(List, "Warning:").
 
 %% Log a list of error or warning descriptors, as returned by compile:file/2.

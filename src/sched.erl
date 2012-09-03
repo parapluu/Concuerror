@@ -72,8 +72,8 @@
 -type analysis_info() :: {analysis_target(), non_neg_integer()}.
 
 -type analysis_options() :: [{'preb', bound()} |
-                             {'include', [file()]} |
-                             {'define', [{atom(), atom()}]}].
+                             {'include', [file:name()]} |
+                             {'define', epp:macros()}].
 
 
 %% Analysis result tuple.
@@ -116,8 +116,18 @@ analyze(Target, Files, Options) ->
             {preb, Bound} -> Bound;
             false -> ?INFINITY
         end,
+    Include =
+        case lists:keyfind('include', 1, Options) of
+            {'include', I} -> I;
+            false -> []
+        end,
+    Define =
+        case lists:keyfind('define', 1, Options) of
+            {'define', D} -> D;
+            false -> []
+        end,
     Ret =
-        case instr:instrument_and_compile(Files) of
+        case instr:instrument_and_compile(Files, Include, Define) of
             {ok, Bin} ->
                 %% Note: No error checking for load
                 ok = instr:load(Bin),

@@ -39,11 +39,10 @@
 
 -type analysis_ret() ::
       sched:analysis_ret()
-    | {'ok', 'gui'}
     | {'error', 'arguments', string()}.
 
 %% Log event handler internal state.
-%% The state (if we want have progress bar) contains
+%% The state (if we want to have progress bar) contains
 %% the current preemption number,
 %% the progress in per cent,
 %% the number of interleaving contained in this preemption number,
@@ -51,17 +50,17 @@
 -type progress() :: {non_neg_integer(), -1..100,
                      non_neg_integer(), non_neg_integer()}.
 
--type state() :: {progress() | 'noprogress',
-                  'log' | 'nolog'}.
+-type state() :: progress() | 'noprogress'.
 
 %% Command line options
 -type option() ::
       {'target',  sched:analysis_target()}
     | {'files',   [file()]}
     | {'output',  file()}
-    | {'include', [file()]}
+    | {'include', [file:name()]}
+    | {'define',  epp:macros()}
     | {'noprogress'}
-    | {'nolog'}
+    | {'quiet'}
     | {'preb',    sched:bound()}
     | {'gui'}
     | {'help'}.
@@ -101,7 +100,8 @@ stop() ->
 gui(_Options) ->
     %% Disable error logging messages.
     ?tty(),
-    gui:start().
+%%    gui:start().
+    'true'.
 
 %% @spec cli() -> 'true'
 %% @doc: Parse the command line arguments and start Concuerror.
@@ -110,152 +110,210 @@ cli() ->
     %% Disable error logging messages.
     ?tty(),
     %% First get the command line options
-    Args1 = init:get_arguments(),
-    %% And keep only this referring to Concuerror
-    %% Hack: to do this add the flag `-concuerror_options'
-    %% which separates erlang from concuerror options
-    Pred = fun(P) -> {concuerror_options, []} /= P end,
-    [_ | Args2] = lists:dropwhile(Pred, Args1),
+    Args = init:get_arguments(),
     %% There should be no plain_arguments
     case init:get_plain_arguments() of
-        [Arg|_] ->
-            io:format("~s: unrecognised argument: ~s", [?APP_STRING, Arg]),
-            init:stop(1);
-        [] -> continue
-    end,
-    Options =
-        case parse(Args2, []) of
-            {'error', 'arguments', Msg1} ->
-                io:format("~s: ~s\n", [?APP_STRING, Msg1]),
-                init:stop(1);
-            Opts -> Opts
-        end,
-    case cliAux(Options) of
-        {'ok', 'gui'} ->
-            true;
-        {'error', 'arguments', Msg2} ->
-            io:format("~s: ~s\n", [?APP_STRING, Msg2]),
-            init:stop(1);
-        Result ->
-            %% Set output file
-            Output =
-                case lists:keyfind(output, 1, Options) of
-                    {output, O} -> O;
-                    false -> "results.txt"
-                end,
-            case export(Result, Output) of
-                {'error', Msg3} ->
-                    io:format("~s: ~s\n",
-                        [?APP_STRING, file:format_error(Msg3)]),
-                    init:stop(1);
-                ok -> true
+        [PlArg|_] ->
+            io:format("~s: unrecognised argument: ~s", [?APP_STRING, PlArg]);
+        [] ->
+            case parse(Args, []) of
+                {'error', 'arguments', Msg1} ->
+                    io:format("~s: ~s\n", [?APP_STRING, Msg1]);
+                Opts -> cliAux(Opts)
             end
     end.
 
 cliAux(Options) ->
     case lists:keyfind('gui', 1, Options) of
-        {'gui'} -> gui(Options), {'ok', 'gui'};
+        {'gui'} -> gui(Options);
         false ->
             %% Start the log manager and attach the event handler below.
             _ = log:start(),
-            _ = log:attach(?MODULE, Options),
+            case lists:keyfind('quiet', 1, Options) of
+                false -> _ = log:attach(?MODULE, Options);
+                {'quiet'} -> continue
+            end,
             %% Run analysis
-            Res = analyzeAux(Options),
+            case analyzeAux(Options) of
+                {'error', 'arguments', Msg1} ->
+                    io:format("~s: ~s\n", [?APP_STRING, Msg1]);
+                Result ->
+                    %% Set output file
+                    Output =
+                        case lists:keyfind(output, 1, Options) of
+                            {output, O} -> O;
+                            false -> "results.txt"
+                        end,
+                    case exportAux(Result, Output) of
+                        {'error', Msg2} ->
+                            io:format("~s: ~s\n",
+                                [?APP_STRING, file:format_error(Msg2)]);
+                        ok -> continue
+                    end
+            end,
             %% Stop event handler
-            log:stop(),
-            Res
-    end.
+            log:stop()
+    end,
+    'true'.
 
 %% Parse command line arguments
-parse([{Opt, [Module,Func|Params]} | Args], Options)
-        when (Opt =:= 't') orelse (Opt =:= '-target') ->
-    %% Found --target option
-    AtomModule = erlang:list_to_atom(Module),
-    AtomFunc   = erlang:list_to_atom(Func),
-    AtomParams = validateParams(Params, []),
-    Target = {AtomModule, AtomFunc, AtomParams},
-    NewOptions = lists:keystore(target, 1, Options, {target, Target}),
-    parse(Args, NewOptions);
-parse([{Opt, _} | _Args], _Options)
-        when (Opt =:= 't') orelse (Opt =:= '-target') ->
-    %% Found --target option with wrong parameters
-    wrongArgument('number', Opt);
-parse([{Opt, []} | _Args], _Options)
-        when (Opt =:= 'f') orelse (Opt =:= '-files') ->
-    %% Found --files options without parameters
-    wrongArgument('number', Opt);
-parse([{Opt, Files} | Args], Options)
-        when (Opt =:= 'f') orelse (Opt =:= '-files') ->
-    %% Found --files option
-    NewOptions = keyAppend(files, 1, Options, Files),
-    parse(Args, NewOptions);
-parse([{Opt, [File]} | Args], Options)
-        when (Opt =:= 'o') orelse (Opt =:= '-output') ->
-    %% Found --output option
-    NewOptions = lists:keystore(output, 1, Options, {output, File}),
-    parse(Args, NewOptions);
-parse([{Opt, _Files} | _Args], _Options)
-        when (Opt =:= 'o') orelse (Opt =:= '-output') ->
-    %% Found --output option with wrong parameters
-    wrongArgument('number', Opt);
-parse([{Opt, [Preb]} | Args], Options)
-        when (Opt =:= 'p') orelse (Opt =:= '-preb') ->
-    %% Found --preb option
-    NewPreb =
-        case string:to_integer(Preb) of
-            {P, []} when P>=0 -> P;
-            _ when (Preb=:="inf") orelse (Preb=:="off") -> inf;
-            _ -> wrongArgument('type', Opt)
-        end,
-    NewOptions = lists:keystore(preb, 1, Options, {preb, NewPreb}),
-    parse(Args, NewOptions);
-parse([{Opt, _Prebs} | _Args], _Options)
-        when (Opt =:= 'p') orelse (Opt =:= '-preb') ->
-    %% Found --preb option with wrong parameters
-    wrongArgument('number', Opt);
-parse([{'I', Includes} | Args], Options) ->
-    %% Found -I option
-    NewOptions = keyAppend(include, 1, Options, Includes),
-    parse(Args, NewOptions);
-parse([{'-noprogress', []} | Args], Options) ->
-    %% Found --noprogress option
-    NewOptions = lists:keystore(noprogress, 1, Options, {noprogress}),
-    parse(Args, NewOptions);
-parse([{'-noprogress', _} | _Args], _Options) ->
-    %% Found --noprogress option with wrong parameters
-    wrongArgument('number', '-noprogress');
-parse([{'-nolog', []} | Args], Options) ->
-    %% Found --nolog option
-    NewOptions = lists:keystore(nolog, 1, Options, {nolog}),
-    parse(Args, NewOptions);
-parse([{'-nolog', _} | _Args], _Options) ->
-    %% Found --nolog option with wrong parameters
-    wrongArgument('number', '-nolog');
-parse([{'-help', _} | _Args], _Options) ->
-    %% Found --help option
-    help(),
-    init:stop();
 parse([], Options) ->
     Options;
-parse([Arg | _Args], _Options) ->
-    Msg = io_lib:format("unrecognised concuerror flag: ~p", [Arg]),
-    {'error', 'arguments', Msg}.
+parse([{Opt, Param} | Args], Options) ->
+    case atom_to_list(Opt) of
+        T when T=:="t"; T=:="-target" ->
+            case Param of
+                [Module,Func|Pars] ->
+                    AtomModule = erlang:list_to_atom(Module),
+                    AtomFunc   = erlang:list_to_atom(Func),
+                    case validateTerms(Pars, []) of
+                        {'error',_,_}=Error -> Error;
+                        AtomParams ->
+                            Target = {AtomModule, AtomFunc, AtomParams},
+                            NewOptions = lists:keystore(target, 1,
+                                Options, {target, Target}),
+                            parse(Args, NewOptions)
+                    end;
+                _Other -> wrongArgument('number', Opt)
+            end;
 
-%% Validate user provided function parameters.
-validateParams([], Params) ->
-    lists:reverse(Params);
-validateParams([String|Strings], Params) ->
+        F when F=:="f"; F=:="-files" ->
+            case Param of
+                [] -> wrongArgument('number', Opt);
+                Files ->
+                    NewOptions = keyAppend(files, 1, Options, Files),
+                    parse(Args, NewOptions)
+            end;
+
+        O when O=:="o"; O=:="-output" ->
+            case Param of
+                [File] ->
+                    NewOptions = lists:keystore(output, 1,
+                        Options, {output, File}),
+                    parse(Args, NewOptions);
+                _Other -> wrongArgument('number', Opt)
+            end;
+
+        "I" ->
+            case Param of
+                [Par] ->
+                    NewOptions = keyAppend('include', 1,
+                        Options, [Par]),
+                    parse(Args, NewOptions);
+                _Other -> wrongArgument('number', Opt)
+            end;
+        [$I | Include] ->
+            case Param of
+                [] -> parse([{'I', [Include]} | Args], Options);
+                _Other -> wrongArgument('number', Opt)
+            end;
+
+        "D" ->
+            case Param of
+                [Par] ->
+                    case string:tokens(Par, "=") of
+                        [Name, Term] ->
+                            AtomName = erlang:list_to_atom(Name),
+                            case validateTerms([Term], []) of
+                                {'error',_,_}=Error -> Error;
+                                [AtomTerm] ->
+                                    NewOptions = keyAppend('define', 1,
+                                        Options, [{AtomName, AtomTerm}]),
+                                    parse(Args, NewOptions)
+                            end;
+                        [Name] ->
+                            AtomName = erlang:list_to_atom(Name),
+                            case validateTerms(["true"], []) of
+                                {'error',_,_}=Error -> Error;
+                                [AtomTerm] ->
+                                    NewOptions = keyAppend('define', 1,
+                                        Options, [{AtomName, AtomTerm}]),
+                                    parse(Args, NewOptions)
+                            end;
+                        _Other -> wrongArgument('type', Opt)
+                    end;
+                _Other -> wrongArgument('number', Opt)
+            end;
+        [$D | Define] ->
+            case Param of
+                [] -> parse([{'D', [Define]} | Args], Options);
+                _Other -> wrongArgument('number', Opt)
+            end;
+
+        "-noprogress" ->
+            case Param of
+                [] ->
+                    NewOptions = lists:keystore(noprogress, 1,
+                        Options, {noprogress}),
+                    parse(Args, NewOptions);
+                _Other -> wrongArgument('number', Opt)
+            end;
+
+        "-quiet" ->
+            case Param of
+                [] ->
+                    NewOptions = lists:keystore(quiet, 1,
+                        Options, {quiet}),
+                    parse(Args, NewOptions);
+                _Other -> wrongArgument('number', Opt)
+            end;
+
+        P when P=:="p"; P=:="-preb" ->
+            case Param of
+                [Preb] ->
+                    case string:to_integer(Preb) of
+                        {I, []} when I>=0 ->
+                            NewOptions = lists:keystore(preb, 1, Options,
+                                {preb, I}),
+                            parse(Args, NewOptions);
+                        _ when Preb=:="inf"; Preb=:="off" ->
+                            NewOptions = lists:keystore(preb, 1, Options,
+                                {preb, inf}),
+                            parse(Args, NewOptions);
+                        _Other -> wrongArgument('type', Opt)
+                    end;
+                _Other -> wrongArgument('number', Opt)
+            end;
+
+        "-gui" ->
+            case Param of
+                [] ->
+                    NewOptions = lists:keystore(gui, 1,
+                        Options, {gui}),
+                    parse(Args, NewOptions);
+                _Other -> wrongArgument('number', Opt)
+            end;
+
+        "-help" ->
+            help(),
+            erlang:halt();
+
+        EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
+            EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa" ->
+                %% erl flag (ignore it)
+                parse(Args, Options);
+
+        Other ->
+            Msg = io_lib:format("unrecognised concuerror flag: ~p", [Other]),
+            {'error', 'arguments', Msg}
+    end.
+
+
+%% Validate user provided terms.
+validateTerms([], Terms) ->
+    lists:reverse(Terms);
+validateTerms([String|Strings], Terms) ->
     case erl_scan:string(String ++ ".") of
         {ok, T, _} ->
             case erl_parse:parse_term(T) of
-                {ok, Param} -> validateParams(Strings, [Param|Params]);
+                {ok, Term} -> validateTerms(Strings, [Term|Terms]);
                 {error, {_, _, Info}} ->
-                    Msg = io_lib:format("arg ~s - ~s", [String, Info]),
-                    {'error', 'arguments', Msg}
+                    Msg1 = io_lib:format("arg ~s - ~s", [String, Info]),
+                    {'error', 'arguments', Msg1}
             end;
         {error, {_, _, Info}, _} ->
-            Msg = io_lib:format("info ~s", [Info]),
-            {'error', 'arguments', Msg}
+            Msg2 = io_lib:format("info ~s", [Info]),
+            {'error', 'arguments', Msg2}
     end.
 
 keyAppend(Key, Pos, TupleList, Value) ->
@@ -286,7 +344,10 @@ help() ->
      "  -o|--output file        Specify the output file (default results.txt)\n"
      "  -p|--preb   number|inf  Set preemption bound (default is 2)\n"
      "  -I          include_dir Pass the include_dir to concuerror\n"
-     "  --no-progress           Disable progress bar\n"
+     "  -D          name=value  Define a macro\n"
+     "  --noprogress            Disable progress bar\n"
+     "  -q|--quiet              Disable logging (implies --noprogress)\n"
+     "  --gui                   Run concuerror with graphics\n"
      "  --help                  Show this help message\n"
      "\n"
      "Examples:\n"
@@ -328,22 +389,8 @@ analyzeAux(Options) ->
                 Msg2 = "no input files specified",
                 {'error', 'arguments', Msg2}
         end,
-    %% Set include dirs
-    Include =
-        case lists:keyfind(include, 1, Options) of
-            {include, I} -> I;
-            false -> []
-        end,
-    %% Set preemption bound
-    Preb =
-        case lists:keyfind(preb, 1, Options) of
-            {preb, P} -> P;
-            false -> 2
-        end,
-    %% Create analysis_options
-    AnalysisOptions = [{preb, Preb}, {include, Include}],
     %% Start the analysis
-    sched:analyze(Target, Files, AnalysisOptions).
+    sched:analyze(Target, Files, Options).
 
 
 %%%----------------------------------------------------------------------
@@ -356,21 +403,33 @@ analyzeAux(Options) ->
 -spec export(sched:analysis_ret(), file()) ->
     'ok' | {'error', file:posix() | badarg | system_limit}.
 export(Results, File) ->
+    %% Disable error logging messages.
+    ?tty(),
+    %% Start the log manager.
+    _ = log:start(),
+    Res = exportAux(Results, File),
+    %% Stop event handler
+    log:stop(),
+    Res.
+
+exportAux(Results, File) ->
+    log:log("Writing output to file ~s..", [File]),
     case file:open(File, ['write']) of
         {ok, IoDevice} ->
-            exportAux(Results, IoDevice),
+            exportAux2(Results, IoDevice),
+            log:log("done\n"),
             file:close(IoDevice);
         Error -> Error
     end.
 
-exportAux({'ok', {_Target, RunCount}}, IoDevice) ->
+exportAux2({'ok', {_Target, RunCount}}, IoDevice) ->
     Msg = io_lib:format("Checked ~w interleaving(s). No errors found.\n",
         [RunCount]),
     file:write(IoDevice, Msg);
-exportAux({error, instr, {_Target, _RunCount}}, IoDevice) ->
-    Msg = io_lib:format("Instrumentation error.\n"),
+exportAux2({error, instr, {_Target, _RunCount}}, IoDevice) ->
+    Msg = "Instrumentation error.\n",
     file:write(IoDevice, Msg);
-exportAux({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
+exportAux2({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
     TickLen = length(Tickets),
     Msg1 = io_lib:format("Checked ~w interleaving(s). ~w errors found.\n\n",
         [RunCount, TickLen]),
@@ -401,52 +460,43 @@ showDetails(_Count, [], _IoDevice) -> ok.
 
 %% @doc: Initialize the event handler.
 init(Options) ->
-    Log =
-        case lists:keyfind(nolog, 1, Options) of
-            {nolog} -> nolog;
-            false -> log
-        end,
     Progress =
         case lists:keyfind(noprogress, 1, Options) of
             {noprogress} -> noprogress;
             false -> {0,-1,1,0}
         end,
-    {ok, {Log, Progress}}.
+    {ok, Progress}.
 
 -spec terminate(term(), state()) -> 'ok'.
 terminate(_Reason, _State) -> ok.
 
 -spec handle_event(log:event(), state()) -> {'ok', state()}.
-handle_event({msg, String}, {log,_Prog}=State) ->
+handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};
-handle_event({msg, _String}, {nolog,_Prog}=State) ->
-    {ok, State};
-handle_event({error, _Ticket}, {Log, {CurrPreb,Progress,Total,Errors}}) ->
+handle_event({error, _Ticket}, {CurrPreb,Progress,Total,Errors}) ->
     progress_bar(CurrPreb, Progress, Errors+1),
-    {ok, {Log, {CurrPreb,Progress,Total,Errors+1}}};
-handle_event({error, _Ticket}, {_Log, noprogress}=State) ->
-    {ok, State};
-handle_event({progress_log, Remain},
-        {Log, {CurrPreb,Progress,Total,Errors}}=State) ->
+    {ok, {CurrPreb,Progress,Total,Errors+1}};
+handle_event({error, _Ticket}, 'noprogress') ->
+    {ok, 'noprogress'};
+handle_event({progress_log, Remain}, {CurrPreb,Progress,Total,Errors}=State) ->
     NewProgress = erlang:trunc(100 - Remain*100/Total),
     case NewProgress > Progress of
         true ->
             progress_bar(CurrPreb, NewProgress, Errors),
-            {ok, {Log, {CurrPreb,NewProgress,Total,Errors}}};
+            {ok, {CurrPreb,NewProgress,Total,Errors}};
         false ->
             {ok, State}
     end;
-handle_event({progress_log, _Remain}, {_Log, noprogress}=State) ->
-    {ok, State};
-handle_event({progress_swap, NewTotal},
-        {Log, {CurrPreb,_Progress,_Total,Errors}}) ->
+handle_event({progress_log, _Remain}, 'noprogress') ->
+    {ok, 'noprogress'};
+handle_event({progress_swap, NewTotal}, {CurrPreb,_Progress,_Total,Errors}) ->
     %% Clear last two lines from screen
     io:format("\033[J"),
     NextPreb = CurrPreb + 1,
-    {ok, {Log, {NextPreb,-1,NewTotal,Errors}}};
-handle_event({progress_swap, _NewTotal}, {_Log, noprogress}=State) ->
-    {ok, State}.
+    {ok, {NextPreb,-1,NewTotal,Errors}};
+handle_event({progress_swap, _NewTotal}, 'noprogress') ->
+    {ok, 'noprogress'}.
 
 progress_bar(CurrPreb, PerCent, Errors) ->
     Bar = string:chars($=, PerCent div 2, ">"),

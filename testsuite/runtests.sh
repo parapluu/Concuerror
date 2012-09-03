@@ -54,7 +54,7 @@ for test in "${tests[@]}"; do
         # And run concuerror
         $concuerror --target $mod $fun --files "${files[@]}" \
             --output $results/$suite/$name-$fun-$preb.txt \
-            --preb $preb --noprogress --nolog
+            --preb $preb --quiet
         diff -I '<[0-9]\+\.[0-9]\+\.[0-9]\+>' \
             -I '#Ref<[0-9\.]\+>' \
             -uw suites/$suite/results/$name-$fun-$preb.txt \
