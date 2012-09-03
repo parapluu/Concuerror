@@ -14,7 +14,7 @@
 -module(concuerror).
 
 %% UI exports.
--export([gui/0, cli/0, analyze/1, show/1, stop/0]).
+-export([gui/1, cli/0, analyze/1, stop/0]).
 %% Log server callback exports.
 -export([init/1, terminate/2, handle_event/2]).
 
@@ -37,6 +37,11 @@
 %%% Types
 %%%----------------------------------------------------------------------
 
+-type analysis_ret() ::
+      sched:analysis_ret()
+    | {'ok', 'gui'}
+    | {'error', 'arguments', string()}.
+
 %% Log event handler internal state.
 %% The state (if we want have progress bar) contains
 %% the current preemption number,
@@ -50,19 +55,18 @@
                   'log' | 'nolog'}.
 
 %% Command line options
--type options() ::
-    [ {'target',  sched:analysis_target()}
+-type option() ::
+      {'target',  sched:analysis_target()}
     | {'files',   [file()]}
-    | {'snapshot',  file()}
+    | {'output',  file()}
     | {'include', [file()]}
     | {'noprogress'}
     | {'nolog'}
     | {'preb',    sched:bound()}
-    | {'number', [pos_integer() | {pos_integer(), pos_integer()|'end'}]}
-    | {'details'}
-    | {'all'}
-    ].
+    | {'gui'}
+    | {'help'}.
 
+-type options() :: [option()].
 
 %%%----------------------------------------------------------------------
 %%% UI functions
@@ -91,10 +95,10 @@ stop() ->
     end,
     ok.
 
-%% @spec gui() -> 'true'
+%% @spec gui(options()) -> 'true'
 %% @doc: Start the CED GUI.
--spec gui() -> 'true'.
-gui() ->
+-spec gui(options()) -> 'true'.
+gui(_Options) ->
     %% Disable error logging messages.
     ?tty(),
     gui:start().
@@ -112,27 +116,33 @@ cli() ->
     %% which separates erlang from concuerror options
     Pred = fun(P) -> {concuerror_options, []} /= P end,
     [_ | Args2] = lists:dropwhile(Pred, Args1),
-    %% Firstly parse the command option
-    case init:get_plain_arguments() of
-        ["analyze"] -> action_analyze(Args2, []);
-        ["show"]    -> action_show(Args2, []);
-        ["gui"]     -> action_gui(Args2);
-        ["help"]    -> help();
-        [Action] ->
-            io:format("~s: unrecognised command: ~s\n", [?APP_STRING, Action]),
-            init:stop(1);
-        _ -> help()
-    end,
+    Res =
+        %% There should be no plain_arguments
+        case init:get_plain_arguments() of
+            [] -> Options = parse(Args2, []), cliAux(Options);
+            [Arg|_] ->
+                Msg = io_lib:format("unrecognised argument: ~s", [Arg]),
+                {'error', 'arguments', Msg}
+        end,
+    Res,
     true.
 
-%% We don't allow any options for action `gui'
-action_gui([]) -> gui();
-action_gui([Op|_]) ->
-    io:format("~s: unrecognised flag: ~s\n", [?APP_STRING, Op]),
-    init:stop(1).
+cliAux(Options) ->
+    case lists:keyfind('gui', 1, Options) of
+        {'gui'} -> gui(Options), {'ok', 'gui'};
+        false ->
+            %% Start the log manager and attach the event handler below.
+            _ = log:start(),
+            _ = log:attach(?MODULE, Options),
+            %% Run analysis
+            Res = analyzeAux(Options),
+            %% Stop event handler
+            log:stop(),
+            Res
+    end.
 
-%% Parse options for analyze command and call `analyze/1'
-action_analyze([{Opt, [Module,Func|Params]} | Args], Options)
+%% Parse command line arguments
+parse([{Opt, [Module,Func|Params]} | Args], Options)
         when (Opt =:= 't') orelse (Opt =:= '-target') ->
     %% Found --target option
     AtomModule = erlang:list_to_atom(Module),
@@ -140,31 +150,31 @@ action_analyze([{Opt, [Module,Func|Params]} | Args], Options)
     AtomParams = validateParams(Params, []),
     Target = {AtomModule, AtomFunc, AtomParams},
     NewOptions = lists:keystore(target, 1, Options, {target, Target}),
-    action_analyze(Args, NewOptions);
-action_analyze([{Opt, _} | _Args], _Options)
+    parse(Args, NewOptions);
+parse([{Opt, _} | _Args], _Options)
         when (Opt =:= 't') orelse (Opt =:= '-target') ->
     %% Found --target option with wrong parameters
     wrongArgument('number', Opt);
-action_analyze([{Opt, []} | _Args], _Options)
+parse([{Opt, []} | _Args], _Options)
         when (Opt =:= 'f') orelse (Opt =:= '-files') ->
     %% Found --files options without parameters
     wrongArgument('number', Opt);
-action_analyze([{Opt, Files} | Args], Options)
+parse([{Opt, Files} | Args], Options)
         when (Opt =:= 'f') orelse (Opt =:= '-files') ->
     %% Found --files option
     AbsFiles = lists:map(fun filename:absname/1, Files),
     NewOptions = keyAppend(files, 1, Options, AbsFiles),
-    action_analyze(Args, NewOptions);
-action_analyze([{Opt, [File]} | Args], Options)
+    parse(Args, NewOptions);
+parse([{Opt, [File]} | Args], Options)
         when (Opt =:= 'o') orelse (Opt =:= '-output') ->
     %% Found --output option
-    NewOptions = lists:keystore(snapshot, 1, Options, {snapshot, File}),
-    action_analyze(Args, NewOptions);
-action_analyze([{Opt, _Files} | _Args], _Options)
+    NewOptions = lists:keystore(output, 1, Options, {output, File}),
+    parse(Args, NewOptions);
+parse([{Opt, _Files} | _Args], _Options)
         when (Opt =:= 'o') orelse (Opt =:= '-output') ->
     %% Found --output option with wrong parameters
     wrongArgument('number', Opt);
-action_analyze([{Opt, [Preb]} | Args], Options)
+parse([{Opt, [Preb]} | Args], Options)
         when (Opt =:= 'p') orelse (Opt =:= '-preb') ->
     %% Found --preb option
     NewPreb =
@@ -174,34 +184,38 @@ action_analyze([{Opt, [Preb]} | Args], Options)
             _ -> wrongArgument('type', Opt)
         end,
     NewOptions = lists:keystore(preb, 1, Options, {preb, NewPreb}),
-    action_analyze(Args, NewOptions);
-action_analyze([{Opt, _Prebs} | _Args], _Options)
+    parse(Args, NewOptions);
+parse([{Opt, _Prebs} | _Args], _Options)
         when (Opt =:= 'p') orelse (Opt =:= '-preb') ->
     %% Found --preb option with wrong parameters
     wrongArgument('number', Opt);
-action_analyze([{'I', Includes} | Args], Options) ->
+parse([{'I', Includes} | Args], Options) ->
     %% Found -I option
     NewOptions = keyAppend(include, 1, Options, Includes),
-    action_analyze(Args, NewOptions);
-action_analyze([{'-noprogress', []} | Args], Options) ->
+    parse(Args, NewOptions);
+parse([{'-noprogress', []} | Args], Options) ->
     %% Found --noprogress option
     NewOptions = lists:keystore(noprogress, 1, Options, {noprogress}),
-    action_analyze(Args, NewOptions);
-action_analyze([{'-noprogress', _} | _Args], _Options) ->
+    parse(Args, NewOptions);
+parse([{'-noprogress', _} | _Args], _Options) ->
     %% Found --noprogress option with wrong parameters
     wrongArgument('number', '-noprogress');
-action_analyze([{'-nolog', []} | Args], Options) ->
+parse([{'-nolog', []} | Args], Options) ->
     %% Found --nolog option
     NewOptions = lists:keystore(nolog, 1, Options, {nolog}),
-    action_analyze(Args, NewOptions);
-action_analyze([{'-nolog', _} | _Args], _Options) ->
+    parse(Args, NewOptions);
+parse([{'-nolog', _} | _Args], _Options) ->
     %% Found --nolog option with wrong parameters
     wrongArgument('number', '-nolog');
-action_analyze([], Options) ->
-    analyze(Options);
-action_analyze([Arg | _Args], _Options) ->
-    io:format("~s: unrecognised concuerror flag: ~p\n", [?APP_STRING, Arg]),
-    init:stop(1).
+parse([{'-help', _} | _Args], _Options) ->
+    %% Found --help option
+    help(),
+    init:stop();
+parse([], Options) ->
+    Options;
+parse([Arg | _Args], _Options) ->
+    Msg = io_lib:format("unrecognised concuerror flag: ~p", [Arg]),
+    {'error', 'arguments', Msg}.
 
 %% Validate user provided function parameters.
 validateParams([], Params) ->
@@ -212,69 +226,13 @@ validateParams([String|Strings], Params) ->
             case erl_parse:parse_term(T) of
                 {ok, Param} -> validateParams(Strings, [Param|Params]);
                 {error, {_, _, Info}} ->
-                    io:format("~s: arg ~s - ~s\n",
-                        [?APP_STRING, String, Info]),
-                    init:stop(1)
+                    Msg = io_lib:format("arg ~s - ~s", [String, Info]),
+                    {'error', 'arguments', Msg}
             end;
         {error, {_, _, Info}, _} ->
-            io:format("~s: info ~s\n", [?APP_STRING, Info]),
-            init:stop(1)
+            Msg = io_lib:format("info ~s", [Info]),
+            {'error', 'arguments', Msg}
     end.
-
-%% Parse options for show command and call `show/1'
-action_show([{'-snapshot', [File]} | Args], Options) ->
-    %% Found --snapshot option
-    NewOptions = lists:keystore(snapshot, 1, Options, {snapshot, File}),
-    action_show(Args, NewOptions);
-action_show([{'-snapshot', _Files} | _Args], _Options) ->
-    %% Found --snapshot with wrong paramemters
-    wrongArgument('number', '-snapshot');
-action_show([{'n', Numbers} | Args], Options) ->
-    %% Found -n option
-    Fun = fun(Nr) ->
-            case string:to_integer(Nr) of
-                {N, []} when N>0 -> N;
-                {N1, [$.,$.|N2]} when N1>0 ->
-                    case string:to_integer(N2) of
-                        {N3, []} when (N3>0) andalso (N1<N3) -> {N1, N3};
-                        _ when (N2=:="end") -> {N1, 'end'};
-                        _ -> wrongArgument('type', 'n')
-                    end;
-                _ -> wrongArgument('type', 'n')
-            end
-          end,
-    NewNumbers = lists:map(Fun, Numbers),
-    NewOptions = keyAppend(number, 1, Options, NewNumbers),
-    action_show(Args, NewOptions);
-action_show([{'-all', []} | Args], Options) ->
-    %% Found --all option
-    NewOptions = lists:keystore(all, 1, Options, {all}),
-    action_show(Args, NewOptions);
-action_show([{'-all', _Param} | _Args], _Options) ->
-    %% Found --all option with wrong parameters
-    wrongArgument('number', '-all');
-action_show([{Opt, []} | Args], Options)
-        when (Opt =:= 'd') orelse (Opt =:= '-details') ->
-    %% Found --details options
-    NewOptions = lists:keystore(details, 1, Options, {details}),
-    action_show(Args, NewOptions);
-action_show([{Opt, _Params} | _Args], _Options)
-        when (Opt =:= 'd') orelse (Opt =:= '-details') ->
-    %% Found --details option with wrong parameters
-    wrongArgument('number', '-details');
-action_show([{'-nolog', []} | Args], Options) ->
-    %% Found --nolog option
-    NewOptions = lists:keystore(nolog, 1, Options, {nolog}),
-    action_show(Args, NewOptions);
-action_show([{'-nolog', _} | _Args], _Options) ->
-    %% Found --nolog option with wrong parameters
-    wrongArgument('number', '-nolog');
-action_show([], Options) ->
-    show(Options);
-action_show([Arg | _Args], _Options) ->
-    io:format("~s: unrecognised concuerror flag: ~p\n", [?APP_STRING, Arg]),
-    init:stop(1).
-
 
 keyAppend(Key, Pos, TupleList, Value) ->
     case lists:keytake(Key, Pos, TupleList) of
@@ -285,46 +243,31 @@ keyAppend(Key, Pos, TupleList, Value) ->
     end.
 
 wrongArgument('number', Option) ->
-    io:format("~s: wrong number of arguments for option -~s\n",
-        [?APP_STRING, Option]),
-    init:stop(1);
+    Msg = io_lib:format("wrong number of arguments for option -~s", [Option]),
+    {'error', 'arguments', Msg};
 wrongArgument('type', Option) ->
-    io:format("~s: wrong type of argument for option -~s\n",
-        [?APP_STRING, Option]),
-    init:stop(1).
+    Msg = io_lib:format("wrong type of argument for option -~s", [Option]),
+    {'error', 'arguments', Msg}.
 
 help() ->
     io:format(
-     "usage: concuerror <command> [<args>]\n"
+     "usage: concuerror [<args>]\n"
      "A Systematic Testing Framework for detecting\n"
      "Concurrency Errors in Erlang Programs\n"
      "\n"
-     "Commands:\n"
-     "  analyze         Analyze a specific target\n"
-     "  show            Show the results of an analysis\n"
-     "  gui             Run concuerror with graphics\n"
-     "  help            Show this help message\n"
-     "\n"
-     "Analyze options:\n"
+     "Arguments:\n"
      "  -t|--target module function [args]\n"
      "                          Specify the function to execute\n"
      "  -f|--files  modules     Specify the files (modules) to instrument\n"
-     "  -o|--output file        Specify the output file (default results.ced)\n"
+     "  -o|--output file        Specify the output file (default results.txt)\n"
      "  -p|--preb   number|inf  Set preemption bound (default is 2)\n"
      "  -I          include_dir Pass the include_dir to concuerror\n"
      "  --no-progress           Disable progress bar\n"
-     "\n"
-     "Show options:\n"
-     "  --snapshot   file       Specify input (snapshot) file\n"
-     "  -n           from..to   Specify which errors we want (default -all)\n"
-     "  --all                   Show all errors\n"
-     "  -d|--details            Show details about each error\n"
+     "  --help                  Show this help message\n"
      "\n"
      "Examples:\n"
-     "  concuerror analyze --target foo bar arg1 arg2 "
-            "--files \"temp/foo.erl\" -o out.ced\n"
-     "  concuerror show --snapshot out.ced --all\n"
-     "  concuerror show --snapshot out.ced -n 1 4..end --details\n\n").
+     "  concuerror --target foo bar arg1 arg2 "
+        "--files \"temp/foo.erl\" -o out.txt\n\n").
 
 
 %%%----------------------------------------------------------------------
@@ -333,34 +276,41 @@ help() ->
 
 %% @spec analyze(options()) -> 'true'
 %% @doc: Run Concuerror analysis with the given options.
--spec analyze(options()) -> 'true'.
+-spec analyze(options()) -> analysis_ret().
 analyze(Options) ->
     %% Disable error logging messages.
     ?tty(),
+    %% Start the log manager.
+    _ = log:start(),
+    Res = analyzeAux(Options),
+    %% Stop event handler
+    log:stop(),
+    Res.
+
+analyzeAux(Options) ->
     %% Get target
     Target =
         case lists:keyfind(target, 1, Options) of
             {target, T} -> T;
             false ->
-                io:format("~s: no target specified\n", [?APP_STRING]),
-                init:stop(1)
+                Msg1 = "no target specified",
+                {'error', 'arguments', Msg1}
         end,
     %% Get input files
     Files =
         case lists:keyfind(files, 1, Options) of
             {files, F} -> F;
             false ->
-                io:format("~s: no input files specified\n", [?APP_STRING]),
-                init:stop(1)
+                Msg2 = "no input files specified",
+                {'error', 'arguments', Msg2}
         end,
     %% Set output file
     Output =
-        case lists:keyfind(snapshot, 1, Options) of
-            {snapshot, O} -> O;
-            false -> "results.ced"
+        case lists:keyfind(output, 1, Options) of
+            {output, O} -> O;
+            false -> "results.txt"
         end,
     %% Set include dirs
-    %% XXX: We have to actually use it
     Include =
         case lists:keyfind(include, 1, Options) of
             {include, I} -> I;
@@ -374,118 +324,10 @@ analyze(Options) ->
         end,
     %% Create analysis_options
     AnalysisOptions = [{preb, Preb}, {include, Include}],
-    %% Start the log manager and attach the event handler below.
-    _ = log:start(),
-    _ = log:attach(?MODULE, Options),
     %% Start the analysis
-    AnalysisRet = sched:analyze(Target, Files, AnalysisOptions),
-    %% Save result to a snapshot
-    Selection = snapshot:selection(1, 1),
-    snapshot:export(AnalysisRet, Files, Selection, Output),
-    %% Stop event handler
-    log:stop(),
-    true.
+    sched:analyze(Target, Files, AnalysisOptions).
 
-
-%%%----------------------------------------------------------------------
-%%% Show Commnad
-%%%----------------------------------------------------------------------
-
-%% @spec show(options()) -> 'true'
-%% @doc: Examine Concuerror results with the given options.
--spec show(options()) -> 'true'.
-show(Options) ->
-    %% Disable error logging messages.
-    ?tty(),
-    %% Get snapshot file
-    File =
-        case lists:keyfind(snapshot, 1, Options) of
-            {snapshot, S} -> S;
-            false ->
-                io:format("~s: no snapshot file specified\n", [?APP_STRING]),
-                init:stop(1)
-        end,
-    %% Get index of errors to examine
-    Indexes1 =
-        case lists:keyfind(number, 1, Options) of
-            {number, N} -> N;
-            false -> all
-        end,
-    Indexes2 =
-        case lists:keyfind(all, 1, Options) of
-            {all} -> all;
-            false -> Indexes1
-        end,
-    %% Get details option
-    Details =
-        case lists:keyfind(details, 1, Options) of
-            {details} -> true;
-            false -> false
-        end,
-    %% Start the log manager and attach the event handler below.
-    _ = log:start(),
-    _ = log:attach(?MODULE, ['noprogress' | Options]),
-    %% Load snapshot
-    snapshot:cleanup(),
-    case snapshot:import(File) of
-        ok -> continue;
-        Snapshot ->
-            Modules = snapshot:get_modules(Snapshot),
-            Files = lists:map(fun filename:absname/1, Modules),
-            AnalysisRet = snapshot:get_analysis(Snapshot),
-            %% Instrument and load the files
-            %% Note: No error checking here.
-            {ok, Bin} = instr:instrument_and_compile(Files),
-            ok = instr:load(Bin),
-            log:log("\n"),
-            %% Detach event handler
-            log:detach(?MODULE, []),
-            showAux(AnalysisRet, Indexes2, Details),
-            instr:delete_and_purge(Files)
-    end,
-    snapshot:cleanup(),
-    %% Stop event handler
-    log:stop(),
-    true.
-
-showAux({error, analysis, {_Target, RunCount}, Tickets}, Indexes, Details) ->
-    TickLen = length(Tickets),
-    io:format("Checked ~w interleaving(s). ~w errors found.\n\n",
-        [RunCount, TickLen]),
-    NewIndexes = uIndex(Indexes, TickLen),
-    KeyTickets = lists:zip(lists:seq(1, TickLen), Tickets),
-    NewTickets = selectKeys(NewIndexes, KeyTickets, []),
-    lists:foreach(fun(T) -> showDetails(Details, T) end, NewTickets);
-showAux({error, instr, {_Target, _RunCount}}, _Indexes, _Details) ->
-    io:format("Instrumentation error.\n");
-showAux({ok, {_Target, RunCount}}, _Indexes, _Details) ->
-    io:format("Checked ~w interleaving(s). No errors found.\n", [RunCount]).
-
-%% Take the indexes from command line and create a sorted list
-uIndex(all, TickLen) ->
-    lists:seq(1, TickLen);
-uIndex(Indexes, TickLen) ->
-    Fun = fun(I) ->
-            case I of
-                {From, 'end'} -> lists:seq(From, TickLen);
-                {From, To}  -> lists:seq(From, To);
-                Number -> Number
-            end
-          end,
-    Indexes1 = lists:map(Fun, Indexes),
-    Indexes2 = lists:flatten(Indexes1),
-    lists:usort(Indexes2).
-
-%% Keep only this elements whose keys are in Keys list
-%% Both lists are sorted by keys
-selectKeys(_Indexes, [], Acc) ->
-    lists:reverse(Acc);
-selectKeys([], _Tickets, Acc) ->
-    lists:reverse(Acc);
-selectKeys([I | Is], [{I,_T}=Tick | Tickets], Acc) ->
-    selectKeys(Is, Tickets, [Tick | Acc]);
-selectKeys(Indexes, [_ | Tickets], Acc) ->
-    selectKeys(Indexes, Tickets, Acc).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Show details about each ticket
 showDetails(false, {I, Ticket}) ->
