@@ -86,21 +86,21 @@
 %%% Types
 %%%----------------------------------------------------------------------
 
--type mfb() :: {module(), file(), binary()}.
+-type mfb() :: {module(), file:filename(), binary()}.
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation utilities
 %%%----------------------------------------------------------------------
 
 %% Delete and purge all modules in Files.
--spec delete_and_purge([file()]) -> 'ok'.
+-spec delete_and_purge([file:filename()]) -> 'ok'.
 
 delete_and_purge(Files) ->
     ModsToPurge = [list_to_atom(filename:basename(F, ".erl")) || F <- Files],
     Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
     lists:foreach(Fun, ModsToPurge).
 
-%% @spec instrument(Files::[file()], Includes::[file:name()],
+%% @spec instrument(Files::[file:filename()], Includes::[file:name()],
 %%              Defines::epp:macros()) -> 'ok' | 'error'
 %% @doc: Instrument and compile a list of files.
 %%
@@ -108,7 +108,7 @@ delete_and_purge(Files) ->
 %% successfully). If no errors are encountered, the file gets instrumented and
 %% compiled. If these actions are successfull, the function returns `{ok, Bin}',
 %% otherwise `error' is returned. No `.beam' files are produced.
--spec instrument_and_compile([file()], [file:name()], epp:macros()) ->
+-spec instrument_and_compile([file:filename()], [file:name()], epp:macros()) ->
     {'ok', [mfb()]} | 'error'.
 
 instrument_and_compile(Files, Includes, Defines) ->

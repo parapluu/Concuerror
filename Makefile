@@ -17,6 +17,7 @@
 ###----------------------------------------------------------------------
 
 APP_STRING = "Concuerror"
+VSN = "0.9"
 
 ###----------------------------------------------------------------------
 ### Orientation information
@@ -70,7 +71,6 @@ CORE_MODULES = \
 	proc_action \
 	rep \
 	sched \
-	snapshot \
 	state \
 	ticket \
 	util
@@ -176,7 +176,7 @@ concuerror:
 	chmod +x $@
 
 $(EBIN)/%.beam: %.erl
-	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -o $(EBIN) $<
+	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -DVSN="\"$(VSN)\"" -o $(EBIN) $<
 
 ###----------------------------------------------------------------------
 ### Dependencies

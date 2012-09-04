@@ -908,7 +908,7 @@ enableMenuItems() ->
 %% Export dialog
 exportDialog(Parent) ->
     Caption = "Export to " ++ ?APP_STRING ++ " file",
-    Wildcard = ?APP_STRING ++ " files |*" ++ ?APP_FILE,
+    Wildcard = ?APP_STRING ++ " files |*" ++ ?EXPORT_EXT,
     DefaultDir = ref_lookup(?SNAPSHOT_PATH),
     DefaultFile = "",
     Dialog = wxFileDialog:new(Parent, [{message, Caption},
@@ -917,7 +917,7 @@ exportDialog(Parent) ->
                                        {wildCard, Wildcard},
                                        {style, ?wxFD_SAVE bor
                                             ?wxFD_OVERWRITE_PROMPT}]),
-    wxFileDialog:setFilename(Dialog, ?EXPORT_FILE ++ ?APP_FILE),
+    wxFileDialog:setFilename(Dialog, ?EXPORT_FILE ++ ?EXPORT_EXT),
     case wxDialog:showModal(Dialog) of
         ?wxID_OK -> snapshot_export(wxFileDialog:getPath(Dialog));
         _Other -> continue
@@ -978,7 +978,7 @@ getStrings(Ref, N, Count, Strings) ->
 %% Import dialog
 importDialog(Parent) ->
     Caption = "Import from " ++ ?APP_STRING ++ " file",
-    Wildcard = ?APP_STRING ++ " files |*" ++ ?APP_FILE,
+    Wildcard = ?APP_STRING ++ " files |*" ++ ?EXPORT_EXT,
     DefaultDir = ref_lookup(?SNAPSHOT_PATH),
     DefaultFile = "",
     Dialog = wxFileDialog:new(Parent, [{message, Caption},

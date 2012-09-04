@@ -55,8 +55,8 @@
 %% Command line options
 -type option() ::
       {'target',  sched:analysis_target()}
-    | {'files',   [file()]}
-    | {'output',  file()}
+    | {'files',   [file:filename()]}
+    | {'output',  file:filename()}
     | {'include', [file:name()]}
     | {'define',  epp:macros()}
     | {'noprogress'}
@@ -142,7 +142,7 @@ cliAux(Options) ->
                     Output =
                         case lists:keyfind(output, 1, Options) of
                             {output, O} -> O;
-                            false -> "results.txt"
+                            false -> ?EXPORT_FILE
                         end,
                     case exportAux(Result, Output) of
                         {'error', Msg2} ->
@@ -333,10 +333,9 @@ wrongArgument('type', Option) ->
 
 help() ->
     io:format(
-     "usage: concuerror [<args>]\n"
-     "A Systematic Testing Framework for detecting\n"
-     "Concurrency Errors in Erlang Programs\n"
+     ?INFO_MSG
      "\n"
+     "usage: concuerror [<args>]\n"
      "Arguments:\n"
      "  -t|--target module function [args]\n"
      "                          Specify the function to execute\n"
@@ -397,10 +396,10 @@ analyzeAux(Options) ->
 %%% Export Analysis results into a file
 %%%----------------------------------------------------------------------
 
-%% @spec export(sched:analysis_ret(), file()) ->
+%% @spec export(sched:analysis_ret(), file:filename()) ->
 %%              'ok' | {'error', file:posix() | badarg | system_limit}
 %% @doc: Export the analysis results into a text file.
--spec export(sched:analysis_ret(), file()) ->
+-spec export(sched:analysis_ret(), file:filename()) ->
     'ok' | {'error', file:posix() | badarg | system_limit}.
 export(Results, File) ->
     %% Disable error logging messages.

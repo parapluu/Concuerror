@@ -103,10 +103,10 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
-%% @spec: analyze(analysis_target(), [file()], analysis_options()) ->
+%% @spec: analyze(analysis_target(), [file:filename()], analysis_options()) ->
 %%          analysis_ret()
 %% @doc: Produce all interleavings of running `Target'.
--spec analyze(analysis_target(), [file()], analysis_options()) ->
+-spec analyze(analysis_target(), [file:filename()], analysis_options()) ->
             analysis_ret().
 
 analyze(Target, Files, Options) ->

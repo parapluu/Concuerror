@@ -65,14 +65,6 @@
 	    {help, "Show project info."}]]}
 	]).
 
-%% 'About' message
--define(INFO_MSG,
-"
-                           Concuerror
-A systematic testing tool for concurrent Erlang programs.
-                           Version 0.9
-").
-
 %% File paths
 -define(ICON_PATH16, "img/icon16.png").
 -define(ICON_PATH32, "img/icon32.png").
