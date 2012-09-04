@@ -45,6 +45,11 @@
 -define(SETS, ordsets).
 -define(SET_TYPE(X), [X]). %% XXX: bad -- ordsets does not export the type!
 
+%% Default options
+-define(DEFAULT_PREB, 2).
+-define(DEFAULT_INCLUDE, []).
+-define(DEFAULT_DEFINE, []).
+
 %% Default export file.
 -define(EXPORT_EXT,  ".txt").
 -define(EXPORT_FILE, "results" ++ ?EXPORT_EXT).

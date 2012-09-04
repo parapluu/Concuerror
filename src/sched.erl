@@ -114,17 +114,17 @@ analyze(Target, Files, Options) ->
         case lists:keyfind(preb, 1, Options) of
             {preb, inf} -> ?INFINITY;
             {preb, Bound} -> Bound;
-            false -> ?INFINITY
+            false -> ?DEFAULT_PREB
         end,
     Include =
         case lists:keyfind('include', 1, Options) of
             {'include', I} -> I;
-            false -> []
+            false -> ?DEFAULT_INCLUDE
         end,
     Define =
         case lists:keyfind('define', 1, Options) of
             {'define', D} -> D;
-            false -> []
+            false -> ?DEFAULT_DEFINE
         end,
     Ret =
         case instr:instrument_and_compile(Files, Include, Define) of
