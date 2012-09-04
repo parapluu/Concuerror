@@ -41,5 +41,5 @@ syntax_test_() ->
 
 test_ok(File) ->
     Path = filename:join([?TEST_PATH, File]),
-    Result = instr:instrument_and_compile([Path]),
+    Result = instr:instrument_and_compile([Path], [], []),
     ?assertMatch({ok, _Bin}, Result).

@@ -19,29 +19,18 @@
 %% Spec for auto-generated test/0 function (eunit).
 -spec test() -> 'ok' | {'error', term()}.
 
--spec get_target_test() -> 'ok'.
-
-get_target_test() ->
-    Target = {mymodule, myfunction, []},
-    Error = error:mock(),
-    ErrorState = state:empty(),
-    Ticket = ticket:new(Target, Error, ErrorState),
-    ?assertEqual(Target, ticket:get_target(Ticket)).
-
 -spec get_error_test() -> 'ok'.
 
 get_error_test() ->
-    Target = {mymodule, myfunction, []},
     Error = error:mock(),
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, Error, ErrorState),
+    Ticket = ticket:new(Error, ErrorState),
     ?assertEqual(Error, ticket:get_error(Ticket)).
 
 -spec get_state_test() -> 'ok'.
 
 get_state_test() ->
-    Target = {mymodule, myfunction, []},
     Error = error:mock(),
     ErrorState = state:empty(),
-    Ticket = ticket:new(Target, Error, ErrorState),
+    Ticket = ticket:new(Error, ErrorState),
     ?assertEqual(ErrorState, ticket:get_state(Ticket)).
