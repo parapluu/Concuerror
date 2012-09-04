@@ -249,7 +249,7 @@ parse([{Opt, Param} | Args], Options) ->
                 _Other -> wrongArgument('number', Opt)
             end;
 
-        "-quiet" ->
+        Q when Q=:="q"; Q=:="-quiet" ->
             case Param of
                 [] ->
                     NewOptions = lists:keystore(quiet, 1,
