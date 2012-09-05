@@ -27,10 +27,10 @@ get_error_test() ->
     Ticket = ticket:new(Error, ErrorState),
     ?assertEqual(Error, ticket:get_error(Ticket)).
 
--spec get_state_test() -> 'ok'.
+-spec get_details_test() -> 'ok'.
 
-get_state_test() ->
+get_details_test() ->
     Error = error:mock(),
     ErrorState = state:empty(),
     Ticket = ticket:new(Error, ErrorState),
-    ?assertEqual(ErrorState, ticket:get_state(Ticket)).
+    ?assertEqual(ErrorState, ticket:get_details(Ticket)).

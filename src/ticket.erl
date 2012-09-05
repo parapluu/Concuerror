@@ -14,7 +14,7 @@
 
 -module(ticket).
 
--export([new/2, get_error/1, get_state/1, details_to_strings/1, sort/1]).
+-export([new/2, get_error/1, get_details/1, details_to_strings/1, sort/1]).
 
 -export_type([ticket/0]).
 
@@ -27,27 +27,27 @@
 %% @doc: Create a new error ticket.
 -spec new(error:error(), [proc_action:proc_action()]) -> ticket().
 
-new(Error, ErrorState) ->
-    {Error, ErrorState}.
+new(Error, ErrorDetails) ->
+    {Error, ErrorDetails}.
 
 -spec get_error(ticket()) -> error:error().
 
-get_error({Error, _ErrorState}) ->
+get_error({Error, _ErrorDetails}) ->
     Error.
 
--spec get_state(ticket()) -> state:state().
+-spec get_details(ticket()) -> state:state().
 
-get_state({_Error, ErrorState}) ->
-    ErrorState.
+get_details({_Error, ErrorDetails}) ->
+    ErrorDetails.
 
 -spec details_to_strings(ticket()) -> [string()].
 
-details_to_strings({_Error, ErrorState}) ->
-    [proc_action:to_string(Detail) || Detail <- ErrorState].
+details_to_strings({_Error, ErrorDetails}) ->
+    [proc_action:to_string(Detail) || Detail <- ErrorDetails].
 
 %% Sort a list of tickets according to state.
 -spec sort([ticket()]) -> [ticket()].
 
 sort(Tickets) ->
-    Compare = fun(T1, T2) -> get_state(T1) =< get_state(T2) end,
+    Compare = fun(T1, T2) -> get_details(T1) =< get_details(T2) end,
     lists:sort(Compare, Tickets).
