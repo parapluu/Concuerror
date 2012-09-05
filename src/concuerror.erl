@@ -351,8 +351,9 @@ help() ->
      "  --help                  Show this help message\n"
      "\n"
      "Examples:\n"
-     "  concuerror --target foo bar arg1 arg2 "
-        "--files \"temp/foo.erl\" -o out.txt\n\n").
+     "  concuerror -DVSN=\\\"1.0\\\" --target foo bar arg1 arg2 "
+        "--files \"foo.erl\" -o out.txt\n"
+     "  concuerror --gui -I./include --files foo.erl --preb inf\n\n").
 
 
 %%%----------------------------------------------------------------------
