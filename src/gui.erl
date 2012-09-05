@@ -820,7 +820,8 @@ loadPrefs(Options) ->
         false -> continue;
         {'files', Files} ->
             AbsFiles = lists:map(fun filename:absname/1, Files),
-            addListItems(?MODULE_LIST, AbsFiles)
+            ErlFiles = lists:filter(fun util:is_erl_source/1, AbsFiles),
+            addListItems(?MODULE_LIST, ErlFiles)
     end,
     %% Set include_dirs
     case lists:keyfind('include', 1, Options) of

@@ -14,8 +14,9 @@
 
 -module(util).
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0,
-         funs/1, funs/2, funLine/3]).
+         is_erl_source/1, funs/1, funs/2, funLine/3]).
 
+-include_lib("kernel/include/file.hrl").
 -include("gen.hrl").
 
 %% @spec doc(string()) -> 'ok'
@@ -50,6 +51,21 @@ flush_mailbox() ->
     receive
         _Any -> flush_mailbox()
     after 0 -> ok
+    end.
+
+%% @spec is_erl_source(file:filename()) -> boolean()
+%% @doc: Check if file exists and has `.erl' suffix
+-spec is_erl_source(file:filename()) -> boolean().
+
+is_erl_source(File) ->
+    case filename:extension(File) of
+        ".erl" ->
+            case file:read_file_info(File) of
+                {ok, Info} ->
+                    Info#file_info.type == 'regular';
+                _Error -> false
+            end;
+        _Other -> false
     end.
 
 %% @spec funs(string()) -> [{atom(), non_neg_integer()}]
