@@ -113,7 +113,7 @@ cli() ->
     %% There should be no plain_arguments
     case init:get_plain_arguments() of
         [PlArg|_] ->
-            io:format("~s: unrecognised argument: ~s", [?APP_STRING, PlArg]);
+            io:format("~s: unrecognised argument: ~s\n", [?APP_STRING, PlArg]);
         [] ->
             case parse(Args, []) of
                 {'error', 'arguments', Msg1} ->

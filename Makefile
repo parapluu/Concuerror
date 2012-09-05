@@ -174,7 +174,7 @@ concuerror:
 	\n\
 	erl +Bi -smp enable -noinput -sname $(APP_STRING) \\\\\n\
 	    -pa $(EBIN) \\\\\n\
-	    -s concuerror cli -s init stop \"\$$@\" &\n\
+	    -s concuerror cli -s init stop -- \"\$$@\" &\n\
 	wait \$$!\n" ! > $@
 	chmod +x $@
 
