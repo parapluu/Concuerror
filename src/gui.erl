@@ -165,9 +165,10 @@ setupModuleSizer(Parent) ->
     ModuleBox = wxStaticBox:new(Parent, ?wxID_ANY, "Modules"),
     ModuleList = wxListBox:new(Parent, ?MODULE_LIST),
     ref_add(?MODULE_LIST, ModuleList),
-    AddButton = wxButton:new(Parent, ?ADD, [{label, "&Add..."}]),
+    AddButton = wxButton:new(Parent, ?ADD),
     RemButton = wxButton:new(Parent, ?REMOVE),
     ClearButton = wxButton:new(Parent, ?CLEAR),
+    RefreshButton = wxButton:new(Parent, ?REFRESH),
     %% Setup button sizers
     AddRemSizer = wxBoxSizer:new(?wxHORIZONTAL),
     _ = wxSizer:add(AddRemSizer, AddButton,
@@ -176,7 +177,9 @@ setupModuleSizer(Parent) ->
                     [{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
     ClrSizer = wxBoxSizer:new(?wxHORIZONTAL),
     _ = wxSizer:add(ClrSizer, ClearButton,
-                    [{proportion, 1}, {border, 5}]),
+                    [{proportion, 1}, {flag, ?wxRIGHT}, {border, 5}]),
+    _ = wxSizer:add(ClrSizer, RefreshButton,
+                    [{proportion, 1}, {flag, ?wxLEFT}, {border, 5}]),
     %% Setup module sizers
     ModuleSizer = wxStaticBoxSizer:new(ModuleBox, ?wxVERTICAL),
     _ = wxSizer:add(ModuleSizer, ModuleList,
@@ -813,7 +816,7 @@ prefsDialog(Parent) ->
 %% For now always load default preferences on startup.
 loadPrefs(Options) ->
     %% Set initial file load path (used by the module addition dialog).
-    ref_add(?FILE_PATH, ""),
+    ref_add(?FILE_PATH, "."),
     %% Disable save as (we don't have any results yet)
     wxMenuItem:enable(ref_lookup(?SAVEAS_MENU_ITEM), [{enable, false}]),
     ref_add(?ANALYSIS_RET, undef),
@@ -1157,6 +1160,9 @@ loop() ->
             loop();
         #wx{id = ?STOP, event = #wxCommand{type = command_button_clicked}} ->
             stop(),
+            loop();
+        #wx{id = ?REFRESH, event = #wxCommand{type = command_button_clicked}} ->
+            refresh(),
             loop();
         %% -------------------- Listbox handlers --------------------- %%
         #wx{id = ?ERROR_LIST,
