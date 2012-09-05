@@ -14,7 +14,7 @@
 
 -module(ticket).
 
--export([new/2, get_error/1, get_state/1, sort/1]).
+-export([new/2, get_error/1, get_state/1, details_to_strings/1, sort/1]).
 
 -export_type([ticket/0]).
 
@@ -39,6 +39,11 @@ get_error({Error, _ErrorState}) ->
 
 get_state({_Error, ErrorState}) ->
     ErrorState.
+
+-spec details_to_strings(ticket()) -> [string()].
+
+details_to_strings({_Error, ErrorState}) ->
+    [proc_action:to_string(Detail) || Detail <- ErrorState].
 
 %% Sort a list of tickets according to state.
 -spec sort([ticket()]) -> [ticket()].

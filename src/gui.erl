@@ -15,7 +15,7 @@
 -module(gui).
 
 %% UI exports.
--export([start/0]).
+-export([start/1]).
 %% Log server callback exports.
 -export([init/1, terminate/2, handle_event/2]).
 
@@ -30,32 +30,25 @@
 %%% UI functions
 %%%----------------------------------------------------------------------
 
-%% @spec start() -> 'true'
+%% @spec start(concuerror:options()) -> 'true'
 %% @doc: Start the CED GUI.
--spec start() -> 'true'.
+-spec start(concuerror:options()) -> 'true'.
 
-start() ->
+start(Options) ->
     register(?RP_GUI, self()),
     _ = wx:new(),
     %% Start the object reference mapping service.
     ref_start(),
-    %% Set initial file load path (used by the module addition dialog).
-    ref_add(?FILE_PATH, ""),
-    %% Set initial loaded files to empty list
-    ref_add(?LOADED_FILES, []),
-    %% Load preferences from file or if not found, load defaults.
-    loadPrefs(),
-    snapshot_init(),
     Frame = setupFrame(),
     wxFrame:show(Frame),
     setSplitterInitSizes(),
-    %% Start the log manager and attach the event handler below.
-    _ = log:start(),
+    %% Attach the event handler below.
     _ = log:attach(?MODULE, wx:get_env()),
+    %% Load preferences from Options.
+    loadPrefs(Options),
+    refresh(),
     %% Start the replay server.
     loop(),
-    snapshot:cleanup(),
-    log:stop(),
     %% Save possibly edited preferences to file.
     savePrefs(),
     ref_stop(),
@@ -94,10 +87,8 @@ handle_event({error, Ticket}, State) ->
     ErrorItem = util:flat_format("~s~n~s", [error:type(Error),
                                             error:short(Error)]),
     List = ref_lookup(?ERROR_LIST),
-    Count = wxControlWithItems:getCount(List),
-    wxListBox:insertItems(List, [ErrorItem], Count),
-    wxControlWithItems:setSelection(List, 0),
-    addListData(?ERROR_LIST, [{Ticket, []}]),
+    wxControlWithItems:append(List, ErrorItem),
+    addListData(?ERROR_LIST, [Ticket]),
     {ok, State};
 handle_event({progress_log, _Remain}, State) ->
     {ok, State};
@@ -113,11 +104,6 @@ setupFrame() ->
     ref_add(?FRAME, Frame),
     MenuBar = wxMenuBar:new(),
     setupMenu(MenuBar, ?MENU_SPEC),
-    %% Icons = wxIconBundle:new(),
-    %% wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH16)),
-    %% wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH32)),
-    %% wxIconBundle:addIcon(Icons, wxIcon:new(?ICON_PATH64)),
-    %% wxFrame:setIcons(Frame, Icons),
     wxFrame:setMenuBar(Frame, MenuBar),
     _ = wxFrame:createStatusBar(Frame, [{id, ?STATUS_BAR}]),
     wxEvtHandler:connect(Frame, close_window),
@@ -563,11 +549,12 @@ addDialog(Parent) ->
                                             ?wxFD_MULTIPLE}]),
     case wxDialog:showModal(Dialog) of
         ?wxID_OK ->
-            File = wxFileDialog:getPaths(Dialog),
-            case checkDuplicates(?FILES, File) of
+            NewFiles = wxFileDialog:getPaths(Dialog),
+            ModuleList = ref_lookup(?MODULE_LIST),
+            OldFiles = getStrings(ModuleList),
+            case checkDuplicates(OldFiles, NewFiles) of
                 false ->
-                    addListItems(?MODULE_LIST, File),
-                    add_file(File),
+                    addListItems(?MODULE_LIST, NewFiles),
                     ref_add(?FILE_PATH, getDirectory());
                 Duplicates ->
                     wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT),
@@ -590,10 +577,7 @@ addListItems(Id, Items) ->
     List = ref_lookup(Id),
     Count = wxControlWithItems:getCount(List),
     wxListBox:insertItems(List, Items, Count),
-    case Count of
-        0 -> wxControlWithItems:setSelection(List, 0);
-        _Other -> wxControlWithItems:setSelection(List, Count)
-    end.
+    wxControlWithItems:setSelection(List, Count).
 
 analyze_proc() ->
     Env = wx:get_env(),
@@ -631,17 +615,18 @@ analyze() ->
 
 analyze_aux(Module, Function, Args, Files) ->
     analysis_init(),
-    %% Cleanup previous loaded code, add the new ones
-    clearLoaded(),
-    ref_add(?LOADED_FILES, Files),
     Target = {Module, Function, Args},
-    Opts = case ref_lookup(?PREF_PREB_ENABLED) of
-                true -> [{preb, ref_lookup(?PREF_PREB_BOUND)}];
-                false -> []
+    Preb = case ref_lookup(?PREF_PREB_ENABLED) of
+                true -> {preb, ref_lookup(?PREF_PREB_BOUND)};
+                false -> {preb, inf}
            end,
+    Include = {'include', ref_lookup(?PREF_INCLUDE)},
+    Define = {'define', ref_lookup(?PREF_DEFINE)},
+    Opts = [Include, Define, Preb],
     Result = sched:analyze(Target, Files, Opts),
-    snapshot_add_analysis_ret(Result),
+    ref_add(?ANALYSIS_RET, Result),
     analysis_cleanup().
+
 
 %% Initialization actions before starting analysis (clear log, etc.).
 analysis_init() ->
@@ -687,21 +672,9 @@ analysis_cleanup() ->
     end,
     wxSizer:layout(AnalStopSizer).
 
-analysis_show_errors({error, analysis, _Info, Tickets}) ->
-    Errors = [ticket:get_error(Ticket) || Ticket <- Tickets],
-    ErrorItems = [util:flat_format("~s~n~s", [error:type(Error),
-                                              error:short(Error)])
-                  || Error <- Errors],
-    setListItems(?ERROR_LIST, ErrorItems),
-    ListOfEmpty = lists:duplicate(length(Tickets), []),
-    setListData(?ERROR_LIST, lists:zip(Tickets, ListOfEmpty));
-analysis_show_errors(_Result) ->
-    ok.
-
-checkDuplicates(OldId, New) ->
-    Old = ref_lookup(OldId),
-    OldBase = [filename:basename(O, ".erl") || O <- Old],
-    NewBase = [filename:basename(N, ".erl") || N <- New],
+checkDuplicates(OldFiles, NewFiles) ->
+    OldBase = [filename:basename(O, ".erl") || O <- OldFiles],
+    NewBase = [filename:basename(N, ".erl") || N <- NewFiles],
     IBase = sets:intersection(sets:from_list(OldBase), sets:from_list(NewBase)),
     case sets:size(IBase) of
         0 -> false;
@@ -838,22 +811,52 @@ prefsDialog(Parent) ->
     end.
 
 %% For now always load default preferences on startup.
-loadPrefs() ->
-    lists:foreach(fun ({Id, Value}) -> ref_add(Id, Value) end, ?DEFAULT_PREFS).
+loadPrefs(Options) ->
+    %% Set initial file load path (used by the module addition dialog).
+    ref_add(?FILE_PATH, ""),
+    ref_add(?ANALYSIS_RET, undef),
+    %% Set files
+    case lists:keyfind('files', 1, Options) of
+        false -> continue;
+        {'files', Files} ->
+            AbsFiles = lists:map(fun filename:absname/1, Files),
+            addListItems(?MODULE_LIST, AbsFiles)
+    end,
+    %% Set include_dirs
+    case lists:keyfind('include', 1, Options) of
+        false -> ref_add(?PREF_INCLUDE, ?DEFAULT_INCLUDE);
+        {'include', Include} -> ref_add(?PREF_INCLUDE, Include)
+    end,
+    %% Set defined macros
+    case lists:keyfind('define', 1, Options) of
+        false -> ref_add(?PREF_DEFINE, ?DEFAULT_DEFINE);
+        {'define', Define} -> ref_add(?PREF_DEFINE, Define)
+    end,
+    %% Set preemption bound
+    case lists:keyfind('preb', 1, Options) of
+        false ->
+            ref_add(?PREF_PREB_ENABLED, true),
+            ref_add(?PREF_PREB_BOUND, ?DEFAULT_PREB);
+        {'preb', inf} ->
+            ref_add(?PREF_PREB_ENABLED, false),
+            ref_add(?PREF_PREB_BOUND, ?DEFAULT_PREB);
+        {'preb', Preb} ->
+            ref_add(?PREF_PREB_ENABLED, true),
+            ref_add(?PREF_PREB_BOUND, Preb)
+    end.
 
 %% Do nothing for now.
 savePrefs() ->
     ok.
 
-clearAll() ->
-    clearMods(),
-    clearFuns(),
-    clearSrc(),
-    clearLog(),
-    clearProbs(),
-    clearErrors(),
-    clearLoaded(),
-    clearIleaves().
+%%clearAll() ->
+%%    clearMods(),
+%%    clearFuns(),
+%%    clearSrc(),
+%%    clearLog(),
+%%    clearProbs(),
+%%    clearErrors(),
+%%    clearIleaves().
 
 clearErrors() ->
     ErrorList = ref_lookup(?ERROR_LIST),
@@ -870,15 +873,14 @@ clearIleaves() ->
     wxListBox:setSelection(IleaveList, ?wxNOT_FOUND),
     wxControlWithItems:clear(IleaveList).
 
-clearLog() ->
-    LogText = ref_lookup(?LOG_TEXT),
-    wxTextCtrl:clear(LogText).
+%%clearLog() ->
+%%    LogText = ref_lookup(?LOG_TEXT),
+%%    wxTextCtrl:clear(LogText).
 
 clearMods() ->
     ModuleList = ref_lookup(?MODULE_LIST),
     wxListBox:setSelection(ModuleList, ?wxNOT_FOUND),
-    wxControlWithItems:clear(ModuleList),
-    init_files().
+    wxControlWithItems:clear(ModuleList).
 
 clearProbs() ->
     ErrorText = ref_lookup(?ERROR_TEXT),
@@ -890,39 +892,35 @@ clearSrc() ->
     wxStyledTextCtrl:clearAll(SourceText),
     wxStyledTextCtrl:setReadOnly(SourceText, true).
 
-clearLoaded() ->
-    LoadedFiles = ref_lookup(?LOADED_FILES),
-    instr:delete_and_purge(LoadedFiles).
-
 disableMenuItems() ->
     Opts = [{enable, false}],
     wxMenuItem:enable(ref_lookup(?ANALYZE_MENU_ITEM), Opts),
-    wxMenuItem:enable(ref_lookup(?EXPORT_MENU_ITEM), Opts),
-    wxMenuItem:enable(ref_lookup(?IMPORT_MENU_ITEM), Opts).
+    wxMenuItem:enable(ref_lookup(?SAVEAS_MENU_ITEM), Opts).
 
 enableMenuItems() ->
     wxMenuItem:enable(ref_lookup(?ANALYZE_MENU_ITEM)),
-    wxMenuItem:enable(ref_lookup(?EXPORT_MENU_ITEM)),
-    wxMenuItem:enable(ref_lookup(?IMPORT_MENU_ITEM)).
+    wxMenuItem:enable(ref_lookup(?SAVEAS_MENU_ITEM)).
 
 %% Export dialog
-exportDialog(Parent) ->
-    Caption = "Export to " ++ ?APP_STRING ++ " file",
-    Wildcard = ?APP_STRING ++ " files |*" ++ ?EXPORT_EXT,
-    DefaultDir = ref_lookup(?SNAPSHOT_PATH),
-    DefaultFile = "",
-    Dialog = wxFileDialog:new(Parent, [{message, Caption},
-                                       {defaultDir, DefaultDir},
-                                       {defaultFile, DefaultFile},
-                                       {wildCard, Wildcard},
-                                       {style, ?wxFD_SAVE bor
-                                            ?wxFD_OVERWRITE_PROMPT}]),
-    wxFileDialog:setFilename(Dialog, ?EXPORT_FILE ++ ?EXPORT_EXT),
-    case wxDialog:showModal(Dialog) of
-        ?wxID_OK -> snapshot_export(wxFileDialog:getPath(Dialog));
-        _Other -> continue
-    end,
-    wxDialog:destroy(Dialog).
+exportDialog(_Parent) ->
+    io:format("Here..\n"),
+    ok.
+%    Caption = "Export to " ++ ?APP_STRING ++ " file",
+%    Wildcard = ?APP_STRING ++ " files |*" ++ ?EXPORT_EXT,
+%    DefaultDir = ref_lookup(?SNAPSHOT_PATH),
+%    DefaultFile = "",
+%    Dialog = wxFileDialog:new(Parent, [{message, Caption},
+%                                       {defaultDir, DefaultDir},
+%                                       {defaultFile, DefaultFile},
+%                                       {wildCard, Wildcard},
+%                                       {style, ?wxFD_SAVE bor
+%                                            ?wxFD_OVERWRITE_PROMPT}]),
+%    wxFileDialog:setFilename(Dialog, ?EXPORT_FILE ++ ?EXPORT_EXT),
+%    case wxDialog:showModal(Dialog) of
+%        ?wxID_OK -> snapshot_export(wxFileDialog:getPath(Dialog));
+%        _Other -> continue
+%    end,
+%    wxDialog:destroy(Dialog).
 
 %% Return the directory path of selected module.
 getDirectory() ->
@@ -975,24 +973,6 @@ getStrings(Ref, N, Count, Strings) ->
     String = wxControlWithItems:getString(Ref, N),
     getStrings(Ref, N + 1, Count, [String|Strings]).
 
-%% Import dialog
-importDialog(Parent) ->
-    Caption = "Import from " ++ ?APP_STRING ++ " file",
-    Wildcard = ?APP_STRING ++ " files |*" ++ ?EXPORT_EXT,
-    DefaultDir = ref_lookup(?SNAPSHOT_PATH),
-    DefaultFile = "",
-    Dialog = wxFileDialog:new(Parent, [{message, Caption},
-                                       {defaultDir, DefaultDir},
-                                       {defaultFile, DefaultFile},
-                                       {wildCard, Wildcard},
-                                       {style, ?wxFD_OPEN bor
-                                            ?wxFD_FILE_MUST_EXIST}]),
-    case wxDialog:showModal(Dialog) of
-        ?wxID_OK -> snapshot_import(wxFileDialog:getPath(Dialog));
-        _Other -> continue
-    end,
-    wxDialog:destroy(Dialog).
-
 %% Refresh selected module (reload source code from disk).
 %% NOTE: When switching selected modules, no explicit refresh
 %%       by the user is required, because the `command_listbox_selected`
@@ -1038,7 +1018,6 @@ refreshFun() ->
 remove() ->
     ModuleList = ref_lookup(?MODULE_LIST),
     Selection = wxListBox:getSelection(ModuleList),
-    File = wxListBox:getStringSelection(ModuleList),
     SourceText = ref_lookup(?SOURCE_TEXT),
     if Selection =:= ?wxNOT_FOUND ->
             continue;
@@ -1055,8 +1034,7 @@ remove() ->
                true ->
                     wxControlWithItems:setSelection(ModuleList, Selection)
             end
-    end,
-    remove_file(File).
+    end.
 
 %% Kill the analysis process.
 stop() ->
@@ -1084,9 +1062,9 @@ send_event_msg_to_self(Id) ->
     ok.
 
 %% Set ListBox (Id) data (remove existing).
-setListData(Id, DataList) ->
-    List = ref_lookup(Id),
-    setListData_aux(List, DataList, 0).
+%%setListData(Id, DataList) ->
+%%    List = ref_lookup(Id),
+%%    setListData_aux(List, DataList, 0).
 
 setListData_aux(_List, [], _N) ->
     ok;
@@ -1111,30 +1089,12 @@ show_details() ->
         ?wxNOT_FOUND -> continue;
         Id ->
             wxControlWithItems:clear(IleaveList),
-            Ticket =
-                case wxControlWithItems:getClientData(ErrorList, Id) of
-                    {T, []} ->
-                        %% Disable log event handler while replaying.
-                        _ = log:detach(?MODULE, []),
-                        Details = sched:replay(T),
-                        _ = log:attach(?MODULE, wx:get_env()),
-                        NewData = {T, Details},
-                        wxControlWithItems:setClientData(ErrorList, Id,
-                                                         NewData),
-                        setListItems(?ILEAVE_LIST, details_to_strings(Details)),
-                        T;
-                    {T, Cached} ->
-                        setListItems(?ILEAVE_LIST, details_to_strings(Cached)),
-                        T
-                end,
+            Ticket = wxControlWithItems:getClientData(ErrorList, Id),
+            setListItems(?ILEAVE_LIST, ticket:details_to_strings(Ticket)),
             clearProbs(),
             Error = ticket:get_error(Ticket),
             wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT), error:long(Error))
     end.
-
-%% Function to be moved (to sched or util).
-details_to_strings(Details) ->
-    [proc_action:to_string(Detail) || Detail <- Details].
 
 %% Validate user provided function arguments.
 %% The arguments are first scanned and then parsed to ensure that they
@@ -1160,70 +1120,22 @@ validateArgs(I, [Ref|Refs], Args, ErrorId) ->
             error
     end.
 
-add_file(File) ->
-    ref_add(?FILES, File ++ ref_lookup(?FILES)).
 
-init_files() ->
-    ref_add(?FILES, []).
+%%----------------------------------------
+%% Save results
+%%----------------------------------------
 
-remove_file(File) ->
-    ref_add(?FILES, ref_lookup(?FILES) -- [File]).
+snapshot_export(_Export) ->
+    ok.
+%    AnalysisRet = ref_lookup(?ANALYSIS_RET),
+%    Files = lists:reverse(ref_lookup(?FILES)),
+%    ModuleList = ref_lookup(?MODULE_LIST),
+%    ModuleID = wxListBox:getSelection(ModuleList),
+%    FunctionList = ref_lookup(?FUNCTION_LIST),
+%    FunctionID = wxListBox:getSelection(FunctionList),
+%    Selection = snapshot:selection(ModuleID, FunctionID),
+%    snapshot:export(AnalysisRet, Files, Selection, Export).
 
-%%%----------------------------------------------------------------------
-%%% Snapshot utilities
-%%%----------------------------------------------------------------------
-
-snapshot_add_analysis_ret(AnalysisRet) ->
-    ref_add(?ANALYSIS_RET, AnalysisRet).
-
-snapshot_export(Export) ->
-    AnalysisRet = ref_lookup(?ANALYSIS_RET),
-    Files = lists:reverse(ref_lookup(?FILES)),
-    ModuleList = ref_lookup(?MODULE_LIST),
-    ModuleID = wxListBox:getSelection(ModuleList),
-    FunctionList = ref_lookup(?FUNCTION_LIST),
-    FunctionID = wxListBox:getSelection(FunctionList),
-    Selection = snapshot:selection(ModuleID, FunctionID),
-    snapshot:export(AnalysisRet, Files, Selection, Export).
-
-snapshot_import(Import) ->
-    clearAll(),
-    snapshot:cleanup(),
-    case snapshot:import(Import) of
-        ok -> continue;
-        Snapshot ->
-            Mods = snapshot:get_modules(Snapshot),
-            Files = [filename:absname(M) || M <- Mods],
-            %% Instrument and load the files
-            %% Note: No error checking here.
-            ref_add(?LOADED_FILES, Files),
-            {ok, Bin} = instr:instrument_and_compile(Files),
-            ok = instr:load(Bin),
-            %% Extract info from our snapshot
-            addListItems(?MODULE_LIST, Files),
-            ref_add(?FILE_PATH, getDirectory()),
-            Selection = snapshot:get_selection(Snapshot),
-            ModuleList = ref_lookup(?MODULE_LIST),
-            ModuleID = snapshot:get_module_id(Selection),
-            wxControlWithItems:setSelection(ModuleList, ModuleID),
-            refresh(),
-            FunctionList = ref_lookup(?FUNCTION_LIST),
-            FunctionID = snapshot:get_function_id(Selection),
-            wxControlWithItems:setSelection(FunctionList, FunctionID),
-            refreshFun(),
-            AnalysisRet = snapshot:get_analysis(Snapshot),
-            analysis_show_errors(AnalysisRet),
-            ErrorList = ref_lookup(?ERROR_LIST),
-            wxControlWithItems:setSelection(ErrorList, 0),
-            show_details(),
-            IleaveList = ref_lookup(?ILEAVE_LIST),
-            wxControlWithItems:setSelection(IleaveList, 0)
-    end.
-
-snapshot_init() ->
-    ref_add(?ANALYSIS_RET, undef),
-    init_files(),
-    ref_add(?SNAPSHOT_PATH, "").
 
 %%%----------------------------------------------------------------------
 %%% Main event loop
@@ -1310,13 +1222,9 @@ loop() ->
             loop();
         #wx{id = ?EXIT, event = #wxCommand{type = command_menu_selected}} ->
             ok;
-        #wx{id = ?EXPORT, event = #wxCommand{type = command_menu_selected}} ->
+        #wx{id = ?SAVEAS, event = #wxCommand{type = command_menu_selected}} ->
             Frame = ref_lookup(?FRAME),
             exportDialog(Frame),
-            loop();
-        #wx{id = ?IMPORT, event = #wxCommand{type = command_menu_selected}} ->
-            Frame = ref_lookup(?FRAME),
-            importDialog(Frame),
             loop();
         #wx{id = ?PREFS, event = #wxCommand{type = command_menu_selected}} ->
             Frame = ref_lookup(?FRAME),

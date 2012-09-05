@@ -23,18 +23,15 @@
 %%    [{MenuName1, [MenuItem11, MenuItem12, ...]}, ...]
 -define(MENU_SPEC,
 	[{"&File",
-          [[{id, ?IMPORT}, {text, "&Import...\tCtrl-I"},
-            {help, "Import analysis information from file."},
-            {label, ?IMPORT_MENU_ITEM}],
-           [{id, ?EXPORT}, {text, "&Export...\tCtrl-E"},
-            {help, "Export analysis information to file."},
-            {label, ?EXPORT_MENU_ITEM}],
+      [[{id, ?SAVEAS}, {text, "&Save As...\tCtrl-S"},
+        {help, "Save analysis information to file."},
+        {label, ?SAVEAS_MENU_ITEM}],
 	   [{id, ?wxID_SEPARATOR}, {kind, ?wxITEM_SEPARATOR}],
-           [{id, ?EXIT}, {help, "Quit Concuerror."}]]},
+       [{id, ?EXIT}, {help, "Quit Concuerror."}]]},
 	 {"&Edit",
 	  [[{id, ?PREFS}, {text, "&Preferences...\tCtrl-P"},
 	    {help, "Edit Concuerror preferences."}]]},
-        {"&Module",
+     {"&Module",
 	  [[{id, ?ADD}, {text, "&Add...\tCtrl-A"},
 	    {help, "Add an existing erlang module."}],
 	   [{id, ?REMOVE}, {text, "&Remove\tCtrl-R"},
@@ -48,7 +45,7 @@
 	  [[{id, ?ANALYZE}, {text, "Ana&lyze\tCtrl-L"},
 	    {help, "Analyze selected function."},
             {label, ?ANALYZE_MENU_ITEM}],
-           [{id, ?STOP}, {text, "&Stop\tCtrl-S"},
+           [{id, ?STOP}, {text, "Sto&p\tCtrl-P"},
             {help, "Stop analysis of selected function."},
             {label, ?STOP_MENU_ITEM}]]},
 	 {"&View",
@@ -65,19 +62,15 @@
 	    {help, "Show project info."}]]}
 	]).
 
-%% File paths
--define(ICON_PATH16, "img/icon16.png").
--define(ICON_PATH32, "img/icon32.png").
--define(ICON_PATH64, "img/icon64.png").
-
 %% GUI component definitions
 -define(ABOUT, ?wxID_ABOUT).
 -define(ADD, ?wxID_ADD).
 -define(CLEAR, ?wxID_CLEAR).
--define(OPEN, ?wxID_OPEN).
 -define(REMOVE, ?wxID_REMOVE).
 -define(SEPARATOR, ?wxID_SEPARATOR).
 -define(EXIT, ?wxID_EXIT).
+-define(SAVEAS, ?wxID_SAVEAS).
+-define(REFRESH, ?wxID_REFRESH).
 
 -define(ANAL_STOP_SIZER, 500).
 -define(ANALYZE, 501).
@@ -86,14 +79,11 @@
 -define(ERROR_ILEAVE_SPLITTER, 504).
 -define(ERROR_LIST, 505).
 -define(ERROR_TEXT, 506).
--define(EXPORT, 507).
--define(EXPORT_MENU_ITEM, 508).
+-define(SAVEAS_MENU_ITEM, 508).
 -define(FRAME, 509).
 -define(FUNCTION_LIST, 510).
 -define(GRAPH_PANEL, 511).
 -define(ILEAVE_LIST, 512).
--define(IMPORT, 513).
--define(IMPORT_MENU_ITEM, 514).
 -define(LOG_NOTEBOOK, 515).
 -define(LOG_TEXT, 516).
 -define(MOD_FUN_SPLITTER, 517).
@@ -104,7 +94,6 @@
 -define(PREB_ENABLED_CBOX, 522).
 -define(PREFS, 523).
 -define(PROC_TEXT, 524).
--define(REFRESH, 525).
 -define(SCR_GRAPH, 526).
 -define(SOURCE_TEXT, 527).
 -define(STATIC_BMP, 528).
@@ -135,22 +124,16 @@
 -define(GRAV_ERROR_ILEAVE, 0.2).
 
 %% Preferences related definitions
--define(PREF_PREB_ENABLED, 561).
--define(PREF_PREB_BOUND, 562).
+-define(PREF_PREB_ENABLED, 560).
+-define(PREF_PREB_BOUND, 561).
+-define(PREF_INCLUDE, 562).
+-define(PREF_DEFINE, 563).
 
-%% Snapshot related definitions
--define(ANALYSIS_RET, 563).
--define(FILES, 564).
--define(SNAPSHOT_PATH, 565).
--define(LOADED_FILES, 566).
+%% Analysis Result definitions
+-define(ANALYSIS_RET, 564).
 
 %% Other definitions
--define(FILE_PATH, 560).
-
-%% Default preferences
--define(DEFAULT_PREFS,
-	[{?PREF_PREB_ENABLED, true},
-	 {?PREF_PREB_BOUND, 2}]).
+-define(FILE_PATH, 565).
 
 %% Erlang keywords
 -define(KEYWORDS, "after begin case try cond catch andalso orelse end fun "

@@ -97,11 +97,10 @@ stop() ->
 %% @spec gui(options()) -> 'true'
 %% @doc: Start the CED GUI.
 -spec gui(options()) -> 'true'.
-gui(_Options) ->
+gui(Options) ->
     %% Disable error logging messages.
     ?tty(),
-%%    gui:start().
-    'true'.
+    gui:start(Options).
 
 %% @spec cli() -> 'true'
 %% @doc: Parse the command line arguments and start Concuerror.
@@ -124,11 +123,12 @@ cli() ->
     end.
 
 cliAux(Options) ->
+    %% Start the log manager.
+    _ = log:start(),
     case lists:keyfind('gui', 1, Options) of
         {'gui'} -> gui(Options);
         false ->
-            %% Start the log manager and attach the event handler below.
-            _ = log:start(),
+            %% Attach the event handler below.
             case lists:keyfind('quiet', 1, Options) of
                 false -> _ = log:attach(?MODULE, Options);
                 {'quiet'} -> continue
@@ -150,10 +150,10 @@ cliAux(Options) ->
                                 [?APP_STRING, file:format_error(Msg2)]);
                         ok -> continue
                     end
-            end,
-            %% Stop event handler
-            log:stop()
+            end
     end,
+    %% Stop event handler
+    log:stop(),
     'true'.
 
 %% Parse command line arguments
@@ -440,10 +440,9 @@ showDetails(Count, [Ticket|Tickets], IoDevice) ->
     Error = ticket:get_error(Ticket),
     Msg1 = io_lib:format("~p\n~s\n", [Count, error:long(Error)]),
     file:write(IoDevice, Msg1),
-    Details = ticket:get_state(Ticket),
+    Details = ticket:details_to_strings(Ticket),
     lists:foreach(fun(Detail) ->
-                D = proc_action:to_string(Detail),
-                Msg2 = io_lib:format("  ~s\n", [D]),
+                Msg2 = io_lib:format("  ~s\n", [Detail]),
                 file:write(IoDevice, Msg2) end,
         Details),
     file:write(IoDevice, "\n\n"),
