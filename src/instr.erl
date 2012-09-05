@@ -15,6 +15,8 @@
 -module(instr).
 -export([delete_and_purge/1, instrument_and_compile/3, load/1]).
 
+-export_type([macros/0]).
+
 -include("gen.hrl").
 
 %%%----------------------------------------------------------------------
@@ -88,6 +90,8 @@
 
 -type mfb() :: {module(), file:filename(), binary()}.
 
+-type macros() :: [{atom(), term()}].
+
 %%%----------------------------------------------------------------------
 %%% Instrumentation utilities
 %%%----------------------------------------------------------------------
@@ -101,14 +105,14 @@ delete_and_purge(Files) ->
     lists:foreach(Fun, ModsToPurge).
 
 %% @spec instrument(Files::[file:filename()], Includes::[file:name()],
-%%              Defines::epp:macros()) -> 'ok' | 'error'
+%%              Defines::macros()) -> 'ok' | 'error'
 %% @doc: Instrument and compile a list of files.
 %%
 %% Each file is first validated (i.e. checked whether it will compile
 %% successfully). If no errors are encountered, the file gets instrumented and
 %% compiled. If these actions are successfull, the function returns `{ok, Bin}',
 %% otherwise `error' is returned. No `.beam' files are produced.
--spec instrument_and_compile([file:filename()], [file:name()], epp:macros()) ->
+-spec instrument_and_compile([file:filename()], [file:name()], macros()) ->
     {'ok', [mfb()]} | 'error'.
 
 instrument_and_compile(Files, Includes, Defines) ->

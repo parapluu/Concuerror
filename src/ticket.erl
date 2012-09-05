@@ -35,7 +35,7 @@ new(Error, ErrorDetails) ->
 get_error({Error, _ErrorDetails}) ->
     Error.
 
--spec get_details(ticket()) -> state:state().
+-spec get_details(ticket()) -> [proc_action:proc_action()].
 
 get_details({_Error, ErrorDetails}) ->
     ErrorDetails.

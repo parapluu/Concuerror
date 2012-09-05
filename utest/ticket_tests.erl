@@ -23,14 +23,22 @@
 
 get_error_test() ->
     Error = error:mock(),
-    ErrorState = state:empty(),
-    Ticket = ticket:new(Error, ErrorState),
+    Pid = spawn(fun() -> ok end),
+    lid:start(),
+    Lid = lid:new(Pid, noparent),
+    Actions = [{'after', Lid}, {'block', Lid}],
+    Ticket = ticket:new(Error, Actions),
+    lid:stop(),
     ?assertEqual(Error, ticket:get_error(Ticket)).
 
 -spec get_details_test() -> 'ok'.
 
 get_details_test() ->
     Error = error:mock(),
-    ErrorState = state:empty(),
-    Ticket = ticket:new(Error, ErrorState),
-    ?assertEqual(ErrorState, ticket:get_details(Ticket)).
+    Pid = spawn(fun() -> ok end),
+    lid:start(),
+    Lid = lid:new(Pid, noparent),
+    Actions = [{'after', Lid}, {'block', Lid}],
+    Ticket = ticket:new(Error, Actions),
+    lid:stop(),
+    ?assertEqual(Actions, ticket:get_details(Ticket)).

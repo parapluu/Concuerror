@@ -73,7 +73,7 @@
 
 -type analysis_options() :: [{'preb', bound()} |
                              {'include', [file:name()]} |
-                             {'define', epp:macros()}].
+                             {'define', instr:macros()}].
 
 
 %% Analysis result tuple.

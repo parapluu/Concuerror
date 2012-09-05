@@ -58,7 +58,7 @@
     | {'files',   [file:filename()]}
     | {'output',  file:filename()}
     | {'include', [file:name()]}
-    | {'define',  epp:macros()}
+    | {'define',  instr:macros()}
     | {'noprogress'}
     | {'quiet'}
     | {'preb',    sched:bound()}
@@ -86,13 +86,13 @@ stop() ->
     case net_adm:ping(Node) of
         pong ->
             %% Stop analysis
-            spawn(Node, fun() -> ?RP_SCHED ! stop_analysis end);
+            spawn(Node, fun() -> ?RP_SCHED ! stop_analysis end),
+            ok;
         _ ->
             %% Well some times we could not connect with the
             %% first try so for now just repeat
             stop()
-    end,
-    ok.
+    end.
 
 %% @spec gui(options()) -> 'true'
 %% @doc: Start the CED GUI.
@@ -130,8 +130,10 @@ cliAux(Options) ->
         false ->
             %% Attach the event handler below.
             case lists:keyfind('quiet', 1, Options) of
-                false -> _ = log:attach(?MODULE, Options);
-                {'quiet'} -> continue
+                false ->
+                    _ = log:attach(?MODULE, Options),
+                    ok;
+                {'quiet'} -> ok
             end,
             %% Run analysis
             case analyzeAux(Options) of
@@ -400,12 +402,14 @@ analyzeAux(Options) ->
 %%              'ok' | {'error', file:posix() | badarg | system_limit}
 %% @doc: Export the analysis results into a text file.
 -spec export(sched:analysis_ret(), file:filename()) ->
-    'ok' | {'error', file:posix() | badarg | system_limit}.
+    'ok' | {'error', file:posix() | badarg | system_limit | terminated}.
 export(Results, File) ->
     case file:open(File, ['write']) of
         {ok, IoDevice} ->
-            exportAux(Results, IoDevice),
-            file:close(IoDevice);
+            case exportAux(Results, IoDevice) of
+                ok -> file:close(IoDevice);
+                Error -> Error
+            end;
         Error -> Error
     end.
 
@@ -418,24 +422,31 @@ exportAux({error, instr, {_Target, _RunCount}}, IoDevice) ->
     file:write(IoDevice, Msg);
 exportAux({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
     TickLen = length(Tickets),
-    Msg1 = io_lib:format("Checked ~w interleaving(s). ~w errors found.\n\n",
+    Msg = io_lib:format("Checked ~w interleaving(s). ~w errors found.\n\n",
         [RunCount, TickLen]),
-    file:write(IoDevice, Msg1),
-    showDetails(1, ticket:sort(Tickets), IoDevice).
+    case file:write(IoDevice, Msg) of
+        ok ->
+            case lists:foldl(fun writeDetails/2, {1, IoDevice},
+                    ticket:sort(Tickets)) of
+                {'error', _Reason}=Error -> Error;
+                _Ok -> ok
+            end;
+        Error -> Error
+    end.
 
-%% Show details about each ticket
-showDetails(Count, [Ticket|Tickets], IoDevice) ->
+%% Write details about each ticket
+writeDetails(_Ticket, {'error', _Reason}=Error) ->
+    Error;
+writeDetails(Ticket, {Count, IoDevice}) ->
     Error = ticket:get_error(Ticket),
-    Msg1 = io_lib:format("~p\n~s\n", [Count, error:long(Error)]),
-    file:write(IoDevice, Msg1),
-    Details = ticket:details_to_strings(Ticket),
-    lists:foreach(fun(Detail) ->
-                Msg2 = io_lib:format("  ~s\n", [Detail]),
-                file:write(IoDevice, Msg2) end,
-        Details),
-    file:write(IoDevice, "\n\n"),
-    showDetails(Count+1, Tickets, IoDevice);
-showDetails(_Count, [], _IoDevice) -> ok.
+    Description = io_lib:format("~p\n~s\n", [Count, error:long(Error)]),
+    Details = lists:map(fun(M) -> "  " ++ M ++ "\n" end,
+                    ticket:details_to_strings(Ticket)),
+    Msg = lists:flatten([Description | Details]),
+    case file:write(IoDevice, Msg ++ "\n\n") of
+        ok -> {Count+1, IoDevice};
+        WriteError -> WriteError
+    end.
 
 
 %%%----------------------------------------------------------------------
