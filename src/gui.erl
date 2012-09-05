@@ -814,6 +814,8 @@ prefsDialog(Parent) ->
 loadPrefs(Options) ->
     %% Set initial file load path (used by the module addition dialog).
     ref_add(?FILE_PATH, ""),
+    %% Disable save as (we don't have any results yet)
+    wxMenuItem:enable(ref_lookup(?SAVEAS_MENU_ITEM), [{enable, false}]),
     ref_add(?ANALYSIS_RET, undef),
     %% Set files
     case lists:keyfind('files', 1, Options) of
@@ -903,25 +905,32 @@ enableMenuItems() ->
     wxMenuItem:enable(ref_lookup(?SAVEAS_MENU_ITEM)).
 
 %% Export dialog
-exportDialog(_Parent) ->
-    io:format("Here..\n"),
-    ok.
-%    Caption = "Export to " ++ ?APP_STRING ++ " file",
-%    Wildcard = ?APP_STRING ++ " files |*" ++ ?EXPORT_EXT,
-%    DefaultDir = ref_lookup(?SNAPSHOT_PATH),
-%    DefaultFile = "",
-%    Dialog = wxFileDialog:new(Parent, [{message, Caption},
-%                                       {defaultDir, DefaultDir},
-%                                       {defaultFile, DefaultFile},
-%                                       {wildCard, Wildcard},
-%                                       {style, ?wxFD_SAVE bor
-%                                            ?wxFD_OVERWRITE_PROMPT}]),
-%    wxFileDialog:setFilename(Dialog, ?EXPORT_FILE ++ ?EXPORT_EXT),
-%    case wxDialog:showModal(Dialog) of
-%        ?wxID_OK -> snapshot_export(wxFileDialog:getPath(Dialog));
-%        _Other -> continue
-%    end,
-%    wxDialog:destroy(Dialog).
+exportDialog(Parent) ->
+    Caption = "Save to " ++ ?APP_STRING ++ " file",
+    Wildcard = "Text files |*" ++ ?EXPORT_EXT,
+    DefaultDir = ".",
+    DefaultFile = "",
+    Dialog = wxFileDialog:new(Parent, [{message, Caption},
+                                       {defaultDir, DefaultDir},
+                                       {defaultFile, DefaultFile},
+                                       {wildCard, Wildcard},
+                                       {style, ?wxFD_SAVE bor
+                                            ?wxFD_OVERWRITE_PROMPT}]),
+    wxFileDialog:setFilename(Dialog, ?EXPORT_FILE),
+    case wxDialog:showModal(Dialog) of
+        ?wxID_OK ->
+            AnalysisRet = ref_lookup(?ANALYSIS_RET),
+            Output = wxFileDialog:getPath(Dialog),
+            log:log("Writing output to file ~s..", [Output]),
+            case concuerror:export(AnalysisRet, Output) of
+                {'error', Msg} ->
+                    log:log("~s\n", [file:format_error(Msg)]);
+                ok ->
+                    log:log("done\n")
+            end;
+        _Other -> continue
+    end,
+    wxDialog:destroy(Dialog).
 
 %% Return the directory path of selected module.
 getDirectory() ->
@@ -1121,21 +1130,6 @@ validateArgs(I, [Ref|Refs], Args, ErrorId) ->
             error
     end.
 
-
-%%----------------------------------------
-%% Save results
-%%----------------------------------------
-
-snapshot_export(_Export) ->
-    ok.
-%    AnalysisRet = ref_lookup(?ANALYSIS_RET),
-%    Files = lists:reverse(ref_lookup(?FILES)),
-%    ModuleList = ref_lookup(?MODULE_LIST),
-%    ModuleID = wxListBox:getSelection(ModuleList),
-%    FunctionList = ref_lookup(?FUNCTION_LIST),
-%    FunctionID = wxListBox:getSelection(FunctionList),
-%    Selection = snapshot:selection(ModuleID, FunctionID),
-%    snapshot:export(AnalysisRet, Files, Selection, Export).
 
 
 %%%----------------------------------------------------------------------
