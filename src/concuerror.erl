@@ -144,11 +144,12 @@ cliAux(Options) ->
                             {output, O} -> O;
                             false -> ?EXPORT_FILE
                         end,
-                    case exportAux(Result, Output) of
+                    log:log("Writing output to file ~s..", [Output]),
+                    case export(Result, Output) of
                         {'error', Msg2} ->
-                            io:format("~s: ~s\n",
-                                [?APP_STRING, file:format_error(Msg2)]);
-                        ok -> continue
+                            log:log("~s\n", [file:format_error(Msg2)]);
+                        ok ->
+                            log:log("done\n")
                     end
             end
     end,
@@ -294,7 +295,7 @@ parse([{Opt, Param} | Args], Options) ->
                 parse(Args, Options);
 
         Other ->
-            Msg = io_lib:format("unrecognised concuerror flag: ~p", [Other]),
+            Msg = io_lib:format("unrecognised concuerror flag: -~s", [Other]),
             {'error', 'arguments', Msg}
     end.
 
@@ -402,33 +403,21 @@ analyzeAux(Options) ->
 -spec export(sched:analysis_ret(), file:filename()) ->
     'ok' | {'error', file:posix() | badarg | system_limit}.
 export(Results, File) ->
-    %% Disable error logging messages.
-    ?tty(),
-    %% Start the log manager.
-    _ = log:start(),
-    Res = exportAux(Results, File),
-    %% Stop event handler
-    log:stop(),
-    Res.
-
-exportAux(Results, File) ->
-    log:log("Writing output to file ~s..", [File]),
     case file:open(File, ['write']) of
         {ok, IoDevice} ->
-            exportAux2(Results, IoDevice),
-            log:log("done\n"),
+            exportAux(Results, IoDevice),
             file:close(IoDevice);
         Error -> Error
     end.
 
-exportAux2({'ok', {_Target, RunCount}}, IoDevice) ->
+exportAux({'ok', {_Target, RunCount}}, IoDevice) ->
     Msg = io_lib:format("Checked ~w interleaving(s). No errors found.\n",
         [RunCount]),
     file:write(IoDevice, Msg);
-exportAux2({error, instr, {_Target, _RunCount}}, IoDevice) ->
+exportAux({error, instr, {_Target, _RunCount}}, IoDevice) ->
     Msg = "Instrumentation error.\n",
     file:write(IoDevice, Msg);
-exportAux2({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
+exportAux({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
     TickLen = length(Tickets),
     Msg1 = io_lib:format("Checked ~w interleaving(s). ~w errors found.\n\n",
         [RunCount, TickLen]),
