@@ -54,11 +54,11 @@ DIALYZER_FLAGS = -Wunmatched_returns
 ###----------------------------------------------------------------------
 
 TARGETS = \
-	core \
-	main \
-	log \
-	utest \
-	scripts
+	core_target \
+	main_target \
+	log_target \
+	utest_target \
+	scripts_target
 
 MAIN_MODULES = \
 	concuerror
@@ -145,18 +145,21 @@ dialyze: all
 doc:	$(EBIN)/util.beam
 	erl -noinput -pa $(EBIN) -s util doc $(TOP) -s init stop
 
-core:	$(CORE_MODULES:%=$(EBIN)/%.beam)
+core_target:    $(CORE_MODULES:%=$(EBIN)/%.beam)
 
-main:	$(MAIN_MODULES:%=$(EBIN)/%.beam)
+main_target:    $(MAIN_MODULES:%=$(EBIN)/%.beam)
 
-log:	$(LOG_MODULES:%=$(EBIN)/%.beam)
+log_target:     $(LOG_MODULES:%=$(EBIN)/%.beam)
 
-utest:	$(UTEST_MODULES:%=$(EBIN)/%.beam)
+utest_target:   $(UTEST_MODULES:%=$(EBIN)/%.beam)
 
-scripts: concuerror
+scripts_target: concuerror
 
-test: 	all
+utest: all
 	erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop
+
+test: all
+	@(cd testsuite && ./runtests.sh)
 
 concuerror:
 	printf "\
