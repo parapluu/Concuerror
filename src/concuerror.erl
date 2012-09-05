@@ -375,23 +375,21 @@ analyze(Options) ->
 
 analyzeAux(Options) ->
     %% Get target
-    Target =
-        case lists:keyfind(target, 1, Options) of
-            {target, T} -> T;
-            false ->
-                Msg1 = "no target specified",
-                {'error', 'arguments', Msg1}
-        end,
-    %% Get input files
-    Files =
-        case lists:keyfind(files, 1, Options) of
-            {files, F} -> F;
-            false ->
-                Msg2 = "no input files specified",
-                {'error', 'arguments', Msg2}
-        end,
-    %% Start the analysis
-    sched:analyze(Target, Files, Options).
+    case lists:keyfind(target, 1, Options) of
+        false ->
+            Msg1 = "no target specified",
+            {'error', 'arguments', Msg1};
+        {target, Target} ->
+            %% Get input files
+            case lists:keyfind(files, 1, Options) of
+                false ->
+                    Msg2 = "no input files specified",
+                    {'error', 'arguments', Msg2};
+                {files, Files} ->
+                    %% Start the analysis
+                    sched:analyze(Target, Files, Options)
+            end
+    end.
 
 
 %%%----------------------------------------------------------------------
