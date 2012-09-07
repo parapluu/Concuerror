@@ -29,6 +29,8 @@
          rep_ets_match_object/1, rep_ets_match_object/3,
          rep_ets_match_delete/2, rep_ets_foldl/3]).
 
+-export([rep_send_flanagan/2]).
+
 -include("gen.hrl").
 
 %%%----------------------------------------------------------------------
@@ -301,6 +303,25 @@ rep_send(Dest, Msg) ->
     case ?LID_FROM_PID(self()) of
         not_found -> Dest ! Msg;
         SelfLid ->
+            NewDest = find_pid(Dest),
+            case ?LID_FROM_PID(NewDest) of
+                not_found -> Dest ! Msg;
+                _DestLid -> Dest ! {?INSTR_MSG, SelfLid, Msg}
+            end,
+            sched:notify(send, {NewDest, Msg}),
+            Msg
+    end.
+
+-spec rep_send_flanagan(dest(), term()) -> term().
+
+rep_send_flanagan(Dest, Msg) ->
+    case ?LID_FROM_PID(self()) of
+        not_found ->
+            %% Unknown process sends using instrumented code. Allow it.
+            %% It will be reported at the receive point.
+            Dest ! Msg;
+        SelfLid ->
+            log:log("I am flanaganized!\n"),
             NewDest = find_pid(Dest),
             case ?LID_FROM_PID(NewDest) of
                 not_found -> Dest ! Msg;

@@ -290,7 +290,9 @@ parse([{Opt, Param} | Args], Options) ->
         "-help" ->
             help(),
             erlang:halt();
-
+        "-flanagan" ->
+            NewOptions = lists:keystore(flanagan, 1, Options, {flanagan}),
+            parse(Args, NewOptions);
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
             EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa" ->
                 %% erl flag (ignore it)

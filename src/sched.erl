@@ -126,14 +126,15 @@ analyze(Target, Files, Options) ->
             {'define', D} -> D;
             false -> ?DEFAULT_DEFINE
         end,
+    Flanagan = lists:member({flanagan}, Options),
     Ret =
-        case instr:instrument_and_compile(Files, Include, Define) of
+        case instr:instrument_and_compile(Files, Include, Define, Flanagan) of
             {ok, Bin} ->
                 %% Note: No error checking for load
                 ok = instr:load(Bin),
                 log:log("Running analysis...~n~n"),
                 {T1, _} = statistics(wall_clock),
-                Result = interleave(Target, PreBound),
+                Result = interleave(Target, PreBound, Flanagan),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = elapsed_time(T1, T2),
                 case Result of
@@ -156,9 +157,16 @@ analyze(Target, Files, Options) ->
     Ret.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
-interleave(Target, PreBound) ->
+interleave(Target, PreBound, Flanagan) ->
     Self = self(),
-    spawn_link(fun() -> interleave_aux(Target, PreBound, Self) end),
+    Fun = 
+        fun() ->
+                case Flanagan of
+                    true -> interleave_flanagan(Target, PreBound, Self);
+                    false -> interleave_aux(Target, PreBound, Self)
+                end
+        end,
+    spawn_link(Fun),
     receive
         {interleave_result, Result} -> Result
     end.
@@ -178,6 +186,13 @@ interleave_aux(Target, PreBound, Parent) ->
     state_stop(),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
+
+interleave_flanagan(Target, PreBound, Parent) ->
+    log:log("Flanagan is not really ready yet...\n"),
+    register(?RP_SCHED, self()),
+    Result = interleave_flanagan(Target, PreBound),
+    Parent ! {interleave_result, Result}.
+
 
 interleave_outer_loop(_T, RunCnt, Tickets, MaxBound, MaxBound) ->
     log:log("Context bound reached\n"),
@@ -202,6 +217,27 @@ interleave_outer_loop_ret([], RunCnt) ->
     {ok, RunCnt};
 interleave_outer_loop_ret(Tickets, RunCnt) ->
     {error, RunCnt, Tickets}.
+
+-type s_i()         :: non_neg_integer().
+-type instruction() :: term().
+-type transition()  :: 'init' | {lid:lid(), instruction()}.
+-type clock_map()   :: dict(). %% dict(lid:lid(), clock_vector()).
+%% -type clock_vector() :: dict(). %% dict(lid:lid() | s_i(), s_i()).
+
+-define(fstate, flanagan_state).
+-record(?fstate, {
+           i         = 0                 :: s_i(),
+           last                          :: transition(),
+           backtrack = sets:new()        :: set(), %% set(lid())
+           done      = sets:new()        :: set(), %% set(lid())
+           clock_map = empty_clock_map() :: clock_map(),
+           trace     = queue:new()       :: queue() %% queue(lid:lid())
+          }).
+
+empty_clock_map() -> dict:new().
+
+interleave_flanagan(Target, _PreBound) ->
+    {ok, 0}.
 
 %% Main loop for producing process interleavings.
 %% The first process (FirstPid) is created linked to the scheduler,

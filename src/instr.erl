@@ -13,7 +13,7 @@
 %%%----------------------------------------------------------------------
 
 -module(instr).
--export([delete_and_purge/1, instrument_and_compile/3, load/1]).
+-export([delete_and_purge/1, instrument_and_compile/4, load/1]).
 
 -export_type([macros/0]).
 
@@ -112,11 +112,18 @@ delete_and_purge(Files) ->
 %% successfully). If no errors are encountered, the file gets instrumented and
 %% compiled. If these actions are successfull, the function returns `{ok, Bin}',
 %% otherwise `error' is returned. No `.beam' files are produced.
--spec instrument_and_compile([file:filename()], [file:name()], macros()) ->
+-spec instrument_and_compile([file:filename()], [file:name()], macros(), boolean()) ->
     {'ok', [mfb()]} | 'error'.
 
-instrument_and_compile(Files, Includes, Defines) ->
+instrument_and_compile(Files, Includes, Defines, Flanagan) ->
+    put(flanagan, Flanagan),
     instrument_and_compile_aux(Files, Includes, Defines, []).
+
+-define(default_or_flanagan(Default, Flanagan),
+        case get(flanagan) of
+            true -> Flanagan;
+            false -> Default
+        end).
 
 instrument_and_compile_aux([], _Includes, _Defines, Acc) ->
     {ok, lists:reverse(Acc)};
@@ -451,12 +458,12 @@ transform_receive_case(Clauses) ->
                   {erl_syntax:clause([Pattern], [], [NewBody]), NewHasCatchall}
           end,
     case lists:mapfoldl(Fun, false, Clauses) of
-        {NewClauses, _HasCatchall} ->
+        {NewClauses, false} ->
             Pattern = new_underscore_variable(),
             Body = erl_syntax:atom(block),
             CatchallClause = erl_syntax:clause([Pattern], [], [Body]),
-            NewClauses ++ [CatchallClause]
-%%      {NewClauses, true} -> NewClauses
+            NewClauses ++ [CatchallClause];
+        {NewClauses, true} -> NewClauses
     end.
 
 transform_receive_clauses(Clauses) ->
