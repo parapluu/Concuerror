@@ -224,20 +224,99 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
 -type clock_map()   :: dict(). %% dict(lid:lid(), clock_vector()).
 %% -type clock_vector() :: dict(). %% dict(lid:lid() | s_i(), s_i()).
 
--define(fstate, flanagan_state).
--record(?fstate, {
-           i         = 0                 :: s_i(),
-           last                          :: transition(),
-           backtrack = sets:new()        :: set(), %% set(lid())
-           done      = sets:new()        :: set(), %% set(lid())
-           clock_map = empty_clock_map() :: clock_map(),
-           trace     = queue:new()       :: queue() %% queue(lid:lid())
-          }).
+-record(trace_state, {
+	  i         = 0                 :: s_i(),
+	  last                          :: transition(),
+	  enabled   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
+	  next      = dict:new()        :: dict(), %% dict(lid:lid(), instruction())
+	  backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
+	  done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
+	  clock_map = empty_clock_map() :: clock_map()
+	 }).
+
+-type trace_state() :: #trace_state{}.
+
+-record(flanagan_state, {
+	  tickets     = []          :: [ticket:ticket()],
+	  trace       = []          :: [trace_state()],
+	  must_replay = false       :: boolean(),
+	  quick_trace = queue:new() :: queue(), %% queue(lid:lid()),
+	  pid_to_lid  = dict:new()  :: dict(), %% dict(pid(), lid:lid()),
+	  lid_to_pid  = dict:new()  :: dict() %% dict(lid:lid(), pid()),
+	 }).
 
 empty_clock_map() -> dict:new().
 
 interleave_flanagan(Target, _PreBound) ->
     {ok, 0}.
+
+explore(State) ->
+    case select_from_enabled(State) of
+	{ok, Selected} ->
+	    {Result, SelectedRunState} =
+		add_local_backtracks_and_run_selected(Selected, State),
+	    case Result of
+		{ok, NewNext} ->
+		    NewState = add_all_backtracks(NewNext, SelectedRunState),
+		    explore(NewState);
+		{error, ErrorInfo} ->
+		    NewState = report_error(Selected, ErrorInfo, SelectedRunState),
+		    explore(NewState)
+	    end;
+	none ->
+	    NewState = report_no_actives(State),
+	    explore(NewState)
+    end.
+
+select_from_enabled(#flanagan_state{trace = [TraceTop|_RestTrace]}) ->
+    case TraceTop#trace_state.enabled of
+	[ActiveLid|_RestLids] ->
+	    Instruction = dict:fetch(ActiveLid, TraceTop#trace_state.next),
+	    {ok, {ActiveLid, Instruction}};
+	[] -> none
+    end.
+
+add_local_backtracks_and_run_selected(Transition, State) ->
+    LocalBacktracksAddedState = add_local_backtracks(Transition, State),
+    run_selected(Transition, LocalBacktracksAddedState).
+
+%% STUB
+add_local_backtracks(Transition, State) ->
+    State.
+
+run_selected(Transition, #flanagan_state{must_replay = true} = State) ->
+    run_selected(Transition, replay_trace(State));
+run_selected({Lid, Instruction} = Transition, #flanagan_state{must_replay = false} = State) ->
+    Next = wait_next(Lid, State),
+    UpdatedState = handle_instruction(Instruction, Lid, State),
+    {Next, UpdatedState}.
+
+%% STUB
+replay_trace(State) ->
+    State.
+
+wait_next(Lid, State) ->
+    receive
+        #sched{msg = Type, lid = Lid, misc = Misc} ->
+	    %% STUB
+	    {ok, something}
+    end.
+
+%% STUB
+handle_instruction(Instruction, Lid, State) ->
+    State.
+
+%% STUB
+add_all_backtracks(Transition, State) ->
+    State.
+
+%% STUB
+report_error(Transition, ErrorInfo, State) ->
+    State.
+
+%% STUB
+report_no_actives(State) ->
+    State.
 
 %% Main loop for producing process interleavings.
 %% The first process (FirstPid) is created linked to the scheduler,
