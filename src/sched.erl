@@ -251,29 +251,32 @@ interleave_flanagan(Target, _PreBound) ->
     {ok, 0}.
 
 explore(State) ->
-    case select_from_enabled(State) of
-	{ok, Selected} ->
-	    {Result, SelectedRunState} =
-		update_trace_and_run_selected(Selected, State),
-	    case Result of
-		{ok, NewNext} ->
-		    NewState = add_all_backtracks(NewNext, SelectedRunState),
-		    explore(NewState);
-		{error, ErrorInfo} ->
-                    NewState =
-                        report_error(Selected, ErrorInfo, SelectedRunState),
-		    explore(NewState)
-	    end;
-	none ->
-	    NewState = report_no_actives(State),
-	    explore(NewState)
-    end.
+    NewState = 
+        case select_from_backtrack(State) of
+            {ok, Selected} ->
+                {Result, SelectedRunState} =
+                    update_trace_and_run_selected(Selected, State),
+                case Result of
+                    {ok, NewNext} ->
+                        UpdatedState =
+                            add_all_backtracks(NewNext, SelectedRunState),
+                        add_some_next_to_backtrack(UpdatedState);
+                    {error, ErrorInfo} ->
+                        report_error(Selected, ErrorInfo, SelectedRunState)
+                end;
+            none ->
+                report_no_actives(State)
+        end,
+    explore(NewState).
 
-select_from_enabled(#flanagan_state{trace = [TraceTop|_RestTrace]}) ->
-    case TraceTop#trace_state.enabled of
-	[ActiveLid|_RestLids] ->
-	    Instruction = dict:fetch(ActiveLid, TraceTop#trace_state.next),
-	    {ok, {ActiveLid, Instruction}};
+select_from_backtrack(#flanagan_state{trace = [TraceTop|_RestTrace]}) ->
+    %% FIXME: Pick first and don't really subtract.
+    Backtrack = TraceTop#trace_state.backtrack,
+    Done = TraceTop#trace_state.done,
+    case ordsets:subtract(Backtrack, Done) of
+	[SelectedLid|_RestLids] ->
+	    Instruction = dict:fetch(SelectedLid, TraceTop#trace_state.next),
+	    {ok, {SelectedLid, Instruction}};
 	[] -> none
     end.
 
@@ -284,16 +287,32 @@ update_trace_and_run_selected(Transition, State) ->
 %% STUB
 update_trace(Transition, #flanagan_state{trace = Trace} = State) ->
     [TraceTop|RestTrace] = Trace,
-    #trace_state{i = N, backtrack = Backtrack, next = Next} = TraceTop,
-    NewBacktrack = add_local_backtracks(Transition, Next, Backtrack),
+    #trace_state{i = N, backtrack = Backtrack,
+                 next = Next, clock_map = ClockMap} = TraceTop,
+    NewBacktrack = add_local_backtracks(Transition, Next, ClockMap, Backtrack),
     NewStep = #trace_state{i = N+1, last = Transition},
     NewTraceTop = TraceTop#trace_state{backtrack = NewBacktrack},
     NewTrace = [NewStep, NewTraceTop|RestTrace],
     State#flanagan_state{trace = NewTrace}.
 
 %% STUB
-add_local_backtracks(Transition, Next, Backtrack) ->
-    Backtrack.
+add_local_backtracks({NLid, _} = Transition, Next, ClockMap, Backtrack) ->
+    Fold =
+        fun(Lid, Instruction, AccBacktrack) ->
+            Add =
+                case dependent(Transition, {Lid, Instruction}) of
+                    false -> false;
+                    true -> NLid =/= Lid
+                end,
+            case Add of
+                true -> ordsets:add_element(Lid, AccBacktrack);
+                false -> AccBacktrack
+            end
+        end,
+    dict:fold(Fold, Backtrack, Next).
+
+%% STUB
+dependent(TransitionA, TransitionB) -> true.
 
 run_selected(Transition, #flanagan_state{must_replay = true} = State) ->
     run_selected(Transition, replay_trace(State));
@@ -307,18 +326,36 @@ replay_trace(State) ->
     State.
 
 wait_next(Lid, State) ->
+    ok = resume(Lid, State),
     receive
         #sched{msg = Type, lid = Lid, misc = Misc} ->
-	    %% STUB
-	    {ok, something}
+            case Type of
+                error -> {error, Misc};
+                _Else -> {ok, {Lid, {Type, Misc}}}
+            end
     end.
 
+resume(Lid, #flanagan_state{lid_to_pid = LidToPid}) ->
+    Pid = dict:fetch(Lid, LidToPid),
+    Pid ! #sched{msg = continue},
+    ok.
+
 %% STUB
-handle_instruction(Instruction, Lid, State) ->
+handle_instruction({spawn, Opts}, Lid, State) ->
+    Parent = Lid,
+    ChildPid =
+        receive
+            #sched{msg = spawned, lid = Parent, misc = ChildPid0} ->
+                ChildPid0
+        end,
     State.
 
 %% STUB
 add_all_backtracks(Transition, State) ->
+    State.
+
+%% STUB
+add_some_next_to_backtrack(State) ->
     State.
 
 %% STUB
