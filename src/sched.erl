@@ -218,17 +218,17 @@ interleave_outer_loop_ret([], RunCnt) ->
 interleave_outer_loop_ret(Tickets, RunCnt) ->
     {error, RunCnt, Tickets}.
 
--type s_i()         :: non_neg_integer().
--type instruction() :: term().
--type transition()  :: 'init' | {lid:lid(), instruction()}.
--type clock_map()   :: dict(). %% dict(lid:lid(), clock_vector()).
+-type s_i()        :: non_neg_integer().
+-type instr()      :: term().
+-type transition() :: 'init' | {lid:lid(), instr()}.
+-type clock_map()  :: dict(). %% dict(lid:lid(), clock_vector()).
 %% -type clock_vector() :: dict(). %% dict(lid:lid() | s_i(), s_i()).
 
 -record(trace_state, {
 	  i         = 0                 :: s_i(),
 	  last                          :: transition(),
 	  enabled   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
-	  next      = dict:new()        :: dict(), %% dict(lid:lid(), instruction())
+	  next      = dict:new()        :: dict(), %% dict(lid:lid(), instr()),
 	  backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
 	  done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
 	  clock_map = empty_clock_map() :: clock_map()
@@ -254,13 +254,14 @@ explore(State) ->
     case select_from_enabled(State) of
 	{ok, Selected} ->
 	    {Result, SelectedRunState} =
-		add_local_backtracks_and_run_selected(Selected, State),
+		update_trace_and_run_selected(Selected, State),
 	    case Result of
 		{ok, NewNext} ->
 		    NewState = add_all_backtracks(NewNext, SelectedRunState),
 		    explore(NewState);
 		{error, ErrorInfo} ->
-		    NewState = report_error(Selected, ErrorInfo, SelectedRunState),
+                    NewState =
+                        report_error(Selected, ErrorInfo, SelectedRunState),
 		    explore(NewState)
 	    end;
 	none ->
@@ -276,17 +277,27 @@ select_from_enabled(#flanagan_state{trace = [TraceTop|_RestTrace]}) ->
 	[] -> none
     end.
 
-add_local_backtracks_and_run_selected(Transition, State) ->
-    LocalBacktracksAddedState = add_local_backtracks(Transition, State),
+update_trace_and_run_selected(Transition, State) ->
+    LocalBacktracksAddedState = update_trace(Transition, State),
     run_selected(Transition, LocalBacktracksAddedState).
 
 %% STUB
-add_local_backtracks(Transition, State) ->
-    State.
+update_trace(Transition, #flanagan_state{trace = Trace} = State) ->
+    [TraceTop|RestTrace] = Trace,
+    #trace_state{i = N, backtrack = Backtrack, next = Next} = TraceTop,
+    NewBacktrack = add_local_backtracks(Transition, Next, Backtrack),
+    NewStep = #trace_state{i = N+1, last = Transition},
+    NewTraceTop = TraceTop#trace_state{backtrack = NewBacktrack},
+    NewTrace = [NewStep, NewTraceTop|RestTrace],
+    State#flanagan_state{trace = NewTrace}.
+
+%% STUB
+add_local_backtracks(Transition, Next, Backtrack) ->
+    Backtrack.
 
 run_selected(Transition, #flanagan_state{must_replay = true} = State) ->
     run_selected(Transition, replay_trace(State));
-run_selected({Lid, Instruction} = Transition, #flanagan_state{must_replay = false} = State) ->
+run_selected({Lid, Instruction}, State) ->
     Next = wait_next(Lid, State),
     UpdatedState = handle_instruction(Instruction, Lid, State),
     {Next, UpdatedState}.
