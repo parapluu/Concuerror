@@ -51,14 +51,21 @@
                   error          :: ?NO_ERROR | error:error(),
                   state          :: state:state()}).
 
+
+%% 'next' messages are about next instrumented instruction not yet dispatched
+%% 'prev' messages are about additional effects of a dispatched instruction
+%% 'async' messages are about receives which have become enabled
+-type sched_msg_type() :: 'next' | 'prev' | 'async'.
+
 %% Internal message format
 %%
 %% msg    : An atom describing the type of the message.
 %% pid    : The sender's LID.
 %% misc   : Optional arguments, depending on the message type.
--record(sched, {msg  :: atom(),
-                lid  :: lid:lid(),
-                misc  = empty :: term()}).
+-record(sched, {msg          :: atom(),
+                lid          :: lid:lid(),
+                misc = empty :: term(),
+                type = next  :: sched_msg_type()}).
 
 %% Special internal message format (fields same as above).
 -record(special, {msg :: atom(),
@@ -228,6 +235,7 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
 	  i         = 0                 :: s_i(),
 	  last                          :: transition(),
 	  enabled   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
+          blocked   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
 	  next      = dict:new()        :: dict(), %% dict(lid:lid(), instr()),
 	  backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
 	  done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
@@ -240,9 +248,7 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
 	  tickets     = []          :: [ticket:ticket()],
 	  trace       = []          :: [trace_state()],
 	  must_replay = false       :: boolean(),
-	  quick_trace = queue:new() :: queue(), %% queue(lid:lid()),
-	  pid_to_lid  = dict:new()  :: dict(), %% dict(pid(), lid:lid()),
-	  lid_to_pid  = dict:new()  :: dict() %% dict(lid:lid(), pid()),
+	  quick_trace = queue:new() :: queue() %% queue(lid:lid()),
 	 }).
 
 empty_clock_map() -> dict:new().
@@ -250,52 +256,52 @@ empty_clock_map() -> dict:new().
 interleave_flanagan(Target, _PreBound) ->
     {ok, 0}.
 
-explore(State) ->
+explore(MightNeedReplayState) ->
     NewState = 
-        case select_from_backtrack(State) of
-            {ok, Selected} ->
-                {Result, SelectedRunState} =
-                    update_trace_and_run_selected(Selected, State),
-                case Result of
-                    {ok, NewNext} ->
-                        UpdatedState =
-                            add_all_backtracks(NewNext, SelectedRunState),
-                        add_some_next_to_backtrack(UpdatedState);
+        case select_from_backtrack(MightNeedReplayState) of
+            {ok, Selected, State} ->
+                case wait_next(Selected) of
+                    {ok, Next} ->
+                        LocalAddState = add_local_backtracks(Selected, State),
+                        AllAddState = add_all_backtracks(Next, LocalAddState),
+                        UpdState = update_trace(Selected, Next, AllAddState),
+                        add_some_next_to_backtrack(UpdState);
                     {error, ErrorInfo} ->
-                        report_error(Selected, ErrorInfo, SelectedRunState)
+                        report_error(Selected, ErrorInfo, State)
                 end;
             none ->
-                report_no_actives(State)
+                report_no_actives(MightNeedReplayState)
         end,
     explore(NewState).
 
-select_from_backtrack(#flanagan_state{trace = [TraceTop|_RestTrace]}) ->
+select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
     %% FIXME: Pick first and don't really subtract.
+    [TraceTop|RestTrace] = Trace,
     Backtrack = TraceTop#trace_state.backtrack,
     Done = TraceTop#trace_state.done,
     case ordsets:subtract(Backtrack, Done) of
 	[SelectedLid|_RestLids] ->
+            State =
+                case MightNeedReplayState#flanagan_state.must_replay of
+                    true -> replay_trace(MightNeedReplayState);
+                    false -> MightNeedReplayState
+                end,
 	    Instruction = dict:fetch(SelectedLid, TraceTop#trace_state.next),
-	    {ok, {SelectedLid, Instruction}};
+            NewDone = ordsets:add_element(SelectedLid, Done),
+            NewTraceTop = TraceTop#trace_state{done = NewDone},
+            NewState = State#flanagan_state{trace = [NewTraceTop|RestTrace]},
+	    {ok, {SelectedLid, Instruction}, NewDone};
 	[] -> none
     end.
 
-update_trace_and_run_selected(Transition, State) ->
-    LocalBacktracksAddedState = update_trace(Transition, State),
-    run_selected(Transition, LocalBacktracksAddedState).
-
-%% STUB
-update_trace(Transition, #flanagan_state{trace = Trace} = State) ->
+add_local_backtracks(Transition, #flanagan_state{trace = Trace} = State) ->
     [TraceTop|RestTrace] = Trace,
-    #trace_state{i = N, backtrack = Backtrack,
-                 next = Next, clock_map = ClockMap} = TraceTop,
+    #trace_state{backtrack = Backtrack, next = Next, clock_map = ClockMap} =
+        TraceTop,
     NewBacktrack = add_local_backtracks(Transition, Next, ClockMap, Backtrack),
-    NewStep = #trace_state{i = N+1, last = Transition},
-    NewTraceTop = TraceTop#trace_state{backtrack = NewBacktrack},
-    NewTrace = [NewStep, NewTraceTop|RestTrace],
+    NewTrace = [TraceTop#trace_state{backtrack = NewBacktrack}|RestTrace],
     State#flanagan_state{trace = NewTrace}.
 
-%% STUB
 add_local_backtracks({NLid, _} = Transition, Next, ClockMap, Backtrack) ->
     Fold =
         fun(Lid, Instruction, AccBacktrack) ->
@@ -314,40 +320,52 @@ add_local_backtracks({NLid, _} = Transition, Next, ClockMap, Backtrack) ->
 %% STUB
 dependent(TransitionA, TransitionB) -> true.
 
-run_selected(Transition, #flanagan_state{must_replay = true} = State) ->
-    run_selected(Transition, replay_trace(State));
-run_selected({Lid, Instruction}, State) ->
-    Next = wait_next(Lid, State),
-    UpdatedState = handle_instruction(Instruction, Lid, State),
-    {Next, UpdatedState}.
+%% - add new entry with new entry
+%% - wait next of current process
+%% - wait any possible additional messages
+%% - check for async
+update_trace(Selected, Next, State) ->
+    UpdatedState = handle_instruction(Selected, State),
+    UpdatedState.
 
 %% STUB
 replay_trace(State) ->
     State.
 
-wait_next(Lid, State) ->
-    ok = resume(Lid, State),
+wait_next(Lid) ->
+    ok = resume(Lid),
     receive
-        #sched{msg = Type, lid = Lid, misc = Misc} ->
+        #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
             case Type of
                 error -> {error, Misc};
                 _Else -> {ok, {Lid, {Type, Misc}}}
             end
     end.
 
-resume(Lid, #flanagan_state{lid_to_pid = LidToPid}) ->
-    Pid = dict:fetch(Lid, LidToPid),
+resume(Lid) ->
+    Pid = lid:get_pid(Lid),
     Pid ! #sched{msg = continue},
     ok.
 
 %% STUB
-handle_instruction({spawn, Opts}, Lid, State) ->
-    Parent = Lid,
-    ChildPid =
-        receive
-            #sched{msg = spawned, lid = Parent, misc = ChildPid0} ->
-                ChildPid0
-        end,
+handle_instruction({Lid, {spawn, Opts}}, State) ->
+    %% Parent = Lid,
+    %% [TraceTop|RestTrace] = Trace,
+    %% #trace_state{i = N, next = Next, clock_map = ClockMap} = TraceTop,
+    %% NewStep = #trace_state{i = N+1, last = Transition},
+
+    %% #flanagan_state{trace = [TraceTop|RestTrace]
+    %% ChildPid =
+    %%     receive
+    %%         #sched{msg = spawned, lid = Parent, misc = Pid, type = prev} ->
+    %%             Pid
+    %%     end,
+    %% ChildNextInstr =
+    %%     receive
+    %%         #sched{msg = Next, lid = ChildPid, misc = Misc, type = next} ->
+    %%             {Next, Misc}
+    %%     end,
+    
     State.
 
 %% STUB
