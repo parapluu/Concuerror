@@ -290,9 +290,28 @@ select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
             NewDone = ordsets:add_element(SelectedLid, Done),
             NewTraceTop = TraceTop#trace_state{done = NewDone},
             NewState = State#flanagan_state{trace = [NewTraceTop|RestTrace]},
-	    {ok, {SelectedLid, Instruction}, NewDone};
+	    {ok, {SelectedLid, Instruction}, NewState};
 	[] -> none
     end.
+
+%% STUB
+replay_trace(State) ->
+    State.
+
+wait_next(Lid) ->
+    ok = resume(Lid),
+    receive
+        #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
+            case Type of
+                error -> {error, Misc};
+                _Else -> {ok, {Lid, {Type, Misc}}}
+            end
+    end.
+
+resume(Lid) ->
+    Pid = lid:get_pid(Lid),
+    Pid ! #sched{msg = continue},
+    ok.
 
 add_local_backtracks(Transition, #flanagan_state{trace = Trace} = State) ->
     [TraceTop|RestTrace] = Trace,
@@ -320,6 +339,10 @@ add_local_backtracks({NLid, _} = Transition, Next, ClockMap, Backtrack) ->
 %% STUB
 dependent(TransitionA, TransitionB) -> true.
 
+%% STUB
+add_all_backtracks(Transition, State) ->
+    State.
+
 %% - add new entry with new entry
 %% - wait next of current process
 %% - wait any possible additional messages
@@ -327,25 +350,6 @@ dependent(TransitionA, TransitionB) -> true.
 update_trace(Selected, Next, State) ->
     UpdatedState = handle_instruction(Selected, State),
     UpdatedState.
-
-%% STUB
-replay_trace(State) ->
-    State.
-
-wait_next(Lid) ->
-    ok = resume(Lid),
-    receive
-        #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
-            case Type of
-                error -> {error, Misc};
-                _Else -> {ok, {Lid, {Type, Misc}}}
-            end
-    end.
-
-resume(Lid) ->
-    Pid = lid:get_pid(Lid),
-    Pid ! #sched{msg = continue},
-    ok.
 
 %% STUB
 handle_instruction({Lid, {spawn, Opts}}, State) ->
@@ -369,10 +373,6 @@ handle_instruction({Lid, {spawn, Opts}}, State) ->
     State.
 
 %% STUB
-add_all_backtracks(Transition, State) ->
-    State.
-
-%% STUB
 add_some_next_to_backtrack(State) ->
     State.
 
@@ -383,6 +383,8 @@ report_error(Transition, ErrorInfo, State) ->
 %% STUB
 report_no_actives(State) ->
     State.
+
+%%------------------------------------------------------------------------------
 
 %% Main loop for producing process interleavings.
 %% The first process (FirstPid) is created linked to the scheduler,
