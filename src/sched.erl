@@ -166,7 +166,7 @@ analyze(Target, Files, Options) ->
 %% Produce all possible process interleavings of (Mod, Fun, Args).
 interleave(Target, PreBound, Flanagan) ->
     Self = self(),
-    Fun = 
+    Fun =
         fun() ->
                 case Flanagan of
                     true -> interleave_flanagan(Target, PreBound, Self);
@@ -232,50 +232,91 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
 %% -type clock_vector() :: dict(). %% dict(lid:lid() | s_i(), s_i()).
 
 -record(trace_state, {
-	  i         = 0                 :: s_i(),
-	  last                          :: transition(),
-	  enabled   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
+          i         = 0                 :: s_i(),
+          last      = init              :: transition(),
+          enabled   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           blocked   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
-	  next      = dict:new()        :: dict(), %% dict(lid:lid(), instr()),
-	  backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
-	  done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
-	  clock_map = empty_clock_map() :: clock_map()
-	 }).
+          nexts     = dict:new()        :: dict(), %% dict(lid:lid(), instr()),
+          backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
+          done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
+          clock_map = empty_clock_map() :: clock_map()
+         }).
 
 -type trace_state() :: #trace_state{}.
 
 -record(flanagan_state, {
-	  tickets     = []          :: [ticket:ticket()],
-	  trace       = []          :: [trace_state()],
-	  must_replay = false       :: boolean(),
-	  quick_trace = queue:new() :: queue() %% queue(lid:lid()),
-	 }).
+          tickets     = []          :: [ticket:ticket()],
+          trace       = []          :: [trace_state()],
+          must_replay = false       :: boolean(),
+          quick_trace = queue:new() :: queue() %% queue(lid:lid()),
+         }).
 
 empty_clock_map() -> dict:new().
 
+%% STUB
 interleave_flanagan(Target, _PreBound) ->
-    {ok, 0}.
+    log:log("Interleave flanagan!\n"),
+    Trace = start_target(Target),
+    log:log("Target started!\n"),
+    NewState = #flanagan_state{trace = Trace},
+    explore(NewState).
+
+-define(d(T), erlang:display(T)).
+
+start_target(Target) ->
+    lid:start(),
+    {Mod, Fun, Args} = Target,
+    NewFun = fun() -> apply(Mod, Fun, Args) end,
+    FirstPid = spawn_link(NewFun),
+    %% FIXME: RACE CONDITION spawned process might require its LID before sched
+    %%                       has a chance to run!
+    FirstLid = lid:new(FirstPid, noparent),
+    Enabled = ordsets:add_element(FirstLid, ordsets:new()),
+    %% FIXME: First call might crash...
+    {ok, Next} = get_next(FirstLid),
+    [#trace_state{nexts = dict:store(FirstLid, Next, dict:new()),
+                  enabled = Enabled, backtrack = Enabled}].
+
+get_next(Lid) ->
+    receive
+        #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
+            case Type of
+                error -> {error, Misc};
+                _Else -> {ok, {Type, Misc}}
+            end
+    end.
 
 explore(MightNeedReplayState) ->
-    NewState = 
-        case select_from_backtrack(MightNeedReplayState) of
-            {ok, Selected, State} ->
-                case wait_next(Selected) of
-                    {ok, Next} ->
-                        LocalAddState = add_local_backtracks(Selected, State),
-                        AllAddState = add_all_backtracks(Next, LocalAddState),
-                        UpdState = update_trace(Selected, Next, AllAddState),
-                        add_some_next_to_backtrack(UpdState);
-                    {error, ErrorInfo} ->
-                        report_error(Selected, ErrorInfo, State)
-                end;
-            none ->
-                report_no_actives(MightNeedReplayState)
-        end,
-    explore(NewState).
+    log:log("Explore!\n"),
+    case select_from_backtrack(MightNeedReplayState) of
+        {ok, {Lid, _} = Selected, State} = D1->
+            log:log("D1: ~p\n",[D1]),
+            case wait_next(Lid) of
+                {ok, Next} ->
+                    log:log("Next: ~p\n",[Next]),
+                    LocalAddState = add_local_backtracks(Selected, State),
+                    log:log("LAS: ~p\n",[LocalAddState]),
+                    AllAddState = add_all_backtracks(Next, LocalAddState),
+                    log:log("AAS: ~p\n",[AllAddState]),
+                    UpdState = update_trace(Selected, Next, AllAddState),
+                    log:log("US : ~p\n",[UpdState]),
+                    NewState = add_some_next_to_backtrack(UpdState),
+                    explore(NewState);
+                {error, ErrorInfo} ->
+                    NewState = report_error(Selected, ErrorInfo, State),
+                    explore(NewState)                        
+            end;
+        none ->
+            log:log("~p\n",[?LINE]),
+            NewState = report_no_unexplored(MightNeedReplayState),
+            explore(NewState);
+        done ->
+           {ok, 0.001}
+    end.
 
 select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
     %% FIXME: Pick first and don't really subtract.
+    %% FIXME: This is actually the trace bottom...
     [TraceTop|RestTrace] = Trace,
     Backtrack = TraceTop#trace_state.backtrack,
     Done = TraceTop#trace_state.done,
@@ -286,12 +327,16 @@ select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
                     true -> replay_trace(MightNeedReplayState);
                     false -> MightNeedReplayState
                 end,
-	    Instruction = dict:fetch(SelectedLid, TraceTop#trace_state.next),
+	    Instruction = dict:fetch(SelectedLid, TraceTop#trace_state.nexts),
             NewDone = ordsets:add_element(SelectedLid, Done),
             NewTraceTop = TraceTop#trace_state{done = NewDone},
             NewState = State#flanagan_state{trace = [NewTraceTop|RestTrace]},
 	    {ok, {SelectedLid, Instruction}, NewState};
-	[] -> none
+	[] ->
+            case TraceTop#trace_state.last of
+                init -> done;
+                _ -> none
+            end
     end.
 
 %% STUB
@@ -300,51 +345,120 @@ replay_trace(State) ->
 
 wait_next(Lid) ->
     ok = resume(Lid),
-    receive
-        #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
-            case Type of
-                error -> {error, Misc};
-                _Else -> {ok, {Lid, {Type, Misc}}}
-            end
-    end.
+    {ok, {Lid, get_next(Lid)}}.
 
 resume(Lid) ->
+    ?d(resume),
     Pid = lid:get_pid(Lid),
+    ?d({lid,Lid,pid,Pid}),
     Pid ! #sched{msg = continue},
     ok.
 
 add_local_backtracks(Transition, #flanagan_state{trace = Trace} = State) ->
     [TraceTop|RestTrace] = Trace,
-    #trace_state{backtrack = Backtrack, next = Next, clock_map = ClockMap} =
+    #trace_state{backtrack = Backtrack, nexts = Nexts,
+                 clock_map = ClockMap, i = I} =
         TraceTop,
-    NewBacktrack = add_local_backtracks(Transition, Next, ClockMap, Backtrack),
+    NewBacktrack = add_local_backtracks(Transition, Nexts, ClockMap, Backtrack, I+1),
     NewTrace = [TraceTop#trace_state{backtrack = NewBacktrack}|RestTrace],
     State#flanagan_state{trace = NewTrace}.
 
-add_local_backtracks({NLid, _} = Transition, Next, ClockMap, Backtrack) ->
+add_local_backtracks({NLid, _} = Transition, Nexts, ClockMap, Backtrack, NI) ->
     Fold =
         fun(Lid, Instruction, AccBacktrack) ->
-            Add =
+            Dependent =
                 case dependent(Transition, {Lid, Instruction}) of
                     false -> false;
                     true -> NLid =/= Lid
                 end,
-            case Add of
+            Clock = lookup_clock_value(Lid, lookup_clock(NLid, ClockMap)),
+            case Dependent andalso NI > Clock of
                 true -> ordsets:add_element(Lid, AccBacktrack);
                 false -> AccBacktrack
             end
         end,
-    dict:fold(Fold, Backtrack, Next).
+    dict:fold(Fold, Backtrack, Nexts).
+
+lookup_clock(PorS, ClockMap) ->
+  case dict:find(PorS, ClockMap) of
+    {ok, Clock} -> Clock;
+    error -> dict:new()
+  end.
+
+lookup_clock_value(P, CV) ->
+  case dict:find(P, CV) of
+    {ok, Value} -> Value;
+    error -> 0
+  end.
 
 %% STUB
 dependent(TransitionA, TransitionB) -> true.
 
-%% STUB
-add_all_backtracks(Transition, State) ->
-    State.
+add_all_backtracks(Transition, #flanagan_state{trace = Trace} = State) ->
+    NewTrace = add_all_backtracks_trace(Transition, Trace),
+    State#flanagan_state{trace = NewTrace}.
+
+add_all_backtracks_trace({Lid, _} = Transition, Trace) ->
+    [#trace_state{clock_map = ClockMap}|_] = Trace,
+    ClockVector = lookup_clock(Lid, ClockMap),
+    add_all_backtracks_trace(Transition, ClockVector, Trace, []).
+
+add_all_backtracks_trace(_Transition, _ClockVector, [_] = Init, Acc) ->
+    lists:reverse(Acc, Init);
+add_all_backtracks_trace({Lid, _} = Transition, ClockVector, [StateI|Trace], Acc) ->
+    #trace_state{i = I, last = {ProcSI, _} = SI, clock_map = ClockMap} = StateI,
+    Dependent = dependent(Transition, SI),
+    Clock = lookup_clock_value(ProcSI, ClockVector),
+    case Dependent andalso I > Clock of
+        false ->
+            add_all_backtracks_trace(Transition, ClockVector, Trace, [StateI|Acc]);
+        true ->
+            [#trace_state{enabled = Enabled, backtrack = Backtrack} = PreSI|Rest] = Trace,
+            NewBacktrack =
+                add_from_E(Lid, Enabled, [StateI|Acc], ClockVector, Backtrack),
+            ?debug_2("      New backtrack: ~p\n", [NewBacktrack]),
+            lists:reverse(Acc, [StateI,PreSI#trace_state{backtrack = NewBacktrack}|Rest])
+    end.
+
+add_from_E(P, Enabled, ForwardTrace, ClockVector, Backtrack) ->
+  case lists:member(P, Enabled) of
+    true ->
+      ?debug_2("        Enabled.\n"),
+      ordsets:add_element(P, Backtrack);
+    false ->
+      ?debug_2("        Not Enabled.\n"),
+      case find_one_from_E(P, ClockVector, Enabled, ForwardTrace) of
+        {true, Q} ->
+          ?debug_2("        ~p needs to happen\n", [Q]),
+          ordsets:add_element(Q, Backtrack);
+        false ->
+          ?debug_2("        Adding all enabled: ~p\n", [Enabled]),
+          ordsets:union(Backtrack, ordsets:from_list(Enabled))
+      end
+  end.
+
+find_one_from_E(_P, _ClockVector, _Enabled, []) -> false;
+find_one_from_E(P, ClockVector, Enabled, [Sj|Rest]) ->
+  #trace_state{i = J, last = _Sj = {ProcSj, _}} = Sj,
+  ?debug_2("          ~p: ~p\n", [J, ProcSj]),
+  Satisfies =
+    case lists:member(ProcSj, Enabled) of
+      false ->
+        ?debug_2("          Was not enabled\n"),
+        false;
+      true ->
+        ClockValue = lookup_clock_value(ProcSj, ClockVector),
+        ?debug_2("          Clock is: ~p\n", [ClockValue]),
+        J =< ClockValue
+    end,
+  case Satisfies of
+    true ->
+      ?debug_2("            Found ~p\n", [ProcSj]),
+      {true, ProcSj};
+    false -> find_one_from_E(P, ClockVector, Enabled, Rest)
+  end.
 
 %% - add new entry with new entry
-%% - wait next of current process
 %% - wait any possible additional messages
 %% - check for async
 update_trace(Selected, Next, State) ->
@@ -355,10 +469,11 @@ update_trace(Selected, Next, State) ->
 handle_instruction({Lid, {spawn, Opts}}, State) ->
     %% Parent = Lid,
     %% [TraceTop|RestTrace] = Trace,
-    %% #trace_state{i = N, next = Next, clock_map = ClockMap} = TraceTop,
+    %% #trace_state{i = N, nexts = Nexts, clock_map = ClockMap} = TraceTop,
     %% NewStep = #trace_state{i = N+1, last = Transition},
 
-    %% #flanagan_state{trace = [TraceTop|RestTrace]
+    %% #flanagan_state{trace = [TraceTop|RestTrace]},
+    %% %% Parent sends ChildPid. Child could also do that.
     %% ChildPid =
     %%     receive
     %%         #sched{msg = spawned, lid = Parent, misc = Pid, type = prev} ->
@@ -369,7 +484,6 @@ handle_instruction({Lid, {spawn, Opts}}, State) ->
     %%         #sched{msg = Next, lid = ChildPid, misc = Misc, type = next} ->
     %%             {Next, Misc}
     %%     end,
-    
     State.
 
 %% STUB
@@ -381,7 +495,7 @@ report_error(Transition, ErrorInfo, State) ->
     State.
 
 %% STUB
-report_no_actives(State) ->
+report_no_unexplored(State) ->
     State.
 
 %%------------------------------------------------------------------------------

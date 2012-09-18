@@ -315,8 +315,12 @@ needs_instrument(Module, Function, ArgTrees) ->
 
 instrument_application({erlang, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
-    RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Function))),
-    erl_syntax:application(RepMod, RepFun, ArgTrees);
+    FunAtom = list_to_atom("rep_" ++ atom_to_list(Function)),
+    RepFun = erl_syntax:atom(FunAtom),
+    FlanaganFun =
+        erl_syntax:atom(list_to_atom(atom_to_list(FunAtom) ++ "_flanagan")),
+    FinalFun = ?default_or_flanagan(RepFun, FlanaganFun),
+    erl_syntax:application(RepMod, FinalFun, ArgTrees);
 instrument_application({Module, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
     RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Module)

@@ -1,7 +1,7 @@
 -module(test).
 
 -export([independent_receivers/0, simple_spawn/0, spawn_and_send/0, many_spawn/0,
-         receiver/0, not_really_blocker/0]).
+         receiver/0, not_really_blocker/0, spawn/0]).
 
 independent_receivers() ->
     Parent = self(),
@@ -42,3 +42,7 @@ receiver() ->
 not_really_blocker() ->
     spawn(fun() -> receive ok -> ok after 10 -> ok end end) ! ok.
 
+spawn() ->
+    Fun = fun() -> ok end,
+    spawn(Fun),
+    spawn(Fun).

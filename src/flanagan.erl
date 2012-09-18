@@ -248,8 +248,6 @@ add_old_backtracks_for_p({ProcNext, _} = Next, [StateI|Rest], Acc, ClockMap) ->
   end.
 
 add_from_E(P, PStates, ForwardTrace, ClockMap, Backtrack) ->
-  %% This is an overapproximation, as instead of the E set described in the
-  %% algorithm we look only whether the process in question is enabled.
   Enabled = all_enabled(PStates),
   case lists:member(P, Enabled) of
     true ->
