@@ -451,12 +451,12 @@ transform_receive_case(Clauses) ->
                   {erl_syntax:clause([Pattern], [], [NewBody]), NewHasCatchall}
           end,
     case lists:mapfoldl(Fun, false, Clauses) of
-        {NewClauses, false} ->
+        {NewClauses, _HasCatchall} ->
             Pattern = new_underscore_variable(),
             Body = erl_syntax:atom(block),
             CatchallClause = erl_syntax:clause([Pattern], [], [Body]),
-            NewClauses ++ [CatchallClause];
-        {NewClauses, true} -> NewClauses
+            NewClauses ++ [CatchallClause]
+%%      {NewClauses, true} -> NewClauses
     end.
 
 transform_receive_clauses(Clauses) ->
