@@ -29,6 +29,7 @@
          rep_ets_match_object/1, rep_ets_match_object/3,
          rep_ets_match_delete/2, rep_ets_foldl/3]).
 
+-export([spawn_fun_wrapper/1]).
 -export([rep_send_flanagan/2, rep_spawn_flanagan/1]).
 
 -include("gen.hrl").
@@ -378,8 +379,25 @@ rep_spawn_flanagan(Fun) ->
         _Lid ->
             sched:notify(spawn, []),
             %% FIXME: Someone must report the new process...
-            spawn(fun() -> Fun() end)
+            spawn(fun() -> spawn_fun_wrapper(Fun) end)
     end.
+
+-spec spawn_fun_wrapper(function()) -> term().
+
+spawn_fun_wrapper(Fun) ->
+    try
+        Ret = Fun(),
+        sched:notify(exit, []),
+        Ret
+    catch
+        Class:Type ->
+            sched:notify(uncaught_exception,[Class,Type,erlang:get_stacktrace()]),
+            case Class of
+                error -> error(Type);
+                throw -> throw(Type);
+                exit  -> exit(Type)
+            end
+    end.                    
 
 %% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn/3'.

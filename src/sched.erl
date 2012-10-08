@@ -245,6 +245,7 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
 -type trace_state() :: #trace_state{}.
 
 -record(flanagan_state, {
+          run_count   = 1           :: pos_integer(),
           tickets     = []          :: [ticket:ticket()],
           trace       = []          :: [trace_state()],
           must_replay = false       :: boolean(),
@@ -267,10 +268,10 @@ start_target(Target) ->
     lid:start(),
     {Mod, Fun, Args} = Target,
     NewFun = fun() -> apply(Mod, Fun, Args) end,
-    FirstPid = spawn_link(NewFun),
-    %% FIXME: RACE CONDITION spawned process might require its LID before sched
-    %%                       has a chance to run!
+    SpawnFun = fun() -> wait(), rep:spawn_fun_wrapper(NewFun) end,
+    FirstPid = spawn_link(SpawnFun),
     FirstLid = lid:new(FirstPid, noparent),
+    resume(FirstLid),
     Enabled = ordsets:add_element(FirstLid, ordsets:new()),
     %% FIXME: First call might crash...
     {ok, Next} = get_next(FirstLid),
@@ -289,9 +290,9 @@ get_next(Lid) ->
 explore(MightNeedReplayState) ->
     log:log("Explore!\n"),
     case select_from_backtrack(MightNeedReplayState) of
-        {ok, {Lid, _} = Selected, State} = D1->
+        {ok, {Lid, Cmd} = Selected, State} = D1->
             log:log("D1: ~p\n",[D1]),
-            case wait_next(Lid) of
+            case wait_next(Lid, Cmd) of
                 {ok, Next} ->
                     log:log("Next: ~p\n",[Next]),
                     LocalAddState = add_local_backtracks(Selected, State),
@@ -308,10 +309,10 @@ explore(MightNeedReplayState) ->
             end;
         none ->
             log:log("~p\n",[?LINE]),
-            NewState = report_no_unexplored(MightNeedReplayState),
+            NewState = report_possible_deadlock(MightNeedReplayState),
             explore(NewState);
         done ->
-           {ok, 0.001}
+            flanagan_return(MightNeedReplayState)
     end.
 
 select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
@@ -341,11 +342,18 @@ select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
 
 %% STUB
 replay_trace(State) ->
-    State.
+    RunCnt = State#flanagan_state.run_count,
+    State#flanagan_state{run_count = RunCnt + 1}.
 
-wait_next(Lid) ->
-    ok = resume(Lid),
-    {ok, {Lid, get_next(Lid)}}.
+wait_next(Lid, Cmd) ->
+    case Cmd of
+        {exit, []} ->
+            ok = resume(Lid),
+            {ok, exited};
+        _Other ->
+            ok = resume(Lid),
+            get_next(Lid)
+    end.
 
 resume(Lid) ->
     ?d(resume),
@@ -398,6 +406,8 @@ add_all_backtracks(Transition, #flanagan_state{trace = Trace} = State) ->
     NewTrace = add_all_backtracks_trace(Transition, Trace),
     State#flanagan_state{trace = NewTrace}.
 
+add_all_backtracks_trace(exited, Trace) ->
+    Trace;
 add_all_backtracks_trace({Lid, _} = Transition, Trace) ->
     [#trace_state{clock_map = ClockMap}|_] = Trace,
     ClockVector = lookup_clock(Lid, ClockMap),
@@ -461,11 +471,26 @@ find_one_from_E(P, ClockVector, Enabled, [Sj|Rest]) ->
 %% - add new entry with new entry
 %% - wait any possible additional messages
 %% - check for async
-update_trace(Selected, Next, State) ->
-    UpdatedState = handle_instruction(Selected, State),
+update_trace({Lid, _} = Selected, Next, State) ->
+    log:log("Sele: ~p\nNext: ~p\n",[Selected, Next]),
+    #flanagan_state{trace = [TraceTop|_] = Trace} = State,
+    #trace_state{i = I, enabled = Enabled, blocked = Blocked,
+                 nexts = Nexts, clock_map = ClockMap} = TraceTop,
+    NewNexts = dict:store(Lid, Next, Nexts),
+    NewTraceTop =
+        #trace_state{i = I+1, last = Selected, enabled = Enabled, blocked = Blocked,
+                     nexts = NewNexts, clock_map = ClockMap},
+    NewState = State#flanagan_state{trace = [NewTraceTop|Trace]},
+    UpdatedState = handle_instruction(Selected, NewState),
     UpdatedState.
 
 %% STUB
+handle_instruction({Lid, {exit, []}}, State) ->
+    log:log("Exit\n"),
+    #flanagan_state{trace = [TraceTop|Rest]} = State,
+    #trace_state{enabled = Enabled} = TraceTop,
+    NewEnabled = ordsets:del_element(Lid, Enabled),
+    State#flanagan_state{trace = [TraceTop#trace_state{enabled = NewEnabled}|Rest]};
 handle_instruction({Lid, {spawn, Opts}}, State) ->
     %% Parent = Lid,
     %% [TraceTop|RestTrace] = Trace,
@@ -488,15 +513,30 @@ handle_instruction({Lid, {spawn, Opts}}, State) ->
 
 %% STUB
 add_some_next_to_backtrack(State) ->
-    State.
+    #flanagan_state{trace = [TraceTop|Rest]} = State,
+    #trace_state{enabled = Enabled} = TraceTop,
+    Backtrack =
+        case Enabled of
+            [] -> [];
+            [H|_] -> [H]
+        end,
+    #flanagan_state{trace = [TraceTop#trace_state{backtrack = Backtrack}|Rest]}.
 
 %% STUB
 report_error(Transition, ErrorInfo, State) ->
     State.
 
 %% STUB
-report_no_unexplored(State) ->
-    State.
+report_possible_deadlock(State) ->
+    #flanagan_state{trace = [_TraceTop|Trace]} = State,
+    State#flanagan_state{must_replay = true, trace = Trace}.
+
+flanagan_return(State) ->
+    RunCnt = State#flanagan_state.run_count,
+    case State#flanagan_state.tickets of
+        [] -> {ok, RunCnt};
+        Tickets -> {error, RunCnt, Tickets}
+    end.
 
 %%------------------------------------------------------------------------------
 
