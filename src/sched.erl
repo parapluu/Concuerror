@@ -362,7 +362,7 @@ select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
 %% STUB
 replay_trace(State) ->
     [#trace_state{lid_trace = LidTrace}|_] = State#flanagan_state.trace,
-    ?f_debug("Little cutie is trying to replay...\n"),
+    ?f_debug("REPLAY\n"),
     ?f_debug("~p\n",[LidTrace]),
     Target = State#flanagan_state.target,
     ?f_debug("~p\n",[Target]),
@@ -370,7 +370,7 @@ replay_trace(State) ->
     start_target_op(Target),
     replay_lid_trace(LidTrace),
     RunCnt = State#flanagan_state.run_count,
-    State#flanagan_state{run_count = RunCnt + 1}.
+    State#flanagan_state{run_count = RunCnt + 1, must_replay = false}.
 
 replay_lid_trace(Queue) ->
     {V, NewQueue} = queue:out(Queue),
@@ -598,7 +598,7 @@ report_error(Transition, ErrorInfo, State) ->
 %% STUB
 report_possible_deadlock(State) ->
     #flanagan_state{trace = [_TraceTop|Trace]} = State,
-    log:log("~p\n",[queue:to_list(_TraceTop#trace_state.lid_trace)]),
+    ?f_debug("~p\n",[queue:to_list(_TraceTop#trace_state.lid_trace)]),
     State#flanagan_state{must_replay = true, trace = Trace}.
 
 flanagan_return(State) ->
