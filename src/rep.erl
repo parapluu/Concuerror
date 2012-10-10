@@ -378,8 +378,9 @@ rep_spawn_flanagan(Fun) ->
         not_found -> spawn(Fun);
         _Lid ->
             sched:notify(spawn, []),
-            %% FIXME: Someone must report the new process...
-            spawn(fun() -> spawn_fun_wrapper(Fun) end)
+            Pid = spawn(fun() -> sched:wait(), spawn_fun_wrapper(Fun) end),
+            sched:notify(spawned, Pid, prev),
+            Pid
     end.
 
 -spec spawn_fun_wrapper(function()) -> term().

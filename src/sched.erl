@@ -20,6 +20,8 @@
 %% Internal exports
 -export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, lid_from_pid/1]).
 
+-export([notify/3]).
+
 -export_type([analysis_target/0, analysis_ret/0, bound/0]).
 
 -include("gen.hrl").
@@ -30,6 +32,15 @@
 
 -define(INFINITY, 1000000).
 -define(NO_ERROR, undef).
+
+%-define(F_DEBUG, true).
+-ifdef(F_DEBUG).
+-define(f_debug(A,B), log:log(A,B)).
+-define(f_debug(A), log:log(A,[])).
+-else.
+-define(f_debug(_A,_B), ok).
+-define(f_debug(A), ok).
+-endif.
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -195,7 +206,7 @@ interleave_aux(Target, PreBound, Parent) ->
     Parent ! {interleave_result, Result}.
 
 interleave_flanagan(Target, PreBound, Parent) ->
-    log:log("Flanagan is not really ready yet...\n"),
+    ?f_debug("Flanagan is not really ready yet...\n"),
     register(?RP_SCHED, self()),
     Result = interleave_flanagan(Target, PreBound),
     Parent ! {interleave_result, Result}.
@@ -239,44 +250,52 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
           nexts     = dict:new()        :: dict(), %% dict(lid:lid(), instr()),
           backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
-          clock_map = empty_clock_map() :: clock_map()
+          clock_map = empty_clock_map() :: clock_map(),
+          lid_trace = queue:new()       :: queue() %% queue(lid:lid())
          }).
 
 -type trace_state() :: #trace_state{}.
 
 -record(flanagan_state, {
+          target                    :: analysis_target(),
           run_count   = 1           :: pos_integer(),
           tickets     = []          :: [ticket:ticket()],
           trace       = []          :: [trace_state()],
-          must_replay = false       :: boolean(),
-          quick_trace = queue:new() :: queue() %% queue(lid:lid()),
+          must_replay = false       :: boolean()
          }).
 
 empty_clock_map() -> dict:new().
 
 %% STUB
 interleave_flanagan(Target, _PreBound) ->
-    log:log("Interleave flanagan!\n"),
+    ?f_debug("Interleave flanagan!\n"),
     Trace = start_target(Target),
-    log:log("Target started!\n"),
-    NewState = #flanagan_state{trace = Trace},
+    ?f_debug("Target started!\n"),
+    NewState = #flanagan_state{trace = Trace, target = Target},
     explore(NewState).
 
--define(d(T), erlang:display(T)).
-
 start_target(Target) ->
+    FirstLid = start_target_op(Target),
+    %% FIXME: First call might crash...
+    {ok, Next} = get_next(FirstLid),
+    Enabled = ordsets:add_element(FirstLid, ordsets:new()),
+    [#trace_state{nexts = dict:store(FirstLid, Next, dict:new()),
+                  enabled = Enabled, backtrack = Enabled}].
+
+start_target_op(Target) ->
+    ?f_debug("Tsamina\n"),
     lid:start(),
+    ?f_debug("amina\n"),
     {Mod, Fun, Args} = Target,
     NewFun = fun() -> apply(Mod, Fun, Args) end,
     SpawnFun = fun() -> wait(), rep:spawn_fun_wrapper(NewFun) end,
+    ?f_debug("eh eh\n"),
     FirstPid = spawn_link(SpawnFun),
+    ?f_debug("eh eh\n"),
     FirstLid = lid:new(FirstPid, noparent),
+    ?f_debug("waka\n"),
     resume(FirstLid),
-    Enabled = ordsets:add_element(FirstLid, ordsets:new()),
-    %% FIXME: First call might crash...
-    {ok, Next} = get_next(FirstLid),
-    [#trace_state{nexts = dict:store(FirstLid, Next, dict:new()),
-                  enabled = Enabled, backtrack = Enabled}].
+    FirstLid.
 
 get_next(Lid) ->
     receive
@@ -288,19 +307,19 @@ get_next(Lid) ->
     end.
 
 explore(MightNeedReplayState) ->
-    log:log("Explore!\n"),
+    ?f_debug("Explore!\n"),
     case select_from_backtrack(MightNeedReplayState) of
         {ok, {Lid, Cmd} = Selected, State} = D1->
-            log:log("D1: ~p\n",[D1]),
+            ?f_debug("D1: ~p\n",[D1]),
             case wait_next(Lid, Cmd) of
                 {ok, Next} ->
-                    log:log("Next: ~p\n",[Next]),
+                    ?f_debug("Next: ~p\n",[Next]),
                     LocalAddState = add_local_backtracks(Selected, State),
-                    log:log("LAS: ~p\n",[LocalAddState]),
+                    ?f_debug("LAS: ~p\n",[LocalAddState]),
                     AllAddState = add_all_backtracks(Next, LocalAddState),
-                    log:log("AAS: ~p\n",[AllAddState]),
+                    ?f_debug("AAS: ~p\n",[AllAddState]),
                     UpdState = update_trace(Selected, Next, AllAddState),
-                    log:log("US : ~p\n",[UpdState]),
+                    ?f_debug("US : ~p\n",[UpdState]),
                     NewState = add_some_next_to_backtrack(UpdState),
                     explore(NewState);
                 {error, ErrorInfo} ->
@@ -308,7 +327,7 @@ explore(MightNeedReplayState) ->
                     explore(NewState)                        
             end;
         none ->
-            log:log("~p\n",[?LINE]),
+            ?f_debug("~p\n",[?LINE]),
             NewState = report_possible_deadlock(MightNeedReplayState),
             explore(NewState);
         done ->
@@ -342,8 +361,27 @@ select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
 
 %% STUB
 replay_trace(State) ->
+    [#trace_state{lid_trace = LidTrace}|_] = State#flanagan_state.trace,
+    ?f_debug("Little cutie is trying to replay...\n"),
+    ?f_debug("~p\n",[LidTrace]),
+    Target = State#flanagan_state.target,
+    ?f_debug("~p\n",[Target]),
+    lid:stop(),
+    start_target_op(Target),
+    replay_lid_trace(LidTrace),
     RunCnt = State#flanagan_state.run_count,
     State#flanagan_state{run_count = RunCnt + 1}.
+
+replay_lid_trace(Queue) ->
+    {V, NewQueue} = queue:out(Queue),
+    case V of
+        {value, {Lid, Command} = Transition} ->
+            _ = wait_next(Lid, Command),
+            _ = handle_instruction_op(Transition),
+            replay_lid_trace(NewQueue);
+        empty ->
+            ok
+    end.                
 
 wait_next(Lid, Cmd) ->
     case Cmd of
@@ -356,9 +394,9 @@ wait_next(Lid, Cmd) ->
     end.
 
 resume(Lid) ->
-    ?d(resume),
+    ?f_debug("resume"),
     Pid = lid:get_pid(Lid),
-    ?d({lid,Lid,pid,Pid}),
+    ?f_debug("{lid,~p,pid~p}\n",[Lid,Pid]),
     Pid ! #sched{msg = continue},
     ok.
 
@@ -472,44 +510,75 @@ find_one_from_E(P, ClockVector, Enabled, [Sj|Rest]) ->
 %% - wait any possible additional messages
 %% - check for async
 update_trace({Lid, _} = Selected, Next, State) ->
-    log:log("Sele: ~p\nNext: ~p\n",[Selected, Next]),
+    ?f_debug("Sele: ~p\nNext: ~p\n",[Selected, Next]),
     #flanagan_state{trace = [TraceTop|_] = Trace} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
-                 nexts = Nexts, clock_map = ClockMap} = TraceTop,
+                 nexts = Nexts, lid_trace = LidTrace,
+                 clock_map = ClockMap} = TraceTop,
     NewNexts = dict:store(Lid, Next, Nexts),
-    NewTraceTop =
-        #trace_state{i = I+1, last = Selected, enabled = Enabled, blocked = Blocked,
-                     nexts = NewNexts, clock_map = ClockMap},
-    NewState = State#flanagan_state{trace = [NewTraceTop|Trace]},
-    UpdatedState = handle_instruction(Selected, NewState),
-    UpdatedState.
+    {NewEnabled, NewBlocked} =
+        update_lid_enabled(Lid, Next, Enabled, Blocked),
+    NewClockMap = ClockMap,
+    NewLidTrace = queue:in(Selected, LidTrace),
+    CommonNewTraceTop =
+        #trace_state{i = I+1, last = Selected, nexts = NewNexts,
+                     enabled = NewEnabled, blocked = NewBlocked,
+                     lid_trace = NewLidTrace, clock_map = NewClockMap},
+    NewTraceTop = handle_instruction(Selected, CommonNewTraceTop),
+    State#flanagan_state{trace = [NewTraceTop|Trace]}.
+
+update_lid_enabled(Lid, Next, Enabled, Blocked) ->
+    case is_next_enabled(Next) of
+        true -> {Enabled, Blocked};
+        false ->
+            {ordsets:del_element(Lid, Enabled),
+             ordsets:add_element(Lid, Blocked)}
+    end.
+
+is_next_enabled(_) -> true.
+
+
+%% Handle instruction is broken in two parts to reuse code in replay.
+handle_instruction(Transition, TraceTop) ->
+    Variables = handle_instruction_op(Transition),
+    handle_instruction_al(Transition, TraceTop, Variables).
+
+handle_instruction_op({Lid, {spawn, Opts}}) ->
+    ParentLid = Lid,
+    ChildPid =
+        receive
+            #sched{msg = spawned, lid = ParentLid, misc = Pid, type = prev} ->
+                Pid
+        end,
+    ChildLid = lid:new(ChildPid, ParentLid),
+    resume(ChildLid),
+    ChildNextInstr =
+        receive
+            #sched{msg = Next, lid = ChildLid, misc = Misc, type = next} ->
+                {Next, Misc}
+        end,
+    {ParentLid, ChildPid, ChildLid, ChildNextInstr};
+handle_instruction_op(_) ->
+    {}.
 
 %% STUB
-handle_instruction({Lid, {exit, []}}, State) ->
-    log:log("Exit\n"),
-    #flanagan_state{trace = [TraceTop|Rest]} = State,
-    #trace_state{enabled = Enabled} = TraceTop,
+handle_instruction_al({Lid, {exit, []}}, TraceTop, {}) ->
+    ?f_debug("Exit\n"),
+    #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
-    State#flanagan_state{trace = [TraceTop#trace_state{enabled = NewEnabled}|Rest]};
-handle_instruction({Lid, {spawn, Opts}}, State) ->
-    %% Parent = Lid,
-    %% [TraceTop|RestTrace] = Trace,
-    %% #trace_state{i = N, nexts = Nexts, clock_map = ClockMap} = TraceTop,
-    %% NewStep = #trace_state{i = N+1, last = Transition},
-
-    %% #flanagan_state{trace = [TraceTop|RestTrace]},
-    %% %% Parent sends ChildPid. Child could also do that.
-    %% ChildPid =
-    %%     receive
-    %%         #sched{msg = spawned, lid = Parent, misc = Pid, type = prev} ->
-    %%             Pid
-    %%     end,
-    %% ChildNextInstr =
-    %%     receive
-    %%         #sched{msg = Next, lid = ChildPid, misc = Misc, type = next} ->
-    %%             {Next, Misc}
-    %%     end,
-    State.
+    NewNexts = dict:erase(Lid, Nexts),
+    TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts};
+handle_instruction_al({Lid, {spawn, Opts}}, TraceTop,
+                      {ParentLid, ChildPid, ChildLid, ChildNextInstr}) ->
+    #trace_state{enabled = Enabled, blocked = Blocked, nexts = Nexts} = TraceTop,
+    NewNexts = dict:store(ChildLid, ChildNextInstr, Nexts),
+    MaybeEnabled = ordsets:add_element(ChildLid, Enabled),
+    {NewEnabled, NewBlocked} =
+        update_lid_enabled(ChildLid, ChildNextInstr, MaybeEnabled, Blocked),
+    ?f_debug("My child is ~p:~p:~p\n",[ChildPid,ChildLid,ChildNextInstr]),
+    TraceTop#trace_state{enabled = NewEnabled,
+                         blocked = NewBlocked,
+                         nexts = NewNexts}.
 
 %% STUB
 add_some_next_to_backtrack(State) ->
@@ -520,7 +589,7 @@ add_some_next_to_backtrack(State) ->
             [] -> [];
             [H|_] -> [H]
         end,
-    #flanagan_state{trace = [TraceTop#trace_state{backtrack = Backtrack}|Rest]}.
+    State#flanagan_state{trace = [TraceTop#trace_state{backtrack = Backtrack}|Rest]}.
 
 %% STUB
 report_error(Transition, ErrorInfo, State) ->
@@ -529,6 +598,7 @@ report_error(Transition, ErrorInfo, State) ->
 %% STUB
 report_possible_deadlock(State) ->
     #flanagan_state{trace = [_TraceTop|Trace]} = State,
+    log:log("~p\n",[queue:to_list(_TraceTop#trace_state.lid_trace)]),
     State#flanagan_state{must_replay = true, trace = Trace}.
 
 flanagan_return(State) ->
@@ -1051,11 +1121,19 @@ continue(Lid) ->
 -spec notify(notification(), any()) -> 'ok'.
 
 notify(Msg, Misc) ->
+    notify(Msg, Misc, next).
+
+-spec notify(notification(), any(), sched_msg_type()) -> 'ok'.
+
+notify(Msg, Misc, Type) ->
     case lid_from_pid(self()) of
         not_found -> ok;
         Lid ->
-            ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc},
-            wait()
+            ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc, type = Type},
+            case Type of
+                next  -> wait();
+                _Else -> ok
+            end
     end.
 
 %% TODO: Maybe move into lid module.
