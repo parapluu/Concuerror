@@ -6,10 +6,13 @@
 
 %% -define(DEBUG, true).
 %% -define(STEPWISE, true).
-%% -define(STATS, true).
+-define(STATS, true).
+-define(STACK, true).
 
 -ifdef(DEBUG).
+-ifndef(STACK).
 -define(STACK, true).
+-endif.
 -endif.
 
 %%------------------------------------------------------------------------------
@@ -71,6 +74,22 @@
 -define(stats_inc, ok).
 -endif.
 
+-ifdef(STACK).
+
+-define(show_stack(Trace), io:format("~p\n",[get_stack(Trace)])).
+           
+get_stack(Trace) ->
+  get_stack(Trace, []).
+
+get_stack([], Acc) -> Acc;
+get_stack([#state{last = P}|Rest], Acc) -> get_stack(Rest, [P|Acc]).
+
+-else.
+
+-define(show_stack(_Trace), ok).
+
+-endif.
+
 test(M) ->
   InitPStates = dict:store(M, new_pstate(M), dict:new()),
   ?stats_start,
@@ -106,8 +125,30 @@ p(c) ->
 p(d) ->
   [rec,
    {send, m1},
-   exit].
+   exit];
 
+p(m2) ->
+  [{spawn, x},
+   {spawn, y},
+   {spawn, z},
+   {spawn, w},
+   {send, y},
+   exit];
+p(x) ->
+  [rec,
+   {send,y},
+   exit];
+p(y) ->
+  [rec,
+   rec,
+   exit];
+p(z) ->
+  [rec,
+   {send,x},
+   exit];
+p(w) ->
+  [{send,z},
+   exit].
 
 %%------------------------------------------------------------------------------
 
@@ -159,9 +200,15 @@ run(P, PStates) ->
 
 dependent({ P1,        _C1}, { P2,        _C2}) when P1 =:= P2 -> true;
 dependent({_P1, {send, P2}}, {_P3, {send, P4}}) when P2 =:= P4 -> true;
-dependent({_P1, {send, P2}}, { P3,        rec}) when P2 =:= P3 -> true;
-dependent({ P1,        rec}, {_P2, {send, P3}}) when P1 =:= P3 -> true;
+%dependent({_P1, {send, P2}}, { P3,        rec}) when P2 =:= P3 -> true;
+%dependent({ P1,        rec}, {_P2, {send, P3}}) when P1 =:= P3 -> true;
 dependent(                _,                 _)                -> false.
+
+dependent2({ P1,        _C1}, { P2,        _C2}) when P1 =:= P2 -> true;
+dependent2({_P1, {send, P2}}, {_P3, {send, P4}}) when P2 =:= P4 -> true;
+dependent2({_P1, {send, P2}}, { P3,        rec}) when P2 =:= P3 -> true;
+dependent2({ P1,        rec}, {_P2, {send, P3}}) when P1 =:= P3 -> true;
+dependent2(                _,                 _)                -> false.
 
 %%------------------------------------------------------------------------------
 
@@ -190,6 +237,7 @@ explore(Trace, ClockMap) ->
     case pick_random_enabled(Trace) of
       none ->
         %% TODO: Report Check for deadlocks
+        ?show_stack(Trace),
         ?stats_inc,
         UpdatedTrace;
       {ok, P} ->
@@ -379,7 +427,7 @@ max_dependent(Command, Trace, ClockMap) ->
 
 max_dependent(_Cmd, [], _ClockMap, Acc) -> Acc;
 max_dependent(Cmd1, [#state{i = N, last = Cmd2}|Trace], ClockMap, Acc) ->
-  case dependent(Cmd1, Cmd2) of
+  case dependent2(Cmd1, Cmd2) of
     true ->
       CI = lookup_clock(N, ClockMap),
       Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
@@ -388,13 +436,3 @@ max_dependent(Cmd1, [#state{i = N, last = Cmd2}|Trace], ClockMap, Acc) ->
     false ->
       max_dependent(Cmd1, Trace, ClockMap, Acc)
   end.
-
--ifdef(STACK).
-
-get_stack(Trace) ->
-  get_stack(Trace, []).
-
-get_stack([], Acc) -> Acc;
-get_stack([#state{last = P}|Rest], Acc) -> get_stack(Rest, [P|Acc]).
-
--endif.
