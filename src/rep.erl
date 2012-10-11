@@ -322,13 +322,13 @@ rep_send_flanagan(Dest, Msg) ->
             %% It will be reported at the receive point.
             Dest ! Msg;
         SelfLid ->
-            log:log("I am flanaganized!\n"),
             NewDest = find_pid(Dest),
-            case ?LID_FROM_PID(NewDest) of
+            NewLid = ?LID_FROM_PID(NewDest),
+            sched:notify(send, {NewLid, Msg}),
+            case NewLid of
                 not_found -> Dest ! Msg;
                 _DestLid -> Dest ! {?INSTR_MSG, SelfLid, Msg}
             end,
-            sched:notify(send, {NewDest, Msg}),
             Msg
     end.
 
@@ -380,6 +380,8 @@ rep_spawn_flanagan(Fun) ->
             sched:notify(spawn, []),
             Pid = spawn(fun() -> sched:wait(), spawn_fun_wrapper(Fun) end),
             sched:notify(spawned, Pid, prev),
+            %% Wait before using the PID to be sure that an LID is assigned
+            sched:wait(),
             Pid
     end.
 
