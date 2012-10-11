@@ -1,7 +1,8 @@
 -module(test).
 
 -export([independent_receivers/0, simple_spawn/0, spawn_and_send/0, many_spawn/0,
-         receiver/0, not_really_blocker/0, spawn/0, three_send/0]).
+         receiver/0, not_really_blocker/0, spawn/0, three_send/0,
+         crasher/0, crasher2/0]).
 
 independent_receivers() ->
     Parent = self(),
@@ -53,3 +54,26 @@ three_send() ->
     spawn(Fun) ! ok,
     spawn(Fun) ! ok.
     
+crasher() ->
+    spawn(fun() -> this() end).
+
+this() ->
+    will().
+
+will() ->
+    crash().
+
+crash() ->
+    throw(boom).
+
+crasher2() ->
+    spawn(fun() -> this2() end).
+
+this2() ->
+    will2().
+
+will2() ->
+    crash2().
+
+crash2() ->
+    1/0.
