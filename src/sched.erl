@@ -282,8 +282,7 @@ interleave_flanagan(Target, _PreBound) ->
 
 start_target(Target) ->
     FirstLid = start_target_op(Target),
-    %% FIXME: First call might crash...
-    {ok, Next} = wait_next(FirstLid, init),
+    Next = wait_next(FirstLid, init),
     Enabled = ordsets:add_element(FirstLid, ordsets:new()),
     [#trace_state{nexts = dict:store(FirstLid, Next, dict:new()),
                   enabled = Enabled, backtrack = Enabled}].
@@ -292,26 +291,21 @@ start_target_op(Target) ->
     lid:start(),
     {Mod, Fun, Args} = Target,
     NewFun = fun() -> apply(Mod, Fun, Args) end,
-    SpawnFun = fun() -> wait(), rep:spawn_fun_wrapper(NewFun) end,
+    SpawnFun = fun() -> rep:spawn_fun_wrapper(NewFun) end,
     FirstPid = spawn(SpawnFun),
     lid:new(FirstPid, noparent).
-
-get_next(Lid) ->
-    receive
-        #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
-            case Type of
-                error -> {error, Misc};
-                _Else -> {ok, {Type, Misc}}
-            end
-    end.
 
 explore(MightNeedReplayState) ->
     ?f_debug("Explore!\n"),
     case select_from_backtrack(MightNeedReplayState) of
         {ok, {Lid, Cmd} = Selected, State} = D1->
             ?f_debug("D1: ~p\n",[D1]),
-            case wait_next(Lid, Cmd) of
-                {ok, Next} ->
+            case Cmd of
+                {error, ErrorInfo} ->
+                    NewState = report_error(Selected, State),
+                    explore(NewState);
+                _Else ->
+                    Next = wait_next(Lid, Cmd),
                     ?f_debug("Next: ~p\n",[Next]),
                     LocalAddState = add_local_backtracks(Selected, State),
                     ?f_debug("LAS: ~p\n",[LocalAddState]),
@@ -320,10 +314,7 @@ explore(MightNeedReplayState) ->
                     UpdState = update_trace(Selected, Next, AllAddState),
                     ?f_debug("US : ~p\n",[UpdState]),
                     NewState = add_some_next_to_backtrack(UpdState),
-                    explore(NewState);
-                {error, ErrorInfo} ->
-                    NewState = report_error(Selected, ErrorInfo, State),
-                    explore(NewState)                        
+                    explore(NewState)
             end;
         none ->
             ?f_debug("~p\n",[?LINE]),
@@ -386,7 +377,7 @@ wait_next(Lid, Prev) ->
     case Prev of
         {exit, []} ->
             ok = resume(Lid),
-            {ok, exited};
+            exited;
         {spawn, []} ->
             ok = resume(Lid),
             %% This interruption happens to make sure that a child has an LID
@@ -414,6 +405,12 @@ resume(Lid) ->
     ?f_debug("{lid,~p,pid,~p}\n",[Lid,Pid]),
     Pid ! #sched{msg = continue},
     ok.
+
+get_next(Lid) ->
+    receive
+        #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
+            {Type, Misc}
+    end.
 
 add_local_backtracks(Transition, #flanagan_state{trace = Trace} = State) ->
     [TraceTop|RestTrace] = Trace,
@@ -566,12 +563,7 @@ handle_instruction_op({Lid, {spawn, Opts}}) ->
             #sched{msg = spawned, lid = ParentLid, misc = ChildLid0, type = prev} ->
                 ChildLid0
         end,
-    resume(ChildLid),
-    ChildNextInstr =
-        receive
-            #sched{msg = Next, lid = ChildLid, misc = Misc, type = next} ->
-                {Next, Misc}
-        end,
+    ChildNextInstr = wait_next(ChildLid, init),
     flush_mailbox(),
     {ParentLid, ChildLid, ChildNextInstr};
 handle_instruction_op(_) ->
@@ -619,8 +611,11 @@ add_some_next_to_backtrack(State) ->
     State#flanagan_state{trace = [TraceTop#trace_state{backtrack = Backtrack}|Rest]}.
 
 %% STUB
-report_error(Transition, ErrorInfo, State) ->
-    State.
+report_error(Transition, State) ->
+    #flanagan_state{trace = [TraceTop|_]} = State,
+    ?f_debug("ERROR!\n~p\n",[Transition]),
+    log:log("~p\n",[queue:to_list(queue:in(Transition,TraceTop#trace_state.lid_trace))]),
+    State#flanagan_state{must_replay = true}.
 
 %% STUB
 report_possible_deadlock(State) ->

@@ -378,7 +378,7 @@ rep_spawn_flanagan(Fun) ->
         not_found -> spawn(Fun);
         _Lid ->
             sched:notify(spawn, []),
-            Pid = spawn(fun() -> sched:wait(), spawn_fun_wrapper(Fun) end),
+            Pid = spawn(fun() -> spawn_fun_wrapper(Fun) end),
             sched:notify(spawned, Pid, prev),
             %% Wait before using the PID to be sure that an LID is assigned
             sched:wait(),
@@ -389,12 +389,13 @@ rep_spawn_flanagan(Fun) ->
 
 spawn_fun_wrapper(Fun) ->
     try
+        sched:wait(),
         Ret = Fun(),
         sched:notify(exit, []),
         Ret
     catch
         Class:Type ->
-            sched:notify(uncaught_exception,[Class,Type,erlang:get_stacktrace()]),
+            sched:notify(error,[Class,Type,erlang:get_stacktrace()]),
             case Class of
                 error -> error(Type);
                 throw -> throw(Type);
