@@ -211,7 +211,6 @@ interleave_flanagan(Target, PreBound, Parent) ->
     Result = interleave_flanagan(Target, PreBound),
     Parent ! {interleave_result, Result}.
 
-
 interleave_outer_loop(_T, RunCnt, Tickets, MaxBound, MaxBound) ->
     log:log("Context bound reached\n"),
     interleave_outer_loop_ret(Tickets, RunCnt);
@@ -737,7 +736,7 @@ driver(Context, ReplayState) ->
     case state:is_empty(ReplayState) of
         true -> driver_normal(Context);
         false ->
-            log:log("Replay..."),
+            ?f_debug("Replay..."),
             driver_replay(Context, ReplayState)
     end.
 
@@ -747,12 +746,12 @@ driver_replay(Context, ReplayState) ->
     #context{blocked = NewBlocked} = NewContext,
     case state:is_empty(Rest) of
         true ->
-            log:log("done\n"),
+            ?f_debug("done\n"),
             case ?SETS:is_element(Next, NewBlocked) of
                 %% If the last action of the replayed state prefix is a block,
                 %% we can safely abort.
                 true ->
-                    log:log("I am a hidden interleaving! :-P\n"),
+                    ?f_debug("I am a hidden interleaving! :-P\n"),
                     abort;
                 %% Replay has finished; proceed in normal mode, after checking
                 %% for errors during the last replayed action.
@@ -770,12 +769,12 @@ driver_normal(#context{active=Active, current=LastLid,
     Next =
         case ?SETS:is_element(LastLid, Active) of
             true ->
-                log:log("Can continue with LastLid\n"),
+                ?f_debug("Can continue with LastLid\n"),
                 TmpActive = ?SETS:to_list(?SETS:del_element(LastLid, Active)),
                 {LastLid,TmpActive, next};
             false ->
                 [Head|TmpActive] = ?SETS:to_list(Active),
-                log:log("Can NOT continue with LastLid. Pick ~p.\n",[Head]),
+                ?f_debug("Can NOT continue with LastLid. Pick ~p.\n",[Head]),
                 {Head, TmpActive, current}
         end,
     {NewContext, Insert} = run_no_block(Context, Next),
@@ -819,24 +818,24 @@ run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
         true ->
             case Rest of
                 [] ->
-                    log:log("Got blocked. Nothing remains\n"),
+                    ?f_debug("Got blocked. Nothing remains\n"),
                     {NewContext#context{state = State}, {[], W}};
                 [RH|RT] ->
-                    log:log("Got blocked. Picking another.\n"),
+                    ?f_debug("Got blocked. Picking another.\n"),
                     NextContext = NewContext#context{state = State},
                     run_no_block(NextContext, {RH, RT, current})
             end;
         false ->
-            log:log("Did not get blocked.\n"),
+            ?f_debug("Did not get blocked.\n"),
             {NewContext, {Rest, W}}
     end.
 
 insert_states(State, {Lids, current}) ->
-    log:log("Add ~w to current context bound.\n",[Lids]),
+    ?f_debug("Add ~w to current context bound.\n",[Lids]),
     Extend = lists:map(fun(L) -> state:extend(State, L) end, Lids),
     state_save(Extend);
 insert_states(State, {Lids, next}) ->
-    log:log("Add ~w to next context bound.\n",[Lids]),
+    ?f_debug("Add ~w to next context bound.\n",[Lids]),
     Extend = lists:map(fun(L) -> state:extend(State, L) end, Lids),
     state_save_next(Extend).
 

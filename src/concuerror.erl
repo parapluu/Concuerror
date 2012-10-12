@@ -291,7 +291,9 @@ parse([{Opt, Param} | Args], Options) ->
             help(),
             erlang:halt();
         "-flanagan" ->
-            NewOptions = lists:keystore(flanagan, 1, Options, {flanagan}),
+            NewOptions0 = lists:keystore(flanagan, 1, Options, {flanagan}),
+            NewOptions =
+                lists:keystore(noprogress, 1, NewOptions0, {noprogress}),
             parse(Args, NewOptions);
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
             EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa" ->
@@ -473,38 +475,34 @@ terminate(_Reason, _State) -> ok.
 handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};
-handle_event(_, State) ->
-    {ok, State}.
+handle_event({error, _Ticket}, {CurrPreb,Progress,Total,Errors}) ->
+    progress_bar(CurrPreb, Progress, Errors+1),
+    {ok, {CurrPreb,Progress,Total,Errors+1}};
+handle_event({error, _Ticket}, 'noprogress') ->
+    {ok, 'noprogress'};
+handle_event({progress_log, Remain}, {CurrPreb,Progress,Total,Errors}=State) ->
+    NewProgress = erlang:trunc(100 - Remain*100/Total),
+    case NewProgress > Progress of
+        true ->
+            progress_bar(CurrPreb, NewProgress, Errors),
+            {ok, {CurrPreb,NewProgress,Total,Errors}};
+        false ->
+            {ok, State}
+    end;
+handle_event({progress_log, _Remain}, 'noprogress') ->
+    {ok, 'noprogress'};
+handle_event({progress_swap, NewTotal}, {CurrPreb,_Progress,_Total,Errors}) ->
+    %% Clear last two lines from screen
+    io:format("\033[J"),
+    NextPreb = CurrPreb + 1,
+    {ok, {NextPreb,-1,NewTotal,Errors}};
+handle_event({progress_swap, _NewTotal}, 'noprogress') ->
+    {ok, 'noprogress'}.
 
-
-%% handle_event({error, _Ticket}, {CurrPreb,Progress,Total,Errors}) ->
-%%     progress_bar(CurrPreb, Progress, Errors+1),
-%%     {ok, {CurrPreb,Progress,Total,Errors+1}};
-%% handle_event({error, _Ticket}, 'noprogress') ->
-%%     {ok, 'noprogress'};
-%% handle_event({progress_log, Remain}, {CurrPreb,Progress,Total,Errors}=State) ->
-%%     NewProgress = erlang:trunc(100 - Remain*100/Total),
-%%     case NewProgress > Progress of
-%%         true ->
-%%             progress_bar(CurrPreb, NewProgress, Errors),
-%%             {ok, {CurrPreb,NewProgress,Total,Errors}};
-%%         false ->
-%%             {ok, State}
-%%     end;
-%% handle_event({progress_log, _Remain}, 'noprogress') ->
-%%     {ok, 'noprogress'};
-%% handle_event({progress_swap, NewTotal}, {CurrPreb,_Progress,_Total,Errors}) ->
-%%     %% Clear last two lines from screen
-%%     io:format("\033[J"),
-%%     NextPreb = CurrPreb + 1,
-%%     {ok, {NextPreb,-1,NewTotal,Errors}};
-%% handle_event({progress_swap, _NewTotal}, 'noprogress') ->
-%%     {ok, 'noprogress'}.
-
-%% progress_bar(CurrPreb, PerCent, Errors) ->
-%%     Bar = string:chars($=, PerCent div 2, ">"),
-%%     StrPerCent = io_lib:format("~p", [PerCent]),
-%%     io:format("Preemption: ~p\n"
-%%         " ~3s% [~.51s]  ~p errors found"
-%%         "\033[1A\r",
-%%         [CurrPreb, StrPerCent, Bar, Errors]).
+progress_bar(CurrPreb, PerCent, Errors) ->
+    Bar = string:chars($=, PerCent div 2, ">"),
+    StrPerCent = io_lib:format("~p", [PerCent]),
+    io:format("Preemption: ~p\n"
+        " ~3s% [~.51s]  ~p errors found"
+        "\033[1A\r",
+        [CurrPreb, StrPerCent, Bar, Errors]).
