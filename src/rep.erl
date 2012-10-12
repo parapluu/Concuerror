@@ -377,7 +377,7 @@ rep_spawn_flanagan(Fun) ->
     case ?LID_FROM_PID(self()) of
         not_found -> spawn(Fun);
         _Lid ->
-            sched:notify(spawn, []),
+            sched:notify(spawn, unknown),
             Pid = spawn(fun() -> spawn_fun_wrapper(Fun) end),
             sched:notify(spawned, Pid, prev),
             %% Wait before using the PID to be sure that an LID is assigned
@@ -391,7 +391,7 @@ spawn_fun_wrapper(Fun) ->
     try
         sched:wait(),
         Ret = Fun(),
-        sched:notify(exit, []),
+        sched:notify(exit, normal),
         Ret
     catch
         Class:Type ->

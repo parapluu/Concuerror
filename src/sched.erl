@@ -236,6 +236,8 @@ interleave_outer_loop_ret([], RunCnt) ->
 interleave_outer_loop_ret(Tickets, RunCnt) ->
     {error, RunCnt, Tickets}.
 
+%%------------------------------------------------------------------------------
+
 -type s_i()        :: non_neg_integer().
 -type instr()      :: term().
 -type transition() :: {lid:lid(), instr()}.
@@ -375,10 +377,10 @@ replay_lid_trace(Queue) ->
 
 wait_next(Lid, Prev) ->
     case Prev of
-        {exit, []} ->
+        {exit, normal} ->
             ok = resume(Lid),
             exited;
-        {spawn, []} ->
+        {spawn, _} ->
             ok = resume(Lid),
             %% This interruption happens to make sure that a child has an LID
             %% before the parent wants to do any operation with its PID.
@@ -580,22 +582,27 @@ flush_mailbox() ->
     end.
 
 %% STUB
-handle_instruction_al({Lid, {exit, []}}, TraceTop, {}) ->
+handle_instruction_al({Lid, {exit, normal}}, TraceTop, {}) ->
     ?f_debug("Exit\n"),
     #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
     TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts};
-handle_instruction_al({Lid, {spawn, Opts}}, TraceTop,
+handle_instruction_al({Lid, {spawn, unknown}} = Transition, TraceTop,
                       {ParentLid, ChildLid, ChildNextInstr}) ->
-    #trace_state{enabled = Enabled, blocked = Blocked, nexts = Nexts} = TraceTop,
+    #trace_state{enabled = Enabled, blocked = Blocked, nexts = Nexts,
+                 lid_trace = LidTrace} = TraceTop,
     NewNexts = dict:store(ChildLid, ChildNextInstr, Nexts),
     MaybeEnabled = ordsets:add_element(ChildLid, Enabled),
     {NewEnabled, NewBlocked} =
         update_lid_enabled(ChildLid, ChildNextInstr, MaybeEnabled, Blocked),
-    TraceTop#trace_state{enabled = NewEnabled,
+    {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
+    NewLidTrace = queue:in({Lid, {spawn, ChildLid}}, TmpLidTrace),
+    TraceTop#trace_state{last = {Lid, {spawn, ChildLid}},
+                         enabled = NewEnabled,
                          blocked = NewBlocked,
-                         nexts = NewNexts};
+                         nexts = NewNexts,
+                         lid_trace = NewLidTrace};
 handle_instruction_al(_Transition, TraceTop, {}) ->
     TraceTop.
 
@@ -612,10 +619,36 @@ add_some_next_to_backtrack(State) ->
 
 %% STUB
 report_error(Transition, State) ->
-    #flanagan_state{trace = [TraceTop|_]} = State,
+    #flanagan_state{trace = [TraceTop|_], tickets = Tickets} = State,
     ?f_debug("ERROR!\n~p\n",[Transition]),
-    log:log("~p\n",[queue:to_list(queue:in(Transition,TraceTop#trace_state.lid_trace))]),
-    State#flanagan_state{must_replay = true}.
+    InitTr = init_tr(),
+    [InitTr|Trace] =
+        queue:to_list(queue:in(Transition, TraceTop#trace_state.lid_trace)),
+    ?f_debug("Trace     :~p\n",[Trace]),
+    ?f_debug("Transition:~p\n",[Transition]),
+    ErrorState = lists:map(fun convert_error_trace/1, Trace),
+    ?f_debug("ES:~p\n",[ErrorState]),
+    Error = convert_error_info(Transition),
+    ?f_debug("E:~p\n",[Error]),
+    %% State#flanagan_state{must_replay = true, tickets = Tickets}.
+    Ticket = ticket:new(Error, ErrorState),
+    log:show_error(Ticket),
+    State#flanagan_state{must_replay = true, tickets = [Ticket|Tickets]}.
+
+convert_error_trace({Lid, {error, [ErrorOrThrow|_]}})
+  when ErrorOrThrow =:= error; ErrorOrThrow =:= throw ->
+    {exit, Lid, "Exception"};
+convert_error_trace({Lid, {Instr, Extra}}) ->
+    {Instr, Lid, Extra}.
+
+convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}})->
+    NewType =
+        case Kind of
+            error -> Type;
+            throw -> {nocatch, Type}
+        end,
+    [_|TmpStacktrace] = lists:reverse(Stacktrace),
+    {exception,{NewType, lists:reverse(TmpStacktrace)}}.
 
 %% STUB
 report_possible_deadlock(State) ->
@@ -775,6 +808,7 @@ check_for_errors(#context{error=NewError, actions=Actions, active=NewActive,
             end;
         _Other ->
             ErrorState = lists:reverse(Actions),
+            ?f_debug("SNEAK A PEEK!\nES:~p\nE:~p\n",[ErrorState, NewError]),
             {error, NewError, ErrorState}
     end.
 
