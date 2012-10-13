@@ -11,7 +11,7 @@
 %%% Description : State interface unit tests
 %%%----------------------------------------------------------------------
 
--module(state_tests).
+-module(concuerror_state_tests).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -21,25 +21,25 @@
 -spec extend_trim_head_test() -> 'ok'.
 
 extend_trim_head_test() ->
-    lid:start(),
-    Init = state:empty(),
-    Lid = lid:new(c:pid(0, 2, 3), noparent),
-    State1 = state:extend(Init, Lid),
-    State2 = state:pack(State1),
-    {NewLid, NewState} = state:trim_head(State2),
+    concuerror_lid:start(),
+    Init = concuerror_state:empty(),
+    Lid = concuerror_lid:new(c:pid(0, 2, 3), noparent),
+    State1 = concuerror_state:extend(Init, Lid),
+    State2 = concuerror_state:pack(State1),
+    {NewLid, NewState} = concuerror_state:trim_head(State2),
     ?assertEqual(NewLid, Lid),
-    ?assertEqual(true, state:is_empty(NewState)),
-    lid:stop().
+    ?assertEqual(true, concuerror_state:is_empty(NewState)),
+    concuerror_lid:stop().
 
 -spec extend_trim_tail_test() -> 'ok'.
 
 extend_trim_tail_test() ->
-    lid:start(),
-    Init = state:empty(),
-    Lid = lid:new(c:pid(0, 2, 3), noparent),
-    State1 = state:extend(Init, Lid),
-    State2 = state:pack(State1),
-    {NewLid, NewState} = state:trim_tail(State2),
+    concuerror_lid:start(),
+    Init = concuerror_state:empty(),
+    Lid = concuerror_lid:new(c:pid(0, 2, 3), noparent),
+    State1 = concuerror_state:extend(Init, Lid),
+    State2 = concuerror_state:pack(State1),
+    {NewLid, NewState} = concuerror_state:trim_tail(State2),
     ?assertEqual(NewLid, Lid),
-    ?assertEqual(true, state:is_empty(NewState)),
-    lid:stop().
+    ?assertEqual(true, concuerror_state:is_empty(NewState)),
+    concuerror_lid:stop().

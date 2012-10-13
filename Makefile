@@ -64,26 +64,26 @@ MAIN_MODULES = \
 	concuerror
 
 CORE_MODULES = \
-	gui \
-	error \
-	instr \
-	lid \
-	proc_action \
-	rep \
-	sched \
-	state \
-	ticket \
-	util
+	concuerror_gui \
+	concuerror_error \
+	concuerror_instr \
+	concuerror_lid \
+	concuerror_proc_action \
+	concuerror_rep \
+	concuerror_sched \
+	concuerror_state \
+	concuerror_ticket \
+	concuerror_util
 
 LOG_MODULES = \
-	log
+	concuerror_log
 
 UTEST_MODULES = \
-	error_tests \
-	instr_tests \
-	lid_tests \
-	state_tests \
-	ticket_tests
+	concuerror_error_tests \
+	concuerror_instr_tests \
+	concuerror_lid_tests \
+	concuerror_state_tests \
+	concuerror_ticket_tests
 
 MODULES = \
 	$(MAIN_MODULES) \
@@ -142,8 +142,8 @@ endif
 dialyze: all
 	dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam
 
-doc:	$(EBIN)/util.beam
-	erl -noinput -pa $(EBIN) -s util doc $(TOP) -s init stop
+doc:	$(EBIN)/concuerror_util.beam
+	erl -noinput -pa $(EBIN) -s concuerror_util doc $(TOP) -s init stop
 
 core_target:    $(CORE_MODULES:%=$(EBIN)/%.beam)
 
@@ -156,7 +156,8 @@ utest_target:   $(UTEST_MODULES:%=$(EBIN)/%.beam)
 scripts_target: concuerror
 
 utest: all
-	erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop
+	erl -noinput -sname $(APP_STRING) -pa $(EBIN) \
+		-s concuerror_util test -s init stop
 
 test: all
 	@(cd testsuite && ./runtests.sh)

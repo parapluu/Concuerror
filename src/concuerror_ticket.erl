@@ -12,7 +12,7 @@
 %%% Description : Error ticket interface
 %%%----------------------------------------------------------------------
 
--module(ticket).
+-module(concuerror_ticket).
 
 -export([new/2, get_error/1, get_details/1, details_to_strings/1, sort/1]).
 
@@ -22,20 +22,22 @@
 
 %% An error ticket containing all the informations about an error
 %% and the interleaving that caused it.
--type ticket() :: {error:error(), [proc_action:proc_action()]}.
+-type ticket() :: {concuerror_error:error(),
+                   [concuerror_proc_action:proc_action()]}.
 
 %% @doc: Create a new error ticket.
--spec new(error:error(), [proc_action:proc_action()]) -> ticket().
+-spec new(concuerror_error:error(), [concuerror_proc_action:proc_action()])
+            -> ticket().
 
 new(Error, ErrorDetails) ->
     {Error, ErrorDetails}.
 
--spec get_error(ticket()) -> error:error().
+-spec get_error(ticket()) -> concuerror_error:error().
 
 get_error({Error, _ErrorDetails}) ->
     Error.
 
--spec get_details(ticket()) -> [proc_action:proc_action()].
+-spec get_details(ticket()) -> [concuerror_proc_action:proc_action()].
 
 get_details({_Error, ErrorDetails}) ->
     ErrorDetails.
@@ -43,7 +45,7 @@ get_details({_Error, ErrorDetails}) ->
 -spec details_to_strings(ticket()) -> [string()].
 
 details_to_strings({_Error, ErrorDetails}) ->
-    [proc_action:to_string(Detail) || Detail <- ErrorDetails].
+    [concuerror_proc_action:to_string(Detail) || Detail <- ErrorDetails].
 
 %% Sort a list of tickets according to state.
 -spec sort([ticket()]) -> [ticket()].

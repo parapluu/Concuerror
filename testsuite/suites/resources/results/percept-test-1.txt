@@ -2,10 +2,11 @@ Checked 106 interleaving(s). 32 errors found.
 
 1
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.408.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.408.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -18,10 +19,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.408.0>],[]},
 
 2
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.417.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.417.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -40,10 +42,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.417.0>],[]},
 
 3
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.412.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.412.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -60,10 +63,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.412.0>],[]},
 
 4
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.260.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.260.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -108,10 +112,11 @@ Details           : {badarg,
 
 6
 Error type        : Exception
-Details           : {badarg,[{erlang,unregister,[percept_db],[]},
-                             {rep,rep_unregister,1,
-                                  [{file,"src/rep.erl"},{line,479}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,unregister,[percept_db],[]},
+                         {concuerror_rep,rep_unregister,1,
+                             [{file,"src/concuerror_rep.erl"},{line,480}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -127,10 +132,11 @@ Details           : {badarg,[{erlang,unregister,[percept_db],[]},
 
 7
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.315.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.315.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -149,10 +155,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.315.0>],[]},
 
 8
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.320.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.320.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -173,10 +180,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.320.0>],[]},
 
 9
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.310.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.310.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -249,10 +257,11 @@ Details           : {badarg,
 
 12
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.393.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.393.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -271,10 +280,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.393.0>],[]},
 
 13
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.388.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.388.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -291,10 +301,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.388.0>],[]},
 
 14
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.403.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.403.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -313,10 +324,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.403.0>],[]},
 
 15
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.383.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.383.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -331,10 +343,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.383.0>],[]},
 
 16
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.423.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.423.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -349,10 +362,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.423.0>],[]},
 
 17
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.240.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.240.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -365,10 +379,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.240.0>],[]},
 
 18
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.235.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.235.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -387,10 +402,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.235.0>],[]},
 
 19
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.230.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.230.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -407,10 +423,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.230.0>],[]},
 
 20
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.82.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.82.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -455,10 +472,11 @@ Details           : {badarg,
 
 22
 Error type        : Exception
-Details           : {badarg,[{erlang,unregister,[percept_db],[]},
-                             {rep,rep_unregister,1,
-                                  [{file,"src/rep.erl"},{line,479}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,unregister,[percept_db],[]},
+                         {concuerror_rep,rep_unregister,1,
+                             [{file,"src/concuerror_rep.erl"},{line,480}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -474,10 +492,11 @@ Details           : {badarg,[{erlang,unregister,[percept_db],[]},
 
 23
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.127.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.127.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -496,10 +515,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.127.0>],[]},
 
 24
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.132.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.132.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -520,10 +540,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.132.0>],[]},
 
 25
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.142.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.142.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -596,10 +617,11 @@ Details           : {badarg,
 
 28
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.215.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.215.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -618,10 +640,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.215.0>],[]},
 
 29
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.225.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.225.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -640,10 +663,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.225.0>],[]},
 
 30
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.220.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.220.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -660,10 +684,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.220.0>],[]},
 
 31
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.205.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.205.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)
@@ -678,10 +703,11 @@ Details           : {badarg,[{erlang,register,[percept_db,<0.205.0>],[]},
 
 32
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[percept_db,<0.245.0>],[]},
-                             {rep,rep_register,2,
-                                  [{file,"src/rep.erl"},{line,286}]},
-                             {percept,start,0,[]}]}
+Details           : {badarg,
+                        [{erlang,register,[percept_db,<0.245.0>],[]},
+                         {concuerror_rep,rep_register,2,
+                             [{file,"src/concuerror_rep.erl"},{line,287}]},
+                         {percept,start,0,[]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 exits (normal)

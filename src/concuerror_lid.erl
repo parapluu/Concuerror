@@ -12,7 +12,7 @@
 %%% Description : LID interface
 %%%----------------------------------------------------------------------
 
--module(lid).
+-module(concuerror_lid).
 
 -export([cleanup/1, from_pid/1, fold_pids/2, get_pid/1, mock/1,
          new/2, start/0, stop/0, to_string/1]).

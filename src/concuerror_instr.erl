@@ -12,7 +12,7 @@
 %%% Description : Instrumenter
 %%%----------------------------------------------------------------------
 
--module(instr).
+-module(concuerror_instr).
 -export([delete_and_purge/1, instrument_and_compile/3, load/1]).
 
 -export_type([macros/0]).
@@ -82,7 +82,7 @@
 -define(INSTR_MOD_FUN, ?INSTR_ERL_MOD_FUN ++ ?INSTR_ETS_FUN).
 
 %% Module containing replacement functions.
--define(REP_MOD, rep).
+-define(REP_MOD, concuerror_rep).
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -130,7 +130,7 @@ instrument_and_compile_aux([File|Rest], Includes, Defines, Acc) ->
 instrument_and_compile_one(File, Includes, Defines) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
-    log:log("Validating file ~p...~n", [File]),
+    concuerror_log:log("Validating file ~p...~n", [File]),
     OptIncludes = lists:map(fun(I) -> {i, I} end, Includes),
     OptDefines  = lists:map(fun({M,V}) -> {d,M,V} end, Defines),
     PreOptions = [strong_validation,verbose,return | OptIncludes++OptDefines],
@@ -141,21 +141,21 @@ instrument_and_compile_one(File, Includes, Defines) ->
             %% A table for holding used variable names.
             ?NT_USED = ets:new(?NT_USED, [named_table, private]),
             %% Instrument given source file.
-            log:log("Instrumenting file ~p...~n", [File]),
+            concuerror_log:log("Instrumenting file ~p...~n", [File]),
             case instrument(File, Includes, Defines) of
                 {ok, NewForms} ->
                     %% Delete `used` table.
                     ets:delete(?NT_USED),
                     %% Compile instrumented code.
                     %% TODO: More compile options?
-                    log:log("Compiling instrumented code...~n"),
+                    concuerror_log:log("Compiling instrumented code...~n"),
                     CompOptions = [binary],
                     case compile:forms(NewForms, CompOptions) of
                         {ok, Module, Binary} -> {Module, File, Binary};
-                        error -> log:log("error~n"), error
+                        error -> concuerror_log:log("error~n"), error
                     end;
                 {error, Error} ->
-                    log:log("error: ~p~n", [Error]),
+                    concuerror_log:log("error: ~p~n", [Error]),
                     %% Delete `used` table.
                     ets:delete(?NT_USED),
                     error
@@ -163,7 +163,7 @@ instrument_and_compile_one(File, Includes, Defines) ->
         {error, Errors, Warnings} ->
             log_error_list(Errors),
             log_warning_list(Warnings),
-            log:log("error~n"),
+            concuerror_log:log("error~n"),
             error
     end.
 
@@ -180,7 +180,7 @@ load_one({Module, File, Binary}) ->
     case code:load_binary(Module, File, Binary) of
         {module, Module} -> ok;
         {error, Error} ->
-            log:log("error~n~p~n", [Error]),
+            concuerror_log:log("error~n~p~n", [Error]),
             error
     end.
 
@@ -563,7 +563,7 @@ log_warning_list(_List) -> ok.
 
 %% Log a list of error or warning descriptors, as returned by compile:file/2.
 log_list(List, Pre) ->
-    LogFun = fun(String) -> log:log(String) end,
+    LogFun = fun(String) -> concuerror_log:log(String) end,
     _ = [LogFun(io_lib:format("~s:~p: ~s ~s\n",
                               [File, Line, Pre, Mod:format_error(Descr)]))
          || {File, Info} <- List, {Line, Mod, Descr} <- Info],

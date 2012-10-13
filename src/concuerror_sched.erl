@@ -12,7 +12,7 @@
 %%% Description : Scheduler
 %%%----------------------------------------------------------------------
 
--module(sched).
+-module(concuerror_sched).
 
 %% UI related exports
 -export([analyze/3]).
@@ -41,15 +41,15 @@
 %% blocked : A set containing all processes that cannot be scheduled next
 %%          (e.g. waiting for a message on a `receive`).
 %% current : The LID of the currently running or last run process.
-%% actions : The actions performed (proc_action:proc_action()).
+%% actions : The actions performed (concuerror_proc_action:proc_action()).
 %% error   : A term describing the error that occurred.
 %% state   : The current state of the program.
--record(context, {active         :: ?SET_TYPE(lid:lid()),
-                  blocked        :: ?SET_TYPE(lid:lid()),
-                  current        :: lid:lid(),
-                  actions        :: [proc_action:proc_action()],
-                  error          :: ?NO_ERROR | error:error(),
-                  state          :: state:state()}).
+-record(context, {active         :: ?SET_TYPE(concuerror_lid:lid()),
+                  blocked        :: ?SET_TYPE(concuerror_lid:lid()),
+                  current        :: concuerror_lid:lid(),
+                  actions        :: [concuerror_proc_action:proc_action()],
+                  error          :: ?NO_ERROR | concuerror_error:error(),
+                  state          :: concuerror_state:state()}).
 
 %% Internal message format
 %%
@@ -57,12 +57,12 @@
 %% pid    : The sender's LID.
 %% misc   : Optional arguments, depending on the message type.
 -record(sched, {msg  :: atom(),
-                lid  :: lid:lid(),
+                lid  :: concuerror_lid:lid(),
                 misc  = empty :: term()}).
 
 %% Special internal message format (fields same as above).
 -record(special, {msg :: atom(),
-                  lid :: lid:lid() | 'not_found',
+                  lid :: concuerror_lid:lid() | 'not_found',
                   misc = empty :: term()}).
 
 %%%----------------------------------------------------------------------
@@ -73,14 +73,14 @@
 
 -type analysis_options() :: [{'preb', bound()} |
                              {'include', [file:name()]} |
-                             {'define', instr:macros()}].
+                             {'define', concuerror_instr:macros()}].
 
 
 %% Analysis result tuple.
 -type analysis_ret() ::
     {'ok', analysis_info()} |
     {'error', 'instr', analysis_info()} |
-    {'error', 'analysis', analysis_info(), [ticket:ticket()]}.
+    {'error', 'analysis', analysis_info(), [concuerror_ticket:ticket()]}.
 
 %% Module-Function-Arguments tuple.
 -type analysis_target() :: {module(), atom(), [term()]}.
@@ -127,32 +127,35 @@ analyze(Target, Files, Options) ->
             false -> ?DEFAULT_DEFINE
         end,
     Ret =
-        case instr:instrument_and_compile(Files, Include, Define) of
+        case concuerror_instr:instrument_and_compile(Files, Include, Define) of
             {ok, Bin} ->
                 %% Note: No error checking for load
-                ok = instr:load(Bin),
-                log:log("Running analysis...~n~n"),
+                ok = concuerror_instr:load(Bin),
+                concuerror_log:log("Running analysis...~n~n"),
                 {T1, _} = statistics(wall_clock),
                 Result = interleave(Target, PreBound),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = elapsed_time(T1, T2),
                 case Result of
                     {ok, RunCount} ->
-                        log:log("Analysis complete (checked ~w interleaving(s) "
-                                "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-                        log:log("No errors found.~n"),
+                        concuerror_log:log("Analysis complete (checked ~w "
+                                "interleaving(s) in ~wm~.2fs):~n",
+                                [RunCount, Mins, Secs]),
+                        concuerror_log:log("No errors found.~n"),
                         {ok, {Target, RunCount}};
                     {error, RunCount, Tickets} ->
                         TicketCount = length(Tickets),
-                        log:log("Analysis complete (checked ~w interleaving(s) "
-                                "in ~wm~.2fs):~n", [RunCount, Mins, Secs]),
-                        log:log("Found ~p erroneous interleaving(s).~n",
+                        concuerror_log:log("Analysis complete (checked ~w "
+                                "interleaving(s) in ~wm~.2fs):~n",
+                                [RunCount, Mins, Secs]),
+                        concuerror_log:log(
+                                "Found ~p erroneous interleaving(s).~n",
                                 [TicketCount]),
                         {error, analysis, {Target, RunCount}, Tickets}
                 end;
             error -> {error, instr, {Target, 0}}
         end,
-    instr:delete_and_purge(Files),
+    concuerror_instr:delete_and_purge(Files),
     Ret.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
@@ -167,12 +170,12 @@ interleave_aux(Target, PreBound, Parent) ->
     register(?RP_SCHED, self()),
     %% The mailbox is flushed mainly to discard possible `exit` messages
     %% before enabling the `trap_exit` flag.
-    util:flush_mailbox(),
+    concuerror_util:flush_mailbox(),
     process_flag(trap_exit, true),
     %% Initialize state table.
     state_start(),
     %% Save empty replay state for the first run.
-    InitState = state:empty(),
+    InitState = concuerror_state:empty(),
     state_save([InitState]),
     Result = interleave_outer_loop(Target, 0, [], -1, PreBound),
     state_stop(),
@@ -213,7 +216,7 @@ interleave_loop(Target, RunCnt, Tickets) ->
         ReplayState ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
-            lid:start(),
+            concuerror_lid:start(),
             %% Save current process list (any process created after
             %% this will be cleaned up at the end of the run)
             ProcBefore = processes(),
@@ -222,22 +225,22 @@ interleave_loop(Target, RunCnt, Tickets) ->
             NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
             FirstPid = spawn_link(NewFun),
             %% Initialize scheduler context
-            FirstLid = lid:new(FirstPid, noparent),
+            FirstLid = concuerror_lid:new(FirstPid, noparent),
             Active = ?SETS:add_element(FirstLid, ?SETS:new()),
             Blocked = ?SETS:new(),
-            State = state:empty(),
+            State = concuerror_state:empty(),
             Context = #context{active=Active, state=State,
                 blocked=Blocked, actions=[]},
             %% Interleave using driver
             Ret = driver(Context, ReplayState),
             %% Cleanup
             proc_cleanup(processes() -- ProcBefore),
-            lid:stop(),
+            concuerror_lid:stop(),
             NewTickets =
                 case Ret of
                     {error, Error, ErrorState} ->
-                        Ticket = ticket:new(Error, ErrorState),
-                        log:show_error(Ticket),
+                        Ticket = concuerror_ticket:new(Error, ErrorState),
+                        concuerror_log:show_error(Ticket),
                         [Ticket|Tickets];
                     _OtherRet1 -> Tickets
                 end,
@@ -264,16 +267,16 @@ interleave_loop(Target, RunCnt, Tickets) ->
 %%%----------------------------------------------------------------------
 
 driver(Context, ReplayState) ->
-    case state:is_empty(ReplayState) of
+    case concuerror_state:is_empty(ReplayState) of
         true -> driver_normal(Context);
         false -> driver_replay(Context, ReplayState)
     end.
 
 driver_replay(Context, ReplayState) ->
-    {Next, Rest} = state:trim_head(ReplayState),
+    {Next, Rest} = concuerror_state:trim_head(ReplayState),
     NewContext = run(Context#context{current = Next, error = ?NO_ERROR}),
     #context{blocked = NewBlocked} = NewContext,
-    case state:is_empty(Rest) of
+    case concuerror_state:is_empty(Rest) of
         true ->
             case ?SETS:is_element(Next, NewBlocked) of
                 %% If the last action of the replayed state prefix is a block,
@@ -285,7 +288,8 @@ driver_replay(Context, ReplayState) ->
             end;
         false ->
             case ?SETS:is_element(Next, NewBlocked) of
-                true -> log:internal("Proc. ~p should be active.", [Next]);
+                true -> concuerror_log:internal(
+                        "Proc. ~p should be active.", [Next]);
                 false -> driver_replay(NewContext, Rest)
             end
     end.
@@ -323,7 +327,8 @@ check_for_errors(#context{error=NewError, actions=Actions, active=NewActive,
                     case ?SETS:size(NewBlocked) of
                         0 -> ok;
                         _NonEmptyBlocked ->
-                            Deadlock = error:new({deadlock, NewBlocked}),
+                            Deadlock =
+                                concuerror_error:new({deadlock, NewBlocked}),
                             ErrorState = lists:reverse(Actions),
                             {error, Deadlock, ErrorState}
                     end;
@@ -349,17 +354,17 @@ run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
     end.
 
 insert_states(State, {Lids, current}) ->
-    Extend = lists:map(fun(L) -> state:extend(State, L) end, Lids),
+    Extend = lists:map(fun(L) -> concuerror_state:extend(State, L) end, Lids),
     state_save(Extend);
 insert_states(State, {Lids, next}) ->
-    Extend = lists:map(fun(L) -> state:extend(State, L) end, Lids),
+    Extend = lists:map(fun(L) -> concuerror_state:extend(State, L) end, Lids),
     state_save_next(Extend).
 
 %% Run process Lid in context Context until it encounters a preemption point.
 run(#context{current = Lid, state = State} = Context) ->
-    ?debug_2("Running process ~s.~n", [lid:to_string(Lid)]),
+    ?debug_2("Running process ~s.~n", [concuerror_lid:to_string(Lid)]),
     %% Create new state by adding this process.
-    NewState = state:extend(State, Lid),
+    NewState = concuerror_state:extend(State, Lid),
     %% Send message to "unblock" the process.
     continue(Lid),
     %% Dispatch incoming notifications to the appropriate handler.
@@ -385,7 +390,7 @@ dispatch(Context) ->
             handler(Type, Lid, Context, Misc);
         %% Ignore unknown processes.
         {'EXIT', Pid, Reason} ->
-            case lid:from_pid(Pid) of
+            case concuerror_lid:from_pid(Pid) of
                 not_found -> dispatch(Context);
                 Lid -> handler(exit, Lid, Context, Reason)
             end
@@ -398,7 +403,7 @@ dispatch(Context) ->
 handler('after', Lid, #context{actions=Actions}=Context, _Misc) ->
     Action = {'after', Lid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 %% Move the process to the blocked set.
@@ -407,17 +412,17 @@ handler(block, Lid,
         _Misc) ->
     Action = {'block', Lid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     NewActive = ?SETS:del_element(Lid, Active),
     NewBlocked = ?SETS:add_element(Lid, Blocked),
     Context#context{active=NewActive, blocked=NewBlocked, actions=NewActions};
 
 handler(demonitor, Lid, #context{actions=Actions}=Context, _Ref) ->
     %% TODO: Get LID from Ref?
-    TargetLid = lid:mock(0),
+    TargetLid = concuerror_lid:mock(0),
     Action = {demonitor, Lid, TargetLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 %% Remove the exited process from the active set.
@@ -427,19 +432,19 @@ handler(exit, Lid, #context{active = Active, actions = Actions} = Context,
         Reason) ->
     NewActive = ?SETS:del_element(Lid, Active),
     %% Cleanup LID stored info.
-    lid:cleanup(Lid),
+    concuerror_lid:cleanup(Lid),
     %% Handle and propagate errors.
     case Reason of
         normal ->
             Action1 = {exit, Lid, normal},
             NewActions1 = [Action1 | Actions],
-            ?debug_1(proc_action:to_string(Action1) ++ "~n"),
+            ?debug_1(concuerror_proc_action:to_string(Action1) ++ "~n"),
             Context#context{active = NewActive, actions = NewActions1};
         _Else ->
-            Error = error:new(Reason),
-            Action2 = {exit, Lid, error:type(Error)},
+            Error = concuerror_error:new(Reason),
+            Action2 = {exit, Lid, concuerror_error:type(Error)},
             NewActions2 = [Action2 | Actions],
-            ?debug_1(proc_action:to_string(Action2) ++ "~n"),
+            ?debug_1(concuerror_proc_action:to_string(Action2) ++ "~n"),
             Context#context{active=NewActive, error=Error, actions=NewActions2}
     end;
 
@@ -451,41 +456,41 @@ handler(halt, Lid, #context{actions = Actions}=Context, Misc) ->
             Status -> {halt, Lid, Status}
         end,
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{active=?SETS:new(),blocked=?SETS:new(),actions=NewActions};
 
 handler(is_process_alive, Lid, #context{actions=Actions}=Context, TargetPid) ->
-    TargetLid = lid:from_pid(TargetPid),
+    TargetLid = concuerror_lid:from_pid(TargetPid),
     Action = {is_process_alive, Lid, TargetLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 handler(link, Lid, #context{actions = Actions}=Context, TargetPid) ->
-    TargetLid = lid:from_pid(TargetPid),
+    TargetLid = concuerror_lid:from_pid(TargetPid),
     Action = {link, Lid, TargetLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 handler(monitor, Lid, #context{actions = Actions}=Context, {Item, _Ref}) ->
-    TargetLid = lid:from_pid(Item),
+    TargetLid = concuerror_lid:from_pid(Item),
     Action = {monitor, Lid, TargetLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 handler(process_flag, Lid, #context{actions=Actions}=Context, {Flag, Value}) ->
     Action = {process_flag, Lid, Flag, Value},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 %% Normal receive message handler.
 handler('receive', Lid, #context{actions = Actions}=Context, {From, Msg}) ->
     Action = {'receive', Lid, From, Msg},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 %% Receive message handler for special messages, like 'EXIT' and 'DOWN',
@@ -493,20 +498,20 @@ handler('receive', Lid, #context{actions = Actions}=Context, {From, Msg}) ->
 handler('receive_no_instr', Lid, #context{actions = Actions}=Context, Msg) ->
     Action = {'receive_no_instr', Lid, Msg},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 handler(register, Lid, #context{actions=Actions}=Context, {RegName, RegLid}) ->
     Action = {register, Lid, RegName, RegLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 handler(send, Lid, #context{actions = Actions}=Context, {DstPid, Msg}) ->
-    DstLid = lid:from_pid(DstPid),
+    DstLid = concuerror_lid:from_pid(DstPid),
     Action = {send, Lid, DstLid, Msg},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 %% Link the newly spawned process to the scheduler process and add it to the
@@ -514,10 +519,10 @@ handler(send, Lid, #context{actions = Actions}=Context, {DstPid, Msg}) ->
 handler(spawn, ParentLid,
         #context{active= Active, actions = Actions} = Context, ChildPid) ->
     link(ChildPid),
-    ChildLid = lid:new(ChildPid, ParentLid),
+    ChildLid = concuerror_lid:new(ChildPid, ParentLid),
     Action = {spawn, ParentLid, ChildLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     NewActive = ?SETS:add_element(ChildLid, Active),
     Context#context{active = NewActive, actions = NewActions};
 
@@ -525,10 +530,10 @@ handler(spawn, ParentLid,
 handler(spawn_link, ParentLid,
         #context{active = Active, actions = Actions} = Context, ChildPid) ->
     link(ChildPid),
-    ChildLid = lid:new(ChildPid, ParentLid),
+    ChildLid = concuerror_lid:new(ChildPid, ParentLid),
     Action = {spawn_link, ParentLid, ChildLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     NewActive = ?SETS:add_element(ChildLid, Active),
     Context#context{active = NewActive, actions = NewActions};
 
@@ -536,10 +541,10 @@ handler(spawn_link, ParentLid,
 handler(spawn_monitor, ParentLid,
         #context{active=Active, actions=Actions}=Context, {ChildPid, _Ref}) ->
     link(ChildPid),
-    ChildLid = lid:new(ChildPid, ParentLid),
+    ChildLid = concuerror_lid:new(ChildPid, ParentLid),
     Action = {spawn_monitor, ParentLid, ChildLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     NewActive = ?SETS:add_element(ChildLid, Active),
     Context#context{active = NewActive, actions = NewActions};
 
@@ -552,33 +557,33 @@ handler(spawn_opt, ParentLid,
             C -> {C, noref}
         end,
     link(ChildPid),
-    ChildLid = lid:new(ChildPid, ParentLid),
+    ChildLid = concuerror_lid:new(ChildPid, ParentLid),
     Opts = sets:to_list(sets:intersection(sets:from_list([link, monitor]),
                                           sets:from_list(Opt))),
     Action = {spawn_opt, ParentLid, ChildLid, Opts},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     NewActive = ?SETS:add_element(ChildLid, Active),
     Context#context{active = NewActive, actions = NewActions};
 
 handler(unlink, Lid, #context{actions = Actions}=Context, TargetPid) ->
-    TargetLid = lid:from_pid(TargetPid),
+    TargetLid = concuerror_lid:from_pid(TargetPid),
     Action = {unlink, Lid, TargetLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 handler(unregister, Lid, #context{actions = Actions}=Context, RegName) ->
     Action = {unregister, Lid, RegName},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 handler(whereis, Lid, #context{actions = Actions}=Context, {RegName, Result}) ->
-    ResultLid = lid:from_pid(Result),
+    ResultLid = concuerror_lid:from_pid(Result),
     Action = {whereis, Lid, RegName, ResultLid},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions};
 
 %% Handler for anything "non-special". It just passes the arguments
@@ -588,7 +593,7 @@ handler(whereis, Lid, #context{actions = Actions}=Context, {RegName, Result}) ->
 handler(CallMsg, Lid, #context{actions = Actions}=Context, Args) ->
     Action = {CallMsg, Lid, Args},
     NewActions = [Action | Actions],
-    ?debug_1(proc_action:to_string(Action) ++ "~n"),
+    ?debug_1(concuerror_proc_action:to_string(Action) ++ "~n"),
     Context#context{actions = NewActions}.
 
 %%%----------------------------------------------------------------------
@@ -624,9 +629,9 @@ state_load() ->
     case get(?NT_STATE1) of
         [State | Rest] ->
             put(?NT_STATE1, Rest),
-            log:progress(log, Len1-1),
+            concuerror_log:progress(log, Len1-1),
             put(?NT_STATELEN, {Len1-1, Len2}),
-            state:pack(State);
+            concuerror_state:pack(State);
         [] -> no_state
     end.
 
@@ -666,7 +671,7 @@ state_stop() ->
 %% Swap names of the two state tables and clear one of them.
 state_swap() ->
     {_Len1, Len2} = get(?NT_STATELEN),
-    log:progress(swap, Len2),
+    concuerror_log:progress(swap, Len2),
     put(?NT_STATELEN, {Len2, 0}),
     put(?NT_STATE1, put(?NT_STATE2, [])).
 
@@ -686,7 +691,7 @@ continue(Pid) when is_pid(Pid) ->
     Pid ! #sched{msg = continue},
     ok;
 continue(Lid) ->
-    Pid = lid:get_pid(Lid),
+    Pid = concuerror_lid:get_pid(Lid),
     Pid ! #sched{msg = continue},
     ok.
 
@@ -705,10 +710,10 @@ notify(Msg, Misc) ->
     end.
 
 %% TODO: Maybe move into lid module.
--spec lid_from_pid(pid()) -> lid:lid() | 'not_found'.
+-spec lid_from_pid(pid()) -> concuerror_lid:lid() | 'not_found'.
 
 lid_from_pid(Pid) ->
-    lid:from_pid(Pid).
+    concuerror_lid:from_pid(Pid).
 
 -spec wakeup() -> 'ok'.
 
