@@ -415,7 +415,10 @@ instrument_receive(Tree) ->
             Action = erl_syntax:receive_expr_action(Tree),
             AfterBlock = erl_syntax:block_expr(Action),
             ModTree = erl_syntax:atom(?REP_MOD),
-            FunTree = erl_syntax:atom(rep_receive_block),
+            RepBlock =
+                ?default_or_flanagan(rep_receive_block,
+                                     rep_receive_block_flanagan),
+            FunTree = erl_syntax:atom(RepBlock),
             Fun = erl_syntax:application(ModTree, FunTree, []),
             transform_receive_timeout(Fun, AfterBlock, Timeout);
         _Other ->
@@ -428,28 +431,41 @@ instrument_receive(Tree) ->
             FunExpr = erl_syntax:fun_expr([FunClause]),
             %% Create ?REP_MOD:rep_receive(fun(X) -> ...).
             Module = erl_syntax:atom(?REP_MOD),
-            Function = erl_syntax:atom(rep_receive),
-            RepReceive = erl_syntax:application(Module, Function, [FunExpr]),
+            RepReceiveFun =
+                ?default_or_flanagan(rep_receive, rep_receive_flanagan),
+            Function = erl_syntax:atom(RepReceiveFun),
+            Timeout = erl_syntax:receive_expr_timeout(Tree),
+            HasNoTimeout = Timeout =:= none,
+            HasNoTimeoutAtom = erl_syntax:atom(HasNoTimeout),
+            RepReceive =
+                erl_syntax:application(Module, Function,
+                                       [FunExpr, HasNoTimeoutAtom]),
             %% Create new receive expression.
             NewReceive = erl_syntax:receive_expr(NewClauses),
             %% Result is begin rep_receive(...), NewReceive end.
             Block = erl_syntax:block_expr([RepReceive, NewReceive]),
-            case erl_syntax:receive_expr_timeout(Tree) of
+            case HasNoTimeout of
                 %% Instrument `receive` without `after` part.
-                none -> Block;
+                true -> Block;
                 %% Instrument `receive` with `after` part.
-                _Any ->
-                    Timeout = erl_syntax:receive_expr_timeout(Tree),
+                false ->
                     Action = erl_syntax:receive_expr_action(Tree),
                     RepMod = erl_syntax:atom(?REP_MOD),
-                    RepFun = erl_syntax:atom(rep_after_notify),
+                    RepAfterNotify =
+                        ?default_or_flanagan(rep_after_notify,
+                                             rep_after_notify_flanagan),
+                    RepFun = erl_syntax:atom(RepAfterNotify),
                     RepApp = erl_syntax:application(RepMod, RepFun, []),
                     NewAction = [RepApp|Action],
                     %% receive NewPatterns -> NewActions after 0 -> NewAfter end
                     ZeroTimeout = erl_syntax:integer(0),
                     AfterExpr = erl_syntax:receive_expr(NewClauses,
                                                         ZeroTimeout, NewAction),
-                    transform_receive_timeout(Block, AfterExpr, Timeout)
+                    AfterBlock =
+                        ?default_or_flanagan(AfterExpr,
+                                            erl_syntax:block_expr([RepReceive,
+                                                                   AfterExpr])),
+                    transform_receive_timeout(Block, AfterBlock, Timeout)
             end
     end.
 
@@ -489,7 +505,9 @@ transform_receive_clause_regular(Clause) ->
     PidVar = new_variable(),
     NewPattern = [erl_syntax:tuple([InstrAtom, PidVar, OldPattern])],
     Module = erl_syntax:atom(?REP_MOD),
-    Function = erl_syntax:atom(rep_receive_notify),
+    RepReceiveNotify =
+        ?default_or_flanagan(rep_receive_notify, rep_receive_notify_flanagan),
+    Function = erl_syntax:atom(RepReceiveNotify),
     Arguments = [PidVar, OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),
     NewBody = [Notify|OldBody],
@@ -504,7 +522,9 @@ transform_receive_clause_special(Clause) ->
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
     Module = erl_syntax:atom(?REP_MOD),
-    Function = erl_syntax:atom(rep_receive_notify),
+    RepReceiveNotify =
+        ?default_or_flanagan(rep_receive_notify, rep_receive_notify_flanagan),
+    Function = erl_syntax:atom(RepReceiveNotify),
     Arguments = [OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),
     NewBody = [Notify|OldBody],
@@ -524,12 +544,9 @@ transform_receive_timeout(InfBlock, FrBlock, Timeout) ->
 %% Instrument a Pid ! Msg expression.
 %% Pid ! Msg is transformed into ?REP_MOD:rep_send(Pid, Msg).
 instrument_send(Tree) ->
-    Module = erl_syntax:atom(?REP_MOD),
-    Function = erl_syntax:atom(rep_send),
     Dest = erl_syntax:infix_expr_left(Tree),
     Msg = erl_syntax:infix_expr_right(Tree),
-    Arguments = [Dest, Msg],
-    erl_syntax:application(Module, Function, Arguments).
+    instrument_application({erlang, send, [Dest, Msg]}).
 
 %%%----------------------------------------------------------------------
 %%% Helper functions

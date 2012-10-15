@@ -16,7 +16,7 @@
 
 -export([rep_after_notify/0, rep_demonitor/1, rep_demonitor/2,
          rep_halt/0, rep_halt/1, rep_is_process_alive/1, rep_link/1,
-         rep_monitor/2, rep_process_flag/2, rep_receive/1,
+         rep_monitor/2, rep_process_flag/2, rep_receive/2,
          rep_receive_block/0, rep_receive_notify/1,
          rep_receive_notify/2, rep_register/2, rep_send/2,
          rep_send/3, rep_spawn/1, rep_spawn/3, rep_spawn_link/1,
@@ -31,6 +31,9 @@
 
 -export([spawn_fun_wrapper/1]).
 -export([rep_send_flanagan/2, rep_spawn_flanagan/1]).
+-export([rep_receive_flanagan/2, rep_receive_block_flanagan/0,
+         rep_after_notify_flanagan/0, rep_receive_notify_flanagan/2,
+         rep_receive_notify_flanagan/1]).
 
 -include("gen.hrl").
 
@@ -202,9 +205,9 @@ rep_process_flag(Flag, Value) ->
 %%
 %% If a matching message is found in the process' message queue, continue
 %% to actual receive statement, else block and when unblocked do the same.
--spec rep_receive(fun((term()) -> 'block' | 'continue')) -> 'ok'.
+-spec rep_receive(fun((term()) -> 'block' | 'continue'), boolean()) -> 'ok'.
 
-rep_receive(Fun) ->
+rep_receive(Fun, _HasTimeout) ->
     case ?LID_FROM_PID(self()) of
         not_found ->
             log:internal("Uninstrumented process enters instrumented receive");
@@ -278,6 +281,60 @@ rep_receive_notify(From, Msg) ->
 rep_receive_notify(Msg) ->
     sched:notify('receive_no_instr', Msg),
     ok.
+
+%%------------------------------------------------------------------------------
+
+-spec rep_receive_flanagan(fun((term()) -> 'block' | 'continue'), boolean()) -> 'ok'.
+
+rep_receive_flanagan(Fun, HasTimeout) ->
+    log:log("receive\n"),
+    case ?LID_FROM_PID(self()) of
+        not_found ->
+            log:internal("Uninstrumented process enters instrumented receive");
+        _Lid ->
+            rep_receive_loop_flanagan(poll, Fun, HasTimeout)
+    end.
+
+rep_receive_loop_flanagan(Act, Fun, HasTimeout) ->
+    case Act of
+        continue -> ok;
+        poll ->
+            {messages, Mailbox} = process_info(self(), messages),
+            case rep_receive_match(Fun, Mailbox) of
+                block ->
+                    NewAct = sched:notify('receive', {block, HasTimeout}),
+                    rep_receive_loop_flanagan(NewAct, Fun, HasTimeout);
+                continue ->
+                    continue = sched:notify('receive', {continue, HasTimeout}),
+                    ok
+            end
+    end.
+
+-spec rep_receive_block_flanagan() -> no_return().
+
+rep_receive_block_flanagan() ->
+    Fun = fun(_Message) -> block end,
+    rep_receive_flanagan(Fun, true).
+
+-spec rep_after_notify_flanagan() -> 'ok'.
+
+rep_after_notify_flanagan() ->
+    log:log("after notify\n"),
+    rep_after_notify().
+
+-spec rep_receive_notify_flanagan(pid(), term()) -> 'ok'.
+
+rep_receive_notify_flanagan(From, Msg) ->
+    log:log("receive notify\n"),
+    rep_receive_notify(From, Msg).
+
+-spec rep_receive_notify_flanagan(term()) -> 'ok'.
+
+rep_receive_notify_flanagan(Msg) ->
+    log:log("receive notify\n"),
+    rep_receive_notify(Msg).
+
+%%------------------------------------------------------------------------------
 
 %% @spec rep_register(atom(), pid() | port()) -> 'true'
 %% @doc: Replacement for `register/2'.

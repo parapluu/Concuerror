@@ -22,6 +22,8 @@
 
 -export([notify/3]).
 
+-export([wait_poll_or_continue/0]).
+
 -export_type([analysis_target/0, analysis_ret/0, bound/0]).
 
 -include("gen.hrl").
@@ -801,6 +803,8 @@ check_for_errors(#context{error=NewError, actions=Actions, active=NewActive,
                         _NonEmptyBlocked ->
                             Deadlock = error:new({deadlock, NewBlocked}),
                             ErrorState = lists:reverse(Actions),
+                            log:log("SNEAK A PEEK!\nES:~p\nE:~p\n",
+                                    [ErrorState, Deadlock]),
                             {error, Deadlock, ErrorState}
                     end;
                 _NonEmptyActive -> driver_normal(NewContext)
@@ -1191,7 +1195,11 @@ notify(Msg, Misc, Type) ->
         Lid ->
             ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc, type = Type},
             case Type of
-                next  -> wait();
+                next  ->
+                    case Msg of
+                        'receive' -> wait_poll_or_continue();
+                        _Other -> wait()
+                    end;
                 _Else -> ok
             end
     end.
@@ -1225,3 +1233,12 @@ wait() ->
     receive
         #sched{msg = continue} -> ok
     end.
+
+-spec wait_poll_or_continue() -> 'poll' | 'continue'.
+
+wait_poll_or_continue() ->
+    receive
+        #sched{msg = continue} -> continue;
+        #sched{msg = poll} -> poll
+    end.
+    
