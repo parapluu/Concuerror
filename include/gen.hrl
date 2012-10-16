@@ -58,8 +58,8 @@
 -define(RET_INTERNAL_ERROR, 1).
 
 %% Host - Node names.
--define(HOST, net_adm:localhost()).
--define(CED_NODE, list_to_atom(?APP_STRING ++ "@" ++ ?HOST)).
+-define(NODE, atom_to_list(node())).
+-define(HOST, lists:dropwhile(fun(E) -> E /= $@ end, ?NODE)).
 
 %% 'About' message
 -define(INFO_MSG,

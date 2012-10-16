@@ -31,7 +31,7 @@
 %%%----------------------------------------------------------------------
 
 %% @spec start(concuerror:options()) -> 'true'
-%% @doc: Start the CED GUI.
+%% @doc: Start the Concuerror GUI.
 -spec start(concuerror:options()) -> 'true'.
 
 start(Options) ->

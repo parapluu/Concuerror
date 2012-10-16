@@ -164,18 +164,19 @@ test: all
 
 concuerror:
 	printf "\
-	#%c/bin/bash\n\
-	\n\
+	#%c/bin/bash\n\n\
+	Date=\$$(date +%%s%%N)\n\
+	Name=\"$(APP_STRING)\$$Date\"\n\
+	Cookie=\"$(APP_STRING)Cookie\"\n\n\
 	trap ctrl_c INT\n\
 	function ctrl_c() {\n\
-	    erl -sname $(APP_STRING)_Stop -noinput \\\\\n\
+	    erl -sname $(APP_STRING)Stop -noinput -cookie \$$Cookie \\\\\n\
 	        -pa $(EBIN) \\\\\n\
-	        -s concuerror stop -s init stop\n\
-	}\n\
-	\n\
-	erl +Bi -smp enable -noinput -sname $(APP_STRING) \\\\\n\
+	        -run concuerror stop \$$Name -run init stop\n\
+	}\n\n\
+	erl +Bi -smp enable -noinput -sname \$$Name -cookie \$$Cookie \\\\\n\
 	    -pa $(EBIN) \\\\\n\
-	    -s concuerror cli -s init stop -- \"\$$@\" &\n\
+	    -run concuerror cli -run init stop -- \"\$$@\" &\n\
 	wait \$$!\n" ! > $@
 	chmod +x $@
 

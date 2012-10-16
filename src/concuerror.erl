@@ -14,7 +14,7 @@
 -module(concuerror).
 
 %% UI exports.
--export([gui/1, cli/0, analyze/1, export/2, stop/0]).
+-export([gui/1, cli/0, analyze/1, export/2, stop/0, stop/1]).
 %% Log server callback exports.
 -export([init/1, terminate/2, handle_event/2]).
 
@@ -75,27 +75,30 @@
 %% @doc: Stop the Concuerror analysis
 -spec stop() -> ok.
 stop() ->
-    %% XXX: Erlang nodes is erroneous with Concuerror right
-    %% now and there is times this approach may crash.
-    %% Get the hostname
-    Temp1 = atom_to_list(node()),
-    Host = lists:dropwhile(fun(E) -> E /= $@ end, Temp1),
-    %% Set Concuerror Node
-    Node = list_to_atom("Concuerror" ++ Host),
-    %% Connect to node
-    case net_adm:ping(Node) of
-        pong ->
-            %% Stop analysis
-            spawn(Node, fun() -> ?RP_SCHED ! stop_analysis end),
-            ok;
-        _ ->
-            %% Well some times we could not connect with the
-            %% first try so for now just repeat
-            stop()
+    try ?RP_SCHED ! stop_analysis
+    catch
+        error:badarg ->
+            init:stop()
+    end,
+    ok.
+
+%% @spec stop_node([string()]) -> ok
+%% @doc: Stop the Concuerror analysis
+-spec stop([string()]) -> ok.
+stop([Name]) ->
+    %% Disable error logging messages.
+    ?tty(),
+    Node = list_to_atom(Name ++ ?HOST),
+    case rpc:call(Node, concuerror, stop, []) of
+        {badrpc, _Reason} ->
+            %% Retry
+            stop([Name]);
+        _Res ->
+            ok
     end.
 
 %% @spec gui(options()) -> 'true'
-%% @doc: Start the CED GUI.
+%% @doc: Start the Concuerror GUI.
 -spec gui(options()) -> 'true'.
 gui(Options) ->
     %% Disable error logging messages.
@@ -292,7 +295,8 @@ parse([{Opt, Param} | Args], Options) ->
             erlang:halt();
 
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
-            EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa" ->
+            EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa";
+            EF=:="cookie" ->
                 %% erl flag (ignore it)
                 parse(Args, Options);
 
