@@ -3,7 +3,8 @@
 -export([independent_receivers/0, simple_spawn/0, spawn_and_send/0, many_spawn/0,
          receiver/0, not_really_blocker/0, spawn/0, three_send/0,
          crasher/0, crasher2/0,
-         blocker/0]).
+         blocker/0, blocking_trace/0,
+         receiver_trace/0]).
 
 independent_receivers() ->
     Parent = self(),
@@ -31,12 +32,10 @@ simple_spawn() ->
 
 spawn_and_send() ->
     spawn(fun() -> ok end) ! ok.
-    
+
 many_spawn() ->
-    Fun = fun() -> ok end,
-    spawn(Fun),
-    spawn(Fun),
-    spawn(Fun).
+    Fun = fun() -> spawn(fun() -> ok end) end,
+    many(Fun, 3).
 
 receiver() ->
     spawn(fun() -> receive ok -> ok end end) ! ok.
@@ -45,16 +44,13 @@ not_really_blocker() ->
     spawn(fun() -> receive ok -> ok after 0 -> ok end end) ! ok.
 
 spawn() ->
-    Fun = fun() -> ok end,
-    spawn(Fun),
-    spawn(Fun).
+    Fun = fun() -> spawn(fun() -> ok end) end,
+    many(2, Fun).
 
 three_send() ->
-    Fun = fun() -> ok end,
-    spawn(Fun) ! ok,
-    spawn(Fun) ! ok,
-    spawn(Fun) ! ok.
-    
+    Fun = fun() -> spawn(fun() -> ok end) ! ok end,
+    many(Fun, 3).
+
 crasher() ->
     spawn(fun() -> this() end).
 
@@ -64,9 +60,6 @@ this() ->
 will() ->
     crash().
 
-crash() ->
-    throw(boom).
-
 crasher2() ->
     spawn(fun() -> this2() end).
 
@@ -74,12 +67,34 @@ this2() ->
     will2().
 
 will2() ->
-    crash2().
+    badarith().
 
-crash2() ->
-    1/0.
+blocking_trace() ->
+    Pid = spawn(fun() -> ok end),
+    Pid ! ok,
+    Pid ! ok,
+    Pid ! ok,
+    Pid ! ok,
+    blocker().
+
+receiver_trace() ->
+    receiver(),
+    blocker().
+
+%%------------------------------------------------------------------------------
+%% Small Testing Parts
+%%------------------------------------------------------------------------------
 
 blocker() ->
     receive
         Pat -> Pat
     end.
+
+crash() ->
+    throw(boom).
+
+badarith() ->
+    1/0.
+
+many(Fun, 0) -> ok;
+many(Fun, N) -> Fun(), many(Fun, N-1).

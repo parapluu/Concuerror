@@ -155,8 +155,10 @@ root_lid() ->
 next_lid(ParentLid, Children) ->
     100 * ParentLid + Children + 1.
 
--spec to_string(lid()) -> string().
+-spec to_string(lid() | {dead, lid()}) -> string().
 
+to_string({dead, Lid}) ->
+    lists:flatten(io_lib:format("~s (dead)",[to_string(Lid)]));
 to_string(Lid) ->
     LidString = lists:flatten(io_lib:format("P~p", [Lid])),
     NewLidString = re:replace(LidString, "0", ".", [global]),

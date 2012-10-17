@@ -302,10 +302,10 @@ rep_receive_loop_flanagan(Act, Fun, HasTimeout) ->
             {messages, Mailbox} = process_info(self(), messages),
             case rep_receive_match(Fun, Mailbox) of
                 block ->
-                    NewAct = sched:notify('receive', {block, HasTimeout}),
+                    NewAct = sched:notify('receive', [false, HasTimeout]),
                     rep_receive_loop_flanagan(NewAct, Fun, HasTimeout);
                 continue ->
-                    continue = sched:notify('receive', {continue, HasTimeout}),
+                    continue = sched:notify('receive', [true, HasTimeout]),
                     ok
             end
     end.
