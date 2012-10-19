@@ -712,7 +712,7 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 NewDest =
                     case sets:is_element(Dest, Procs) of
                         true -> Dest;
-                        false -> {dead, Dest}
+                        false -> not_found %{dead, Dest}
                     end,
                 {send, Lid, NewDest, Msg};
             'receive' ->

@@ -1,0 +1,32 @@
+#!/bin/bash
+
+TESTS="simple_spawn spawn_and_send receiver spawn crasher crasher2 \
+blocking_trace receiver_trace two_receiver_trace \
+spawner_trace spawner_trace_2 spawner_trace_3 spawner_trace_4 spawner_trace_5 \
+many_spawn three_send"
+
+compare() {
+    echo -n "$1 "
+    ./concuerror -f test.erl -p inf -t test $1 > /dev/null
+    grep -v blocks results.txt > normal
+    ./concuerror -f test.erl -t test $1 --flanagan > /dev/null
+    mv results.txt flanagan
+    if diff -q normal flanagan; then
+        echo "OK"
+    else
+        echo "ERROR!"
+        diff normal flanagan
+        exit 1
+    fi
+}
+
+make -s
+if [ -n "$1" ]; then
+    compare $1
+    exit 0
+else
+    for t in $TESTS; do
+        compare $t
+    done
+    exit 0
+fi

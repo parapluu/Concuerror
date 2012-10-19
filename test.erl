@@ -4,7 +4,8 @@
          receiver/0, not_really_blocker/0, spawn/0, three_send/0,
          crasher/0, crasher2/0,
          blocker/0, blocking_trace/0,
-         receiver_trace/0]).
+         receiver_trace/0, two_receiver_trace/0,
+         spawner_trace/0, spawner_trace_2/0, spawner_trace_3/0, spawner_trace_4/0, spawner_trace_5/0]).
 
 independent_receivers() ->
     Parent = self(),
@@ -33,6 +34,10 @@ simple_spawn() ->
 spawn_and_send() ->
     spawn(fun() -> ok end) ! ok.
 
+spawn() ->
+    Fun = fun() -> spawn(fun() -> ok end) end,
+    many(Fun, 2).
+
 many_spawn() ->
     Fun = fun() -> spawn(fun() -> ok end) end,
     many(Fun, 3).
@@ -42,10 +47,6 @@ receiver() ->
 
 not_really_blocker() ->
     spawn(fun() -> receive ok -> ok after 0 -> ok end end) ! ok.
-
-spawn() ->
-    Fun = fun() -> spawn(fun() -> ok end) end,
-    many(2, Fun).
 
 three_send() ->
     Fun = fun() -> spawn(fun() -> ok end) ! ok end,
@@ -80,6 +81,30 @@ blocking_trace() ->
 receiver_trace() ->
     receiver(),
     blocker().
+
+two_receiver_trace() ->
+    spawn(fun() -> ok end),
+    receiver_trace().
+
+spawner_trace() ->
+    spawn(),
+    blocker().
+
+spawner_trace_2() ->
+    many_spawn(),
+    blocker().
+
+spawner_trace_3() ->
+    many_spawn(),
+    crasher().
+
+spawner_trace_4() ->
+    spawn(),
+    crasher().
+
+spawner_trace_5() ->
+    spawn(fun() -> ok end),
+    crasher().
 
 %%------------------------------------------------------------------------------
 %% Small Testing Parts
