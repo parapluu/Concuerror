@@ -1,9 +1,13 @@
 #!/bin/bash
 
 TESTS="simple_spawn spawn_and_send receiver spawn crasher crasher2 \
-blocking_trace receiver_trace two_receiver_trace \
+blocking_trace receiver_trace \
+two_receiver_trace two_receiver_trace_2 two_receiver_trace_3 \
 spawner_trace spawner_trace_2 spawner_trace_3 spawner_trace_4 spawner_trace_5 \
-many_spawn three_send"
+many_spawn three_send \
+afterer after_crasher \
+opt_afterer opt_after_crasher \
+not_really_blocker not_really_blocker_crasher"
 
 compare() {
     echo -n "$1 "

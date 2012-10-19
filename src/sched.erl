@@ -35,7 +35,7 @@
 -define(INFINITY, 1000000).
 -define(NO_ERROR, undef).
 
-%-define(F_DEBUG, true).
+% -define(F_DEBUG, true).
 -ifdef(F_DEBUG).
 -define(f_debug(A,B), log:log(A,B)).
 -define(f_debug(A), log:log(A,[])).
@@ -590,6 +590,19 @@ handle_instruction_op({Lid, {'receive', [HasMatching, HasAfter]}}) ->
                         'receive' -> Details;
                         'receive_no_instr' -> {not_found, Details}
                     end
+            end;
+        false ->
+            %% Need to check whether something matching has arrived in the meanwhile.
+            true = HasAfter,
+            receive
+                #sched{msg = 'after', lid = Lid, misc = empty, type = prev} ->
+                    {};
+                #sched{msg = ReceiveTag, lid = Lid,
+                       misc = Details, type = prev} ->
+                    case ReceiveTag of
+                        'receive' -> Details;
+                        'receive_no_instr' -> {not_found, Details}
+                    end
             end
     end;
 handle_instruction_op(_) ->
@@ -632,13 +645,14 @@ handle_instruction_al({Lid, {spawn, unknown}} = Transition, TraceTop,
 handle_instruction_al({Lid, {'receive', [HasMatching, HasAfter]}} = Transition,
                       TraceTop, ReceiveDetails) ->
     #trace_state{lid_trace = LidTrace} = TraceTop,
-    case HasMatching of
-        true ->
-            {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
-            NewLast = {Lid, {'receive', ReceiveDetails}},
-            NewLidTrace = queue:in(NewLast, TmpLidTrace),
-            TraceTop#trace_state{last = NewLast, lid_trace = NewLidTrace}
-    end;
+    {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
+    NewLast =
+        case ReceiveDetails of
+            {} -> {Lid, {'after', []}};
+            _Else -> {Lid, {'receive', ReceiveDetails}}
+        end,
+    NewLidTrace = queue:in(NewLast, TmpLidTrace),
+    TraceTop#trace_state{last = NewLast, lid_trace = NewLidTrace};
 handle_instruction_al(_Transition, TraceTop, {}) ->
     TraceTop.
 
@@ -718,6 +732,8 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
             'receive' ->
                 {Origin, Msg} = Extra,
                 {'receive', Lid, Origin, Msg};
+            'after' ->
+                {'after', Lid};
             _ ->
                 {Instr, Lid, Extra}
         end,
@@ -741,7 +757,7 @@ report_possible_deadlock(State) ->
                 LidTrace = queue:to_list(TraceTop#trace_state.lid_trace),
                 case TraceTop#trace_state.blocked of
                     [] ->
-                        ?f_debug("~p\n",[LidTrace]),
+                        log:log("~p\n",[LidTrace]),
                         Tickets;
                     Blocked ->
                         ?f_debug("Deadlock: ~p\n",[LidTrace]),

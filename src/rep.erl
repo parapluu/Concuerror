@@ -287,7 +287,6 @@ rep_receive_notify(Msg) ->
 -spec rep_receive_flanagan(fun((term()) -> 'block' | 'continue'), boolean()) -> 'ok'.
 
 rep_receive_flanagan(Fun, HasTimeout) ->
-    log:log("receive\n"),
     case ?LID_FROM_PID(self()) of
         not_found ->
             log:internal("Uninstrumented process enters instrumented receive");
@@ -319,8 +318,8 @@ rep_receive_block_flanagan() ->
 -spec rep_after_notify_flanagan() -> 'ok'.
 
 rep_after_notify_flanagan() ->
-    log:log("after notify\n"),
-    rep_after_notify().
+    sched:notify('after', empty, prev),
+    ok.
 
 -spec rep_receive_notify_flanagan(pid(), term()) -> 'ok'.
 

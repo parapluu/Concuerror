@@ -4,8 +4,12 @@
          receiver/0, not_really_blocker/0, spawn/0, three_send/0,
          crasher/0, crasher2/0,
          blocker/0, blocking_trace/0,
-         receiver_trace/0, two_receiver_trace/0,
-         spawner_trace/0, spawner_trace_2/0, spawner_trace_3/0, spawner_trace_4/0, spawner_trace_5/0]).
+         receiver_trace/0, two_receiver_trace/0, two_receiver_trace_2/0, two_receiver_trace_3/0,
+         afterer/0, after_crasher/0,
+         opt_afterer/0, opt_after_crasher/0,
+         spawner_trace/0, spawner_trace_2/0, spawner_trace_3/0, spawner_trace_4/0, spawner_trace_5/0,
+         independent_receivers_blocker/0,
+         not_really_blocker/0, not_really_blocker_crasher/0]).
 
 independent_receivers() ->
     Parent = self(),
@@ -106,13 +110,55 @@ spawner_trace_5() ->
     spawn(fun() -> ok end),
     crasher().
 
+two_receiver_trace_2() ->
+    spawn(fun() -> ok end),
+    receiver(),
+    spawn(fun() -> ok end),
+    crasher2().
+
+two_receiver_trace_3() ->
+    receiver(),
+    receiver(),
+    crasher().
+
+after_crasher() ->
+    afterer(),
+    crasher().
+
+opt_after_crasher() ->
+    opt_afterer(),
+    crasher().
+
+independent_receivers_blocker() ->
+    independent_receivers(),
+    blocker().    
+
+not_really_blocker_crasher() ->
+    not_really_blocker(),
+    crasher().
+
 %%------------------------------------------------------------------------------
 %% Small Testing Parts
 %%------------------------------------------------------------------------------
 
+opt_afterer() ->
+    Ref = make_ref(),
+    receive
+        Ref -> ok
+    after
+        10 -> ok
+    end.
+
 blocker() ->
     receive
         Pat -> Pat
+    end.
+
+afterer() ->
+    spawn(),
+    receive
+    after 50 ->
+            ok
     end.
 
 crash() ->
