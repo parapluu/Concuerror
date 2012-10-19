@@ -146,15 +146,15 @@ analyze(Target, Files, Options) ->
             {'define', D} -> D;
             false -> ?DEFAULT_DEFINE
         end,
-    Flanagan = lists:member({flanagan}, Options),
+    Dpor = lists:member({dpor}, Options),
     Ret =
-        case instr:instrument_and_compile(Files, Include, Define, Flanagan) of
+        case instr:instrument_and_compile(Files, Include, Define, Dpor) of
             {ok, Bin} ->
                 %% Note: No error checking for load
                 ok = instr:load(Bin),
                 log:log("Running analysis...~n~n"),
                 {T1, _} = statistics(wall_clock),
-                Result = interleave(Target, PreBound, Flanagan),
+                Result = interleave(Target, PreBound, Dpor),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = elapsed_time(T1, T2),
                 case Result of
@@ -177,12 +177,12 @@ analyze(Target, Files, Options) ->
     Ret.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
-interleave(Target, PreBound, Flanagan) ->
+interleave(Target, PreBound, Dpor) ->
     Self = self(),
     Fun =
         fun() ->
-                case Flanagan of
-                    true -> interleave_flanagan(Target, PreBound, Self);
+                case Dpor of
+                    true -> interleave_dpor(Target, PreBound, Self);
                     false -> interleave_aux(Target, PreBound, Self)
                 end
         end,
@@ -207,10 +207,10 @@ interleave_aux(Target, PreBound, Parent) ->
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
 
-interleave_flanagan(Target, PreBound, Parent) ->
-    ?f_debug("Flanagan is not really ready yet...\n"),
+interleave_dpor(Target, PreBound, Parent) ->
+    ?f_debug("Dpor is not really ready yet...\n"),
     register(?RP_SCHED, self()),
-    Result = interleave_flanagan(Target, PreBound),
+    Result = interleave_dpor(Target, PreBound),
     Parent ! {interleave_result, Result}.
 
 interleave_outer_loop(_T, RunCnt, Tickets, MaxBound, MaxBound) ->
@@ -267,7 +267,7 @@ new_lid_trace() ->
 
 -type trace_state() :: #trace_state{}.
 
--record(flanagan_state, {
+-record(dpor_state, {
           target                    :: analysis_target(),
           run_count   = 1           :: pos_integer(),
           tickets     = []          :: [ticket:ticket()],
@@ -276,11 +276,11 @@ new_lid_trace() ->
          }).
 
 %% STUB
-interleave_flanagan(Target, _PreBound) ->
-    ?f_debug("Interleave flanagan!\n"),
+interleave_dpor(Target, _PreBound) ->
+    ?f_debug("Interleave dpor!\n"),
     Trace = start_target(Target),
     ?f_debug("Target started!\n"),
-    NewState = #flanagan_state{trace = Trace, target = Target},
+    NewState = #dpor_state{trace = Trace, target = Target},
     explore(NewState).
 
 start_target(Target) ->
@@ -327,11 +327,11 @@ explore(MightNeedReplayState) ->
             NewState = report_possible_deadlock(MightNeedReplayState),
             case finished(NewState) of
                 false -> explore(NewState);
-                true -> flanagan_return(MightNeedReplayState)
+                true -> dpor_return(MightNeedReplayState)
             end
     end.
 
-select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
+select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
     %% FIXME: Pick first and don't really subtract.
     %% FIXME: This is actually the trace bottom...
     [TraceTop|RestTrace] = Trace,
@@ -340,14 +340,14 @@ select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
     case ordsets:subtract(Backtrack, Done) of
 	[SelectedLid|_RestLids] ->
             State =
-                case MightNeedReplayState#flanagan_state.must_replay of
+                case MightNeedReplayState#dpor_state.must_replay of
                     true -> replay_trace(MightNeedReplayState);
                     false -> MightNeedReplayState
                 end,
 	    Instruction = dict:fetch(SelectedLid, TraceTop#trace_state.nexts),
             NewDone = ordsets:add_element(SelectedLid, Done),
             NewTraceTop = TraceTop#trace_state{done = NewDone},
-            NewState = State#flanagan_state{trace = [NewTraceTop|RestTrace]},
+            NewState = State#dpor_state{trace = [NewTraceTop|RestTrace]},
 	    {ok, {SelectedLid, Instruction}, NewState};
 	[] ->
             none
@@ -355,16 +355,16 @@ select_from_backtrack(#flanagan_state{trace = Trace} = MightNeedReplayState) ->
 
 %% STUB
 replay_trace(State) ->
-    [#trace_state{lid_trace = LidTrace}|_] = State#flanagan_state.trace,
+    [#trace_state{lid_trace = LidTrace}|_] = State#dpor_state.trace,
     ?f_debug("REPLAY\n"),
-    Target = State#flanagan_state.target,
+    Target = State#dpor_state.target,
     ?f_debug("~p\n",[Target]),
     ?f_debug("~p\n",[LidTrace]),
     lid:stop(),
     start_target_op(Target),
     replay_lid_trace(LidTrace),
-    RunCnt = State#flanagan_state.run_count,
-    State#flanagan_state{run_count = RunCnt + 1, must_replay = false}.
+    RunCnt = State#dpor_state.run_count,
+    State#dpor_state{run_count = RunCnt + 1, must_replay = false}.
 
 replay_lid_trace(Queue) ->
     {V, NewQueue} = queue:out(Queue),
@@ -416,7 +416,7 @@ get_next(Lid) ->
             {Type, Misc}
     end.
 
-add_local_backtracks(Transition, #flanagan_state{trace = Trace} = State) ->
+add_local_backtracks(Transition, #dpor_state{trace = Trace} = State) ->
     [TraceTop|RestTrace] = Trace,
     #trace_state{backtrack = Backtrack, nexts = Nexts,
                  clock_map = ClockMap, enabled = Enabled, i = I} =
@@ -424,7 +424,7 @@ add_local_backtracks(Transition, #flanagan_state{trace = Trace} = State) ->
     NewBacktrack =
         add_local_backtracks(Transition, Nexts, Enabled, ClockMap, Backtrack, I+1),
     NewTrace = [TraceTop#trace_state{backtrack = NewBacktrack}|RestTrace],
-    State#flanagan_state{trace = NewTrace}.
+    State#dpor_state{trace = NewTrace}.
 
 add_local_backtracks({NLid, _} = Transition, Nexts, AllEnabled,
                      ClockMap, Backtrack, NI) ->
@@ -461,9 +461,9 @@ lookup_clock_value(P, CV) ->
 %% STUB
 dependent(TransitionA, TransitionB) -> true.
 
-add_all_backtracks(Transition, #flanagan_state{trace = Trace} = State) ->
+add_all_backtracks(Transition, #dpor_state{trace = Trace} = State) ->
     NewTrace = add_all_backtracks_trace(Transition, Trace),
-    State#flanagan_state{trace = NewTrace}.
+    State#dpor_state{trace = NewTrace}.
 
 add_all_backtracks_trace(exited, Trace) ->
     Trace;
@@ -532,7 +532,7 @@ find_one_from_E(P, ClockVector, Enabled, [Sj|Rest]) ->
 %% - check for async
 update_trace({Lid, _} = Selected, Next, State) ->
     ?f_debug("Sele: ~p\nNext: ~p\n",[Selected, Next]),
-    #flanagan_state{trace = [TraceTop|_] = Trace} = State,
+    #dpor_state{trace = [TraceTop|_] = Trace} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  nexts = Nexts, lid_trace = LidTrace,
                  clock_map = ClockMap} = TraceTop,
@@ -547,7 +547,7 @@ update_trace({Lid, _} = Selected, Next, State) ->
                      lid_trace = NewLidTrace, clock_map = NewClockMap},
     NewTraceTop = handle_instruction(Selected, CommonNewTraceTop),
     UnblockedTraceTop = check_blocked(NewTraceTop),
-    State#flanagan_state{trace = [UnblockedTraceTop|Trace]}.
+    State#dpor_state{trace = [UnblockedTraceTop|Trace]}.
 
 update_lid_enabled(Lid, Next, Enabled, Blocked) ->
     case is_next_enabled(Next) of
@@ -681,18 +681,18 @@ poll_all_blocked(Lid, {Blocked, Enabled, Nexts} = Original) ->
 
 %% STUB
 add_some_next_to_backtrack(State) ->
-    #flanagan_state{trace = [TraceTop|Rest]} = State,
+    #dpor_state{trace = [TraceTop|Rest]} = State,
     #trace_state{enabled = Enabled} = TraceTop,
     Backtrack =
         case Enabled of
             [] -> [];
             [H|_] -> [H]
         end,
-    State#flanagan_state{trace = [TraceTop#trace_state{backtrack = Backtrack}|Rest]}.
+    State#dpor_state{trace = [TraceTop#trace_state{backtrack = Backtrack}|Rest]}.
 
 %% STUB
 report_error(Transition, State) ->
-    #flanagan_state{trace = [TraceTop|_], tickets = Tickets} = State,
+    #dpor_state{trace = [TraceTop|_], tickets = Tickets} = State,
     ?f_debug("ERROR!\n~p\n",[Transition]),
     InitTr = init_tr(),
     [InitTr|Trace] =
@@ -704,10 +704,10 @@ report_error(Transition, State) ->
     ?f_debug("ES:~p\n",[ErrorState]),
     Error = convert_error_info(Transition),
     ?f_debug("E:~p\n",[Error]),
-    %% State#flanagan_state{must_replay = true, tickets = Tickets}.
+    %% State#dpor_state{must_replay = true, tickets = Tickets}.
     Ticket = ticket:new(Error, ErrorState),
     log:show_error(Ticket),
-    State#flanagan_state{must_replay = true, tickets = [Ticket|Tickets]}.
+    State#dpor_state{must_replay = true, tickets = [Ticket|Tickets]}.
 
 convert_error_trace({Lid, {error, [ErrorOrThrow|_]}}, Procs)
   when ErrorOrThrow =:= error; ErrorOrThrow =:= throw ->
@@ -750,7 +750,7 @@ convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}})->
 
 %% STUB
 report_possible_deadlock(State) ->
-    #flanagan_state{trace = [TraceTop|Trace], tickets = Tickets} = State,
+    #dpor_state{trace = [TraceTop|Trace], tickets = Tickets} = State,
     NewTickets =
         case TraceTop#trace_state.enabled of
             [] ->
@@ -777,14 +777,14 @@ report_possible_deadlock(State) ->
             _Else ->
                 Tickets
         end,
-    State#flanagan_state{must_replay = true, trace = Trace, tickets = NewTickets}.
+    State#dpor_state{must_replay = true, trace = Trace, tickets = NewTickets}.
 
-finished(#flanagan_state{trace = Trace}) ->
+finished(#dpor_state{trace = Trace}) ->
     Trace =:= [].
 
-flanagan_return(State) ->
-    RunCnt = State#flanagan_state.run_count,
-    case State#flanagan_state.tickets of
+dpor_return(State) ->
+    RunCnt = State#dpor_state.run_count,
+    case State#dpor_state.tickets of
         [] -> {ok, RunCnt};
         Tickets -> {error, RunCnt, Tickets}
     end.

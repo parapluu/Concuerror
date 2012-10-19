@@ -115,13 +115,13 @@ delete_and_purge(Files) ->
 -spec instrument_and_compile([file:filename()], [file:name()], macros(), boolean()) ->
     {'ok', [mfb()]} | 'error'.
 
-instrument_and_compile(Files, Includes, Defines, Flanagan) ->
-    put(flanagan, Flanagan),
+instrument_and_compile(Files, Includes, Defines, Dpor) ->
+    put(dpor, Dpor),
     instrument_and_compile_aux(Files, Includes, Defines, []).
 
--define(default_or_flanagan(Default, Flanagan),
-        case get(flanagan) of
-            true -> Flanagan;
+-define(default_or_dpor(Default, Dpor),
+        case get(dpor) of
+            true -> Dpor;
             false -> Default
         end).
 
@@ -317,9 +317,9 @@ instrument_application({erlang, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
     FunAtom = list_to_atom("rep_" ++ atom_to_list(Function)),
     RepFun = erl_syntax:atom(FunAtom),
-    FlanaganFun =
-        erl_syntax:atom(list_to_atom(atom_to_list(FunAtom) ++ "_flanagan")),
-    FinalFun = ?default_or_flanagan(RepFun, FlanaganFun),
+    DporFun =
+        erl_syntax:atom(list_to_atom(atom_to_list(FunAtom) ++ "_dpor")),
+    FinalFun = ?default_or_dpor(RepFun, DporFun),
     erl_syntax:application(RepMod, FinalFun, ArgTrees);
 instrument_application({Module, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
@@ -416,8 +416,8 @@ instrument_receive(Tree) ->
             AfterBlock = erl_syntax:block_expr(Action),
             ModTree = erl_syntax:atom(?REP_MOD),
             RepBlock =
-                ?default_or_flanagan(rep_receive_block,
-                                     rep_receive_block_flanagan),
+                ?default_or_dpor(rep_receive_block,
+                                     rep_receive_block_dpor),
             FunTree = erl_syntax:atom(RepBlock),
             Fun = erl_syntax:application(ModTree, FunTree, []),
             transform_receive_timeout(Fun, AfterBlock, Timeout);
@@ -432,7 +432,7 @@ instrument_receive(Tree) ->
             %% Create ?REP_MOD:rep_receive(fun(X) -> ...).
             Module = erl_syntax:atom(?REP_MOD),
             RepReceiveFun =
-                ?default_or_flanagan(rep_receive, rep_receive_flanagan),
+                ?default_or_dpor(rep_receive, rep_receive_dpor),
             Function = erl_syntax:atom(RepReceiveFun),
             Timeout = erl_syntax:receive_expr_timeout(Tree),
             HasNoTimeout = Timeout =:= none,
@@ -452,8 +452,8 @@ instrument_receive(Tree) ->
                     Action = erl_syntax:receive_expr_action(Tree),
                     RepMod = erl_syntax:atom(?REP_MOD),
                     RepAfterNotify =
-                        ?default_or_flanagan(rep_after_notify,
-                                             rep_after_notify_flanagan),
+                        ?default_or_dpor(rep_after_notify,
+                                             rep_after_notify_dpor),
                     RepFun = erl_syntax:atom(RepAfterNotify),
                     RepApp = erl_syntax:application(RepMod, RepFun, []),
                     NewAction = [RepApp|Action],
@@ -462,7 +462,7 @@ instrument_receive(Tree) ->
                     AfterExpr = erl_syntax:receive_expr(NewClauses,
                                                         ZeroTimeout, NewAction),
                     AfterBlock =
-                        ?default_or_flanagan(AfterExpr,
+                        ?default_or_dpor(AfterExpr,
                                             erl_syntax:block_expr([RepReceive,
                                                                    AfterExpr])),
                     transform_receive_timeout(Block, AfterBlock, Timeout)
@@ -506,7 +506,7 @@ transform_receive_clause_regular(Clause) ->
     NewPattern = [erl_syntax:tuple([InstrAtom, PidVar, OldPattern])],
     Module = erl_syntax:atom(?REP_MOD),
     RepReceiveNotify =
-        ?default_or_flanagan(rep_receive_notify, rep_receive_notify_flanagan),
+        ?default_or_dpor(rep_receive_notify, rep_receive_notify_dpor),
     Function = erl_syntax:atom(RepReceiveNotify),
     Arguments = [PidVar, OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),
@@ -523,7 +523,7 @@ transform_receive_clause_special(Clause) ->
     OldBody = erl_syntax:clause_body(Clause),
     Module = erl_syntax:atom(?REP_MOD),
     RepReceiveNotify =
-        ?default_or_flanagan(rep_receive_notify, rep_receive_notify_flanagan),
+        ?default_or_dpor(rep_receive_notify, rep_receive_notify_dpor),
     Function = erl_syntax:atom(RepReceiveNotify),
     Arguments = [OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),

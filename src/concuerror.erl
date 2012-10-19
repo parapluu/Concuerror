@@ -290,8 +290,8 @@ parse([{Opt, Param} | Args], Options) ->
         "-help" ->
             help(),
             erlang:halt();
-        "-flanagan" ->
-            NewOptions0 = lists:keystore(flanagan, 1, Options, {flanagan}),
+        "-dpor" ->
+            NewOptions0 = lists:keystore(dpor, 1, Options, {dpor}),
             NewOptions =
                 lists:keystore(noprogress, 1, NewOptions0, {noprogress}),
             parse(Args, NewOptions);

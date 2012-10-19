@@ -30,10 +30,10 @@
          rep_ets_match_delete/2, rep_ets_foldl/3]).
 
 -export([spawn_fun_wrapper/1]).
--export([rep_send_flanagan/2, rep_spawn_flanagan/1]).
--export([rep_receive_flanagan/2, rep_receive_block_flanagan/0,
-         rep_after_notify_flanagan/0, rep_receive_notify_flanagan/2,
-         rep_receive_notify_flanagan/1]).
+-export([rep_send_dpor/2, rep_spawn_dpor/1]).
+-export([rep_receive_dpor/2, rep_receive_block_dpor/0,
+         rep_after_notify_dpor/0, rep_receive_notify_dpor/2,
+         rep_receive_notify_dpor/1]).
 
 -include("gen.hrl").
 
@@ -284,17 +284,17 @@ rep_receive_notify(Msg) ->
 
 %%------------------------------------------------------------------------------
 
--spec rep_receive_flanagan(fun((term()) -> 'block' | 'continue'), boolean()) -> 'ok'.
+-spec rep_receive_dpor(fun((term()) -> 'block' | 'continue'), boolean()) -> 'ok'.
 
-rep_receive_flanagan(Fun, HasTimeout) ->
+rep_receive_dpor(Fun, HasTimeout) ->
     case ?LID_FROM_PID(self()) of
         not_found ->
             log:internal("Uninstrumented process enters instrumented receive");
         _Lid ->
-            rep_receive_loop_flanagan(poll, Fun, HasTimeout)
+            rep_receive_loop_dpor(poll, Fun, HasTimeout)
     end.
 
-rep_receive_loop_flanagan(Act, Fun, HasTimeout) ->
+rep_receive_loop_dpor(Act, Fun, HasTimeout) ->
     case Act of
         continue -> ok;
         poll ->
@@ -302,34 +302,34 @@ rep_receive_loop_flanagan(Act, Fun, HasTimeout) ->
             case rep_receive_match(Fun, Mailbox) of
                 block ->
                     NewAct = sched:notify('receive', [false, HasTimeout]),
-                    rep_receive_loop_flanagan(NewAct, Fun, HasTimeout);
+                    rep_receive_loop_dpor(NewAct, Fun, HasTimeout);
                 continue ->
                     continue = sched:notify('receive', [true, HasTimeout]),
                     ok
             end
     end.
 
--spec rep_receive_block_flanagan() -> no_return().
+-spec rep_receive_block_dpor() -> no_return().
 
-rep_receive_block_flanagan() ->
+rep_receive_block_dpor() ->
     Fun = fun(_Message) -> block end,
-    rep_receive_flanagan(Fun, true).
+    rep_receive_dpor(Fun, true).
 
--spec rep_after_notify_flanagan() -> 'ok'.
+-spec rep_after_notify_dpor() -> 'ok'.
 
-rep_after_notify_flanagan() ->
+rep_after_notify_dpor() ->
     sched:notify('after', empty, prev),
     ok.
 
--spec rep_receive_notify_flanagan(pid(), term()) -> 'ok'.
+-spec rep_receive_notify_dpor(pid(), term()) -> 'ok'.
 
-rep_receive_notify_flanagan(From, Msg) ->
+rep_receive_notify_dpor(From, Msg) ->
     sched:notify('receive', {From, Msg}, prev),
     ok.
 
--spec rep_receive_notify_flanagan(term()) -> 'ok'.
+-spec rep_receive_notify_dpor(term()) -> 'ok'.
 
-rep_receive_notify_flanagan(Msg) ->
+rep_receive_notify_dpor(Msg) ->
     sched:notify(receive_no_instr, Msg, prev),
     ok.
 
@@ -369,9 +369,9 @@ rep_send(Dest, Msg) ->
             Msg
     end.
 
--spec rep_send_flanagan(dest(), term()) -> term().
+-spec rep_send_dpor(dest(), term()) -> term().
 
-rep_send_flanagan(Dest, Msg) ->
+rep_send_dpor(Dest, Msg) ->
     case ?LID_FROM_PID(self()) of
         not_found ->
             %% Unknown process sends using instrumented code. Allow it.
@@ -427,9 +427,9 @@ rep_spawn(Fun) ->
             Pid
     end.
 
--spec rep_spawn_flanagan(function()) -> pid().
+-spec rep_spawn_dpor(function()) -> pid().
 
-rep_spawn_flanagan(Fun) ->
+rep_spawn_dpor(Fun) ->
     case ?LID_FROM_PID(self()) of
         not_found -> spawn(Fun);
         _Lid ->
