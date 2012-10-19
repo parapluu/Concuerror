@@ -375,7 +375,7 @@ replay_lid_trace(Queue) ->
             replay_lid_trace(NewQueue);
         empty ->
             ok
-    end.                
+    end.
 
 wait_next(Lid, Prev) ->
     case Prev of
@@ -580,6 +580,18 @@ handle_instruction_op({Lid, {spawn, Opts}}) ->
     ChildNextInstr = wait_next(ChildLid, init),
     flush_mailbox(),
     {ParentLid, ChildLid, ChildNextInstr};
+handle_instruction_op({Lid, {'receive', [HasMatching, HasAfter]}}) ->
+    case HasMatching of
+        true ->
+            receive
+                #sched{msg = ReceiveTag, lid = Lid,
+                       misc = Details, type = prev} ->
+                    case ReceiveTag of
+                        'receive' -> Details;
+                        'receive_no_instr' -> {not_found, Details}
+                    end
+            end
+    end;
 handle_instruction_op(_) ->
     flush_mailbox(),
     {}.
@@ -610,12 +622,23 @@ handle_instruction_al({Lid, {spawn, unknown}} = Transition, TraceTop,
     {NewEnabled, NewBlocked} =
         update_lid_enabled(ChildLid, ChildNextInstr, MaybeEnabled, Blocked),
     {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
-    NewLidTrace = queue:in({Lid, {spawn, ChildLid}}, TmpLidTrace),
-    TraceTop#trace_state{last = {Lid, {spawn, ChildLid}},
+    NewLast = {Lid, {spawn, ChildLid}},
+    NewLidTrace = queue:in(NewLast, TmpLidTrace),
+    TraceTop#trace_state{last = NewLast,
                          enabled = NewEnabled,
                          blocked = NewBlocked,
                          nexts = NewNexts,
                          lid_trace = NewLidTrace};
+handle_instruction_al({Lid, {'receive', [HasMatching, HasAfter]}} = Transition,
+                      TraceTop, ReceiveDetails) ->
+    #trace_state{lid_trace = LidTrace} = TraceTop,
+    case HasMatching of
+        true ->
+            {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
+            NewLast = {Lid, {'receive', ReceiveDetails}},
+            NewLidTrace = queue:in(NewLast, TmpLidTrace),
+            TraceTop#trace_state{last = NewLast, lid_trace = NewLidTrace}
+    end;
 handle_instruction_al(_Transition, TraceTop, {}) ->
     TraceTop.
 
@@ -691,7 +714,10 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                         true -> Dest;
                         false -> {dead, Dest}
                     end,
-                {send,Lid,NewDest,Msg};
+                {send, Lid, NewDest, Msg};
+            'receive' ->
+                {Origin, Msg} = Extra,
+                {'receive', Lid, Origin, Msg};
             _ ->
                 {Instr, Lid, Extra}
         end,
@@ -1327,4 +1353,4 @@ wait_poll_or_continue() ->
         #sched{msg = continue} -> continue;
         #sched{msg = poll} -> poll
     end.
-    
+

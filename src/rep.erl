@@ -325,14 +325,14 @@ rep_after_notify_flanagan() ->
 -spec rep_receive_notify_flanagan(pid(), term()) -> 'ok'.
 
 rep_receive_notify_flanagan(From, Msg) ->
-    log:log("receive notify\n"),
-    rep_receive_notify(From, Msg).
+    sched:notify('receive', {From, Msg}, prev),
+    ok.
 
 -spec rep_receive_notify_flanagan(term()) -> 'ok'.
 
 rep_receive_notify_flanagan(Msg) ->
-    log:log("receive notify\n"),
-    rep_receive_notify(Msg).
+    sched:notify(receive_no_instr, Msg, prev),
+    ok.
 
 %%------------------------------------------------------------------------------
 
