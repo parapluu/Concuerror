@@ -160,7 +160,7 @@ utest: all
 		-s concuerror_util test -s init stop
 
 test: all
-	@(cd testsuite && ./runtests.sh)
+	@(cd testsuite && THREADS=$(THREADS) ./runtests.py)
 
 concuerror:
 	printf "\
