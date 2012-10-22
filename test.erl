@@ -5,6 +5,7 @@
          crasher/0, crasher2/0,
          blocker/0, blocking_trace/0,
          receiver_trace/0, two_receiver_trace/0, two_receiver_trace_2/0, two_receiver_trace_3/0,
+         two_receiver_trace_flat/0,
          afterer/0, after_crasher/0,
          opt_afterer/0, opt_after_crasher/0,
          spawner_trace/0, spawner_trace_2/0, spawner_trace_3/0, spawner_trace_4/0, spawner_trace_5/0,
@@ -85,6 +86,14 @@ blocking_trace() ->
 receiver_trace() ->
     receiver(),
     blocker().
+
+two_receiver_trace_flat() ->
+    _Pid1 = spawn(fun() -> ok end),
+    Pid2 = spawn(fun() -> receive ok -> ok end end),
+    Pid2 ! ok,
+    receive
+        Pat -> Pat
+    end.
 
 two_receiver_trace() ->
     spawn(fun() -> ok end),

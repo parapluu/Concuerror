@@ -268,19 +268,23 @@ new_lid_trace() ->
 -type trace_state() :: #trace_state{}.
 
 -record(dpor_state, {
-          target                    :: analysis_target(),
-          run_count   = 1           :: pos_integer(),
-          tickets     = []          :: [ticket:ticket()],
-          trace       = []          :: [trace_state()],
-          must_replay = false       :: boolean()
+          target              :: analysis_target(),
+          run_count   = 1     :: pos_integer(),
+          tickets     = []    :: [ticket:ticket()],
+          trace       = []    :: [trace_state()],
+          must_replay = false :: boolean(),
+          proc_before = []    :: [pid()]
          }).
 
 %% STUB
 interleave_dpor(Target, _PreBound) ->
     ?f_debug("Interleave dpor!\n"),
+    Procs = processes(),
+    %% To be able to clean up we need to be trapping exits...
+    process_flag(trap_exit, true),
     Trace = start_target(Target),
     ?f_debug("Target started!\n"),
-    NewState = #dpor_state{trace = Trace, target = Target},
+    NewState = #dpor_state{trace = Trace, target = Target, proc_before = Procs},
     explore(NewState).
 
 start_target(Target) ->
@@ -323,7 +327,6 @@ explore(MightNeedReplayState) ->
                     explore(NewState)
             end;
         none ->
-            ?f_debug("~p\n",[?LINE]),
             NewState = report_possible_deadlock(MightNeedReplayState),
             case finished(NewState) of
                 false -> explore(NewState);
@@ -339,6 +342,7 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
     Done = TraceTop#trace_state.done,
     case ordsets:subtract(Backtrack, Done) of
 	[SelectedLid|_RestLids] ->
+            ?f_debug("Have to try ~p...\n",[SelectedLid]),
             State =
                 case MightNeedReplayState#dpor_state.must_replay of
                     true -> replay_trace(MightNeedReplayState);
@@ -350,20 +354,23 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
             NewState = State#dpor_state{trace = [NewTraceTop|RestTrace]},
 	    {ok, {SelectedLid, Instruction}, NewState};
 	[] ->
+            ?f_debug("Backtrack set explored\n",[]),
             none
     end.
 
 %% STUB
-replay_trace(State) ->
+replay_trace(#dpor_state{proc_before = ProcBefore} = State) ->
+    ?f_debug("Replay is required...\n"),
     [#trace_state{lid_trace = LidTrace}|_] = State#dpor_state.trace,
-    ?f_debug("REPLAY\n"),
+    ?f_debug("~p\n",[queue:to_list(LidTrace)]),
     Target = State#dpor_state.target,
-    ?f_debug("~p\n",[Target]),
-    ?f_debug("~p\n",[LidTrace]),
     lid:stop(),
+    proc_cleanup(processes() -- ProcBefore),
     start_target_op(Target),
     replay_lid_trace(LidTrace),
+    flush_mailbox(),
     RunCnt = State#dpor_state.run_count,
+    ?f_debug("Done replaying...\n"),
     State#dpor_state{run_count = RunCnt + 1, must_replay = false}.
 
 replay_lid_trace(Queue) ->
@@ -395,6 +402,7 @@ wait_next(Lid, Prev) ->
                         Pid
                 end,
             ChildLid = lid:new(ChildPid, Lid),
+            ?f_debug("Child process is registered\n"),
             resume(Lid),
             self() ! Msg#sched{misc=ChildLid},
             get_next(Lid);
@@ -531,7 +539,7 @@ find_one_from_E(P, ClockVector, Enabled, [Sj|Rest]) ->
 %% - wait any possible additional messages
 %% - check for async
 update_trace({Lid, _} = Selected, Next, State) ->
-    ?f_debug("Sele: ~p\nNext: ~p\n",[Selected, Next]),
+    ?f_debug("Sele: ~w Next: ~w\n",[Selected, Next]),
     #dpor_state{trace = [TraceTop|_] = Trace} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  nexts = Nexts, lid_trace = LidTrace,
@@ -559,10 +567,9 @@ update_lid_enabled(Lid, Next, Enabled, Blocked) ->
 
 is_next_enabled({'receive', [HasMatching, HasAfter]}) ->
     R = HasMatching orelse HasAfter,
-    ?f_debug("Rec:~p\n",[R]),
+    ?f_debug("  Enabled: ~p\n",[R]),
     R;
 is_next_enabled(_) -> true.
-
 
 %% Handle instruction is broken in two parts to reuse code in replay.
 handle_instruction(Transition, TraceTop) ->
@@ -604,6 +611,11 @@ handle_instruction_op({Lid, {'receive', [HasMatching, HasAfter]}}) ->
                         'receive_no_instr' -> {not_found, Details}
                     end
             end
+    end;
+handle_instruction_op({Lid, {'receive', Concrete}}) ->
+    %% Used during replaying for receive statements that should succeed.
+    receive
+        #sched{msg = 'receive', lid = Lid, misc = Concrete, type = prev} -> {}
     end;
 handle_instruction_op(_) ->
     flush_mailbox(),
@@ -660,16 +672,17 @@ check_blocked(TraceTop) ->
     #trace_state{blocked = Blocked, enabled = Enabled, nexts = Nexts} = TraceTop,
     BlockedList = ordsets:to_list(Blocked),
     InitAcc = {Blocked, Enabled, Nexts},
-    {NewBlocked, NewEnabled, NewNexts} = R =
+    {NewBlocked, NewEnabled, NewNexts} =
         lists:foldl(fun poll_all_blocked/2, InitAcc, BlockedList),
-    ?f_debug("~w\n",[R]),
+    ?f_debug("  Blocked: ~w\n  Enabled: ~w\n  Nexts: ~w\n",
+             [NewBlocked, NewEnabled, dict:to_list(NewNexts)]),
     TraceTop#trace_state{blocked = NewBlocked,
                          enabled = NewEnabled,
                          nexts = NewNexts}.
 
 poll_all_blocked(Lid, {Blocked, Enabled, Nexts} = Original) ->
     [HasMatching, HasAfter] = Res = poll(Lid),
-    ?f_debug("~p:~p\n",[Lid, Res]),
+    ?f_debug("Poll ~p: HasMatching: ~p HasAfter: ~p\n",[Lid, HasMatching, HasAfter]),
     case HasMatching of
         true ->
             {ordsets:del_element(Lid, Blocked),
@@ -757,19 +770,16 @@ report_possible_deadlock(State) ->
                 LidTrace = queue:to_list(TraceTop#trace_state.lid_trace),
                 case TraceTop#trace_state.blocked of
                     [] ->
-                        log:log("~p\n",[LidTrace]),
+                        log:log("All processes exited:~p\n",[LidTrace]),
                         Tickets;
                     Blocked ->
-                        ?f_debug("Deadlock: ~p\n",[LidTrace]),
                         InitTr = init_tr(),
                         [InitTr|DeadTrace] = LidTrace,
-                        ?f_debug("Trace     :~p\n",[DeadTrace]),
+                        ?f_debug("Deadlock:~p\n",[DeadTrace]),
                         {ErrorState, _Procs} =
                             lists:mapfoldl(fun convert_error_trace/2,
                                            sets:new(), DeadTrace),
-                        ?f_debug("ES:~p\n",[ErrorState]),
                         Error = {deadlock, Blocked},
-                        ?f_debug("E:~p\n",[Error]),
                         Ticket = ticket:new(Error, ErrorState),
                         log:show_error(Ticket),
                         [Ticket|Tickets]
@@ -777,6 +787,7 @@ report_possible_deadlock(State) ->
             _Else ->
                 Tickets
         end,
+    ?f_debug("Stack frame dropped\n"),
     State#dpor_state{must_replay = true, trace = Trace, tickets = NewTickets}.
 
 finished(#dpor_state{trace = Trace}) ->
