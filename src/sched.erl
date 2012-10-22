@@ -243,14 +243,14 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
 -type instr()      :: term().
 -type transition() :: {lid:lid(), instr()}.
 -type clock_map()  :: dict(). %% dict(lid:lid(), clock_vector()).
-%% -type clock_vector() :: dict(). %% dict(lid:lid() | s_i(), s_i()).
+%% -type clock_vector() :: dict(). %% dict(lid:lid(), s_i()).
 
 -record(trace_state, {
           i         = 0                 :: s_i(),
           last      = init_tr()         :: transition(),
           enabled   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           blocked   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
-          nexts     = dict:new()        :: dict(), %% dict(lid:lid(), instr()),
+          nexts     = dict:new()        :: dict(), %% dict(lid:lid(), {instr(), clock_vector()}),
           backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           clock_map = empty_clock_map() :: clock_map(),
@@ -293,7 +293,7 @@ start_target(Target) ->
     MaybeEnabled = ordsets:add_element(FirstLid, ordsets:new()),
     {Enabled, Blocked} =
         update_lid_enabled(FirstLid, Next, MaybeEnabled, ordsets:new()),
-    [#trace_state{nexts = dict:store(FirstLid, Next, dict:new()),
+    [#trace_state{nexts = dict:store(FirstLid, {Next, empty_clock_map()}, dict:new()),
                   enabled = Enabled, blocked = Blocked, backtrack = Enabled}].
 
 start_target_op(Target) ->
@@ -307,7 +307,8 @@ start_target_op(Target) ->
 explore(MightNeedReplayState) ->
     ?f_debug("Explore!\n"),
     case select_from_backtrack(MightNeedReplayState) of
-        {ok, {Lid, Cmd} = Selected, State} ->
+        {ok, {Lid, {Cmd, ClockVector}}, State} ->
+            Selected = {Lid, Cmd},
             ?f_debug("Selected: ~p\n",[Selected]),
             %% ?f_debug("D1: ~p\n",[D1]),
             case Cmd of
@@ -321,7 +322,7 @@ explore(MightNeedReplayState) ->
                     %% ?f_debug("LAS: ~p\n",[LocalAddState]),
                     AllAddState = add_all_backtracks(Next, LocalAddState),
                     %% ?f_debug("AAS: ~p\n",[AllAddState]),
-                    UpdState = update_trace(Selected, Next, AllAddState),
+                    UpdState = update_trace(Selected, ClockVector, Next, AllAddState),
                     %% ?f_debug("US : ~p\n",[UpdState]),
                     NewState = add_some_next_to_backtrack(UpdState),
                     explore(NewState)
@@ -437,7 +438,7 @@ add_local_backtracks(Transition, #dpor_state{trace = Trace} = State) ->
 add_local_backtracks({NLid, _} = Transition, Nexts, AllEnabled,
                      ClockMap, Backtrack, NI) ->
     Fold =
-        fun(Lid, Instruction, AccBacktrack) ->
+        fun(Lid, {Instruction, _ClockVector}, AccBacktrack) ->
             Dependent =
                 case dependent(Transition, {Lid, Instruction}) of
                     false -> false;
@@ -454,8 +455,8 @@ add_local_backtracks({NLid, _} = Transition, Nexts, AllEnabled,
         end,
     dict:fold(Fold, Backtrack, Nexts).
 
-lookup_clock(PorS, ClockMap) ->
-  case dict:find(PorS, ClockMap) of
+lookup_clock(P, ClockMap) ->
+  case dict:find(P, ClockMap) of
     {ok, Clock} -> Clock;
     error -> dict:new()
   end.
@@ -538,23 +539,25 @@ find_one_from_E(P, ClockVector, Enabled, [Sj|Rest]) ->
 %% - add new entry with new entry
 %% - wait any possible additional messages
 %% - check for async
-update_trace({Lid, _} = Selected, Next, State) ->
+update_trace({Lid, _} = Selected, ClockVector, Next, State) ->
     ?f_debug("Sele: ~w Next: ~w\n",[Selected, Next]),
     #dpor_state{trace = [TraceTop|_] = Trace} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  nexts = Nexts, lid_trace = LidTrace,
                  clock_map = ClockMap} = TraceTop,
-    NewNexts = dict:store(Lid, Next, Nexts),
+    NewN = I+1,
+    LidsClockVector = dict:store(Lid, NewN, ClockVector),
+    NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
+    NewNexts = dict:store(Lid, {Next, LidsClockVector}, Nexts),
     {NewEnabled, NewBlocked} =
         update_lid_enabled(Lid, Next, Enabled, Blocked),
-    NewClockMap = ClockMap,
     NewLidTrace = queue:in(Selected, LidTrace),
     CommonNewTraceTop =
-        #trace_state{i = I+1, last = Selected, nexts = NewNexts,
+        #trace_state{i = NewN, last = Selected, nexts = NewNexts,
                      enabled = NewEnabled, blocked = NewBlocked,
                      lid_trace = NewLidTrace, clock_map = NewClockMap},
-    NewTraceTop = handle_instruction(Selected, CommonNewTraceTop),
-    UnblockedTraceTop = check_blocked(NewTraceTop),
+    NewTraceTop = handle_instruction(Selected, LidsClockVector, CommonNewTraceTop),
+    UnblockedTraceTop = check_blocked(NewTraceTop, LidsClockVector),
     State#dpor_state{trace = [UnblockedTraceTop|Trace]}.
 
 update_lid_enabled(Lid, Next, Enabled, Blocked) ->
@@ -572,9 +575,9 @@ is_next_enabled({'receive', [HasMatching, HasAfter]}) ->
 is_next_enabled(_) -> true.
 
 %% Handle instruction is broken in two parts to reuse code in replay.
-handle_instruction(Transition, TraceTop) ->
+handle_instruction(Transition, ClockVector, TraceTop) ->
     Variables = handle_instruction_op(Transition),
-    handle_instruction_al(Transition, TraceTop, Variables).
+    handle_instruction_al(Transition, ClockVector, TraceTop, Variables).
 
 handle_instruction_op({Lid, {spawn, Opts}}) ->
     ParentLid = Lid,
@@ -617,6 +620,11 @@ handle_instruction_op({Lid, {'receive', Concrete}}) ->
     receive
         #sched{msg = 'receive', lid = Lid, misc = Concrete, type = prev} -> {}
     end;
+handle_instruction_op({Lid, {'after', []}}) ->
+    %% Used during replaying for after statements.
+    receive
+        #sched{msg = 'after', lid = Lid, misc = empty, type = prev} -> {}
+    end;
 handle_instruction_op(_) ->
     flush_mailbox(),
     {}.
@@ -631,17 +639,17 @@ flush_mailbox() ->
     end.
 
 %% STUB
-handle_instruction_al({Lid, {exit, normal}}, TraceTop, {}) ->
+handle_instruction_al({Lid, {exit, normal}}, _ClockVector, TraceTop, {}) ->
     ?f_debug("Exit\n"),
     #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
     TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts};
-handle_instruction_al({Lid, {spawn, unknown}} = Transition, TraceTop,
-                      {ParentLid, ChildLid, ChildNextInstr}) ->
+handle_instruction_al({Lid, {spawn, unknown}} = Transition, ClockVector,
+                      TraceTop, {ParentLid, ChildLid, ChildNextInstr}) ->
     #trace_state{enabled = Enabled, blocked = Blocked, nexts = Nexts,
                  lid_trace = LidTrace} = TraceTop,
-    NewNexts = dict:store(ChildLid, ChildNextInstr, Nexts),
+    NewNexts = dict:store(ChildLid, {ChildNextInstr, ClockVector}, Nexts),
     MaybeEnabled = ordsets:add_element(ChildLid, Enabled),
     ?f_debug("NextChild:~p\n",[ChildNextInstr]),
     {NewEnabled, NewBlocked} =
@@ -655,7 +663,7 @@ handle_instruction_al({Lid, {spawn, unknown}} = Transition, TraceTop,
                          nexts = NewNexts,
                          lid_trace = NewLidTrace};
 handle_instruction_al({Lid, {'receive', [HasMatching, HasAfter]}} = Transition,
-                      TraceTop, ReceiveDetails) ->
+                      _ClockVector, TraceTop, ReceiveDetails) ->
     #trace_state{lid_trace = LidTrace} = TraceTop,
     {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
     NewLast =
@@ -665,32 +673,43 @@ handle_instruction_al({Lid, {'receive', [HasMatching, HasAfter]}} = Transition,
         end,
     NewLidTrace = queue:in(NewLast, TmpLidTrace),
     TraceTop#trace_state{last = NewLast, lid_trace = NewLidTrace};
-handle_instruction_al(_Transition, TraceTop, {}) ->
+handle_instruction_al(_Transition, _ClockVector, TraceTop, {}) ->
     TraceTop.
 
-check_blocked(TraceTop) ->
+check_blocked(TraceTop, ClockVector) ->
     #trace_state{blocked = Blocked, enabled = Enabled, nexts = Nexts} = TraceTop,
     BlockedList = ordsets:to_list(Blocked),
     InitAcc = {Blocked, Enabled, Nexts},
     {NewBlocked, NewEnabled, NewNexts} =
-        lists:foldl(fun poll_all_blocked/2, InitAcc, BlockedList),
+        lists:foldl(poll_all_blocked(ClockVector), InitAcc, BlockedList),
     ?f_debug("  Blocked: ~w\n  Enabled: ~w\n  Nexts: ~w\n",
-             [NewBlocked, NewEnabled, dict:to_list(NewNexts)]),
+             [NewBlocked, NewEnabled,
+              [{Lid, Instr, dict:to_list(VC)} || {Lid, {Instr, VC}} <- dict:to_list(NewNexts)]]),
     TraceTop#trace_state{blocked = NewBlocked,
                          enabled = NewEnabled,
                          nexts = NewNexts}.
 
-poll_all_blocked(Lid, {Blocked, Enabled, Nexts} = Original) ->
-    [HasMatching, HasAfter] = Res = poll(Lid),
-    ?f_debug("Poll ~p: HasMatching: ~p HasAfter: ~p\n",[Lid, HasMatching, HasAfter]),
-    case HasMatching of
-        true ->
-            {ordsets:del_element(Lid, Blocked),
-             ordsets:add_element(Lid, Enabled),
-             dict:store(Lid, {'receive', Res}, Nexts)};
-        false ->
-            Original
+poll_all_blocked(EnablingCV) ->
+    fun(Lid, {Blocked, Enabled, Nexts} = Original) ->
+            [HasMatching, HasAfter] = Res = poll(Lid),
+            {{_,[false, HasAfter]}, OwnCV} = dict:fetch(Lid, Nexts),
+            ?f_debug("Poll ~p: HasMatching: ~p HasAfter: ~p\n",[Lid, HasMatching, HasAfter]),
+            case HasMatching of
+                true ->
+                    MaxCV = max_cv(EnablingCV, OwnCV),
+                    ?f_debug("Changed state: OwnCV: ~p TransCV: ~p MaxCV: ~p\n",
+                             [OwnCV, EnablingCV, MaxCV]),
+                    {ordsets:del_element(Lid, Blocked),
+                     ordsets:add_element(Lid, Enabled),
+                     dict:store(Lid, {{'receive', Res}, MaxCV}, Nexts)};
+                false ->
+                    Original
+            end
     end.
+
+max_cv(CV1, CV2) ->
+    Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
+    dict:merge(Merger, CV1, CV2).
 
 %% STUB
 add_some_next_to_backtrack(State) ->

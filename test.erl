@@ -10,7 +10,8 @@
          opt_afterer/0, opt_after_crasher/0,
          spawner_trace/0, spawner_trace_2/0, spawner_trace_3/0, spawner_trace_4/0, spawner_trace_5/0,
          independent_receivers_blocker/0,
-         not_really_blocker/0, not_really_blocker_crasher/0]).
+         not_really_blocker/0, not_really_blocker_crasher/0,
+         trace_the_receives/0]).
 
 independent_receivers() ->
     Parent = self(),
@@ -178,3 +179,30 @@ badarith() ->
 
 many(Fun, 0) -> ok;
 many(Fun, N) -> Fun(), many(Fun, N-1).
+
+trace_the_receives() ->
+    spawn(fun() -> ok end),
+    X = spawn(fun() ->
+                      receive
+                          Pat1 ->
+                              receive
+                                  Pat2 ->
+                                      [Pat1, Pat2]
+                              end
+                      end
+              end),
+    Y = spawn(fun() ->
+                      receive
+                          ok ->
+                              X ! y
+                      end
+              end),
+    Z = spawn(fun() ->
+                      receive
+                          ok ->
+                              Y ! ok
+                      end
+              end),
+    W = spawn(fun() -> Z ! ok end),
+    X ! main.
+                      
