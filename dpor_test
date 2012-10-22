@@ -12,9 +12,11 @@ independent_receivers"
 
 compare() {
     echo -n "$1 "
-    ./concuerror -f test.erl -p inf -t test $1 > /dev/null
+    Module=$(basename $2 .erl)
+    Command="./concuerror -f $2 -t $Module $1"
+    $Command -p inf > /dev/null
     grep -v blocks results.txt > normal
-    ./concuerror -f test.erl -t test $1 --dpor > /dev/null
+    $Command --dpor > /dev/null
     mv results.txt dpor
     if diff -q normal dpor; then
         echo "OK"
@@ -26,12 +28,17 @@ compare() {
 }
 
 make -s
-if [ -n "$1" ]; then
-    compare $1
+if [ "$1" = "-d" ]; then
+    for t in $(find $2 -maxdepth 1 -type f); do
+        compare $(basename $t .erl) $t
+    done
+    exit 0
+elif [ -n "$1" ]; then
+    compare $1 test.erl
     exit 0
 else
     for t in $TESTS; do
-        compare $t
+        compare $t test.erl
     done
     exit 0
 fi

@@ -22,7 +22,7 @@
          rep_send/3, rep_spawn/1, rep_spawn/3, rep_spawn_link/1,
          rep_spawn_link/3, rep_spawn_monitor/1, rep_spawn_monitor/3,
          rep_spawn_opt/2, rep_spawn_opt/4, rep_unlink/1,
-         rep_unregister/1, rep_whereis/1, rep_var/3]).
+         rep_unregister/1, rep_whereis/1, rep_var/4]).
 
 -export([rep_ets_insert_new/2, rep_ets_lookup/2, rep_ets_select_delete/2,
          rep_ets_insert/2, rep_ets_delete/1, rep_ets_delete/2,
@@ -30,7 +30,11 @@
          rep_ets_match_delete/2, rep_ets_foldl/3]).
 
 -export([spawn_fun_wrapper/1]).
--export([rep_send_dpor/2, rep_spawn_dpor/1]).
+-export([rep_send_dpor/2]).
+-export([rep_spawn_dpor/1, rep_spawn_dpor/3,
+         rep_spawn_link_dpor/1, rep_spawn_link_dpor/3]).
+-export([rep_is_process_alive_dpor/1, rep_link_dpor/1,
+         rep_unlink_dpor/1, rep_unregister_dpor/1]).
 -export([rep_receive_dpor/2, rep_receive_block_dpor/0,
          rep_after_notify_dpor/0, rep_receive_notify_dpor/2,
          rep_receive_notify_dpor/1]).
@@ -49,24 +53,31 @@
 
 %% Callback function mapping.
 -define(INSTR_MOD_FUN,
-        [{{erlang, demonitor, 1}, fun rep_demonitor/1},
-         {{erlang, demonitor, 2}, fun rep_demonitor/2},
+        [{{erlang, demonitor, 1}, fun rep_demonitor/1,
+          fun rep_demonitor_dpor/1},
+         {{erlang, demonitor, 2}, fun rep_demonitor/2,
+          fun rep_demonitor_dpor/2},
          {{erlang, halt, 0}, fun rep_halt/0},
          {{erlang, halt, 1}, fun rep_halt/1},
-         {{erlang, is_process_alive, 1}, fun rep_is_process_alive/1},
-         {{erlang, link, 1}, fun rep_link/1},
+         {{erlang, is_process_alive, 1}, fun rep_is_process_alive/1,
+          fun rep_is_process_alive_dpor/1},
+         {{erlang, link, 1}, fun rep_link/1, fun rep_link_dpor/1},
          {{erlang, monitor, 2}, fun rep_monitor/2},
          {{erlang, process_flag, 2}, fun rep_process_flag/2},
-         {{erlang, register, 2}, fun rep_register/2},
-         {{erlang, spawn, 1}, fun rep_spawn/1},
-         {{erlang, spawn, 3}, fun rep_spawn/3},
-         {{erlang, spawn_link, 1}, fun rep_spawn_link/1},
-         {{erlang, spawn_link, 3}, fun rep_spawn_link/3},
+         {{erlang, register, 2}, fun rep_register/2,
+          fun rep_register_dpor/2},
+         {{erlang, spawn, 1}, fun rep_spawn/1, fun rep_spawn_dpor/1},
+         {{erlang, spawn, 3}, fun rep_spawn/3, fun rep_spawn_dpor/3},
+         {{erlang, spawn_link, 1}, fun rep_spawn_link/1,
+          fun rep_spawn_link_dpor/1},
+         {{erlang, spawn_link, 3}, fun rep_spawn_link/3,
+          fun rep_spawn_link_dpor/3},
          {{erlang, spawn_monitor, 1}, fun rep_spawn_monitor/1},
          {{erlang, spawn_monitor, 3}, fun rep_spawn_monitor/3},
          {{erlang, spawn_opt, 2}, fun rep_spawn_opt/2},
          {{erlang, spawn_opt, 4}, fun rep_spawn_opt/4},
-         {{erlang, unlink, 1}, fun rep_unlink/1},
+         {{erlang, unlink, 1}, fun rep_unlink/1,
+          fun rep_unlink_dpor/1},
          {{erlang, unregister, 1}, fun rep_unregister/1},
          {{erlang, whereis, 1}, fun rep_whereis/1},
          {{ets, insert_new, 2}, fun rep_ets_insert_new/2},
@@ -85,12 +96,25 @@
 %%%----------------------------------------------------------------------
 
 %% Handle Mod:Fun(Args) calls.
--spec rep_var(module(), atom(), [term()]) -> term().
+-spec rep_var('default' | 'dpor', module(), atom(), [term()]) -> term().
 
-rep_var(Mod, Fun, Args) ->
+rep_var(Version, Mod, Fun, Args) ->
     Key = {Mod, Fun, length(Args)},
     case lists:keyfind(Key, 1, ?INSTR_MOD_FUN) of
-        {Key, Callback} -> apply(Callback, Args);
+        {Key, Default} ->
+            case Version of
+                default ->
+                    apply(Default, Args);
+                dpor ->
+                    log:internal("DPOR has no support for ~p yet.\n",[Key])
+            end;
+        {Key, Default, Dpor} ->
+            case Version of
+                default ->
+                    apply(Default, Args);
+                dpor ->
+                    apply(Dpor, Args)
+            end;
         false -> apply(Mod, Fun, Args)
     end.
 
@@ -105,6 +129,12 @@ rep_demonitor(Ref) ->
     sched:notify(demonitor, Ref),
     Result.
 
+-spec rep_demonitor_dpor(reference()) -> 'true'.
+
+rep_demonitor_dpor(Ref) ->
+    sched:notify(demonitor, Ref),
+    demonitor(Ref).
+
 %% @spec: rep_demonitor(reference(), ['flush' | 'info']) -> 'true'
 %% @doc: Replacement for `demonitor/2'.
 %%
@@ -115,6 +145,12 @@ rep_demonitor(Ref, Opts) ->
     Result = demonitor(Ref, Opts),
     sched:notify(demonitor, Ref),
     Result.
+
+-spec rep_demonitor_dpor(reference(), ['flush' | 'info']) -> 'true'.
+
+rep_demonitor_dpor(Ref, Opts) ->
+    sched:notify(demonitor, Ref),
+    demonitor(Ref, Opts).
 
 %% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/0'.
@@ -143,6 +179,12 @@ rep_is_process_alive(Pid) ->
     sched:notify(is_process_alive, Pid),
     Result.
 
+-spec rep_is_process_alive_dpor(pid()) -> boolean().
+
+rep_is_process_alive_dpor(Pid) ->
+    sched:notify(is_process_alive, Pid),
+    is_process_alive(Pid).
+
 %% @spec: rep_link(pid() | port()) -> 'true'
 %% @doc: Replacement for `link/1'.
 %%
@@ -153,6 +195,12 @@ rep_link(Pid) ->
     Result = link(Pid),
     sched:notify(link, Pid),
     Result.
+
+-spec rep_link_dpor(pid() | port()) -> 'true'.
+
+rep_link_dpor(Pid) ->
+    sched:notify(link, Pid),
+    link(Pid).
 
 %% @spec: rep_monitor('process', pid() | {atom(), node()} | atom()) ->
 %%                           reference()
@@ -348,6 +396,14 @@ rep_register(RegName, P) ->
     sched:notify(register, {RegName, PLid}),
     Ret.
 
+-spec rep_register_dpor(atom(), pid() | port()) -> 'true'.
+
+rep_register_dpor(RegName, P) ->
+    %% TODO: Maybe send Pid instead to avoid rpc.
+    PLid = ?LID_FROM_PID(P),
+    sched:notify(register, {RegName, PLid}),
+    register(RegName, P).
+
 %% @spec rep_send(dest(), term()) -> term()
 %% @doc: Replacement for `send/2' (and the equivalent `!' operator).
 %%
@@ -469,6 +525,12 @@ rep_spawn(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn(Fun).
 
+-spec rep_spawn_dpor(atom(), atom(), [term()]) -> pid().
+
+rep_spawn_dpor(Module, Function, Args) ->
+    Fun = fun() -> apply(Module, Function, Args) end,
+    rep_spawn_dpor(Fun).
+
 %% @spec rep_spawn_link(function()) -> pid()
 %% @doc: Replacement for `spawn_link/1'.
 %%
@@ -484,6 +546,20 @@ rep_spawn_link(Fun) ->
             Pid
     end.
 
+-spec rep_spawn_link_dpor(function()) -> pid().
+
+rep_spawn_link_dpor(Fun) ->
+    case ?LID_FROM_PID(self()) of
+        not_found -> spawn(Fun);
+        _Lid ->
+            sched:notify(spawn_link, unknown),
+            Pid = spawn_link(fun() -> spawn_fun_wrapper(Fun) end),
+            sched:notify(spawned, Pid, prev),
+            %% Wait before using the PID to be sure that an LID is assigned
+            sched:wait(),
+            Pid
+    end.
+
 %% @spec rep_spawn_link(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn_link/3'.
 %%
@@ -493,6 +569,12 @@ rep_spawn_link(Fun) ->
 rep_spawn_link(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn_link(Fun).
+
+-spec rep_spawn_link_dpor(atom(), atom(), [term()]) -> pid().
+
+rep_spawn_link_dpor(Module, Function, Args) ->
+    Fun = fun() -> apply(Module, Function, Args) end,
+    rep_spawn_link_dpor(Fun).
 
 %% @spec rep_spawn_monitor(function()) -> {pid(), reference()}
 %% @doc: Replacement for `spawn_monitor/1'.
@@ -579,6 +661,12 @@ rep_unlink(Pid) ->
     sched:notify(unlink, Pid),
     Result.
 
+-spec rep_unlink_dpor(pid() | port()) -> 'true'.
+
+rep_unlink_dpor(Pid) ->
+    sched:notify(unlink, Pid),
+    unlink(Pid).
+
 %% @spec rep_unregister(atom()) -> 'true'
 %% @doc: Replacement for `unregister/1'.
 %%
@@ -589,6 +677,12 @@ rep_unregister(RegName) ->
     Ret = unregister(RegName),
     sched:notify(unregister, RegName),
     Ret.
+
+-spec rep_unregister_dpor(atom()) -> 'true'.
+
+rep_unregister_dpor(RegName) ->
+    sched:notify(unregister, RegName),
+    unregister(RegName).
 
 %% @spec rep_whereis(atom()) -> pid() | port() | 'undefined'
 %% @doc: Replacement for `whereis/1'.

@@ -332,7 +332,8 @@ instrument_var_application({ModTree, FunTree, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
     RepFun = erl_syntax:atom(rep_var),
     ArgList = erl_syntax:list(ArgTrees),
-    erl_syntax:application(RepMod, RepFun, [ModTree, FunTree, ArgList]).
+    Version = erl_syntax:atom(?default_or_dpor(default, dpor)),
+    erl_syntax:application(RepMod, RepFun, [Version, ModTree, FunTree, ArgList]).
 
 %% Instrument a receive expression.
 %% ----------------------------------------------------------------------

@@ -308,7 +308,7 @@ explore(MightNeedReplayState) ->
             ?f_debug("Selected: ~p\n",[Selected]),
             %% ?f_debug("D1: ~p\n",[D1]),
             case Cmd of
-                {error, ErrorInfo} ->
+                {error, _ErrorInfo} ->
                     NewState = report_error(Selected, State),
                     explore(NewState);
                 _Else ->
@@ -386,7 +386,7 @@ wait_next(Lid, Prev) ->
         {exit, normal} ->
             ok = resume(Lid),
             exited;
-        {spawn, _} ->
+        {Spawn, _} when Spawn =:= spawn; Spawn =:= spawn_link ->
             ok = resume(Lid),
             %% This interruption happens to make sure that a child has an LID
             %% before the parent wants to do any operation with its PID.
@@ -575,7 +575,7 @@ handle_instruction(Transition, ClockVector, TraceTop) ->
     Variables = handle_instruction_op(Transition),
     handle_instruction_al(Transition, ClockVector, TraceTop, Variables).
 
-handle_instruction_op({Lid, {spawn, Opts}}) ->
+handle_instruction_op({Lid, {Spawn, _Info}}) when Spawn =:= spawn; Spawn =:= spawn_link ->
     ParentLid = Lid,
     ChildLid =
         receive
@@ -585,7 +585,7 @@ handle_instruction_op({Lid, {spawn, Opts}}) ->
         end,
     ChildNextInstr = wait_next(ChildLid, init),
     flush_mailbox(),
-    {ParentLid, ChildLid, ChildNextInstr};
+    {ChildLid, ChildNextInstr};
 handle_instruction_op({Lid, {'receive', [HasMatching, HasAfter]}}) ->
     case HasMatching of
         true ->
@@ -627,8 +627,8 @@ handle_instruction_op(_) ->
 
 flush_mailbox() ->
     receive
-        Any ->
-            ?f_debug("NONEMPTY!\n~p\n",[Any]),
+        _Any ->
+            ?f_debug("NONEMPTY!\n~p\n",[_Any]),
             flush_mailbox()
     after 0 ->
             ok
@@ -641,8 +641,9 @@ handle_instruction_al({Lid, {exit, normal}}, _ClockVector, TraceTop, {}) ->
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
     TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts};
-handle_instruction_al({Lid, {spawn, unknown}} = Transition, ClockVector,
-                      TraceTop, {ParentLid, ChildLid, ChildNextInstr}) ->
+handle_instruction_al({Lid, {Spawn, unknown}} = Transition, ClockVector,
+                      TraceTop, {ChildLid, ChildNextInstr})
+  when Spawn =:= spawn; Spawn =:= spawn_link ->
     #trace_state{enabled = Enabled, blocked = Blocked, nexts = Nexts,
                  lid_trace = LidTrace} = TraceTop,
     NewNexts = dict:store(ChildLid, {ChildNextInstr, ClockVector}, Nexts),
@@ -651,14 +652,14 @@ handle_instruction_al({Lid, {spawn, unknown}} = Transition, ClockVector,
     {NewEnabled, NewBlocked} =
         update_lid_enabled(ChildLid, ChildNextInstr, MaybeEnabled, Blocked),
     {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
-    NewLast = {Lid, {spawn, ChildLid}},
+    NewLast = {Lid, {Spawn, ChildLid}},
     NewLidTrace = queue:in(NewLast, TmpLidTrace),
     TraceTop#trace_state{last = NewLast,
                          enabled = NewEnabled,
                          blocked = NewBlocked,
                          nexts = NewNexts,
                          lid_trace = NewLidTrace};
-handle_instruction_al({Lid, {'receive', [HasMatching, HasAfter]}} = Transition,
+handle_instruction_al({Lid, {'receive', [_HasMatching, _HasAfter]}} = Transition,
                       _ClockVector, TraceTop, ReceiveDetails) ->
     #trace_state{lid_trace = LidTrace} = TraceTop,
     {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
@@ -743,7 +744,8 @@ convert_error_trace({Lid, {error, [ErrorOrThrow|_]}}, Procs)
 convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
     NewProcs =
         case Instr of
-            spawn  -> sets:add_element(Extra, Procs);
+            Spawn when Spawn =:= spawn; Spawn =:= spawn_link ->
+                sets:add_element(Extra, Procs);
             exit   -> sets:del_element(Lid, Procs);
             _ -> Procs
         end,
@@ -785,7 +787,8 @@ report_possible_deadlock(State) ->
                 LidTrace = queue:to_list(TraceTop#trace_state.lid_trace),
                 case TraceTop#trace_state.blocked of
                     [] ->
-                        log:log("All processes exited:~p\n",[LidTrace]),
+                        %log:log("All processes exited:~p\n",[LidTrace]),
+                        %log:log("~p\n",[State#dpor_state.run_count]),
                         Tickets;
                     Blocked ->
                         InitTr = init_tr(),
