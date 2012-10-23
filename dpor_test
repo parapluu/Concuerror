@@ -15,7 +15,7 @@ compare() {
     Module=$(basename $2 .erl)
     Command="./concuerror -f $2 -t $Module $1"
     $Command -p inf > /dev/null
-    grep -v blocks results.txt > normal
+    mv results.txt normal
     $Command --dpor > /dev/null
     mv results.txt dpor
     if diff -q normal dpor; then

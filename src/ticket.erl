@@ -28,7 +28,10 @@
 -spec new(error:error(), [proc_action:proc_action()]) -> ticket().
 
 new(Error, ErrorDetails) ->
-    {Error, ErrorDetails}.
+    {Error, [Q || Q <- ErrorDetails, not_block(Q)]}.
+
+not_block({block, _}) -> false;
+not_block(_Else) -> true.
 
 -spec get_error(ticket()) -> error:error().
 
