@@ -301,7 +301,7 @@ start_target_op(Target) ->
     lid:new(FirstPid, noparent).
 
 explore(MightNeedReplayState) ->
-    ?f_debug("Explore!\n"),
+    ?f_debug("--------\nExplore!\n--------\n"),
     case select_from_backtrack(MightNeedReplayState) of
         {ok, {Lid, {Cmd, ClockVector}}, State} ->
             Selected = {Lid, Cmd},
@@ -309,7 +309,10 @@ explore(MightNeedReplayState) ->
             %% ?f_debug("D1: ~p\n",[D1]),
             case Cmd of
                 {error, _ErrorInfo} ->
-                    NewState = report_error(Selected, State),
+                    UpdState = report_error(Selected, State),
+                    %% FIXME: We have already failed... Try other combos
+                    %%        for compatibility.
+                    NewState = add_some_next_to_backtrack(UpdState),
                     explore(NewState);
                 _Else ->
                     Next = wait_next(Lid, Cmd),
@@ -467,14 +470,12 @@ lookup_clock_value(P, CV) ->
 dependent(TransitionA, TransitionB) -> true.
 
 add_all_backtracks(Transition, #dpor_state{trace = Trace} = State) ->
-    log:log("Normal\n"),
     NewTrace = add_all_backtracks_trace(Transition, Trace),
     State#dpor_state{trace = NewTrace}.
 
 add_all_backtracks_trace(exited, Trace) ->
     Trace;
 add_all_backtracks_trace({Lid, _} = Transition, Trace) ->
-    log:log("~p\n",[Transition]),
     [#trace_state{clock_map = ClockMap}|_] = Trace,
     ClockVector = lookup_clock(Lid, ClockMap),
     add_all_backtracks_trace(Transition, ClockVector, Trace, []).
@@ -485,6 +486,7 @@ add_all_backtracks_trace({Lid, _} = Transition, ClockVector, [StateI|Trace], Acc
     #trace_state{i = I, last = {ProcSI, _} = SI, clock_map = ClockMap} = StateI,
     Dependent = dependent(Transition, SI),
     Clock = lookup_clock_value(ProcSI, ClockVector),
+    ?f_debug("Dep ~p andalso ~p\n",[Dependent, I > Clock]),
     case Dependent andalso I > Clock of
         false ->
             add_all_backtracks_trace(Transition, ClockVector, Trace, [StateI|Acc]);
@@ -557,7 +559,7 @@ update_trace({Lid, Cmd} = Selected, ClockVector, Next, State) ->
     {NewTraceTop, NewTrace} =
         handle_instruction(Selected, LidsClockVector, CommonNewTraceTop, Trace),
     UnblockedTraceTop = check_blocked(NewTraceTop, LidsClockVector),
-    State#dpor_state{trace = [UnblockedTraceTop|Trace]}.
+    State#dpor_state{trace = [UnblockedTraceTop|NewTrace]}.
 
 update_lid_enabled(Lid, Next, Enabled, Blocked) ->
     case is_next_enabled(Next) of
@@ -657,13 +659,13 @@ handle_instruction_al({Lid, {Spawn, unknown}} = Transition, ClockVector,
     {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
     NewLast = {Lid, {Spawn, ChildLid}},
     NewLidTrace = queue:in(NewLast, TmpLidTrace),
-    log:log("Child\n"),
+    ?f_debug("Child adding more backtracks...\n"),
     NewTrace = add_all_backtracks_trace(ChildTr, Trace),
     case NewTrace =/= Trace of
         true ->
-            log:log("CHANGED!");
+            ?f_debug("CHANGED!\n");
         false ->
-            log:log("NOT CHANGED!")
+            ?f_debug("NOT CHANGED!\n")
     end,
     {TraceTop#trace_state{last = NewLast,
                           enabled = NewEnabled,
@@ -723,9 +725,11 @@ max_cv(CV1, CV2) ->
 %% STUB
 add_some_next_to_backtrack(State) ->
     #dpor_state{trace = [TraceTop|Rest]} = State,
-    #trace_state{enabled = Enabled} = TraceTop,
+    #trace_state{enabled = Enabled, done = Done} = TraceTop,
+    %% FIXME: As we continue even though we have found an error, we
+    %%        need to exclude already explored cases.
     Backtrack =
-        case Enabled of
+        case ordsets:subtract(Enabled, Done) of
             [] -> [];
             [H|_] -> [H]
         end,
@@ -738,14 +742,9 @@ report_error(Transition, State) ->
     InitTr = init_tr(),
     [InitTr|Trace] =
         queue:to_list(queue:in(Transition, TraceTop#trace_state.lid_trace)),
-    ?f_debug("Trace     :~p\n",[Trace]),
-    ?f_debug("Transition:~p\n",[Transition]),
     {ErrorState, _Procs} =
         lists:mapfoldl(fun convert_error_trace/2, sets:new(), Trace),
-    ?f_debug("ES:~p\n",[ErrorState]),
     Error = convert_error_info(Transition),
-    ?f_debug("E:~p\n",[Error]),
-    %% State#dpor_state{must_replay = true, tickets = Tickets}.
     Ticket = ticket:new(Error, ErrorState),
     log:show_error(Ticket),
     State#dpor_state{must_replay = true, tickets = [Ticket|Tickets]}.
