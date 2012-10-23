@@ -16,7 +16,7 @@ compare() {
     Command="./concuerror -f $2 -t $Module $1"
     $Command -p inf > /dev/null
     mv results.txt normal
-    $Command --dpor > /dev/null
+    $Command --dpor_fake > /dev/null
     mv results.txt dpor
     if diff -q normal dpor; then
         echo "OK"

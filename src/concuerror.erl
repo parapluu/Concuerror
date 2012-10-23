@@ -295,6 +295,12 @@ parse([{Opt, Param} | Args], Options) ->
             NewOptions =
                 lists:keystore(noprogress, 1, NewOptions0, {noprogress}),
             parse(Args, NewOptions);
+        "-dpor_fake" ->
+            NewOptions0 = lists:keystore(dpor_fake, 1, Options, {dpor_fake}),
+            NewOptions1 = lists:keystore(dpor, 1, NewOptions0, {dpor}),
+            NewOptions =
+                lists:keystore(noprogress, 1, NewOptions1, {noprogress}),
+            parse(Args, NewOptions);
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
             EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa" ->
                 %% erl flag (ignore it)

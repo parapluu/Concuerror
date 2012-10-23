@@ -145,6 +145,7 @@ analyze(Target, Files, Options) ->
             false -> ?DEFAULT_DEFINE
         end,
     Dpor = lists:member({dpor}, Options),
+    DporFake = lists:member({dpor_fake}, Options),
     Ret =
         case instr:instrument_and_compile(Files, Include, Define, Dpor) of
             {ok, Bin} ->
@@ -152,7 +153,7 @@ analyze(Target, Files, Options) ->
                 ok = instr:load(Bin),
                 log:log("Running analysis...~n~n"),
                 {T1, _} = statistics(wall_clock),
-                Result = interleave(Target, PreBound, Dpor),
+                Result = interleave(Target, PreBound, Dpor, DporFake),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = elapsed_time(T1, T2),
                 case Result of
@@ -175,12 +176,12 @@ analyze(Target, Files, Options) ->
     Ret.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
-interleave(Target, PreBound, Dpor) ->
+interleave(Target, PreBound, Dpor, DporFake) ->
     Self = self(),
     Fun =
         fun() ->
                 case Dpor of
-                    true -> interleave_dpor(Target, PreBound, Self);
+                    true -> interleave_dpor(Target, PreBound, Self, DporFake);
                     false -> interleave_aux(Target, PreBound, Self)
                 end
         end,
@@ -205,10 +206,10 @@ interleave_aux(Target, PreBound, Parent) ->
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
 
-interleave_dpor(Target, PreBound, Parent) ->
+interleave_dpor(Target, PreBound, Parent, DporFake) ->
     ?f_debug("Dpor is not really ready yet...\n"),
     register(?RP_SCHED, self()),
-    Result = interleave_dpor(Target, PreBound),
+    Result = interleave_dpor(Target, PreBound, DporFake),
     Parent ! {interleave_result, Result}.
 
 interleave_outer_loop(_T, RunCnt, Tickets, MaxBound, MaxBound) ->
@@ -269,18 +270,20 @@ new_lid_trace() ->
           tickets     = []    :: [ticket:ticket()],
           trace       = []    :: [trace_state()],
           must_replay = false :: boolean(),
-          proc_before = []    :: [pid()]
+          proc_before = []    :: [pid()],
+          fake_dpor   = false :: boolean()
          }).
 
 %% STUB
-interleave_dpor(Target, _PreBound) ->
+interleave_dpor(Target, _PreBound, DporFake) ->
     ?f_debug("Interleave dpor!\n"),
     Procs = processes(),
     %% To be able to clean up we need to be trapping exits...
     process_flag(trap_exit, true),
     Trace = start_target(Target),
     ?f_debug("Target started!\n"),
-    NewState = #dpor_state{trace = Trace, target = Target, proc_before = Procs},
+    NewState = #dpor_state{trace = Trace, target = Target, proc_before = Procs,
+                           fake_dpor = DporFake},
     explore(NewState).
 
 start_target(Target) ->
@@ -430,18 +433,23 @@ add_local_backtracks(Transition, #dpor_state{trace = Trace} = State) ->
                  clock_map = ClockMap, enabled = Enabled, i = I} =
         TraceTop,
     NewBacktrack =
-        add_local_backtracks(Transition, Nexts, Enabled, ClockMap, Backtrack, I+1),
+        add_local_backtracks(Transition, Nexts, Enabled, ClockMap,
+                             Backtrack, I+1, State#dpor_state.fake_dpor),
     NewTrace = [TraceTop#trace_state{backtrack = NewBacktrack}|RestTrace],
     State#dpor_state{trace = NewTrace}.
 
 add_local_backtracks({NLid, _} = Transition, Nexts, AllEnabled,
-                     ClockMap, Backtrack, NI) ->
+                     ClockMap, Backtrack, NI, Fake) ->
     Fold =
         fun(Lid, {Instruction, _ClockVector}, AccBacktrack) ->
             Dependent =
-                case dependent(Transition, {Lid, Instruction}) of
-                    false -> false;
-                    true -> NLid =/= Lid
+                case Fake of
+                    false ->
+                        case dependent(Transition, {Lid, Instruction}) of
+                            false -> false;
+                            true -> NLid =/= Lid
+                        end;
+                    true -> true
                 end,
             Clock = lookup_clock_value(Lid, lookup_clock(NLid, ClockMap)),
             Enabled = ordsets:is_element(Lid, AllEnabled),
@@ -470,8 +478,14 @@ lookup_clock_value(P, CV) ->
 dependent(TransitionA, TransitionB) -> true.
 
 add_all_backtracks(Transition, #dpor_state{trace = Trace} = State) ->
-    NewTrace = add_all_backtracks_trace(Transition, Trace),
-    State#dpor_state{trace = NewTrace}.
+    case State#dpor_state.fake_dpor of
+        false ->
+            NewTrace = add_all_backtracks_trace(Transition, Trace),
+            State#dpor_state{trace = NewTrace};
+        true ->
+            %% Local will take care of all the backtracks.
+            State
+    end.
 
 add_all_backtracks_trace(exited, Trace) ->
     Trace;
