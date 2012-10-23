@@ -467,12 +467,14 @@ lookup_clock_value(P, CV) ->
 dependent(TransitionA, TransitionB) -> true.
 
 add_all_backtracks(Transition, #dpor_state{trace = Trace} = State) ->
+    log:log("Normal\n"),
     NewTrace = add_all_backtracks_trace(Transition, Trace),
     State#dpor_state{trace = NewTrace}.
 
 add_all_backtracks_trace(exited, Trace) ->
     Trace;
 add_all_backtracks_trace({Lid, _} = Transition, Trace) ->
+    log:log("~p\n",[Transition]),
     [#trace_state{clock_map = ClockMap}|_] = Trace,
     ClockVector = lookup_clock(Lid, ClockMap),
     add_all_backtracks_trace(Transition, ClockVector, Trace, []).
@@ -535,7 +537,7 @@ find_one_from_E(P, ClockVector, Enabled, [Sj|Rest]) ->
 %% - add new entry with new entry
 %% - wait any possible additional messages
 %% - check for async
-update_trace({Lid, _} = Selected, ClockVector, Next, State) ->
+update_trace({Lid, Cmd} = Selected, ClockVector, Next, State) ->
     ?f_debug("Sele: ~w Next: ~w\n",[Selected, Next]),
     #dpor_state{trace = [TraceTop|_] = Trace} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
@@ -552,7 +554,8 @@ update_trace({Lid, _} = Selected, ClockVector, Next, State) ->
         #trace_state{i = NewN, last = Selected, nexts = NewNexts,
                      enabled = NewEnabled, blocked = NewBlocked,
                      lid_trace = NewLidTrace, clock_map = NewClockMap},
-    NewTraceTop = handle_instruction(Selected, LidsClockVector, CommonNewTraceTop),
+    {NewTraceTop, NewTrace} =
+        handle_instruction(Selected, LidsClockVector, CommonNewTraceTop, Trace),
     UnblockedTraceTop = check_blocked(NewTraceTop, LidsClockVector),
     State#dpor_state{trace = [UnblockedTraceTop|Trace]}.
 
@@ -571,9 +574,9 @@ is_next_enabled({'receive', [HasMatching, HasAfter]}) ->
 is_next_enabled(_) -> true.
 
 %% Handle instruction is broken in two parts to reuse code in replay.
-handle_instruction(Transition, ClockVector, TraceTop) ->
+handle_instruction(Transition, ClockVector, TraceTop, Trace) ->
     Variables = handle_instruction_op(Transition),
-    handle_instruction_al(Transition, ClockVector, TraceTop, Variables).
+    handle_instruction_al(Transition, ClockVector, TraceTop, Variables, Trace).
 
 handle_instruction_op({Lid, {Spawn, _Info}}) when Spawn =:= spawn; Spawn =:= spawn_link ->
     ParentLid = Lid,
@@ -635,14 +638,14 @@ flush_mailbox() ->
     end.
 
 %% STUB
-handle_instruction_al({Lid, {exit, normal}}, _ClockVector, TraceTop, {}) ->
+handle_instruction_al({Lid, {exit, normal}}, _ClockVector, TraceTop, {}, Trace) ->
     ?f_debug("Exit\n"),
     #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
-    TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts};
+    {TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts}, Trace};
 handle_instruction_al({Lid, {Spawn, unknown}} = Transition, ClockVector,
-                      TraceTop, {ChildLid, ChildNextInstr})
+                      TraceTop, {ChildLid, ChildNextInstr} = ChildTr, Trace)
   when Spawn =:= spawn; Spawn =:= spawn_link ->
     #trace_state{enabled = Enabled, blocked = Blocked, nexts = Nexts,
                  lid_trace = LidTrace} = TraceTop,
@@ -654,13 +657,22 @@ handle_instruction_al({Lid, {Spawn, unknown}} = Transition, ClockVector,
     {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
     NewLast = {Lid, {Spawn, ChildLid}},
     NewLidTrace = queue:in(NewLast, TmpLidTrace),
-    TraceTop#trace_state{last = NewLast,
-                         enabled = NewEnabled,
-                         blocked = NewBlocked,
-                         nexts = NewNexts,
-                         lid_trace = NewLidTrace};
+    log:log("Child\n"),
+    NewTrace = add_all_backtracks_trace(ChildTr, Trace),
+    case NewTrace =/= Trace of
+        true ->
+            log:log("CHANGED!");
+        false ->
+            log:log("NOT CHANGED!")
+    end,
+    {TraceTop#trace_state{last = NewLast,
+                          enabled = NewEnabled,
+                          blocked = NewBlocked,
+                          nexts = NewNexts,
+                          lid_trace = NewLidTrace},
+     NewTrace};
 handle_instruction_al({Lid, {'receive', [_HasMatching, _HasAfter]}} = Transition,
-                      _ClockVector, TraceTop, ReceiveDetails) ->
+                      _ClockVector, TraceTop, ReceiveDetails, Trace) ->
     #trace_state{lid_trace = LidTrace} = TraceTop,
     {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
     NewLast =
@@ -669,9 +681,9 @@ handle_instruction_al({Lid, {'receive', [_HasMatching, _HasAfter]}} = Transition
             _Else -> {Lid, {'receive', ReceiveDetails}}
         end,
     NewLidTrace = queue:in(NewLast, TmpLidTrace),
-    TraceTop#trace_state{last = NewLast, lid_trace = NewLidTrace};
-handle_instruction_al(_Transition, _ClockVector, TraceTop, {}) ->
-    TraceTop.
+    {TraceTop#trace_state{last = NewLast, lid_trace = NewLidTrace}, Trace};
+handle_instruction_al(_Transition, _ClockVector, TraceTop, {}, Trace) ->
+    {TraceTop, Trace}.
 
 check_blocked(TraceTop, ClockVector) ->
     #trace_state{blocked = Blocked, enabled = Enabled, nexts = Nexts} = TraceTop,
