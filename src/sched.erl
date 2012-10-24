@@ -250,6 +250,8 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
           nexts     = dict:new()        :: dict(), %% dict(lid:lid(), {instr(), clock_vector()}),
           backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
+          sleep_set = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
+          sleep_map = dict:new()        :: dict(), %% dict(lid:lid(), set(lid:lid)),
           clock_map = empty_clock_map() :: clock_map(),
           lid_trace = new_lid_trace()   :: queue() %% queue(lid:lid())
          }).
@@ -318,11 +320,11 @@ explore(MightNeedReplayState) ->
                     Next = wait_next(Lid, Cmd),
                     ?f_debug("Next: ~p\n",[Next]),
                     LocalAddState = add_local_backtracks(Selected, State),
-                    %% ?f_debug("LAS: ~p\n",[LocalAddState]),
-                    AllAddState = add_all_backtracks({Lid, Next}, LocalAddState),
                     %% ?f_debug("AAS: ~p\n",[AllAddState]),
-                    UpdState = update_trace(Selected, Next, AllAddState),
-                    NewChildState = add_all_child_backtracks(Cmd, UpdState),
+                    UpdState = update_trace(Selected, Next, LocalAddState),
+                    %% ?f_debug("LAS: ~p\n",[UpdState]),
+                    AllAddState = add_all_backtracks({Lid, Next}, UpdState),
+                    NewChildState = add_all_child_backtracks(Cmd, AllAddState),
                     %% ?f_debug("US : ~p\n",[UpdState]),
                     NewState = add_some_next_to_backtrack(NewChildState),
                     explore(NewState)
@@ -341,8 +343,17 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
     [TraceTop|RestTrace] = Trace,
     Backtrack = TraceTop#trace_state.backtrack,
     Done = TraceTop#trace_state.done,
+    Sleeping = TraceTop#trace_state.sleep_set,
     case ordsets:subtract(Backtrack, Done) of
-	[SelectedLid|_RestLids] ->
+	[] ->
+            ?f_debug("Backtrack set explored\n",[]),
+            none;
+        Some ->
+            [SelectedLid|_RestLids] =
+                case ordsets:subtract(Some, Sleeping) of
+                    [] -> Some;
+                    StillSome -> StillSome
+                end,
             ?f_debug("Have to try ~p...\n",[SelectedLid]),
             State =
                 case MightNeedReplayState#dpor_state.must_replay of
@@ -353,10 +364,7 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
             NewDone = ordsets:add_element(SelectedLid, Done),
             NewTraceTop = TraceTop#trace_state{done = NewDone},
             NewState = State#dpor_state{trace = [NewTraceTop|RestTrace]},
-	    {ok, {SelectedLid, Instruction}, NewState};
-	[] ->
-            ?f_debug("Backtrack set explored\n",[]),
-            none
+	    {ok, {SelectedLid, Instruction}, NewState}
     end.
 
 %% STUB
@@ -505,11 +513,23 @@ add_all_backtracks_trace({Lid, _} = Transition, ClockVector, [StateI|Trace], Acc
         false ->
             add_all_backtracks_trace(Transition, ClockVector, Trace, [StateI|Acc]);
         true ->
-            [#trace_state{enabled = Enabled, backtrack = Backtrack} = PreSI|Rest] = Trace,
-            NewBacktrack =
-                add_from_E(Lid, Enabled, [StateI|Acc], ClockVector, Backtrack),
+            ?f_debug("~p: I:~p ~p\n",[Transition, I, SI]),
+            [#trace_state{enabled = Enabled, backtrack = Backtrack,
+                          sleep_map = SleepMap} = PreSI|Rest] = Trace,
+            {NewBacktrack, NewSleepMap} =
+                case add_from_E(Lid, Enabled, [StateI|Acc], ClockVector) of
+                    {one, P} ->
+                        {ordsets:add_element(P, Backtrack),
+                         update_sleep_map([P], ProcSI, SleepMap)};
+                    {many, Ps} ->
+                        {ordsets:union(Backtrack, ordsets:from_list(Enabled)),
+                         update_sleep_map(Ps, ProcSI, SleepMap)}
+                end,
             ?f_debug("      New backtrack: ~p\n", [NewBacktrack]),
-            lists:reverse(Acc, [StateI,PreSI#trace_state{backtrack = NewBacktrack}|Rest])
+            NewPreSI =
+                PreSI#trace_state{backtrack = NewBacktrack,
+                                  sleep_map = NewSleepMap},
+            lists:reverse(Acc, [StateI,NewPreSI|Rest])
     end.
 
 lookup_clock(P, ClockMap) ->
@@ -524,20 +544,20 @@ lookup_clock_value(P, CV) ->
         error -> 0
     end.
 
-add_from_E(P, Enabled, ForwardTrace, ClockVector, Backtrack) ->
+add_from_E(P, Enabled, ForwardTrace, ClockVector) ->
   case lists:member(P, Enabled) of
     true ->
       ?f_debug("        Enabled.\n"),
-      ordsets:add_element(P, Backtrack);
+      {one, P};
     false ->
       ?f_debug("        Not Enabled.\n"),
       case find_one_from_E(P, ClockVector, Enabled, ForwardTrace) of
         {true, Q} ->
           ?f_debug("        ~p needs to happen\n", [Q]),
-          ordsets:add_element(Q, Backtrack);
+          {one, Q};
         false ->
-          ?f_debug("        Adding all enabled: ~p\n", [Enabled]),
-          ordsets:union(Backtrack, ordsets:from_list(Enabled))
+          ?f_debug("        Adding all enabled: ~w\n", [Enabled]),
+          {many, Enabled}
       end
   end.
 
@@ -562,30 +582,76 @@ find_one_from_E(P, ClockVector, Enabled, [Sj|Rest]) ->
     false -> find_one_from_E(P, ClockVector, Enabled, Rest)
   end.
 
+update_sleep_map(Procs, SleepThis, SleepMap) ->
+    Update =
+        fun(OldSleeps) ->
+            ordsets:add_element(SleepThis, OldSleeps)
+        end,
+    Init = ordsets:from_list([SleepThis]),
+    Fold =
+        fun(P, Dict) ->
+            dict:update(P, Update, Init, Dict)
+        end,
+    lists:foldl(Fold, SleepMap, Procs).
+
 %% - add new entry with new entry
 %% - wait any possible additional messages
 %% - check for async
-update_trace({Lid, _} = Selected, Next, State) ->
+update_trace({Lid, Instr} = Selected, Next, State) ->
     ?f_debug("Sele: ~w Next: ~w\n",[Selected, Next]),
     #dpor_state{trace = [TraceTop|_] = Trace} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  nexts = Nexts, lid_trace = LidTrace,
-                 clock_map = ClockMap} = TraceTop,
+                 clock_map = ClockMap, sleep_set = SleepSet,
+                 sleep_map = SleepMap} = TraceTop,
     NewN = I+1,
     ClockVector = lookup_clock(Lid, ClockMap),
-    LidsClockVector = dict:store(Lid, NewN, ClockVector),
+    DependsClockVector =
+        case Instr of
+            {'receive', _ } -> collect_sends(Lid, Trace, ClockVector);
+            _Other -> ClockVector
+        end,
+    LidsClockVector = dict:store(Lid, NewN, DependsClockVector),
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
     NewNexts = dict:store(Lid, Next, Nexts),
     {NewEnabled, NewBlocked} =
         update_lid_enabled(Lid, Next, Enabled, Blocked),
     NewLidTrace = queue:in(Selected, LidTrace),
+    WakedSleepSet = ordsets:del_element(Lid, SleepSet),
+    NewSleepSet =
+        case dict:find(Lid, SleepMap) of
+            error -> WakedSleepSet;
+            {ok, NewSleeping} ->
+                ?f_debug("Sleeping: ~w\n",[NewSleeping]),
+                ordsets:union(NewSleeping, WakedSleepSet)
+        end,        
     CommonNewTraceTop =
         #trace_state{i = NewN, last = Selected, nexts = NewNexts,
                      enabled = NewEnabled, blocked = NewBlocked,
-                     lid_trace = NewLidTrace, clock_map = NewClockMap},
+                     lid_trace = NewLidTrace, clock_map = NewClockMap,
+                     sleep_set = NewSleepSet},
     NewTraceTop = handle_instruction(Selected, CommonNewTraceTop),
     UnblockedTraceTop = check_blocked(NewTraceTop),
     State#dpor_state{trace = [UnblockedTraceTop|Trace]}.
+
+collect_sends(Lid, [_], ClockVector) ->
+    ClockVector;
+collect_sends(Lid, [TraceTop|Rest], ClockVector) ->
+    NewClockVector =
+        case TraceTop of
+            #trace_state{last = {NLid, {send, {Lid, _}}}, clock_map = ClockMap} ->
+                ?f_debug("Sometimes...\n"),
+                NClockVector = lookup_clock(NLid, ClockMap),
+                Res = max_cv(ClockVector, NClockVector),
+                ?f_debug("~p\n",[dict:to_list(Res)]),
+                Res;
+            _Other -> ClockVector
+        end,
+    collect_sends(Lid, Rest, NewClockVector).
+
+max_cv(D1, D2) ->
+    Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
+    NewAcc = dict:merge(Merger, D1, D2).
 
 update_lid_enabled(Lid, Next, Enabled, Blocked) ->
     case is_next_enabled(Next) of
@@ -690,8 +756,8 @@ handle_instruction_al({Lid, {Spawn, unknown}} = Transition, TraceTop,
                          blocked = NewBlocked,
                          nexts = NewNexts,
                          lid_trace = NewLidTrace};
-handle_instruction_al({Lid, {'receive', [HasMatching, HasAfter]}} = Transition,
-                      TraceTop, ReceiveDetails) ->
+handle_instruction_al({Lid, {'receive', _}} = Transition, TraceTop,
+                      ReceiveDetails) ->
     #trace_state{lid_trace = LidTrace} = TraceTop,
     {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
     NewLast =
@@ -717,8 +783,9 @@ check_blocked(TraceTop) ->
                          nexts = NewNexts}.
 
 poll_all_blocked(Lid, {Blocked, Enabled, Nexts} = Original) ->
-    [HasMatching, HasAfter] = Res = poll(Lid),
-    ?f_debug("Poll ~p: HasMatching: ~p HasAfter: ~p\n",[Lid, HasMatching, HasAfter]),
+    [HasMatching, _HasAfter] = Res = poll(Lid),
+    ?f_debug("Poll ~p: HasMatching: ~p HasAfter: ~p\n",
+             [Lid, HasMatching, _HasAfter]),
     case HasMatching of
         true ->
             {ordsets:del_element(Lid, Blocked),
