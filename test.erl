@@ -11,27 +11,29 @@
          spawner_trace/0, spawner_trace_2/0, spawner_trace_3/0, spawner_trace_4/0, spawner_trace_5/0,
          independent_receivers_blocker/0,
          not_really_blocker/0, not_really_blocker_crasher/0,
-         trace_the_receives/0]).
+         trace_the_receives/0,
+         spawn_link_receive_exit/0]).
 
 independent_receivers() ->
     Parent = self(),
-    Rec1 = spawn(fun() -> receiver(Parent) end),
-    Rec2 = spawn(fun() -> receiver(Parent) end),
+    Rec1 = spawn(fun() -> receiver(Parent, one) end),
+    Rec2 = spawn(fun() -> receiver(Parent, two) end),
     Snd1 = spawn(fun() -> sender(Rec1) end),
     Snd2 = spawn(fun() -> sender(Rec2) end),
     receive
-        ok ->
+        One ->
             receive
-                ok -> done
+                Two -> [One, Two]
             end
-    end.
+    end,
+    1/0.
 
 sender(Pid) ->
     Pid ! ok.
 
-receiver(Parent) ->
+receiver(Parent, Msg) ->
     receive
-        ok -> Parent ! ok
+        ok -> Parent ! Msg
     end.
 
 simple_spawn() ->
@@ -206,3 +208,12 @@ trace_the_receives() ->
     W = spawn(fun() -> Z ! ok end),
     X ! main.
                       
+spawn_link_receive_exit() ->
+    Fun = fun() -> process_flag(trap_exit, true),
+           receive
+               {'EXIT', _Pid, normal} -> 1/0
+           end
+      end,
+    spawn_link(Fun),
+    ok.
+
