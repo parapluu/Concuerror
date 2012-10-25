@@ -25,8 +25,7 @@ independent_receivers() ->
             receive
                 Two -> [One, Two]
             end
-    end,
-    1/0.
+    end.
 
 sender(Pid) ->
     Pid ! ok.
