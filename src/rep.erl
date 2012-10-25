@@ -36,7 +36,7 @@
 -export([rep_is_process_alive_dpor/1, rep_link_dpor/1,
          rep_unlink_dpor/1, rep_unregister_dpor/1]).
 -export([rep_receive_dpor/2, rep_receive_block_dpor/0,
-         rep_after_notify_dpor/0, rep_receive_notify_dpor/2,
+         rep_after_notify_dpor/0, rep_receive_notify_dpor/3,
          rep_receive_notify_dpor/1]).
 
 -include("gen.hrl").
@@ -369,17 +369,16 @@ rep_after_notify_dpor() ->
     sched:notify('after', empty, prev),
     ok.
 
--spec rep_receive_notify_dpor(pid(), term()) -> 'ok'.
+-spec rep_receive_notify_dpor(pid(), dict(), term()) -> 'ok'.
 
-rep_receive_notify_dpor(From, Msg) ->
-    sched:notify('receive', {From, Msg}, prev),
+rep_receive_notify_dpor(From, CV, Msg) ->
+    sched:notify('receive', {From, CV, Msg}, prev),
     ok.
 
--spec rep_receive_notify_dpor(term()) -> 'ok'.
+-spec rep_receive_notify_dpor(term()) -> no_return().
 
 rep_receive_notify_dpor(Msg) ->
-    sched:notify(receive_no_instr, Msg, prev),
-    ok.
+    log:internal("Received uninstrumented message: ~p\n", [Msg]).
 
 %%------------------------------------------------------------------------------
 
@@ -437,11 +436,7 @@ rep_send_dpor(Dest, Msg) ->
             NewDest = find_pid(Dest),
             NewLid = ?LID_FROM_PID(NewDest),
             sched:notify(send, {NewLid, Msg}),
-            case NewLid of
-                not_found -> Dest ! Msg;
-                _DestLid -> Dest ! {?INSTR_MSG, SelfLid, Msg}
-            end,
-            Msg
+            Dest ! Msg
     end.
 
 %% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->

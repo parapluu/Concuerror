@@ -247,13 +247,13 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
           last      = init_tr()         :: transition(),
           enabled   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           blocked   = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
-          nexts     = dict:new()        :: dict(), %% dict(lid:lid(), {instr(), clock_vector()}),
+          nexts     = dict:new()        :: dict(), %% dict(lid:lid(), instr()),
           backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           sleep_set = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           sleep_map = dict:new()        :: dict(), %% dict(lid:lid(), set(lid:lid)),
           clock_map = empty_clock_map() :: clock_map(),
-          lid_trace = new_lid_trace()   :: queue() %% queue(lid:lid())
+          lid_trace = new_lid_trace()   :: queue() %% queue({transition(), clock_vector()})
          }).
 
 init_tr() ->
@@ -262,7 +262,9 @@ init_tr() ->
 empty_clock_map() -> dict:new().
 
 new_lid_trace() ->
-    queue:in(init_tr(), queue:new()).
+    queue:in({init_tr(), empty_clock_vector()}, queue:new()).
+
+empty_clock_vector() -> dict:new().
 
 -type trace_state() :: #trace_state{}.
 
@@ -365,7 +367,7 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
 replay_trace(#dpor_state{proc_before = ProcBefore} = State) ->
     ?f_debug("Replay is required...\n"),
     [#trace_state{lid_trace = LidTrace}|_] = State#dpor_state.trace,
-    ?f_debug("~p\n",[queue:to_list(LidTrace)]),
+    ?f_debug("~p\n",[[S || {S, _V} <- queue:to_list(LidTrace)]]),
     Target = State#dpor_state.target,
     lid:stop(),
     proc_cleanup(processes() -- ProcBefore),
@@ -379,9 +381,11 @@ replay_trace(#dpor_state{proc_before = ProcBefore} = State) ->
 replay_lid_trace(Queue) ->
     {V, NewQueue} = queue:out(Queue),
     case V of
-        {value, {Lid, Command} = Transition} ->
+        {value, {{Lid, Command} = Transition, VC}} ->
+            ?f_debug("Replay: ~p\n",[Transition]),
             _ = wait_next(Lid, Command),
             _ = handle_instruction_op(Transition),
+            replace_messages(Lid, VC),
             replay_lid_trace(NewQueue);
         empty ->
             ok
@@ -415,7 +419,7 @@ wait_next(Lid, Prev) ->
     end.
 
 resume(Lid) ->
-    ?f_debug("resume"),
+    ?f_debug("resume "),
     Pid = lid:get_pid(Lid),
     ?f_debug("{lid,~p,pid,~p}\n",[Lid,Pid]),
     Pid ! #sched{msg = continue},
@@ -577,7 +581,7 @@ update_sleep_map(Procs, SleepThis, SleepMap) ->
 %% - add new entry with new entry
 %% - wait any possible additional messages
 %% - check for async
-update_trace({Lid, Instr} = Selected, Next, State) ->
+update_trace({Lid, _} = Selected, Next, State) ->
     ?f_debug("Sele: ~w Next: ~w\n",[Selected, Next]),
     #dpor_state{trace = [TraceTop|_] = Trace} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
@@ -586,17 +590,11 @@ update_trace({Lid, Instr} = Selected, Next, State) ->
                  sleep_map = SleepMap} = TraceTop,
     NewN = I+1,
     ClockVector = lookup_clock(Lid, ClockMap),
-    DependsClockVector =
-        case Instr of
-            {'receive', _ } -> collect_sends(Lid, Trace, ClockVector);
-            _Other -> ClockVector
-        end,
-    LidsClockVector = dict:store(Lid, NewN, DependsClockVector),
+    LidsClockVector = dict:store(Lid, NewN, ClockVector),
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
     NewNexts = dict:store(Lid, Next, Nexts),
     {NewEnabled, NewBlocked} =
         update_lid_enabled(Lid, Next, Enabled, Blocked),
-    NewLidTrace = queue:in(Selected, LidTrace),
     WakedSleepSet = remove_awaked(SleepSet, Nexts, Selected),
     NewSleepSet =
         case dict:find(Lid, SleepMap) of
@@ -608,30 +606,15 @@ update_trace({Lid, Instr} = Selected, Next, State) ->
     CommonNewTraceTop =
         #trace_state{i = NewN, last = Selected, nexts = NewNexts,
                      enabled = NewEnabled, blocked = NewBlocked,
-                     lid_trace = NewLidTrace, clock_map = NewClockMap,
-                     sleep_set = NewSleepSet},
+                     clock_map = NewClockMap, sleep_set = NewSleepSet},
     NewTraceTop = handle_instruction(Selected, CommonNewTraceTop),
+    UpdatedClockVector = lookup_clock(Lid, NewTraceTop#trace_state.clock_map),
+    replace_messages(Lid, UpdatedClockVector),
+    PossiblyRewrittenSelected = NewTraceTop#trace_state.last,
+    NewLidTrace =
+        queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
     UnblockedTraceTop = check_blocked(NewTraceTop),
-    State#dpor_state{trace = [UnblockedTraceTop|Trace]}.
-
-collect_sends(_Lid, [_], ClockVector) ->
-    ClockVector;
-collect_sends(Lid, [TraceTop|Rest], ClockVector) ->
-    NewClockVector =
-        case TraceTop of
-            #trace_state{last = {NLid, {send, {Lid, _}}}, clock_map = ClockMap} ->
-                ?f_debug("Sometimes...\n"),
-                NClockVector = lookup_clock(NLid, ClockMap),
-                Res = max_cv(ClockVector, NClockVector),
-                ?f_debug("~p\n",[dict:to_list(Res)]),
-                Res;
-            _Other -> ClockVector
-        end,
-    collect_sends(Lid, Rest, NewClockVector).
-
-max_cv(D1, D2) ->
-    Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
-    dict:merge(Merger, D1, D2).
+    State#dpor_state{trace = [UnblockedTraceTop#trace_state{lid_trace = NewLidTrace}|Trace]}.
 
 update_lid_enabled(Lid, Next, Enabled, Blocked) ->
     case is_next_enabled(Next) of
@@ -677,31 +660,24 @@ handle_instruction_op({Lid, {'receive', [HasMatching, HasAfter]}}) ->
     case HasMatching of
         true ->
             receive
-                #sched{msg = ReceiveTag, lid = Lid,
-                       misc = Details, type = prev} ->
-                    case ReceiveTag of
-                        'receive' -> Details;
-                        'receive_no_instr' -> {not_found, Details}
-                    end
+                #sched{msg = 'receive', lid = Lid, misc = Details, type = prev} ->
+                    Details
             end;
         false ->
+            %% FIXME:
             %% Need to check whether something matching has arrived in the meanwhile.
             true = HasAfter,
             receive
                 #sched{msg = 'after', lid = Lid, misc = empty, type = prev} ->
                     {};
-                #sched{msg = ReceiveTag, lid = Lid,
-                       misc = Details, type = prev} ->
-                    case ReceiveTag of
-                        'receive' -> Details;
-                        'receive_no_instr' -> {not_found, Details}
-                    end
+                #sched{msg = 'receive', lid = Lid, misc = Details, type = prev} ->
+                    Details
             end
     end;
-handle_instruction_op({Lid, {'receive', Concrete}}) ->
+handle_instruction_op({Lid, {'receive', {From, Msg}}}) ->
     %% Used during replaying for receive statements that should succeed.
     receive
-        #sched{msg = 'receive', lid = Lid, misc = Concrete, type = prev} -> {}
+        #sched{msg = 'receive', lid = Lid, misc = {From, _CV, Msg}, type = prev} -> {}
     end;
 handle_instruction_op({Lid, {'after', []}}) ->
     %% Used during replaying for after statements.
@@ -728,37 +704,36 @@ handle_instruction_al({Lid, {exit, normal}}, TraceTop, {}) ->
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
     TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts};
-handle_instruction_al({Lid, {Spawn, unknown}} = Transition, TraceTop,
-                      {ChildLid, ChildNextInstr})
+handle_instruction_al({Lid, {Spawn, unknown}}, TraceTop, {ChildLid, ChildNextInstr})
   when Spawn =:= spawn; Spawn =:= spawn_link ->
-    #trace_state{enabled = Enabled, blocked = Blocked, nexts = Nexts,
-                 lid_trace = LidTrace} = TraceTop,
+    #trace_state{enabled = Enabled, blocked = Blocked, nexts = Nexts} = TraceTop,
     NewNexts = dict:store(ChildLid, ChildNextInstr, Nexts),
     MaybeEnabled = ordsets:add_element(ChildLid, Enabled),
     ?f_debug("NextChild:~p\n",[ChildNextInstr]),
     {NewEnabled, NewBlocked} =
         update_lid_enabled(ChildLid, ChildNextInstr, MaybeEnabled, Blocked),
-    {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
     NewLast = {Lid, {Spawn, ChildLid}},
-    NewLidTrace = queue:in(NewLast, TmpLidTrace),
     TraceTop#trace_state{last = NewLast,
                          enabled = NewEnabled,
                          blocked = NewBlocked,
-                         nexts = NewNexts,
-                         lid_trace = NewLidTrace};
-handle_instruction_al({Lid, {'receive', _}} = Transition, TraceTop,
-                      ReceiveDetails) ->
-    #trace_state{lid_trace = LidTrace} = TraceTop,
-    {{value, Transition}, TmpLidTrace} = queue:out_r(LidTrace),
-    NewLast =
+                         nexts = NewNexts};
+handle_instruction_al({Lid, {'receive', _}}, TraceTop, ReceiveDetails) ->
+    #trace_state{clock_map = ClockMap} = TraceTop,
+    Vector = lookup_clock(Lid, ClockMap),
+    {NewLast, NewVector} =
         case ReceiveDetails of
-            {} -> {Lid, {'after', []}};
-            _Else -> {Lid, {'receive', ReceiveDetails}}
+            {} -> {{Lid, {'after', []}}, Vector};
+            {From, CV, Msg} ->
+                {{Lid, {'receive', {From, Msg}}}, max_cv(Vector, CV)}
         end,
-    NewLidTrace = queue:in(NewLast, TmpLidTrace),
-    TraceTop#trace_state{last = NewLast, lid_trace = NewLidTrace};
+    NewClockMap = dict:store(Lid, NewVector, ClockMap),
+    TraceTop#trace_state{last = NewLast, clock_map = NewClockMap};
 handle_instruction_al(_Transition, TraceTop, {}) ->
     TraceTop.
+
+max_cv(D1, D2) ->
+    Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
+    dict:merge(Merger, D1, D2).
 
 check_blocked(TraceTop) ->
     #trace_state{blocked = Blocked, enabled = Enabled, nexts = Nexts} = TraceTop,
@@ -825,7 +800,7 @@ report_error(Transition, State) ->
     ?f_debug("ERROR!\n~p\n",[Transition]),
     InitTr = init_tr(),
     [{P1, init} = InitTr|Trace] =
-        queue:to_list(queue:in(Transition, TraceTop#trace_state.lid_trace)),
+        [S || {S,_V} <- queue:to_list(queue:in({Transition, foo}, TraceTop#trace_state.lid_trace))],
     InitSet = sets:add_element(P1, sets:new()),
     {ErrorState, _Procs} =
         lists:mapfoldl(fun convert_error_trace/2, InitSet, Trace),
@@ -880,7 +855,7 @@ report_possible_deadlock(State) ->
     NewTickets =
         case TraceTop#trace_state.enabled of
             [] ->
-                LidTrace = queue:to_list(TraceTop#trace_state.lid_trace),
+                LidTrace = [S || {S, _V} <- queue:to_list(TraceTop#trace_state.lid_trace)],
                 case TraceTop#trace_state.blocked of
                     [] ->
                         %% log:log("~p\n",[State#dpor_state.run_count]),
@@ -1468,15 +1443,74 @@ no_wakeup() ->
 -spec wait() -> 'ok'.
 
 wait() ->
-    receive
-        #sched{msg = continue} -> ok
-    end.
+    wait_poll_or_continue(ok).
 
 -spec wait_poll_or_continue() -> 'poll' | 'continue'.
 
 wait_poll_or_continue() ->
+    wait_poll_or_continue(continue).
+
+-define(VECTOR_MSG(LID, VC),
+        #sched{msg = vector, lid = LID, misc = VC, type = async}).
+
+wait_poll_or_continue(Msg) ->
+    {message_queue_len, Msgs} = process_info(self(), message_queue_len),
     receive
-        #sched{msg = continue} -> continue;
-        #sched{msg = poll} -> poll
+        #sched{msg = continue} -> Msg;
+        #sched{msg = poll} -> poll;
+        ?VECTOR_MSG(Lid, VC) ->
+            {message_queue_len, NewMsgs} = process_info(self(), message_queue_len),
+            case NewMsgs > Msgs of
+                true -> instrument_my_messages(Lid, VC);
+                false -> ok
+            end,
+            notify(vector, ok, async),
+            wait_poll_or_continue(Msg)
     end.
 
+replace_messages(Lid, VC) ->
+    Unused = unused,
+    Fun =
+        fun(Pid, U) when U =:= Unused ->
+            case is_process_alive(Pid) of
+                true ->
+                    link(Pid),
+                    Pid ! ?VECTOR_MSG(Lid, VC),
+                    receive
+                        ?VECTOR_MSG(PidsLid, ok) -> ok;
+                        {'EXIT', Pid, _Reason} ->
+                            %% Process may have been asked to exit.
+                            ok                                                        
+                    end,
+                    unlink(Pid);
+                false -> ok
+            end,
+            U
+        end,
+    lid:fold_pids(Fun, Unused).
+
+-define(IS_INSTR_MSG(Msg),
+        (is_tuple(Msg) andalso
+         size(Msg) =:= 4 andalso
+         element(1, Msg) =:= ?INSTR_MSG)).
+
+instrument_my_messages(Lid, VC) ->
+    Self = self(),
+    Check =
+        fun() ->
+                receive
+                    Msg when not ?IS_INSTR_MSG(Msg) ->
+                        Instr = {?INSTR_MSG, Lid, VC, Msg},
+                        Self ! Instr,
+                        cont
+                after
+                    0 -> done
+                end
+        end,
+    dynamic_loop(Check).
+
+dynamic_loop(Check) ->
+    case Check() of
+        done -> ok;
+        cont -> dynamic_loop(Check)
+    end.

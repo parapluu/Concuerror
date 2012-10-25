@@ -504,12 +504,18 @@ transform_receive_clause_regular(Clause) ->
     OldBody = erl_syntax:clause_body(Clause),
     InstrAtom = erl_syntax:atom(?INSTR_MSG),
     PidVar = new_variable(),
-    NewPattern = [erl_syntax:tuple([InstrAtom, PidVar, OldPattern])],
+    CV = new_variable(),
+    NewPattern =
+        [erl_syntax:tuple(
+           ?default_or_dpor([InstrAtom, PidVar, OldPattern],
+                            [InstrAtom, PidVar, CV, OldPattern]))],
     Module = erl_syntax:atom(?REP_MOD),
     RepReceiveNotify =
         ?default_or_dpor(rep_receive_notify, rep_receive_notify_dpor),
     Function = erl_syntax:atom(RepReceiveNotify),
-    Arguments = [PidVar, OldPattern],
+    Arguments =
+        ?default_or_dpor([PidVar, OldPattern],
+                         [PidVar, CV, OldPattern]),
     Notify = erl_syntax:application(Module, Function, Arguments),
     NewBody = [Notify|OldBody],
     erl_syntax:clause(NewPattern, OldGuard, NewBody).
