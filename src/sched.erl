@@ -251,7 +251,6 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
           backtrack = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           done      = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
           sleep_set = ordsets:new()     :: ordsets:ordset(), %% set(lid:lid()),
-          sleep_map = dict:new()        :: dict(), %% dict(lid:lid(), set(lid:lid)),
           clock_map = empty_clock_map() :: clock_map(),
           lid_trace = new_lid_trace()   :: queue() %% queue({transition(), clock_vector()})
          }).
@@ -514,23 +513,14 @@ add_all_backtracks_trace(Transition, ClockVector, [StateI|Trace], Acc) ->
             add_all_backtracks_trace(Transition, ClockVector, Trace, [StateI|Acc]);
         true ->
             ?f_debug("~p: I:~p ~p\n",[Transition, I, SI]),
-            [#trace_state{enabled = Enabled, backtrack = Backtrack,
-                          sleep_map = SleepMap, sleep_set = SleepSet} = 
+            [#trace_state{enabled = Enabled, backtrack = Backtrack, sleep_set = SleepSet} =
                  PreSI|Rest] = Trace,
-            {NewBacktrack, NewSleepMap} =
-                case add_from_E(ordsets:subtract(Enabled, SleepSet),
-                                I, ClockVector) of
-                    {one, P} ->
-                        {ordsets:add_element(P, Backtrack),
-                         update_sleep_map([P], ProcSI, SleepMap)};
-                    {many, Ps} ->
-                        {ordsets:union(Backtrack, ordsets:from_list(Enabled)),
-                         update_sleep_map(Ps, ProcSI, SleepMap)}
-                end,
+            P = pick_from_E(ordsets:subtract(Enabled, SleepSet), I, ClockVector),
+            NewBacktrack = ordsets:add_element(P, Backtrack),
+            NewSleepSet = ordsets:add_element(ProcSI, SleepSet),
             ?f_debug("      New backtrack: ~w\n", [NewBacktrack]),
             NewPreSI =
-                PreSI#trace_state{backtrack = NewBacktrack,
-                                  sleep_map = NewSleepMap},
+                PreSI#trace_state{backtrack = NewBacktrack, sleep_set = NewSleepSet},
             lists:reverse(Acc, [StateI,NewPreSI|Rest])
     end.
 
@@ -546,7 +536,7 @@ lookup_clock_value(P, CV) ->
         error -> 0
     end.
 
-add_from_E(Candidates, I, ClockVector) ->
+pick_from_E(Candidates, I, ClockVector) ->
     Fold =
         fun(Lid, Acc) ->
                 Clock = lookup_clock_value(Lid, ClockVector),
@@ -564,19 +554,7 @@ add_from_E(Candidates, I, ClockVector) ->
                 end
         end,
     {ok, Pick, _Clock} = lists:foldl(Fold, none, Candidates),
-    {one, Pick}.
-
-update_sleep_map(Procs, SleepThis, SleepMap) ->
-    Update =
-        fun(OldSleeps) ->
-            ordsets:add_element(SleepThis, OldSleeps)
-        end,
-    Init = ordsets:from_list([SleepThis]),
-    Fold =
-        fun(P, Dict) ->
-            dict:update(P, Update, Init, Dict)
-        end,
-    lists:foldl(Fold, SleepMap, Procs).
+    Pick.
 
 %% - add new entry with new entry
 %% - wait any possible additional messages
@@ -586,8 +564,7 @@ update_trace({Lid, _} = Selected, Next, State) ->
     #dpor_state{trace = [TraceTop|_] = Trace} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  nexts = Nexts, lid_trace = LidTrace,
-                 clock_map = ClockMap, sleep_set = SleepSet,
-                 sleep_map = SleepMap} = TraceTop,
+                 clock_map = ClockMap, sleep_set = SleepSet} = TraceTop,
     NewN = I+1,
     ClockVector = lookup_clock(Lid, ClockMap),
     LidsClockVector = dict:store(Lid, NewN, ClockVector),
@@ -595,14 +572,7 @@ update_trace({Lid, _} = Selected, Next, State) ->
     NewNexts = dict:store(Lid, Next, Nexts),
     {NewEnabled, NewBlocked} =
         update_lid_enabled(Lid, Next, Enabled, Blocked),
-    WakedSleepSet = remove_awaked(SleepSet, Nexts, Selected),
-    NewSleepSet =
-        case dict:find(Lid, SleepMap) of
-            error -> WakedSleepSet;
-            {ok, NewSleeping} ->
-                ?f_debug("Sleeping: ~w\n",[NewSleeping]),
-                ordsets:union(NewSleeping, WakedSleepSet)
-        end,        
+    NewSleepSet = remove_awaked(SleepSet, Nexts, Selected),
     CommonNewTraceTop =
         #trace_state{i = NewN, last = Selected, nexts = NewNexts,
                      enabled = NewEnabled, blocked = NewBlocked,
@@ -1477,7 +1447,7 @@ replace_messages(Lid, VC) ->
                     link(Pid),
                     Pid ! ?VECTOR_MSG(Lid, VC),
                     receive
-                        ?VECTOR_MSG(PidsLid, ok) -> ok;
+                        ?VECTOR_MSG(_PidsLid, ok) -> ok;
                         {'EXIT', Pid, _Reason} ->
                             %% Process may have been asked to exit.
                             ok                                                        
