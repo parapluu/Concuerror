@@ -76,6 +76,7 @@
          {ets, match_object, 1},
          {ets, match_object, 3},
          {ets, match_delete, 2},
+         {ets, new, 2},
          {ets, foldl, 3}]).
 
 %% Instrumented mod:fun.
@@ -315,17 +316,17 @@ needs_instrument(Module, Function, ArgTrees) ->
 
 instrument_application({erlang, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
-    FunAtom = list_to_atom("rep_" ++ atom_to_list(Function)),
+    DporSuffix = ?default_or_dpor("", "_dpor"),
+    FunAtom = list_to_atom("rep_" ++ atom_to_list(Function) ++ DporSuffix),
     RepFun = erl_syntax:atom(FunAtom),
-    DporFun =
-        erl_syntax:atom(list_to_atom(atom_to_list(FunAtom) ++ "_dpor")),
-    FinalFun = ?default_or_dpor(RepFun, DporFun),
-    erl_syntax:application(RepMod, FinalFun, ArgTrees);
+    erl_syntax:application(RepMod, RepFun, ArgTrees);
 instrument_application({Module, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
+    DporSuffix = ?default_or_dpor("", "_dpor"),
     RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Module)
                                           ++ "_"
-                                          ++ atom_to_list(Function))),
+                                          ++ atom_to_list(Function)
+                                          ++ DporSuffix)),
     erl_syntax:application(RepMod, RepFun, ArgTrees).
 
 instrument_var_application({ModTree, FunTree, ArgTrees}) ->

@@ -33,7 +33,7 @@
 -define(INFINITY, 1000000).
 -define(NO_ERROR, undef).
 
-% -define(F_DEBUG, true).
+%%-define(F_DEBUG, true).
 -ifdef(F_DEBUG).
 -define(f_debug(A,B), log:log(A,B)).
 -define(f_debug(A), log:log(A,[])).
@@ -328,11 +328,11 @@ explore(MightNeedReplayState) ->
                 _Else ->
                     Next = wait_next(Lid, Cmd),
                     ?f_debug("Next: ~p\n",[Next]),
-                    LocalAddState = add_local_backtracks(Selected, State),
+                    UpdState = update_trace(Selected, Next, State),
+                    LocalAddState = add_local_backtracks(UpdState),
                     %% ?f_debug("AAS: ~p\n",[AllAddState]),
-                    UpdState = update_trace(Selected, Next, LocalAddState),
                     %% ?f_debug("LAS: ~p\n",[UpdState]),
-                    AllAddState = add_all_backtracks({Lid, Next}, UpdState),
+                    AllAddState = add_all_backtracks({Lid, Next}, LocalAddState),
                     NewChildState = add_all_child_backtracks(Cmd, AllAddState),
                     %% ?f_debug("US : ~p\n",[UpdState]),
                     NewState = add_some_next_to_backtrack(NewChildState),
@@ -400,25 +400,35 @@ replay_lid_trace(Queue) ->
 
 wait_next(Lid, Prev) ->
     case Prev of
-        {exit, normal} ->
+        {exit, {normal, _DeadEts}} ->
             ok = resume(Lid),
             exited;
         {Spawn, _} when Spawn =:= spawn; Spawn =:= spawn_link ->
             ok = resume(Lid),
             %% This interruption happens to make sure that a child has an LID
             %% before the parent wants to do any operation with its PID.
-            ChildPid =
+            ChildLid =
                 receive
                     #sched{msg = spawned,
                            lid = Lid,
                            misc = Pid,
                            type = prev} = Msg ->
-                        Pid
+                        lid:new(Pid, Lid)
                 end,
-            ChildLid = lid:new(ChildPid, Lid),
             ?f_debug("Child process is registered\n"),
             resume(Lid),
             self() ! Msg#sched{misc=ChildLid},
+            get_next(Lid);
+        {ets, {new, _Options}} ->
+            ok = resume(Lid),
+            EtsLid =
+                receive
+                    #sched{msg = new_tid, lid = Lid, misc = Tid,
+                           type = prev} = Msg ->
+                        lid:ets_new(Tid)
+                end,
+            resume(Lid),
+            self() ! Msg#sched{msg = new_ets_lid, misc = EtsLid},
             get_next(Lid);
         _Other ->
             ok = resume(Lid),
@@ -438,9 +448,9 @@ get_next(Lid) ->
             {Type, Misc}
     end.
 
-add_local_backtracks(Transition, #dpor_state{preemption_bound = PreBound,
-                                             trace = Trace} = State) ->
-    [TraceTop|RestTrace] = Trace,
+add_local_backtracks(#dpor_state{preemption_bound = PreBound,
+                                 trace = Trace} = State) ->
+    [#trace_state{last = Transition} = NewTop,TraceTop|RestTrace] = Trace,
     #trace_state{backtrack = Backtrack, nexts = Nexts, enabled = Enabled,
                  sleep_set = SleepSet, preemptions = Preemptions,
                  last = {LLid, _}} = TraceTop,
@@ -451,16 +461,20 @@ add_local_backtracks(Transition, #dpor_state{preemption_bound = PreBound,
         end,
     case Allowed of
         true ->
-            NewBacktrack = add_local_backtracks(Transition, Nexts, Enabled, Backtrack),
+            NewBacktrack =
+                add_local_backtracks(Transition, Nexts, Enabled, Backtrack),
             SleepingRemoved = ordsets:subtract(NewBacktrack, SleepSet),
             case Backtrack =/= SleepingRemoved of
                 true ->
                     ?f_debug("OldBacktrack:~w\n",[Backtrack]),
                     ?f_debug("Sleeping:~w\n",[SleepSet]),
-                    ?f_debug("Local adds: ~w\n",[ordsets:subtract(SleepingRemoved, Backtrack)]);
+                    ?f_debug("Local adds: ~w\n",
+                             [ordsets:subtract(SleepingRemoved, Backtrack)]);
                 false -> ok
             end,
-            NewTrace = [TraceTop#trace_state{backtrack = SleepingRemoved}|RestTrace],
+            NewTrace =
+                [NewTop,
+                 TraceTop#trace_state{backtrack = SleepingRemoved}|RestTrace],
             State#dpor_state{trace = NewTrace};
         false ->
             State
@@ -503,6 +517,8 @@ dependent({_Lid1, {send, {Lid, Msg1}}}, {_Lid2, {send, {Lid, Msg2}}}) ->
     Msg1 =/= Msg2;
 dependent({_Lid1, {send, {Lid, _Msg}}}, {Lid, {'after', empty}}) ->
     true;
+dependent({_Lid1, {ets, {_Op, [Table|Rest]}}}, {_Lid2, {exit, {normal, Tables}}}) ->
+    lists:member(Table, Tables);
 dependent(_TransitionA, _TransitionB) ->
     ?f_debug("A:~p B:~p\n",[_TransitionA, _TransitionB]),
     false.
@@ -589,7 +605,7 @@ pick_from_E(Candidates, I, ClockVector) ->
 %% - wait any possible additional messages
 %% - check for async
 update_trace({Lid, _} = Selected, Next, State) ->
-    #dpor_state{trace = [TraceTop|Rest]} = State,
+    #dpor_state{trace = [TraceTop|Rest] = Trace} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  pollable = Pollable,
                  nexts = Nexts, lid_trace = LidTrace,
@@ -598,7 +614,8 @@ update_trace({Lid, _} = Selected, Next, State) ->
     ?f_debug("Sele: ~w Next: ~w\nPreemptions: ~w\n",[Selected, Next, Preemptions]),
     NewN = I+1,
     ClockVector = lookup_clock(Lid, ClockMap),
-    LidsClockVector = dict:store(Lid, NewN, ClockVector),
+    BaseClockVector = dict:store(Lid, NewN, ClockVector),
+    LidsClockVector = recent_dependency_cv(Selected, BaseClockVector, LidTrace),
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
     NewNexts = dict:store(Lid, Next, Nexts),
     MaybeNotPollable = ordsets:del_element(Lid, Pollable),
@@ -635,6 +652,29 @@ update_trace({Lid, _} = Selected, Next, State) ->
     State#dpor_state{trace = [UnblockedTraceTop#trace_state{lid_trace = NewLidTrace},
                               NewPrevTraceTop|Rest]}.
 
+recent_dependency_cv({_Lid, {ets, _Info}} = Transition, ClockVector, LidTrace) ->
+    Fun =
+        fun(Queue) ->
+            {Ret, NewQueue} = queue:out_r(Queue),
+            case Ret of
+                empty -> {done, ClockVector};
+                {value, {Transition2, CV}} ->
+                    case dependent(Transition, Transition2) of
+                        true -> {done, max_cv(ClockVector, CV)};
+                        false -> {cont, NewQueue}
+                    end
+            end
+        end,
+    dynamic_loop_acc(Fun, LidTrace);
+recent_dependency_cv(_Transition, ClockVector, _Trace) ->
+    ClockVector.
+
+dynamic_loop_acc(Fun, Arg) ->
+    case Fun(Arg) of
+        {done, Ret} -> Ret;
+        {cont, NewArg} -> dynamic_loop_acc(Fun, NewArg)
+    end.
+    
 update_lid_enabled(Lid, Next, Pollable, Enabled, Blocked) ->
     {NewEnabled, NewBlocked} =
         case is_enabled(Next) of
@@ -690,6 +730,12 @@ handle_instruction_op({Lid, {'receive', _TagOrInfo}}) ->
         #sched{msg = 'receive', lid = Lid, misc = Details, type = prev} ->
             Details
     end;
+handle_instruction_op({Lid, {ets, {new, {_Lid, _Name, _Options}}}}) ->
+    receive
+        %% This is the replaced message
+        #sched{msg = new_ets_lid, lid = Lid, misc = EtsLid, type = prev} ->
+            EtsLid
+    end;
 handle_instruction_op(_) ->
     flush_mailbox(),
     {}.
@@ -704,7 +750,7 @@ flush_mailbox() ->
     end.
 
 %% STUB
-handle_instruction_al({Lid, {exit, normal}}, TraceTop, {}) ->
+handle_instruction_al({Lid, {exit, {normal, _DeadEts}}}, TraceTop, {}) ->
     ?f_debug("Exit\n"),
     #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
@@ -739,6 +785,10 @@ handle_instruction_al({Lid, {'receive', Tag}}, TraceTop, {From, CV, Msg}) ->
     NewVector = max_cv(Vector, CV),
     NewClockMap = dict:store(Lid, NewVector, ClockMap),
     TraceTop#trace_state{last = NewLast, clock_map = NewClockMap};
+handle_instruction_al({Lid, {ets, {new, {unknown, Name, Options}}}},
+                      TraceTop, EtsLid) ->
+    NewLast = {Lid, {ets, {new, {EtsLid, Name, Options}}}},
+    TraceTop#trace_state{last = NewLast};
 handle_instruction_al(_Transition, TraceTop, {}) ->
     TraceTop.
 
@@ -882,6 +932,8 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 {'receive', Lid, Origin, Msg};
             'after' ->
                 {'after', Lid};
+            exit ->
+                {exit, Lid, normal};
             _ ->
                 {Instr, Lid, Extra}
         end,
@@ -1518,19 +1570,15 @@ replace_messages(Lid, VC) ->
     Unused = unused,
     Fun =
         fun(Pid, U) when U =:= Unused ->
-            case is_process_alive(Pid) of
-                true ->
-                    link(Pid),
-                    Pid ! ?VECTOR_MSG(Lid, VC),
-                    receive
-                        ?VECTOR_MSG(_PidsLid, ok) -> ok;
-                        {'EXIT', Pid, _Reason} ->
-                            %% Process may have been asked to exit.
-                            ok                                                        
-                    end,
-                    unlink(Pid);
-                false -> ok
+            link(Pid),
+            Pid ! ?VECTOR_MSG(Lid, VC),
+            receive
+                ?VECTOR_MSG(_PidsLid, ok) -> ok;
+                {'EXIT', Pid, _Reason} ->
+                    %% Process may have been asked to exit.
+                    ok                                                        
             end,
+            unlink(Pid),
             U
         end,
     lid:fold_pids(Fun, Unused).

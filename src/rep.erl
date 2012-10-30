@@ -27,7 +27,7 @@
 -export([rep_ets_insert_new/2, rep_ets_lookup/2, rep_ets_select_delete/2,
          rep_ets_insert/2, rep_ets_delete/1, rep_ets_delete/2,
          rep_ets_match_object/1, rep_ets_match_object/3,
-         rep_ets_match_delete/2, rep_ets_foldl/3]).
+         rep_ets_match_delete/2, rep_ets_new/2, rep_ets_foldl/3]).
 
 -export([spawn_fun_wrapper/1]).
 -export([rep_send_dpor/2]).
@@ -38,6 +38,8 @@
 -export([rep_receive_dpor/2, rep_receive_block_dpor/0,
          rep_after_notify_dpor/0, rep_receive_notify_dpor/3,
          rep_receive_notify_dpor/1]).
+
+-export([rep_ets_insert_dpor/2, rep_ets_new_dpor/2]).
 
 -include("gen.hrl").
 
@@ -89,6 +91,7 @@
          {{ets, match_object, 1}, fun rep_ets_match_object/1},
          {{ets, match_object, 3}, fun rep_ets_match_object/3},
          {{ets, match_delete, 2}, fun rep_ets_match_delete/2},
+         {{ets, new, 2}, fun rep_ets_new/2},
          {{ets, foldl, 3}, fun rep_ets_foldl/3}]).
 
 %%%----------------------------------------------------------------------
@@ -507,7 +510,8 @@ spawn_fun_wrapper(Fun) ->
     try
         sched:wait(),
         Ret = Fun(),
-        sched:notify(exit, normal),
+        MyEts = find_my_ets_tables(),
+        sched:notify(exit, {normal, MyEts}),
         Ret
     catch
         Class:Type ->
@@ -518,6 +522,11 @@ spawn_fun_wrapper(Fun) ->
                 exit  -> exit(Type)
             end
     end.                    
+
+find_my_ets_tables() ->
+    Self = self(),
+    [?LID_FROM_PID(TID) ||
+        TID <- ets:all(), Self =:= ets:info(TID, owner)].             
 
 %% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn/3'.
@@ -748,10 +757,30 @@ rep_ets_match_delete(Tab, Pattern) ->
     sched:notify(ets_match_delete, {Tab, Pattern}),
     Ret.
 
+rep_ets_new(Name, Options) ->
+    Ret = ets:new(Name, Options),
+    sched:notify(ets_new, {Name, Options}),
+    Ret.
+
 rep_ets_foldl(Function, Acc0, Tab) ->
     Ret = ets:foldl(Function, Acc0, Tab),
     sched:notify(ets_foldl, {Function, Acc0, Tab}),
     Ret.
+
+%%%----------------------------------------------------------------------
+%%% ETS replacements DPOR
+%%%----------------------------------------------------------------------
+
+rep_ets_new_dpor(Name, Options) ->
+    sched:notify(ets, {new, {unknown, Name, Options}}),
+    Tid = ets:new(Name, Options),
+    sched:notify(new_tid, Tid, prev),
+    sched:wait(),
+    Tid.
+
+rep_ets_insert_dpor(Tab, Obj) ->
+    sched:notify(ets, {insert, [?LID_FROM_PID(Tab), Obj]}),
+    ets:insert(Tab, Obj).
 
 %%%----------------------------------------------------------------------
 %%% Helper functions
