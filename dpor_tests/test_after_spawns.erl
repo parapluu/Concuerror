@@ -10,12 +10,23 @@ test_after_spawns() ->
     One = receive_or_fail(1),
     Two = receive_or_fail(2),
     Three = receive_or_fail(3),
-    throw({One, Two, Three}).
+    throw({ok, One, Two, Three}).
 
 receive_or_fail(N) ->
     receive
         Msg -> Msg
     after
         10 ->
-            throw(N)
+            List = get_msgs([]),
+            throw({N, List})
     end.
+
+get_msgs(Acc) ->
+    receive
+        P ->
+            get_msgs([P|Acc])
+    after
+        0 ->
+            Acc
+    end.
+    

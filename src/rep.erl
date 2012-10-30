@@ -344,15 +344,25 @@ rep_receive_dpor(Fun, HasTimeout) ->
 
 rep_receive_loop_dpor(Act, Fun, HasTimeout) ->
     case Act of
-        continue -> ok;
+        Resume when Resume =:= ok;
+                    Resume =:= continue -> ok;
         poll ->
             {messages, Mailbox} = process_info(self(), messages),
             case rep_receive_match(Fun, Mailbox) of
                 block ->
-                    NewAct = sched:notify('receive', [false, HasTimeout]),
+                    NewAct =
+                        case HasTimeout of
+                            false -> sched:notify('receive', blocked);
+                            true -> sched:notify('after', empty)
+                        end,
                     rep_receive_loop_dpor(NewAct, Fun, HasTimeout);
                 continue ->
-                    continue = sched:notify('receive', [true, HasTimeout]),
+                    Tag =
+                        case HasTimeout of
+                            false -> unblocked;
+                            true -> had_after
+                        end,
+                    continue = sched:notify('receive', Tag),
                     ok
             end
     end.
@@ -366,7 +376,6 @@ rep_receive_block_dpor() ->
 -spec rep_after_notify_dpor() -> 'ok'.
 
 rep_after_notify_dpor() ->
-    sched:notify('after', empty, prev),
     ok.
 
 -spec rep_receive_notify_dpor(pid(), dict(), term()) -> 'ok'.
@@ -432,7 +441,7 @@ rep_send_dpor(Dest, Msg) ->
             %% Unknown process sends using instrumented code. Allow it.
             %% It will be reported at the receive point.
             Dest ! Msg;
-        SelfLid ->
+        _SelfLid ->
             NewDest = find_pid(Dest),
             NewLid = ?LID_FROM_PID(NewDest),
             sched:notify(send, {NewLid, Msg}),

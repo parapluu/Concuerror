@@ -5,8 +5,7 @@
 spawned_sender_crasher() ->
     Receiver = spawn(fun receive_two/0),
     spawn(sender(Receiver, one)),
-    spawn(sender(Receiver, two)),
-    1/0.
+    spawn(sender(Receiver, two)).
 
     
 
@@ -15,7 +14,8 @@ receive_two() ->
         Pat1 ->
             receive
                 Pat2 ->
-                    [Pat1, Pat2]
+                    [one, two] = [Pat1, Pat2],
+                    [two, one] = [Pat1, Pat2]
             end
     end.
 
