@@ -68,7 +68,7 @@ cleanup(Lid) ->
 %% Return the LID of process Pid or 'not_found' if mapping not in table.
 -spec from_pid(term()) -> lid() | 'not_found'.
 
-from_pid(Pid) when is_pid(Pid); is_integer(Pid) ->
+from_pid(Pid) when is_pid(Pid); is_integer(Pid); is_atom(Pid) ->
     case ets:lookup(?NT_PID, Pid) of
         [{Pid, Lid}] -> Lid;
         [] -> not_found

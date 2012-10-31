@@ -39,7 +39,7 @@
          rep_after_notify_dpor/0, rep_receive_notify_dpor/3,
          rep_receive_notify_dpor/1]).
 
--export([rep_ets_insert_dpor/2, rep_ets_new_dpor/2]).
+-export([rep_ets_insert_dpor/2, rep_ets_new_dpor/2, rep_ets_lookup_dpor/2]).
 
 -include("gen.hrl").
 
@@ -772,15 +772,19 @@ rep_ets_foldl(Function, Acc0, Tab) ->
 %%%----------------------------------------------------------------------
 
 rep_ets_new_dpor(Name, Options) ->
-    sched:notify(ets, {new, {unknown, Name, Options}}),
+    sched:notify(ets, {new, [unknown, Name, Options]}),
     Tid = ets:new(Name, Options),
     sched:notify(new_tid, Tid, prev),
     sched:wait(),
     Tid.
 
 rep_ets_insert_dpor(Tab, Obj) ->
-    sched:notify(ets, {insert, [?LID_FROM_PID(Tab), Obj]}),
+    sched:notify(ets, {insert, [?LID_FROM_PID(Tab), Tab, Obj]}),
     ets:insert(Tab, Obj).
+
+rep_ets_lookup_dpor(Tab, Key) ->
+    sched:notify(ets, {lookup, [?LID_FROM_PID(Tab), Tab, Key]}),
+    ets:lookup(Tab, Key).
 
 %%%----------------------------------------------------------------------
 %%% Helper functions

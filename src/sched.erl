@@ -372,9 +372,8 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
 
 %% STUB
 replay_trace(#dpor_state{proc_before = ProcBefore} = State) ->
-    ?f_debug("Replay is required...\n"),
+    ?f_debug("\nReplay is required...\n"),
     [#trace_state{lid_trace = LidTrace}|_] = State#dpor_state.trace,
-    ?f_debug("~p\n",[[S || {S, _V} <- queue:to_list(LidTrace)]]),
     Target = State#dpor_state.target,
     lid:stop(),
     proc_cleanup(processes() -- ProcBefore),
@@ -382,14 +381,14 @@ replay_trace(#dpor_state{proc_before = ProcBefore} = State) ->
     replay_lid_trace(LidTrace),
     flush_mailbox(),
     RunCnt = State#dpor_state.run_count,
-    ?f_debug("Done replaying...\n"),
+    ?f_debug("Done replaying...\n\n"),
     State#dpor_state{run_count = RunCnt + 1, must_replay = false}.
 
 replay_lid_trace(Queue) ->
     {V, NewQueue} = queue:out(Queue),
     case V of
         {value, {{Lid, Command} = Transition, VC}} ->
-            ?f_debug("Replay: ~p\n",[Transition]),
+            ?f_debug(" ~p\n",[Transition]),
             _ = wait_next(Lid, Command),
             _ = handle_instruction_op(Transition),
             replace_messages(Lid, VC),
@@ -415,7 +414,6 @@ wait_next(Lid, Prev) ->
                            type = prev} = Msg ->
                         lid:new(Pid, Lid)
                 end,
-            ?f_debug("Child process is registered\n"),
             resume(Lid),
             self() ! Msg#sched{misc=ChildLid},
             get_next(Lid);
@@ -436,9 +434,7 @@ wait_next(Lid, Prev) ->
     end.
 
 resume(Lid) ->
-    ?f_debug("resume "),
     Pid = lid:get_pid(Lid),
-    ?f_debug("{lid,~p,pid,~p}\n",[Lid,Pid]),
     Pid ! #sched{msg = continue},
     ok.
 
@@ -459,22 +455,20 @@ add_local_backtracks(#dpor_state{preemption_bound = PreBound,
             false -> true;
             true -> Preemptions < PreBound
         end,
-    case Allowed of
+    case Allowed andalso may_have_dependencies(Transition) of
         true ->
+            SleepingRemoved = ordsets:subtract(Enabled, SleepSet),
             NewBacktrack =
-                add_local_backtracks(Transition, Nexts, Enabled, Backtrack),
-            SleepingRemoved = ordsets:subtract(NewBacktrack, SleepSet),
-            case Backtrack =/= SleepingRemoved of
+                add_local_backtracks(Transition, Nexts, SleepingRemoved, Backtrack),
+            case Backtrack =/= NewBacktrack of
                 true ->
-                    ?f_debug("OldBacktrack:~w\n",[Backtrack]),
-                    ?f_debug("Sleeping:~w\n",[SleepSet]),
                     ?f_debug("Local adds: ~w\n",
-                             [ordsets:subtract(SleepingRemoved, Backtrack)]);
+                             [ordsets:subtract(NewBacktrack, Backtrack)]);
                 false -> ok
             end,
             NewTrace =
                 [NewTop,
-                 TraceTop#trace_state{backtrack = SleepingRemoved}|RestTrace],
+                 TraceTop#trace_state{backtrack = NewBacktrack}|RestTrace],
             State#dpor_state{trace = NewTrace};
         false ->
             State
@@ -498,12 +492,21 @@ add_local_backtracks({NLid, _} = Transition, Nexts, AllEnabled, Backtrack) ->
         end,
     lists:foldl(Fold, Backtrack, ordsets:to_list(AllEnabled)).
 
+may_have_dependencies({_Lid, {error, _}}) -> false;
+may_have_dependencies({_Lid, {Spawn, _}})
+  when Spawn =:= spawn; Spawn =:= spawn_link -> false;
+may_have_dependencies({_Lid, {'receive', _}}) -> false;
+may_have_dependencies(_Else) -> true.
+
 %% STUB
 %% All Trace:
 %%   dependent(New, Older)
 %% Local Trace:
 %%   dependent(Possible, Chosen)
-dependent({X, _}, {X, _}) ->
+dependent(A, B) ->
+    dependent(A, B, false).
+
+dependent({X, _}, {X, _}, false) ->
     %% You are already in the backtrack set.
     false;
 %% TODO:
@@ -513,22 +516,42 @@ dependent({X, _}, {X, _}) ->
 %%     false;
 %% dependent(A, {_, {exit, normal}} = B) ->
 %%     dependent(B, A);
-dependent({_Lid1, {send, {Lid, Msg1}}}, {_Lid2, {send, {Lid, Msg2}}}) ->
+dependent({_Lid1, {send, {Lid, Msg1}}}, {_Lid2, {send, {Lid, Msg2}}}, false) ->
     Msg1 =/= Msg2;
-dependent({_Lid1, {send, {Lid, _Msg}}}, {Lid, {'after', empty}}) ->
+dependent({_Lid1, {ets, Op1}}, {_Lid2, {ets, Op2}}, false) ->
+    dependent_ets(Op1, Op2);
+dependent({_Lid1, {send, {Lid, _Msg}}}, {Lid, {'after', empty}}, _Swap) ->
     true;
-dependent({_Lid1, {ets, {_Op, [Table|Rest]}}}, {_Lid2, {exit, {normal, Tables}}}) ->
+dependent({_Lid1, {ets, {_Op, [Table|Rest]}}}, {_Lid2, {exit, {normal, Tables}}},
+          _Swap) ->
     lists:member(Table, Tables);
-dependent(_TransitionA, _TransitionB) ->
-    ?f_debug("A:~p B:~p\n",[_TransitionA, _TransitionB]),
+dependent(TransitionA, TransitionB, false) ->
+    dependent(TransitionB, TransitionA, true);
+dependent(TransitionA, TransitionB, true) ->
+    false.
+
+dependent_ets(Op1, Op2) ->
+    dependent_ets(Op1, Op2, false).
+
+dependent_ets({insert, [T, _, {K, V1}]}, {insert, [T, _, {K, V2}]}, false) ->
+    V1 =/= V2;
+dependent_ets({insert, [T, _, {K, _}]}, {lookup, [T, _, K]}, _Swap) -> true;
+dependent_ets(Op1, Op2, false) ->
+    dependent_ets(Op1, Op2, true);
+dependent_ets(Op1, Op2, true) ->
     false.
 
 add_all_backtracks(Transition, #dpor_state{preemption_bound = PreBound,
                                            trace = Trace} = State) ->
     case State#dpor_state.fake_dpor of
         false ->
-            NewTrace = add_all_backtracks_trace(Transition, Trace, PreBound),
-            State#dpor_state{trace = NewTrace};
+            case may_have_dependencies(Transition) of
+                true ->
+                    NewTrace =
+                        add_all_backtracks_trace(Transition, Trace, PreBound),
+                    State#dpor_state{trace = NewTrace};
+                false -> State
+            end;
         true ->
             %% add_some_next will take care of all the backtracks.
             State
@@ -549,18 +572,17 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, [StateI|Trace], Acc)
         true ->
             Dependent = dependent(Transition, SI),
             Clock = lookup_clock_value(ProcSI, ClockVector),
-            ?f_debug("Dep ~p andalso ~p\n",[Dependent, I > Clock]),
+            ?f_debug("~-4w ~p: Dep ~p andalso ~p\n",[I, SI, Dependent, I > Clock]),
             case Dependent andalso I > Clock of
                 false ->
                     add_all_backtracks_trace(Transition, ClockVector, PreBound, Trace, [StateI|Acc]);
                 true ->
-                    ?f_debug("NEW Backtrack! ~p: I:~p ~p\n",[Transition, I, SI]),
                     [#trace_state{enabled = Enabled, backtrack = Backtrack, sleep_set = SleepSet} =
                          PreSI|Rest] = Trace,
                     P = pick_from_E(ordsets:subtract(Enabled, SleepSet), I, ClockVector),
                     NewBacktrack = ordsets:add_element(P, Backtrack),
                     NewSleepSet = ordsets:add_element(ProcSI, SleepSet),
-                    ?f_debug("      New backtrack: ~w\n", [NewBacktrack]),
+                    ?f_debug("     Global adds: ~w\n", [P]),
                     NewPreSI =
                         PreSI#trace_state{backtrack = NewBacktrack, sleep_set = NewSleepSet},
                     lists:reverse(Acc, [StateI,NewPreSI|Rest])
@@ -611,7 +633,6 @@ update_trace({Lid, _} = Selected, Next, State) ->
                  nexts = Nexts, lid_trace = LidTrace,
                  clock_map = ClockMap, sleep_set = SleepSet,
                  preemptions = Preemptions, last = {LLid,_}} = TraceTop,
-    ?f_debug("Sele: ~w Next: ~w\nPreemptions: ~w\n",[Selected, Next, Preemptions]),
     NewN = I+1,
     ClockVector = lookup_clock(Lid, ClockMap),
     BaseClockVector = dict:store(Lid, NewN, ClockVector),
@@ -699,14 +720,17 @@ is_pollable({'after', empty}) -> true;
 is_pollable(_Else) -> false.
 
 remove_awaked(SleepSet, Nexts, Selected) ->
-    ?f_debug("OldSS: ~w\n",[SleepSet]),
     Filter =
         fun(Lid) ->
                 Instr = dict:fetch(Lid, Nexts),
-                not dependent({Lid, Instr}, Selected)
+                R = not dependent({Lid, Instr}, Selected),
+                case R of
+                    false -> ?f_debug("Awake ~p\n",[{Lid, Instr}]);
+                    true -> ok
+                end,
+                R
         end,
     N = [S || S <- SleepSet, Filter(S)],
-    ?f_debug("NewSS:~w\n", [N]),
     N.
 
 %% Handle instruction is broken in two parts to reuse code in replay.
@@ -730,7 +754,7 @@ handle_instruction_op({Lid, {'receive', _TagOrInfo}}) ->
         #sched{msg = 'receive', lid = Lid, misc = Details, type = prev} ->
             Details
     end;
-handle_instruction_op({Lid, {ets, {new, {_Lid, _Name, _Options}}}}) ->
+handle_instruction_op({Lid, {ets, {new, [_Lid, _Name, _Options]}}}) ->
     receive
         %% This is the replaced message
         #sched{msg = new_ets_lid, lid = Lid, misc = EtsLid, type = prev} ->
@@ -751,7 +775,6 @@ flush_mailbox() ->
 
 %% STUB
 handle_instruction_al({Lid, {exit, {normal, _DeadEts}}}, TraceTop, {}) ->
-    ?f_debug("Exit\n"),
     #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
@@ -762,7 +785,7 @@ handle_instruction_al({Lid, {Spawn, unknown}}, TraceTop, {ChildLid, ChildNextIns
                  nexts = Nexts, pollable = Pollable} = TraceTop,
     NewNexts = dict:store(ChildLid, ChildNextInstr, Nexts),
     MaybeEnabled = ordsets:add_element(ChildLid, Enabled),
-    ?f_debug("NextChild:~p\n",[ChildNextInstr]),
+    ?f_debug("Child's Next:~p\n",[ChildNextInstr]),
     {NewPollable, NewEnabled, NewBlocked} =
         update_lid_enabled(ChildLid, ChildNextInstr, Pollable, MaybeEnabled, Blocked),
     NewLast = {Lid, {Spawn, ChildLid}},
@@ -785,9 +808,9 @@ handle_instruction_al({Lid, {'receive', Tag}}, TraceTop, {From, CV, Msg}) ->
     NewVector = max_cv(Vector, CV),
     NewClockMap = dict:store(Lid, NewVector, ClockMap),
     TraceTop#trace_state{last = NewLast, clock_map = NewClockMap};
-handle_instruction_al({Lid, {ets, {new, {unknown, Name, Options}}}},
+handle_instruction_al({Lid, {ets, {new, [unknown, Name, Options]}}},
                       TraceTop, EtsLid) ->
-    NewLast = {Lid, {ets, {new, {EtsLid, Name, Options}}}},
+    NewLast = {Lid, {ets, {new, [EtsLid, Name, Options]}}},
     TraceTop#trace_state{last = NewLast};
 handle_instruction_al(_Transition, TraceTop, {}) ->
     TraceTop.
@@ -803,9 +826,10 @@ check_pollable(OldTraceTop, TraceTop) ->
     #trace_state{backtrack = Backtrack} = OldTraceTop,
     PollableList = ordsets:to_list(Pollable),
     InitAcc = {Backtrack, SleepSet, Pollable, Blocked, Enabled, Nexts},
+    ?f_debug("Polling...\n"),
     {NewBacktrack, NewSleepSet, NewPollable, NewBlocked, NewEnabled, NewNexts} =
         lists:foldl(fun poll_all/2, InitAcc, PollableList),
-    ?f_debug("  Pollable: ~w\n  Blocked: ~w\n  Enabled: ~w\n  Nexts: ~w\n",
+    ?f_debug("Pollable: ~w\nBlocked: ~w\nEnabled: ~w\nNexts: ~w\n",
              [NewPollable, NewBlocked, NewEnabled, dict:to_list(NewNexts)]),
     {OldTraceTop#trace_state{backtrack = NewBacktrack},
      TraceTop#trace_state{pollable = NewPollable,
@@ -815,7 +839,7 @@ check_pollable(OldTraceTop, TraceTop) ->
                           nexts = NewNexts}}.
 
 poll_all(Lid, {Backtrack, SleepSet, Pollable, Blocked, Enabled, Nexts} = Original) ->
-    ?f_debug("Poll ~p: ",[Lid]),
+    ?f_debug("  Poll ~p: ",[Lid]),
     Res = poll(Lid),
     ?f_debug("~p\n",[Res]),
     case Res of
@@ -877,14 +901,13 @@ add_some_next_to_backtrack(State) ->
                             none ->
                                 case ordsets:is_element(Lid, Candidates) of
                                     true -> [Lid];
-                                    false -> ?f_debug("Picked: ~w\n",[H]), [H]
+                                    false -> [H]
                                 end;
-                            Else ->
-                                ?f_debug("Picked to crash: ~w\n",[H]),
-                                [Else]
+                            Else -> [Else]
                         end
                 end
         end,
+    ?f_debug("Picked: ~w\n",[Backtrack]),
     State#dpor_state{trace = [TraceTop#trace_state{backtrack = Backtrack}|Rest]}.
 
 %% STUB
@@ -934,6 +957,15 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 {'after', Lid};
             exit ->
                 {exit, Lid, normal};
+            ets ->
+                case Extra of
+                    {new, [_EtsLid, Name, Options]} ->
+                        {ets_new, Lid, {Name, Options}};
+                    {insert, [EtsLid, Tid, Objects]} ->
+                        {ets_insert, Lid, {Tid, Objects}};
+                    {lookup, [EtsLid, Tid, Key]} ->
+                        {ets_lookup, Lid, {Tid, Key}}
+                end;
             _ ->
                 {Instr, Lid, Extra}
         end,
@@ -945,8 +977,7 @@ convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}})->
             error -> Type;
             throw -> {nocatch, Type}
         end,
-    [_|TmpStacktrace] = lists:reverse(Stacktrace),
-    {exception,{NewType, lists:reverse(TmpStacktrace)}}.
+    {exception, {NewType, Stacktrace}}.
 
 %% STUB
 report_possible_deadlock(State) ->

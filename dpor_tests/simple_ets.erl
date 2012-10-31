@@ -11,13 +11,20 @@ simple_ets() ->
         end,
     spawn(fun() -> F(key, value),
                    F(key, new_value),
-                   F(clef, souffle)
+                   F(clef, souffle),
+                   Self ! ok
           end),
     spawn(fun() -> F(key, eulav),
                    F(clef, elffuos),
                    Self ! ok
           end),
     receive
-        ok -> ok
+        ok ->
+            [{key, V1}] = ets:lookup(Tid, key),
+            [{clef, V2}] = ets:lookup(Tid, clef),
+            case {V1, V2} of
+                {new_value, souffle} -> ok;
+                {eulav, elffuos} -> ok
+            end
     end.
     

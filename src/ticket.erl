@@ -28,7 +28,19 @@
 -spec new(error:error(), [proc_action:proc_action()]) -> ticket().
 
 new(Error, ErrorDetails) ->
-    {Error, [Q || Q <- ErrorDetails, not_block(Q)]}.
+    NewError =
+        case Error of
+            {exception, {Type, Stacktrace}} ->
+                {exception, {Type, clean_stacktrace(Stacktrace)}};
+            Error -> Error
+        end,
+    {NewError, [Q || Q <- ErrorDetails, not_block(Q)]}.
+
+clean_stacktrace(Stacktrace) ->
+    [T || T <- Stacktrace, not is_rep_module(T)].
+
+is_rep_module({?REP_MOD, _, _, _}) -> true;
+is_rep_module(_Else) -> false.
 
 not_block({block, _}) -> false;
 not_block(_Else) -> true.
@@ -54,3 +66,4 @@ details_to_strings({_Error, ErrorDetails}) ->
 sort(Tickets) ->
     Compare = fun(T1, T2) -> get_details(T1) =< get_details(T2) end,
     lists:sort(Compare, Tickets).
+

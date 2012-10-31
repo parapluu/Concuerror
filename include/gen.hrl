@@ -38,6 +38,9 @@
 -define(NT_STATELEN, '_._state_len').
 -define(NT_USED, '_._used').
 
+%% Module containing replacement functions.
+-define(REP_MOD, rep).
+
 %% Instrumented message atom.
 -define(INSTR_MSG, '_._instr_msg').
 

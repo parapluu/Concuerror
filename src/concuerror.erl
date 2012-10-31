@@ -449,7 +449,8 @@ writeDetails(_Ticket, {'error', _Reason}=Error) ->
     Error;
 writeDetails(Ticket, {Count, IoDevice}) ->
     Error = ticket:get_error(Ticket),
-    Description = io_lib:format("~p\n~s\n", [Count, error:long(Error)]),
+    Description =
+        io_lib:format("~p\n~s\n", [erlang:phash2(Ticket), error:long(Error)]),
     Details = lists:map(fun(M) -> "  " ++ M ++ "\n" end,
                     ticket:details_to_strings(Ticket)),
     Msg = lists:flatten([Description | Details]),

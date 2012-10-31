@@ -82,9 +82,6 @@
 %% Instrumented mod:fun.
 -define(INSTR_MOD_FUN, ?INSTR_ERL_MOD_FUN ++ ?INSTR_ETS_FUN).
 
-%% Module containing replacement functions.
--define(REP_MOD, rep).
-
 %%%----------------------------------------------------------------------
 %%% Types
 %%%----------------------------------------------------------------------
