@@ -3,7 +3,7 @@
 -compile(export_all).
 
 simple_ets() ->
-    Tid = ets:new(simple_ets, [public]),
+    Tid = ets:new(simple_ets, [public, named_table]),
     Self = self(),
     F =
         fun(K,V) ->
