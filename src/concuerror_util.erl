@@ -14,7 +14,7 @@
 
 -module(concuerror_util).
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0,
-         is_erl_source/1, funs/1, funs/2, funLine/3,
+         is_erl_source/1, funs/1, funs/2, funLine/3, pmap/2,
          timer_init/0, timer_start/1, timer/1, timer_stop/1, timer_destroy/0,
          init_state/0, progress_bar/3, to_elapsed_time/1, to_elapsed_time/2]).
 
@@ -250,3 +250,11 @@ to_elapsed_time(ElapsedTime) ->
     Mins = ElapsedTime div 60000,
     Secs = (ElapsedTime rem 60000) / 1000,
     {Mins, Secs}.
+
+%% -------------------------------------------------------------------
+%% A concurrent map
+-spec pmap(fun((term()) -> term()), [term()]) -> [term()].
+pmap(Fun, List) ->
+    Parent = self(),
+    Pids = [spawn(fun() -> Parent ! Fun(L) end) || L <- List],
+    [receive Ret -> Ret end || _Pid <- Pids].
