@@ -496,6 +496,8 @@ may_have_dependencies({_Lid, {error, _}}) -> false;
 may_have_dependencies({_Lid, {Spawn, _}})
   when Spawn =:= spawn; Spawn =:= spawn_link -> false;
 may_have_dependencies({_Lid, {'receive', _}}) -> false;
+may_have_dependencies({_Lid, exited}) -> false;
+may_have_dependencies({_Lid, {exit, {normal, []}}}) -> false;
 may_have_dependencies(_Else) -> true.
 
 %% STUB
