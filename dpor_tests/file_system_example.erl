@@ -5,72 +5,86 @@
 -define(NUMBLOCKS, 26).
 -define(NUMINODE, 32).
 
-thread(Tid, Parent) ->
+thread(Name, Tid, Parent) ->
     I = Tid rem ?NUMINODE,
-    acquire_lock(i, I),
+    RPid = acquire_lock(Name, i, I),
     case ets:lookup(inode, I) of
         [{I, 0}] ->
             B = (I * 2) rem ?NUMBLOCKS,
-            while_loop(B, I);
+            while_loop(Name, B, I);
         _Else -> ok
     end,
-    release_lock(i, I),
+    release_lock(RPid),
     Parent ! exit.
 
-acquire_lock(T, I) ->
-    [{I, Pid}] = ets:lookup(T, I),
-    Pid ! {self(), acquire},
+acquire_lock(N, T, I) ->
+    lock_name(T, I) ! {N, acquire},
     receive
-        {Pid, acquired} -> ok
+        {RPid, acquired} -> RPid
     end.
 
-release_lock(T, I) ->
-    [{I, Pid}] = ets:lookup(T, I),
-    Pid ! {self(), release}.
+release_lock(RPid) ->
+    RPid ! release.
 
 lock() ->
     receive
         {Pid, acquire} ->
-            Pid ! {self(), acquired},
+            {RPid, Mon} = spawn_monitor(fun release/0),
+            Pid ! {RPid, acquired},
             receive
-                {Pid, release} ->
-                    lock()
+                {'DOWN', Mon, process, RPid, normal} -> lock()
             end;
         stop -> ok
     end.
 
-while_loop(B, I) ->
-    acquire_lock(b, B),
+release() ->
+    receive
+        release -> ok
+    end.
+
+while_loop(N, B, I) ->
+    RPid = acquire_lock(N, b, B),
     case ets:lookup(busy, B) of
         [{B, false}] ->
             ets:insert(busy, {B, true}),
             ets:insert(inode, {I, B+1}),
-            release_lock(b, B);
+            release_lock(RPid);
         _Else ->
-            release_lock(b, B),
-            while_loop((B+1) rem ?NUMBLOCKS, I)
+            release_lock(RPid),
+            while_loop(N, (B+1) rem ?NUMBLOCKS, I)
     end.
 
 main(Threads) ->
-    [ets:new(N, [public, named_table]) ||
-        N <- [i, b, inode, busy]],
+    [ets:new(N, [public, named_table]) || N <- [inode, busy]],
     init(?NUMINODE, i, inode, 0),
     init(?NUMBLOCKS, b, busy, false),
     spawn_threads(Threads),
     collect_threads(Threads),
-    cleanup().
+    cleanup(),
+    receive
+        never -> ok
+    end.
+
+lock_name(Type, I) ->
+    String = lists:flatten(io_lib:format("lock_~p_~p",[Type, I])),
+    list_to_atom(String).
+
+thread_name(I) ->
+    String = lists:flatten(io_lib:format("thread_~p",[I])),
+    list_to_atom(String).
 
 init(Slots, Lock, Data, Init) ->
     [begin
          Pid = spawn(fun lock/0),
-         ets:insert(Lock, {N, Pid}),
+         register(lock_name(Lock, N), Pid),
          ets:insert(Data, {N, Init})
      end || N <- lists:seq(0, Slots - 1)].
 
 spawn_threads(0) -> ok;
 spawn_threads(N) ->
     Parent = self(),
-    spawn(fun() -> thread(N, Parent) end),
+    Pid = spawn(fun() -> thread(thread_name(N), N, Parent) end),
+    register(thread_name(N), Pid),
     spawn_threads(N-1).
 
 collect_threads(0) -> ok;
@@ -84,8 +98,5 @@ cleanup() ->
     dismiss_locks(?NUMBLOCKS, b).
 
 dismiss_locks(Slots, Lock) ->
-    [begin
-         [{N, Pid}] = ets:lookup(Lock, N),
-         Pid ! stop
-     end || N <- lists:seq(0, Slots - 1)].
+    [lock_name(Lock, N) ! stop || N <- lists:seq(0, Slots - 1)].
          

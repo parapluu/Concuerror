@@ -39,7 +39,8 @@
          rep_after_notify_dpor/0, rep_receive_notify_dpor/3,
          rep_receive_notify_dpor/1]).
 
--export([rep_ets_insert_dpor/2, rep_ets_new_dpor/2, rep_ets_lookup_dpor/2]).
+-export([rep_ets_insert_dpor/2, rep_ets_new_dpor/2, rep_ets_lookup_dpor/2,
+         rep_register_dpor/2, rep_spawn_monitor_dpor/1]).
 
 -include("gen.hrl").
 
@@ -340,7 +341,7 @@ rep_receive_notify(Msg) ->
 rep_receive_dpor(Fun, HasTimeout) ->
     case ?LID_FROM_PID(self()) of
         not_found ->
-            log:internal("Uninstrumented process enters instrumented receive");
+            ok; %% log:internal("Uninstrumented process enters instrumented receive");
         _Lid ->
             rep_receive_loop_dpor(poll, Fun, HasTimeout)
     end.
@@ -390,7 +391,7 @@ rep_receive_notify_dpor(From, CV, Msg) ->
 -spec rep_receive_notify_dpor(term()) -> no_return().
 
 rep_receive_notify_dpor(Msg) ->
-    log:internal("Received uninstrumented message: ~p\n", [Msg]).
+    ok. %% log:internal("Received uninstrumented message: ~p\n", [Msg]).
 
 %%------------------------------------------------------------------------------
 
@@ -409,10 +410,8 @@ rep_register(RegName, P) ->
 
 -spec rep_register_dpor(atom(), pid() | port()) -> 'true'.
 
+%% Stub
 rep_register_dpor(RegName, P) ->
-    %% TODO: Maybe send Pid instead to avoid rpc.
-    PLid = ?LID_FROM_PID(P),
-    sched:notify(register, {RegName, PLid}),
     register(RegName, P).
 
 %% @spec rep_send(dest(), term()) -> term()
@@ -603,6 +602,12 @@ rep_spawn_monitor(Fun) ->
             sched:notify(spawn_monitor, Ret),
             Ret
     end.
+
+-spec rep_spawn_monitor_dpor(function()) -> {pid(), reference()}.
+
+%% STUB
+rep_spawn_monitor_dpor(Fun) ->
+    spawn_monitor(Fun).
 
 %% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}
 %% @doc: Replacement for `spawn_monitor/3'.
