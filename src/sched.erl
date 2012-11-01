@@ -607,6 +607,7 @@ pick_from_E(Candidates, I, ClockVector) ->
     Fold =
         fun(Lid, Acc) ->
                 Clock = lookup_clock_value(Lid, ClockVector),
+                ?f_debug("  ~p: ~p\n",[Lid, Clock]),
                 case Clock > I of
                     false -> Acc;
                     true ->
@@ -782,14 +783,18 @@ handle_instruction_al({Lid, {exit, {normal, _DeadEts}}}, TraceTop, {}) ->
 handle_instruction_al({Lid, {Spawn, unknown}}, TraceTop, {ChildLid, ChildNextInstr})
   when Spawn =:= spawn; Spawn =:= spawn_link ->
     #trace_state{enabled = Enabled, blocked = Blocked,
-                 nexts = Nexts, pollable = Pollable} = TraceTop,
+                 nexts = Nexts, pollable = Pollable,
+                 clock_map = ClockMap} = TraceTop,
     NewNexts = dict:store(ChildLid, ChildNextInstr, Nexts),
+    ClockVector = lookup_clock(Lid, ClockMap),
+    NewClockMap = dict:store(ChildLid, ClockVector, ClockMap),
     MaybeEnabled = ordsets:add_element(ChildLid, Enabled),
     ?f_debug("Child's Next:~p\n",[ChildNextInstr]),
     {NewPollable, NewEnabled, NewBlocked} =
         update_lid_enabled(ChildLid, ChildNextInstr, Pollable, MaybeEnabled, Blocked),
     NewLast = {Lid, {Spawn, ChildLid}},
     TraceTop#trace_state{last = NewLast,
+                         clock_map = NewClockMap,
                          enabled = NewEnabled,
                          blocked = NewBlocked,
                          pollable = NewPollable,
