@@ -177,5 +177,5 @@ to_string({whereis, Proc, RegName, not_found}) ->
 to_string({whereis, Proc, RegName, RegLid}) ->
     io_lib:format("Process ~s requests the pid of process `~p` (~s)",
                   [lid:to_string(Proc), RegName, lid:to_string(RegLid)]);
-to_string({CallMsg, Proc, _Args}) ->
-    io_lib:format("Process ~s: ~p", [lid:to_string(Proc), CallMsg]).
+to_string({CallMsg, Proc, Args}) ->
+    io_lib:format("Process ~s: ~p ~p", [lid:to_string(Proc), CallMsg, Args]).

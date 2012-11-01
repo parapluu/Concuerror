@@ -40,7 +40,9 @@
          rep_receive_notify_dpor/1]).
 
 -export([rep_ets_insert_dpor/2, rep_ets_new_dpor/2, rep_ets_lookup_dpor/2,
-         rep_register_dpor/2, rep_spawn_monitor_dpor/1]).
+         rep_ets_insert_new_dpor/2]).
+
+-export([rep_register_dpor/2, rep_spawn_monitor_dpor/1]).
 
 -include("gen.hrl").
 
@@ -786,6 +788,10 @@ rep_ets_new_dpor(Name, Options) ->
 rep_ets_insert_dpor(Tab, Obj) ->
     sched:notify(ets, {insert, [?LID_FROM_PID(Tab), Tab, Obj]}),
     ets:insert(Tab, Obj).
+
+rep_ets_insert_new_dpor(Tab, Obj) ->
+    sched:notify(ets, {insert_new, [?LID_FROM_PID(Tab), Tab, Obj]}),
+    ets:insert_new(Tab, Obj).
 
 rep_ets_lookup_dpor(Tab, Key) ->
     sched:notify(ets, {lookup, [?LID_FROM_PID(Tab), Tab, Key]}),

@@ -524,12 +524,12 @@ dependent({_Lid1, {ets, Op1}}, {_Lid2, {ets, Op2}}, false) ->
     dependent_ets(Op1, Op2);
 dependent({_Lid1, {send, {Lid, _Msg}}}, {Lid, {'after', empty}}, _Swap) ->
     true;
-dependent({_Lid1, {ets, {_Op, [Table|Rest]}}}, {_Lid2, {exit, {normal, Tables}}},
+dependent({_Lid1, {ets, {_Op, [Table|_Rest]}}}, {_Lid2, {exit, {normal, Tables}}},
           _Swap) ->
     lists:member(Table, Tables);
 dependent(TransitionA, TransitionB, false) ->
     dependent(TransitionB, TransitionA, true);
-dependent(TransitionA, TransitionB, true) ->
+dependent(_TransitionA, _TransitionB, true) ->
     false.
 
 dependent_ets(Op1, Op2) ->
@@ -537,10 +537,16 @@ dependent_ets(Op1, Op2) ->
 
 dependent_ets({insert, [T, _, {K, V1}]}, {insert, [T, _, {K, V2}]}, false) ->
     V1 =/= V2;
-dependent_ets({insert, [T, _, {K, _}]}, {lookup, [T, _, K]}, _Swap) -> true;
+dependent_ets({insert_new, [T, _, {K, _}]}, {insert_new, [T, _, {K, _}]}, false) ->
+    true;
+dependent_ets({insert_new, [T, _, {K, _}]}, {insert, [T, _, {K, _}]}, _Swap) ->
+    true;
+dependent_ets({Insert, [T, _, {K, _}]}, {lookup, [T, _, K]}, _Swap)
+  when Insert =:= insert; Insert =:= insert_new ->
+    true;
 dependent_ets(Op1, Op2, false) ->
     dependent_ets(Op1, Op2, true);
-dependent_ets(Op1, Op2, true) ->
+dependent_ets(_Op1, _Op2, true) ->
     false.
 
 add_all_backtracks(Transition, #dpor_state{preemption_bound = PreBound,
@@ -630,7 +636,7 @@ pick_from_E(Candidates, I, ClockVector) ->
 %% - wait any possible additional messages
 %% - check for async
 update_trace({Lid, _} = Selected, Next, State) ->
-    #dpor_state{trace = [TraceTop|Rest] = Trace} = State,
+    #dpor_state{trace = [TraceTop|Rest]} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  pollable = Pollable,
                  nexts = Nexts, lid_trace = LidTrace,
@@ -968,9 +974,11 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 case Extra of
                     {new, [_EtsLid, Name, Options]} ->
                         {ets_new, Lid, {Name, Options}};
-                    {insert, [EtsLid, Tid, Objects]} ->
+                    {insert, [_EtsLid, Tid, Objects]} ->
                         {ets_insert, Lid, {Tid, Objects}};
-                    {lookup, [EtsLid, Tid, Key]} ->
+                    {insert_new, [_EtsLid, Tid, Objects]} ->
+                        {ets_insert_new, Lid, {Tid, Objects}};
+                    {lookup, [_EtsLid, Tid, Key]} ->
                         {ets_lookup, Lid, {Tid, Key}}
                 end;
             _ ->
