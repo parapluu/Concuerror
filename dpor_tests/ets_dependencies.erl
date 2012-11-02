@@ -24,7 +24,10 @@ ets_dependencies() ->
             receive
                 ok ->
                     receive
-                        ok -> ok
+                        ok ->
+                            receive
+                                dead -> ok
+                            end
                     end
             end
     end.

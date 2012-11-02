@@ -40,7 +40,7 @@
          rep_receive_notify_dpor/1]).
 
 -export([rep_ets_insert_dpor/2, rep_ets_new_dpor/2, rep_ets_lookup_dpor/2,
-         rep_ets_insert_new_dpor/2]).
+         rep_ets_insert_new_dpor/2, rep_ets_delete_dpor/1]).
 
 -export([rep_register_dpor/2, rep_spawn_monitor_dpor/1, rep_process_flag_dpor/2]).
 
@@ -518,6 +518,9 @@ spawn_fun_wrapper(Fun) ->
         sched:notify(exit, {normal, MyEts}),
         Ret
     catch
+        exit:normal ->
+            MyEtsNormal = find_my_ets_tables(),
+            sched:notify(exit, {normal, MyEtsNormal});
         Class:Type ->
             sched:notify(error,[Class,Type,erlang:get_stacktrace()]),
             case Class of
@@ -799,6 +802,9 @@ rep_ets_insert_new_dpor(Tab, Obj) ->
 rep_ets_lookup_dpor(Tab, Key) ->
     sched:notify(ets, {lookup, [?LID_FROM_PID(Tab), Tab, Key]}),
     ets:lookup(Tab, Key).
+
+rep_ets_delete_dpor(Tab) ->
+    ets:delete(Tab).
 
 %%%----------------------------------------------------------------------
 %%% Helper functions

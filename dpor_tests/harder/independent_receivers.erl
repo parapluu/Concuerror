@@ -4,21 +4,21 @@
 
 independent_receivers() ->
     Parent = self(),
-    Rec1 = spawn(fun() -> receiver(Parent) end),
-    Rec2 = spawn(fun() -> receiver(Parent) end),
+    Rec1 = spawn(fun() -> receiver(Parent, 1) end),
+    Rec2 = spawn(fun() -> receiver(Parent, 2) end),
     Snd1 = spawn(fun() -> sender(Rec1) end),
     Snd2 = spawn(fun() -> sender(Rec2) end),
     receive
-        ok ->
+        _Msg1 ->
             receive
-                ok -> done
+                _Msg2 -> done
             end
     end.
 
 sender(Pid) ->
     Pid ! ok.
 
-receiver(Parent) ->
+receiver(Parent, N) ->
     receive
-        ok -> Parent ! ok
+        ok -> Parent ! N
     end.
