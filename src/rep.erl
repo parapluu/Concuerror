@@ -42,7 +42,7 @@
 -export([rep_ets_insert_dpor/2, rep_ets_new_dpor/2, rep_ets_lookup_dpor/2,
          rep_ets_insert_new_dpor/2]).
 
--export([rep_register_dpor/2, rep_spawn_monitor_dpor/1]).
+-export([rep_register_dpor/2, rep_spawn_monitor_dpor/1, rep_process_flag_dpor/2]).
 
 -include("gen.hrl").
 
@@ -252,6 +252,9 @@ rep_process_flag(trap_exit = Flag, Value) ->
     sched:notify(process_flag, {Flag, Value}),
     Result;
 rep_process_flag(Flag, Value) ->
+    process_flag(Flag, Value).
+
+rep_process_flag_dpor(Flag, Value) ->
     process_flag(Flag, Value).
 
 %% @spec rep_receive(fun((function()) -> term())) -> term()

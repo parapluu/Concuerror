@@ -316,7 +316,6 @@ start_target_op(Target) ->
     lid:new(FirstPid, noparent).
 
 explore(MightNeedReplayState) ->
-    ?f_debug("--------\nExplore!\n--------\n"),
     case select_from_backtrack(MightNeedReplayState) of
         {ok, {Lid, Cmd} = Selected, State} ->
             ?f_debug("Selected: ~p\n",[Selected]),
@@ -352,6 +351,8 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
     [TraceTop|RestTrace] = Trace,
     Backtrack = TraceTop#trace_state.backtrack,
     Done = TraceTop#trace_state.done,
+    ?f_debug("------------\nExplore ~p\n------------\n",
+             [TraceTop#trace_state.i + 1]),
     case ordsets:subtract(Backtrack, Done) of
 	[] ->
             ?f_debug("Backtrack set explored\n",[]),
@@ -378,21 +379,21 @@ replay_trace(#dpor_state{proc_before = ProcBefore} = State) ->
     lid:stop(),
     proc_cleanup(processes() -- ProcBefore),
     start_target_op(Target),
-    replay_lid_trace(LidTrace),
+    replay_lid_trace(0, LidTrace),
     flush_mailbox(),
     RunCnt = State#dpor_state.run_count,
     ?f_debug("Done replaying...\n\n"),
     State#dpor_state{run_count = RunCnt + 1, must_replay = false}.
 
-replay_lid_trace(Queue) ->
+replay_lid_trace(N, Queue) ->
     {V, NewQueue} = queue:out(Queue),
     case V of
         {value, {{Lid, Command} = Transition, VC}} ->
-            ?f_debug(" ~p\n",[Transition]),
+            ?f_debug(" ~-4w: ~p\n",[N, Transition]),
             _ = wait_next(Lid, Command),
             _ = handle_instruction_op(Transition),
             replace_messages(Lid, VC),
-            replay_lid_trace(NewQueue);
+            replay_lid_trace(N+1, NewQueue);
         empty ->
             ok
     end.
@@ -545,7 +546,7 @@ dependent_ets({Insert, [T, _, {K, _}]}, {lookup, [T, _, K]}, _Swap)
   when Insert =:= insert; Insert =:= insert_new ->
     true;
 dependent_ets(Op1, Op2, false) ->
-    dependent_ets(Op1, Op2, true);
+    dependent_ets(Op2, Op1, true);
 dependent_ets(_Op1, _Op2, true) ->
     false.
 
@@ -580,11 +581,11 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, [StateI|Trace], Acc)
         true ->
             Dependent = dependent(Transition, SI),
             Clock = lookup_clock_value(ProcSI, ClockVector),
-            ?f_debug("~-4w ~p: Dep ~p andalso ~p\n",[I, SI, Dependent, I > Clock]),
             case Dependent andalso I > Clock of
                 false ->
                     add_all_backtracks_trace(Transition, ClockVector, PreBound, Trace, [StateI|Acc]);
                 true ->
+                    ?f_debug("~-4w ~p: Dep ~p andalso ~p\n",[I, SI, Dependent, I > Clock]),
                     [#trace_state{enabled = Enabled, backtrack = Backtrack, sleep_set = SleepSet} =
                          PreSI|Rest] = Trace,
                     P = pick_from_E(ordsets:subtract(Enabled, SleepSet), I, ClockVector),
@@ -990,7 +991,8 @@ convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}})->
     NewType =
         case Kind of
             error -> Type;
-            throw -> {nocatch, Type}
+            throw -> {nocatch, Type};
+            exit -> Type
         end,
     {exception, {NewType, Stacktrace}}.
 
