@@ -361,9 +361,6 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
                     true -> replay_trace(MightNeedReplayState);
                     false -> MightNeedReplayState
                 end,
-            ?f_debug("Happened before: ~p\n",
-                     [dict:to_list(lookup_clock(SelectedLid,
-                                                TraceTop#trace_state.clock_map))]),
 	    Instruction = dict:fetch(SelectedLid, TraceTop#trace_state.nexts),
             NewDone = ordsets:add_element(SelectedLid, Done),
             NewTraceTop = TraceTop#trace_state{done = NewDone},
@@ -586,12 +583,21 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, [StateI|Trace], Acc)
                     ?f_debug("~4w: ~p ~p Clock ~p\n",[I, Dependent, SI, Clock]),
                     [#trace_state{enabled = Enabled, backtrack = Backtrack, sleep_set = SleepSet} =
                          PreSI|Rest] = Trace,
-                    P = pick_from_E(ordsets:subtract(Enabled, SleepSet), I, ClockVector),
-                    NewBacktrack = ordsets:add_element(P, Backtrack),
-                    ?f_debug("     Global adds: ~w\n", [P]),
-                    NewPreSI =
-                        PreSI#trace_state{backtrack = NewBacktrack},
-                    lists:reverse(Acc, [StateI,NewPreSI|Rest])
+                    Candidates = ordsets:subtract(Enabled, SleepSet),
+                    case pick_from_E(Candidates, I, ClockVector) of
+                        {ok, P} ->
+                            NewBacktrack = ordsets:add_element(P, Backtrack),
+                            ?f_debug("     Global adds: ~w\n", [P]),
+                            NewPreSI =
+                                PreSI#trace_state{backtrack = NewBacktrack},
+                            lists:reverse(Acc, [StateI,NewPreSI|Rest]);
+                        none ->
+                            ?f_debug("     All sleeping... continue\n"),
+                            #trace_state{clock_map = ClockMap} = StateI,
+                            NewClockVector = lookup_clock(ProcSI, ClockMap),
+                            add_all_backtracks_trace(Transition, NewClockVector,
+                                                     PreBound, Trace, [StateI|Acc])
+                    end
             end;
         false ->
             add_all_backtracks_trace(Transition, ClockVector, PreBound, Trace, [StateI|Acc])
@@ -627,8 +633,10 @@ pick_from_E(Candidates, I, ClockVector) ->
                         end
                 end
         end,
-    {ok, Pick, _Clock} = lists:foldl(Fold, none, Candidates),
-    Pick.
+    case lists:foldl(Fold, none, Candidates) of
+        {ok, Pick, _Clock} -> {ok, Pick};
+        none -> none
+    end.
 
 %% - add new entry with new entry
 %% - wait any possible additional messages
@@ -675,22 +683,15 @@ update_trace({Lid, _} = Selected, Next, State) ->
                      preemptions = NewPreemptions},
     InstrNewTraceTop = handle_instruction(Selected, CommonNewTraceTop),
     UpdatedClockVector = lookup_clock(Lid, InstrNewTraceTop#trace_state.clock_map),
+    ?f_debug("Happened before: ~p\n", [dict:to_list(UpdatedClockVector)]),
     replace_messages(Lid, UpdatedClockVector),
     PossiblyRewrittenSelected = InstrNewTraceTop#trace_state.last,
     NewLidTrace =
         queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
     {NewPrevTraceTop, NewTraceTop} =
         check_pollable(UpdatedClockVector, PrevTraceTop, InstrNewTraceTop),
-    Fun =
-        fun(P, AccClockMap) ->
-                CV = lookup_clock(P, AccClockMap),
-                dict:store(P, max_cv(CV, UpdatedClockVector), AccClockMap)
-        end,
-    UpdatedClockMap = InstrNewTraceTop#trace_state.clock_map,
-    AwakedClockMap = lists:foldl(Fun, UpdatedClockMap, Awaked),
     NewTrace =
-        [NewTraceTop#trace_state{lid_trace = NewLidTrace,
-                                 clock_map = AwakedClockMap},
+        [NewTraceTop#trace_state{lid_trace = NewLidTrace},
          NewPrevTraceTop|Rest],
     recheck_awaked_dependencies(Awaked, State#dpor_state{trace = NewTrace}).
 
@@ -943,16 +944,20 @@ add_some_next_to_backtrack(State) ->
 report_error(Transition, State) ->
     #dpor_state{trace = [TraceTop|_], tickets = Tickets} = State,
     ?f_debug("ERROR!\n~p\n",[Transition]),
+    Error = convert_error_info(Transition),
+    LidTrace = queue:in({Transition, foo}, TraceTop#trace_state.lid_trace),
+    Ticket = create_ticket(Error, LidTrace),
+    State#dpor_state{must_replay = true, tickets = [Ticket|Tickets]}.
+
+create_ticket(Error, LidTrace) ->
     InitTr = init_tr(),
-    [{P1, init} = InitTr|Trace] =
-        [S || {S,_V} <- queue:to_list(queue:in({Transition, foo}, TraceTop#trace_state.lid_trace))],
+    [{P1, init} = InitTr|Trace] = [S || {S,_V} <- queue:to_list(LidTrace)],
     InitSet = sets:add_element(P1, sets:new()),
     {ErrorState, _Procs} =
         lists:mapfoldl(fun convert_error_trace/2, InitSet, Trace),
-    Error = convert_error_info(Transition),
     Ticket = ticket:new(Error, ErrorState),
     log:show_error(Ticket),
-    State#dpor_state{must_replay = true, tickets = [Ticket|Tickets]}.
+    Ticket.
 
 convert_error_trace({Lid, {error, [ErrorOrThrow|_]}}, Procs)
   when ErrorOrThrow =:= error; ErrorOrThrow =:= throw ->
@@ -1017,22 +1022,15 @@ report_possible_deadlock(State) ->
     NewTickets =
         case TraceTop#trace_state.enabled of
             [] ->
-                LidTrace = [S || {S, _V} <- queue:to_list(TraceTop#trace_state.lid_trace)],
                 case TraceTop#trace_state.blocked of
                     [] ->
                         %% log:log("~p\n",[State#dpor_state.run_count]),
                         %% log:log("All processes exited:~p\n",[LidTrace]),
                         Tickets;
                     Blocked ->
-                        InitTr = init_tr(),
-                        [InitTr|DeadTrace] = LidTrace,
-                        ?f_debug("Deadlock:~p\n",[DeadTrace]),
-                        {ErrorState, _Procs} =
-                            lists:mapfoldl(fun convert_error_trace/2,
-                                           sets:new(), DeadTrace),
                         Error = {deadlock, Blocked},
-                        Ticket = ticket:new(Error, ErrorState),
-                        log:show_error(Ticket),
+                        Ticket = 
+                            create_ticket(Error, TraceTop#trace_state.lid_trace),
                         [Ticket|Tickets]
                 end;
             _Else ->
