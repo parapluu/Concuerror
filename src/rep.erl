@@ -362,7 +362,15 @@ rep_receive_loop_dpor(Act, Fun, HasTimeout) ->
                     NewAct =
                         case HasTimeout of
                             false -> sched:notify('receive', blocked);
-                            true -> sched:notify('after', empty)
+                            true ->
+                                NewFun =
+                                    fun(Msg) ->
+                                        case rep_receive_match(Fun, [Msg]) of
+                                            block -> false;
+                                            continue -> true
+                                        end
+                                    end,
+                                sched:notify('after', NewFun)
                         end,
                     rep_receive_loop_dpor(NewAct, Fun, HasTimeout);
                 continue ->

@@ -520,8 +520,8 @@ dependent({_Lid1, {send, {Lid, Msg1}}}, {_Lid2, {send, {Lid, Msg2}}}, false) ->
     Msg1 =/= Msg2;
 dependent({_Lid1, {ets, Op1}}, {_Lid2, {ets, Op2}}, false) ->
     dependent_ets(Op1, Op2);
-dependent({_Lid1, {send, {Lid, _Msg}}}, {Lid, {'after', empty}}, _Swap) ->
-    true;
+dependent({_Lid1, {send, {Lid, Msg}}}, {Lid, {'after', Fun}}, _Swap) ->
+    Fun(Msg);
 dependent({_Lid1, {ets, {_Op, [Table|_Rest]}}}, {_Lid2, {exit, {normal, Tables}}},
           _Swap) ->
     lists:member(Table, Tables);
@@ -738,7 +738,7 @@ is_enabled({'receive', blocked}) -> false;
 is_enabled(_Else) -> true.
 
 is_pollable({'receive', blocked}) -> true;
-is_pollable({'after', empty}) -> true;
+is_pollable({'after', _Fun}) -> true;
 is_pollable(_Else) -> false.
 
 partition_awaked(SleepSet, Nexts, Selected) ->
@@ -843,48 +843,46 @@ check_pollable(CV, OldTraceTop, TraceTop) ->
     #trace_state{pollable = Pollable} = TraceTop,
     PollableList = ordsets:to_list(Pollable),
     ?f_debug("Polling...\n"),
-    lists:foldl(poll_all(CV), {OldTraceTop, TraceTop}, PollableList).
+    lists:foldl(fun poll_all/2, {OldTraceTop, TraceTop}, PollableList).
 
-poll_all(CV) ->
-    fun(Lid, {OldTraceTop, TraceTop} = Original) ->
-            case poll(Lid) of
-                {'receive', Info} = Res when
-                      Info =:= unblocked;
-                      Info =:= had_after ->
-                    ?f_debug("  Poll ~p: ",[Lid]),
-                    ?f_debug("~p\n",[Res]),
-                    #trace_state{pollable = Pollable,
-                                 blocked = Blocked,
-                                 enabled = Enabled,
-                                 sleep_set = SleepSet,
-                                 nexts = Nexts} = TraceTop,
-                    #trace_state{backtrack = Backtrack} = OldTraceTop,
-                    {NewBacktrack, NewSleepSet} =
-                        case Info of
-                            unblocked -> {Backtrack, SleepSet};
-                            had_after ->
-                                case ordsets:is_element(Lid, SleepSet) of
-                                    true ->
-                                        {Backtrack,
-                                         ordsets:del_element(Lid, SleepSet)};
-                                    false ->
-                                        {ordsets:add_element(Lid, Backtrack),
-                                         SleepSet}
-                                end
-                        end,
-                    NewPollable = ordsets:del_element(Lid, Pollable),
-                    NewBlocked = ordsets:del_element(Lid, Blocked),
-                    NewEnabled = ordsets:add_element(Lid, Enabled),
-                    NewNexts = dict:store(Lid, Res, Nexts),
-                    {OldTraceTop#trace_state{backtrack = NewBacktrack},
-                     TraceTop#trace_state{pollable = NewPollable,
-                                          blocked = NewBlocked,
-                                          enabled = NewEnabled,
-                                          sleep_set = NewSleepSet,
-                                          nexts = NewNexts}};
-                _Else ->
-                    Original
-            end
+poll_all(Lid, {OldTraceTop, TraceTop} = Original) ->
+    case poll(Lid) of
+        {'receive', Info} = Res when
+              Info =:= unblocked;
+              Info =:= had_after ->
+            ?f_debug("  Poll ~p: ",[Lid]),
+            ?f_debug("~p\n",[Res]),
+            #trace_state{pollable = Pollable,
+                         blocked = Blocked,
+                         enabled = Enabled,
+                         sleep_set = SleepSet,
+                         nexts = Nexts} = TraceTop,
+            #trace_state{backtrack = Backtrack} = OldTraceTop,
+            {NewBacktrack, NewSleepSet} =
+                case Info of
+                    unblocked -> {Backtrack, SleepSet};
+                    had_after ->
+                        case ordsets:is_element(Lid, SleepSet) of
+                            true ->
+                                {Backtrack,
+                                 ordsets:del_element(Lid, SleepSet)};
+                            false ->
+                                {ordsets:add_element(Lid, Backtrack),
+                                 SleepSet}
+                        end
+                end,
+            NewPollable = ordsets:del_element(Lid, Pollable),
+            NewBlocked = ordsets:del_element(Lid, Blocked),
+            NewEnabled = ordsets:add_element(Lid, Enabled),
+            NewNexts = dict:store(Lid, Res, Nexts),
+            {OldTraceTop#trace_state{backtrack = NewBacktrack},
+             TraceTop#trace_state{pollable = NewPollable,
+                                  blocked = NewBlocked,
+                                  enabled = NewEnabled,
+                                  sleep_set = NewSleepSet,
+                                  nexts = NewNexts}};
+        _Else ->
+            Original
     end.
 
 recheck_awaked_dependencies(Awaked, State) ->
