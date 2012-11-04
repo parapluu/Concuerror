@@ -697,18 +697,18 @@ update_trace({Lid, _} = Selected, Next, State) ->
 
 recent_dependency_cv({_Lid, {ets, _Info}} = Transition, ClockVector, LidTrace) ->
     Fun =
-        fun(Queue) ->
+        fun({Queue, CVAcc}) ->
             {Ret, NewQueue} = queue:out_r(Queue),
             case Ret of
-                empty -> {done, ClockVector};
+                empty -> {done, CVAcc};
                 {value, {Transition2, CV}} ->
                     case dependent(Transition, Transition2) of
-                        true -> {done, max_cv(ClockVector, CV)};
-                        false -> {cont, NewQueue}
+                        true -> {cont, {NewQueue, max_cv(CVAcc, CV)}};
+                        false -> {cont, {NewQueue, CVAcc}}
                     end
             end
         end,
-    dynamic_loop_acc(Fun, LidTrace);
+    dynamic_loop_acc(Fun, {LidTrace, ClockVector});
 recent_dependency_cv(_Transition, ClockVector, _Trace) ->
     ClockVector.
 
@@ -857,25 +857,19 @@ poll_all(CV) ->
                                  blocked = Blocked,
                                  enabled = Enabled,
                                  sleep_set = SleepSet,
-                                 nexts = Nexts,
-                                 clock_map = ClockMap} = TraceTop,
+                                 nexts = Nexts} = TraceTop,
                     #trace_state{backtrack = Backtrack} = OldTraceTop,
-                    {NewBacktrack, NewSleepSet, NewClockMap} =
+                    {NewBacktrack, NewSleepSet} =
                         case Info of
-                            unblocked -> {Backtrack, SleepSet, ClockMap};
+                            unblocked -> {Backtrack, SleepSet};
                             had_after ->
-                                OldCV = lookup_clock(Lid, ClockMap),
-                                NewClockMap0 =
-                                    dict:store(Lid, max_cv(OldCV, CV), ClockMap),
                                 case ordsets:is_element(Lid, SleepSet) of
                                     true ->
                                         {Backtrack,
-                                         ordsets:del_element(Lid, SleepSet),
-                                         NewClockMap0};
+                                         ordsets:del_element(Lid, SleepSet)};
                                     false ->
                                         {ordsets:add_element(Lid, Backtrack),
-                                         SleepSet,
-                                         NewClockMap0}
+                                         SleepSet}
                                 end
                         end,
                     NewPollable = ordsets:del_element(Lid, Pollable),
@@ -887,8 +881,7 @@ poll_all(CV) ->
                                           blocked = NewBlocked,
                                           enabled = NewEnabled,
                                           sleep_set = NewSleepSet,
-                                          nexts = NewNexts,
-                                          clock_map = NewClockMap}};
+                                          nexts = NewNexts}};
                 _Else ->
                     Original
             end
