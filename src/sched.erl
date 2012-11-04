@@ -574,14 +574,17 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, [StateI|Trace], Acc)
     #trace_state{i = I, last = {ProcSI, _} = SI, preemptions = Preemptions} = StateI,
     case Preemptions + 1 =< PreBound of
         true ->
-            Dependent = dependent(Transition, SI),
             Clock = lookup_clock_value(ProcSI, ClockVector),
-            case Dependent andalso I > Clock of
+            case I > Clock andalso dependent(Transition, SI) of
                 false ->
-                    add_all_backtracks_trace(Transition, ClockVector, PreBound, Trace, [StateI|Acc]);
+                    add_all_backtracks_trace(Transition, ClockVector, PreBound,
+                                             Trace, [StateI|Acc]);
                 true ->
-                    ?f_debug("~4w: ~p ~p Clock ~p\n",[I, Dependent, SI, Clock]),
-                    [#trace_state{enabled = Enabled, backtrack = Backtrack, sleep_set = SleepSet} =
+                    ?f_debug("~4w: ~p ~p Clock ~p\n",
+                             [I, dependent(Transition, SI), SI, Clock]),
+                    [#trace_state{enabled = Enabled,
+                                  backtrack = Backtrack,
+                                  sleep_set = SleepSet} =
                          PreSI|Rest] = Trace,
                     Candidates = ordsets:subtract(Enabled, SleepSet),
                     case pick_from_E(Candidates, I, ClockVector) of
@@ -689,7 +692,7 @@ update_trace({Lid, _} = Selected, Next, State) ->
     NewLidTrace =
         queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
     {NewPrevTraceTop, NewTraceTop} =
-        check_pollable(UpdatedClockVector, PrevTraceTop, InstrNewTraceTop),
+        check_pollable(PrevTraceTop, InstrNewTraceTop),
     NewTrace =
         [NewTraceTop#trace_state{lid_trace = NewLidTrace},
          NewPrevTraceTop|Rest],
@@ -839,7 +842,7 @@ max_cv(D1, D2) ->
     Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
     dict:merge(Merger, D1, D2).
 
-check_pollable(CV, OldTraceTop, TraceTop) ->
+check_pollable(OldTraceTop, TraceTop) ->
     #trace_state{pollable = Pollable} = TraceTop,
     PollableList = ordsets:to_list(Pollable),
     ?f_debug("Polling...\n"),
