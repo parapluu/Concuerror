@@ -16,6 +16,7 @@ compare() {
     fi
 }
 
+cd $(dirname $0)
 cd ..
 make -s
 cd dpor_tests
