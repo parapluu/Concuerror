@@ -1,0 +1,53 @@
+Checked 5 interleaving(s). 5 errors found.
+
+9729265
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[parent,<0.44.0>],[]}]}
+  Process P1 spawns process P1.1
+  Process P1 registers process P1 as `parent`
+  Process P1 registers process P1.1 as `child`
+  Process P1 exits (normal)
+  Process P1.1 registers process P1.1 as `parent`
+  Process P1.1 exits ("Exception")
+
+
+3426319
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[parent,<0.46.0>],[]}]}
+  Process P1 spawns process P1.1
+  Process P1 registers process P1 as `parent`
+  Process P1 registers process P1.1 as `child`
+  Process P1.1 registers process P1.1 as `parent`
+  Process P1.1 exits ("Exception")
+
+
+53248492
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[parent,<0.48.0>],[]}]}
+  Process P1 spawns process P1.1
+  Process P1 registers process P1 as `parent`
+  Process P1.1 registers process P1.1 as `parent`
+  Process P1.1 exits ("Exception")
+
+
+82804109
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[child,<0.50.0>],[]}]}
+  Process P1 spawns process P1.1
+  Process P1.1 registers process P1.1 as `parent`
+  Process P1.1 exits (normal)
+  Process P1 registers process P1 as `parent`
+  Process P1 registers process P1.1 as `child`
+  Process P1 exits ("Exception")
+
+
+97225453
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[parent,<0.51.0>],[]},
+                             {registered_2,registered_2,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1.1 registers process P1.1 as `parent`
+  Process P1 registers process P1 as `parent`
+  Process P1 exits ("Exception")
+
+

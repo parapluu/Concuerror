@@ -1,0 +1,1698 @@
+Checked 32 interleaving(s). 32 errors found.
+
+33262318
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+5937549
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+35860862
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+43116655
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+66534763
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+47498702
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+56299536
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+130601784
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+13424348
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+105683873
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+93120907
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+132670111
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+109319399
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+87258307
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+12652338
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+62835792
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+37514107
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+9271023
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+79747180
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+77420468
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+103480039
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+8359436
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+101230895
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+49511249
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+25992984
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+18644296
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+4246126
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+82605422
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+94710135
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+110472735
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+
+55633431
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 exits (normal)
+
+
+11134963
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 spawns process P1.7
+  Process P1.7 sends message `1` to process P1.1
+  Process P1.7 sends message `1` to process P1.2
+  Process P1.7 sends message `1` to process P1.3
+  Process P1.7 sends message `1` to process P1.4
+  Process P1.7 sends message `1` to process P1.5
+  Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
+  Process P1.6 sends message `sender` to process P1
+  Process P1.6 exits (normal)
+  Process P1 receives message `sender` from process P1.6
+  Process P1 sends message `go` to process P1.1
+  Process P1 sends message `go` to process P1.2
+  Process P1 sends message `go` to process P1.3
+  Process P1 sends message `go` to process P1.4
+  Process P1 sends message `go` to process P1.5
+  Process P1.1 receives message `go` from process P1
+  Process P1.1 receives message `1` from process P1.7
+  Process P1.1 receives message `0` from process P1.6
+  Process P1.1 exits (normal)
+  Process P1.2 receives message `go` from process P1
+  Process P1.2 receives message `1` from process P1.7
+  Process P1.2 receives message `0` from process P1.6
+  Process P1.2 exits (normal)
+  Process P1.3 receives message `go` from process P1
+  Process P1.3 receives message `1` from process P1.7
+  Process P1.3 receives message `0` from process P1.6
+  Process P1.3 exits (normal)
+  Process P1.4 receives message `go` from process P1
+  Process P1.4 receives message `1` from process P1.7
+  Process P1.4 receives message `0` from process P1.6
+  Process P1.4 exits (normal)
+  Process P1.5 receives message `go` from process P1
+  Process P1.5 receives message `1` from process P1.7
+  Process P1.5 receives message `0` from process P1.6
+  Process P1.5 exits (normal)
+
+

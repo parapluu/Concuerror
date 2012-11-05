@@ -1,0 +1,22 @@
+Checked 2 interleaving(s). 2 errors found.
+
+72537885
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 receives no matching messages
+  Process P1 receives no matching messages
+  Process P1.1 sends message `one` to process P1
+  Process P1.1 exits (normal)
+
+
+12280549
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 receives no matching messages
+  Process P1.1 sends message `one` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `one` from process P1.1
+
+

@@ -1,0 +1,11 @@
+Checked 2 interleaving(s). 1 errors found.
+
+13393246
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[child,<0.46.0>],[]}]}
+  Process P1 spawns process P1.1
+  Process P1.1 exits (normal)
+  Process P1 registers process P1.1 as `child`
+  Process P1 exits ("Exception")
+
+

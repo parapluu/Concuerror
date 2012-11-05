@@ -1,0 +1,10 @@
+Checked 2 interleaving(s). 1 errors found.
+
+23112305
+Error type        : Exception
+Details           : {badarg,[]}
+  Process P1 spawns process P1.1
+  Process P1 sends message `ok` to nonexisting process
+  Process P1 exits ("Exception")
+
+

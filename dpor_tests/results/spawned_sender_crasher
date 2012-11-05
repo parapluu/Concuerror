@@ -1,0 +1,40 @@
+Checked 2 interleaving(s). 2 errors found.
+
+28235904
+Error type        : Exception
+Details           : {{badmatch,[one,two]},
+                     [{spawned_sender_crasher,receive_two,0,
+                          [{file,"src/spawned_sender_crasher.erl"},
+                           {line,18}]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 exits (normal)
+  Process P1.2 sends message `one` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `one` from process P1.2
+  Process P1.3 sends message `two` to process P1.1
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `two` from process P1.3
+  Process P1.1 exits ("Exception")
+
+
+25303513
+Error type        : Exception
+Details           : {{badmatch,[two,one]},
+                     [{spawned_sender_crasher,receive_two,0,
+                          [{file,"src/spawned_sender_crasher.erl"},
+                           {line,17}]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 exits (normal)
+  Process P1.3 sends message `two` to process P1.1
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `two` from process P1.3
+  Process P1.2 sends message `one` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `one` from process P1.2
+  Process P1.1 exits ("Exception")
+
+
