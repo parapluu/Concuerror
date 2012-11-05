@@ -397,7 +397,7 @@ replay_lid_trace(N, Queue) ->
 
 wait_next(Lid, Prev) ->
     case Prev of
-        {exit, {normal, _DeadEts}} ->
+        {exit, {normal, _Info}} ->
             ok = resume(Lid),
             exited;
         {Spawn, _} when Spawn =:= spawn; Spawn =:= spawn_link ->
@@ -495,7 +495,7 @@ may_have_dependencies({_Lid, {Spawn, _}})
   when Spawn =:= spawn; Spawn =:= spawn_link -> false;
 may_have_dependencies({_Lid, {'receive', _}}) -> false;
 may_have_dependencies({_Lid, exited}) -> false;
-may_have_dependencies({_Lid, {exit, {normal, []}}}) -> false;
+may_have_dependencies({_Lid, {exit, {normal, {[], none}}}}) -> false;
 may_have_dependencies(_Else) -> true.
 
 %% STUB
@@ -503,42 +503,100 @@ may_have_dependencies(_Else) -> true.
 %%   dependent(New, Older)
 %% Local Trace:
 %%   dependent(Possible, Chosen)
+
 dependent(A, B) ->
     dependent(A, B, false).
 
 dependent({X, _}, {X, _}, false) ->
     %% You are already in the backtrack set.
     false;
-%% TODO:
-%% Exits depends on sends to registered processes because if you send
-%% to an exited registered process you crash...
-%% dependent({_, {exit, normal}}, _) ->
-%%     false;
-%% dependent(A, {_, {exit, normal}} = B) ->
-%%     dependent(B, A);
+
+%% Register and unregister have the same dependencies.
+%% Use a unique value for the Pid to avoid checks there.
+dependent({Lid, {unregister, RegName}}, B, false) ->
+    dependent({Lid, {register, {RegName, make_ref()}}}, B, false);
+dependent(A, {Lid, {unregister, RegName}}, false) ->
+    dependent(A, {Lid, {register, {RegName, make_ref()}}}, false);
+
+
+%% Sending requires at least a different message.
 dependent({_Lid1, {send, {_Orig1, Lid, Msg1}}},
           {_Lid2, {send, {_Orig2, Lid, Msg2}}}, false) ->
     Msg1 =/= Msg2;
+
+
+%% ETS operations live in their own small world.
 dependent({_Lid1, {ets, Op1}}, {_Lid2, {ets, Op2}}, false) ->
     dependent_ets(Op1, Op2);
-dependent({_Lid1, {send, {_Orig, Lid, Msg}}}, {Lid, {'after', Fun}}, _Swap) ->
-    Fun(Msg);
-dependent({_Lid1, {ets, {_Op, [Table|_Rest]}}}, {_Lid2, {exit, {normal, Tables}}},
+
+%% Table owners exits mess things up.
+dependent({_Lid1, {ets, {_Op, [Table|_Rest]}}},
+          {_Lid2, {exit, {normal, {Tables, _Name}}}},
           _Swap) ->
     lists:member(Table, Tables);
-dependent({_Lid1, {register, {RegName, PLid}}},
+
+
+%% Sending to an activated after clause depends on that receive's patterns
+dependent({_Lid1, {send, {_Orig, Lid, Msg}}}, {Lid, {'after', Fun}}, _Swap) ->
+    Fun(Msg);
+
+
+%% Registered processes:
+
+%% Sending using name to a process that may exit and unregister.
+dependent({_Lid1, {send, {Orig, _Lid, _Msg}}},
+          {_Lid2, {exit, {normal, {_Tables, {ok, Orig}}}}}, _Swap) ->
+    true;
+
+%% Send using name before process has registered itself.
+dependent({_Lid1, {register, {RegName, _PLid}}},
           {_Lid2, {send, {RegName, _Lid, _Msg}}}, _Swap) ->
     true;
+
+%% Two registers using the same name.
+dependent({_Lid1, {register, {RegName, _PLid1}}},
+          {_Lid2, {register, {RegName, _PLid2}}}, false) ->
+    true;
+
+%% Two registers for the same process.
+dependent({_Lid1, {register, {_RegName1, PLid}}},
+          {_Lid2, {register, {_RegName2, PLid}}}, false) ->
+    true;
+
+%% Register a process that may exit.
 dependent({_Lid1, {register, {_RegName, PLid}}},
-          {PLid, {exit, {normal, _Tables}}}, _Swap) ->
+          {PLid, {exit, {normal, _Info}}}, _Swap) ->
     true;
+
+%% Register for a name that might be in use.
+dependent({_Lid1, {register, {RegName, _PLid}}},
+          {_Lid2, {exit, {normal, {_Ets, {ok, RegName}}}}}, _Swap) ->
+    true;
+
+%% Whereis using name before process has registered itself.
+dependent({_Lid1, {register, {RegName, _PLid}}},
+          {_Lid2, {whereis, RegName}}, _Swap) ->
+    true;
+
+%% Process alive and exits
 dependent({_Lid1, {is_process_alive, Lid}},
-          {Lid, {exit, {normal, _Tables}}}, _Swap) ->
+          {Lid, {exit, {normal, _Info}}}, _Swap) ->
     true;
+
+%% Process registered and exits
+dependent({_Lid1, {whereis, RegName}},
+          {_Lid2, {exit, {normal, {_ets, {ok, RegName}}}}}, _Swap) ->
+    true;
+
+
+%% Swap the two arguments if the test is not symmetric by itself.
 dependent(TransitionA, TransitionB, false) ->
     dependent(TransitionB, TransitionA, true);
 dependent(_TransitionA, _TransitionB, true) ->
     false.
+
+
+%% ETS table dependencies:
 
 dependent_ets(Op1, Op2) ->
     dependent_ets(Op1, Op2, false).
@@ -556,6 +614,7 @@ dependent_ets(Op1, Op2, false) ->
     dependent_ets(Op2, Op1, true);
 dependent_ets(_Op1, _Op2, true) ->
     false.
+
 
 add_all_backtracks(Transition, #dpor_state{preemption_bound = PreBound,
                                            trace = Trace} = State) ->
@@ -803,7 +862,7 @@ flush_mailbox() ->
     end.
 
 %% STUB
-handle_instruction_al({Lid, {exit, {normal, _DeadEts}}}, TraceTop, {}) ->
+handle_instruction_al({Lid, {exit, {normal, _Info}}}, TraceTop, {}) ->
     #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
@@ -996,8 +1055,10 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
             register ->
                 {Name, RLid} = Extra,
                 {register, Lid, Name, RLid};
-            is_process_alive ->
-                {is_process_alive, Lid, Extra};
+            OneArg when OneArg =:= whereis;
+                        OneArg =:= unregister;
+                        OneArg =:= is_process_alive ->
+                {OneArg, Lid, Extra};
             exit ->
                 {exit, Lid, normal};
             ets ->

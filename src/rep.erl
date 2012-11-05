@@ -30,11 +30,15 @@
          rep_ets_match_delete/2, rep_ets_new/2, rep_ets_foldl/3]).
 
 -export([spawn_fun_wrapper/1]).
+
 -export([rep_send_dpor/2]).
+
 -export([rep_spawn_dpor/1, rep_spawn_dpor/3,
          rep_spawn_link_dpor/1, rep_spawn_link_dpor/3]).
--export([rep_is_process_alive_dpor/1, rep_link_dpor/1,
-         rep_unlink_dpor/1, rep_unregister_dpor/1]).
+
+-export([rep_link_dpor/1, rep_unlink_dpor/1,
+         rep_spawn_monitor_dpor/1, rep_process_flag_dpor/2]).
+
 -export([rep_receive_dpor/2, rep_receive_block_dpor/0,
          rep_after_notify_dpor/0, rep_receive_notify_dpor/3,
          rep_receive_notify_dpor/1]).
@@ -42,7 +46,10 @@
 -export([rep_ets_insert_dpor/2, rep_ets_new_dpor/2, rep_ets_lookup_dpor/2,
          rep_ets_insert_new_dpor/2, rep_ets_delete_dpor/1]).
 
--export([rep_register_dpor/2, rep_spawn_monitor_dpor/1, rep_process_flag_dpor/2]).
+-export([rep_register_dpor/2,
+         rep_is_process_alive_dpor/1,
+         rep_unregister_dpor/1,
+         rep_whereis_dpor/1]).
 
 -include("gen.hrl").
 
@@ -529,14 +536,12 @@ rep_spawn_dpor(Fun) ->
 spawn_fun_wrapper(Fun) ->
     try
         sched:wait(),
-        Ret = Fun(),
-        MyEts = find_my_ets_tables(),
-        sched:notify(exit, {normal, MyEts}),
-        Ret
+        Fun(),
+        exit(normal)
     catch
         exit:normal ->
-            MyEtsNormal = find_my_ets_tables(),
-            sched:notify(exit, {normal, MyEtsNormal});
+            MyInfo = find_my_info(),
+            sched:notify(exit, {normal, MyInfo});
         Class:Type ->
             sched:notify(error,[Class,Type,erlang:get_stacktrace()]),
             case Class of
@@ -546,10 +551,22 @@ spawn_fun_wrapper(Fun) ->
             end
     end.                    
 
+find_my_info() ->
+    MyEts = find_my_ets_tables(),
+    MyName = find_my_registered_name(),
+    {MyEts, MyName}.        
+
 find_my_ets_tables() ->
     Self = self(),
     [?LID_FROM_PID(TID) ||
-        TID <- ets:all(), Self =:= ets:info(TID, owner)].             
+        TID <- ets:all(), Self =:= ets:info(TID, owner)].
+
+find_my_registered_name() ->
+    Self = self(),
+    case process_info(Self, registered_name) of
+        [] -> none;
+        {registered_name, Name} -> {ok, Name}
+    end.
 
 %% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn/3'.
@@ -736,6 +753,12 @@ rep_whereis(RegName) ->
     Ret = whereis(RegName),
     sched:notify(whereis, {RegName, Ret}),
     Ret.
+
+-spec rep_whereis_dpor(atom()) -> pid() | port() | 'undefined'.
+
+rep_whereis_dpor(RegName) ->
+    sched:notify(whereis, RegName),
+    whereis(RegName).
 
 %%%----------------------------------------------------------------------
 %%% ETS replacements
