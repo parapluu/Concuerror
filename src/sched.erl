@@ -1666,6 +1666,8 @@ wait_poll_or_continue(Msg) ->
     end.
 
 replace_messages(Lid, VC) ->
+    %% Let "black" processes send any remaining messages.
+    erlang:yield(),
     Unused = unused,
     Fun =
         fun(Pid, U) when U =:= Unused ->
