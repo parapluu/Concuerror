@@ -516,15 +516,22 @@ dependent({X, _}, {X, _}, false) ->
 %%     false;
 %% dependent(A, {_, {exit, normal}} = B) ->
 %%     dependent(B, A);
-dependent({_Lid1, {send, {Lid, Msg1}}}, {_Lid2, {send, {Lid, Msg2}}}, false) ->
+dependent({_Lid1, {send, {_Orig1, Lid, Msg1}}},
+          {_Lid2, {send, {_Orig2, Lid, Msg2}}}, false) ->
     Msg1 =/= Msg2;
 dependent({_Lid1, {ets, Op1}}, {_Lid2, {ets, Op2}}, false) ->
     dependent_ets(Op1, Op2);
-dependent({_Lid1, {send, {Lid, Msg}}}, {Lid, {'after', Fun}}, _Swap) ->
+dependent({_Lid1, {send, {_Orig, Lid, Msg}}}, {Lid, {'after', Fun}}, _Swap) ->
     Fun(Msg);
 dependent({_Lid1, {ets, {_Op, [Table|_Rest]}}}, {_Lid2, {exit, {normal, Tables}}},
           _Swap) ->
     lists:member(Table, Tables);
+dependent({_Lid1, {register, {RegName, PLid}}},
+          {_Lid2, {send, {RegName, _Lid, _Msg}}}, _Swap) ->
+    true;
+dependent({_Lid1, {register, {_RegName, PLid}}},
+          {PLid, {exit, {normal, _Tables}}}, _Swap) ->
+    true;
 dependent(TransitionA, TransitionB, false) ->
     dependent(TransitionB, TransitionA, true);
 dependent(_TransitionA, _TransitionB, true) ->
@@ -967,7 +974,7 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
     NewInstr =
         case Instr of
             send ->
-                {Dest, Msg} = Extra,
+                {_Orig, Dest, Msg} = Extra,
                 NewDest =
                     case sets:is_element(Dest, Procs) of
                         true -> Dest;
@@ -983,6 +990,9 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 {'receive', Lid, Origin, Msg};
             'after' ->
                 {'after', Lid};
+            register ->
+                {Name, RLid} = Extra,
+                {register, Lid, Name, RLid};
             exit ->
                 {exit, Lid, normal};
             ets ->

@@ -425,6 +425,11 @@ rep_register(RegName, P) ->
 
 %% Stub
 rep_register_dpor(RegName, P) ->
+    case ?LID_FROM_PID(P) of
+        not_found -> ok;
+        PLid ->
+            sched:notify(register, {RegName, PLid})
+    end,
     register(RegName, P).
 
 %% @spec rep_send(dest(), term()) -> term()
@@ -459,7 +464,7 @@ rep_send_dpor(Dest, Msg) ->
         _SelfLid ->
             NewDest = find_pid(Dest),
             NewLid = ?LID_FROM_PID(NewDest),
-            sched:notify(send, {NewLid, Msg}),
+            sched:notify(send, {Dest, NewLid, Msg}),
             Dest ! Msg
     end.
 
