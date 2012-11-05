@@ -532,6 +532,9 @@ dependent({_Lid1, {register, {RegName, PLid}}},
 dependent({_Lid1, {register, {_RegName, PLid}}},
           {PLid, {exit, {normal, _Tables}}}, _Swap) ->
     true;
+dependent({_Lid1, {is_process_alive, Lid}},
+          {Lid, {exit, {normal, _Tables}}}, _Swap) ->
+    true;
 dependent(TransitionA, TransitionB, false) ->
     dependent(TransitionB, TransitionA, true);
 dependent(_TransitionA, _TransitionB, true) ->
@@ -993,6 +996,8 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
             register ->
                 {Name, RLid} = Extra,
                 {register, Lid, Name, RLid};
+            is_process_alive ->
+                {is_process_alive, Lid, Extra};
             exit ->
                 {exit, Lid, normal};
             ets ->

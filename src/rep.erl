@@ -188,7 +188,10 @@ rep_is_process_alive(Pid) ->
 -spec rep_is_process_alive_dpor(pid()) -> boolean().
 
 rep_is_process_alive_dpor(Pid) ->
-    sched:notify(is_process_alive, Pid),
+    case ?LID_FROM_PID(Pid) of
+        not_found -> ok;
+        PLid -> sched:notify(is_process_alive, PLid)
+    end,
     is_process_alive(Pid).
 
 %% @spec: rep_link(pid() | port()) -> 'true'
