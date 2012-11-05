@@ -2,15 +2,16 @@
 
 compare() {
     echo -n "$1 "
-    O="results/$T"
-    NO="new_results/$T"
-    ../concuerror -f src/$T.erl -t $T $T \
+    O="results/$1"
+    NO="new_results/$1"
+    ../concuerror -f src/$1.erl -t $1 $1 \
         -o $NO --dpor -p inf > /dev/null
     if diff -q $O $NO; then
         echo "OK"
     else
         echo "ERROR!"
-        mv $NO $O
+        diff $O $NO
+        exit 1
     fi
 }
 
@@ -19,12 +20,11 @@ make -s
 cd dpor_tests
 mkdir -p new_results
 if [ -n "$1" ]; then
-    Name=$(basename $1 .erl)
-    compare $Name
+    compare $(basename "$1" .erl)
     exit 0
 else
     for i in $(ls src); do 
-        T=$(basename $i .erl);
-        compare $T
+        compare $(basename "$i" .erl)
     done
+    exit 0
 fi
