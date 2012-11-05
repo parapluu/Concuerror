@@ -469,21 +469,17 @@ instrument_receive(Tree) ->
     end.
 
 transform_receive_case(Clauses) ->
-    Fun = fun(Clause, HasCatchall) ->
-                  [Pattern] = erl_syntax:clause_patterns(Clause),
-                  NewBody = erl_syntax:atom(continue),
-                  NewHasCatchall = HasCatchall orelse
-                      erl_syntax:type(Pattern) =:= variable,
-                  {erl_syntax:clause([Pattern], [], [NewBody]), NewHasCatchall}
-          end,
-    case lists:mapfoldl(Fun, false, Clauses) of
-        {NewClauses, false} ->
-            Pattern = new_underscore_variable(),
-            Body = erl_syntax:atom(block),
-            CatchallClause = erl_syntax:clause([Pattern], [], [Body]),
-            NewClauses ++ [CatchallClause];
-        {NewClauses, true} -> NewClauses
-    end.
+    Fun =
+        fun(Clause) ->
+            [Pattern] = erl_syntax:clause_patterns(Clause),
+            NewBody = erl_syntax:atom(continue),
+            erl_syntax:clause([Pattern], [], [NewBody])
+        end,
+    NewClauses = lists:map(Fun, Clauses),
+    Pattern = new_underscore_variable(),
+    Body = erl_syntax:atom(block),
+    CatchallClause = erl_syntax:clause([Pattern], [], [Body]),
+    NewClauses ++ [CatchallClause].
 
 transform_receive_clauses(Clauses) ->
     Trans = fun(P) -> [transform_receive_clause_regular(P),
