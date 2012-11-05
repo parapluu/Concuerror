@@ -849,6 +849,7 @@ rep_ets_lookup_dpor(Tab, Key) ->
     ets:lookup(Tab, Key).
 
 rep_ets_delete_dpor(Tab) ->
+    sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab]}),
     ets:delete(Tab).
 
 %%%----------------------------------------------------------------------

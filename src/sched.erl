@@ -610,6 +610,8 @@ dependent_ets({insert_new, [T, _, {K, _}]}, {insert, [T, _, {K, _}]}, _Swap) ->
 dependent_ets({Insert, [T, _, {K, _}]}, {lookup, [T, _, K]}, _Swap)
   when Insert =:= insert; Insert =:= insert_new ->
     true;
+dependent_ets({delete, [T, _]}, {_, [T|_]}, _Swap) ->
+    true;
 dependent_ets(Op1, Op2, false) ->
     dependent_ets(Op2, Op1, true);
 dependent_ets(_Op1, _Op2, true) ->
@@ -1102,7 +1104,9 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                     {insert_new, [_EtsLid, Tid, Objects]} ->
                         {ets_insert_new, Lid, {Tid, Objects}};
                     {lookup, [_EtsLid, Tid, Key]} ->
-                        {ets_lookup, Lid, {Tid, Key}}
+                        {ets_lookup, Lid, {Tid, Key}};
+                    {delete, [_EtsLid, Tid]} ->
+                        {ets_delete, Lid, Tid}
                 end;
             _ ->
                 {Instr, Lid, Extra}
