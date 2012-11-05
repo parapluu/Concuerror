@@ -656,6 +656,8 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, [StateI|Trace], Acc)
                                   sleep_set = SleepSet} =
                          PreSI|Rest] = Trace,
                     Candidates = ordsets:subtract(Enabled, SleepSet),
+                    %% Initial = find_initial(I, Acc),
+                    %% ?f_debug("Initial: ~w\n",[ordsets:del_element(ProcSI, Initial)]),
                     case pick_from_E(Candidates, I, ClockVector) of
                         {ok, P} ->
                             NewBacktrack = ordsets:add_element(P, Backtrack),
@@ -686,6 +688,36 @@ lookup_clock_value(P, CV) ->
         {ok, Value} -> Value;
         error -> 0
     end.
+
+%% find_initial(I, RevTrace) ->
+%%     ?f_debug("I: ~w\n",[I]),
+%%     find_initial(I, RevTrace, ordsets:new()).
+
+%% find_initial(_I, [], Initial) ->
+%%     Initial;
+%% find_initial(I, [TraceTop|Rest], Initial) ->
+%%     #trace_state{last = {P,_}, clock_map = ClockMap} = TraceTop,
+%%     Add =
+%%         case ordsets:is_element(P, Initial) of
+%%             true -> false;
+%%             false ->
+%%                 Clock = lookup_clock(P, ClockMap),
+%%                 case has_dependency_after(Clock, P, I) of
+%%                     true -> false;
+%%                     false -> true
+%%                 end
+%%         end,
+%%     case Add of
+%%         false -> find_initial(I, Rest, Initial);
+%%         true  -> find_initial(I, Rest, ordsets:add_element(P, Initial))
+%%     end.
+
+%% has_dependency_after(Clock, P, I) ->
+%%     Fold =
+%%         fun(_Key, _Value, true) -> true;
+%%            (Key, Value, false) -> P =/= Key andalso Value >= I
+%%         end,
+%%     dict:fold(Fold, false, Clock).                
 
 pick_from_E(Candidates, I, ClockVector) ->
     Fold =
