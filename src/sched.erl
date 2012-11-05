@@ -324,14 +324,10 @@ explore(MightNeedReplayState) ->
                     explore(NewState);
                 _Else ->
                     Next = wait_next(Lid, Cmd),
-                    ?f_debug("Selected: ~p\n",[Selected]),
                     UpdState = update_trace(Selected, Next, State),
-                    ?f_debug("Selected: ~p\n",[Selected]),
-                    LocalAddState = add_local_backtracks(UpdState),
+                    AllAddState = add_all_backtracks(UpdState),
                     ?f_debug("Next: ~p\n",[Next]),
-                    AllAddState = add_all_backtracks({Lid, Next}, LocalAddState),
-                    NewChildState = add_all_child_backtracks(Cmd, AllAddState),
-                    NewState = add_some_next_to_backtrack(NewChildState),
+                    NewState = add_some_next_to_backtrack(AllAddState),
                     explore(NewState)
             end;
         none ->
@@ -386,10 +382,13 @@ replay_lid_trace(N, Queue) ->
     {V, NewQueue} = queue:out(Queue),
     case V of
         {value, {{Lid, Command} = Transition, VC}} ->
-            ?f_debug(" ~-4w: ~p\n",[N, Transition]),
+            ?f_debug(" ~-4w: ~p",[N, Transition]),
             _ = wait_next(Lid, Command),
+            ?f_debug("."),
             _ = handle_instruction_op(Transition),
+            ?f_debug("."),
             replace_messages(Lid, VC),
+            ?f_debug("\n"),
             replay_lid_trace(N+1, NewQueue);
         empty ->
             ok
@@ -442,60 +441,11 @@ get_next(Lid) ->
             {Type, Misc}
     end.
 
-add_local_backtracks(#dpor_state{preemption_bound = PreBound,
-                                 trace = Trace} = State) ->
-    [#trace_state{last = Transition} = NewTop,TraceTop|RestTrace] = Trace,
-    #trace_state{backtrack = Backtrack, nexts = Nexts, enabled = Enabled,
-                 sleep_set = SleepSet, preemptions = Preemptions,
-                 last = {LLid, _}} = TraceTop,
-    Allowed =
-        case ordsets:is_element(LLid, Enabled) of
-            false -> true;
-            true -> Preemptions < PreBound
-        end,
-    case Allowed andalso may_have_dependencies(Transition) of
-        true ->
-            SleepingRemoved = ordsets:subtract(Enabled, SleepSet),
-            NewBacktrack =
-                add_local_backtracks(Transition, Nexts, SleepingRemoved, Backtrack),
-            case Backtrack =/= NewBacktrack of
-                true ->
-                    ?f_debug("Local adds: ~w\n",
-                             [ordsets:subtract(NewBacktrack, Backtrack)]);
-                false -> ok
-            end,
-            NewTrace =
-                [NewTop,
-                 TraceTop#trace_state{backtrack = NewBacktrack}|RestTrace],
-            State#dpor_state{trace = NewTrace};
-        false ->
-            State
-    end.
-
-add_local_backtracks({NLid, _} = Transition, Nexts, AllEnabled, Backtrack) ->
-    Fold =
-        fun(Lid, AccBacktrack) ->
-            Dependent =
-                case NLid =/= Lid of
-                    true -> 
-                        Instruction = dict:fetch(Lid, Nexts),
-                        dependent({Lid, Instruction}, Transition);
-                    false ->
-                        false
-                end,
-            case Dependent of
-                true -> ordsets:add_element(Lid, AccBacktrack);
-                false -> AccBacktrack
-            end
-        end,
-    lists:foldl(Fold, Backtrack, ordsets:to_list(AllEnabled)).
-
 may_have_dependencies({_Lid, {error, _}}) -> false;
 may_have_dependencies({_Lid, {Spawn, _}})
   when Spawn =:= spawn; Spawn =:= spawn_link -> false;
 may_have_dependencies({_Lid, {'receive', _}}) -> false;
 may_have_dependencies({_Lid, exited}) -> false;
-may_have_dependencies({_Lid, {exit, {normal, {[], none}}}}) -> false;
 may_have_dependencies(_Else) -> true.
 
 %% STUB
@@ -618,10 +568,11 @@ dependent_ets(_Op1, _Op2, true) ->
     false.
 
 
-add_all_backtracks(Transition, #dpor_state{preemption_bound = PreBound,
-                                           trace = Trace} = State) ->
+add_all_backtracks(#dpor_state{preemption_bound = PreBound,
+                               trace = Trace} = State) ->
     case State#dpor_state.fake_dpor of
         false ->
+            [#trace_state{last = Transition}|_] = Trace,
             case may_have_dependencies(Transition) of
                 true ->
                     NewTrace =
@@ -635,9 +586,10 @@ add_all_backtracks(Transition, #dpor_state{preemption_bound = PreBound,
     end.
 
 add_all_backtracks_trace({Lid, _} = Transition, Trace, PreBound) ->
-    [#trace_state{clock_map = ClockMap}|_] = Trace,
-    ClockVector = lookup_clock(Lid, ClockMap),
-    add_all_backtracks_trace(Transition, ClockVector, PreBound, Trace, []).
+    [#trace_state{i = I} = Top|
+     [#trace_state{clock_map = ClockMap}|_] = PTrace] = Trace,
+    ClockVector = dict:store(Lid, I, lookup_clock(Lid, ClockMap)),
+    add_all_backtracks_trace(Transition, ClockVector, PreBound, PTrace, [Top]).
 
 add_all_backtracks_trace(_Transition, _ClockVector, _PreBound, [_] = Init, Acc) ->
     lists:reverse(Acc, Init);
@@ -761,8 +713,7 @@ update_trace({Lid, _} = Selected, Next, State) ->
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
     NewSleepSetCandidates =
         ordsets:union(ordsets:del_element(Lid, Done), SleepSet),
-    {NewSleepSet, Awaked} =
-        partition_awaked(NewSleepSetCandidates, Nexts, Selected),
+    NewSleepSet = filter_awaked(NewSleepSetCandidates, Nexts, Selected),
     NewNexts = dict:store(Lid, Next, Nexts),
     MaybeNotPollable = ordsets:del_element(Lid, Pollable),
     {NewPollable, NewEnabled, NewBlocked} =
@@ -792,6 +743,7 @@ update_trace({Lid, _} = Selected, Next, State) ->
     ?f_debug("Happened before: ~p\n", [dict:to_list(UpdatedClockVector)]),
     replace_messages(Lid, UpdatedClockVector),
     PossiblyRewrittenSelected = InstrNewTraceTop#trace_state.last,
+    ?f_debug("Selected: ~p\n",[PossiblyRewrittenSelected]),
     NewLidTrace =
         queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
     {NewPrevTraceTop, NewTraceTop} =
@@ -799,7 +751,7 @@ update_trace({Lid, _} = Selected, Next, State) ->
     NewTrace =
         [NewTraceTop#trace_state{lid_trace = NewLidTrace},
          NewPrevTraceTop|Rest],
-    recheck_awaked_dependencies(Awaked, State#dpor_state{trace = NewTrace}).
+    State#dpor_state{trace = NewTrace}.
 
 recent_dependency_cv({_Lid, {ets, _Info}} = Transition, ClockVector, LidTrace) ->
     Fun =
@@ -847,13 +799,13 @@ is_pollable({'receive', blocked}) -> true;
 is_pollable({'after', _Fun}) -> true;
 is_pollable(_Else) -> false.
 
-partition_awaked(SleepSet, Nexts, Selected) ->
-    Partition =
+filter_awaked(SleepSet, Nexts, Selected) ->
+    Filter =
         fun(Lid) ->
                 Instr = dict:fetch(Lid, Nexts),
                 not dependent({Lid, Instr}, Selected)
         end,
-    lists:partition(Partition, SleepSet).
+    [S || S <- SleepSet, Filter(S)].
 
 %% Handle instruction is broken in two parts to reuse code in replay.
 handle_instruction(Transition, TraceTop) ->
@@ -910,7 +862,6 @@ handle_instruction_al({Lid, {Spawn, unknown}}, TraceTop, {ChildLid, ChildNextIns
     ClockVector = lookup_clock(Lid, ClockMap),
     NewClockMap = dict:store(ChildLid, ClockVector, ClockMap),
     MaybeEnabled = ordsets:add_element(ChildLid, Enabled),
-    ?f_debug("Child's Next:~p\n",[ChildNextInstr]),
     {NewPollable, NewEnabled, NewBlocked} =
         update_lid_enabled(ChildLid, ChildNextInstr, Pollable, MaybeEnabled, Blocked),
     NewLast = {Lid, {Spawn, ChildLid}},
@@ -990,25 +941,6 @@ poll_all(Lid, {OldTraceTop, TraceTop} = Original) ->
         _Else ->
             Original
     end.
-
-recheck_awaked_dependencies(Awaked, State) ->
-    #dpor_state{trace = [#trace_state{nexts = Nexts}|_]} = State,
-    recheck_awaked_dependencies(Awaked, Nexts, State).
-
-recheck_awaked_dependencies([], _Nexts, State) -> State;
-recheck_awaked_dependencies([P|Awaked], Nexts, State) ->
-    Instr = dict:fetch(P, Nexts),
-    ?f_debug("Awake: ~p\n",[{P, Instr}]),
-    NewState = add_all_backtracks({P, Instr}, State),
-    recheck_awaked_dependencies(Awaked, Nexts, NewState).
-
-add_all_child_backtracks({spawn, unknown}, State) ->
-    #dpor_state{trace = [TraceTop|_]} = State,
-    #trace_state{last = {_, {spawn, ChildLid}}, nexts = Nexts} = TraceTop,
-    ChildNext = dict:fetch(ChildLid, Nexts),
-    add_all_backtracks({ChildLid, ChildNext}, State);
-add_all_child_backtracks(_Else, State) ->
-    State.    
 
 %% STUB
 add_some_next_to_backtrack(State) ->

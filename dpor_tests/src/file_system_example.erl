@@ -86,8 +86,11 @@ init(Slots, Lock, Data, Init) ->
 spawn_threads(0) -> ok;
 spawn_threads(N) ->
     Parent = self(),
-    Pid = spawn(fun() -> thread(thread_name(N), N, Parent) end),
-    register(thread_name(N), Pid),
+    Pid = spawn(fun() ->
+                    Name = thread_name(N),
+                    register(Name, self()),
+                    thread(Name, N, Parent)
+                end),
     spawn_threads(N-1).
 
 collect_threads(0) -> ok;

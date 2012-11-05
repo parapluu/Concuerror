@@ -5,9 +5,10 @@ compare() {
     O="results/$1"
     NO="new_results/$1"
     ../concuerror -f src/$1.erl -t $1 $1 \
-        -o $NO --dpor -p inf > /dev/null
+        -o $NO --dpor -p inf > log
     if diff -q $O $NO; then
         echo "OK"
+        rm $NO
     else
         echo "ERROR!"
         diff $O $NO

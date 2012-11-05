@@ -18,7 +18,7 @@ receive_or_fail(N) ->
     after
         10 ->
             List = get_msgs([]),
-            throw({N, List})
+            {N, List}
     end.
 
 get_msgs(Acc) ->
