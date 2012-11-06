@@ -761,7 +761,8 @@ predecessors(Candidates, I, ClockVector) ->
 %% - wait any possible additional messages
 %% - check for async
 update_trace({Lid, _} = Selected, Next, State) ->
-    #dpor_state{trace = [PrevTraceTop|Rest]} = State,
+    #dpor_state{trace = [PrevTraceTop|Rest],
+                dpor_flavor = Flavor} = State,
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  pollable = Pollable, done = Done,
                  nexts = Nexts, lid_trace = LidTrace,
@@ -772,9 +773,14 @@ update_trace({Lid, _} = Selected, Next, State) ->
     BaseClockVector = dict:store(Lid, NewN, ClockVector),
     LidsClockVector = recent_dependency_cv(Selected, BaseClockVector, LidTrace),
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
-    NewSleepSetCandidates =
-        ordsets:union(ordsets:del_element(Lid, Done), SleepSet),
-    NewSleepSet = filter_awaked(NewSleepSetCandidates, Nexts, Selected),
+    NewSleepSet =
+        case Flavor of
+            fake -> [];
+            _Other ->
+                NewSleepSetCandidates =
+                    ordsets:union(ordsets:del_element(Lid, Done), SleepSet),
+                filter_awaked(NewSleepSetCandidates, Nexts, Selected)
+        end,
     NewNexts = dict:store(Lid, Next, Nexts),
     MaybeNotPollable = ordsets:del_element(Lid, Pollable),
     {NewPollable, NewEnabled, NewBlocked} =
@@ -1018,18 +1024,25 @@ poll_all(Lid, {OldTraceTop, TraceTop} = Original) ->
     end.
 
 add_some_next_to_backtrack(State) ->
-    #dpor_state{trace = [TraceTop|Rest], dpor_flavor = Flavor} = State,
+    #dpor_state{trace = [TraceTop|Rest], dpor_flavor = Flavor,
+                preemption_bound = PreBound} = State,
     #trace_state{enabled = Enabled, sleep_set = SleepSet,
-                 error_nxt = ErrorNext, last = {Lid, _}} = TraceTop,
+                 error_nxt = ErrorNext, last = {Lid, _},
+                 preemptions = Preemptions} = TraceTop,
     ?f_debug("Pick random: Enabled: ~w Sleeping: ~w\n",
              [Enabled, SleepSet]),
     Backtrack =
-        case ordsets:subtract(Enabled, SleepSet) of
-            [] -> [];
-            [H|_] = Candidates ->
-                case Flavor of
-                    fake -> Candidates;
-                    _Other ->
+        case Flavor of
+            fake ->
+                case ordsets:is_element(Lid, Enabled) of
+                    true when Preemptions =:= PreBound ->
+                        [Lid];
+                    _Else -> Enabled
+                end;
+            _Other ->
+                case ordsets:subtract(Enabled, SleepSet) of
+                    [] -> [];
+                    [H|_] = Candidates ->
                         case ErrorNext of
                             none ->
                                 case ordsets:is_element(Lid, Candidates) of
