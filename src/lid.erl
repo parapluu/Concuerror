@@ -134,7 +134,7 @@ ref_new(Lid, Ref) ->
     true = ets:insert(?NT_PID, {Ref, N, Lid}),
     N.
 
--spec lookup_ref_lid(ref_lid()) -> lid().
+-spec lookup_ref_lid(reference()) -> lid().
 
 lookup_ref_lid(RefLid) ->
     ets:lookup_element(?NT_PID, RefLid, 3).

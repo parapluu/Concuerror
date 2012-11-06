@@ -60,7 +60,7 @@
 %%%----------------------------------------------------------------------
 
 %% Return the calling process' LID.
--define(LID_FROM_PID(Pid), sched:lid_from_pid(Pid)).
+-define(LID_FROM_PID(Pid), lid:from_pid(Pid)).
 
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.

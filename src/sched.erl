@@ -1676,12 +1676,13 @@ send_message(Lid, Message) ->
 %% If the calling user process has an associated LID, then send
 %% a notification and yield. Otherwise, for an unknown process
 %% running instrumented code completely ignore this call.
--spec notify(notification(), any()) -> 'ok'.
+-spec notify(notification(), any()) -> 'ok' | 'continue' | 'poll'.
 
 notify(Msg, Misc) ->
     notify(Msg, Misc, next).
 
--spec notify(notification(), any(), sched_msg_type()) -> 'ok'.
+-spec notify(notification(), any(), sched_msg_type()) ->
+                    'ok' | 'continue' | 'poll'.
 
 notify(Msg, Misc, Type) ->
     case lid_from_pid(self()) of
