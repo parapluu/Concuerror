@@ -6,13 +6,11 @@ compare() {
     NO="new_results/$1"
     ../concuerror -f src/$1.erl -t $1 $1 \
         -o $NO --dpor -p inf > log
-    if diff -q $O $NO; then
+    if diff -q $O $NO > /dev/null; then
         echo "OK"
         rm $NO
     else
-        echo "ERROR!"
-        diff $O $NO
-        exit 1
+        echo "  FAILED! $O (reference) and $NO differ."
     fi
 }
 
