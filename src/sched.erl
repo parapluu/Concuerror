@@ -398,12 +398,11 @@ replay_lid_trace(N, Queue) ->
     end.
 
 wait_next(Lid, Prev) ->
+    ok = resume(Lid),
     case Prev of
         {exit, {normal, _Info}} ->
-            ok = resume(Lid),
             exited;
         {Spawn, _} when Spawn =:= spawn; Spawn =:= spawn_link ->
-            ok = resume(Lid),
             %% This interruption happens to make sure that a child has an LID
             %% before the parent wants to do any operation with its PID.
             ChildLid =
@@ -418,18 +417,26 @@ wait_next(Lid, Prev) ->
             self() ! Msg#sched{misc=ChildLid},
             get_next(Lid);
         {ets, {new, _Options}} ->
-            ok = resume(Lid),
             EtsLid =
                 receive
-                    #sched{msg = new_tid, lid = Lid, misc = Tid,
+                    #sched{msg = new_ets_lid, lid = Lid, misc = Tid,
                            type = prev} = Msg ->
                         lid:ets_new(Tid)
                 end,
             resume(Lid),
-            self() ! Msg#sched{msg = new_ets_lid, misc = EtsLid},
+            self() ! Msg#sched{misc = EtsLid},
+            get_next(Lid);
+        {monitor, {TLid, _}} ->
+            MonRef =
+                receive
+                    #sched{msg = monitor_ref, lid = Lid,
+                           misc = Ref, type = prev} = Msg ->
+                        lid:ref_new(TLid, Ref)
+                end,
+            resume(Lid),
+            self() ! Msg#sched{misc = MonRef},
             get_next(Lid);
         _Other ->
-            ok = resume(Lid),
             get_next(Lid)
     end.
 
@@ -541,6 +548,10 @@ dependent({_Lid1, {whereis, RegName}},
           {_Lid2, {exit, {normal, {_ets, {ok, RegName}}}}}, _Swap) ->
     true;
 
+%% Demonitor and exit.
+dependent({_Lid, {demonitor, TLid}},
+          {TLid, {exit, {normal, _Info}}}, _Swap) ->
+    true;
 
 %% Swap the two arguments if the test is not symmetric by itself.
 dependent(TransitionA, TransitionB, false) ->
@@ -888,6 +899,12 @@ handle_instruction_op({Lid, {ets, {new, [_Lid, _Name, _Options]}}}) ->
         #sched{msg = new_ets_lid, lid = Lid, misc = EtsLid, type = prev} ->
             EtsLid
     end;
+handle_instruction_op({Lid, {monitor, {_TLid, _RefLid}}}) ->
+    receive
+        %% This is the replaced message
+        #sched{msg = monitor_ref, lid = Lid, misc = RefLid, type = prev} ->
+            RefLid
+    end;
 handle_instruction_op(_) ->
     flush_mailbox(),
     {}.
@@ -943,6 +960,9 @@ handle_instruction_al({Lid, {'receive', Tag}}, TraceTop, {From, CV, Msg}) ->
 handle_instruction_al({Lid, {ets, {new, [unknown, Name, Options]}}},
                       TraceTop, EtsLid) ->
     NewLast = {Lid, {ets, {new, [EtsLid, Name, Options]}}},
+    TraceTop#trace_state{last = NewLast};
+handle_instruction_al({Lid, {monitor, {TLid, unknown}}}, TraceTop, RefLid) ->
+    NewLast = {Lid, {monitor, {TLid, RefLid}}},
     TraceTop#trace_state{last = NewLast};
 handle_instruction_al(_Transition, TraceTop, {}) ->
     TraceTop.
@@ -1116,6 +1136,7 @@ report_possible_deadlock(State) ->
                 case TraceTop#trace_state.blocked of
                     [] -> Tickets;
                     Blocked ->
+                        ?f_debug("DEADLOCK!\n"),
                         Error = {deadlock, Blocked},
                         LidTrace = TraceTop#trace_state.lid_trace,
                         Ticket = create_ticket(Error, LidTrace),

@@ -51,6 +51,8 @@
          rep_unregister_dpor/1,
          rep_whereis_dpor/1]).
 
+-export([rep_monitor_dpor/2, rep_demonitor_dpor/1, rep_demonitor_dpor/2]).
+
 -include("gen.hrl").
 
 %%%----------------------------------------------------------------------
@@ -74,7 +76,8 @@
          {{erlang, is_process_alive, 1}, fun rep_is_process_alive/1,
           fun rep_is_process_alive_dpor/1},
          {{erlang, link, 1}, fun rep_link/1, fun rep_link_dpor/1},
-         {{erlang, monitor, 2}, fun rep_monitor/2},
+         {{erlang, monitor, 2}, fun rep_monitor/2,
+          fun rep_monitor_dpor/2},
          {{erlang, process_flag, 2}, fun rep_process_flag/2},
          {{erlang, register, 2}, fun rep_register/2,
           fun rep_register_dpor/2},
@@ -151,7 +154,7 @@ rep_demonitor(Ref) ->
 -spec rep_demonitor_dpor(reference()) -> 'true'.
 
 rep_demonitor_dpor(Ref) ->
-    sched:notify(demonitor, Ref),
+    sched:notify(demonitor, lid:lookup_ref_lid(Ref)),
     demonitor(Ref).
 
 %% @spec: rep_demonitor(reference(), ['flush' | 'info']) -> 'true'
@@ -168,7 +171,8 @@ rep_demonitor(Ref, Opts) ->
 -spec rep_demonitor_dpor(reference(), ['flush' | 'info']) -> 'true'.
 
 rep_demonitor_dpor(Ref, Opts) ->
-    sched:notify(demonitor, Ref),
+    %% FIXME: Consume maybe instrumented DOWN message on flush.
+    sched:notify(demonitor, {?LID_FROM_PID(Ref), Opts}),
     demonitor(Ref, Opts).
 
 %% @spec: rep_halt() -> no_return()
@@ -237,6 +241,20 @@ rep_monitor(Type, Item) ->
     NewItem = find_pid(Item),
     sched:notify(monitor, {NewItem, Ref}),
     Ref.
+
+-spec rep_monitor_dpor('process', pid() | {atom(), node()} | atom()) ->
+                              reference().
+
+rep_monitor_dpor(Type, Item) ->
+    case ?LID_FROM_PID(find_pid(Item)) of
+        not_found -> monitor(Type, Item);
+        Lid ->
+            sched:notify(monitor, {Lid, unknown}),
+            Ref = monitor(Type, Item),
+            sched:notify(monitor_ref, Ref, prev),
+            sched:wait(),
+            Ref
+    end.
 
 %% @spec: rep_process_flag('trap_exit', boolean()) -> boolean();
 %%                        ('error_handler', atom()) -> atom();
@@ -832,7 +850,7 @@ rep_ets_foldl(Function, Acc0, Tab) ->
 rep_ets_new_dpor(Name, Options) ->
     sched:notify(ets, {new, [unknown, Name, Options]}),
     Tid = ets:new(Name, Options),
-    sched:notify(new_tid, Tid, prev),
+    sched:notify(new_ets_lid, Tid, prev),
     sched:wait(),
     Tid.
 
