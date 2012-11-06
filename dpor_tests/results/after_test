@@ -1,4 +1,4 @@
-Checked 27 interleaving(s). 27 errors found.
+Checked 18 interleaving(s). 18 errors found.
 
 112065455
 Error type        : Deadlock
@@ -71,30 +71,6 @@ Blocked processes : P1
   Process P1 receives no matching messages
 
 
-89465326
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-
-
 119945029
 Error type        : Deadlock
 Blocked processes : P1
@@ -161,53 +137,6 @@ Blocked processes : P1
   Process P1.3 sends message `ok2` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-
-
-33220706
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-
-
-16503501
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
 
 
@@ -279,29 +208,6 @@ Blocked processes : P1
   Process P1 receives no matching messages
 
 
-70755268
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-
-
 80533596
 Error type        : Deadlock
 Blocked processes : P1
@@ -365,51 +271,6 @@ Blocked processes : P1
   Process P1.3 sends message `ok2` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-
-
-115495903
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-
-
-26988071
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
 
 
@@ -478,28 +339,6 @@ Blocked processes : P1
   Process P1 receives no matching messages
 
 
-58692250
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-
-
 32674801
 Error type        : Deadlock
 Blocked processes : P1
@@ -560,49 +399,6 @@ Blocked processes : P1
   Process P1.3 sends message `ok2` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-
-
-52979247
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-
-
-65954467
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
 
 

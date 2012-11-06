@@ -592,29 +592,37 @@ add_all_backtracks_trace({Lid, _} = Transition, Trace, PreBound) ->
     ClockVector = dict:store(Lid, I, lookup_clock(Lid, ClockMap)),
     add_all_backtracks_trace(Transition, ClockVector, PreBound, PTrace, [Top]).
 
-add_all_backtracks_trace(_Transition, _ClockVector, _PreBound, [_] = Init, Acc) ->
+add_all_backtracks_trace(_Transition, _ClockVector,
+                         _PreBound, [_] = Init, Acc) ->
     lists:reverse(Acc, Init);
 add_all_backtracks_trace(Transition, ClockVector, PreBound,
+                         [#trace_state{preemptions = Preempt} = StateI|Trace],
+                         Acc)
+  when Preempt + 1 > PreBound ->
+    add_all_backtracks_trace(Transition, ClockVector, PreBound,
+                             Trace, [StateI|Acc]);
+add_all_backtracks_trace(Transition, ClockVector, PreBound,
                          [StateI|Trace], Acc) ->
-    #trace_state{i = I, last = {ProcSI, _} = SI,
-                 preemptions = Preemptions} = StateI,
+    #trace_state{i = I, last = {ProcSI, _} = SI} = StateI,
+    Clock = lookup_clock_value(ProcSI, ClockVector),
     Action =
-        case Preemptions + 1 =< PreBound of
+        case I > Clock andalso dependent(Transition, SI) of
+            false -> {continue, ClockVector};
             true ->
-                Clock = lookup_clock_value(ProcSI, ClockVector),
-                case I > Clock andalso dependent(Transition, SI) of
-                    false -> {continue, ClockVector};
-                    true ->
-                        ?f_debug("~4w: ~p ~p Clock ~p\n",
-                                 [I, dependent(Transition, SI), SI, Clock]),
-                        [#trace_state{enabled = Enabled,
-                                      backtrack = Backtrack,
-                                      sleep_set = SleepSet} =
-                             PreSI|Rest] = Trace,
-                        Candidates = ordsets:subtract(Enabled, SleepSet),
-                        %% Initial = find_initial(I, Acc),
-                        %% ?f_debug("Initial: ~w\n",
-                        %%          [ordsets:del_element(ProcSI, Initial)]),
+                ?f_debug("~4w: ~p ~p Clock ~p\n",
+                         [I, dependent(Transition, SI), SI, Clock]),
+                [#trace_state{enabled = Enabled,
+                              backtrack = Backtrack,
+                              sleep_set = SleepSet} =
+                     PreSI|Rest] = Trace,
+                Candidates = ordsets:subtract(Enabled, SleepSet),
+                Initial = ordsets:del_element(ProcSI, find_initial(I, Acc)),
+                ?f_debug("Initial: ~w\n",[Initial]),
+                case ordsets:intersection(Initial, Backtrack) of
+                    [_|_] ->
+                        ?f_debug("Already have an initial in backtrack.\n"),
+                        {done, Trace};
+                    [] ->
                         case pick_from_E(Candidates, I, ClockVector) of
                             {ok, P} ->
                                 NewBacktrack =
@@ -622,24 +630,21 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound,
                                 ?f_debug("     Global adds: ~w\n", [P]),
                                 NewPreSI =
                                     PreSI#trace_state{backtrack = NewBacktrack},
-                                {done,
-                                 lists:reverse(Acc, [StateI,NewPreSI|Rest])};
+                                {done, [NewPreSI|Rest]};
                             none ->
                                 ?f_debug("     All sleeping... continue\n"),
                                 #trace_state{clock_map = ClockMap} = StateI,
                                 NewClockVector = lookup_clock(ProcSI, ClockMap),
                                 {continue, NewClockVector}
                         end
-                end;
-            false ->
-                {continue, ClockVector}
+                end
         end,
     case Action of
         {continue, UpdClockVector} ->
             add_all_backtracks_trace(Transition, UpdClockVector, PreBound,
                                      Trace, [StateI|Acc]);
         {done, FinalTrace} ->
-            FinalTrace
+            lists:reverse(Acc, [StateI|FinalTrace])
     end.
 
 lookup_clock(P, ClockMap) ->
@@ -654,35 +659,41 @@ lookup_clock_value(P, CV) ->
         error -> 0
     end.
 
-%% find_initial(I, RevTrace) ->
-%%     ?f_debug("I: ~w\n",[I]),
-%%     find_initial(I, RevTrace, ordsets:new()).
+find_initial(I, RevTrace) ->
+    Empty = ordsets:new(),
+    find_initial(I, RevTrace, Empty, Empty).
 
-%% find_initial(_I, [], Initial) ->
-%%     Initial;
-%% find_initial(I, [TraceTop|Rest], Initial) ->
-%%     #trace_state{last = {P,_}, clock_map = ClockMap} = TraceTop,
-%%     Add =
-%%         case ordsets:is_element(P, Initial) of
-%%             true -> false;
-%%             false ->
-%%                 Clock = lookup_clock(P, ClockMap),
-%%                 case has_dependency_after(Clock, P, I) of
-%%                     true -> false;
-%%                     false -> true
-%%                 end
-%%         end,
-%%     case Add of
-%%         false -> find_initial(I, Rest, Initial);
-%%         true  -> find_initial(I, Rest, ordsets:add_element(P, Initial))
-%%     end.
+find_initial(_I, [], Initial, _NotInitial) ->
+    Initial;
+find_initial(I, [TraceTop|Rest], Initial, NotInitial) ->
+    #trace_state{last = {P,_}, clock_map = ClockMap} = TraceTop,
+    Add =
+        case ordsets:is_element(P, Initial) orelse
+            ordsets:is_element(P, NotInitial) of
+            true -> false;
+            false ->
+                Clock = lookup_clock(P, ClockMap),
+                case has_dependency_after(Clock, P, I) of
+                    true -> not_initial;
+                    false -> initial
+                end
+        end,
+    case Add of
+        false -> find_initial(I, Rest, Initial, NotInitial);
+        initial ->
+            NewInitial = ordsets:add_element(P, Initial),
+            find_initial(I, Rest, NewInitial, NotInitial);
+        not_initial ->
+            NewNotInitial = ordsets:add_element(P, NotInitial),
+            find_initial(I, Rest, Initial, NewNotInitial)            
+    end.
 
-%% has_dependency_after(Clock, P, I) ->
-%%     Fold =
-%%         fun(_Key, _Value, true) -> true;
-%%            (Key, Value, false) -> P =/= Key andalso Value >= I
-%%         end,
-%%     dict:fold(Fold, false, Clock).                
+has_dependency_after(Clock, P, I) ->
+    Fold =
+        fun(_Key, _Value, true) -> true;
+           (Key, Value, false) -> P =/= Key andalso Value >= I
+        end,
+    dict:fold(Fold, false, Clock).                
 
 pick_from_E(Candidates, I, ClockVector) ->
     Fold =
