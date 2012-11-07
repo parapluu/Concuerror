@@ -12,7 +12,7 @@
 %%% Description : Logging and error reporting interface
 %%%----------------------------------------------------------------------
 
--module(log).
+-module(concuerror_log).
 %% Non gen_evt exports.
 -export([internal/1, internal/2]).
 %% Log API exports.
@@ -30,7 +30,7 @@
 %%% Callback types
 %%%----------------------------------------------------------------------
 
--type event() :: {'msg', string()} | {'error', ticket:ticket()}.
+-type event() :: {'msg', string()} | {'error', concuerror_ticket:ticket()}.
 -type state() :: [].
 
 -export_type([event/0, state/0]).
@@ -63,13 +63,13 @@ internal(String, Args) ->
 -spec attach(module(), term()) -> 'ok' | {'EXIT', term()}.
 
 attach(Mod, Args) ->
-    gen_event:add_handler(log, Mod, Args).
+    gen_event:add_handler(concuerror_log, Mod, Args).
 
 %% Detach an event handler module.
 -spec detach(module(), term()) -> 'ok' | {'error', 'module_not_found'}.
 
 detach(Mod, Args) ->
-    gen_event:delete_handler(log, Mod, Args).
+    gen_event:delete_handler(concuerror_log, Mod, Args).
 
 %% @spec start(atom(), term()) -> {'ok', pid()} |
 %%                                  {'error', {'already_started', pid()}}
@@ -80,14 +80,14 @@ detach(Mod, Args) ->
 -spec start() -> {'ok', pid()} | {'error', {'already_started', pid()}}.
 
 start() ->
-    gen_event:start({local, log}).
+    gen_event:start({local, concuerror_log}).
 
 %% @spec stop() -> 'ok'
 %% @doc: Terminates the log event manager.
 -spec stop() -> 'ok'.
 
 stop() ->
-    gen_event:stop(log).
+    gen_event:stop(concuerror_log).
 
 %% @spec log(string()) -> 'ok'
 %% @doc: Logs a string.
@@ -102,23 +102,23 @@ log(String) when is_list(String) ->
 
 log(String, Args) when is_list(String), is_list(Args) ->
     LogMsg = io_lib:format(String, Args),
-    gen_event:notify(log, {msg, LogMsg}).
+    gen_event:notify(concuerror_log, {msg, LogMsg}).
 
-%% @spec show_error(ticket:ticket()) -> 'ok'
+%% @spec show_error(concuerror_ticket:ticket()) -> 'ok'
 %% @doc: Shows an error.
--spec show_error(ticket:ticket()) -> 'ok'.
+-spec show_error(concuerror_ticket:ticket()) -> 'ok'.
 
 show_error(Ticket) ->
-    gen_event:notify(log, {error, Ticket}).
+    gen_event:notify(concuerror_log, {error, Ticket}).
 
 %% @spec progress(log|swap, non_neg_integer()) -> 'ok'
 %% @doc: Shows analysis progress.
 -spec progress(log|swap, non_neg_integer()) -> 'ok'.
 
 progress(log, Remain) ->
-    gen_event:notify(log, {progress_log, Remain});
+    gen_event:notify(concuerror_log, {progress_log, Remain});
 progress(swap, NewState) ->
-    gen_event:notify(log, {progress_swap, NewState}).
+    gen_event:notify(concuerror_log, {progress_swap, NewState}).
 
 %%%----------------------------------------------------------------------
 %%% Callback functions

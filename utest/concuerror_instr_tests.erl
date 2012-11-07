@@ -12,7 +12,7 @@
 %%% Description : Instrumenter unit tests
 %%%----------------------------------------------------------------------
 
--module(instr_tests).
+-module(concuerror_instr_tests).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -25,8 +25,12 @@
 -spec syntax_test_() -> term().
 
 syntax_test_() ->
-    Setup = fun() -> _ = log:start(), log:attach(log, []) end,
-    Cleanup = fun(_Any) -> log:stop() end,
+    Setup =
+        fun() ->
+                _ = concuerror_log:start(),
+                concuerror_log:attach(concuerror_log, [])
+        end,
+    Cleanup = fun(_Any) -> concuerror_log:stop() end,
     Test01 = {"Block expression in after clause",
 	      fun(_Any) -> test_ok("block_after.erl") end},
     Test02 = {"Assignments to non-local variables in patterns",
@@ -41,5 +45,5 @@ syntax_test_() ->
 
 test_ok(File) ->
     Path = filename:join([?TEST_PATH, File]),
-    Result = instr:instrument_and_compile([Path], [], [], false),
+    Result = concuerror_instr:instrument_and_compile([Path], [], [], false),
     ?assertMatch({ok, _Bin}, Result).

@@ -64,26 +64,26 @@ MAIN_MODULES = \
 	concuerror
 
 CORE_MODULES = \
-	gui \
-	error \
-	instr \
-	lid \
-	proc_action \
-	rep \
-	sched \
-	state \
-	ticket \
-	util
+	concuerror_gui \
+	concuerror_error \
+	concuerror_instr \
+	concuerror_lid \
+	concuerror_proc_action \
+	concuerror_rep \
+	concuerror_sched \
+	concuerror_state \
+	concuerror_ticket \
+	concuerror_util
 
 LOG_MODULES = \
-	log
+	concuerror_log
 
 UTEST_MODULES = \
-	error_tests \
-	instr_tests \
-	lid_tests \
-	state_tests \
-	ticket_tests
+	concuerror_error_tests \
+	concuerror_instr_tests \
+	concuerror_lid_tests \
+	concuerror_state_tests \
+	concuerror_ticket_tests
 
 MODULES = \
 	$(MAIN_MODULES) \
@@ -142,8 +142,8 @@ endif
 dialyze: all
 	dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam
 
-doc:	$(EBIN)/util.beam
-	erl -noinput -pa $(EBIN) -s util doc $(TOP) -s init stop
+doc:	$(EBIN)/concuerror_util.beam
+	erl -noinput -pa $(EBIN) -s concuerror_util doc $(TOP) -s init stop
 
 core_target:    $(CORE_MODULES:%=$(EBIN)/%.beam)
 
@@ -156,25 +156,27 @@ utest_target:   $(UTEST_MODULES:%=$(EBIN)/%.beam)
 scripts_target: concuerror
 
 utest: all
-	erl -noinput -sname $(APP_STRING) -pa $(EBIN) -s util test -s init stop
+	erl -noinput -sname $(APP_STRING) -pa $(EBIN) \
+		-s concuerror_util test -s init stop
 
 test: all
-	@(cd testsuite && ./runtests.sh)
+	@(cd testsuite && THREADS=$(THREADS) ./runtests.py)
 
 concuerror:
 	printf "\
-	#%c/bin/bash\n\
-	\n\
+	#%c/bin/bash\n\n\
+	Date=\$$(date +%%s%%N)\n\
+	Name=\"$(APP_STRING)\$$Date\"\n\
+	Cookie=\"$(APP_STRING)Cookie\"\n\n\
 	trap ctrl_c INT\n\
 	function ctrl_c() {\n\
-	    erl -sname $(APP_STRING)_Stop -noinput \\\\\n\
+	    erl -sname $(APP_STRING)Stop -noinput -cookie \$$Cookie \\\\\n\
 	        -pa $(EBIN) \\\\\n\
-	        -s concuerror stop -s init stop\n\
-	}\n\
-	\n\
-	erl +Bi -smp enable -noinput -sname $(APP_STRING) \\\\\n\
+	        -run concuerror stop \$$Name -run init stop\n\
+	}\n\n\
+	erl +Bi -smp enable -noinput -sname \$$Name -cookie \$$Cookie \\\\\n\
 	    -pa $(EBIN) \\\\\n\
-	    -s concuerror cli -s init stop -- \"\$$@\" &\n\
+	    -run concuerror cli -run init stop -- \"\$$@\" &\n\
 	wait \$$!\n" ! > $@
 	chmod +x $@
 

@@ -11,7 +11,7 @@
 %%% Description : State interface
 %%%----------------------------------------------------------------------
 
--module(state).
+-module(concuerror_state).
 
 -export([extend/2, empty/0, is_empty/1, pack/1, trim_head/1, trim_tail/1]).
 
@@ -26,16 +26,16 @@
 -define(BIN_TO_TERM(X), binary_to_term(X)).
 -define(TERM_TO_BIN(X), term_to_binary(X, ?OPT_T2B)).
 -else.
--type state() :: {{lid:lid(),pos_integer()} | 'undefined',
+-type state() :: {{concuerror_lid:lid(),pos_integer()} | 'undefined',
                   queue(),
-                  {lid:lid(),pos_integer()} | 'undefined'}.
+                  {concuerror_lid:lid(),pos_integer()} | 'undefined'}.
 -define(BIN_TO_TERM(X), X).
 -define(TERM_TO_BIN(X), X).
 -endif.
 
 %% Given a state and a process LID, return a new extended state
 %% containing the given LID as its last element.
--spec extend(state(), lid:lid()) -> state().
+-spec extend(state(), concuerror_lid:lid()) -> state().
 
 extend(State, Lid) ->
     {Front, Queue, Rear} = ?BIN_TO_TERM(State),
@@ -90,7 +90,7 @@ pack(State) ->
 %% Return a tuple containing the first Lid in the given state
 %% and a new state with that Lid removed.
 %% Assume the State is packed and not empty.
--spec trim_head(state()) -> {lid:lid(), state()}.
+-spec trim_head(state()) -> {concuerror_lid:lid(), state()}.
 
 trim_head(State) ->
     {Front, Queue, Rear} = ?BIN_TO_TERM(State),
@@ -110,7 +110,7 @@ trim_head(State) ->
 %% Return a tuple containing the last Lid in the given state
 %% and a new state with that Lid removed.
 %% Assume the State is packed and not empty.
--spec trim_tail(state()) -> {lid:lid(), state()}.
+-spec trim_tail(state()) -> {concuerror_lid:lid(), state()}.
 
 trim_tail(State) ->
     {Front, Queue, Rear} = ?BIN_TO_TERM(State),

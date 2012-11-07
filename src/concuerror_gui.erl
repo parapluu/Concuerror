@@ -12,7 +12,7 @@
 %%% Description : Graphical User Interface
 %%%----------------------------------------------------------------------
 
--module(gui).
+-module(concuerror_gui).
 
 %% UI exports.
 -export([start/1]).
@@ -31,7 +31,7 @@
 %%%----------------------------------------------------------------------
 
 %% @spec start(concuerror:options()) -> 'true'
-%% @doc: Start the CED GUI.
+%% @doc: Start the Concuerror GUI.
 -spec start(concuerror:options()) -> 'true'.
 
 start(Options) ->
@@ -43,7 +43,7 @@ start(Options) ->
     wxFrame:show(Frame),
     setSplitterInitSizes(),
     %% Attach the event handler below.
-    _ = log:attach(?MODULE, wx:get_env()),
+    _ = concuerror_log:attach(?MODULE, wx:get_env()),
     %% Load preferences from Options.
     loadPrefs(Options),
     refresh(),
@@ -77,15 +77,15 @@ init(Env) ->
 terminate(_Reason, _State) ->
     ok.
 
--spec handle_event(log:event(), state()) -> {'ok', state()}.
+-spec handle_event(concuerror_log:event(), state()) -> {'ok', state()}.
 
 handle_event({msg, String}, State) ->
     wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), String),
     {ok, State};
 handle_event({error, Ticket}, State) ->
-    Error = ticket:get_error(Ticket),
-    ErrorItem = util:flat_format("~s~n~s", [error:type(Error),
-                                            error:short(Error)]),
+    Error = concuerror_ticket:get_error(Ticket),
+    ErrorItem = concuerror_util:flat_format("~s~n~s",
+        [concuerror_error:type(Error), concuerror_error:short(Error)]),
     List = ref_lookup(?ERROR_LIST),
     wxControlWithItems:append(List, ErrorItem),
     addListData(?ERROR_LIST, [Ticket]),
@@ -626,7 +626,7 @@ analyze_aux(Module, Function, Args, Files) ->
     Include = {'include', ref_lookup(?PREF_INCLUDE)},
     Define = {'define', ref_lookup(?PREF_DEFINE)},
     Opts = [Include, Define, Preb],
-    Result = sched:analyze(Target, Files, Opts),
+    Result = concuerror_sched:analyze(Target, Files, Opts),
     ref_add(?ANALYSIS_RET, Result),
     analysis_cleanup().
 
@@ -825,7 +825,8 @@ loadPrefs(Options) ->
         false -> continue;
         {'files', Files} ->
             AbsFiles = lists:map(fun filename:absname/1, Files),
-            ErlFiles = lists:filter(fun util:is_erl_source/1, AbsFiles),
+            ErlFiles =
+                lists:filter(fun concuerror_util:is_erl_source/1, AbsFiles),
             addListItems(?MODULE_LIST, ErlFiles)
     end,
     %% Set include_dirs
@@ -924,12 +925,12 @@ exportDialog(Parent) ->
         ?wxID_OK ->
             AnalysisRet = ref_lookup(?ANALYSIS_RET),
             Output = wxFileDialog:getPath(Dialog),
-            log:log("Writing output to file ~s..", [Output]),
+            concuerror_log:log("Writing output to file ~s..", [Output]),
             case concuerror:export(AnalysisRet, Output) of
                 {'error', Msg} ->
-                    log:log("~s\n", [file:format_error(Msg)]);
+                    concuerror_log:log("~s\n", [file:format_error(Msg)]);
                 ok ->
-                    log:log("done\n")
+                    concuerror_log:log("done\n")
             end;
         _Other -> continue
     end,
@@ -997,7 +998,7 @@ refresh() ->
         _Other ->
             Module = wxListBox:getStringSelection(ModuleList),
             %% Scan selected module for exported functions.
-            Funs = util:funs(Module, string),
+            Funs = concuerror_util:funs(Module, string),
             setListItems(?FUNCTION_LIST, Funs),
             %% Update source viewer.
             SourceText = ref_lookup(?SOURCE_TEXT),
@@ -1018,7 +1019,7 @@ refreshFun() ->
                 _Other ->
                     Path = wxListBox:getStringSelection(ModuleList),
                     %% Scan selected module for selected function line number.
-                    Line = util:funLine(Path, Function, Arity),
+                    Line = concuerror_util:funLine(Path, Function, Arity),
                     %% Update source viewer.
                     SourceText = ref_lookup(?SOURCE_TEXT),
                     wxStyledTextCtrl:gotoLine(SourceText, Line),
@@ -1103,10 +1104,12 @@ show_details() ->
         Id ->
             wxControlWithItems:clear(IleaveList),
             Ticket = wxControlWithItems:getClientData(ErrorList, Id),
-            setListItems(?ILEAVE_LIST, ticket:details_to_strings(Ticket)),
+            setListItems(?ILEAVE_LIST,
+                concuerror_ticket:details_to_strings(Ticket)),
             clearProbs(),
-            Error = ticket:get_error(Ticket),
-            wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT), error:long(Error))
+            Error = concuerror_ticket:get_error(Ticket),
+            wxTextCtrl:appendText(ref_lookup(?ERROR_TEXT),
+                concuerror_error:long(Error))
     end.
 
 %% Validate user provided function arguments.

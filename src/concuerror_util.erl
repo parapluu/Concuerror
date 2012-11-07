@@ -12,7 +12,7 @@
 %%% Description : Utilities
 %%%----------------------------------------------------------------------
 
--module(util).
+-module(concuerror_util).
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0,
          is_erl_source/1, funs/1, funs/2, funLine/3]).
 
@@ -33,7 +33,11 @@ doc(AppDir) ->
 -spec test() -> 'ok'.
 
 test() ->
-    Modules = [lid, state, error, ticket, instr],
+    Modules = [concuerror_lid,
+               concuerror_state,
+               concuerror_error,
+               concuerror_ticket,
+               concuerror_instr],
     Tests = [{module, M} || M <- Modules],
     eunit:test(Tests, [verbose]).
 

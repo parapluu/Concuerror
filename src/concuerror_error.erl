@@ -12,7 +12,7 @@
 %%% Description : Error interface
 %%%----------------------------------------------------------------------
 
--module(error).
+-module(concuerror_error).
 
 -export([long/1, mock/0, new/1, short/1, type/1]).
 
@@ -41,10 +41,10 @@ type({exception, _Details}) -> "Exception".
 short({deadlock, Blocked}) ->
     OldList = lists:sort(?SETS:to_list(Blocked)),
     {List, [Last]} = lists:split(length(OldList) - 1, OldList),
-    Fun = fun(L, A) -> A ++ lid:to_string(L) ++ ", " end,
-    lists:foldl(Fun, "", List) ++ lid:to_string(Last);
+    Fun = fun(L, A) -> A ++ concuerror_lid:to_string(L) ++ ", " end,
+    lists:foldl(Fun, "", List) ++ concuerror_lid:to_string(Last);
 short({assertion_violation, [{module, Module}, {line, Line}|_Rest]}) ->
-    util:flat_format("~p.erl:~p", [Module, Line]);
+    concuerror_util:flat_format("~p.erl:~p", [Module, Line]);
 short({exception, Reason}) ->
     lists:flatten(io_lib:format("~W", [Reason, 3])).
 
@@ -53,18 +53,18 @@ short({exception, Reason}) ->
 long({deadlock, _Blocked} = Error) ->
     Format = "Error type        : Deadlock~n"
         "Blocked processes : ~s",
-    util:flat_format(Format, [short(Error)]);
+    concuerror_util:flat_format(Format, [short(Error)]);
 long({assertion_violation,
       [{module, Module}, {line, Line}, _Xpr, {expected, Exp}, {value, Val}]}) ->
     Format = "Error type        : Assertion violation~n"
         "Module:Line       : ~p.erl:~p~n"
         "Expected          : ~p~n"
         "Value             : ~p",
-    util:flat_format(Format, [Module, Line, Exp, Val]);
+    concuerror_util:flat_format(Format, [Module, Line, Exp, Val]);
 long({exception, Details}) ->
     Format = "Error type        : Exception~n"
         "Details           : ~p",
-    util:flat_format(Format, [Details]).
+    concuerror_util:flat_format(Format, [Details]).
 
 -spec mock() -> {'exception', 'foobar'}.
 

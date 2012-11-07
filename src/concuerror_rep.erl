@@ -12,7 +12,7 @@
 %%% Description : Replacement BIFs
 %%%----------------------------------------------------------------------
 
--module(rep).
+-module(concuerror_rep).
 
 -export([rep_after_notify/0, rep_demonitor/1, rep_demonitor/2,
          rep_halt/0, rep_halt/1, rep_is_process_alive/1, rep_link/1,
@@ -60,7 +60,7 @@
 %%%----------------------------------------------------------------------
 
 %% Return the calling process' LID.
--define(LID_FROM_PID(Pid), lid:from_pid(Pid)).
+-define(LID_FROM_PID(Pid), concuerror_lid:from_pid(Pid)).
 
 %% The destination of a `send' operation.
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
@@ -128,7 +128,7 @@ rep_var(Version, Mod, Fun, Args) ->
                 default ->
                     apply(Default, Args);
                 dpor ->
-                    log:internal("DPOR has no support for ~p yet.\n",[Key])
+                    concuerror_log:internal("DPOR has no support for ~p yet.\n",[Key])
             end;
         {Key, Default, Dpor} ->
             case Version of
@@ -148,13 +148,13 @@ rep_var(Version, Mod, Fun, Args) ->
 
 rep_demonitor(Ref) ->
     Result = demonitor(Ref),
-    sched:notify(demonitor, Ref),
+    concuerror_sched:notify(demonitor, Ref),
     Result.
 
 -spec rep_demonitor_dpor(reference()) -> 'true'.
 
 rep_demonitor_dpor(Ref) ->
-    sched:notify(demonitor, lid:lookup_ref_lid(Ref)),
+    concuerror_sched:notify(demonitor, lid:lookup_ref_lid(Ref)),
     demonitor(Ref).
 
 %% @spec: rep_demonitor(reference(), ['flush' | 'info']) -> 'true'
@@ -165,14 +165,14 @@ rep_demonitor_dpor(Ref) ->
 
 rep_demonitor(Ref, Opts) ->
     Result = demonitor(Ref, Opts),
-    sched:notify(demonitor, Ref),
+    concuerror_sched:notify(demonitor, Ref),
     Result.
 
 -spec rep_demonitor_dpor(reference(), ['flush' | 'info']) -> 'true'.
 
 rep_demonitor_dpor(Ref, Opts) ->
     %% FIXME: Consume maybe instrumented DOWN message on flush.
-    sched:notify(demonitor, {?LID_FROM_PID(Ref), Opts}),
+    concuerror_sched:notify(demonitor, {?LID_FROM_PID(Ref), Opts}),
     demonitor(Ref, Opts).
 
 %% @spec: rep_halt() -> no_return()
@@ -182,7 +182,7 @@ rep_demonitor_dpor(Ref, Opts) ->
 -spec rep_halt() -> no_return().
 
 rep_halt() ->
-    sched:notify(halt, empty).
+    concuerror_sched:notify(halt, empty).
 
 %% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/1'.
@@ -191,7 +191,7 @@ rep_halt() ->
 -spec rep_halt(non_neg_integer() | string()) -> no_return().
 
 rep_halt(Status) ->
-    sched:notify(halt, Status).
+    concuerror_sched:notify(halt, Status).
 
 %% @spec: rep_is_process_alive(pid()) -> boolean()
 %% @doc: Replacement for `is_process_alive/1'.
@@ -199,7 +199,7 @@ rep_halt(Status) ->
 
 rep_is_process_alive(Pid) ->
     Result = is_process_alive(Pid),
-    sched:notify(is_process_alive, Pid),
+    concuerror_sched:notify(is_process_alive, Pid),
     Result.
 
 -spec rep_is_process_alive_dpor(pid()) -> boolean().
@@ -207,7 +207,7 @@ rep_is_process_alive(Pid) ->
 rep_is_process_alive_dpor(Pid) ->
     case ?LID_FROM_PID(Pid) of
         not_found -> ok;
-        PLid -> sched:notify(is_process_alive, PLid)
+        PLid -> concuerror_sched:notify(is_process_alive, PLid)
     end,
     is_process_alive(Pid).
 
@@ -219,13 +219,13 @@ rep_is_process_alive_dpor(Pid) ->
 
 rep_link(Pid) ->
     Result = link(Pid),
-    sched:notify(link, Pid),
+    concuerror_sched:notify(link, Pid),
     Result.
 
 -spec rep_link_dpor(pid() | port()) -> 'true'.
 
 rep_link_dpor(Pid) ->
-    sched:notify(link, Pid),
+    concuerror_sched:notify(link, Pid),
     link(Pid).
 
 %% @spec: rep_monitor('process', pid() | {atom(), node()} | atom()) ->
@@ -239,7 +239,7 @@ rep_link_dpor(Pid) ->
 rep_monitor(Type, Item) ->
     Ref = monitor(Type, Item),
     NewItem = find_pid(Item),
-    sched:notify(monitor, {NewItem, Ref}),
+    concuerror_sched:notify(monitor, {NewItem, Ref}),
     Ref.
 
 -spec rep_monitor_dpor('process', pid() | {atom(), node()} | atom()) ->
@@ -249,10 +249,10 @@ rep_monitor_dpor(Type, Item) ->
     case ?LID_FROM_PID(find_pid(Item)) of
         not_found -> monitor(Type, Item);
         Lid ->
-            sched:notify(monitor, {Lid, unknown}),
+            concuerror_sched:notify(monitor, {Lid, unknown}),
             Ref = monitor(Type, Item),
-            sched:notify(monitor_ref, Ref, prev),
-            sched:wait(),
+            concuerror_sched:notify(monitor_ref, Ref, prev),
+            concuerror_sched:wait(),
             Ref
     end.
 
@@ -283,11 +283,12 @@ rep_monitor_dpor(Type, Item) ->
 
 rep_process_flag(trap_exit = Flag, Value) ->
     Result = process_flag(Flag, Value),
-    sched:notify(process_flag, {Flag, Value}),
+    concuerror_sched:notify(process_flag, {Flag, Value}),
     Result;
 rep_process_flag(Flag, Value) ->
     process_flag(Flag, Value).
 
+%% STUB
 rep_process_flag_dpor(Flag, Value) ->
     process_flag(Flag, Value).
 
@@ -301,12 +302,13 @@ rep_process_flag_dpor(Flag, Value) ->
 rep_receive(Fun, _HasTimeout) ->
     case ?LID_FROM_PID(self()) of
         not_found ->
-            log:internal("Uninstrumented process enters instrumented receive");
+            concuerror_log:internal(
+                "Uninstrumented process enters instrumented receive");
         _Lid ->
             {messages, Mailbox} = process_info(self(), messages),
             case rep_receive_match(Fun, Mailbox) of
                 block ->
-                    sched:block(),
+                    concuerror_sched:block(),
                     rep_receive_loop(Fun);
                 continue -> ok
             end
@@ -316,21 +318,21 @@ rep_receive_loop(Fun) ->
     {messages, Mailbox} = process_info(self(), messages),
     case rep_receive_match(Fun, Mailbox) of
         block ->
-            sched:no_wakeup(),
+            concuerror_sched:no_wakeup(),
             rep_receive_loop(Fun);
         continue ->
-            sched:wakeup()
+            concuerror_sched:wakeup()
     end.
 
 %% Blocks forever (used for 'receive after infinity -> ...' expressions).
 -spec rep_receive_block() -> no_return().
 
 rep_receive_block() ->
-    sched:block(),
+    concuerror_sched:block(),
     rep_receive_block_loop().
 
 rep_receive_block_loop() ->
-    sched:no_wakeup(),
+    concuerror_sched:no_wakeup(),
     rep_receive_block_loop().
 
 rep_receive_match(_Fun, []) ->
@@ -349,7 +351,7 @@ rep_receive_match(Fun, [H|T]) ->
 -spec rep_after_notify() -> 'ok'.
 
 rep_after_notify() ->
-    sched:notify('after', empty),
+    concuerror_sched:notify('after', empty),
     ok.
 
 %% @spec rep_receive_notify(pid(), term()) -> 'ok'
@@ -360,7 +362,7 @@ rep_after_notify() ->
 -spec rep_receive_notify(pid(), term()) -> 'ok'.
 
 rep_receive_notify(From, Msg) ->
-    sched:notify('receive', {From, Msg}),
+    concuerror_sched:notify('receive', {From, Msg}),
     ok.
 
 %% @spec rep_receive_notify(term()) -> 'ok'
@@ -370,7 +372,7 @@ rep_receive_notify(From, Msg) ->
 -spec rep_receive_notify(term()) -> 'ok'.
 
 rep_receive_notify(Msg) ->
-    sched:notify('receive_no_instr', Msg),
+    concuerror_sched:notify('receive_no_instr', Msg),
     ok.
 
 %%------------------------------------------------------------------------------
@@ -380,7 +382,7 @@ rep_receive_notify(Msg) ->
 rep_receive_dpor(Fun, HasTimeout) ->
     case ?LID_FROM_PID(self()) of
         not_found ->
-            ok; %% log:internal("Uninstrumented process enters instrumented receive");
+            ok; %% concuerror_log:internal("Uninstrumented process enters instrumented receive");
         _Lid ->
             rep_receive_loop_dpor(poll, Fun, HasTimeout)
     end.
@@ -395,7 +397,7 @@ rep_receive_loop_dpor(Act, Fun, HasTimeout) ->
                 block ->
                     NewAct =
                         case HasTimeout of
-                            false -> sched:notify('receive', blocked);
+                            false -> concuerror_sched:notify('receive', blocked);
                             true ->
                                 NewFun =
                                     fun(Msg) ->
@@ -404,7 +406,7 @@ rep_receive_loop_dpor(Act, Fun, HasTimeout) ->
                                             continue -> true
                                         end
                                     end,
-                                sched:notify('after', NewFun)
+                                concuerror_sched:notify('after', NewFun)
                         end,
                     rep_receive_loop_dpor(NewAct, Fun, HasTimeout);
                 continue ->
@@ -413,7 +415,7 @@ rep_receive_loop_dpor(Act, Fun, HasTimeout) ->
                             false -> unblocked;
                             true -> had_after
                         end,
-                    continue = sched:notify('receive', Tag),
+                    continue = concuerror_sched:notify('receive', Tag),
                     ok
             end
     end.
@@ -432,13 +434,13 @@ rep_after_notify_dpor() ->
 -spec rep_receive_notify_dpor(pid(), dict(), term()) -> 'ok'.
 
 rep_receive_notify_dpor(From, CV, Msg) ->
-    sched:notify('receive', {From, CV, Msg}, prev),
+    concuerror_sched:notify('receive', {From, CV, Msg}, prev),
     ok.
 
 -spec rep_receive_notify_dpor(term()) -> no_return().
 
 rep_receive_notify_dpor(Msg) ->
-    ok. %% log:internal("Received uninstrumented message: ~p\n", [Msg]).
+    ok. %% concuerror_log:internal("Received uninstrumented message: ~p\n", [Msg]).
 
 %%------------------------------------------------------------------------------
 
@@ -452,7 +454,7 @@ rep_register(RegName, P) ->
     Ret = register(RegName, P),
     %% TODO: Maybe send Pid instead to avoid rpc.
     PLid = ?LID_FROM_PID(P),
-    sched:notify(register, {RegName, PLid}),
+    concuerror_sched:notify(register, {RegName, PLid}),
     Ret.
 
 -spec rep_register_dpor(atom(), pid() | port()) -> 'true'.
@@ -462,7 +464,7 @@ rep_register_dpor(RegName, P) ->
     case ?LID_FROM_PID(P) of
         not_found -> ok;
         PLid ->
-            sched:notify(register, {RegName, PLid})
+            concuerror_sched:notify(register, {RegName, PLid})
     end,
     register(RegName, P).
 
@@ -483,7 +485,7 @@ rep_send(Dest, Msg) ->
                 not_found -> Dest ! Msg;
                 _DestLid -> Dest ! {?INSTR_MSG, SelfLid, Msg}
             end,
-            sched:notify(send, {NewDest, Msg}),
+            concuerror_sched:notify(send, {NewDest, Msg}),
             Msg
     end.
 
@@ -498,7 +500,7 @@ rep_send_dpor(Dest, Msg) ->
         _SelfLid ->
             NewDest = find_pid(Dest),
             NewLid = ?LID_FROM_PID(NewDest),
-            sched:notify(send, {Dest, NewLid, Msg}),
+            concuerror_sched:notify(send, {Dest, NewLid, Msg}),
             Dest ! Msg
     end.
 
@@ -521,7 +523,7 @@ rep_send(Dest, Msg, Opt) ->
                     erlang:send(Dest,
                                 {?INSTR_MSG, SelfLid, Msg}, Opt)
             end,
-            sched:notify(send, {NewDest, Msg}),
+            concuerror_sched:notify(send, {NewDest, Msg}),
             Msg
     end.
 
@@ -536,8 +538,8 @@ rep_spawn(Fun) ->
     case ?LID_FROM_PID(self()) of
         not_found -> spawn(Fun);
         _Lid ->
-            Pid = spawn(fun() -> sched:wait(), Fun() end),
-            sched:notify(spawn, Pid),
+            Pid = spawn(fun() -> concuerror_sched:wait(), Fun() end),
+            concuerror_sched:notify(spawn, Pid),
             Pid
     end.
 
@@ -547,11 +549,11 @@ rep_spawn_dpor(Fun) ->
     case ?LID_FROM_PID(self()) of
         not_found -> spawn(Fun);
         _Lid ->
-            sched:notify(spawn, unknown),
+            concuerror_sched:notify(spawn, unknown),
             Pid = spawn(fun() -> spawn_fun_wrapper(Fun) end),
-            sched:notify(spawned, Pid, prev),
+            concuerror_sched:notify(spawned, Pid, prev),
             %% Wait before using the PID to be sure that an LID is assigned
-            sched:wait(),
+            concuerror_sched:wait(),
             Pid
     end.
 
@@ -559,15 +561,15 @@ rep_spawn_dpor(Fun) ->
 
 spawn_fun_wrapper(Fun) ->
     try
-        sched:wait(),
+        concuerror_sched:wait(),
         Fun(),
         exit(normal)
     catch
         exit:normal ->
             MyInfo = find_my_info(),
-            sched:notify(exit, {normal, MyInfo});
+            concuerror_sched:notify(exit, {normal, MyInfo});
         Class:Type ->
-            sched:notify(error,[Class,Type,erlang:get_stacktrace()]),
+            concuerror_sched:notify(error,[Class,Type,erlang:get_stacktrace()]),
             case Class of
                 error -> error(Type);
                 throw -> throw(Type);
@@ -626,8 +628,8 @@ rep_spawn_link(Fun) ->
     case ?LID_FROM_PID(self()) of
         not_found -> spawn_link(Fun);
         _Lid ->
-            Pid = spawn_link(fun() -> sched:wait(), Fun() end),
-            sched:notify(spawn_link, Pid),
+            Pid = spawn_link(fun() -> concuerror_sched:wait(), Fun() end),
+            concuerror_sched:notify(spawn_link, Pid),
             Pid
     end.
 
@@ -637,11 +639,11 @@ rep_spawn_link_dpor(Fun) ->
     case ?LID_FROM_PID(self()) of
         not_found -> spawn(Fun);
         _Lid ->
-            sched:notify(spawn_link, unknown),
+            concuerror_sched:notify(spawn_link, unknown),
             Pid = spawn_link(fun() -> spawn_fun_wrapper(Fun) end),
-            sched:notify(spawned, Pid, prev),
+            concuerror_sched:notify(spawned, Pid, prev),
             %% Wait before using the PID to be sure that an LID is assigned
-            sched:wait(),
+            concuerror_sched:wait(),
             Pid
     end.
 
@@ -671,8 +673,8 @@ rep_spawn_monitor(Fun) ->
     case ?LID_FROM_PID(self()) of
         not_found -> spawn_monitor(Fun);
         _Lid ->
-            Ret = spawn_monitor(fun() -> sched:wait(), Fun() end),
-            sched:notify(spawn_monitor, Ret),
+            Ret = spawn_monitor(fun() -> concuerror_sched:wait(), Fun() end),
+            concuerror_sched:notify(spawn_monitor, Ret),
             Ret
     end.
 
@@ -714,8 +716,8 @@ rep_spawn_opt(Fun, Opt) ->
     case ?LID_FROM_PID(self()) of
         not_found -> spawn_opt(Fun, Opt);
         _Lid ->
-            Ret = spawn_opt(fun() -> sched:wait(), Fun() end, Opt),
-            sched:notify(spawn_opt, {Ret, Opt}),
+            Ret = spawn_opt(fun() -> concuerror_sched:wait(), Fun() end, Opt),
+            concuerror_sched:notify(spawn_opt, {Ret, Opt}),
             Ret
     end.
 
@@ -749,13 +751,13 @@ rep_spawn_opt(Module, Function, Args, Opt) ->
 
 rep_unlink(Pid) ->
     Result = unlink(Pid),
-    sched:notify(unlink, Pid),
+    concuerror_sched:notify(unlink, Pid),
     Result.
 
 -spec rep_unlink_dpor(pid() | port()) -> 'true'.
 
 rep_unlink_dpor(Pid) ->
-    sched:notify(unlink, Pid),
+    concuerror_sched:notify(unlink, Pid),
     unlink(Pid).
 
 %% @spec rep_unregister(atom()) -> 'true'
@@ -766,13 +768,13 @@ rep_unlink_dpor(Pid) ->
 
 rep_unregister(RegName) ->
     Ret = unregister(RegName),
-    sched:notify(unregister, RegName),
+    concuerror_sched:notify(unregister, RegName),
     Ret.
 
 -spec rep_unregister_dpor(atom()) -> 'true'.
 
 rep_unregister_dpor(RegName) ->
-    sched:notify(unregister, RegName),
+    concuerror_sched:notify(unregister, RegName),
     unregister(RegName).
 
 %% @spec rep_whereis(atom()) -> pid() | port() | 'undefined'
@@ -783,13 +785,13 @@ rep_unregister_dpor(RegName) ->
 
 rep_whereis(RegName) ->
     Ret = whereis(RegName),
-    sched:notify(whereis, {RegName, Ret}),
+    concuerror_sched:notify(whereis, {RegName, Ret}),
     Ret.
 
 -spec rep_whereis_dpor(atom()) -> pid() | port() | 'undefined'.
 
 rep_whereis_dpor(RegName) ->
-    sched:notify(whereis, RegName),
+    concuerror_sched:notify(whereis, RegName),
     whereis(RegName).
 
 %%%----------------------------------------------------------------------
@@ -798,57 +800,57 @@ rep_whereis_dpor(RegName) ->
 %% FIXME: A lot of repeated code here.
 rep_ets_insert_new(Tab, Obj) ->
     Ret = ets:insert_new(Tab, Obj),
-    sched:notify(ets_insert_new, {Tab, Obj}),
+    concuerror_sched:notify(ets_insert_new, {Tab, Obj}),
     Ret.
 
 rep_ets_lookup(Tab, Key) ->
     Ret = ets:lookup(Tab, Key),
-    sched:notify(ets_lookup, {Tab, Key}),
+    concuerror_sched:notify(ets_lookup, {Tab, Key}),
     Ret.
 
 rep_ets_select_delete(Tab, MatchSpec) ->
     Ret = ets:select_delete(Tab, MatchSpec),
-    sched:notify(ets_select_delete, {Tab, MatchSpec}),
+    concuerror_sched:notify(ets_select_delete, {Tab, MatchSpec}),
     Ret.
 
 rep_ets_insert(Tab, Obj) ->
     Ret = ets:insert(Tab, Obj),
-    sched:notify(ets_insert, {Tab, Obj}),
+    concuerror_sched:notify(ets_insert, {Tab, Obj}),
     Ret.
 
 rep_ets_delete(Tab) ->
     Ret = ets:delete(Tab),
-    sched:notify(ets_delete, Tab),
+    concuerror_sched:notify(ets_delete, Tab),
     Ret.
 
 rep_ets_delete(Tab, Key) ->
     Ret = ets:delete(Tab, Key),
-    sched:notify(ets_delete, {Tab, Key}),
+    concuerror_sched:notify(ets_delete, {Tab, Key}),
     Ret.
 
 rep_ets_match_object(Continuation) ->
     Ret = ets:match_object(Continuation),
-    sched:notify(ets_match_object, {Continuation}),
+    concuerror_sched:notify(ets_match_object, {Continuation}),
     Ret.
 
 rep_ets_match_object(Tab, Pattern, Limit) ->
     Ret = ets:match_object(Tab, Pattern, Limit),
-    sched:notify(ets_match_object, {Tab, Pattern, Limit}),
+    concuerror_sched:notify(ets_match_object, {Tab, Pattern, Limit}),
     Ret.
 
 rep_ets_match_delete(Tab, Pattern) ->
     Ret = ets:match_delete(Tab, Pattern),
-    sched:notify(ets_match_delete, {Tab, Pattern}),
+    concuerror_sched:notify(ets_match_delete, {Tab, Pattern}),
     Ret.
 
 rep_ets_new(Name, Options) ->
     Ret = ets:new(Name, Options),
-    sched:notify(ets_new, {Name, Options}),
+    concuerror_sched:notify(ets_new, {Name, Options}),
     Ret.
 
 rep_ets_foldl(Function, Acc0, Tab) ->
     Ret = ets:foldl(Function, Acc0, Tab),
-    sched:notify(ets_foldl, {Function, Acc0, Tab}),
+    concuerror_sched:notify(ets_foldl, {Function, Acc0, Tab}),
     Ret.
 
 %%%----------------------------------------------------------------------
@@ -856,35 +858,35 @@ rep_ets_foldl(Function, Acc0, Tab) ->
 %%%----------------------------------------------------------------------
 
 rep_ets_new_dpor(Name, Options) ->
-    sched:notify(ets, {new, [unknown, Name, Options]}),
+    concuerror_sched:notify(ets, {new, [unknown, Name, Options]}),
     try
         Tid = ets:new(Name, Options),
-        sched:notify(new_ets_lid, Tid, prev),
-        sched:wait(),
+        concuerror_sched:notify(new_ets_lid, Tid, prev),
+        concuerror_sched:wait(),
         Tid
     catch
         _:_ ->
 	        %% Report a fake tid...
-            sched:notify(new_ets_lid, -1, prev),
-            sched:wait(),
+            concuerror_sched:notify(new_ets_lid, -1, prev),
+            concuerror_sched:wait(),
             %% And throw the error again...
             ets:new(Name, Options)
     end.
 
 rep_ets_insert_dpor(Tab, Obj) ->
-    sched:notify(ets, {insert, [?LID_FROM_PID(Tab), Tab, Obj]}),
+    concuerror_sched:notify(ets, {insert, [?LID_FROM_PID(Tab), Tab, Obj]}),
     ets:insert(Tab, Obj).
 
 rep_ets_insert_new_dpor(Tab, Obj) ->
-    sched:notify(ets, {insert_new, [?LID_FROM_PID(Tab), Tab, Obj]}),
+    concuerror_sched:notify(ets, {insert_new, [?LID_FROM_PID(Tab), Tab, Obj]}),
     ets:insert_new(Tab, Obj).
 
 rep_ets_lookup_dpor(Tab, Key) ->
-    sched:notify(ets, {lookup, [?LID_FROM_PID(Tab), Tab, Key]}),
+    concuerror_sched:notify(ets, {lookup, [?LID_FROM_PID(Tab), Tab, Key]}),
     ets:lookup(Tab, Key).
 
 rep_ets_delete_dpor(Tab) ->
-    sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab]}),
+    concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab]}),
     ets:delete(Tab).
 
 %%%----------------------------------------------------------------------

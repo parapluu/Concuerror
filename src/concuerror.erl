@@ -14,7 +14,7 @@
 -module(concuerror).
 
 %% UI exports.
--export([gui/1, cli/0, analyze/1, export/2, stop/0]).
+-export([gui/1, cli/0, analyze/1, export/2, stop/0, stop/1]).
 %% Log server callback exports.
 -export([init/1, terminate/2, handle_event/2]).
 
@@ -38,7 +38,7 @@
 %%%----------------------------------------------------------------------
 
 -type analysis_ret() ::
-      sched:analysis_ret()
+      concuerror_sched:analysis_ret()
     | {'error', 'arguments', string()}.
 
 %% Log event handler internal state.
@@ -54,14 +54,14 @@
 
 %% Command line options
 -type option() ::
-      {'target',  sched:analysis_target()}
+      {'target',  concuerror_sched:analysis_target()}
     | {'files',   [file:filename()]}
     | {'output',  file:filename()}
     | {'include', [file:name()]}
-    | {'define',  instr:macros()}
+    | {'define',  concuerror_instr:macros()}
     | {'noprogress'}
     | {'quiet'}
-    | {'preb',    sched:bound()}
+    | {'preb',    concuerror_sched:bound()}
     | {'gui'}
     | {'help'}.
 
@@ -75,32 +75,35 @@
 %% @doc: Stop the Concuerror analysis
 -spec stop() -> ok.
 stop() ->
-    %% XXX: Erlang nodes is erroneous with Concuerror right
-    %% now and there is times this approach may crash.
-    %% Get the hostname
-    Temp1 = atom_to_list(node()),
-    Host = lists:dropwhile(fun(E) -> E /= $@ end, Temp1),
-    %% Set Concuerror Node
-    Node = list_to_atom("Concuerror" ++ Host),
-    %% Connect to node
-    case net_adm:ping(Node) of
-        pong ->
-            %% Stop analysis
-            spawn(Node, fun() -> ?RP_SCHED ! stop_analysis end),
-            ok;
-        _ ->
-            %% Well some times we could not connect with the
-            %% first try so for now just repeat
-            stop()
+    try ?RP_SCHED ! stop_analysis
+    catch
+        error:badarg ->
+            init:stop()
+    end,
+    ok.
+
+%% @spec stop_node([string()]) -> ok
+%% @doc: Stop the Concuerror analysis
+-spec stop([string()]) -> ok.
+stop([Name]) ->
+    %% Disable error logging messages.
+    ?tty(),
+    Node = list_to_atom(Name ++ ?HOST),
+    case rpc:call(Node, concuerror, stop, []) of
+        {badrpc, _Reason} ->
+            %% Retry
+            stop([Name]);
+        _Res ->
+            ok
     end.
 
 %% @spec gui(options()) -> 'true'
-%% @doc: Start the CED GUI.
+%% @doc: Start the Concuerror GUI.
 -spec gui(options()) -> 'true'.
 gui(Options) ->
     %% Disable error logging messages.
     ?tty(),
-    gui:start(Options).
+    concuerror_gui:start(Options).
 
 %% @spec cli() -> 'true'
 %% @doc: Parse the command line arguments and start Concuerror.
@@ -124,14 +127,14 @@ cli() ->
 
 cliAux(Options) ->
     %% Start the log manager.
-    _ = log:start(),
+    _ = concuerror_log:start(),
     case lists:keyfind('gui', 1, Options) of
         {'gui'} -> gui(Options);
         false ->
             %% Attach the event handler below.
             case lists:keyfind('quiet', 1, Options) of
                 false ->
-                    _ = log:attach(?MODULE, Options),
+                    _ = concuerror_log:attach(?MODULE, Options),
                     ok;
                 {'quiet'} -> ok
             end,
@@ -146,17 +149,17 @@ cliAux(Options) ->
                             {output, O} -> O;
                             false -> ?EXPORT_FILE
                         end,
-                    log:log("Writing output to file ~s..", [Output]),
+                    concuerror_log:log("Writing output to file ~s..", [Output]),
                     case export(Result, Output) of
                         {'error', Msg2} ->
-                            log:log("~s\n", [file:format_error(Msg2)]);
+                            concuerror_log:log("~s\n", [file:format_error(Msg2)]);
                         ok ->
-                            log:log("done\n")
+                            concuerror_log:log("done\n")
                     end
             end
     end,
     %% Stop event handler
-    log:stop(),
+    concuerror_log:stop(),
     'true'.
 
 %% Parse command line arguments
@@ -300,7 +303,8 @@ parse([{Opt, Param} | Args], Options) ->
             NewOptions = lists:keystore(dpor, 1, Options, {dpor, flanagan}),
             parse([{'-noprogress',[]}|Args], NewOptions);
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
-            EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa" ->
+            EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa";
+            EF=:="cookie" ->
                 %% erl flag (ignore it)
                 parse(Args, Options);
 
@@ -377,10 +381,10 @@ analyze(Options) ->
     %% Disable error logging messages.
     ?tty(),
     %% Start the log manager.
-    _ = log:start(),
+    _ = concuerror_log:start(),
     Res = analyzeAux(Options),
     %% Stop event handler
-    log:stop(),
+    concuerror_log:stop(),
     Res.
 
 analyzeAux(Options) ->
@@ -397,7 +401,7 @@ analyzeAux(Options) ->
                     {'error', 'arguments', Msg2};
                 {files, Files} ->
                     %% Start the analysis
-                    sched:analyze(Target, Files, Options)
+                    concuerror_sched:analyze(Target, Files, Options)
             end
     end.
 
@@ -406,10 +410,10 @@ analyzeAux(Options) ->
 %%% Export Analysis results into a file
 %%%----------------------------------------------------------------------
 
-%% @spec export(sched:analysis_ret(), file:filename()) ->
+%% @spec export(concuerror_sched:analysis_ret(), file:filename()) ->
 %%              'ok' | {'error', file:posix() | badarg | system_limit}
 %% @doc: Export the analysis results into a text file.
--spec export(sched:analysis_ret(), file:filename()) ->
+-spec export(concuerror_sched:analysis_ret(), file:filename()) ->
     'ok' | {'error', file:posix() | badarg | system_limit | terminated}.
 export(Results, File) ->
     case file:open(File, ['write']) of
@@ -435,7 +439,7 @@ exportAux({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
     case file:write(IoDevice, Msg) of
         ok ->
             case lists:foldl(fun writeDetails/2, {1, IoDevice},
-                    ticket:sort(Tickets)) of
+                    concuerror_ticket:sort(Tickets)) of
                 {'error', _Reason}=Error -> Error;
                 _Ok -> ok
             end;
@@ -446,11 +450,11 @@ exportAux({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
 writeDetails(_Ticket, {'error', _Reason}=Error) ->
     Error;
 writeDetails(Ticket, {Count, IoDevice}) ->
-    Error = ticket:get_error(Ticket),
-    Description =
-        io_lib:format("~p\n~s\n", [erlang:phash2(Ticket), error:long(Error)]),
+    Error = concuerror_ticket:get_error(Ticket),
+    Description = io_lib:format("~p\n~s\n",
+        [erlang:phash2(Ticket), concuerror_error:long(Error)]),
     Details = lists:map(fun(M) -> "  " ++ M ++ "\n" end,
-                    ticket:details_to_strings(Ticket)),
+                    concuerror_ticket:details_to_strings(Ticket)),
     Msg = lists:flatten([Description | Details]),
     case file:write(IoDevice, Msg ++ "\n\n") of
         ok -> {Count+1, IoDevice};
@@ -476,7 +480,7 @@ init(Options) ->
 -spec terminate(term(), state()) -> 'ok'.
 terminate(_Reason, _State) -> ok.
 
--spec handle_event(log:event(), state()) -> {'ok', state()}.
+-spec handle_event(concuerror_log:event(), state()) -> {'ok', state()}.
 handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};

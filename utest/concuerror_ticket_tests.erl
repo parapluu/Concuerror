@@ -12,7 +12,7 @@
 %%% Description : Ticket interface unit tests
 %%%----------------------------------------------------------------------
 
--module(ticket_tests).
+-module(concuerror_ticket_tests).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -22,23 +22,23 @@
 -spec get_error_test() -> 'ok'.
 
 get_error_test() ->
-    Error = error:mock(),
+    Error = concuerror_error:mock(),
     Pid = spawn(fun() -> ok end),
-    lid:start(),
-    Lid = lid:new(Pid, noparent),
+    concuerror_lid:start(),
+    Lid = concuerror_lid:new(Pid, noparent),
     Actions = [{'after', Lid}, {'block', Lid}],
-    Ticket = ticket:new(Error, Actions),
-    lid:stop(),
-    ?assertEqual(Error, ticket:get_error(Ticket)).
+    Ticket = concuerror_ticket:new(Error, Actions),
+    concuerror_lid:stop(),
+    ?assertEqual(Error, concuerror_ticket:get_error(Ticket)).
 
 -spec get_details_test() -> 'ok'.
 
 get_details_test() ->
-    Error = error:mock(),
+    Error = concuerror_error:mock(),
     Pid = spawn(fun() -> ok end),
-    lid:start(),
-    Lid = lid:new(Pid, noparent),
+    concuerror_lid:start(),
+    Lid = concuerror_lid:new(Pid, noparent),
     Actions = [{'after', Lid}, {'block', Lid}],
-    Ticket = ticket:new(Error, Actions),
-    lid:stop(),
-    ?assertEqual(Actions, ticket:get_details(Ticket)).
+    Ticket = concuerror_ticket:new(Error, Actions),
+    concuerror_lid:stop(),
+    ?assertEqual(Actions, concuerror_ticket:get_details(Ticket)).

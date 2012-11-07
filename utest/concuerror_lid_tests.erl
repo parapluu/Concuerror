@@ -11,7 +11,7 @@
 %%% Description : LID interface unit tests
 %%%----------------------------------------------------------------------
 
--module(lid_tests).
+-module(concuerror_lid_tests).
 
 -include_lib("eunit/include/eunit.hrl").
 
@@ -24,22 +24,22 @@
 -spec one_proc_test_() -> term().
 
 one_proc_test_() ->
-    Setup = fun() -> lid:start(),
+    Setup = fun() -> concuerror_lid:start(),
  		     Pid = c:pid(0, 2, 3),
- 		     Lid = lid:new(Pid, noparent),
+ 		     Lid = concuerror_lid:new(Pid, noparent),
  		     {Pid, Lid}
  	    end,
-    Cleanup = fun(_Any) -> lid:stop() end,
+    Cleanup = fun(_Any) -> concuerror_lid:stop() end,
     Test1 = {"LID to Pid",
-	     fun({Pid, Lid}) -> ?assertEqual(Pid, lid:get_pid(Lid)) end},
+	     fun({Pid, Lid}) -> ?assertEqual(Pid,concuerror_lid:get_pid(Lid)) end},
     Test2 = {"Pid to LID",
-	     fun({Pid, Lid}) -> ?assertEqual(Lid, lid:from_pid(Pid)) end},
+	     fun({Pid, Lid}) -> ?assertEqual(Lid,concuerror_lid:from_pid(Pid)) end},
     Test3 = {"Parent -> Child",
 	     fun({_Pid, Lid}) ->
 		     ChildPid = c:pid(0, 2, 4),
-		     ChildLid = lid:new(ChildPid, Lid),
-		     ?assertEqual(ChildPid, lid:get_pid(ChildLid)),
-		     ?assertEqual(ChildLid, lid:from_pid(ChildPid))
+		     ChildLid = concuerror_lid:new(ChildPid, Lid),
+		     ?assertEqual(ChildPid, concuerror_lid:get_pid(ChildLid)),
+		     ?assertEqual(ChildLid, concuerror_lid:from_pid(ChildPid))
 	     end},
     Tests = [Test1, Test2, Test3],
     Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
@@ -48,25 +48,25 @@ one_proc_test_() ->
 -spec two_proc_test_() -> term().
 
 two_proc_test_() ->
-    Setup = fun() -> lid:start(),
+    Setup = fun() -> concuerror_lid:start(),
  		     Pid1 = c:pid(0, 2, 3),
 		     Pid2 = c:pid(0, 2, 4),
- 		     Lid1 = lid:new(Pid1, noparent),
- 		     Lid2 = lid:new(Pid2, Lid1),
+ 		     Lid1 = concuerror_lid:new(Pid1, noparent),
+ 		     Lid2 = concuerror_lid:new(Pid2, Lid1),
  		     {Pid1, Pid2, Lid1, Lid2}
  	    end,
-    Cleanup = fun(_Any) -> lid:stop() end,
+    Cleanup = fun(_Any) -> concuerror_lid:stop() end,
     Test1 = {"Fold Pids",
 	     fun({Pid1, Pid2, _Lid1, _Lid2}) ->
 		     Fun = fun(P, A) -> [P|A] end,
-		     Result = lid:fold_pids(Fun, []),
+		     Result = concuerror_lid:fold_pids(Fun, []),
 		     ?assertEqual([Pid2, Pid1], Result)
 	     end},
     Test2 = {"Cleanup",
 	     fun({Pid1, _Pid2, Lid1, _Lid2}) ->
-		     lid:cleanup(Lid1),
-		     ?assertEqual(not_found, lid:from_pid(Pid1)),
-		     ?assertEqual(not_found, lid:get_pid(Lid1))
+		     concuerror_lid:cleanup(Lid1),
+		     ?assertEqual(not_found, concuerror_lid:from_pid(Pid1)),
+		     ?assertEqual(not_found, concuerror_lid:get_pid(Lid1))
 	     end},
     Tests = [Test1, Test2],
     Inst = fun(X) -> [{D, fun() -> T(X) end} || {D, T} <- Tests] end,
