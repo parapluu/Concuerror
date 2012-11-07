@@ -327,6 +327,7 @@ explore(MightNeedReplayState) ->
                     NewState = report_error(Selected, State),
                     explore(NewState);
                 _Else ->
+                    ?f_debug("Plan: ~p\n",[Selected]),
                     Next = wait_next(Lid, Cmd),
                     UpdState = update_trace(Selected, Next, State),
                     AllAddState = add_all_backtracks(UpdState),
@@ -489,12 +490,21 @@ dependent({_Lid1, {send, {_Orig1, Lid, Msg1}}},
 dependent({_Lid1, {ets, Op1}}, {_Lid2, {ets, Op2}}, false) ->
     dependent_ets(Op1, Op2);
 
+%% Registering a table with the same name as an existing one.
+dependent({_Lid1, {ets, {new, [_Table, Name, Options]}}},
+          {_Lid2, {exit, {normal, {Tables, _Name}}}},
+          _Swap) ->
+    PublicNamedTables = [N || {_Lid, {ok, N}} <- Tables],
+    lists:all(fun(X) -> X end,
+              [lists:member(E,L) || {E, L} <- [{named_table, Options},
+                                               {public, Options},
+                                               {Name, PublicNamedTables}]]);
+
 %% Table owners exits mess things up.
 dependent({_Lid1, {ets, {_Op, [Table|_Rest]}}},
           {_Lid2, {exit, {normal, {Tables, _Name}}}},
           _Swap) ->
-    lists:member(Table, Tables);
-
+    lists:keymember(Table, 1, Tables);
 
 %% Sending to an activated after clause depends on that receive's patterns
 dependent({_Lid1, {send, {_Orig, Lid, Msg}}}, {Lid, {'after', Fun}}, _Swap) ->
@@ -530,7 +540,7 @@ dependent({_Lid1, {register, {_RegName, PLid}}},
 
 %% Register for a name that might be in use.
 dependent({_Lid1, {register, {RegName, _PLid}}},
-          {_Lid2, {exit, {normal, {_Ets, {ok, RegName}}}}}, _Swap) ->
+          {_Lid2, {exit, {normal, {_Tables, {ok, RegName}}}}}, _Swap) ->
     true;
 
 %% Whereis using name before process has registered itself.
@@ -545,7 +555,7 @@ dependent({_Lid1, {is_process_alive, Lid}},
 
 %% Process registered and exits
 dependent({_Lid1, {whereis, RegName}},
-          {_Lid2, {exit, {normal, {_ets, {ok, RegName}}}}}, _Swap) ->
+          {_Lid2, {exit, {normal, {_Tables, {ok, RegName}}}}}, _Swap) ->
     true;
 
 %% Demonitor and exit.
@@ -577,6 +587,11 @@ dependent_ets({Insert, [T, _, {K, _}]}, {lookup, [T, _, K]}, _Swap)
     true;
 dependent_ets({delete, [T, _]}, {_, [T|_]}, _Swap) ->
     true;
+dependent_ets({new, [_Tid1, Name, Options1]},
+              {new, [_Tid2, Name, Options2]}, false) ->
+    lists:all(fun(X) -> X end,
+              [lists:member(O, L) || O <- [named_table, public],
+                                     L <- [Options1, Options2]]);
 dependent_ets(Op1, Op2, false) ->
     dependent_ets(Op2, Op1, true);
 dependent_ets(_Op1, _Op2, true) ->

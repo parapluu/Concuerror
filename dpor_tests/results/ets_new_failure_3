@@ -1,0 +1,24 @@
+Checked 4 interleaving(s). 2 errors found.
+
+89984411
+Error type        : Exception
+Details           : {badarg,[{ets,new,[table,[named_table,public]],[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1: ets_new {table,[named_table,public]}
+  Process P1.2: ets_new {table,[named_table,public]}
+  Process P1.2 exits ("Exception")
+
+
+94943623
+Error type        : Exception
+Details           : {badarg,[{ets,new,[table,[named_table,public]],[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2: ets_new {table,[named_table,public]}
+  Process P1.1: ets_new {table,[named_table,public]}
+  Process P1.1 exits ("Exception")
+
+

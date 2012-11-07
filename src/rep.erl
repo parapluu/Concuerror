@@ -582,8 +582,16 @@ find_my_info() ->
 
 find_my_ets_tables() ->
     Self = self(),
-    [?LID_FROM_PID(TID) ||
-        TID <- ets:all(), Self =:= ets:info(TID, owner)].
+    [begin
+         Lid = ?LID_FROM_PID(TID),
+         PublicName =
+             case [ets:info(TID, I) || I <- [named_table, protection]] of
+                 [true, public] ->
+                     {ok, ets:info(TID, name)};
+                 _ -> false
+             end,
+         {Lid, PublicName}
+     end || TID <- ets:all(), Self =:= ets:info(TID, owner)].
 
 find_my_registered_name() ->
     Self = self(),
@@ -849,10 +857,19 @@ rep_ets_foldl(Function, Acc0, Tab) ->
 
 rep_ets_new_dpor(Name, Options) ->
     sched:notify(ets, {new, [unknown, Name, Options]}),
-    Tid = ets:new(Name, Options),
-    sched:notify(new_ets_lid, Tid, prev),
-    sched:wait(),
-    Tid.
+    try
+        Tid = ets:new(Name, Options),
+        sched:notify(new_ets_lid, Tid, prev),
+        sched:wait(),
+        Tid
+    catch
+        _:_ ->
+	        %% Report a fake tid...
+            sched:notify(new_ets_lid, -1, prev),
+            sched:wait(),
+            %% And throw the error again...
+            ets:new(Name, Options)
+    end.
 
 rep_ets_insert_dpor(Tab, Obj) ->
     sched:notify(ets, {insert, [?LID_FROM_PID(Tab), Tab, Obj]}),
@@ -877,4 +894,6 @@ rep_ets_delete_dpor(Tab) ->
 find_pid(Pid) when is_pid(Pid) ->
     Pid;
 find_pid(Atom) when is_atom(Atom) ->
-    whereis(Atom).
+    whereis(Atom);
+find_pid(Other) ->
+    Other.
