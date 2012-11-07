@@ -244,21 +244,21 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
 
 -type s_i()        :: non_neg_integer().
 -type instr()      :: term().
--type transition() :: {lid:lid(), instr()}.
--type clock_map()  :: dict(). %% dict(lid:lid(), clock_vector()).
-%% -type clock_vector() :: dict(). %% dict(lid:lid(), s_i()).
+-type transition() :: {concuerror_lid:lid(), instr()}.
+-type clock_map()  :: dict(). %% dict(concuerror_lid:lid(), clock_vector()).
+%% -type clock_vector() :: dict(). %% dict(concuerror_lid:lid(), s_i()).
 
 -record(trace_state, {
           i         = 0                 :: s_i(),
           last      = init_tr()         :: transition(),
-          enabled   = ordsets:new()     :: ordsets:ordset(lid:lid()),
-          blocked   = ordsets:new()     :: ordsets:ordset(lid:lid()),
-          pollable  = ordsets:new()     :: ordsets:ordset(lid:lid()),
-          backtrack = ordsets:new()     :: ordsets:ordset(lid:lid()),
-          done      = ordsets:new()     :: ordsets:ordset(lid:lid()),
-          sleep_set = ordsets:new()     :: ordsets:ordset(lid:lid()),
-          nexts     = dict:new()        :: dict(), %% dict(lid:lid(), instr()),
-          error_nxt = none              :: lid:lid() | 'none',
+          enabled   = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
+          blocked   = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
+          pollable  = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
+          backtrack = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
+          done      = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
+          sleep_set = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
+          nexts     = dict:new()        :: dict(), %% dict(concuerror_lid:lid(), instr()),
+          error_nxt = none              :: concuerror_lid:lid() | 'none',
           clock_map = empty_clock_map() :: clock_map(),
           preemptions = 0               :: non_neg_integer(),
           lid_trace = new_lid_trace()   :: queue() %% queue({transition(),
