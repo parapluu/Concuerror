@@ -4,7 +4,7 @@ To run the testsuite:
 
   1) To run all the tests simple execute `./runtests.py'.
      For every test results are saved in
-     `results/<suite_name>/<test_name>-<function_name>-<preem_bound>.txt'
+     `results/<suite_name>/results/<test_name>-<function_name>-<preem_bound>.txt'
 
   2) To run all the tests from specific suites (SUITE1, SUITE2)
      execute `./runtests.py suites/SUITE1/src/* suites/SUITE2/src/*'.
