@@ -197,6 +197,8 @@ next_lid(ParentLid, Children) ->
 
 to_string({dead, Lid}) ->
     lists:flatten(io_lib:format("~s (dead)",[to_string(Lid)]));
+to_string({name, Name}) when is_atom(Name)->
+    lists:flatten(io_lib:format("named '~p'", [Name]));
 to_string(Lid) ->
     LidString = lists:flatten(io_lib:format("P~p", [Lid])),
     NewLidString = re:replace(LidString, "0", ".", [global]),

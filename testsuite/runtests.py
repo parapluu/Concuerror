@@ -31,7 +31,7 @@ def runTest(test):
         files = [test]
     # Create a dir to save the results
     try:
-        os.makedirs(results + "/" + suite + "/results")
+        os.makedirs(results + "/" + suite + "/vanilla")
     except OSError:
         pass
     # Compile it
@@ -67,12 +67,12 @@ def runScenario(suite, name, modn, funn, preb, files):
     global total_failed
     sema.acquire()
     # Run concuerror
-    os.system("%s --target %s %s --files %s --output %s/%s/results/%s-%s-%s.txt --preb %s --quiet"
+    os.system("%s --dpor_fake --target %s %s --files %s --output %s/%s/vanilla/%s-%s-%s.txt --preb %s --quiet"
             % (concuerror, modn, funn, ' '.join(files), results, suite, name,
                funn, preb, preb))
     # Compare the results
-    a = "%s/suites/%s/results/%s-%s-%s.txt" % (dirname, suite, name, funn, preb)
-    b = "%s/%s/results/%s-%s-%s.txt" % (results, suite, name, funn, preb)
+    a = "%s/suites/%s/vanilla/%s-%s-%s.txt" % (dirname, suite, name, funn, preb)
+    b = "%s/%s/vanilla/%s-%s-%s.txt" % (results, suite, name, funn, preb)
     equalRes = equalResults(a, b)
     sema.release()
     # Print the results
@@ -130,7 +130,7 @@ results = dirname + "/results"
 
 # Cleanup temp files
 os.system("find %s -name '*.beam' -exec rm {} \;" % dirname)
-os.system("rm -rf %s/*" % results)
+#os.system("rm -rf %s/*" % results)
 
 # Compile scenarios.erl
 os.system("erlc %s/scenarios.erl" % dirname)
@@ -144,7 +144,12 @@ else:
     tests = glob.glob(dirname + "/suites/*/src/*")
 
 # Print header
-print "Concuerror's Testsuite\n"
+# How many threads we want (default 4)
+threads = os.getenv("THREADS", "")
+if threads == "":
+    threads = "4"
+
+print "Concuerror's Testsuite (%d threads)\n" % int(threads)
 print "%-10s %-20s %-40s  %s" % \
         ("Suite", "Test", "(Function,  Preemption Bound)", "Result")
 print "---------------------------------------" + \
@@ -156,10 +161,6 @@ lock = Lock()
 total_tests = Value(c_int, 0, lock=False)
 total_failed = Value(c_int, 0, lock=False)
 
-# How many threads we want (default 4)
-threads = os.getenv("THREADS", "")
-if threads == "":
-    threads = "4"
 sema = BoundedSemaphore(int(threads))
 
 # For every test do

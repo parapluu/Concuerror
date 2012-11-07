@@ -1,0 +1,10 @@
+Checked 2 interleaving(s). 1 errors found.
+
+20840082
+Error type        : Deadlock
+Blocked processes : P1.1
+  Process P1 spawns and links to process P1.1
+  Process P1 exits (normal)
+  Process P1.1 sets flag `trap_exit` to `true`
+
+

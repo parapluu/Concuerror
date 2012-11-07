@@ -30,14 +30,14 @@ Details           : {badarg,[{erlang,register,[parent,<0.48.0>],[]}]}
   Process P1.1 exits ("Exception")
 
 
-82804109
+98220944
 Error type        : Exception
 Details           : {badarg,[{erlang,register,[child,<0.50.0>],[]}]}
   Process P1 spawns process P1.1
   Process P1.1 registers process P1.1 as `parent`
   Process P1.1 exits (normal)
   Process P1 registers process P1 as `parent`
-  Process P1 registers process P1.1 as `child`
+  Process P1 registers process P1.1 (dead) as `child`
   Process P1 exits ("Exception")
 
 

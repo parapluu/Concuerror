@@ -435,10 +435,14 @@ instrument_receive(Tree) ->
             Function = erl_syntax:atom(RepReceiveFun),
             Timeout = erl_syntax:receive_expr_timeout(Tree),
             HasNoTimeout = Timeout =:= none,
-            HasTimeoutAtom = erl_syntax:atom(not HasNoTimeout),
+            HasTimeoutExpr =
+                case HasNoTimeout of
+                    true -> erl_syntax:atom(infinity);
+                    false -> Timeout
+                end,
             RepReceive =
                 erl_syntax:application(Module, Function,
-                                       [FunExpr, HasTimeoutAtom]),
+                                       [FunExpr, HasTimeoutExpr]),
             %% Create new receive expression.
             NewReceive = erl_syntax:receive_expr(NewClauses),
             %% Result is begin rep_receive(...), NewReceive end.

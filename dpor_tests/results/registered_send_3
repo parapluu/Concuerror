@@ -1,6 +1,6 @@
 Checked 3 interleaving(s). 2 errors found.
 
-64019981
+22213138
 Error type        : Exception
 Details           : {badarg,[{erlang,register,[child,<0.48.0>],[]},
                              {registered_send_3,registered_send_3,0,[]}]}
@@ -8,11 +8,11 @@ Details           : {badarg,[{erlang,register,[child,<0.48.0>],[]},
   Process P1 sends message `ok` to process P1.1
   Process P1.1 receives message `ok` from process P1
   Process P1.1 exits (normal)
-  Process P1 registers process P1.1 as `child`
+  Process P1 registers process P1.1 (dead) as `child`
   Process P1 exits ("Exception")
 
 
-32539453
+133777353
 Error type        : Exception
 Details           : {badarg,[]}
   Process P1 spawns process P1.1
@@ -20,7 +20,7 @@ Details           : {badarg,[]}
   Process P1 registers process P1.1 as `child`
   Process P1.1 receives message `ok` from process P1
   Process P1.1 exits (normal)
-  Process P1 sends message `foo` to nonexisting process
+  Process P1 sends message `foo` to process named 'child'
   Process P1 exits ("Exception")
 
 

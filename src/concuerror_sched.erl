@@ -37,6 +37,7 @@
 -ifdef(F_DEBUG).
 -define(f_debug(A,B), concuerror_log:log(A,B)).
 -define(f_debug(A), concuerror_log:log(A,[])).
+-define(DEPTH, 10).
 -else.
 -define(f_debug(_A,_B), ok).
 -define(f_debug(A), ok).
@@ -330,11 +331,11 @@ explore(MightNeedReplayState) ->
                     NewState = report_error(Selected, State),
                     explore(NewState);
                 _Else ->
-                    ?f_debug("Plan: ~p\n",[Selected]),
+                    ?f_debug("Plan: ~P\n",[Selected, ?DEPTH]),
                     Next = wait_next(Lid, Cmd),
                     UpdState = update_trace(Selected, Next, State),
                     AllAddState = add_all_backtracks(UpdState),
-                    ?f_debug("Next: ~p\n",[Next]),
+                    ?f_debug("Next: ~P\n",[Next, ?DEPTH]),
                     NewState = add_some_next_to_backtrack(AllAddState),
                     explore(NewState)
             end;
@@ -342,7 +343,7 @@ explore(MightNeedReplayState) ->
             NewState = report_possible_deadlock(MightNeedReplayState),
             case finished(NewState) of
                 false -> explore(NewState);
-                true -> dpor_return(MightNeedReplayState)
+                true -> dpor_return(NewState)
             end
     end.
 
@@ -389,7 +390,7 @@ replay_lid_trace(N, Queue) ->
     {V, NewQueue} = queue:out(Queue),
     case V of
         {value, {{Lid, Command} = Transition, VC}} ->
-            ?f_debug(" ~-4w: ~p",[N, Transition]),
+            ?f_debug(" ~-4w: ~P",[N, Transition, ?DEPTH]),
             _ = wait_next(Lid, Command),
             ?f_debug("."),
             _ = handle_instruction_op(Transition),
@@ -402,23 +403,32 @@ replay_lid_trace(N, Queue) ->
     end.
 
 wait_next(Lid, Prev) ->
-    ok = resume(Lid),
+    continue(Lid),
     case Prev of
         {exit, {normal, _Info}} ->
             exited;
-        {Spawn, _} when Spawn =:= spawn; Spawn =:= spawn_link ->
+        {Spawn, _}
+          when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor ->
             %% This interruption happens to make sure that a child has an LID
             %% before the parent wants to do any operation with its PID.
-            ChildLid =
+            Replace =
                 receive
                     #sched{msg = spawned,
                            lid = Lid,
-                           misc = Pid,
+                           misc = Info,
                            type = prev} = Msg ->
-                        concuerror_lid:new(Pid, Lid)
+                        case Spawn =:= spawn_monitor of
+                            true ->
+                                {Pid, Ref} = Info,
+                                ChildLid = concuerror_lid:new(Pid, Lid),
+                                MonRef = concuerror_lid:ref_new(ChildLid, Ref),
+                                {ChildLid, MonRef};
+                            false ->
+                                concuerror_lid:new(Info, Lid)
+                        end
                 end,
-            resume(Lid),
-            self() ! Msg#sched{misc=ChildLid},
+            continue(Lid),
+            self() ! Msg#sched{misc=Replace},
             get_next(Lid);
         {ets, {new, _Options}} ->
             EtsLid =
@@ -427,7 +437,7 @@ wait_next(Lid, Prev) ->
                            type = prev} = Msg ->
                         concuerror_lid:ets_new(Tid)
                 end,
-            resume(Lid),
+            continue(Lid),
             self() ! Msg#sched{misc = EtsLid},
             get_next(Lid);
         {monitor, {TLid, _}} ->
@@ -437,17 +447,12 @@ wait_next(Lid, Prev) ->
                            misc = Ref, type = prev} = Msg ->
                         concuerror_lid:ref_new(TLid, Ref)
                 end,
-            resume(Lid),
+            continue(Lid),
             self() ! Msg#sched{misc = MonRef},
             get_next(Lid);
         _Other ->
             get_next(Lid)
     end.
-
-resume(Lid) ->
-    Pid = concuerror_lid:get_pid(Lid),
-    Pid ! #sched{msg = continue},
-    ok.
 
 get_next(Lid) ->
     receive
@@ -495,7 +500,7 @@ dependent({_Lid1, {ets, Op1}}, {_Lid2, {ets, Op2}}, false) ->
 
 %% Registering a table with the same name as an existing one.
 dependent({_Lid1, {ets, {new, [_Table, Name, Options]}}},
-          {_Lid2, {exit, {normal, {Tables, _Name}}}},
+          {_Lid2, {exit, {normal, {Tables, _Name, _Links}}}},
           _Swap) ->
     PublicNamedTables = [N || {_Lid, {ok, N}} <- Tables],
     lists:all(fun(X) -> X end,
@@ -505,7 +510,7 @@ dependent({_Lid1, {ets, {new, [_Table, Name, Options]}}},
 
 %% Table owners exits mess things up.
 dependent({_Lid1, {ets, {_Op, [Table|_Rest]}}},
-          {_Lid2, {exit, {normal, {Tables, _Name}}}},
+          {_Lid2, {exit, {normal, {Tables, _Name, _Links}}}},
           _Swap) ->
     lists:keymember(Table, 1, Tables);
 
@@ -518,7 +523,7 @@ dependent({_Lid1, {send, {_Orig, Lid, Msg}}}, {Lid, {'after', Fun}}, _Swap) ->
 
 %% Sending using name to a process that may exit and unregister.
 dependent({_Lid1, {send, {Orig, _Lid, _Msg}}},
-          {_Lid2, {exit, {normal, {_Tables, {ok, Orig}}}}}, _Swap) ->
+          {_Lid2, {exit, {normal, {_Tables, {ok, Orig}, _Links}}}}, _Swap) ->
     true;
 
 %% Send using name before process has registered itself.
@@ -542,13 +547,13 @@ dependent({_Lid1, {register, {_RegName, PLid}}},
     true;
 
 %% Register for a name that might be in use.
-dependent({_Lid1, {register, {RegName, _PLid}}},
-          {_Lid2, {exit, {normal, {_Tables, {ok, RegName}}}}}, _Swap) ->
+dependent({_Lid1, {register, {Name, _PLid}}},
+          {_Lid2, {exit, {normal, {_Tables, {ok, Name}, _Links}}}}, _Swap) ->
     true;
 
 %% Whereis using name before process has registered itself.
-dependent({_Lid1, {register, {RegName, _PLid}}},
-          {_Lid2, {whereis, RegName}}, _Swap) ->
+dependent({_Lid1, {register, {RegName, _PLid1}}},
+          {_Lid2, {whereis, {RegName, _PLid2}}}, _Swap) ->
     true;
 
 %% Process alive and exits
@@ -557,14 +562,19 @@ dependent({_Lid1, {is_process_alive, Lid}},
     true;
 
 %% Process registered and exits
-dependent({_Lid1, {whereis, RegName}},
-          {_Lid2, {exit, {normal, {_Tables, {ok, RegName}}}}}, _Swap) ->
+dependent({_Lid1, {whereis, {Name, _PLid1}}},
+          {_Lid2, {exit, {normal, {_Tables, {ok, Name}, _Links}}}}, _Swap) ->
     true;
 
 %% Demonitor and exit.
 dependent({_Lid, {demonitor, TLid}},
           {TLid, {exit, {normal, _Info}}}, _Swap) ->
     true;
+
+%% Trap exits flag and linked process exiting.
+dependent({Lid1, {process_flag, {trap_exit, _Value}}},
+          {_Lid2, {exit, {normal, {_Tables, _Name, Links}}}}, _Swap) ->
+    lists:member(Lid1, Links);
 
 %% Swap the two arguments if the test is not symmetric by itself.
 dependent(TransitionA, TransitionB, false) ->
@@ -643,8 +653,8 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, Flavor,
         case I > Clock andalso dependent(Transition, SI) of
             false -> {continue, ClockVector};
             true ->
-                ?f_debug("~4w: ~p ~p Clock ~p\n",
-                         [I, dependent(Transition, SI), SI, Clock]),
+                ?f_debug("~4w: ~p ~P Clock ~p\n",
+                         [I, dependent(Transition, SI), SI, ?DEPTH, Clock]),
                 [#trace_state{enabled = Enabled,
                               backtrack = Backtrack,
                               sleep_set = SleepSet} =
@@ -829,7 +839,7 @@ update_trace({Lid, _} = Selected, Next, State) ->
     ?f_debug("Happened before: ~p\n", [dict:to_list(UpdatedClockVector)]),
     replace_messages(Lid, UpdatedClockVector),
     PossiblyRewrittenSelected = InstrNewTraceTop#trace_state.last,
-    ?f_debug("Selected: ~p\n",[PossiblyRewrittenSelected]),
+    ?f_debug("Selected: ~P\n",[PossiblyRewrittenSelected, ?DEPTH]),
     NewLidTrace =
         queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
     {NewPrevTraceTop, NewTraceTop} =
@@ -900,18 +910,23 @@ handle_instruction(Transition, TraceTop) ->
     handle_instruction_al(Transition, TraceTop, Variables).
 
 handle_instruction_op({Lid, {Spawn, _Info}})
-  when Spawn =:= spawn; Spawn =:= spawn_link ->
+  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor ->
     ParentLid = Lid,
-    ChildLid =
+    Info =
         receive
             %% This is the replaced message
             #sched{msg = spawned, lid = ParentLid,
-                   misc = ChildLid0, type = prev} ->
-                ChildLid0
+                   misc = Info0, type = prev} ->
+                Info0
+        end,
+    ChildLid =
+        case Spawn =:= spawn_monitor of
+            true -> element(1, Info);
+            false -> Info
         end,
     ChildNextInstr = wait_next(ChildLid, init),
     flush_mailbox(),
-    {ChildLid, ChildNextInstr};
+    {Info, ChildNextInstr};
 handle_instruction_op({Lid, {'receive', _TagOrInfo}}) ->
     receive
         #sched{msg = 'receive', lid = Lid, misc = Details, type = prev} ->
@@ -929,6 +944,17 @@ handle_instruction_op({Lid, {monitor, {_TLid, _RefLid}}}) ->
         #sched{msg = monitor_ref, lid = Lid, misc = RefLid, type = prev} ->
             RefLid
     end;
+handle_instruction_op({Lid, {whereis, _Info}}) ->
+    receive
+        %% This is the replaced message
+        #sched{msg = whereis_res, lid = Lid, misc = WhereisRes, type = prev} ->
+            WhereisRes
+    end;
+handle_instruction_op({Lid, {exit, _Info}}) ->
+    receive
+        #sched{msg = exit, lid = Lid, misc = Info, type = prev} ->
+            Info
+    end;
 handle_instruction_op(_) ->
     flush_mailbox(),
     {}.
@@ -942,14 +968,21 @@ flush_mailbox() ->
             ok
     end.
 
-handle_instruction_al({Lid, {exit, {normal, _Info}}}, TraceTop, {}) ->
+handle_instruction_al({Lid, {exit, {normal, _OldInfo}}}, TraceTop, Info) ->
     #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
-    TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts};
+    NewLast = {Lid, {exit, {normal, Info}}},
+    TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts,
+                         last = NewLast};
 handle_instruction_al({Lid, {Spawn, unknown}}, TraceTop,
-                      {ChildLid, ChildNextInstr})
-  when Spawn =:= spawn; Spawn =:= spawn_link ->
+                      {Info, ChildNextInstr})
+  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor ->
+    ChildLid =
+        case Spawn =:= spawn_monitor of
+            true -> element(1, Info);
+            false -> Info
+        end,
     #trace_state{enabled = Enabled, blocked = Blocked,
                  nexts = Nexts, pollable = Pollable,
                  clock_map = ClockMap} = TraceTop,
@@ -960,7 +993,7 @@ handle_instruction_al({Lid, {Spawn, unknown}}, TraceTop,
     {NewPollable, NewEnabled, NewBlocked} =
         update_lid_enabled(ChildLid, ChildNextInstr, Pollable,
                            MaybeEnabled, Blocked),
-    NewLast = {Lid, {Spawn, ChildLid}},
+    NewLast = {Lid, {Spawn, Info}},
     TraceTop#trace_state{last = NewLast,
                          clock_map = NewClockMap,
                          enabled = NewEnabled,
@@ -985,9 +1018,15 @@ handle_instruction_al({Lid, {ets, {new, [unknown, Name, Options]}}},
                       TraceTop, EtsLid) ->
     NewLast = {Lid, {ets, {new, [EtsLid, Name, Options]}}},
     TraceTop#trace_state{last = NewLast};
+handle_instruction_al({Lid, {whereis, {Name, unknown}}},
+                      TraceTop, WhereisRes) ->
+    NewLast = {Lid, {whereis, {Name, WhereisRes}}},
+    TraceTop#trace_state{last = NewLast};
 handle_instruction_al({Lid, {monitor, {TLid, unknown}}}, TraceTop, RefLid) ->
     NewLast = {Lid, {monitor, {TLid, RefLid}}},
     TraceTop#trace_state{last = NewLast};
+handle_instruction_al({_Lid, {halt, _Status}}, TraceTop, {}) ->
+    TraceTop#trace_state{enabled = [], blocked = [], error_nxt = none};
 handle_instruction_al(_Transition, TraceTop, {}) ->
     TraceTop.
 
@@ -1006,8 +1045,7 @@ poll_all(Lid, {OldTraceTop, TraceTop} = Original) ->
         {'receive', Info} = Res when
               Info =:= unblocked;
               Info =:= had_after ->
-            ?f_debug("  Poll ~p: ",[Lid]),
-            ?f_debug("~p\n",[Res]),
+            ?f_debug("  Poll ~p: ~p\n",[Lid, Res]),
             #trace_state{pollable = Pollable,
                          blocked = Blocked,
                          enabled = Enabled,
@@ -1050,26 +1088,26 @@ add_some_next_to_backtrack(State) ->
     ?f_debug("Pick random: Enabled: ~w Sleeping: ~w\n",
              [Enabled, SleepSet]),
     Backtrack =
-        case Flavor of
-            fake ->
-                case ordsets:is_element(Lid, Enabled) of
-                    true when Preemptions =:= PreBound ->
-                        [Lid];
-                    _Else -> Enabled
-                end;
-            _Other ->
-                case ordsets:subtract(Enabled, SleepSet) of
-                    [] -> [];
-                    [H|_] = Candidates ->
-                        case ErrorNext of
-                            none ->
+        case ErrorNext of
+            none ->
+                case Flavor of
+                    fake ->
+                        case ordsets:is_element(Lid, Enabled) of
+                            true when Preemptions =:= PreBound ->
+                                [Lid];
+                            _Else -> Enabled
+                        end;
+                    _Other ->
+                        case ordsets:subtract(Enabled, SleepSet) of
+                            [] -> [];
+                            [H|_] = Candidates ->
                                 case ordsets:is_element(Lid, Candidates) of
                                     true -> [Lid];
                                     false -> [H]
-                                end;
-                            Else -> [Else]
+                                end
                         end
-                end
+                end;
+            Else -> [Else]
         end,
     ?f_debug("Picked: ~w\n",[Backtrack]),
     NewTraceTop = TraceTop#trace_state{backtrack = Backtrack},
@@ -1077,7 +1115,7 @@ add_some_next_to_backtrack(State) ->
 
 report_error(Transition, State) ->
     #dpor_state{trace = [TraceTop|_], tickets = Tickets} = State,
-    ?f_debug("ERROR!\n~p\n",[Transition]),
+    ?f_debug("ERROR!\n~P\n",[Transition, ?DEPTH]),
     Error = convert_error_info(Transition),
     LidTrace = queue:in({Transition, foo}, TraceTop#trace_state.lid_trace),
     Ticket = create_ticket(Error, LidTrace),
@@ -1093,25 +1131,33 @@ create_ticket(Error, LidTrace) ->
     concuerror_log:show_error(Ticket),
     Ticket.
 
-convert_error_trace({Lid, {error, [ErrorOrThrow|_]}}, Procs)
+convert_error_trace({Lid, {error, [ErrorOrThrow,Kind|_]}}, Procs)
   when ErrorOrThrow =:= error; ErrorOrThrow =:= throw ->
-    {{exit, Lid, "Exception"}, Procs};
+    Msg =
+        concuerror_error:type(concuerror_error:new({Kind, foo})),    
+    {{exit, Lid, Msg}, Procs};
 convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
     NewProcs =
         case Instr of
-            Spawn when Spawn =:= spawn; Spawn =:= spawn_link ->
-                sets:add_element(Extra, Procs);
+            Spawn when Spawn =:= spawn; Spawn =:= spawn_link;
+                       Spawn =:= spawn_monitor ->
+                NewLid =
+                    case Spawn =:= spawn_monitor of
+                        true -> element(1, Extra);
+                        false -> Extra
+                    end,
+                sets:add_element(NewLid, Procs);
             exit   -> sets:del_element(Lid, Procs);
             _ -> Procs
         end,
     NewInstr =
         case Instr of
             send ->
-                {_Orig, Dest, Msg} = Extra,
+                {Orig, Dest, Msg} = Extra,
                 NewDest =
-                    case sets:is_element(Dest, Procs) of
-                        true -> Dest;
-                        false -> not_found %{dead, Dest}
+                    case is_atom(Orig) of
+                        true -> {name, Orig};
+                        false -> check_lid_liveness(Dest, NewProcs)
                     end,
                 {send, Lid, NewDest, Msg};
             'receive' ->
@@ -1123,15 +1169,21 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 {'receive', Lid, Origin, Msg};
             'after' ->
                 {'after', Lid};
-            register ->
-                {Name, RLid} = Extra,
-                {register, Lid, Name, RLid};
-            OneArg when OneArg =:= whereis;
-                        OneArg =:= unregister;
-                        OneArg =:= is_process_alive ->
-                {OneArg, Lid, Extra};
+            is_process_alive ->
+                {is_process_alive, Lid, check_lid_liveness(Extra, NewProcs)};
+            TwoArg when TwoArg =:= register;
+                        TwoArg =:= whereis ->
+                {Name, TLid} = Extra,
+                {TwoArg, Lid, Name, check_lid_liveness(TLid, NewProcs)};
+            process_flag ->
+                {Arg1, Arg2} = Extra,
+                {process_flag, Lid, Arg1, Arg2};
             exit ->
                 {exit, Lid, normal};
+            Monitor when Monitor =:= monitor;
+                         Monitor =:= spawn_monitor ->
+                {TLid, _RefLid} = Extra,
+                {Monitor, Lid, check_lid_liveness(TLid, NewProcs)};
             ets ->
                 case Extra of
                     {new, [_EtsLid, Name, Options]} ->
@@ -1150,6 +1202,15 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
         end,
     {NewInstr, NewProcs}.
 
+
+check_lid_liveness(not_found, _Live) ->
+    not_found;
+check_lid_liveness(Lid, Live) ->
+    case sets:is_element(Lid, Live) of
+        true -> Lid;
+        false -> {dead, Lid}
+    end.
+
 convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}})->
     NewType =
         case Kind of
@@ -1157,7 +1218,13 @@ convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}})->
             throw -> {nocatch, Type};
             exit -> Type
         end,
-    {exception, {NewType, Stacktrace}}.
+    {Tag, Details} = concuerror_error:new({NewType, foo}),
+    Info =
+        case Tag of
+            exception -> {NewType, Stacktrace};
+            assertion_violation -> Details
+        end,
+    {Tag, Info}.
 
 report_possible_deadlock(State) ->
     #dpor_state{trace = [TraceTop|Trace], tickets = Tickets} = State,
@@ -1753,16 +1820,11 @@ wait_poll_or_continue() ->
         #sched{msg = vector, lid = LID, misc = VC, type = async}).
 
 wait_poll_or_continue(Msg) ->
-    {message_queue_len, Msgs} = process_info(self(), message_queue_len),
     receive
         #sched{msg = continue} -> Msg;
         #sched{msg = poll} -> poll;
         ?VECTOR_MSG(Lid, VC) ->
-            {message_queue_len, NewMsgs} = process_info(self(), message_queue_len),
-            case NewMsgs > Msgs of
-                true -> instrument_my_messages(Lid, VC);
-                false -> ok
-            end,
+            instrument_my_messages(Lid, VC),
             notify(vector, ok, async),
             wait_poll_or_continue(Msg)
     end.

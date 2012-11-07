@@ -37,7 +37,8 @@
          rep_spawn_link_dpor/1, rep_spawn_link_dpor/3]).
 
 -export([rep_link_dpor/1, rep_unlink_dpor/1,
-         rep_spawn_monitor_dpor/1, rep_process_flag_dpor/2]).
+         rep_spawn_monitor_dpor/1, rep_spawn_monitor_dpor/3,
+         rep_process_flag_dpor/2]).
 
 -export([rep_receive_dpor/2, rep_receive_block_dpor/0,
          rep_after_notify_dpor/0, rep_receive_notify_dpor/3,
@@ -52,6 +53,8 @@
          rep_whereis_dpor/1]).
 
 -export([rep_monitor_dpor/2, rep_demonitor_dpor/1, rep_demonitor_dpor/2]).
+
+-export([rep_halt_dpor/0, rep_halt_dpor/1]).
 
 -include("gen.hrl").
 
@@ -71,24 +74,32 @@
           fun rep_demonitor_dpor/1},
          {{erlang, demonitor, 2}, fun rep_demonitor/2,
           fun rep_demonitor_dpor/2},
-         {{erlang, halt, 0}, fun rep_halt/0},
-         {{erlang, halt, 1}, fun rep_halt/1},
+         {{erlang, halt, 0}, fun rep_halt/0,
+          fun rep_halt_dpor/0},
+         {{erlang, halt, 1}, fun rep_halt/1,
+          fun rep_halt_dpor/1},
          {{erlang, is_process_alive, 1}, fun rep_is_process_alive/1,
           fun rep_is_process_alive_dpor/1},
-         {{erlang, link, 1}, fun rep_link/1, fun rep_link_dpor/1},
+         {{erlang, link, 1}, fun rep_link/1,
+          fun rep_link_dpor/1},
          {{erlang, monitor, 2}, fun rep_monitor/2,
           fun rep_monitor_dpor/2},
-         {{erlang, process_flag, 2}, fun rep_process_flag/2},
+         {{erlang, process_flag, 2}, fun rep_process_flag/2,
+          fun rep_process_flag_dpor/2},
          {{erlang, register, 2}, fun rep_register/2,
           fun rep_register_dpor/2},
-         {{erlang, spawn, 1}, fun rep_spawn/1, fun rep_spawn_dpor/1},
-         {{erlang, spawn, 3}, fun rep_spawn/3, fun rep_spawn_dpor/3},
+         {{erlang, spawn, 1}, fun rep_spawn/1,
+          fun rep_spawn_dpor/1},
+         {{erlang, spawn, 3}, fun rep_spawn/3,
+          fun rep_spawn_dpor/3},
          {{erlang, spawn_link, 1}, fun rep_spawn_link/1,
           fun rep_spawn_link_dpor/1},
          {{erlang, spawn_link, 3}, fun rep_spawn_link/3,
           fun rep_spawn_link_dpor/3},
-         {{erlang, spawn_monitor, 1}, fun rep_spawn_monitor/1},
-         {{erlang, spawn_monitor, 3}, fun rep_spawn_monitor/3},
+         {{erlang, spawn_monitor, 1}, fun rep_spawn_monitor/1,
+          fun rep_spawn_monitor_dpor/1},
+         {{erlang, spawn_monitor, 3}, fun rep_spawn_monitor/3,
+          fun rep_spawn_monitor_dpor/3},
          {{erlang, spawn_opt, 2}, fun rep_spawn_opt/2},
          {{erlang, spawn_opt, 4}, fun rep_spawn_opt/4},
          {{erlang, unlink, 1}, fun rep_unlink/1,
@@ -171,8 +182,18 @@ rep_demonitor(Ref, Opts) ->
 -spec rep_demonitor_dpor(reference(), ['flush' | 'info']) -> 'true'.
 
 rep_demonitor_dpor(Ref, Opts) ->
-    %% FIXME: Consume maybe instrumented DOWN message on flush.
-    concuerror_sched:notify(demonitor, {?LID_FROM_PID(Ref), Opts}),
+    concuerror_sched:notify(demonitor, concuerror_lid:lookup_ref_lid(Ref)),
+    case lists:member(flush, Opts) of
+        true ->
+            receive
+                {?INSTR_MSG, _, _, {_, Ref, _, _, _}} ->
+                    true
+            after 0 ->
+                    true
+            end;
+        false ->
+            true
+    end,
     demonitor(Ref, Opts).
 
 %% @spec: rep_halt() -> no_return()
@@ -184,6 +205,11 @@ rep_demonitor_dpor(Ref, Opts) ->
 rep_halt() ->
     concuerror_sched:notify(halt, empty).
 
+-spec rep_halt_dpor() -> no_return().
+
+rep_halt_dpor() ->
+    concuerror_sched:notify(halt, empty).
+
 %% @spec: rep_halt() -> no_return()
 %% @doc: Replacement for `halt/1'.
 %%
@@ -191,6 +217,11 @@ rep_halt() ->
 -spec rep_halt(non_neg_integer() | string()) -> no_return().
 
 rep_halt(Status) ->
+    concuerror_sched:notify(halt, Status).
+
+-spec rep_halt_dpor(non_neg_integer() | string()) -> no_return().
+
+rep_halt_dpor(Status) ->
     concuerror_sched:notify(halt, Status).
 
 %% @spec: rep_is_process_alive(pid()) -> boolean()
@@ -225,7 +256,10 @@ rep_link(Pid) ->
 -spec rep_link_dpor(pid() | port()) -> 'true'.
 
 rep_link_dpor(Pid) ->
-    concuerror_sched:notify(link, Pid),
+    case ?LID_FROM_PID(Pid) of
+        not_found -> ok;
+        PLid -> concuerror_sched:notify(link, PLid)
+    end,
     link(Pid).
 
 %% @spec: rep_monitor('process', pid() | {atom(), node()} | atom()) ->
@@ -289,6 +323,13 @@ rep_process_flag(Flag, Value) ->
     process_flag(Flag, Value).
 
 %% STUB
+rep_process_flag_dpor(trap_exit = Flag, Value) ->
+    {trap_exit, OldValue} = process_info(self(), trap_exit),
+    case Value =:= OldValue of
+        true -> ok;
+        false -> concuerror_sched:notify(process_flag, {Flag, Value})
+    end,
+    process_flag(Flag, Value);
 rep_process_flag_dpor(Flag, Value) ->
     process_flag(Flag, Value).
 
@@ -397,8 +438,8 @@ rep_receive_loop_dpor(Act, Fun, HasTimeout) ->
                 block ->
                     NewAct =
                         case HasTimeout of
-                            false -> concuerror_sched:notify('receive', blocked);
-                            true ->
+                            infinity -> concuerror_sched:notify('receive', blocked);
+                            _ ->
                                 NewFun =
                                     fun(Msg) ->
                                         case rep_receive_match(Fun, [Msg]) of
@@ -412,8 +453,8 @@ rep_receive_loop_dpor(Act, Fun, HasTimeout) ->
                 continue ->
                     Tag =
                         case HasTimeout of
-                            false -> unblocked;
-                            true -> had_after
+                            infinity -> unblocked;
+                            _ -> had_after
                         end,
                     continue = concuerror_sched:notify('receive', Tag),
                     ok
@@ -424,7 +465,7 @@ rep_receive_loop_dpor(Act, Fun, HasTimeout) ->
 
 rep_receive_block_dpor() ->
     Fun = fun(_Message) -> block end,
-    rep_receive_dpor(Fun, true).
+    rep_receive_dpor(Fun, infinity).
 
 -spec rep_after_notify_dpor() -> 'ok'.
 
@@ -546,15 +587,24 @@ rep_spawn(Fun) ->
 -spec rep_spawn_dpor(function()) -> pid().
 
 rep_spawn_dpor(Fun) ->
+    spawn_center_dpor(spawn, Fun).
+
+spawn_center_dpor(Kind, Fun) ->
+    Spawner =
+        case Kind of
+            spawn -> fun spawn/1;
+            spawn_link -> fun spawn_link/1;
+            spawn_monitor -> fun spawn_monitor/1                              
+        end,
     case ?LID_FROM_PID(self()) of
-        not_found -> spawn(Fun);
+        not_found -> Spawner(Fun);
         _Lid ->
-            concuerror_sched:notify(spawn, unknown),
-            Pid = spawn(fun() -> spawn_fun_wrapper(Fun) end),
-            concuerror_sched:notify(spawned, Pid, prev),
+            concuerror_sched:notify(Kind, unknown),
+            Result = Spawner(fun() -> spawn_fun_wrapper(Fun) end),
+            concuerror_sched:notify(spawned, Result, prev),
             %% Wait before using the PID to be sure that an LID is assigned
             concuerror_sched:wait(),
-            Pid
+            Result
     end.
 
 -spec spawn_fun_wrapper(function()) -> term().
@@ -567,7 +617,9 @@ spawn_fun_wrapper(Fun) ->
     catch
         exit:normal ->
             MyInfo = find_my_info(),
-            concuerror_sched:notify(exit, {normal, MyInfo});
+            concuerror_sched:notify(exit, {normal, MyInfo}),
+            MyRealInfo = find_my_info(),
+            concuerror_sched:notify(exit, MyRealInfo, prev);
         Class:Type ->
             concuerror_sched:notify(error,[Class,Type,erlang:get_stacktrace()]),
             case Class of
@@ -580,7 +632,8 @@ spawn_fun_wrapper(Fun) ->
 find_my_info() ->
     MyEts = find_my_ets_tables(),
     MyName = find_my_registered_name(),
-    {MyEts, MyName}.        
+    MyLinks = find_my_links(),
+    {MyEts, MyName, MyLinks}.
 
 find_my_ets_tables() ->
     Self = self(),
@@ -596,11 +649,15 @@ find_my_ets_tables() ->
      end || TID <- ets:all(), Self =:= ets:info(TID, owner)].
 
 find_my_registered_name() ->
-    Self = self(),
-    case process_info(Self, registered_name) of
+    case process_info(self(), registered_name) of
         [] -> none;
         {registered_name, Name} -> {ok, Name}
     end.
+
+find_my_links() ->
+    {links, AllPids} = process_info(self(), links),
+    AllLids = [?LID_FROM_PID(Pid) || Pid <- AllPids],
+    [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].                  
 
 %% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn/3'.
@@ -636,16 +693,7 @@ rep_spawn_link(Fun) ->
 -spec rep_spawn_link_dpor(function()) -> pid().
 
 rep_spawn_link_dpor(Fun) ->
-    case ?LID_FROM_PID(self()) of
-        not_found -> spawn(Fun);
-        _Lid ->
-            concuerror_sched:notify(spawn_link, unknown),
-            Pid = spawn_link(fun() -> spawn_fun_wrapper(Fun) end),
-            concuerror_sched:notify(spawned, Pid, prev),
-            %% Wait before using the PID to be sure that an LID is assigned
-            concuerror_sched:wait(),
-            Pid
-    end.
+    spawn_center_dpor(spawn_link, Fun).
 
 %% @spec rep_spawn_link(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn_link/3'.
@@ -682,7 +730,7 @@ rep_spawn_monitor(Fun) ->
 
 %% STUB
 rep_spawn_monitor_dpor(Fun) ->
-    spawn_monitor(Fun).
+    spawn_center_dpor(spawn_monitor, Fun).
 
 %% @spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}
 %% @doc: Replacement for `spawn_monitor/3'.
@@ -693,6 +741,13 @@ rep_spawn_monitor_dpor(Fun) ->
 rep_spawn_monitor(Module, Function, Args) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn_monitor(Fun).
+
+-spec rep_spawn_monitor_dpor(atom(), atom(), [term()]) -> {pid(), reference()}.
+
+%% STUB
+rep_spawn_monitor_dpor(Module, Function, Args) ->
+    Fun = fun() -> apply(Module, Function, Args) end,
+    rep_spawn_monitor_dpor(Fun).
 
 %% @spec rep_spawn_opt(function(),
 %%       ['link' | 'monitor' |
@@ -757,7 +812,10 @@ rep_unlink(Pid) ->
 -spec rep_unlink_dpor(pid() | port()) -> 'true'.
 
 rep_unlink_dpor(Pid) ->
-    concuerror_sched:notify(unlink, Pid),
+    case ?LID_FROM_PID(Pid) of
+        not_found -> ok;
+        PLid -> concuerror_sched:notify(unlink, PLid)
+    end,
     unlink(Pid).
 
 %% @spec rep_unregister(atom()) -> 'true'
@@ -791,8 +849,15 @@ rep_whereis(RegName) ->
 -spec rep_whereis_dpor(atom()) -> pid() | port() | 'undefined'.
 
 rep_whereis_dpor(RegName) ->
-    concuerror_sched:notify(whereis, RegName),
-    whereis(RegName).
+    concuerror_sched:notify(whereis, {RegName, unknown}),
+    R = whereis(RegName),
+    Value =
+        case R =:= undefined of
+            true -> not_found;
+            false -> ?LID_FROM_PID(R)
+        end,
+    concuerror_sched:notify(whereis_res, Value, prev),
+    R.
 
 %%%----------------------------------------------------------------------
 %%% ETS replacements
