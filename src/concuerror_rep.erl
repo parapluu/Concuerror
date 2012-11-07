@@ -154,7 +154,7 @@ rep_demonitor(Ref) ->
 -spec rep_demonitor_dpor(reference()) -> 'true'.
 
 rep_demonitor_dpor(Ref) ->
-    concuerror_sched:notify(demonitor, lid:lookup_ref_lid(Ref)),
+    concuerror_sched:notify(demonitor, concuerror_lid:lookup_ref_lid(Ref)),
     demonitor(Ref).
 
 %% @spec: rep_demonitor(reference(), ['flush' | 'info']) -> 'true'
