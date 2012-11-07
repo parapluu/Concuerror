@@ -266,7 +266,7 @@ interleave_outer_loop_ret(Tickets, RunCnt) ->
          }).
 
 init_tr() ->
-	{lid:root_lid(), init}.
+	{concuerror_lid:root_lid(), init}.
 
 empty_clock_map() -> dict:new().
 
