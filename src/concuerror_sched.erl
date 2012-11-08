@@ -37,7 +37,7 @@
 -ifdef(F_DEBUG).
 -define(f_debug(A,B), concuerror_log:log(A,B)).
 -define(f_debug(A), concuerror_log:log(A,[])).
--define(DEPTH, 10).
+-define(DEPTH, 12).
 -else.
 -define(f_debug(_A,_B), ok).
 -define(f_debug(A), ok).
@@ -402,55 +402,59 @@ replay_lid_trace(N, Queue) ->
             ok
     end.
 
+wait_next(Lid, {exit, {normal, _Info}}) ->
+    continue(Lid),
+    exited;
 wait_next(Lid, Prev) ->
     continue(Lid),
-    case Prev of
-        {exit, {normal, _Info}} ->
-            exited;
-        {Spawn, _}
-          when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor ->
-            %% This interruption happens to make sure that a child has an LID
-            %% before the parent wants to do any operation with its PID.
-            Replace =
-                receive
-                    #sched{msg = spawned,
-                           lid = Lid,
-                           misc = Info,
-                           type = prev} = Msg ->
-                        case Spawn =:= spawn_monitor of
-                            true ->
-                                {Pid, Ref} = Info,
-                                ChildLid = concuerror_lid:new(Pid, Lid),
-                                MonRef = concuerror_lid:ref_new(ChildLid, Ref),
-                                {ChildLid, MonRef};
-                            false ->
-                                concuerror_lid:new(Info, Lid)
-                        end
-                end,
+    Replace =
+        case Prev of
+            {Spawn, _Info}
+              when Spawn =:= spawn; Spawn =:= spawn_link;
+                   Spawn =:= spawn_monitor ->
+                {true,
+                 %% This interruption happens to make sure that a child has an
+                 %% LID before the parent wants to do any operation with its PID.
+                 receive
+                     #sched{msg = spawned,
+                            lid = Lid,
+                            misc = Info,
+                            type = prev} = Msg ->
+                         case Spawn =:= spawn_monitor of
+                             true ->
+                                 {Pid, Ref} = Info,
+                                 ChildLid = concuerror_lid:new(Pid, Lid),
+                                 MonRef = concuerror_lid:ref_new(ChildLid, Ref),
+                                 Msg#sched{misc = {ChildLid, MonRef}};
+                             false ->
+                                 Msg#sched{misc = concuerror_lid:new(Info, Lid)}
+                         end
+                 end};
+            {ets, {new, _Info}} ->
+                {true,
+                 receive
+                     #sched{msg = ets, lid = Lid, misc = {new, [Tid|Rest]},
+                            type = prev} = Msg ->
+                         NewMisc = {new, [concuerror_lid:ets_new(Tid)|Rest]},
+                         Msg#sched{misc = NewMisc}
+                 end};
+            {monitor, _Info} ->
+                {true,
+                 receive
+                     #sched{msg = monitor, lid = Lid, misc = {TLid, Ref},
+                            type = prev} = Msg ->
+                         NewMisc = {TLid, concuerror_lid:ref_new(TLid, Ref)},
+                         Msg#sched{misc = NewMisc}
+                 end};
+            _Other ->
+                false
+        end,
+    case Replace of
+        {true, NewMsg} ->
             continue(Lid),
-            self() ! Msg#sched{misc=Replace},
+            self() ! NewMsg,
             get_next(Lid);
-        {ets, {new, _Options}} ->
-            EtsLid =
-                receive
-                    #sched{msg = new_ets_lid, lid = Lid, misc = Tid,
-                           type = prev} = Msg ->
-                        concuerror_lid:ets_new(Tid)
-                end,
-            continue(Lid),
-            self() ! Msg#sched{misc = EtsLid},
-            get_next(Lid);
-        {monitor, {TLid, _}} ->
-            MonRef =
-                receive
-                    #sched{msg = monitor_ref, lid = Lid,
-                           misc = Ref, type = prev} = Msg ->
-                        concuerror_lid:ref_new(TLid, Ref)
-                end,
-            continue(Lid),
-            self() ! Msg#sched{misc = MonRef},
-            get_next(Lid);
-        _Other ->
+        false ->
             get_next(Lid)
     end.
 
@@ -462,7 +466,7 @@ get_next(Lid) ->
 
 may_have_dependencies({_Lid, {error, _}}) -> false;
 may_have_dependencies({_Lid, {Spawn, _}})
-  when Spawn =:= spawn; Spawn =:= spawn_link -> false;
+  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor -> false;
 may_have_dependencies({_Lid, {'receive', _}}) -> false;
 may_have_dependencies({_Lid, exited}) -> false;
 may_have_dependencies(_Else) -> true.
@@ -486,7 +490,6 @@ dependent({Lid, {unregister, RegName}}, B, false) ->
     dependent({Lid, {register, {RegName, make_ref()}}}, B, false);
 dependent(A, {Lid, {unregister, RegName}}, false) ->
     dependent(A, {Lid, {register, {RegName, make_ref()}}}, false);
-
 
 %% Sending requires at least a different message.
 dependent({_Lid1, {send, {_Orig1, Lid, Msg1}}},
@@ -566,15 +569,19 @@ dependent({_Lid1, {whereis, {Name, _PLid1}}},
           {_Lid2, {exit, {normal, {_Tables, {ok, Name}, _Links}}}}, _Swap) ->
     true;
 
-%% Demonitor and exit.
-dependent({_Lid, {demonitor, TLid}},
+%% Monitor/Demonitor and exit.
+dependent({_Lid, {Chain, TLid}},
+          {TLid, {exit, {normal, _Info}}}, _Swap)
+  when Chain =:= demonitor; Chain =:= link; Chain =:= unlink ->
+    true;
+dependent({_Lid, {monitor, {TLid, _MonRef}}},
           {TLid, {exit, {normal, _Info}}}, _Swap) ->
     true;
 
 %% Trap exits flag and linked process exiting.
-dependent({Lid1, {process_flag, {trap_exit, _Value}}},
-          {_Lid2, {exit, {normal, {_Tables, _Name, Links}}}}, _Swap) ->
-    lists:member(Lid1, Links);
+dependent({_Lid1, {process_flag, {trap_exit, _Value, Links}}},
+          {Lid2, {exit, {normal, {_Tables, _Name}}}}, _Swap) ->
+    lists:member(Lid2, Links);
 
 %% Swap the two arguments if the test is not symmetric by itself.
 dependent(TransitionA, TransitionB, false) ->
@@ -927,32 +934,18 @@ handle_instruction_op({Lid, {Spawn, _Info}})
     ChildNextInstr = wait_next(ChildLid, init),
     flush_mailbox(),
     {Info, ChildNextInstr};
-handle_instruction_op({Lid, {'receive', _TagOrInfo}}) ->
-    receive
-        #sched{msg = 'receive', lid = Lid, misc = Details, type = prev} ->
-            Details
-    end;
-handle_instruction_op({Lid, {ets, {new, [_Lid, _Name, _Options]}}}) ->
+handle_instruction_op({Lid, {ets, {new, _Info}}}) ->
     receive
         %% This is the replaced message
-        #sched{msg = new_ets_lid, lid = Lid, misc = EtsLid, type = prev} ->
-            EtsLid
+        #sched{msg = ets, lid = Lid, misc = {new, Info}, type = prev} ->
+            Info
     end;
-handle_instruction_op({Lid, {monitor, {_TLid, _RefLid}}}) ->
+handle_instruction_op({Lid, {Updatable, _Info}})
+  when Updatable =:= exit; Updatable =:= send; Updatable =:= whereis;
+       Updatable =:= monitor; Updatable =:= 'receive';
+       Updatable =:= process_flag ->
     receive
-        %% This is the replaced message
-        #sched{msg = monitor_ref, lid = Lid, misc = RefLid, type = prev} ->
-            RefLid
-    end;
-handle_instruction_op({Lid, {whereis, _Info}}) ->
-    receive
-        %% This is the replaced message
-        #sched{msg = whereis_res, lid = Lid, misc = WhereisRes, type = prev} ->
-            WhereisRes
-    end;
-handle_instruction_op({Lid, {exit, _Info}}) ->
-    receive
-        #sched{msg = exit, lid = Lid, misc = Info, type = prev} ->
+        #sched{msg = Updatable, lid = Lid, misc = Info, type = prev} ->
             Info
     end;
 handle_instruction_op(_) ->
@@ -968,11 +961,11 @@ flush_mailbox() ->
             ok
     end.
 
-handle_instruction_al({Lid, {exit, {normal, _OldInfo}}}, TraceTop, Info) ->
+handle_instruction_al({Lid, {exit, _OldInfo}}, TraceTop, Info) ->
     #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
-    NewLast = {Lid, {exit, {normal, Info}}},
+    NewLast = {Lid, {exit, Info}},
     TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts,
                          last = NewLast};
 handle_instruction_al({Lid, {Spawn, unknown}}, TraceTop,
@@ -1014,16 +1007,13 @@ handle_instruction_al({Lid, {'receive', Tag}}, TraceTop, {From, CV, Msg}) ->
     NewVector = max_cv(Vector, CV),
     NewClockMap = dict:store(Lid, NewVector, ClockMap),
     TraceTop#trace_state{last = NewLast, clock_map = NewClockMap};
-handle_instruction_al({Lid, {ets, {new, [unknown, Name, Options]}}},
-                      TraceTop, EtsLid) ->
-    NewLast = {Lid, {ets, {new, [EtsLid, Name, Options]}}},
+handle_instruction_al({Lid, {ets, {new, _Info}}}, TraceTop, Info) ->
+    NewLast = {Lid, {ets, {new, Info}}},
     TraceTop#trace_state{last = NewLast};
-handle_instruction_al({Lid, {whereis, {Name, unknown}}},
-                      TraceTop, WhereisRes) ->
-    NewLast = {Lid, {whereis, {Name, WhereisRes}}},
-    TraceTop#trace_state{last = NewLast};
-handle_instruction_al({Lid, {monitor, {TLid, unknown}}}, TraceTop, RefLid) ->
-    NewLast = {Lid, {monitor, {TLid, RefLid}}},
+handle_instruction_al({Lid, {Updatable, _Info}}, TraceTop, Info)
+  when Updatable =:= send; Updatable =:= whereis; Updatable =:= monitor;
+       Updatable =:= process_flag ->
+    NewLast = {Lid, {Updatable, Info}},
     TraceTop#trace_state{last = NewLast};
 handle_instruction_al({_Lid, {halt, _Status}}, TraceTop, {}) ->
     TraceTop#trace_state{enabled = [], blocked = [], error_nxt = none};
@@ -1176,8 +1166,8 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 {Name, TLid} = Extra,
                 {TwoArg, Lid, Name, check_lid_liveness(TLid, NewProcs)};
             process_flag ->
-                {Arg1, Arg2} = Extra,
-                {process_flag, Lid, Arg1, Arg2};
+                {trap_exit, Value, _Links} = Extra,
+                {process_flag, Lid, trap_exit, Value};
             exit ->
                 {exit, Lid, normal};
             Monitor when Monitor =:= monitor;

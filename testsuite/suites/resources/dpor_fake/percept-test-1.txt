@@ -1,0 +1,2408 @@
+Checked 386 interleaving(s). 74 errors found.
+
+125687566
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.915.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+22961400
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.924.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+115457992
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.919.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+99947298
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.841.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+92540281
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+1269959
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.816.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2 sends message `{action,stop}` to process P1.1.1 (dead)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+2863552
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.636.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.1.1 receives no matching messages
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.1.1 exits (normal)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+77664526
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.1.1 receives no matching messages
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+128412236
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.451.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.1.1 receives no matching messages
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+39076374
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.1.1 receives no matching messages
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+50424941
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.1.1 receives no matching messages
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+83507807
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+85619633
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+50560177
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+72301798
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+49709106
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+16132746
+Error type        : Exception
+Details           : {badarg,[{erlang,unregister,[percept_db],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+81393182
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.142.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives message `{action,stop}` from process P1.2
+  Process P1.1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+72909740
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.152.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives message `{action,stop}` from process P1.2
+  Process P1.1.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+15462603
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.147.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+56617990
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+90192369
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives message `{action,stop}` from process P1.2
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+92791003
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+60262706
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+64640887
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+118771426
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+21594796
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+40642650
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+40863223
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+9895481
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+46879925
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+35917766
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 requests the pid of process `percept_db` (P1.1.1)
+  Process P1.2 unregisters process `percept_db`
+  Process P1.2 sends message `{action,stop}` to process P1.1.1
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+91926559
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.900.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+31689878
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.895.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+22606593
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.910.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+27336192
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.890.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+27995761
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.930.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+62908870
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1828.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+78876559
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1823.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+109783143
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1818.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+104170011
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1799.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+110197558
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+28994128
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1774.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1 sends message `{action,stop}` to process P1.2.1 (dead)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+12558376
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1594.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.2.1 receives no matching messages
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.2.1 exits (normal)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+92571980
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.2.1 receives no matching messages
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+85665009
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1414.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.2.1 receives no matching messages
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.2.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+32774278
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.2.1 receives no matching messages
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+83337056
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.2.1 receives no matching messages
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+129455149
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+107318833
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+88101130
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+120295399
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+36563833
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+33889285
+Error type        : Exception
+Details           : {badarg,[{erlang,unregister,[percept_db],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+55487017
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1100.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives message `{action,stop}` from process P1.1
+  Process P1.2.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+103298234
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1095.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+28296959
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.1110.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives message `{action,stop}` from process P1.1
+  Process P1.2.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.1 registers process P1.1.1 (dead) as `percept_db`
+  Process P1.1 exits ("Exception")
+
+
+81858103
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+6562838
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+8472254
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+109294003
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+43469071
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+116137432
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1 exits ("Exception")
+
+
+30507039
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+98182649
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+110840962
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+91289296
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+57596954
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+100829065
+Error type        : Exception
+Details           : {badarg,[{ets,new,
+                                  [pdb_info,
+                                   [named_table,private,{keypos,2},set]],
+                                  []},
+                             {percept,init_percept_db,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits (normal)
+  Process P1.1 requests the pid of process `percept_db` (P1.2.1)
+  Process P1.1 unregisters process `percept_db`
+  Process P1.1 sends message `{action,stop}` to process P1.2.1
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives message `{action,stop}` from process P1.1
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1 exits ("Exception")
+
+
+119757019
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.959.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+55170604
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.969.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.1.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.1.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.1.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.1.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.1.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.1.1 receives no matching messages
+  Process P1.1.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+71731359
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.964.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2.1: ets_new {pdb_info,[named_table,private,{keypos,2},set]}
+  Process P1.2.1: ets_new {pdb_scheduler,
+                            [named_table,private,{keypos,2},ordered_set]}
+  Process P1.2.1: ets_new {pdb_activity,[named_table,private,
+                                       {keypos,2},
+                                       ordered_set]}
+  Process P1.2.1: ets_new {pdb_system,[named_table,private,{keypos,1},set]}
+  Process P1.2.1: ets_new {pdb_warnings,[named_table,private,
+                                       {keypos,1},
+                                       ordered_set]}
+  Process P1.2.1 receives no matching messages
+  Process P1.2.1 exits (normal)
+  Process P1.2 registers process P1.2.1 (dead) as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+75556864
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.949.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.2 spawns process P1.2.1
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits ("Exception")
+
+
+102216871
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[percept_db,<0.940.0>],[]},
+                             {percept,start,0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.2 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 requests the pid of unregistered process `percept_db` (undefined)
+  Process P1.1 spawns process P1.1.1
+  Process P1.1 registers process P1.1.1 as `percept_db`
+  Process P1.1 exits (normal)
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 registers process P1.2.1 as `percept_db`
+  Process P1.2 exits ("Exception")
+
+

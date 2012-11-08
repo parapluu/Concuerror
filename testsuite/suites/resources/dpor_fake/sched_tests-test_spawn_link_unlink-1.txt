@@ -1,0 +1,24 @@
+Checked 2 interleaving(s). 2 errors found.
+
+2652909
+Error type        : Deadlock
+Blocked processes : P1.1
+  Process P1 spawns and links to process P1.1
+  Process P1 unlinks from process P1.1
+  Process P1.1 sets flag `trap_exit` to `true`
+  Process P1.1 sends message `foo` to process P1
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits (normal)
+
+
+35025811
+Error type        : Deadlock
+Blocked processes : P1.1
+  Process P1 spawns and links to process P1.1
+  Process P1.1 sets flag `trap_exit` to `true`
+  Process P1.1 sends message `foo` to process P1
+  Process P1 unlinks from process P1.1
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits (normal)
+
+

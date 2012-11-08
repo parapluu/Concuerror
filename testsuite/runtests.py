@@ -31,7 +31,7 @@ def runTest(test):
         files = [test]
     # Create a dir to save the results
     try:
-        os.makedirs(results + "/" + suite + "/vanilla")
+        os.makedirs(results + "/" + suite + "/dpor_fake")
     except OSError:
         pass
     # Compile it
@@ -67,12 +67,12 @@ def runScenario(suite, name, modn, funn, preb, files):
     global total_failed
     sema.acquire()
     # Run concuerror
-    os.system("%s --dpor_fake --target %s %s --files %s --output %s/%s/vanilla/%s-%s-%s.txt --preb %s --quiet"
+    os.system("%s --dpor --target %s %s --files %s --output %s/%s/dpor_fake/%s-%s-%s.txt --preb %s --quiet"
             % (concuerror, modn, funn, ' '.join(files), results, suite, name,
                funn, preb, preb))
     # Compare the results
-    a = "%s/suites/%s/vanilla/%s-%s-%s.txt" % (dirname, suite, name, funn, preb)
-    b = "%s/%s/vanilla/%s-%s-%s.txt" % (results, suite, name, funn, preb)
+    a = "%s/suites/%s/dpor_fake/%s-%s-%s.txt" % (dirname, suite, name, funn, preb)
+    b = "%s/%s/dpor_fake/%s-%s-%s.txt" % (results, suite, name, funn, preb)
     equalRes = equalResults(a, b)
     sema.release()
     # Print the results

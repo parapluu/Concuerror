@@ -3,18 +3,25 @@
 -export([register_again/0]).
 
 register_again() ->
-    register(bank, self()),
-    spawn(fun() -> bank ! money end),
-    spawn(fun() ->
-                  unregister(bank),
-                  register(bank, self()),
-                  receive
-                      money -> robber_got_money
-                  after
-                      0 -> robbery_failed
-                  end
-          end),
+    Bank = self(),
+    register(bank, Bank),
+    _Customer = spawn(fun() -> bank ! money end),
+    God =
+        spawn(fun() ->
+                      receive
+                          _Msg -> money_changed_hands
+                      end
+              end),
+    _Robber =
+        spawn(fun() ->
+                      unregister(bank),
+                      register(bank, self()),
+                      receive
+                          money -> God ! robber_got_money
+                      after
+                          0 -> robbery_failed
+                      end
+              end),
     receive
-        money -> bank_got_money
+        money -> God ! bank_got_money
     end.
-                  

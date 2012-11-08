@@ -285,7 +285,7 @@ rep_monitor_dpor(Type, Item) ->
         Lid ->
             concuerror_sched:notify(monitor, {Lid, unknown}),
             Ref = monitor(Type, Item),
-            concuerror_sched:notify(monitor_ref, Ref, prev),
+            concuerror_sched:notify(monitor, {Lid, Ref}, prev),
             concuerror_sched:wait(),
             Ref
     end.
@@ -327,11 +327,20 @@ rep_process_flag_dpor(trap_exit = Flag, Value) ->
     {trap_exit, OldValue} = process_info(self(), trap_exit),
     case Value =:= OldValue of
         true -> ok;
-        false -> concuerror_sched:notify(process_flag, {Flag, Value})
+        false ->
+            PlannedLinks = find_my_links(),
+            concuerror_sched:notify(process_flag, {Flag, Value, PlannedLinks}),
+            Links = find_my_links(),
+            concuerror_sched:notify(process_flag, {Flag, Value, Links}, prev)
     end,
     process_flag(Flag, Value);
 rep_process_flag_dpor(Flag, Value) ->
     process_flag(Flag, Value).
+
+find_my_links() ->
+    {links, AllPids} = process_info(self(), links),
+    AllLids = [?LID_FROM_PID(Pid) || Pid <- AllPids],
+    [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].                  
 
 %% @spec rep_receive(fun((function()) -> term())) -> term()
 %% @doc: Function called right before a receive statement.
@@ -539,9 +548,10 @@ rep_send_dpor(Dest, Msg) ->
             %% It will be reported at the receive point.
             Dest ! Msg;
         _SelfLid ->
-            NewDest = find_pid(Dest),
-            NewLid = ?LID_FROM_PID(NewDest),
-            concuerror_sched:notify(send, {Dest, NewLid, Msg}),
+            PlanLid = ?LID_FROM_PID(find_pid(Dest)),
+            concuerror_sched:notify(send, {Dest, PlanLid, Msg}),
+            SendLid = ?LID_FROM_PID(find_pid(Dest)),
+            concuerror_sched:notify(send, {Dest, SendLid, Msg}, prev),
             Dest ! Msg
     end.
 
@@ -619,7 +629,7 @@ spawn_fun_wrapper(Fun) ->
             MyInfo = find_my_info(),
             concuerror_sched:notify(exit, {normal, MyInfo}),
             MyRealInfo = find_my_info(),
-            concuerror_sched:notify(exit, MyRealInfo, prev);
+            concuerror_sched:notify(exit, {normal, MyRealInfo}, prev);
         Class:Type ->
             concuerror_sched:notify(error,[Class,Type,erlang:get_stacktrace()]),
             case Class of
@@ -632,8 +642,7 @@ spawn_fun_wrapper(Fun) ->
 find_my_info() ->
     MyEts = find_my_ets_tables(),
     MyName = find_my_registered_name(),
-    MyLinks = find_my_links(),
-    {MyEts, MyName, MyLinks}.
+    {MyEts, MyName}.
 
 find_my_ets_tables() ->
     Self = self(),
@@ -653,11 +662,6 @@ find_my_registered_name() ->
         [] -> none;
         {registered_name, Name} -> {ok, Name}
     end.
-
-find_my_links() ->
-    {links, AllPids} = process_info(self(), links),
-    AllLids = [?LID_FROM_PID(Pid) || Pid <- AllPids],
-    [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].                  
 
 %% @spec rep_spawn(atom(), atom(), [term()]) -> pid()
 %% @doc: Replacement for `spawn/3'.
@@ -856,7 +860,7 @@ rep_whereis_dpor(RegName) ->
             true -> not_found;
             false -> ?LID_FROM_PID(R)
         end,
-    concuerror_sched:notify(whereis_res, Value, prev),
+    concuerror_sched:notify(whereis, {RegName, Value}, prev),
     R.
 
 %%%----------------------------------------------------------------------
@@ -926,13 +930,13 @@ rep_ets_new_dpor(Name, Options) ->
     concuerror_sched:notify(ets, {new, [unknown, Name, Options]}),
     try
         Tid = ets:new(Name, Options),
-        concuerror_sched:notify(new_ets_lid, Tid, prev),
+        concuerror_sched:notify(ets, {new, [Tid, Name, Options]}, prev),
         concuerror_sched:wait(),
         Tid
     catch
         _:_ ->
 	        %% Report a fake tid...
-            concuerror_sched:notify(new_ets_lid, -1, prev),
+            concuerror_sched:notify(ets, {new, [-1, Name, Options]}, prev),
             concuerror_sched:wait(),
             %% And throw the error again...
             ets:new(Name, Options)

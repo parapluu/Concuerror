@@ -1,0 +1,9 @@
+Checked 1 interleaving(s). 1 errors found.
+
+12775294
+Error type        : Exception
+Details           : {undef,
+                        [{sched_tests,test_spawn_opt_link_receive_exit,0,[]}]}
+  Process P1 exits ("Exception")
+
+

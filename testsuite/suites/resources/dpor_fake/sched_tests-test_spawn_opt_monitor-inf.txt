@@ -1,0 +1,8 @@
+Checked 1 interleaving(s). 1 errors found.
+
+20242176
+Error type        : Exception
+Details           : {undef,[{sched_tests,test_spawn_opt_monitor,0,[]}]}
+  Process P1 exits ("Exception")
+
+

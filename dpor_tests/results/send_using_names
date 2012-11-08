@@ -1,0 +1,19 @@
+Checked 2 interleaving(s). 1 errors found.
+
+110779867
+Error type        : Exception
+Details           : {{badmatch,[msg1,msg2]},
+                     [{send_using_names,send_using_names,0,
+                          [{file,"src/send_using_names.erl"},{line,15}]}]}
+  Process P1 registers process P1 as `name`
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `msg2` to process named 'name'
+  Process P1.2 exits (normal)
+  Process P1 receives message `msg2` from process P1.2
+  Process P1.1 sends message `msg1` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `msg1` from process P1.1
+  Process P1 exits ("Exception")
+
+

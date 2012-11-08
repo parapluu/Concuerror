@@ -1,0 +1,25 @@
+Checked 5 interleaving(s). 2 errors found.
+
+4823149
+Error type        : Assertion violation
+Module:Line       : sched_tests.erl:197
+Expected          : result2
+Value             : result1
+  Process P1 spawns process P1.1
+  Process P1.1 sends message `foo` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits ("Assertion violation")
+
+
+122890493
+Error type        : Assertion violation
+Module:Line       : sched_tests.erl:197
+Expected          : result2
+Value             : result1
+  Process P1 spawns process P1.1
+  Process P1.1 sends message `foo` to process P1
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits ("Assertion violation")
+
+

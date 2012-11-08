@@ -1,57 +1,82 @@
-Checked 5 interleaving(s). 4 errors found.
+Checked 6 interleaving(s). 5 errors found.
 
-99742573
+103475238
 Error type        : Exception
 Details           : {badarg,[]}
   Process P1 registers process P1 as `bank`
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2 unregisters process `bank`
-  Process P1.2 registers process P1.2 as `bank`
-  Process P1.2 receives no matching messages
-  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1.3 unregisters process `bank`
+  Process P1.3 registers process P1.3 as `bank`
+  Process P1.3 receives no matching messages
+  Process P1.3 exits (normal)
   Process P1.1 sends message `money` to process named 'bank'
   Process P1.1 exits ("Exception")
 
 
-27675515
+110598907
+Error type        : Deadlock
+Blocked processes : P1, P1.2
+  Process P1 registers process P1 as `bank`
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3 unregisters process `bank`
+  Process P1.3 registers process P1.3 as `bank`
+  Process P1.3 receives no matching messages
+  Process P1.1 sends message `money` to process named 'bank'
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+36532476
 Error type        : Deadlock
 Blocked processes : P1
   Process P1 registers process P1 as `bank`
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2 unregisters process `bank`
-  Process P1.2 registers process P1.2 as `bank`
-  Process P1.2 receives no matching messages
+  Process P1 spawns process P1.3
+  Process P1.3 unregisters process `bank`
+  Process P1.3 registers process P1.3 as `bank`
   Process P1.1 sends message `money` to process named 'bank'
   Process P1.1 exits (normal)
+  Process P1.3 receives message `money` from process P1.1
+  Process P1.3 sends message `robber_got_money` to process P1.2
+  Process P1.3 exits (normal)
+  Process P1.2 receives message `robber_got_money` from process P1.3
   Process P1.2 exits (normal)
 
 
-125504387
+129606493
 Error type        : Exception
 Details           : {badarg,[]}
   Process P1 registers process P1 as `bank`
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2 unregisters process `bank`
+  Process P1 spawns process P1.3
+  Process P1.3 unregisters process `bank`
   Process P1.1 sends message `money` to process named 'bank'
   Process P1.1 exits ("Exception")
 
 
-70368879
+26059244
 Error type        : Exception
 Details           : {badarg,
                         [{erlang,unregister,[bank],[]},
-                         {register_again,'-register_again/0-fun-3-',0,[]}]}
+                         {register_again,'-register_again/0-fun-5-',1,[]}]}
   Process P1 registers process P1 as `bank`
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
   Process P1.1 sends message `money` to process named 'bank'
   Process P1.1 exits (normal)
   Process P1 receives message `money` from process P1.1
+  Process P1 sends message `bank_got_money` to process P1.2
   Process P1 exits (normal)
-  Process P1.2 unregisters process `bank`
-  Process P1.2 exits ("Exception")
+  Process P1.2 receives message `bank_got_money` from process P1
+  Process P1.2 exits (normal)
+  Process P1.3 unregisters process `bank`
+  Process P1.3 exits ("Exception")
 
 
