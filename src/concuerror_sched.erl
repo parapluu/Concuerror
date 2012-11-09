@@ -20,7 +20,7 @@
 %% Internal exports
 -export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, lid_from_pid/1]).
 
--export([notify/3, wait_poll_or_continue/0]).
+-export([notify/3, wait_poll_or_continue/0, lock_release_atom/0]).
 
 -export_type([analysis_target/0, analysis_ret/0, bound/0]).
 
@@ -471,6 +471,9 @@ may_have_dependencies({_Lid, {'receive', _}}) -> false;
 may_have_dependencies({_Lid, exited}) -> false;
 may_have_dependencies(_Else) -> true.
 
+-spec lock_release_atom() -> '_._concuerror_lock_release'.
+
+lock_release_atom() -> '_._concuerror_lock_release'.
 
 %% All Trace:
 %%   dependent(New, Older)
@@ -494,7 +497,8 @@ dependent(A, {Lid, {unregister, RegName}}, false) ->
 %% Sending requires at least a different message.
 dependent({_Lid1, {send, {_Orig1, Lid, Msg1}}},
           {_Lid2, {send, {_Orig2, Lid, Msg2}}}, false) ->
-    Msg1 =/= Msg2;
+    ReleaseAtom = lock_release_atom(),
+    Msg1 =/= Msg2 andalso Msg1 =/= ReleaseAtom andalso Msg2 =/= ReleaseAtom;
 
 
 %% ETS operations live in their own small world.
