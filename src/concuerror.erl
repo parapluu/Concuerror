@@ -180,6 +180,20 @@ parse([{Opt, Param} | Args], Options) ->
                                 Options, {target, Target}),
                             parse(Args, NewOptions)
                     end;
+                %% Run Eunit tests for specific module
+                [Module] ->
+                    AtomModule = 'eunit',
+                    AtomFunc   = 'test',
+                    Pars = ["[{module, " ++ Module ++ "}]", "[verbose]"],
+                    case validateTerms(Pars, []) of
+                        {'error',_,_}=Error -> Error;
+                        AtomParams ->
+                            Target = {AtomModule, AtomFunc, AtomParams},
+                            NewOptions = lists:keystore(target, 1,
+                                Options, {target, Target}),
+                            NewArgs = [{'D',["TEST"]} | Args],
+                            parse(NewArgs, NewOptions)
+                    end;
                 _Other -> wrongArgument('number', Opt)
             end;
 
@@ -344,6 +358,7 @@ help() ->
      "\n"
      "usage: concuerror [<args>]\n"
      "Arguments:\n"
+     "  -t|--target module      Run eunit tests for this module\n"
      "  -t|--target module function [args]\n"
      "                          Specify the function to execute\n"
      "  -f|--files  modules     Specify the files (modules) to instrument\n"
