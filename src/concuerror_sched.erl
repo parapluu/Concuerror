@@ -805,14 +805,6 @@ update_trace({Lid, _} = Selected, Next, State) ->
     BaseClockVector = dict:store(Lid, NewN, ClockVector),
     LidsClockVector = recent_dependency_cv(Selected, BaseClockVector, LidTrace),
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
-    NewSleepSet =
-        case Flavor of
-            fake -> [];
-            _Other ->
-                NewSleepSetCandidates =
-                    ordsets:union(ordsets:del_element(Lid, Done), SleepSet),
-                filter_awaked(NewSleepSetCandidates, Nexts, Selected)
-        end,
     NewNexts = dict:store(Lid, Next, Nexts),
     MaybeNotPollable = ordsets:del_element(Lid, Pollable),
     {NewPollable, NewEnabled, NewBlocked} =
@@ -831,10 +823,12 @@ update_trace({Lid, _} = Selected, Next, State) ->
                 end;
             false -> Preemptions
         end,
+    NewSleepSetCandidates =
+        ordsets:union(ordsets:del_element(Lid, Done), SleepSet),
     CommonNewTraceTop =
         #trace_state{i = NewN, last = Selected, nexts = NewNexts,
                      enabled = NewEnabled, blocked = NewBlocked,
-                     clock_map = NewClockMap, sleep_set = NewSleepSet,
+                     clock_map = NewClockMap, sleep_set = NewSleepSetCandidates,
                      pollable = NewPollable, error_nxt = ErrorNext,
                      preemptions = NewPreemptions},
     InstrNewTraceTop = handle_instruction(Selected, CommonNewTraceTop),
@@ -848,8 +842,19 @@ update_trace({Lid, _} = Selected, Next, State) ->
         queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
     {NewPrevTraceTop, NewTraceTop} =
         check_pollable(PrevTraceTop, InstrNewTraceTop),
+    NewSleepSet =
+        case Flavor of
+            fake -> [];
+            _Other ->
+                AfterPollingSleepSet = NewTraceTop#trace_state.sleep_set,
+                AfterPollingNexts = NewTraceTop#trace_state.nexts,
+                filter_awaked(AfterPollingSleepSet,
+                              AfterPollingNexts,
+                              PossiblyRewrittenSelected)
+        end,
     NewTrace =
-        [NewTraceTop#trace_state{lid_trace = NewLidTrace},
+        [NewTraceTop#trace_state{lid_trace = NewLidTrace,
+                                 sleep_set = NewSleepSet},
          NewPrevTraceTop|Rest],
     State#dpor_state{trace = NewTrace}.
 
@@ -1217,8 +1222,11 @@ report_possible_deadlock(State) ->
     #dpor_state{trace = [TraceTop|Trace], tickets = Tickets} = State,
     NewTickets =
         case TraceTop#trace_state.enabled of
+        %% case ordsets:subtract(TraceTop#trace_state.enabled,
+        %%                       TraceTop#trace_state.sleep_set) of
             [] ->
                 case TraceTop#trace_state.blocked of
+                %% case TraceTop#trace_state.enabled of
                     [] ->
                         _LidTrace = TraceTop#trace_state.lid_trace,
                         ?f_debug("NORMAL!\n"),
