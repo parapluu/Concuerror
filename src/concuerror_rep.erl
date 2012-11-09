@@ -646,16 +646,12 @@ find_my_info() ->
 
 find_my_ets_tables() ->
     Self = self(),
-    [begin
-         Lid = ?LID_FROM_PID(TID),
-         PublicName =
-             case [ets:info(TID, I) || I <- [named_table, protection]] of
-                 [true, public] ->
-                     {ok, ets:info(TID, name)};
-                 _ -> false
-             end,
-         {Lid, PublicName}
-     end || TID <- ets:all(), Self =:= ets:info(TID, owner)].
+    [{?LID_FROM_PID(TID),
+      case ets:info(TID, named_table) of
+          true -> {ok, ets:info(TID, name)};
+          false -> none
+      end} ||
+        TID <- ets:all(), Self =:= ets:info(TID, owner)].
 
 find_my_registered_name() ->
     case process_info(self(), registered_name) of
