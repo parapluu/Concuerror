@@ -1,11 +1,14 @@
 -module(indexer_example).
 
--export([indexer_example/0]).
+-export([indexer12/0, indexer15/0]).
 
 -define(size, 128).
 -define(max, 4).
 
-indexer_example() ->
+indexer12() ->
+    main(12).
+
+indexer15() ->
     main(15).
 
 thread(Tid) ->
