@@ -503,17 +503,15 @@ dependent({_Lid1, {ets, Op1}}, {_Lid2, {ets, Op2}}, false) ->
 
 %% Registering a table with the same name as an existing one.
 dependent({_Lid1, {ets, {new, [_Table, Name, Options]}}},
-          {_Lid2, {exit, {normal, {Tables, _Name, _Links}}}},
+          {_Lid2, {exit, {normal, {Tables, _Name}}}},
           _Swap) ->
-    PublicNamedTables = [N || {_Lid, {ok, N}} <- Tables],
-    lists:all(fun(X) -> X end,
-              [lists:member(E,L) || {E, L} <- [{named_table, Options},
-                                               {public, Options},
-                                               {Name, PublicNamedTables}]]);
+    NamedTables = [N || {_Lid, {ok, N}} <- Tables],
+    lists:member(named_table, Options) andalso
+        lists:member(Name, NamedTables);
 
 %% Table owners exits mess things up.
 dependent({_Lid1, {ets, {_Op, [Table|_Rest]}}},
-          {_Lid2, {exit, {normal, {Tables, _Name, _Links}}}},
+          {_Lid2, {exit, {normal, {Tables, _Name}}}},
           _Swap) ->
     lists:keymember(Table, 1, Tables);
 
@@ -526,7 +524,7 @@ dependent({_Lid1, {send, {_Orig, Lid, Msg}}}, {Lid, {'after', Fun}}, _Swap) ->
 
 %% Sending using name to a process that may exit and unregister.
 dependent({_Lid1, {send, {Orig, _Lid, _Msg}}},
-          {_Lid2, {exit, {normal, {_Tables, {ok, Orig}, _Links}}}}, _Swap) ->
+          {_Lid2, {exit, {normal, {_Tables, {ok, Orig}}}}}, _Swap) ->
     true;
 
 %% Send using name before process has registered itself.
@@ -551,7 +549,7 @@ dependent({_Lid1, {register, {_RegName, PLid}}},
 
 %% Register for a name that might be in use.
 dependent({_Lid1, {register, {Name, _PLid}}},
-          {_Lid2, {exit, {normal, {_Tables, {ok, Name}, _Links}}}}, _Swap) ->
+          {_Lid2, {exit, {normal, {_Tables, {ok, Name}}}}}, _Swap) ->
     true;
 
 %% Whereis using name before process has registered itself.
@@ -566,7 +564,7 @@ dependent({_Lid1, {is_process_alive, Lid}},
 
 %% Process registered and exits
 dependent({_Lid1, {whereis, {Name, _PLid1}}},
-          {_Lid2, {exit, {normal, {_Tables, {ok, Name}, _Links}}}}, _Swap) ->
+          {_Lid2, {exit, {normal, {_Tables, {ok, Name}}}}}, _Swap) ->
     true;
 
 %% Monitor/Demonitor and exit.
@@ -609,9 +607,8 @@ dependent_ets({delete, [T, _]}, {_, [T|_]}, _Swap) ->
     true;
 dependent_ets({new, [_Tid1, Name, Options1]},
               {new, [_Tid2, Name, Options2]}, false) ->
-    lists:all(fun(X) -> X end,
-              [lists:member(O, L) || O <- [named_table, public],
-                                     L <- [Options1, Options2]]);
+    lists:member(named_table, Options1) andalso
+        lists:member(named_table, Options2);
 dependent_ets(Op1, Op2, false) ->
     dependent_ets(Op2, Op1, true);
 dependent_ets(_Op1, _Op2, true) ->
@@ -1222,7 +1219,12 @@ report_possible_deadlock(State) ->
         case TraceTop#trace_state.enabled of
             [] ->
                 case TraceTop#trace_state.blocked of
-                    [] -> Tickets;
+                    [] ->
+                        _LidTrace = TraceTop#trace_state.lid_trace,
+                        ?f_debug("NORMAL!\n"),
+                        ?f_debug("~p\n",
+                                 [[P || {P,_C} <- queue:to_list(_LidTrace)]]),
+                        Tickets;
                     Blocked ->
                         ?f_debug("DEADLOCK!\n"),
                         Error = {deadlock, Blocked},
@@ -1847,6 +1849,7 @@ instrument_my_messages(Lid, VC) ->
     Self = self(),
     Check =
         fun() ->
+                ?f_debug("M:~p\n",[process_info(self(), messages)]),
                 receive
                     Msg when not ?IS_INSTR_MSG(Msg) ->
                         Instr = {?INSTR_MSG, Lid, VC, Msg},
