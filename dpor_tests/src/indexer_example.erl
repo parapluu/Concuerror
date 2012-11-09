@@ -1,9 +1,14 @@
 -module(indexer_example).
 
+-export([indexer_example/0]).
 -export([indexer12/0, indexer15/0]).
 
 -define(size, 128).
 -define(max, 4).
+
+%% this is needed for the dpor test suite
+indexer_example() ->
+    main(15).
 
 indexer12() ->
     main(12).
