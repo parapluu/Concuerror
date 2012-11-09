@@ -1849,7 +1849,6 @@ instrument_my_messages(Lid, VC) ->
     Self = self(),
     Check =
         fun() ->
-                ?f_debug("M:~p\n",[process_info(self(), messages)]),
                 receive
                     Msg when not ?IS_INSTR_MSG(Msg) ->
                         Instr = {?INSTR_MSG, Lid, VC, Msg},
