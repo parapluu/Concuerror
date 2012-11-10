@@ -1,6 +1,6 @@
 Checked 4 interleaving(s). 3 errors found.
 
-77976422
+125389200
 Error type        : Deadlock
 Blocked processes : P1.4
   Process P1 spawns process P1.1
@@ -12,14 +12,14 @@ Blocked processes : P1.4
   Process P1.2 monitors process P1.1
   Process P1.1 receives message `ok` from process P1.2
   Process P1.1 exits (normal)
-  Process P1.2 receives message `{'DOWN',#Ref<0.0.0.77>,process,...}` from process P1.1
+  Process P1.2 receives message `{'DOWN',#Ref<0.0.0.73>,process,...}` from process P1.1
   Process P1.2 exits (normal)
   Process P1.4 monitors process P1.3
   Process P1.4 sends message `ok` to process P1.3
   Process P1.3 receives message `ok` from process P1.4
   Process P1.3 exits (normal)
   Process P1.4 demonitors process P1.3
-  Process P1.4 receives message `{'DOWN',#Ref<0.0.0.80>,process,...}` from process P1.3
+  Process P1.4 receives message `{'DOWN',#Ref<0.0.0.76>,process,...}` from process P1.3
 
 
 90967836
@@ -43,7 +43,7 @@ Blocked processes : P1.2
   Process P1.3 exits (normal)
 
 
-102350674
+11364020
 Error type        : Deadlock
 Blocked processes : P1.2, P1.4
   Process P1 spawns process P1.1
@@ -60,6 +60,6 @@ Blocked processes : P1.2, P1.4
   Process P1.3 receives message `ok` from process P1.4
   Process P1.3 exits (normal)
   Process P1.4 demonitors process P1.3
-  Process P1.4 receives message `{'DOWN',#Ref<0.0.0.84>,process,...}` from process P1.3
+  Process P1.4 receives message `{'DOWN',#Ref<0.0.0.80>,process,...}` from process P1.3
 
 

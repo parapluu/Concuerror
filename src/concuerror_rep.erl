@@ -939,15 +939,29 @@ rep_ets_new_dpor(Name, Options) ->
     end.
 
 rep_ets_insert_dpor(Tab, Obj) ->
-    concuerror_sched:notify(ets, {insert, [?LID_FROM_PID(Tab), Tab, Obj]}),
-    ets:insert(Tab, Obj).
+    ets_insert_center_dpor(insert, Tab, Obj).
 
 rep_ets_insert_new_dpor(Tab, Obj) ->
-    concuerror_sched:notify(ets, {insert_new, [?LID_FROM_PID(Tab), Tab, Obj]}),
-    ets:insert_new(Tab, Obj).
+    ets_insert_center_dpor(insert_new, Tab, Obj).
+
+ets_insert_center_dpor(Type, Tab, Obj) ->
+    KeyPos = ets:info(Tab, keypos),
+    Lid = ?LID_FROM_PID(Tab),
+    ConvObj =
+        case is_tuple(Obj) of
+            true -> [Obj];
+            false -> Obj
+        end,
+    Keys = ordsets:from_list([element(KeyPos, O) || O <- ConvObj]),
+    concuerror_sched:notify(ets, {Type, [Lid, Tab, Keys, KeyPos, ConvObj]}),
+    case Type of
+        insert -> ets:insert(Tab, Obj);
+        insert_new -> ets:insert_new(Tab, Obj)
+    end.
 
 rep_ets_lookup_dpor(Tab, Key) ->
-    concuerror_sched:notify(ets, {lookup, [?LID_FROM_PID(Tab), Tab, Key]}),
+    Lid = ?LID_FROM_PID(Tab),
+    concuerror_sched:notify(ets, {lookup, [Lid, Tab, Key]}),
     ets:lookup(Tab, Key).
 
 rep_ets_delete_dpor(Tab) ->

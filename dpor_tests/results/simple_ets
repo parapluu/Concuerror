@@ -1,6 +1,6 @@
 Checked 29 interleaving(s). 20 errors found.
 
-107439088
+60745162
 Error type        : Exception
 Details           : {{case_clause,{eulav,souffle}},
                      [{simple_ets,simple_ets,0,
@@ -8,19 +8,19 @@ Details           : {{case_clause,{eulav,souffle}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-97678185
+88182099
 Error type        : Exception
 Details           : {{case_clause,{new_value,elffuos}},
                      [{simple_ets,simple_ets,0,
@@ -28,22 +28,22 @@ Details           : {{case_clause,{new_value,elffuos}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {simple_ets,key}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-10668515
+51672294
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{clef,elffuos}],[]},
@@ -52,21 +52,21 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
   Process P1 exits (normal)
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 exits ("Exception")
 
 
-90045047
+133310087
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{key,eulav}],[]},
@@ -75,20 +75,20 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits (normal)
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
   Process P1.2 exits ("Exception")
 
 
-83033468
+61302109
 Error type        : Exception
 Details           : {{case_clause,{eulav,souffle}},
                      [{simple_ets,simple_ets,0,
@@ -96,22 +96,22 @@ Details           : {{case_clause,{eulav,souffle}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {simple_ets,key}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-62907246
+66446756
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{clef,souffle}],[]},
@@ -120,21 +120,21 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits (normal)
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 exits ("Exception")
 
 
-54150835
+66098059
 Error type        : Exception
 Details           : {{case_clause,{new_value,elffuos}},
                      [{simple_ets,simple_ets,0,
@@ -142,22 +142,22 @@ Details           : {{case_clause,{new_value,elffuos}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {simple_ets,key}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-38665349
+130292871
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{clef,elffuos}],[]},
@@ -166,21 +166,21 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits (normal)
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 exits ("Exception")
 
 
-127621439
+78927864
 Error type        : Exception
 Details           : {{case_clause,{new_value,elffuos}},
                      [{simple_ets,simple_ets,0,
@@ -188,19 +188,19 @@ Details           : {{case_clause,{new_value,elffuos}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-97993535
+131622556
 Error type        : Exception
 Details           : {{case_clause,{eulav,souffle}},
                      [{simple_ets,simple_ets,0,
@@ -208,22 +208,22 @@ Details           : {{case_clause,{eulav,souffle}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {simple_ets,key}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-55917111
+131450099
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{clef,souffle}],[]},
@@ -232,21 +232,21 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
   Process P1 exits (normal)
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 exits ("Exception")
 
 
-133818450
+115529305
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{key,new_value}],[]},
@@ -255,20 +255,20 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits (normal)
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
   Process P1.1 exits ("Exception")
 
 
-64172370
+107249486
 Error type        : Exception
 Details           : {{case_clause,{new_value,elffuos}},
                      [{simple_ets,simple_ets,0,
@@ -276,22 +276,22 @@ Details           : {{case_clause,{new_value,elffuos}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {simple_ets,key}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-36327873
+125192667
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{clef,elffuos}],[]},
@@ -300,21 +300,21 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits (normal)
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 exits ("Exception")
 
 
-4433719
+91762087
 Error type        : Exception
 Details           : {{case_clause,{new_value,elffuos}},
                      [{simple_ets,simple_ets,0,
@@ -322,19 +322,19 @@ Details           : {{case_clause,{new_value,elffuos}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-116265466
+778112
 Error type        : Exception
 Details           : {{case_clause,{value,elffuos}},
                      [{simple_ets,simple_ets,0,
@@ -342,18 +342,18 @@ Details           : {{case_clause,{value,elffuos}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
-  Process P1.1: ets_insert {simple_ets,{key,value}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-23250629
+13003677
 Error type        : Exception
 Details           : {{case_clause,{eulav,souffle}},
                      [{simple_ets,simple_ets,0,
@@ -361,22 +361,22 @@ Details           : {{case_clause,{eulav,souffle}},
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {simple_ets,key}
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits ("Exception")
 
 
-85246798
+31157778
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{clef,souffle}],[]},
@@ -385,21 +385,21 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
-  Process P1.1: ets_insert {simple_ets,{key,value}}
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
   Process P1 exits (normal)
-  Process P1.1: ets_insert {simple_ets,{clef,souffle}}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 exits ("Exception")
 
 
-59271711
+132949098
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{key,new_value}],[]},
@@ -408,20 +408,20 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
-  Process P1.1: ets_insert {simple_ets,{key,value}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
   Process P1 exits (normal)
-  Process P1.1: ets_insert {simple_ets,{key,new_value}}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
   Process P1.1 exits ("Exception")
 
 
-44235368
+79034780
 Error type        : Exception
 Details           : {badarg,
                         [{ets,insert,[simple_ets,{key,value}],[]},
@@ -430,15 +430,15 @@ Details           : {badarg,
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2: ets_insert {simple_ets,{key,eulav}}
-  Process P1.2: ets_insert {simple_ets,{clef,elffuos}}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {simple_ets,key}
   Process P1: ets_lookup {simple_ets,clef}
   Process P1 exits (normal)
-  Process P1.1: ets_insert {simple_ets,{key,value}}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
   Process P1.1 exits ("Exception")
 
 

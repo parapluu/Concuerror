@@ -597,16 +597,29 @@ dependent(_TransitionA, _TransitionB, true) ->
 dependent_ets(Op1, Op2) ->
     dependent_ets(Op1, Op2, false).
 
-dependent_ets({insert, [T, _, {K, V1}]}, {insert, [T, _, {K, V2}]}, false) ->
-    V1 =/= V2;
-dependent_ets({insert_new, [T, _, {K, _}]},
-              {insert_new, [T, _, {K, _}]}, false) ->
-    true;
-dependent_ets({insert_new, [T, _, {K, _}]}, {insert, [T, _, {K, _}]}, _Swap) ->
-    true;
-dependent_ets({Insert, [T, _, {K, _}]}, {lookup, [T, _, K]}, _Swap)
+dependent_ets({insert, [T, _, Keys1, KP, Objects1]},
+              {insert, [T, _, Keys2, KP, Objects2]}, false) ->
+    case ordsets:intersection(Keys1, Keys2) of
+        [] -> false;
+        Keys ->
+            Fold =
+                fun(_K, true) -> true;
+                   (K, false) ->
+                        lists:keyfind(K, KP, Objects1) =/=
+                            lists:keyfind(K, KP, Objects2)
+                end,
+            lists:foldl(Fold, false, Keys)
+    end;
+dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1]},
+              {insert_new, [T, _, Keys2, KP, _Objects2]}, false) ->
+    ordsets:intersection(Keys1, Keys2) =/= [];
+dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1]},
+              {insert, [T, _, Keys2, KP, _Objects2]}, _Swap) ->
+    ordsets:intersection(Keys1, Keys2) =/= [];
+dependent_ets({Insert, [T, _, Keys, _KP, _Objects1]},
+              {lookup, [T, _, K]}, _Swap)
   when Insert =:= insert; Insert =:= insert_new ->
-    true;
+    ordsets:is_element(K, Keys);
 dependent_ets({delete, [T, _]}, {_, [T|_]}, _Swap) ->
     true;
 dependent_ets({new, [_Tid1, Name, Options1]},
@@ -1184,9 +1197,9 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 case Extra of
                     {new, [_EtsLid, Name, Options]} ->
                         {ets_new, Lid, {Name, Options}};
-                    {insert, [_EtsLid, Tid, Objects]} ->
+                    {insert, [_EtsLid, Tid, _K, _KP, Objects]} ->
                         {ets_insert, Lid, {Tid, Objects}};
-                    {insert_new, [_EtsLid, Tid, Objects]} ->
+                    {insert_new, [_EtsLid, Tid, _K, _KP, Objects]} ->
                         {ets_insert_new, Lid, {Tid, Objects}};
                     {lookup, [_EtsLid, Tid, Key]} ->
                         {ets_lookup, Lid, {Tid, Key}};
