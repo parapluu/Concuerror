@@ -1,0 +1,85 @@
+Checked 1 interleaving(s). 1 errors found.
+
+10504981
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1: ets_insert {table,{pids,[<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,
+                                     <0.48.0>]}}
+  Process P1 sends message `ok` to process P1.1
+  Process P1 sends message `ok` to process P1.2
+  Process P1 sends message `ok` to process P1.3
+  Process P1 sends message `ok` to process P1.4
+  Process P1 sends message `ok` to process P1.5
+  Process P1.1 receives message `ok` from process P1
+  Process P1.1 sends message `ok` to process P1.2
+  Process P1.1 sends message `ok` to process P1.3
+  Process P1.1 sends message `ok` to process P1.4
+  Process P1.1 sends message `ok` to process P1.5
+  Process P1.2 receives message `ok` from process P1
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 sends message `ok` to process P1.3
+  Process P1.2 sends message `ok` to process P1.4
+  Process P1.2 sends message `ok` to process P1.5
+  Process P1.2 receives message `ok` from process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 receives message `ok` from process P1
+  Process P1.3 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.2
+  Process P1.3 sends message `ok` to process P1.4
+  Process P1.3 sends message `ok` to process P1.5
+  Process P1.3 receives message `ok` from process P1.1
+  Process P1.3 receives message `ok` from process P1.2
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 receives message `ok` from process P1.3
+  Process P1.4 receives message `ok` from process P1
+  Process P1.4 sends message `ok` to process P1.1
+  Process P1.4 sends message `ok` to process P1.2
+  Process P1.4 sends message `ok` to process P1.3
+  Process P1.4 sends message `ok` to process P1.5
+  Process P1.4 receives message `ok` from process P1.1
+  Process P1.4 receives message `ok` from process P1.2
+  Process P1.4 receives message `ok` from process P1.3
+  Process P1.1 receives message `ok` from process P1.4
+  Process P1.2 receives message `ok` from process P1.4
+  Process P1.3 receives message `ok` from process P1.4
+  Process P1.5 receives message `ok` from process P1
+  Process P1.5 sends message `ok` to process P1.1
+  Process P1.5 sends message `ok` to process P1.2
+  Process P1.5 sends message `ok` to process P1.3
+  Process P1.5 sends message `ok` to process P1.4
+  Process P1.5 receives message `ok` from process P1.1
+  Process P1.5 receives message `ok` from process P1.2
+  Process P1.5 receives message `ok` from process P1.3
+  Process P1.5 receives message `ok` from process P1.4
+  Process P1.5: ets_insert {table,{<0.48.0>,5}}
+  Process P1.5 sends message `ok` to process P1
+  Process P1.5 exits (normal)
+  Process P1 receives message `ok` from process P1.5
+  Process P1.1 receives message `ok` from process P1.5
+  Process P1.1: ets_insert {table,{<0.44.0>,1}}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 receives message `ok` from process P1.5
+  Process P1.2: ets_insert {table,{<0.45.0>,2}}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3 receives message `ok` from process P1.5
+  Process P1.3: ets_insert {table,{<0.46.0>,3}}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.4 receives message `ok` from process P1.5
+  Process P1.4: ets_insert {table,{<0.47.0>,4}}
+  Process P1.4 sends message `ok` to process P1
+  Process P1.4 exits (normal)
+  Process P1 receives message `ok` from process P1.4
+
+
