@@ -403,8 +403,12 @@ replay_lid_trace(N, Queue) ->
     end.
 
 wait_next(Lid, {exit, {normal, _Info}}) ->
+    Pid = concuerror_lid:get_pid(Lid),
+    link(Pid),
     continue(Lid),
-    exited;
+    receive
+        {'EXIT', Pid, normal} -> exited
+    end;
 wait_next(Lid, Prev) ->
     continue(Lid),
     Replace =
