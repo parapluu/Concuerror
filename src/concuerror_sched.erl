@@ -867,10 +867,17 @@ update_trace({Lid, _} = Selected, Next, State) ->
                               AfterPollingNexts,
                               PossiblyRewrittenSelected)
         end,
+    PrevTrace =
+        case PossiblyRewrittenSelected =:= Selected of
+            true -> [NewPrevTraceTop|Rest];
+            false -> rewrite_while_awaked(PossiblyRewrittenSelected,
+                                          Selected,
+                                          [NewPrevTraceTop|Rest])
+        end,
     NewTrace =
         [NewTraceTop#trace_state{
-           lid_trace = NewLidTrace, sleep_set = NewSleepSet},
-         NewPrevTraceTop|Rest],
+           lid_trace = NewLidTrace, sleep_set = NewSleepSet}|
+         PrevTrace],
     State#dpor_state{trace = NewTrace}.
 
 recent_dependency_cv({_Lid, {ets, _Info}} = Transition,
@@ -927,6 +934,26 @@ filter_awaked(SleepSet, Nexts, Selected) ->
                 not dependent({Lid, Instr}, Selected)
         end,
     [S || S <- SleepSet, Filter(S)].
+
+rewrite_while_awaked(Transition, Original, Trace) ->
+    rewrite_while_awaked(Transition, Original, Trace, []).
+
+rewrite_while_awaked(_Transition, _Original, [], Acc) -> lists:reverse(Acc);
+rewrite_while_awaked({P, Instr} = Transition, Original,
+                     [TraceTop|Rest] = Trace, Acc) ->
+    #trace_state{sleep_set = SleepSet, nexts = Nexts, last = {Q, _}} = TraceTop,
+    case
+        not ordsets:is_element(P, SleepSet) andalso
+        P =/= Q andalso
+        Original =:= dict:fetch(P, Nexts)
+    of
+        true ->
+            NewNexts = dict:store(P, Instr, Nexts),
+            NewTraceTop = TraceTop#trace_state{nexts = NewNexts},
+            rewrite_while_awaked(Transition, Original, Rest, [NewTraceTop|Acc]);
+        false ->
+            lists:reverse(Acc, Trace)
+    end.
 
 %% Handle instruction is broken in two parts to reuse code in replay.
 handle_instruction(Transition, TraceTop) ->

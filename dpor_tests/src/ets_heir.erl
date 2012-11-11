@@ -5,4 +5,7 @@
 ets_heir() ->
     Heir = spawn(fun() -> ok end),                         
     Tid = ets:new(table, [{heir, Heir, heir}]),
-    spawn(fun() -> ets:lookup(Tid, x) end).
+    spawn(fun() ->
+                  ets:lookup(Tid, x),
+                  throw(too_bad)
+          end).
