@@ -1,0 +1,26 @@
+Checked 3 interleaving(s). 2 errors found.
+
+86908949
+Error type        : Exception
+Details           : {badarg,[{ets,lookup,[184339,x],[]}]}
+  Process P1 spawns process P1.1
+  Process P1: ets_new {table,[{heir,<0.44.0>,heir}]}
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {184339,x}
+  Process P1.2 exits ("Exception")
+
+
+35774333
+Error type        : Exception
+Details           : {badarg,[{ets,lookup,[188435,x],[]}]}
+  Process P1 spawns process P1.1
+  Process P1: ets_new {table,[{heir,<0.44.0>,heir}]}
+  Process P1 spawns process P1.2
+  Process P1.1 exits (normal)
+  Process P1 exits (normal)
+  Process P1.2: ets_lookup {184339,x}
+  Process P1.2 exits ("Exception")
+
+

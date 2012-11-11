@@ -646,12 +646,36 @@ find_my_info() ->
 
 find_my_ets_tables() ->
     Self = self(),
-    [{?LID_FROM_PID(TID),
-      case ets:info(TID, named_table) of
-          true -> {ok, ets:info(TID, name)};
-          false -> none
-      end} ||
-        TID <- ets:all(), Self =:= ets:info(TID, owner)].
+    MyTIDs = [TID || TID <- ets:all(), Self =:= ets:info(TID, owner)],
+    Fold =
+        fun(TID, {HeirsAcc, TablesAcc}) ->
+            Survives =
+                case ets:info(TID, heir) of
+                    none -> false;
+                    Pid ->
+                        case is_process_alive(Pid) of
+                            false -> false;
+                            true ->
+                                case ?LID_FROM_PID(Pid) of
+                                    not_found -> false;
+                                    HeirLid0 -> {true, HeirLid0}
+                                end
+                        end
+                end,
+            case Survives of
+                false ->
+                    T =
+                        {?LID_FROM_PID(TID),
+                         case ets:info(TID, named_table) of
+                             true -> {ok, ets:info(TID, name)};
+                             false -> none
+                         end},
+                    {HeirsAcc, [T|TablesAcc]};
+                {true, HeirLid} ->
+                    {[HeirLid|HeirsAcc], TablesAcc}
+            end
+        end,
+    lists:foldl(Fold, {[], []}, MyTIDs).
 
 find_my_registered_name() ->
     case process_info(self(), registered_name) of
