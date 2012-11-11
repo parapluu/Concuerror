@@ -1,12 +1,25 @@
 -module(file_system_example).
 
 -export([file_system_example/0]).
+-export([test14/0, test16/0, test18/0, test24/0]).
 
 -define(NUMBLOCKS, 26).
 -define(NUMINODE, 32).
 
 file_system_example() ->
     main(18).
+
+test14() ->
+    main(14).
+
+test16() ->
+    main(16).
+
+test18() ->
+    main(18).
+
+test24() ->
+    main(24).
 
 thread(Name, Tid, Parent) ->
     I = Tid rem ?NUMINODE,
