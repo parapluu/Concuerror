@@ -73,7 +73,8 @@ CORE_MODULES = \
 	concuerror_sched \
 	concuerror_state \
 	concuerror_ticket \
-	concuerror_util
+	concuerror_util \
+	concuerror_io_server
 
 LOG_MODULES = \
 	concuerror_log

@@ -217,6 +217,8 @@ interleave_loop(Target, RunCnt, Tickets) ->
             ?debug_1("Running interleaving ~p~n", [RunCnt]),
             ?debug_1("----------------------~n"),
             concuerror_lid:start(),
+            %% Initialize a new group leader
+            GroupLeader = concuerror_io_server:new_group_leader(self()),
             %% Save current process list (any process created after
             %% this will be cleaned up at the end of the run)
             ProcBefore = processes(),
@@ -224,6 +226,8 @@ interleave_loop(Target, RunCnt, Tickets) ->
             {Mod, Fun, Args} = Target,
             NewFun = fun() -> wait(), apply(Mod, Fun, Args) end,
             FirstPid = spawn_link(NewFun),
+            %% Set our io_server as the group leader
+            group_leader(GroupLeader, FirstPid),
             %% Initialize scheduler context
             FirstLid = concuerror_lid:new(FirstPid, noparent),
             Active = ?SETS:add_element(FirstLid, ?SETS:new()),
@@ -236,6 +240,10 @@ interleave_loop(Target, RunCnt, Tickets) ->
             %% Cleanup
             proc_cleanup(processes() -- ProcBefore),
             concuerror_lid:stop(),
+            %% Get buffered output from group leader
+            %% TODO: For now just ignore it. Maybe we can print it
+            %% only when we have an error (after the backtrace?)
+            _Output = concuerror_io_server:group_leader_sync(GroupLeader),
             NewTickets =
                 case Ret of
                     {error, Error, ErrorState} ->
