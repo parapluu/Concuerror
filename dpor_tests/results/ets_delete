@@ -1,21 +1,21 @@
 Checked 2 interleaving(s). 2 errors found.
 
-96994216
+107178750
 Error type        : Exception
 Details           : {badarg,[{ets,insert,[table,{key,value}],[]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1: ets_delete table
-  Process P1.1: ets_insert {table,{key,value}}
+  Process P1.1: ets_insert {table,[{key,value}]}
   Process P1.1 exits ("Exception")
 
 
-78113141
+46533659
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
-  Process P1.1: ets_insert {table,{key,value}}
+  Process P1.1: ets_insert {table,[{key,value}]}
   Process P1.1 exits (normal)
   Process P1: ets_delete table
 

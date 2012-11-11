@@ -20,7 +20,7 @@
 %% Internal exports
 -export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, lid_from_pid/1]).
 
--export([notify/3, wait_poll_or_continue/0]).
+-export([notify/3, wait_poll_or_continue/0, lock_release_atom/0]).
 
 -export_type([analysis_target/0, analysis_ret/0, bound/0]).
 
@@ -403,8 +403,12 @@ replay_lid_trace(N, Queue) ->
     end.
 
 wait_next(Lid, {exit, {normal, _Info}}) ->
+    Pid = concuerror_lid:get_pid(Lid),
+    link(Pid),
     continue(Lid),
-    exited;
+    receive
+        {'EXIT', Pid, normal} -> exited
+    end;
 wait_next(Lid, Prev) ->
     continue(Lid),
     Replace =
@@ -471,6 +475,9 @@ may_have_dependencies({_Lid, {'receive', _}}) -> false;
 may_have_dependencies({_Lid, exited}) -> false;
 may_have_dependencies(_Else) -> true.
 
+-spec lock_release_atom() -> '_._concuerror_lock_release'.
+
+lock_release_atom() -> '_._concuerror_lock_release'.
 
 %% All Trace:
 %%   dependent(New, Older)
@@ -494,7 +501,8 @@ dependent(A, {Lid, {unregister, RegName}}, false) ->
 %% Sending requires at least a different message.
 dependent({_Lid1, {send, {_Orig1, Lid, Msg1}}},
           {_Lid2, {send, {_Orig2, Lid, Msg2}}}, false) ->
-    Msg1 =/= Msg2;
+    ReleaseAtom = lock_release_atom(),
+    Msg1 =/= Msg2 andalso Msg1 =/= ReleaseAtom andalso Msg2 =/= ReleaseAtom;
 
 
 %% ETS operations live in their own small world.
@@ -593,16 +601,29 @@ dependent(_TransitionA, _TransitionB, true) ->
 dependent_ets(Op1, Op2) ->
     dependent_ets(Op1, Op2, false).
 
-dependent_ets({insert, [T, _, {K, V1}]}, {insert, [T, _, {K, V2}]}, false) ->
-    V1 =/= V2;
-dependent_ets({insert_new, [T, _, {K, _}]},
-              {insert_new, [T, _, {K, _}]}, false) ->
-    true;
-dependent_ets({insert_new, [T, _, {K, _}]}, {insert, [T, _, {K, _}]}, _Swap) ->
-    true;
-dependent_ets({Insert, [T, _, {K, _}]}, {lookup, [T, _, K]}, _Swap)
+dependent_ets({insert, [T, _, Keys1, KP, Objects1]},
+              {insert, [T, _, Keys2, KP, Objects2]}, false) ->
+    case ordsets:intersection(Keys1, Keys2) of
+        [] -> false;
+        Keys ->
+            Fold =
+                fun(_K, true) -> true;
+                   (K, false) ->
+                        lists:keyfind(K, KP, Objects1) =/=
+                            lists:keyfind(K, KP, Objects2)
+                end,
+            lists:foldl(Fold, false, Keys)
+    end;
+dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1]},
+              {insert_new, [T, _, Keys2, KP, _Objects2]}, false) ->
+    ordsets:intersection(Keys1, Keys2) =/= [];
+dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1]},
+              {insert, [T, _, Keys2, KP, _Objects2]}, _Swap) ->
+    ordsets:intersection(Keys1, Keys2) =/= [];
+dependent_ets({Insert, [T, _, Keys, _KP, _Objects1]},
+              {lookup, [T, _, K]}, _Swap)
   when Insert =:= insert; Insert =:= insert_new ->
-    true;
+    ordsets:is_element(K, Keys);
 dependent_ets({delete, [T, _]}, {_, [T|_]}, _Swap) ->
     true;
 dependent_ets({new, [_Tid1, Name, Options1]},
@@ -805,14 +826,6 @@ update_trace({Lid, _} = Selected, Next, State) ->
     BaseClockVector = dict:store(Lid, NewN, ClockVector),
     LidsClockVector = recent_dependency_cv(Selected, BaseClockVector, LidTrace),
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
-    NewSleepSet =
-        case Flavor of
-            fake -> [];
-            _Other ->
-                NewSleepSetCandidates =
-                    ordsets:union(ordsets:del_element(Lid, Done), SleepSet),
-                filter_awaked(NewSleepSetCandidates, Nexts, Selected)
-        end,
     NewNexts = dict:store(Lid, Next, Nexts),
     MaybeNotPollable = ordsets:del_element(Lid, Pollable),
     {NewPollable, NewEnabled, NewBlocked} =
@@ -831,10 +844,12 @@ update_trace({Lid, _} = Selected, Next, State) ->
                 end;
             false -> Preemptions
         end,
+    NewSleepSetCandidates =
+        ordsets:union(ordsets:del_element(Lid, Done), SleepSet),
     CommonNewTraceTop =
         #trace_state{i = NewN, last = Selected, nexts = NewNexts,
                      enabled = NewEnabled, blocked = NewBlocked,
-                     clock_map = NewClockMap, sleep_set = NewSleepSet,
+                     clock_map = NewClockMap, sleep_set = NewSleepSetCandidates,
                      pollable = NewPollable, error_nxt = ErrorNext,
                      preemptions = NewPreemptions},
     InstrNewTraceTop = handle_instruction(Selected, CommonNewTraceTop),
@@ -848,8 +863,19 @@ update_trace({Lid, _} = Selected, Next, State) ->
         queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
     {NewPrevTraceTop, NewTraceTop} =
         check_pollable(PrevTraceTop, InstrNewTraceTop),
+    NewSleepSet =
+        case Flavor of
+            fake -> [];
+            _Other ->
+                AfterPollingSleepSet = NewTraceTop#trace_state.sleep_set,
+                AfterPollingNexts = NewTraceTop#trace_state.nexts,
+                filter_awaked(AfterPollingSleepSet,
+                              AfterPollingNexts,
+                              PossiblyRewrittenSelected)
+        end,
     NewTrace =
-        [NewTraceTop#trace_state{lid_trace = NewLidTrace},
+        [NewTraceTop#trace_state{lid_trace = NewLidTrace,
+                                 sleep_set = NewSleepSet},
          NewPrevTraceTop|Rest],
     State#dpor_state{trace = NewTrace}.
 
@@ -1175,9 +1201,9 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 case Extra of
                     {new, [_EtsLid, Name, Options]} ->
                         {ets_new, Lid, {Name, Options}};
-                    {insert, [_EtsLid, Tid, Objects]} ->
+                    {insert, [_EtsLid, Tid, _K, _KP, Objects]} ->
                         {ets_insert, Lid, {Tid, Objects}};
-                    {insert_new, [_EtsLid, Tid, Objects]} ->
+                    {insert_new, [_EtsLid, Tid, _K, _KP, Objects]} ->
                         {ets_insert_new, Lid, {Tid, Objects}};
                     {lookup, [_EtsLid, Tid, Key]} ->
                         {ets_lookup, Lid, {Tid, Key}};
@@ -1217,8 +1243,11 @@ report_possible_deadlock(State) ->
     #dpor_state{trace = [TraceTop|Trace], tickets = Tickets} = State,
     NewTickets =
         case TraceTop#trace_state.enabled of
+        %% case ordsets:subtract(TraceTop#trace_state.enabled,
+        %%                       TraceTop#trace_state.sleep_set) of
             [] ->
                 case TraceTop#trace_state.blocked of
+                %% case TraceTop#trace_state.enabled of
                     [] ->
                         _LidTrace = TraceTop#trace_state.lid_trace,
                         ?f_debug("NORMAL!\n"),
@@ -1849,7 +1878,6 @@ instrument_my_messages(Lid, VC) ->
     Self = self(),
     Check =
         fun() ->
-                ?f_debug("M:~p\n",[process_info(self(), messages)]),
                 receive
                     Msg when not ?IS_INSTR_MSG(Msg) ->
                         Instr = {?INSTR_MSG, Lid, VC, Msg},

@@ -7,7 +7,7 @@
 -define(NUMINODE, 32).
 
 file_system_example() ->
-    main(18).
+    main(16).
 
 test14() ->
     main(14).
@@ -23,50 +23,45 @@ test24() ->
 
 thread(Name, Tid, Parent) ->
     I = Tid rem ?NUMINODE,
-    RPid = acquire_lock(Name, i, I),
+    acquire_lock(Name, i, I),
     case ets:lookup(inode, I) of
         [{I, 0}] ->
             B = (I * 2) rem ?NUMBLOCKS,
             while_loop(Name, B, I);
         _Else -> ok
     end,
-    release_lock(RPid),
+    release_lock(i, I),
     Parent ! exit.
 
 acquire_lock(N, T, I) ->
     lock_name(T, I) ! {N, acquire},
     receive
-        {RPid, acquired} -> RPid
+        acquired -> ok
     end.
 
-release_lock(RPid) ->
-    RPid ! release.
+release_lock(T, I) ->
+     lock_name(T, I) ! concuerror_sched:lock_release_atom().
 
 lock() ->
     receive
         {Pid, acquire} ->
-            {RPid, Mon} = spawn_monitor(fun release/0),
-            Pid ! {RPid, acquired},
+            Pid ! acquired,
+            ReleaseAtom = concuerror_sched:lock_release_atom(),
             receive
-                {'DOWN', Mon, process, RPid, normal} -> lock()
+                ReleaseAtom -> lock()
             end;
         stop -> ok
     end.
 
-release() ->
-    receive
-        release -> ok
-    end.
-
 while_loop(N, B, I) ->
-    RPid = acquire_lock(N, b, B),
+    acquire_lock(N, b, B),
     case ets:lookup(busy, B) of
         [{B, false}] ->
             ets:insert(busy, {B, true}),
             ets:insert(inode, {I, B+1}),
-            release_lock(RPid);
+            release_lock(b, B);
         _Else ->
-            release_lock(RPid),
+            release_lock(b, B),
             while_loop(N, (B+1) rem ?NUMBLOCKS, I)
     end.
 
