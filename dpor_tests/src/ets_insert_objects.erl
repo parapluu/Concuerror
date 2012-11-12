@@ -4,7 +4,7 @@
 
 ets_insert_objects() ->
     P = self(),
-    T = ets:new(table, [public]),
+    T = ets:new(table, [public, named_table]),
     spawn(fun() ->
                   ets:insert(T, [{x,0},{y,0,0}]),
                   P ! ok
@@ -37,6 +37,6 @@ ets_insert_objects() ->
             end
     end,
     throw({X,Y,Z}).
-            
-        
-    
+
+
+

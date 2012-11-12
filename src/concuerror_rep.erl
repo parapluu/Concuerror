@@ -652,6 +652,7 @@ find_my_ets_tables() ->
             Survives =
                 case ets:info(TID, heir) of
                     none -> false;
+                    Self -> false;
                     Pid ->
                         case is_process_alive(Pid) of
                             false -> false;

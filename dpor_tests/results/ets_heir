@@ -1,41 +1,54 @@
-Checked 3 interleaving(s). 3 errors found.
+Checked 4 interleaving(s). 4 errors found.
 
-80625679
-Error type        : Exception
-Details           : {badarg,[{ets,lookup,[184339,x],[]},
-                             {ets_heir,'-ets_heir/0-fun-1-',1,[]}]}
-  Process P1 spawns process P1.1
-  Process P1: ets_new {table,[{heir,<0.44.0>,heir}]}
-  Process P1 spawns process P1.2
-  Process P1 exits (normal)
-  Process P1.1 exits (normal)
-  Process P1.2: ets_lookup {184339,x}
-  Process P1.2 exits ("Exception")
-
-
-16086516
+6348903
 Error type        : Exception
 Details           : {{nocatch,too_bad},
-                     [{ets_heir,'-ets_heir/0-fun-1-',1,
+                     [{ets_heir,'-ets_heir/0-fun-1-',0,
                                 [{file,"src/ets_heir.erl"},{line,10}]}]}
   Process P1 spawns process P1.1
-  Process P1: ets_new {table,[{heir,<0.44.0>,heir}]}
+  Process P1: ets_new {table,[named_table,{heir,<0.44.0>,heir}]}
   Process P1 spawns process P1.2
-  Process P1.1 exits (normal)
-  Process P1.2: ets_lookup {184339,x}
+  Process P1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
   Process P1.2 exits ("Exception")
 
 
-115068068
+116524561
 Error type        : Exception
-Details           : {badarg,[{ets,lookup,[188435,x],[]},
-                             {ets_heir,'-ets_heir/0-fun-1-',1,[]}]}
+Details           : {badarg,[{ets,lookup,[table,x],[]},
+                             {ets_heir,'-ets_heir/0-fun-1-',0,[]}]}
   Process P1 spawns process P1.1
-  Process P1: ets_new {table,[{heir,<0.44.0>,heir}]}
+  Process P1: ets_new {table,[named_table,{heir,<0.44.0>,heir}]}
+  Process P1 spawns process P1.2
+  Process P1 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits ("Exception")
+
+
+124851609
+Error type        : Exception
+Details           : {{nocatch,too_bad},
+                     [{ets_heir,'-ets_heir/0-fun-1-',0,
+                                [{file,"src/ets_heir.erl"},{line,10}]}]}
+  Process P1 spawns process P1.1
+  Process P1: ets_new {table,[named_table,{heir,<0.44.0>,heir}]}
+  Process P1 spawns process P1.2
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits ("Exception")
+
+
+92774118
+Error type        : Exception
+Details           : {badarg,[{ets,lookup,[table,x],[]},
+                             {ets_heir,'-ets_heir/0-fun-1-',0,[]}]}
+  Process P1 spawns process P1.1
+  Process P1: ets_new {table,[named_table,{heir,<0.44.0>,heir}]}
   Process P1 spawns process P1.2
   Process P1.1 exits (normal)
   Process P1 exits (normal)
-  Process P1.2: ets_lookup {184339,x}
+  Process P1.2: ets_lookup {table,x}
   Process P1.2 exits ("Exception")
 
 
