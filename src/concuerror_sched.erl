@@ -602,8 +602,8 @@ dependent(_TransitionA, _TransitionB, true) ->
 dependent_ets(Op1, Op2) ->
     dependent_ets(Op1, Op2, false).
 
-dependent_ets({insert, [T, _, Keys1, KP, Objects1]},
-              {insert, [T, _, Keys2, KP, Objects2]}, false) ->
+dependent_ets({insert, [T, _, Keys1, KP, Objects1, true]},
+              {insert, [T, _, Keys2, KP, Objects2, true]}, false) ->
     case ordsets:intersection(Keys1, Keys2) of
         [] -> false;
         Keys ->
@@ -615,13 +615,16 @@ dependent_ets({insert, [T, _, Keys1, KP, Objects1]},
                 end,
             lists:foldl(Fold, false, Keys)
     end;
-dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1]},
-              {insert_new, [T, _, Keys2, KP, _Objects2]}, false) ->
+dependent_ets({insert_new, [_, _, _, _, _, false]},
+              {insert_new, [_, _, _, _, _, false]}, false) ->
+    false;
+dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1, _Status1]},
+              {insert_new, [T, _, Keys2, KP, _Objects2, _Status2]}, false) ->
     ordsets:intersection(Keys1, Keys2) =/= [];
-dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1]},
-              {insert, [T, _, Keys2, KP, _Objects2]}, _Swap) ->
+dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1, _Status1]},
+              {insert, [T, _, Keys2, KP, _Objects2, true]}, _Swap) ->
     ordsets:intersection(Keys1, Keys2) =/= [];
-dependent_ets({Insert, [T, _, Keys, _KP, _Objects1]},
+dependent_ets({Insert, [T, _, Keys, _KP, _Objects1, true]},
               {lookup, [T, _, K]}, _Swap)
   when Insert =:= insert; Insert =:= insert_new ->
     ordsets:is_element(K, Keys);
@@ -977,10 +980,11 @@ handle_instruction_op({Lid, {Spawn, _Info}})
         end,
     ChildNextInstr = wait_next(ChildLid, init),
     {Info, ChildNextInstr};
-handle_instruction_op({Lid, {ets, {new, _Info}}}) ->
+handle_instruction_op({Lid, {ets, {Updatable, _Info}}})
+  when Updatable =:= new; Updatable =:= insert_new ->
     receive
         %% This is the replaced message
-        #sched{msg = ets, lid = Lid, misc = {new, Info}, type = prev} ->
+        #sched{msg = ets, lid = Lid, misc = {Updatable, Info}, type = prev} ->
             Info
     end;
 handle_instruction_op({Lid, {Updatable, _Info}})
@@ -1033,8 +1037,9 @@ handle_instruction_al({Lid, {'receive', _Tag}}, TraceTop, {From, CV, Msg}) ->
     NewVector = max_cv(Vector, CV),
     NewClockMap = dict:store(Lid, NewVector, ClockMap),
     TraceTop#trace_state{last = NewLast, clock_map = NewClockMap};
-handle_instruction_al({Lid, {ets, {new, _Info}}}, TraceTop, Info) ->
-    NewLast = {Lid, {ets, {new, Info}}},
+handle_instruction_al({Lid, {ets, {Updatable, _Info}}}, TraceTop, Info)
+  when Updatable =:= new; Updatable =:= insert_new ->
+    NewLast = {Lid, {ets, {Updatable, Info}}},
     TraceTop#trace_state{last = NewLast};
 handle_instruction_al({Lid, {Updatable, _Info}}, TraceTop, Info)
   when Updatable =:= send; Updatable =:= whereis; Updatable =:= monitor;
@@ -1199,9 +1204,9 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                 case Extra of
                     {new, [_EtsLid, Name, Options]} ->
                         {ets_new, Lid, {Name, Options}};
-                    {insert, [_EtsLid, Tid, _K, _KP, Objects]} ->
+                    {insert, [_EtsLid, Tid, _K, _KP, Objects, _Status]} ->
                         {ets_insert, Lid, {Tid, Objects}};
-                    {insert_new, [_EtsLid, Tid, _K, _KP, Objects]} ->
+                    {insert_new, [_EtsLid, Tid, _K, _KP, Objects, _Status]} ->
                         {ets_insert_new, Lid, {Tid, Objects}};
                     {lookup, [_EtsLid, Tid, Key]} ->
                         {ets_lookup, Lid, {Tid, Key}};

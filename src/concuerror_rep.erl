@@ -978,10 +978,14 @@ ets_insert_center_dpor(Type, Tab, Obj) ->
             false -> Obj
         end,
     Keys = ordsets:from_list([element(KeyPos, O) || O <- ConvObj]),
-    concuerror_sched:notify(ets, {Type, [Lid, Tab, Keys, KeyPos, ConvObj]}),
+    concuerror_sched:notify(ets, {Type, [Lid, Tab, Keys, KeyPos, ConvObj, true]}),
     case Type of
         insert -> ets:insert(Tab, Obj);
-        insert_new -> ets:insert_new(Tab, Obj)
+        insert_new ->
+            Ret = ets:insert_new(Tab, Obj),
+            Info = {Type, [Lid, Tab, Keys, KeyPos, ConvObj, Ret]},
+            concuerror_sched:notify(ets, Info, prev),
+            Ret
     end.
 
 rep_ets_lookup_dpor(Tab, Key) ->
