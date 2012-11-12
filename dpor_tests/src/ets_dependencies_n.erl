@@ -9,16 +9,15 @@ ets_dependencies_n() ->
 ets_dependencies_n(Readers) ->
     Parent = self(),
     ets:new(table, [public, named_table]),
-    ets:insert(table, {hot, 0}),
     Writer =
         fun() ->
-            ets:insert(table, {hot, 1}),
+            ets:insert(table, {x, 42}),
             Parent ! ok
         end,
     Reader =
         fun(N) ->
-            ets:insert(table, {N, 1}),
-            ets:lookup(table, hot),
+            ets:lookup(table, N),
+            ets:lookup(table, x),
             Parent ! ok    
         end,
     spawn(Writer),
