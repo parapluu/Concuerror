@@ -6,23 +6,20 @@
 ets_dependencies_n() ->
     ets_dependencies_n(3).
 
-ets_dependencies_n(Readers) ->
-    Parent = self(),
+ets_dependencies_n(N) ->
     ets:new(table, [public, named_table]),
     Writer =
         fun() ->
-            ets:insert(table, {x, 42}),
-            Parent ! ok
+            ets:insert(table, {x, 42})
         end,
     Reader =
-        fun(N) ->
-            ets:lookup(table, N),
-            ets:lookup(table, x),
-            Parent ! ok    
+        fun(I) ->
+            ets:lookup(table, I),
+            ets:lookup(table, x)
         end,
     spawn(Writer),
-    [spawn(fun() -> Reader(I) end) || I <- lists:seq(1, Readers)],
-    [receive _ -> ok end || _ <- lists:seq(1, Readers+1)],
+    [spawn(fun() -> Reader(I) end) || I <- lists:seq(1, N)],
     receive
-        _ -> deadlock
+    after
+        infinity -> deadlock
     end.
