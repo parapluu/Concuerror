@@ -31,7 +31,7 @@ def runTest(test):
         files = [test]
     # Create a dir to save the results
     try:
-        os.makedirs(results + "/" + suite + "/dpor_fake")
+        os.makedirs(results + "/" + suite + "/dpor")
     except OSError:
         pass
     # Compile it
@@ -67,12 +67,12 @@ def runScenario(suite, name, modn, funn, preb, files):
     global total_failed
     sema.acquire()
     # Run concuerror
-    os.system("%s --dpor --target %s %s --files %s --output %s/%s/dpor_fake/%s-%s-%s.txt --preb %s --quiet"
+    os.system("%s --dpor --target %s %s --files %s --output %s/%s/dpor/%s-%s-%s.txt --preb %s --quiet"
             % (concuerror, modn, funn, ' '.join(files), results, suite, name,
                funn, preb, preb))
     # Compare the results
-    a = "%s/suites/%s/dpor_fake/%s-%s-%s.txt" % (dirname, suite, name, funn, preb)
-    b = "%s/%s/dpor_fake/%s-%s-%s.txt" % (results, suite, name, funn, preb)
+    a = "%s/suites/%s/dpor/%s-%s-%s.txt" % (dirname, suite, name, funn, preb)
+    b = "%s/%s/dpor/%s-%s-%s.txt" % (results, suite, name, funn, preb)
     equalRes = equalResults(a, b)
     sema.release()
     # Print the results
@@ -177,7 +177,7 @@ for p in procT:
 print "\nOVERALL SUMMARY for test run"
 print "  %d total tests, which gave rise to" % len(tests)
 print "  %d test cases, of which" % total_tests.value
-print "  %d caused unexpected failures" % total_failed.value
+print "  %d caused expected failures! :-)" % total_failed.value
 
 # Cleanup temp files
 os.system("find %s -name '*.beam' -exec rm {} \;" % dirname)
