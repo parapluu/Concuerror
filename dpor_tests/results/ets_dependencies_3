@@ -1,4 +1,119 @@
-Checked 4 interleaving(s). 4 errors found.
+Checked 24 interleaving(s). 24 errors found.
+
+9306232
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+
+
+103301645
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+
+
+61569823
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_lookup {table,x}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+
+
+72686434
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_lookup {table,x}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+
+
+51292125
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+
 
 9244205
 Error type        : Deadlock
@@ -21,6 +136,121 @@ Blocked processes : P1
   Process P1.3 sends message `ok` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok` from process P1.3
+
+
+81805558
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_lookup {table,x}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+
+
+25490547
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_lookup {table,x}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+
+
+107813448
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1: ets_lookup {table,x}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+
+
+12213726
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+
+
+96649296
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_lookup {table,x}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
 
 
 32255144
@@ -46,6 +276,213 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
+95214374
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+
+
+114142861
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+
+
+52801101
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+
+
+120834192
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+
+
+39539818
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+
+
+88557541
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+
+
+26595098
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+
+
+109800203
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+
+
+124833185
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+
+
 55026154
 Error type        : Deadlock
 Blocked processes : P1
@@ -64,6 +501,29 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+
+
+3989892
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_lookup {table,x}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
   Process P1.3 sends message `ok` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok` from process P1.3

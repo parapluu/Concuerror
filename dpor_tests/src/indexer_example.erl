@@ -21,7 +21,7 @@ thread(Tid) ->
 
 thread(Tid, M) ->
     case getmsg(M, Tid) of
-        stop -> parent ! exit;
+        stop -> ok;
         {W, NewM} -> 
             H = hash(W),
             while_cas_table(H, W),
@@ -47,22 +47,14 @@ while_cas_table(H, W) ->
     end.
 
 main(Threads) ->
-    register(parent, self()),
     ets:new(table, [public, named_table]),
     spawn_threads(Threads-1),
-    collect_threads(Threads-1),
     receive
-        forever_alone -> ok
+    after
+        infinity -> ok
     end.
     
 spawn_threads(-1) -> ok;
 spawn_threads(N) ->
     spawn(fun() -> thread(N) end),
     spawn_threads(N-1).
-
-collect_threads(-1) -> ok;
-collect_threads(N) -> 
-    receive
-        exit -> collect_threads(N-1)
-    end.
-

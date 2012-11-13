@@ -4,20 +4,25 @@
 
 simple_ets() ->
     Tid = ets:new(simple_ets, [public, named_table]),
-    Self = self(),
+    P = self(),
     F =
         fun(K,V) ->
             ets:insert(Tid, {K, V})
         end,
-    spawn(fun() -> F(key, value),
-                   F(key, new_value),
-                   F(clef, souffle),
-                   Self ! ok
-          end),
-    spawn(fun() -> F(key, eulav),
-                   F(clef, elffuos),
-                   Self ! ok
-          end),
+    P1 = spawn(fun() -> F(key, value),
+                        F(key, new_value),
+                        F(clef, souffle),
+                        receive
+                            ok -> P ! ok
+                        end
+               end),
+    P2 = spawn(fun() -> F(key, eulav),
+                        F(clef, elffuos),
+                        receive
+                            ok -> P1 ! ok
+                        end
+               end),
+    P2 ! ok,
     receive
         ok ->
             [{key, V1}] = ets:lookup(Tid, key),

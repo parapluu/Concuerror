@@ -21,7 +21,7 @@ test18() ->
 test24() ->
     main(24).
 
-thread(Name, Tid, Parent) ->
+thread(Name, Tid) ->
     I = Tid rem ?NUMINODE,
     acquire_lock(Name, i, I),
     case ets:lookup(inode, I) of
@@ -30,8 +30,7 @@ thread(Name, Tid, Parent) ->
             while_loop(Name, B, I);
         _Else -> ok
     end,
-    release_lock(i, I),
-    Parent ! exit.
+    release_lock(i, I).
 
 acquire_lock(N, T, I) ->
     lock_name(T, I) ! {N, acquire},
@@ -70,10 +69,9 @@ main(Threads) ->
     init(?NUMINODE, i, inode, 0),
     init(?NUMBLOCKS, b, busy, false),
     spawn_threads(Threads),
-    collect_threads(Threads),
-    cleanup(),
     receive
-        never -> ok
+    after
+        infinity -> ok
     end.
 
 lock_name(Type, I) ->
@@ -93,24 +91,9 @@ init(Slots, Lock, Data, Init) ->
 
 spawn_threads(0) -> ok;
 spawn_threads(N) ->
-    Parent = self(),
     Pid = spawn(fun() ->
-                    Name = thread_name(N),
-                    register(Name, self()),
-                    thread(Name, N, Parent)
+                        Name = thread_name(N),
+                        register(Name, self()),
+                        thread(Name, N)
                 end),
     spawn_threads(N-1).
-
-collect_threads(0) -> ok;
-collect_threads(N) -> 
-    receive
-        exit -> collect_threads(N-1)
-    end.
-
-cleanup() ->
-    dismiss_locks(?NUMINODE, i),
-    dismiss_locks(?NUMBLOCKS, b).
-
-dismiss_locks(Slots, Lock) ->
-    [lock_name(Lock, N) ! stop || N <- lists:seq(0, Slots - 1)].
-         

@@ -4,7 +4,7 @@
          ring_leader_election/1]).
 
 ring_leader_election() ->
-    ring_leader_election(5).
+    ring_leader_election(3).
 
 ring_leader_election(N) ->
     Parent = self(),

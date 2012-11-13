@@ -1,8 +1,8 @@
 Checked 8 interleaving(s). 8 errors found.
 
-19859584
+16896589
 Error type        : Deadlock
-Blocked processes : P1
+Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
   Process P1: ets_new {busy,[public,named_table]}
   Process P1 spawns process P1.1
@@ -240,9 +240,7 @@ Blocked processes : P1
   Process P162: ets_insert {inode,[{13,1}]}
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_b_0'
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
-  Process P162 sends message `exit` to process P1
   Process P162 exits (normal)
-  Process P1 receives message `exit` from process P162
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
   Process P163 registers process P163 as `thread_12`
@@ -260,9 +258,7 @@ Blocked processes : P1
   Process P163: ets_insert {inode,[{12,25}]}
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_b_24'
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
-  Process P163 sends message `exit` to process P1
   Process P163 exits (normal)
-  Process P1 receives message `exit` from process P163
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
   Process P164 registers process P164 as `thread_11`
@@ -280,9 +276,7 @@ Blocked processes : P1
   Process P164: ets_insert {inode,[{11,23}]}
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_b_22'
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
-  Process P164 sends message `exit` to process P1
   Process P164 exits (normal)
-  Process P1 receives message `exit` from process P164
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
   Process P165 registers process P165 as `thread_10`
@@ -300,9 +294,7 @@ Blocked processes : P1
   Process P165: ets_insert {inode,[{10,21}]}
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_b_20'
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
-  Process P165 sends message `exit` to process P1
   Process P165 exits (normal)
-  Process P1 receives message `exit` from process P165
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
   Process P166 registers process P166 as `thread_9`
@@ -320,9 +312,7 @@ Blocked processes : P1
   Process P166: ets_insert {inode,[{9,19}]}
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_b_18'
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
-  Process P166 sends message `exit` to process P1
   Process P166 exits (normal)
-  Process P1 receives message `exit` from process P166
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
   Process P167 registers process P167 as `thread_8`
@@ -340,9 +330,7 @@ Blocked processes : P1
   Process P167: ets_insert {inode,[{8,17}]}
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_b_16'
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
-  Process P167 sends message `exit` to process P1
   Process P167 exits (normal)
-  Process P1 receives message `exit` from process P167
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
   Process P168 registers process P168 as `thread_7`
@@ -360,9 +348,7 @@ Blocked processes : P1
   Process P168: ets_insert {inode,[{7,15}]}
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_b_14'
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
-  Process P168 sends message `exit` to process P1
   Process P168 exits (normal)
-  Process P1 receives message `exit` from process P168
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
   Process P169 registers process P169 as `thread_6`
@@ -380,9 +366,7 @@ Blocked processes : P1
   Process P169: ets_insert {inode,[{6,13}]}
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_b_12'
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
-  Process P169 sends message `exit` to process P1
   Process P169 exits (normal)
-  Process P1 receives message `exit` from process P169
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
   Process P17. registers process P17. as `thread_5`
@@ -400,9 +384,7 @@ Blocked processes : P1
   Process P17.: ets_insert {inode,[{5,11}]}
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_b_10'
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
-  Process P17. sends message `exit` to process P1
   Process P17. exits (normal)
-  Process P1 receives message `exit` from process P17.
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
   Process P171 registers process P171 as `thread_4`
@@ -420,9 +402,7 @@ Blocked processes : P1
   Process P171: ets_insert {inode,[{4,9}]}
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_b_8'
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
-  Process P171 sends message `exit` to process P1
   Process P171 exits (normal)
-  Process P1 receives message `exit` from process P171
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
   Process P172 receives message `acquired` from process P1.4
@@ -437,9 +417,7 @@ Blocked processes : P1
   Process P172: ets_insert {inode,[{3,7}]}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
-  Process P172 sends message `exit` to process P1
   Process P172 exits (normal)
-  Process P1 receives message `exit` from process P172
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `{thread_16,acquire}` from process P159
@@ -457,9 +435,7 @@ Blocked processes : P1
   Process P159: ets_insert {inode,[{16,8}]}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_7'
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
-  Process P159 sends message `exit` to process P1
   Process P159 exits (normal)
-  Process P1 receives message `exit` from process P159
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
   Process P14. receives message `'_._concuerror_lock_release'` from process P159
   Process P173 receives message `acquired` from process P1.3
@@ -474,9 +450,7 @@ Blocked processes : P1
   Process P173: ets_insert {inode,[{2,5}]}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
-  Process P173 sends message `exit` to process P1
   Process P173 exits (normal)
-  Process P1 receives message `exit` from process P173
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `{thread_15,acquire}` from process P16.
@@ -494,9 +468,7 @@ Blocked processes : P1
   Process P16.: ets_insert {inode,[{15,6}]}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_5'
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
-  Process P16. sends message `exit` to process P1
   Process P16. exits (normal)
-  Process P1 receives message `exit` from process P16.
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
   Process P138 receives message `'_._concuerror_lock_release'` from process P16.
   Process P174 receives message `acquired` from process P1.2
@@ -511,9 +483,7 @@ Blocked processes : P1
   Process P174: ets_insert {inode,[{1,3}]}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
-  Process P174 sends message `exit` to process P1
   Process P174 exits (normal)
-  Process P1 receives message `exit` from process P174
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `{thread_14,acquire}` from process P161
@@ -531,190 +501,14 @@ Blocked processes : P1
   Process P161: ets_insert {inode,[{14,4}]}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_3'
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
-  Process P161 sends message `exit` to process P1
   Process P161 exits (normal)
-  Process P1 receives message `exit` from process P161
-  Process P1 sends message `stop` to process named 'lock_i_0'
-  Process P1 sends message `stop` to process named 'lock_i_1'
-  Process P1 sends message `stop` to process named 'lock_i_2'
-  Process P1 sends message `stop` to process named 'lock_i_3'
-  Process P1 sends message `stop` to process named 'lock_i_4'
-  Process P1 sends message `stop` to process named 'lock_i_5'
-  Process P1 sends message `stop` to process named 'lock_i_6'
-  Process P1 sends message `stop` to process named 'lock_i_7'
-  Process P1 sends message `stop` to process named 'lock_i_8'
-  Process P1 sends message `stop` to process named 'lock_i_9'
-  Process P1 sends message `stop` to process named 'lock_i_10'
-  Process P1 sends message `stop` to process named 'lock_i_11'
-  Process P1 sends message `stop` to process named 'lock_i_12'
-  Process P1 sends message `stop` to process named 'lock_i_13'
-  Process P1 sends message `stop` to process named 'lock_i_14'
-  Process P1 sends message `stop` to process named 'lock_i_15'
-  Process P1 sends message `stop` to process named 'lock_i_16'
-  Process P1 sends message `stop` to process named 'lock_i_17'
-  Process P1 sends message `stop` to process named 'lock_i_18'
-  Process P1 sends message `stop` to process named 'lock_i_19'
-  Process P1 sends message `stop` to process named 'lock_i_20'
-  Process P1 sends message `stop` to process named 'lock_i_21'
-  Process P1 sends message `stop` to process named 'lock_i_22'
-  Process P1 sends message `stop` to process named 'lock_i_23'
-  Process P1 sends message `stop` to process named 'lock_i_24'
-  Process P1 sends message `stop` to process named 'lock_i_25'
-  Process P1 sends message `stop` to process named 'lock_i_26'
-  Process P1 sends message `stop` to process named 'lock_i_27'
-  Process P1 sends message `stop` to process named 'lock_i_28'
-  Process P1 sends message `stop` to process named 'lock_i_29'
-  Process P1 sends message `stop` to process named 'lock_i_30'
-  Process P1 sends message `stop` to process named 'lock_i_31'
-  Process P1 sends message `stop` to process named 'lock_b_0'
-  Process P1 sends message `stop` to process named 'lock_b_1'
-  Process P1 sends message `stop` to process named 'lock_b_2'
-  Process P1 sends message `stop` to process named 'lock_b_3'
-  Process P1 sends message `stop` to process named 'lock_b_4'
-  Process P1 sends message `stop` to process named 'lock_b_5'
-  Process P1 sends message `stop` to process named 'lock_b_6'
-  Process P1 sends message `stop` to process named 'lock_b_7'
-  Process P1 sends message `stop` to process named 'lock_b_8'
-  Process P1 sends message `stop` to process named 'lock_b_9'
-  Process P1 sends message `stop` to process named 'lock_b_10'
-  Process P1 sends message `stop` to process named 'lock_b_11'
-  Process P1 sends message `stop` to process named 'lock_b_12'
-  Process P1 sends message `stop` to process named 'lock_b_13'
-  Process P1 sends message `stop` to process named 'lock_b_14'
-  Process P1 sends message `stop` to process named 'lock_b_15'
-  Process P1 sends message `stop` to process named 'lock_b_16'
-  Process P1 sends message `stop` to process named 'lock_b_17'
-  Process P1 sends message `stop` to process named 'lock_b_18'
-  Process P1 sends message `stop` to process named 'lock_b_19'
-  Process P1 sends message `stop` to process named 'lock_b_20'
-  Process P1 sends message `stop` to process named 'lock_b_21'
-  Process P1 sends message `stop` to process named 'lock_b_22'
-  Process P1 sends message `stop` to process named 'lock_b_23'
-  Process P1 sends message `stop` to process named 'lock_b_24'
-  Process P1 sends message `stop` to process named 'lock_b_25'
-  Process P1.1 receives message `stop` from process P1
-  Process P1.1 exits (normal)
-  Process P1.2 receives message `stop` from process P1
-  Process P1.2 exits (normal)
-  Process P1.3 receives message `stop` from process P1
-  Process P1.3 exits (normal)
-  Process P1.4 receives message `stop` from process P1
-  Process P1.4 exits (normal)
-  Process P1.5 receives message `stop` from process P1
-  Process P1.5 exits (normal)
-  Process P1.6 receives message `stop` from process P1
-  Process P1.6 exits (normal)
-  Process P1.7 receives message `stop` from process P1
-  Process P1.7 exits (normal)
-  Process P1.8 receives message `stop` from process P1
-  Process P1.8 exits (normal)
-  Process P1.9 receives message `stop` from process P1
-  Process P1.9 exits (normal)
-  Process P11. receives message `stop` from process P1
-  Process P11. exits (normal)
-  Process P111 receives message `stop` from process P1
-  Process P111 exits (normal)
-  Process P112 receives message `stop` from process P1
-  Process P112 exits (normal)
-  Process P113 receives message `stop` from process P1
-  Process P113 exits (normal)
-  Process P114 receives message `stop` from process P1
-  Process P114 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
-  Process P115 receives message `stop` from process P1
-  Process P115 exits (normal)
-  Process P116 receives message `stop` from process P1
-  Process P116 exits (normal)
-  Process P117 receives message `stop` from process P1
-  Process P117 exits (normal)
-  Process P118 receives message `stop` from process P1
-  Process P118 exits (normal)
-  Process P119 receives message `stop` from process P1
-  Process P119 exits (normal)
-  Process P12. receives message `stop` from process P1
-  Process P12. exits (normal)
-  Process P121 receives message `stop` from process P1
-  Process P121 exits (normal)
-  Process P122 receives message `stop` from process P1
-  Process P122 exits (normal)
-  Process P123 receives message `stop` from process P1
-  Process P123 exits (normal)
-  Process P124 receives message `stop` from process P1
-  Process P124 exits (normal)
-  Process P125 receives message `stop` from process P1
-  Process P125 exits (normal)
-  Process P126 receives message `stop` from process P1
-  Process P126 exits (normal)
-  Process P127 receives message `stop` from process P1
-  Process P127 exits (normal)
-  Process P128 receives message `stop` from process P1
-  Process P128 exits (normal)
-  Process P129 receives message `stop` from process P1
-  Process P129 exits (normal)
-  Process P13. receives message `stop` from process P1
-  Process P13. exits (normal)
-  Process P131 receives message `stop` from process P1
-  Process P131 exits (normal)
-  Process P132 receives message `stop` from process P1
-  Process P132 exits (normal)
-  Process P133 receives message `stop` from process P1
-  Process P133 exits (normal)
-  Process P134 receives message `stop` from process P1
-  Process P134 exits (normal)
-  Process P135 receives message `stop` from process P1
-  Process P135 exits (normal)
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
-  Process P136 receives message `stop` from process P1
-  Process P136 exits (normal)
-  Process P137 receives message `stop` from process P1
-  Process P137 exits (normal)
-  Process P138 receives message `stop` from process P1
-  Process P138 exits (normal)
-  Process P139 receives message `stop` from process P1
-  Process P139 exits (normal)
-  Process P14. receives message `stop` from process P1
-  Process P14. exits (normal)
-  Process P141 receives message `stop` from process P1
-  Process P141 exits (normal)
-  Process P142 receives message `stop` from process P1
-  Process P142 exits (normal)
-  Process P143 receives message `stop` from process P1
-  Process P143 exits (normal)
-  Process P144 receives message `stop` from process P1
-  Process P144 exits (normal)
-  Process P145 receives message `stop` from process P1
-  Process P145 exits (normal)
-  Process P146 receives message `stop` from process P1
-  Process P146 exits (normal)
-  Process P147 receives message `stop` from process P1
-  Process P147 exits (normal)
-  Process P148 receives message `stop` from process P1
-  Process P148 exits (normal)
-  Process P149 receives message `stop` from process P1
-  Process P149 exits (normal)
-  Process P15. receives message `stop` from process P1
-  Process P15. exits (normal)
-  Process P151 receives message `stop` from process P1
-  Process P151 exits (normal)
-  Process P152 receives message `stop` from process P1
-  Process P152 exits (normal)
-  Process P153 receives message `stop` from process P1
-  Process P153 exits (normal)
-  Process P154 receives message `stop` from process P1
-  Process P154 exits (normal)
-  Process P155 receives message `stop` from process P1
-  Process P155 exits (normal)
-  Process P156 receives message `stop` from process P1
-  Process P156 exits (normal)
-  Process P157 receives message `stop` from process P1
-  Process P157 exits (normal)
-  Process P158 receives message `stop` from process P1
-  Process P158 exits (normal)
 
 
-124306449
+7731787
 Error type        : Deadlock
-Blocked processes : P1
+Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
   Process P1: ets_new {busy,[public,named_table]}
   Process P1 spawns process P1.1
@@ -942,9 +736,7 @@ Blocked processes : P1
   Process P161: ets_insert {inode,[{14,3}]}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
-  Process P161 sends message `exit` to process P1
   Process P161 exits (normal)
-  Process P1 receives message `exit` from process P161
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
   Process P162 registers process P162 as `thread_13`
@@ -962,9 +754,7 @@ Blocked processes : P1
   Process P162: ets_insert {inode,[{13,1}]}
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_b_0'
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
-  Process P162 sends message `exit` to process P1
   Process P162 exits (normal)
-  Process P1 receives message `exit` from process P162
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
   Process P163 registers process P163 as `thread_12`
@@ -982,9 +772,7 @@ Blocked processes : P1
   Process P163: ets_insert {inode,[{12,25}]}
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_b_24'
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
-  Process P163 sends message `exit` to process P1
   Process P163 exits (normal)
-  Process P1 receives message `exit` from process P163
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
   Process P164 registers process P164 as `thread_11`
@@ -1002,9 +790,7 @@ Blocked processes : P1
   Process P164: ets_insert {inode,[{11,23}]}
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_b_22'
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
-  Process P164 sends message `exit` to process P1
   Process P164 exits (normal)
-  Process P1 receives message `exit` from process P164
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
   Process P165 registers process P165 as `thread_10`
@@ -1022,9 +808,7 @@ Blocked processes : P1
   Process P165: ets_insert {inode,[{10,21}]}
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_b_20'
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
-  Process P165 sends message `exit` to process P1
   Process P165 exits (normal)
-  Process P1 receives message `exit` from process P165
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
   Process P166 registers process P166 as `thread_9`
@@ -1042,9 +826,7 @@ Blocked processes : P1
   Process P166: ets_insert {inode,[{9,19}]}
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_b_18'
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
-  Process P166 sends message `exit` to process P1
   Process P166 exits (normal)
-  Process P1 receives message `exit` from process P166
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
   Process P167 registers process P167 as `thread_8`
@@ -1062,9 +844,7 @@ Blocked processes : P1
   Process P167: ets_insert {inode,[{8,17}]}
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_b_16'
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
-  Process P167 sends message `exit` to process P1
   Process P167 exits (normal)
-  Process P1 receives message `exit` from process P167
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
   Process P168 registers process P168 as `thread_7`
@@ -1082,9 +862,7 @@ Blocked processes : P1
   Process P168: ets_insert {inode,[{7,15}]}
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_b_14'
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
-  Process P168 sends message `exit` to process P1
   Process P168 exits (normal)
-  Process P1 receives message `exit` from process P168
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
   Process P169 registers process P169 as `thread_6`
@@ -1102,9 +880,7 @@ Blocked processes : P1
   Process P169: ets_insert {inode,[{6,13}]}
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_b_12'
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
-  Process P169 sends message `exit` to process P1
   Process P169 exits (normal)
-  Process P1 receives message `exit` from process P169
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
   Process P17. registers process P17. as `thread_5`
@@ -1122,9 +898,7 @@ Blocked processes : P1
   Process P17.: ets_insert {inode,[{5,11}]}
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_b_10'
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
-  Process P17. sends message `exit` to process P1
   Process P17. exits (normal)
-  Process P1 receives message `exit` from process P17.
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
   Process P171 registers process P171 as `thread_4`
@@ -1142,9 +916,7 @@ Blocked processes : P1
   Process P171: ets_insert {inode,[{4,9}]}
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_b_8'
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
-  Process P171 sends message `exit` to process P1
   Process P171 exits (normal)
-  Process P1 receives message `exit` from process P171
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
   Process P172 receives message `acquired` from process P1.4
@@ -1159,9 +931,7 @@ Blocked processes : P1
   Process P172: ets_insert {inode,[{3,7}]}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
-  Process P172 sends message `exit` to process P1
   Process P172 exits (normal)
-  Process P1 receives message `exit` from process P172
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `{thread_16,acquire}` from process P159
@@ -1179,9 +949,7 @@ Blocked processes : P1
   Process P159: ets_insert {inode,[{16,8}]}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_7'
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
-  Process P159 sends message `exit` to process P1
   Process P159 exits (normal)
-  Process P1 receives message `exit` from process P159
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
   Process P14. receives message `'_._concuerror_lock_release'` from process P159
   Process P173 receives message `acquired` from process P1.3
@@ -1196,9 +964,7 @@ Blocked processes : P1
   Process P173: ets_insert {inode,[{2,5}]}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
-  Process P173 sends message `exit` to process P1
   Process P173 exits (normal)
-  Process P1 receives message `exit` from process P173
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `{thread_15,acquire}` from process P16.
@@ -1216,9 +982,7 @@ Blocked processes : P1
   Process P16.: ets_insert {inode,[{15,6}]}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_5'
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
-  Process P16. sends message `exit` to process P1
   Process P16. exits (normal)
-  Process P1 receives message `exit` from process P16.
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
   Process P138 receives message `'_._concuerror_lock_release'` from process P16.
   Process P174 registers process P174 as `thread_1`
@@ -1243,190 +1007,14 @@ Blocked processes : P1
   Process P174: ets_insert {inode,[{1,4}]}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_3'
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
-  Process P174 sends message `exit` to process P1
   Process P174 exits (normal)
-  Process P1 receives message `exit` from process P174
-  Process P1 sends message `stop` to process named 'lock_i_0'
-  Process P1 sends message `stop` to process named 'lock_i_1'
-  Process P1 sends message `stop` to process named 'lock_i_2'
-  Process P1 sends message `stop` to process named 'lock_i_3'
-  Process P1 sends message `stop` to process named 'lock_i_4'
-  Process P1 sends message `stop` to process named 'lock_i_5'
-  Process P1 sends message `stop` to process named 'lock_i_6'
-  Process P1 sends message `stop` to process named 'lock_i_7'
-  Process P1 sends message `stop` to process named 'lock_i_8'
-  Process P1 sends message `stop` to process named 'lock_i_9'
-  Process P1 sends message `stop` to process named 'lock_i_10'
-  Process P1 sends message `stop` to process named 'lock_i_11'
-  Process P1 sends message `stop` to process named 'lock_i_12'
-  Process P1 sends message `stop` to process named 'lock_i_13'
-  Process P1 sends message `stop` to process named 'lock_i_14'
-  Process P1 sends message `stop` to process named 'lock_i_15'
-  Process P1 sends message `stop` to process named 'lock_i_16'
-  Process P1 sends message `stop` to process named 'lock_i_17'
-  Process P1 sends message `stop` to process named 'lock_i_18'
-  Process P1 sends message `stop` to process named 'lock_i_19'
-  Process P1 sends message `stop` to process named 'lock_i_20'
-  Process P1 sends message `stop` to process named 'lock_i_21'
-  Process P1 sends message `stop` to process named 'lock_i_22'
-  Process P1 sends message `stop` to process named 'lock_i_23'
-  Process P1 sends message `stop` to process named 'lock_i_24'
-  Process P1 sends message `stop` to process named 'lock_i_25'
-  Process P1 sends message `stop` to process named 'lock_i_26'
-  Process P1 sends message `stop` to process named 'lock_i_27'
-  Process P1 sends message `stop` to process named 'lock_i_28'
-  Process P1 sends message `stop` to process named 'lock_i_29'
-  Process P1 sends message `stop` to process named 'lock_i_30'
-  Process P1 sends message `stop` to process named 'lock_i_31'
-  Process P1 sends message `stop` to process named 'lock_b_0'
-  Process P1 sends message `stop` to process named 'lock_b_1'
-  Process P1 sends message `stop` to process named 'lock_b_2'
-  Process P1 sends message `stop` to process named 'lock_b_3'
-  Process P1 sends message `stop` to process named 'lock_b_4'
-  Process P1 sends message `stop` to process named 'lock_b_5'
-  Process P1 sends message `stop` to process named 'lock_b_6'
-  Process P1 sends message `stop` to process named 'lock_b_7'
-  Process P1 sends message `stop` to process named 'lock_b_8'
-  Process P1 sends message `stop` to process named 'lock_b_9'
-  Process P1 sends message `stop` to process named 'lock_b_10'
-  Process P1 sends message `stop` to process named 'lock_b_11'
-  Process P1 sends message `stop` to process named 'lock_b_12'
-  Process P1 sends message `stop` to process named 'lock_b_13'
-  Process P1 sends message `stop` to process named 'lock_b_14'
-  Process P1 sends message `stop` to process named 'lock_b_15'
-  Process P1 sends message `stop` to process named 'lock_b_16'
-  Process P1 sends message `stop` to process named 'lock_b_17'
-  Process P1 sends message `stop` to process named 'lock_b_18'
-  Process P1 sends message `stop` to process named 'lock_b_19'
-  Process P1 sends message `stop` to process named 'lock_b_20'
-  Process P1 sends message `stop` to process named 'lock_b_21'
-  Process P1 sends message `stop` to process named 'lock_b_22'
-  Process P1 sends message `stop` to process named 'lock_b_23'
-  Process P1 sends message `stop` to process named 'lock_b_24'
-  Process P1 sends message `stop` to process named 'lock_b_25'
-  Process P1.1 receives message `stop` from process P1
-  Process P1.1 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
-  Process P1.2 receives message `stop` from process P1
-  Process P1.2 exits (normal)
-  Process P1.3 receives message `stop` from process P1
-  Process P1.3 exits (normal)
-  Process P1.4 receives message `stop` from process P1
-  Process P1.4 exits (normal)
-  Process P1.5 receives message `stop` from process P1
-  Process P1.5 exits (normal)
-  Process P1.6 receives message `stop` from process P1
-  Process P1.6 exits (normal)
-  Process P1.7 receives message `stop` from process P1
-  Process P1.7 exits (normal)
-  Process P1.8 receives message `stop` from process P1
-  Process P1.8 exits (normal)
-  Process P1.9 receives message `stop` from process P1
-  Process P1.9 exits (normal)
-  Process P11. receives message `stop` from process P1
-  Process P11. exits (normal)
-  Process P111 receives message `stop` from process P1
-  Process P111 exits (normal)
-  Process P112 receives message `stop` from process P1
-  Process P112 exits (normal)
-  Process P113 receives message `stop` from process P1
-  Process P113 exits (normal)
-  Process P114 receives message `stop` from process P1
-  Process P114 exits (normal)
-  Process P115 receives message `stop` from process P1
-  Process P115 exits (normal)
-  Process P116 receives message `stop` from process P1
-  Process P116 exits (normal)
-  Process P117 receives message `stop` from process P1
-  Process P117 exits (normal)
-  Process P118 receives message `stop` from process P1
-  Process P118 exits (normal)
-  Process P119 receives message `stop` from process P1
-  Process P119 exits (normal)
-  Process P12. receives message `stop` from process P1
-  Process P12. exits (normal)
-  Process P121 receives message `stop` from process P1
-  Process P121 exits (normal)
-  Process P122 receives message `stop` from process P1
-  Process P122 exits (normal)
-  Process P123 receives message `stop` from process P1
-  Process P123 exits (normal)
-  Process P124 receives message `stop` from process P1
-  Process P124 exits (normal)
-  Process P125 receives message `stop` from process P1
-  Process P125 exits (normal)
-  Process P126 receives message `stop` from process P1
-  Process P126 exits (normal)
-  Process P127 receives message `stop` from process P1
-  Process P127 exits (normal)
-  Process P128 receives message `stop` from process P1
-  Process P128 exits (normal)
-  Process P129 receives message `stop` from process P1
-  Process P129 exits (normal)
-  Process P13. receives message `stop` from process P1
-  Process P13. exits (normal)
-  Process P131 receives message `stop` from process P1
-  Process P131 exits (normal)
-  Process P132 receives message `stop` from process P1
-  Process P132 exits (normal)
-  Process P133 receives message `stop` from process P1
-  Process P133 exits (normal)
-  Process P134 receives message `stop` from process P1
-  Process P134 exits (normal)
-  Process P135 receives message `stop` from process P1
-  Process P135 exits (normal)
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
-  Process P136 receives message `stop` from process P1
-  Process P136 exits (normal)
-  Process P137 receives message `stop` from process P1
-  Process P137 exits (normal)
-  Process P138 receives message `stop` from process P1
-  Process P138 exits (normal)
-  Process P139 receives message `stop` from process P1
-  Process P139 exits (normal)
-  Process P14. receives message `stop` from process P1
-  Process P14. exits (normal)
-  Process P141 receives message `stop` from process P1
-  Process P141 exits (normal)
-  Process P142 receives message `stop` from process P1
-  Process P142 exits (normal)
-  Process P143 receives message `stop` from process P1
-  Process P143 exits (normal)
-  Process P144 receives message `stop` from process P1
-  Process P144 exits (normal)
-  Process P145 receives message `stop` from process P1
-  Process P145 exits (normal)
-  Process P146 receives message `stop` from process P1
-  Process P146 exits (normal)
-  Process P147 receives message `stop` from process P1
-  Process P147 exits (normal)
-  Process P148 receives message `stop` from process P1
-  Process P148 exits (normal)
-  Process P149 receives message `stop` from process P1
-  Process P149 exits (normal)
-  Process P15. receives message `stop` from process P1
-  Process P15. exits (normal)
-  Process P151 receives message `stop` from process P1
-  Process P151 exits (normal)
-  Process P152 receives message `stop` from process P1
-  Process P152 exits (normal)
-  Process P153 receives message `stop` from process P1
-  Process P153 exits (normal)
-  Process P154 receives message `stop` from process P1
-  Process P154 exits (normal)
-  Process P155 receives message `stop` from process P1
-  Process P155 exits (normal)
-  Process P156 receives message `stop` from process P1
-  Process P156 exits (normal)
-  Process P157 receives message `stop` from process P1
-  Process P157 exits (normal)
-  Process P158 receives message `stop` from process P1
-  Process P158 exits (normal)
 
 
-3006494
+77156543
 Error type        : Deadlock
-Blocked processes : P1
+Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
   Process P1: ets_new {busy,[public,named_table]}
   Process P1 spawns process P1.1
@@ -1644,9 +1232,7 @@ Blocked processes : P1
   Process P16.: ets_insert {inode,[{15,5}]}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
-  Process P16. sends message `exit` to process P1
   Process P16. exits (normal)
-  Process P1 receives message `exit` from process P16.
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
   Process P161 registers process P161 as `thread_14`
@@ -1674,9 +1260,7 @@ Blocked processes : P1
   Process P162: ets_insert {inode,[{13,1}]}
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_b_0'
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
-  Process P162 sends message `exit` to process P1
   Process P162 exits (normal)
-  Process P1 receives message `exit` from process P162
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
   Process P163 registers process P163 as `thread_12`
@@ -1694,9 +1278,7 @@ Blocked processes : P1
   Process P163: ets_insert {inode,[{12,25}]}
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_b_24'
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
-  Process P163 sends message `exit` to process P1
   Process P163 exits (normal)
-  Process P1 receives message `exit` from process P163
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
   Process P164 registers process P164 as `thread_11`
@@ -1714,9 +1296,7 @@ Blocked processes : P1
   Process P164: ets_insert {inode,[{11,23}]}
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_b_22'
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
-  Process P164 sends message `exit` to process P1
   Process P164 exits (normal)
-  Process P1 receives message `exit` from process P164
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
   Process P165 registers process P165 as `thread_10`
@@ -1734,9 +1314,7 @@ Blocked processes : P1
   Process P165: ets_insert {inode,[{10,21}]}
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_b_20'
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
-  Process P165 sends message `exit` to process P1
   Process P165 exits (normal)
-  Process P1 receives message `exit` from process P165
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
   Process P166 registers process P166 as `thread_9`
@@ -1754,9 +1332,7 @@ Blocked processes : P1
   Process P166: ets_insert {inode,[{9,19}]}
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_b_18'
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
-  Process P166 sends message `exit` to process P1
   Process P166 exits (normal)
-  Process P1 receives message `exit` from process P166
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
   Process P167 registers process P167 as `thread_8`
@@ -1774,9 +1350,7 @@ Blocked processes : P1
   Process P167: ets_insert {inode,[{8,17}]}
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_b_16'
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
-  Process P167 sends message `exit` to process P1
   Process P167 exits (normal)
-  Process P1 receives message `exit` from process P167
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
   Process P168 registers process P168 as `thread_7`
@@ -1794,9 +1368,7 @@ Blocked processes : P1
   Process P168: ets_insert {inode,[{7,15}]}
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_b_14'
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
-  Process P168 sends message `exit` to process P1
   Process P168 exits (normal)
-  Process P1 receives message `exit` from process P168
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
   Process P169 registers process P169 as `thread_6`
@@ -1814,9 +1386,7 @@ Blocked processes : P1
   Process P169: ets_insert {inode,[{6,13}]}
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_b_12'
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
-  Process P169 sends message `exit` to process P1
   Process P169 exits (normal)
-  Process P1 receives message `exit` from process P169
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
   Process P17. registers process P17. as `thread_5`
@@ -1834,9 +1404,7 @@ Blocked processes : P1
   Process P17.: ets_insert {inode,[{5,11}]}
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_b_10'
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
-  Process P17. sends message `exit` to process P1
   Process P17. exits (normal)
-  Process P1 receives message `exit` from process P17.
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
   Process P171 registers process P171 as `thread_4`
@@ -1854,9 +1422,7 @@ Blocked processes : P1
   Process P171: ets_insert {inode,[{4,9}]}
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_b_8'
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
-  Process P171 sends message `exit` to process P1
   Process P171 exits (normal)
-  Process P1 receives message `exit` from process P171
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
   Process P172 receives message `acquired` from process P1.4
@@ -1871,9 +1437,7 @@ Blocked processes : P1
   Process P172: ets_insert {inode,[{3,7}]}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
-  Process P172 sends message `exit` to process P1
   Process P172 exits (normal)
-  Process P1 receives message `exit` from process P172
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `{thread_16,acquire}` from process P159
@@ -1891,9 +1455,7 @@ Blocked processes : P1
   Process P159: ets_insert {inode,[{16,8}]}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_7'
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
-  Process P159 sends message `exit` to process P1
   Process P159 exits (normal)
-  Process P1 receives message `exit` from process P159
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
   Process P14. receives message `'_._concuerror_lock_release'` from process P159
   Process P173 registers process P173 as `thread_2`
@@ -1918,9 +1480,7 @@ Blocked processes : P1
   Process P173: ets_insert {inode,[{2,6}]}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_5'
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
-  Process P173 sends message `exit` to process P1
   Process P173 exits (normal)
-  Process P1 receives message `exit` from process P173
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
   Process P138 receives message `'_._concuerror_lock_release'` from process P173
   Process P174 receives message `acquired` from process P1.2
@@ -1935,9 +1495,7 @@ Blocked processes : P1
   Process P174: ets_insert {inode,[{1,3}]}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
-  Process P174 sends message `exit` to process P1
   Process P174 exits (normal)
-  Process P1 receives message `exit` from process P174
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `{thread_14,acquire}` from process P161
@@ -1955,190 +1513,14 @@ Blocked processes : P1
   Process P161: ets_insert {inode,[{14,4}]}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_3'
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
-  Process P161 sends message `exit` to process P1
   Process P161 exits (normal)
-  Process P1 receives message `exit` from process P161
-  Process P1 sends message `stop` to process named 'lock_i_0'
-  Process P1 sends message `stop` to process named 'lock_i_1'
-  Process P1 sends message `stop` to process named 'lock_i_2'
-  Process P1 sends message `stop` to process named 'lock_i_3'
-  Process P1 sends message `stop` to process named 'lock_i_4'
-  Process P1 sends message `stop` to process named 'lock_i_5'
-  Process P1 sends message `stop` to process named 'lock_i_6'
-  Process P1 sends message `stop` to process named 'lock_i_7'
-  Process P1 sends message `stop` to process named 'lock_i_8'
-  Process P1 sends message `stop` to process named 'lock_i_9'
-  Process P1 sends message `stop` to process named 'lock_i_10'
-  Process P1 sends message `stop` to process named 'lock_i_11'
-  Process P1 sends message `stop` to process named 'lock_i_12'
-  Process P1 sends message `stop` to process named 'lock_i_13'
-  Process P1 sends message `stop` to process named 'lock_i_14'
-  Process P1 sends message `stop` to process named 'lock_i_15'
-  Process P1 sends message `stop` to process named 'lock_i_16'
-  Process P1 sends message `stop` to process named 'lock_i_17'
-  Process P1 sends message `stop` to process named 'lock_i_18'
-  Process P1 sends message `stop` to process named 'lock_i_19'
-  Process P1 sends message `stop` to process named 'lock_i_20'
-  Process P1 sends message `stop` to process named 'lock_i_21'
-  Process P1 sends message `stop` to process named 'lock_i_22'
-  Process P1 sends message `stop` to process named 'lock_i_23'
-  Process P1 sends message `stop` to process named 'lock_i_24'
-  Process P1 sends message `stop` to process named 'lock_i_25'
-  Process P1 sends message `stop` to process named 'lock_i_26'
-  Process P1 sends message `stop` to process named 'lock_i_27'
-  Process P1 sends message `stop` to process named 'lock_i_28'
-  Process P1 sends message `stop` to process named 'lock_i_29'
-  Process P1 sends message `stop` to process named 'lock_i_30'
-  Process P1 sends message `stop` to process named 'lock_i_31'
-  Process P1 sends message `stop` to process named 'lock_b_0'
-  Process P1 sends message `stop` to process named 'lock_b_1'
-  Process P1 sends message `stop` to process named 'lock_b_2'
-  Process P1 sends message `stop` to process named 'lock_b_3'
-  Process P1 sends message `stop` to process named 'lock_b_4'
-  Process P1 sends message `stop` to process named 'lock_b_5'
-  Process P1 sends message `stop` to process named 'lock_b_6'
-  Process P1 sends message `stop` to process named 'lock_b_7'
-  Process P1 sends message `stop` to process named 'lock_b_8'
-  Process P1 sends message `stop` to process named 'lock_b_9'
-  Process P1 sends message `stop` to process named 'lock_b_10'
-  Process P1 sends message `stop` to process named 'lock_b_11'
-  Process P1 sends message `stop` to process named 'lock_b_12'
-  Process P1 sends message `stop` to process named 'lock_b_13'
-  Process P1 sends message `stop` to process named 'lock_b_14'
-  Process P1 sends message `stop` to process named 'lock_b_15'
-  Process P1 sends message `stop` to process named 'lock_b_16'
-  Process P1 sends message `stop` to process named 'lock_b_17'
-  Process P1 sends message `stop` to process named 'lock_b_18'
-  Process P1 sends message `stop` to process named 'lock_b_19'
-  Process P1 sends message `stop` to process named 'lock_b_20'
-  Process P1 sends message `stop` to process named 'lock_b_21'
-  Process P1 sends message `stop` to process named 'lock_b_22'
-  Process P1 sends message `stop` to process named 'lock_b_23'
-  Process P1 sends message `stop` to process named 'lock_b_24'
-  Process P1 sends message `stop` to process named 'lock_b_25'
-  Process P1.1 receives message `stop` from process P1
-  Process P1.1 exits (normal)
-  Process P1.2 receives message `stop` from process P1
-  Process P1.2 exits (normal)
-  Process P1.3 receives message `stop` from process P1
-  Process P1.3 exits (normal)
-  Process P1.4 receives message `stop` from process P1
-  Process P1.4 exits (normal)
-  Process P1.5 receives message `stop` from process P1
-  Process P1.5 exits (normal)
-  Process P1.6 receives message `stop` from process P1
-  Process P1.6 exits (normal)
-  Process P1.7 receives message `stop` from process P1
-  Process P1.7 exits (normal)
-  Process P1.8 receives message `stop` from process P1
-  Process P1.8 exits (normal)
-  Process P1.9 receives message `stop` from process P1
-  Process P1.9 exits (normal)
-  Process P11. receives message `stop` from process P1
-  Process P11. exits (normal)
-  Process P111 receives message `stop` from process P1
-  Process P111 exits (normal)
-  Process P112 receives message `stop` from process P1
-  Process P112 exits (normal)
-  Process P113 receives message `stop` from process P1
-  Process P113 exits (normal)
-  Process P114 receives message `stop` from process P1
-  Process P114 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
-  Process P115 receives message `stop` from process P1
-  Process P115 exits (normal)
-  Process P116 receives message `stop` from process P1
-  Process P116 exits (normal)
-  Process P117 receives message `stop` from process P1
-  Process P117 exits (normal)
-  Process P118 receives message `stop` from process P1
-  Process P118 exits (normal)
-  Process P119 receives message `stop` from process P1
-  Process P119 exits (normal)
-  Process P12. receives message `stop` from process P1
-  Process P12. exits (normal)
-  Process P121 receives message `stop` from process P1
-  Process P121 exits (normal)
-  Process P122 receives message `stop` from process P1
-  Process P122 exits (normal)
-  Process P123 receives message `stop` from process P1
-  Process P123 exits (normal)
-  Process P124 receives message `stop` from process P1
-  Process P124 exits (normal)
-  Process P125 receives message `stop` from process P1
-  Process P125 exits (normal)
-  Process P126 receives message `stop` from process P1
-  Process P126 exits (normal)
-  Process P127 receives message `stop` from process P1
-  Process P127 exits (normal)
-  Process P128 receives message `stop` from process P1
-  Process P128 exits (normal)
-  Process P129 receives message `stop` from process P1
-  Process P129 exits (normal)
-  Process P13. receives message `stop` from process P1
-  Process P13. exits (normal)
-  Process P131 receives message `stop` from process P1
-  Process P131 exits (normal)
-  Process P132 receives message `stop` from process P1
-  Process P132 exits (normal)
-  Process P133 receives message `stop` from process P1
-  Process P133 exits (normal)
-  Process P134 receives message `stop` from process P1
-  Process P134 exits (normal)
-  Process P135 receives message `stop` from process P1
-  Process P135 exits (normal)
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
-  Process P136 receives message `stop` from process P1
-  Process P136 exits (normal)
-  Process P137 receives message `stop` from process P1
-  Process P137 exits (normal)
-  Process P138 receives message `stop` from process P1
-  Process P138 exits (normal)
-  Process P139 receives message `stop` from process P1
-  Process P139 exits (normal)
-  Process P14. receives message `stop` from process P1
-  Process P14. exits (normal)
-  Process P141 receives message `stop` from process P1
-  Process P141 exits (normal)
-  Process P142 receives message `stop` from process P1
-  Process P142 exits (normal)
-  Process P143 receives message `stop` from process P1
-  Process P143 exits (normal)
-  Process P144 receives message `stop` from process P1
-  Process P144 exits (normal)
-  Process P145 receives message `stop` from process P1
-  Process P145 exits (normal)
-  Process P146 receives message `stop` from process P1
-  Process P146 exits (normal)
-  Process P147 receives message `stop` from process P1
-  Process P147 exits (normal)
-  Process P148 receives message `stop` from process P1
-  Process P148 exits (normal)
-  Process P149 receives message `stop` from process P1
-  Process P149 exits (normal)
-  Process P15. receives message `stop` from process P1
-  Process P15. exits (normal)
-  Process P151 receives message `stop` from process P1
-  Process P151 exits (normal)
-  Process P152 receives message `stop` from process P1
-  Process P152 exits (normal)
-  Process P153 receives message `stop` from process P1
-  Process P153 exits (normal)
-  Process P154 receives message `stop` from process P1
-  Process P154 exits (normal)
-  Process P155 receives message `stop` from process P1
-  Process P155 exits (normal)
-  Process P156 receives message `stop` from process P1
-  Process P156 exits (normal)
-  Process P157 receives message `stop` from process P1
-  Process P157 exits (normal)
-  Process P158 receives message `stop` from process P1
-  Process P158 exits (normal)
 
 
-88530936
+58748191
 Error type        : Deadlock
-Blocked processes : P1
+Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
   Process P1: ets_new {busy,[public,named_table]}
   Process P1 spawns process P1.1
@@ -2356,9 +1738,7 @@ Blocked processes : P1
   Process P16.: ets_insert {inode,[{15,5}]}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
-  Process P16. sends message `exit` to process P1
   Process P16. exits (normal)
-  Process P1 receives message `exit` from process P16.
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
   Process P161 registers process P161 as `thread_14`
@@ -2376,9 +1756,7 @@ Blocked processes : P1
   Process P161: ets_insert {inode,[{14,3}]}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
-  Process P161 sends message `exit` to process P1
   Process P161 exits (normal)
-  Process P1 receives message `exit` from process P161
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
   Process P162 registers process P162 as `thread_13`
@@ -2396,9 +1774,7 @@ Blocked processes : P1
   Process P162: ets_insert {inode,[{13,1}]}
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_b_0'
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
-  Process P162 sends message `exit` to process P1
   Process P162 exits (normal)
-  Process P1 receives message `exit` from process P162
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
   Process P163 registers process P163 as `thread_12`
@@ -2416,9 +1792,7 @@ Blocked processes : P1
   Process P163: ets_insert {inode,[{12,25}]}
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_b_24'
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
-  Process P163 sends message `exit` to process P1
   Process P163 exits (normal)
-  Process P1 receives message `exit` from process P163
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
   Process P164 registers process P164 as `thread_11`
@@ -2436,9 +1810,7 @@ Blocked processes : P1
   Process P164: ets_insert {inode,[{11,23}]}
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_b_22'
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
-  Process P164 sends message `exit` to process P1
   Process P164 exits (normal)
-  Process P1 receives message `exit` from process P164
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
   Process P165 registers process P165 as `thread_10`
@@ -2456,9 +1828,7 @@ Blocked processes : P1
   Process P165: ets_insert {inode,[{10,21}]}
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_b_20'
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
-  Process P165 sends message `exit` to process P1
   Process P165 exits (normal)
-  Process P1 receives message `exit` from process P165
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
   Process P166 registers process P166 as `thread_9`
@@ -2476,9 +1846,7 @@ Blocked processes : P1
   Process P166: ets_insert {inode,[{9,19}]}
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_b_18'
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
-  Process P166 sends message `exit` to process P1
   Process P166 exits (normal)
-  Process P1 receives message `exit` from process P166
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
   Process P167 registers process P167 as `thread_8`
@@ -2496,9 +1864,7 @@ Blocked processes : P1
   Process P167: ets_insert {inode,[{8,17}]}
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_b_16'
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
-  Process P167 sends message `exit` to process P1
   Process P167 exits (normal)
-  Process P1 receives message `exit` from process P167
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
   Process P168 registers process P168 as `thread_7`
@@ -2516,9 +1882,7 @@ Blocked processes : P1
   Process P168: ets_insert {inode,[{7,15}]}
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_b_14'
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
-  Process P168 sends message `exit` to process P1
   Process P168 exits (normal)
-  Process P1 receives message `exit` from process P168
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
   Process P169 registers process P169 as `thread_6`
@@ -2536,9 +1900,7 @@ Blocked processes : P1
   Process P169: ets_insert {inode,[{6,13}]}
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_b_12'
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
-  Process P169 sends message `exit` to process P1
   Process P169 exits (normal)
-  Process P1 receives message `exit` from process P169
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
   Process P17. registers process P17. as `thread_5`
@@ -2556,9 +1918,7 @@ Blocked processes : P1
   Process P17.: ets_insert {inode,[{5,11}]}
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_b_10'
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
-  Process P17. sends message `exit` to process P1
   Process P17. exits (normal)
-  Process P1 receives message `exit` from process P17.
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
   Process P171 registers process P171 as `thread_4`
@@ -2576,9 +1936,7 @@ Blocked processes : P1
   Process P171: ets_insert {inode,[{4,9}]}
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_b_8'
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
-  Process P171 sends message `exit` to process P1
   Process P171 exits (normal)
-  Process P1 receives message `exit` from process P171
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
   Process P172 receives message `acquired` from process P1.4
@@ -2593,9 +1951,7 @@ Blocked processes : P1
   Process P172: ets_insert {inode,[{3,7}]}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
-  Process P172 sends message `exit` to process P1
   Process P172 exits (normal)
-  Process P1 receives message `exit` from process P172
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `{thread_16,acquire}` from process P159
@@ -2613,9 +1969,7 @@ Blocked processes : P1
   Process P159: ets_insert {inode,[{16,8}]}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_7'
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
-  Process P159 sends message `exit` to process P1
   Process P159 exits (normal)
-  Process P1 receives message `exit` from process P159
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
   Process P14. receives message `'_._concuerror_lock_release'` from process P159
   Process P173 registers process P173 as `thread_2`
@@ -2640,9 +1994,7 @@ Blocked processes : P1
   Process P173: ets_insert {inode,[{2,6}]}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_5'
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
-  Process P173 sends message `exit` to process P1
   Process P173 exits (normal)
-  Process P1 receives message `exit` from process P173
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
   Process P138 receives message `'_._concuerror_lock_release'` from process P173
   Process P174 registers process P174 as `thread_1`
@@ -2667,190 +2019,14 @@ Blocked processes : P1
   Process P174: ets_insert {inode,[{1,4}]}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_3'
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
-  Process P174 sends message `exit` to process P1
   Process P174 exits (normal)
-  Process P1 receives message `exit` from process P174
-  Process P1 sends message `stop` to process named 'lock_i_0'
-  Process P1 sends message `stop` to process named 'lock_i_1'
-  Process P1 sends message `stop` to process named 'lock_i_2'
-  Process P1 sends message `stop` to process named 'lock_i_3'
-  Process P1 sends message `stop` to process named 'lock_i_4'
-  Process P1 sends message `stop` to process named 'lock_i_5'
-  Process P1 sends message `stop` to process named 'lock_i_6'
-  Process P1 sends message `stop` to process named 'lock_i_7'
-  Process P1 sends message `stop` to process named 'lock_i_8'
-  Process P1 sends message `stop` to process named 'lock_i_9'
-  Process P1 sends message `stop` to process named 'lock_i_10'
-  Process P1 sends message `stop` to process named 'lock_i_11'
-  Process P1 sends message `stop` to process named 'lock_i_12'
-  Process P1 sends message `stop` to process named 'lock_i_13'
-  Process P1 sends message `stop` to process named 'lock_i_14'
-  Process P1 sends message `stop` to process named 'lock_i_15'
-  Process P1 sends message `stop` to process named 'lock_i_16'
-  Process P1 sends message `stop` to process named 'lock_i_17'
-  Process P1 sends message `stop` to process named 'lock_i_18'
-  Process P1 sends message `stop` to process named 'lock_i_19'
-  Process P1 sends message `stop` to process named 'lock_i_20'
-  Process P1 sends message `stop` to process named 'lock_i_21'
-  Process P1 sends message `stop` to process named 'lock_i_22'
-  Process P1 sends message `stop` to process named 'lock_i_23'
-  Process P1 sends message `stop` to process named 'lock_i_24'
-  Process P1 sends message `stop` to process named 'lock_i_25'
-  Process P1 sends message `stop` to process named 'lock_i_26'
-  Process P1 sends message `stop` to process named 'lock_i_27'
-  Process P1 sends message `stop` to process named 'lock_i_28'
-  Process P1 sends message `stop` to process named 'lock_i_29'
-  Process P1 sends message `stop` to process named 'lock_i_30'
-  Process P1 sends message `stop` to process named 'lock_i_31'
-  Process P1 sends message `stop` to process named 'lock_b_0'
-  Process P1 sends message `stop` to process named 'lock_b_1'
-  Process P1 sends message `stop` to process named 'lock_b_2'
-  Process P1 sends message `stop` to process named 'lock_b_3'
-  Process P1 sends message `stop` to process named 'lock_b_4'
-  Process P1 sends message `stop` to process named 'lock_b_5'
-  Process P1 sends message `stop` to process named 'lock_b_6'
-  Process P1 sends message `stop` to process named 'lock_b_7'
-  Process P1 sends message `stop` to process named 'lock_b_8'
-  Process P1 sends message `stop` to process named 'lock_b_9'
-  Process P1 sends message `stop` to process named 'lock_b_10'
-  Process P1 sends message `stop` to process named 'lock_b_11'
-  Process P1 sends message `stop` to process named 'lock_b_12'
-  Process P1 sends message `stop` to process named 'lock_b_13'
-  Process P1 sends message `stop` to process named 'lock_b_14'
-  Process P1 sends message `stop` to process named 'lock_b_15'
-  Process P1 sends message `stop` to process named 'lock_b_16'
-  Process P1 sends message `stop` to process named 'lock_b_17'
-  Process P1 sends message `stop` to process named 'lock_b_18'
-  Process P1 sends message `stop` to process named 'lock_b_19'
-  Process P1 sends message `stop` to process named 'lock_b_20'
-  Process P1 sends message `stop` to process named 'lock_b_21'
-  Process P1 sends message `stop` to process named 'lock_b_22'
-  Process P1 sends message `stop` to process named 'lock_b_23'
-  Process P1 sends message `stop` to process named 'lock_b_24'
-  Process P1 sends message `stop` to process named 'lock_b_25'
-  Process P1.1 receives message `stop` from process P1
-  Process P1.1 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
-  Process P1.2 receives message `stop` from process P1
-  Process P1.2 exits (normal)
-  Process P1.3 receives message `stop` from process P1
-  Process P1.3 exits (normal)
-  Process P1.4 receives message `stop` from process P1
-  Process P1.4 exits (normal)
-  Process P1.5 receives message `stop` from process P1
-  Process P1.5 exits (normal)
-  Process P1.6 receives message `stop` from process P1
-  Process P1.6 exits (normal)
-  Process P1.7 receives message `stop` from process P1
-  Process P1.7 exits (normal)
-  Process P1.8 receives message `stop` from process P1
-  Process P1.8 exits (normal)
-  Process P1.9 receives message `stop` from process P1
-  Process P1.9 exits (normal)
-  Process P11. receives message `stop` from process P1
-  Process P11. exits (normal)
-  Process P111 receives message `stop` from process P1
-  Process P111 exits (normal)
-  Process P112 receives message `stop` from process P1
-  Process P112 exits (normal)
-  Process P113 receives message `stop` from process P1
-  Process P113 exits (normal)
-  Process P114 receives message `stop` from process P1
-  Process P114 exits (normal)
-  Process P115 receives message `stop` from process P1
-  Process P115 exits (normal)
-  Process P116 receives message `stop` from process P1
-  Process P116 exits (normal)
-  Process P117 receives message `stop` from process P1
-  Process P117 exits (normal)
-  Process P118 receives message `stop` from process P1
-  Process P118 exits (normal)
-  Process P119 receives message `stop` from process P1
-  Process P119 exits (normal)
-  Process P12. receives message `stop` from process P1
-  Process P12. exits (normal)
-  Process P121 receives message `stop` from process P1
-  Process P121 exits (normal)
-  Process P122 receives message `stop` from process P1
-  Process P122 exits (normal)
-  Process P123 receives message `stop` from process P1
-  Process P123 exits (normal)
-  Process P124 receives message `stop` from process P1
-  Process P124 exits (normal)
-  Process P125 receives message `stop` from process P1
-  Process P125 exits (normal)
-  Process P126 receives message `stop` from process P1
-  Process P126 exits (normal)
-  Process P127 receives message `stop` from process P1
-  Process P127 exits (normal)
-  Process P128 receives message `stop` from process P1
-  Process P128 exits (normal)
-  Process P129 receives message `stop` from process P1
-  Process P129 exits (normal)
-  Process P13. receives message `stop` from process P1
-  Process P13. exits (normal)
-  Process P131 receives message `stop` from process P1
-  Process P131 exits (normal)
-  Process P132 receives message `stop` from process P1
-  Process P132 exits (normal)
-  Process P133 receives message `stop` from process P1
-  Process P133 exits (normal)
-  Process P134 receives message `stop` from process P1
-  Process P134 exits (normal)
-  Process P135 receives message `stop` from process P1
-  Process P135 exits (normal)
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
-  Process P136 receives message `stop` from process P1
-  Process P136 exits (normal)
-  Process P137 receives message `stop` from process P1
-  Process P137 exits (normal)
-  Process P138 receives message `stop` from process P1
-  Process P138 exits (normal)
-  Process P139 receives message `stop` from process P1
-  Process P139 exits (normal)
-  Process P14. receives message `stop` from process P1
-  Process P14. exits (normal)
-  Process P141 receives message `stop` from process P1
-  Process P141 exits (normal)
-  Process P142 receives message `stop` from process P1
-  Process P142 exits (normal)
-  Process P143 receives message `stop` from process P1
-  Process P143 exits (normal)
-  Process P144 receives message `stop` from process P1
-  Process P144 exits (normal)
-  Process P145 receives message `stop` from process P1
-  Process P145 exits (normal)
-  Process P146 receives message `stop` from process P1
-  Process P146 exits (normal)
-  Process P147 receives message `stop` from process P1
-  Process P147 exits (normal)
-  Process P148 receives message `stop` from process P1
-  Process P148 exits (normal)
-  Process P149 receives message `stop` from process P1
-  Process P149 exits (normal)
-  Process P15. receives message `stop` from process P1
-  Process P15. exits (normal)
-  Process P151 receives message `stop` from process P1
-  Process P151 exits (normal)
-  Process P152 receives message `stop` from process P1
-  Process P152 exits (normal)
-  Process P153 receives message `stop` from process P1
-  Process P153 exits (normal)
-  Process P154 receives message `stop` from process P1
-  Process P154 exits (normal)
-  Process P155 receives message `stop` from process P1
-  Process P155 exits (normal)
-  Process P156 receives message `stop` from process P1
-  Process P156 exits (normal)
-  Process P157 receives message `stop` from process P1
-  Process P157 exits (normal)
-  Process P158 receives message `stop` from process P1
-  Process P158 exits (normal)
 
 
-101159760
+103057185
 Error type        : Deadlock
-Blocked processes : P1
+Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
   Process P1: ets_new {busy,[public,named_table]}
   Process P1 spawns process P1.1
@@ -3058,9 +2234,7 @@ Blocked processes : P1
   Process P159: ets_insert {inode,[{16,7}]}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
-  Process P159 sends message `exit` to process P1
   Process P159 exits (normal)
-  Process P1 receives message `exit` from process P159
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
   Process P16. registers process P16. as `thread_15`
@@ -3098,9 +2272,7 @@ Blocked processes : P1
   Process P162: ets_insert {inode,[{13,1}]}
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_b_0'
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
-  Process P162 sends message `exit` to process P1
   Process P162 exits (normal)
-  Process P1 receives message `exit` from process P162
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
   Process P163 registers process P163 as `thread_12`
@@ -3118,9 +2290,7 @@ Blocked processes : P1
   Process P163: ets_insert {inode,[{12,25}]}
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_b_24'
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
-  Process P163 sends message `exit` to process P1
   Process P163 exits (normal)
-  Process P1 receives message `exit` from process P163
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
   Process P164 registers process P164 as `thread_11`
@@ -3138,9 +2308,7 @@ Blocked processes : P1
   Process P164: ets_insert {inode,[{11,23}]}
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_b_22'
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
-  Process P164 sends message `exit` to process P1
   Process P164 exits (normal)
-  Process P1 receives message `exit` from process P164
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
   Process P165 registers process P165 as `thread_10`
@@ -3158,9 +2326,7 @@ Blocked processes : P1
   Process P165: ets_insert {inode,[{10,21}]}
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_b_20'
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
-  Process P165 sends message `exit` to process P1
   Process P165 exits (normal)
-  Process P1 receives message `exit` from process P165
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
   Process P166 registers process P166 as `thread_9`
@@ -3178,9 +2344,7 @@ Blocked processes : P1
   Process P166: ets_insert {inode,[{9,19}]}
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_b_18'
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
-  Process P166 sends message `exit` to process P1
   Process P166 exits (normal)
-  Process P1 receives message `exit` from process P166
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
   Process P167 registers process P167 as `thread_8`
@@ -3198,9 +2362,7 @@ Blocked processes : P1
   Process P167: ets_insert {inode,[{8,17}]}
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_b_16'
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
-  Process P167 sends message `exit` to process P1
   Process P167 exits (normal)
-  Process P1 receives message `exit` from process P167
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
   Process P168 registers process P168 as `thread_7`
@@ -3218,9 +2380,7 @@ Blocked processes : P1
   Process P168: ets_insert {inode,[{7,15}]}
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_b_14'
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
-  Process P168 sends message `exit` to process P1
   Process P168 exits (normal)
-  Process P1 receives message `exit` from process P168
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
   Process P169 registers process P169 as `thread_6`
@@ -3238,9 +2398,7 @@ Blocked processes : P1
   Process P169: ets_insert {inode,[{6,13}]}
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_b_12'
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
-  Process P169 sends message `exit` to process P1
   Process P169 exits (normal)
-  Process P1 receives message `exit` from process P169
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
   Process P17. registers process P17. as `thread_5`
@@ -3258,9 +2416,7 @@ Blocked processes : P1
   Process P17.: ets_insert {inode,[{5,11}]}
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_b_10'
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
-  Process P17. sends message `exit` to process P1
   Process P17. exits (normal)
-  Process P1 receives message `exit` from process P17.
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
   Process P171 registers process P171 as `thread_4`
@@ -3278,9 +2434,7 @@ Blocked processes : P1
   Process P171: ets_insert {inode,[{4,9}]}
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_b_8'
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
-  Process P171 sends message `exit` to process P1
   Process P171 exits (normal)
-  Process P1 receives message `exit` from process P171
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
   Process P172 registers process P172 as `thread_3`
@@ -3305,9 +2459,7 @@ Blocked processes : P1
   Process P172: ets_insert {inode,[{3,8}]}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_7'
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
-  Process P172 sends message `exit` to process P1
   Process P172 exits (normal)
-  Process P1 receives message `exit` from process P172
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
   Process P14. receives message `'_._concuerror_lock_release'` from process P172
   Process P173 receives message `acquired` from process P1.3
@@ -3322,9 +2474,7 @@ Blocked processes : P1
   Process P173: ets_insert {inode,[{2,5}]}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
-  Process P173 sends message `exit` to process P1
   Process P173 exits (normal)
-  Process P1 receives message `exit` from process P173
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `{thread_15,acquire}` from process P16.
@@ -3342,9 +2492,7 @@ Blocked processes : P1
   Process P16.: ets_insert {inode,[{15,6}]}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_5'
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
-  Process P16. sends message `exit` to process P1
   Process P16. exits (normal)
-  Process P1 receives message `exit` from process P16.
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
   Process P138 receives message `'_._concuerror_lock_release'` from process P16.
   Process P174 receives message `acquired` from process P1.2
@@ -3359,9 +2507,7 @@ Blocked processes : P1
   Process P174: ets_insert {inode,[{1,3}]}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
-  Process P174 sends message `exit` to process P1
   Process P174 exits (normal)
-  Process P1 receives message `exit` from process P174
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `{thread_14,acquire}` from process P161
@@ -3379,190 +2525,14 @@ Blocked processes : P1
   Process P161: ets_insert {inode,[{14,4}]}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_3'
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
-  Process P161 sends message `exit` to process P1
   Process P161 exits (normal)
-  Process P1 receives message `exit` from process P161
-  Process P1 sends message `stop` to process named 'lock_i_0'
-  Process P1 sends message `stop` to process named 'lock_i_1'
-  Process P1 sends message `stop` to process named 'lock_i_2'
-  Process P1 sends message `stop` to process named 'lock_i_3'
-  Process P1 sends message `stop` to process named 'lock_i_4'
-  Process P1 sends message `stop` to process named 'lock_i_5'
-  Process P1 sends message `stop` to process named 'lock_i_6'
-  Process P1 sends message `stop` to process named 'lock_i_7'
-  Process P1 sends message `stop` to process named 'lock_i_8'
-  Process P1 sends message `stop` to process named 'lock_i_9'
-  Process P1 sends message `stop` to process named 'lock_i_10'
-  Process P1 sends message `stop` to process named 'lock_i_11'
-  Process P1 sends message `stop` to process named 'lock_i_12'
-  Process P1 sends message `stop` to process named 'lock_i_13'
-  Process P1 sends message `stop` to process named 'lock_i_14'
-  Process P1 sends message `stop` to process named 'lock_i_15'
-  Process P1 sends message `stop` to process named 'lock_i_16'
-  Process P1 sends message `stop` to process named 'lock_i_17'
-  Process P1 sends message `stop` to process named 'lock_i_18'
-  Process P1 sends message `stop` to process named 'lock_i_19'
-  Process P1 sends message `stop` to process named 'lock_i_20'
-  Process P1 sends message `stop` to process named 'lock_i_21'
-  Process P1 sends message `stop` to process named 'lock_i_22'
-  Process P1 sends message `stop` to process named 'lock_i_23'
-  Process P1 sends message `stop` to process named 'lock_i_24'
-  Process P1 sends message `stop` to process named 'lock_i_25'
-  Process P1 sends message `stop` to process named 'lock_i_26'
-  Process P1 sends message `stop` to process named 'lock_i_27'
-  Process P1 sends message `stop` to process named 'lock_i_28'
-  Process P1 sends message `stop` to process named 'lock_i_29'
-  Process P1 sends message `stop` to process named 'lock_i_30'
-  Process P1 sends message `stop` to process named 'lock_i_31'
-  Process P1 sends message `stop` to process named 'lock_b_0'
-  Process P1 sends message `stop` to process named 'lock_b_1'
-  Process P1 sends message `stop` to process named 'lock_b_2'
-  Process P1 sends message `stop` to process named 'lock_b_3'
-  Process P1 sends message `stop` to process named 'lock_b_4'
-  Process P1 sends message `stop` to process named 'lock_b_5'
-  Process P1 sends message `stop` to process named 'lock_b_6'
-  Process P1 sends message `stop` to process named 'lock_b_7'
-  Process P1 sends message `stop` to process named 'lock_b_8'
-  Process P1 sends message `stop` to process named 'lock_b_9'
-  Process P1 sends message `stop` to process named 'lock_b_10'
-  Process P1 sends message `stop` to process named 'lock_b_11'
-  Process P1 sends message `stop` to process named 'lock_b_12'
-  Process P1 sends message `stop` to process named 'lock_b_13'
-  Process P1 sends message `stop` to process named 'lock_b_14'
-  Process P1 sends message `stop` to process named 'lock_b_15'
-  Process P1 sends message `stop` to process named 'lock_b_16'
-  Process P1 sends message `stop` to process named 'lock_b_17'
-  Process P1 sends message `stop` to process named 'lock_b_18'
-  Process P1 sends message `stop` to process named 'lock_b_19'
-  Process P1 sends message `stop` to process named 'lock_b_20'
-  Process P1 sends message `stop` to process named 'lock_b_21'
-  Process P1 sends message `stop` to process named 'lock_b_22'
-  Process P1 sends message `stop` to process named 'lock_b_23'
-  Process P1 sends message `stop` to process named 'lock_b_24'
-  Process P1 sends message `stop` to process named 'lock_b_25'
-  Process P1.1 receives message `stop` from process P1
-  Process P1.1 exits (normal)
-  Process P1.2 receives message `stop` from process P1
-  Process P1.2 exits (normal)
-  Process P1.3 receives message `stop` from process P1
-  Process P1.3 exits (normal)
-  Process P1.4 receives message `stop` from process P1
-  Process P1.4 exits (normal)
-  Process P1.5 receives message `stop` from process P1
-  Process P1.5 exits (normal)
-  Process P1.6 receives message `stop` from process P1
-  Process P1.6 exits (normal)
-  Process P1.7 receives message `stop` from process P1
-  Process P1.7 exits (normal)
-  Process P1.8 receives message `stop` from process P1
-  Process P1.8 exits (normal)
-  Process P1.9 receives message `stop` from process P1
-  Process P1.9 exits (normal)
-  Process P11. receives message `stop` from process P1
-  Process P11. exits (normal)
-  Process P111 receives message `stop` from process P1
-  Process P111 exits (normal)
-  Process P112 receives message `stop` from process P1
-  Process P112 exits (normal)
-  Process P113 receives message `stop` from process P1
-  Process P113 exits (normal)
-  Process P114 receives message `stop` from process P1
-  Process P114 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
-  Process P115 receives message `stop` from process P1
-  Process P115 exits (normal)
-  Process P116 receives message `stop` from process P1
-  Process P116 exits (normal)
-  Process P117 receives message `stop` from process P1
-  Process P117 exits (normal)
-  Process P118 receives message `stop` from process P1
-  Process P118 exits (normal)
-  Process P119 receives message `stop` from process P1
-  Process P119 exits (normal)
-  Process P12. receives message `stop` from process P1
-  Process P12. exits (normal)
-  Process P121 receives message `stop` from process P1
-  Process P121 exits (normal)
-  Process P122 receives message `stop` from process P1
-  Process P122 exits (normal)
-  Process P123 receives message `stop` from process P1
-  Process P123 exits (normal)
-  Process P124 receives message `stop` from process P1
-  Process P124 exits (normal)
-  Process P125 receives message `stop` from process P1
-  Process P125 exits (normal)
-  Process P126 receives message `stop` from process P1
-  Process P126 exits (normal)
-  Process P127 receives message `stop` from process P1
-  Process P127 exits (normal)
-  Process P128 receives message `stop` from process P1
-  Process P128 exits (normal)
-  Process P129 receives message `stop` from process P1
-  Process P129 exits (normal)
-  Process P13. receives message `stop` from process P1
-  Process P13. exits (normal)
-  Process P131 receives message `stop` from process P1
-  Process P131 exits (normal)
-  Process P132 receives message `stop` from process P1
-  Process P132 exits (normal)
-  Process P133 receives message `stop` from process P1
-  Process P133 exits (normal)
-  Process P134 receives message `stop` from process P1
-  Process P134 exits (normal)
-  Process P135 receives message `stop` from process P1
-  Process P135 exits (normal)
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
-  Process P136 receives message `stop` from process P1
-  Process P136 exits (normal)
-  Process P137 receives message `stop` from process P1
-  Process P137 exits (normal)
-  Process P138 receives message `stop` from process P1
-  Process P138 exits (normal)
-  Process P139 receives message `stop` from process P1
-  Process P139 exits (normal)
-  Process P14. receives message `stop` from process P1
-  Process P14. exits (normal)
-  Process P141 receives message `stop` from process P1
-  Process P141 exits (normal)
-  Process P142 receives message `stop` from process P1
-  Process P142 exits (normal)
-  Process P143 receives message `stop` from process P1
-  Process P143 exits (normal)
-  Process P144 receives message `stop` from process P1
-  Process P144 exits (normal)
-  Process P145 receives message `stop` from process P1
-  Process P145 exits (normal)
-  Process P146 receives message `stop` from process P1
-  Process P146 exits (normal)
-  Process P147 receives message `stop` from process P1
-  Process P147 exits (normal)
-  Process P148 receives message `stop` from process P1
-  Process P148 exits (normal)
-  Process P149 receives message `stop` from process P1
-  Process P149 exits (normal)
-  Process P15. receives message `stop` from process P1
-  Process P15. exits (normal)
-  Process P151 receives message `stop` from process P1
-  Process P151 exits (normal)
-  Process P152 receives message `stop` from process P1
-  Process P152 exits (normal)
-  Process P153 receives message `stop` from process P1
-  Process P153 exits (normal)
-  Process P154 receives message `stop` from process P1
-  Process P154 exits (normal)
-  Process P155 receives message `stop` from process P1
-  Process P155 exits (normal)
-  Process P156 receives message `stop` from process P1
-  Process P156 exits (normal)
-  Process P157 receives message `stop` from process P1
-  Process P157 exits (normal)
-  Process P158 receives message `stop` from process P1
-  Process P158 exits (normal)
 
 
-133419552
+63454277
 Error type        : Deadlock
-Blocked processes : P1
+Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
   Process P1: ets_new {busy,[public,named_table]}
   Process P1 spawns process P1.1
@@ -3770,9 +2740,7 @@ Blocked processes : P1
   Process P159: ets_insert {inode,[{16,7}]}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
-  Process P159 sends message `exit` to process P1
   Process P159 exits (normal)
-  Process P1 receives message `exit` from process P159
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
   Process P16. registers process P16. as `thread_15`
@@ -3800,9 +2768,7 @@ Blocked processes : P1
   Process P161: ets_insert {inode,[{14,3}]}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
-  Process P161 sends message `exit` to process P1
   Process P161 exits (normal)
-  Process P1 receives message `exit` from process P161
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
   Process P162 registers process P162 as `thread_13`
@@ -3820,9 +2786,7 @@ Blocked processes : P1
   Process P162: ets_insert {inode,[{13,1}]}
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_b_0'
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
-  Process P162 sends message `exit` to process P1
   Process P162 exits (normal)
-  Process P1 receives message `exit` from process P162
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
   Process P163 registers process P163 as `thread_12`
@@ -3840,9 +2804,7 @@ Blocked processes : P1
   Process P163: ets_insert {inode,[{12,25}]}
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_b_24'
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
-  Process P163 sends message `exit` to process P1
   Process P163 exits (normal)
-  Process P1 receives message `exit` from process P163
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
   Process P164 registers process P164 as `thread_11`
@@ -3860,9 +2822,7 @@ Blocked processes : P1
   Process P164: ets_insert {inode,[{11,23}]}
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_b_22'
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
-  Process P164 sends message `exit` to process P1
   Process P164 exits (normal)
-  Process P1 receives message `exit` from process P164
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
   Process P165 registers process P165 as `thread_10`
@@ -3880,9 +2840,7 @@ Blocked processes : P1
   Process P165: ets_insert {inode,[{10,21}]}
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_b_20'
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
-  Process P165 sends message `exit` to process P1
   Process P165 exits (normal)
-  Process P1 receives message `exit` from process P165
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
   Process P166 registers process P166 as `thread_9`
@@ -3900,9 +2858,7 @@ Blocked processes : P1
   Process P166: ets_insert {inode,[{9,19}]}
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_b_18'
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
-  Process P166 sends message `exit` to process P1
   Process P166 exits (normal)
-  Process P1 receives message `exit` from process P166
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
   Process P167 registers process P167 as `thread_8`
@@ -3920,9 +2876,7 @@ Blocked processes : P1
   Process P167: ets_insert {inode,[{8,17}]}
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_b_16'
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
-  Process P167 sends message `exit` to process P1
   Process P167 exits (normal)
-  Process P1 receives message `exit` from process P167
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
   Process P168 registers process P168 as `thread_7`
@@ -3940,9 +2894,7 @@ Blocked processes : P1
   Process P168: ets_insert {inode,[{7,15}]}
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_b_14'
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
-  Process P168 sends message `exit` to process P1
   Process P168 exits (normal)
-  Process P1 receives message `exit` from process P168
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
   Process P169 registers process P169 as `thread_6`
@@ -3960,9 +2912,7 @@ Blocked processes : P1
   Process P169: ets_insert {inode,[{6,13}]}
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_b_12'
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
-  Process P169 sends message `exit` to process P1
   Process P169 exits (normal)
-  Process P1 receives message `exit` from process P169
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
   Process P17. registers process P17. as `thread_5`
@@ -3980,9 +2930,7 @@ Blocked processes : P1
   Process P17.: ets_insert {inode,[{5,11}]}
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_b_10'
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
-  Process P17. sends message `exit` to process P1
   Process P17. exits (normal)
-  Process P1 receives message `exit` from process P17.
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
   Process P171 registers process P171 as `thread_4`
@@ -4000,9 +2948,7 @@ Blocked processes : P1
   Process P171: ets_insert {inode,[{4,9}]}
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_b_8'
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
-  Process P171 sends message `exit` to process P1
   Process P171 exits (normal)
-  Process P1 receives message `exit` from process P171
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
   Process P172 registers process P172 as `thread_3`
@@ -4027,9 +2973,7 @@ Blocked processes : P1
   Process P172: ets_insert {inode,[{3,8}]}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_7'
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
-  Process P172 sends message `exit` to process P1
   Process P172 exits (normal)
-  Process P1 receives message `exit` from process P172
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
   Process P14. receives message `'_._concuerror_lock_release'` from process P172
   Process P173 receives message `acquired` from process P1.3
@@ -4044,9 +2988,7 @@ Blocked processes : P1
   Process P173: ets_insert {inode,[{2,5}]}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
-  Process P173 sends message `exit` to process P1
   Process P173 exits (normal)
-  Process P1 receives message `exit` from process P173
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `{thread_15,acquire}` from process P16.
@@ -4064,9 +3006,7 @@ Blocked processes : P1
   Process P16.: ets_insert {inode,[{15,6}]}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_5'
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
-  Process P16. sends message `exit` to process P1
   Process P16. exits (normal)
-  Process P1 receives message `exit` from process P16.
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
   Process P138 receives message `'_._concuerror_lock_release'` from process P16.
   Process P174 registers process P174 as `thread_1`
@@ -4091,190 +3031,14 @@ Blocked processes : P1
   Process P174: ets_insert {inode,[{1,4}]}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_3'
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
-  Process P174 sends message `exit` to process P1
   Process P174 exits (normal)
-  Process P1 receives message `exit` from process P174
-  Process P1 sends message `stop` to process named 'lock_i_0'
-  Process P1 sends message `stop` to process named 'lock_i_1'
-  Process P1 sends message `stop` to process named 'lock_i_2'
-  Process P1 sends message `stop` to process named 'lock_i_3'
-  Process P1 sends message `stop` to process named 'lock_i_4'
-  Process P1 sends message `stop` to process named 'lock_i_5'
-  Process P1 sends message `stop` to process named 'lock_i_6'
-  Process P1 sends message `stop` to process named 'lock_i_7'
-  Process P1 sends message `stop` to process named 'lock_i_8'
-  Process P1 sends message `stop` to process named 'lock_i_9'
-  Process P1 sends message `stop` to process named 'lock_i_10'
-  Process P1 sends message `stop` to process named 'lock_i_11'
-  Process P1 sends message `stop` to process named 'lock_i_12'
-  Process P1 sends message `stop` to process named 'lock_i_13'
-  Process P1 sends message `stop` to process named 'lock_i_14'
-  Process P1 sends message `stop` to process named 'lock_i_15'
-  Process P1 sends message `stop` to process named 'lock_i_16'
-  Process P1 sends message `stop` to process named 'lock_i_17'
-  Process P1 sends message `stop` to process named 'lock_i_18'
-  Process P1 sends message `stop` to process named 'lock_i_19'
-  Process P1 sends message `stop` to process named 'lock_i_20'
-  Process P1 sends message `stop` to process named 'lock_i_21'
-  Process P1 sends message `stop` to process named 'lock_i_22'
-  Process P1 sends message `stop` to process named 'lock_i_23'
-  Process P1 sends message `stop` to process named 'lock_i_24'
-  Process P1 sends message `stop` to process named 'lock_i_25'
-  Process P1 sends message `stop` to process named 'lock_i_26'
-  Process P1 sends message `stop` to process named 'lock_i_27'
-  Process P1 sends message `stop` to process named 'lock_i_28'
-  Process P1 sends message `stop` to process named 'lock_i_29'
-  Process P1 sends message `stop` to process named 'lock_i_30'
-  Process P1 sends message `stop` to process named 'lock_i_31'
-  Process P1 sends message `stop` to process named 'lock_b_0'
-  Process P1 sends message `stop` to process named 'lock_b_1'
-  Process P1 sends message `stop` to process named 'lock_b_2'
-  Process P1 sends message `stop` to process named 'lock_b_3'
-  Process P1 sends message `stop` to process named 'lock_b_4'
-  Process P1 sends message `stop` to process named 'lock_b_5'
-  Process P1 sends message `stop` to process named 'lock_b_6'
-  Process P1 sends message `stop` to process named 'lock_b_7'
-  Process P1 sends message `stop` to process named 'lock_b_8'
-  Process P1 sends message `stop` to process named 'lock_b_9'
-  Process P1 sends message `stop` to process named 'lock_b_10'
-  Process P1 sends message `stop` to process named 'lock_b_11'
-  Process P1 sends message `stop` to process named 'lock_b_12'
-  Process P1 sends message `stop` to process named 'lock_b_13'
-  Process P1 sends message `stop` to process named 'lock_b_14'
-  Process P1 sends message `stop` to process named 'lock_b_15'
-  Process P1 sends message `stop` to process named 'lock_b_16'
-  Process P1 sends message `stop` to process named 'lock_b_17'
-  Process P1 sends message `stop` to process named 'lock_b_18'
-  Process P1 sends message `stop` to process named 'lock_b_19'
-  Process P1 sends message `stop` to process named 'lock_b_20'
-  Process P1 sends message `stop` to process named 'lock_b_21'
-  Process P1 sends message `stop` to process named 'lock_b_22'
-  Process P1 sends message `stop` to process named 'lock_b_23'
-  Process P1 sends message `stop` to process named 'lock_b_24'
-  Process P1 sends message `stop` to process named 'lock_b_25'
-  Process P1.1 receives message `stop` from process P1
-  Process P1.1 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
-  Process P1.2 receives message `stop` from process P1
-  Process P1.2 exits (normal)
-  Process P1.3 receives message `stop` from process P1
-  Process P1.3 exits (normal)
-  Process P1.4 receives message `stop` from process P1
-  Process P1.4 exits (normal)
-  Process P1.5 receives message `stop` from process P1
-  Process P1.5 exits (normal)
-  Process P1.6 receives message `stop` from process P1
-  Process P1.6 exits (normal)
-  Process P1.7 receives message `stop` from process P1
-  Process P1.7 exits (normal)
-  Process P1.8 receives message `stop` from process P1
-  Process P1.8 exits (normal)
-  Process P1.9 receives message `stop` from process P1
-  Process P1.9 exits (normal)
-  Process P11. receives message `stop` from process P1
-  Process P11. exits (normal)
-  Process P111 receives message `stop` from process P1
-  Process P111 exits (normal)
-  Process P112 receives message `stop` from process P1
-  Process P112 exits (normal)
-  Process P113 receives message `stop` from process P1
-  Process P113 exits (normal)
-  Process P114 receives message `stop` from process P1
-  Process P114 exits (normal)
-  Process P115 receives message `stop` from process P1
-  Process P115 exits (normal)
-  Process P116 receives message `stop` from process P1
-  Process P116 exits (normal)
-  Process P117 receives message `stop` from process P1
-  Process P117 exits (normal)
-  Process P118 receives message `stop` from process P1
-  Process P118 exits (normal)
-  Process P119 receives message `stop` from process P1
-  Process P119 exits (normal)
-  Process P12. receives message `stop` from process P1
-  Process P12. exits (normal)
-  Process P121 receives message `stop` from process P1
-  Process P121 exits (normal)
-  Process P122 receives message `stop` from process P1
-  Process P122 exits (normal)
-  Process P123 receives message `stop` from process P1
-  Process P123 exits (normal)
-  Process P124 receives message `stop` from process P1
-  Process P124 exits (normal)
-  Process P125 receives message `stop` from process P1
-  Process P125 exits (normal)
-  Process P126 receives message `stop` from process P1
-  Process P126 exits (normal)
-  Process P127 receives message `stop` from process P1
-  Process P127 exits (normal)
-  Process P128 receives message `stop` from process P1
-  Process P128 exits (normal)
-  Process P129 receives message `stop` from process P1
-  Process P129 exits (normal)
-  Process P13. receives message `stop` from process P1
-  Process P13. exits (normal)
-  Process P131 receives message `stop` from process P1
-  Process P131 exits (normal)
-  Process P132 receives message `stop` from process P1
-  Process P132 exits (normal)
-  Process P133 receives message `stop` from process P1
-  Process P133 exits (normal)
-  Process P134 receives message `stop` from process P1
-  Process P134 exits (normal)
-  Process P135 receives message `stop` from process P1
-  Process P135 exits (normal)
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
-  Process P136 receives message `stop` from process P1
-  Process P136 exits (normal)
-  Process P137 receives message `stop` from process P1
-  Process P137 exits (normal)
-  Process P138 receives message `stop` from process P1
-  Process P138 exits (normal)
-  Process P139 receives message `stop` from process P1
-  Process P139 exits (normal)
-  Process P14. receives message `stop` from process P1
-  Process P14. exits (normal)
-  Process P141 receives message `stop` from process P1
-  Process P141 exits (normal)
-  Process P142 receives message `stop` from process P1
-  Process P142 exits (normal)
-  Process P143 receives message `stop` from process P1
-  Process P143 exits (normal)
-  Process P144 receives message `stop` from process P1
-  Process P144 exits (normal)
-  Process P145 receives message `stop` from process P1
-  Process P145 exits (normal)
-  Process P146 receives message `stop` from process P1
-  Process P146 exits (normal)
-  Process P147 receives message `stop` from process P1
-  Process P147 exits (normal)
-  Process P148 receives message `stop` from process P1
-  Process P148 exits (normal)
-  Process P149 receives message `stop` from process P1
-  Process P149 exits (normal)
-  Process P15. receives message `stop` from process P1
-  Process P15. exits (normal)
-  Process P151 receives message `stop` from process P1
-  Process P151 exits (normal)
-  Process P152 receives message `stop` from process P1
-  Process P152 exits (normal)
-  Process P153 receives message `stop` from process P1
-  Process P153 exits (normal)
-  Process P154 receives message `stop` from process P1
-  Process P154 exits (normal)
-  Process P155 receives message `stop` from process P1
-  Process P155 exits (normal)
-  Process P156 receives message `stop` from process P1
-  Process P156 exits (normal)
-  Process P157 receives message `stop` from process P1
-  Process P157 exits (normal)
-  Process P158 receives message `stop` from process P1
-  Process P158 exits (normal)
 
 
-25544316
+81590933
 Error type        : Deadlock
-Blocked processes : P1
+Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
   Process P1: ets_new {busy,[public,named_table]}
   Process P1 spawns process P1.1
@@ -4482,9 +3246,7 @@ Blocked processes : P1
   Process P159: ets_insert {inode,[{16,7}]}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
-  Process P159 sends message `exit` to process P1
   Process P159 exits (normal)
-  Process P1 receives message `exit` from process P159
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
   Process P16. registers process P16. as `thread_15`
@@ -4502,9 +3264,7 @@ Blocked processes : P1
   Process P16.: ets_insert {inode,[{15,5}]}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
-  Process P16. sends message `exit` to process P1
   Process P16. exits (normal)
-  Process P1 receives message `exit` from process P16.
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
   Process P161 registers process P161 as `thread_14`
@@ -4532,9 +3292,7 @@ Blocked processes : P1
   Process P162: ets_insert {inode,[{13,1}]}
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_b_0'
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
-  Process P162 sends message `exit` to process P1
   Process P162 exits (normal)
-  Process P1 receives message `exit` from process P162
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
   Process P163 registers process P163 as `thread_12`
@@ -4552,9 +3310,7 @@ Blocked processes : P1
   Process P163: ets_insert {inode,[{12,25}]}
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_b_24'
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
-  Process P163 sends message `exit` to process P1
   Process P163 exits (normal)
-  Process P1 receives message `exit` from process P163
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
   Process P164 registers process P164 as `thread_11`
@@ -4572,9 +3328,7 @@ Blocked processes : P1
   Process P164: ets_insert {inode,[{11,23}]}
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_b_22'
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
-  Process P164 sends message `exit` to process P1
   Process P164 exits (normal)
-  Process P1 receives message `exit` from process P164
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
   Process P165 registers process P165 as `thread_10`
@@ -4592,9 +3346,7 @@ Blocked processes : P1
   Process P165: ets_insert {inode,[{10,21}]}
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_b_20'
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
-  Process P165 sends message `exit` to process P1
   Process P165 exits (normal)
-  Process P1 receives message `exit` from process P165
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
   Process P166 registers process P166 as `thread_9`
@@ -4612,9 +3364,7 @@ Blocked processes : P1
   Process P166: ets_insert {inode,[{9,19}]}
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_b_18'
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
-  Process P166 sends message `exit` to process P1
   Process P166 exits (normal)
-  Process P1 receives message `exit` from process P166
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
   Process P167 registers process P167 as `thread_8`
@@ -4632,9 +3382,7 @@ Blocked processes : P1
   Process P167: ets_insert {inode,[{8,17}]}
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_b_16'
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
-  Process P167 sends message `exit` to process P1
   Process P167 exits (normal)
-  Process P1 receives message `exit` from process P167
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
   Process P168 registers process P168 as `thread_7`
@@ -4652,9 +3400,7 @@ Blocked processes : P1
   Process P168: ets_insert {inode,[{7,15}]}
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_b_14'
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
-  Process P168 sends message `exit` to process P1
   Process P168 exits (normal)
-  Process P1 receives message `exit` from process P168
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
   Process P169 registers process P169 as `thread_6`
@@ -4672,9 +3418,7 @@ Blocked processes : P1
   Process P169: ets_insert {inode,[{6,13}]}
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_b_12'
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
-  Process P169 sends message `exit` to process P1
   Process P169 exits (normal)
-  Process P1 receives message `exit` from process P169
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
   Process P17. registers process P17. as `thread_5`
@@ -4692,9 +3436,7 @@ Blocked processes : P1
   Process P17.: ets_insert {inode,[{5,11}]}
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_b_10'
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
-  Process P17. sends message `exit` to process P1
   Process P17. exits (normal)
-  Process P1 receives message `exit` from process P17.
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
   Process P171 registers process P171 as `thread_4`
@@ -4712,9 +3454,7 @@ Blocked processes : P1
   Process P171: ets_insert {inode,[{4,9}]}
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_b_8'
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
-  Process P171 sends message `exit` to process P1
   Process P171 exits (normal)
-  Process P1 receives message `exit` from process P171
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
   Process P172 registers process P172 as `thread_3`
@@ -4739,9 +3479,7 @@ Blocked processes : P1
   Process P172: ets_insert {inode,[{3,8}]}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_7'
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
-  Process P172 sends message `exit` to process P1
   Process P172 exits (normal)
-  Process P1 receives message `exit` from process P172
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
   Process P14. receives message `'_._concuerror_lock_release'` from process P172
   Process P173 registers process P173 as `thread_2`
@@ -4766,9 +3504,7 @@ Blocked processes : P1
   Process P173: ets_insert {inode,[{2,6}]}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_5'
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
-  Process P173 sends message `exit` to process P1
   Process P173 exits (normal)
-  Process P1 receives message `exit` from process P173
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
   Process P138 receives message `'_._concuerror_lock_release'` from process P173
   Process P174 receives message `acquired` from process P1.2
@@ -4783,9 +3519,7 @@ Blocked processes : P1
   Process P174: ets_insert {inode,[{1,3}]}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
-  Process P174 sends message `exit` to process P1
   Process P174 exits (normal)
-  Process P1 receives message `exit` from process P174
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `{thread_14,acquire}` from process P161
@@ -4803,190 +3537,14 @@ Blocked processes : P1
   Process P161: ets_insert {inode,[{14,4}]}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_3'
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
-  Process P161 sends message `exit` to process P1
   Process P161 exits (normal)
-  Process P1 receives message `exit` from process P161
-  Process P1 sends message `stop` to process named 'lock_i_0'
-  Process P1 sends message `stop` to process named 'lock_i_1'
-  Process P1 sends message `stop` to process named 'lock_i_2'
-  Process P1 sends message `stop` to process named 'lock_i_3'
-  Process P1 sends message `stop` to process named 'lock_i_4'
-  Process P1 sends message `stop` to process named 'lock_i_5'
-  Process P1 sends message `stop` to process named 'lock_i_6'
-  Process P1 sends message `stop` to process named 'lock_i_7'
-  Process P1 sends message `stop` to process named 'lock_i_8'
-  Process P1 sends message `stop` to process named 'lock_i_9'
-  Process P1 sends message `stop` to process named 'lock_i_10'
-  Process P1 sends message `stop` to process named 'lock_i_11'
-  Process P1 sends message `stop` to process named 'lock_i_12'
-  Process P1 sends message `stop` to process named 'lock_i_13'
-  Process P1 sends message `stop` to process named 'lock_i_14'
-  Process P1 sends message `stop` to process named 'lock_i_15'
-  Process P1 sends message `stop` to process named 'lock_i_16'
-  Process P1 sends message `stop` to process named 'lock_i_17'
-  Process P1 sends message `stop` to process named 'lock_i_18'
-  Process P1 sends message `stop` to process named 'lock_i_19'
-  Process P1 sends message `stop` to process named 'lock_i_20'
-  Process P1 sends message `stop` to process named 'lock_i_21'
-  Process P1 sends message `stop` to process named 'lock_i_22'
-  Process P1 sends message `stop` to process named 'lock_i_23'
-  Process P1 sends message `stop` to process named 'lock_i_24'
-  Process P1 sends message `stop` to process named 'lock_i_25'
-  Process P1 sends message `stop` to process named 'lock_i_26'
-  Process P1 sends message `stop` to process named 'lock_i_27'
-  Process P1 sends message `stop` to process named 'lock_i_28'
-  Process P1 sends message `stop` to process named 'lock_i_29'
-  Process P1 sends message `stop` to process named 'lock_i_30'
-  Process P1 sends message `stop` to process named 'lock_i_31'
-  Process P1 sends message `stop` to process named 'lock_b_0'
-  Process P1 sends message `stop` to process named 'lock_b_1'
-  Process P1 sends message `stop` to process named 'lock_b_2'
-  Process P1 sends message `stop` to process named 'lock_b_3'
-  Process P1 sends message `stop` to process named 'lock_b_4'
-  Process P1 sends message `stop` to process named 'lock_b_5'
-  Process P1 sends message `stop` to process named 'lock_b_6'
-  Process P1 sends message `stop` to process named 'lock_b_7'
-  Process P1 sends message `stop` to process named 'lock_b_8'
-  Process P1 sends message `stop` to process named 'lock_b_9'
-  Process P1 sends message `stop` to process named 'lock_b_10'
-  Process P1 sends message `stop` to process named 'lock_b_11'
-  Process P1 sends message `stop` to process named 'lock_b_12'
-  Process P1 sends message `stop` to process named 'lock_b_13'
-  Process P1 sends message `stop` to process named 'lock_b_14'
-  Process P1 sends message `stop` to process named 'lock_b_15'
-  Process P1 sends message `stop` to process named 'lock_b_16'
-  Process P1 sends message `stop` to process named 'lock_b_17'
-  Process P1 sends message `stop` to process named 'lock_b_18'
-  Process P1 sends message `stop` to process named 'lock_b_19'
-  Process P1 sends message `stop` to process named 'lock_b_20'
-  Process P1 sends message `stop` to process named 'lock_b_21'
-  Process P1 sends message `stop` to process named 'lock_b_22'
-  Process P1 sends message `stop` to process named 'lock_b_23'
-  Process P1 sends message `stop` to process named 'lock_b_24'
-  Process P1 sends message `stop` to process named 'lock_b_25'
-  Process P1.1 receives message `stop` from process P1
-  Process P1.1 exits (normal)
-  Process P1.2 receives message `stop` from process P1
-  Process P1.2 exits (normal)
-  Process P1.3 receives message `stop` from process P1
-  Process P1.3 exits (normal)
-  Process P1.4 receives message `stop` from process P1
-  Process P1.4 exits (normal)
-  Process P1.5 receives message `stop` from process P1
-  Process P1.5 exits (normal)
-  Process P1.6 receives message `stop` from process P1
-  Process P1.6 exits (normal)
-  Process P1.7 receives message `stop` from process P1
-  Process P1.7 exits (normal)
-  Process P1.8 receives message `stop` from process P1
-  Process P1.8 exits (normal)
-  Process P1.9 receives message `stop` from process P1
-  Process P1.9 exits (normal)
-  Process P11. receives message `stop` from process P1
-  Process P11. exits (normal)
-  Process P111 receives message `stop` from process P1
-  Process P111 exits (normal)
-  Process P112 receives message `stop` from process P1
-  Process P112 exits (normal)
-  Process P113 receives message `stop` from process P1
-  Process P113 exits (normal)
-  Process P114 receives message `stop` from process P1
-  Process P114 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
-  Process P115 receives message `stop` from process P1
-  Process P115 exits (normal)
-  Process P116 receives message `stop` from process P1
-  Process P116 exits (normal)
-  Process P117 receives message `stop` from process P1
-  Process P117 exits (normal)
-  Process P118 receives message `stop` from process P1
-  Process P118 exits (normal)
-  Process P119 receives message `stop` from process P1
-  Process P119 exits (normal)
-  Process P12. receives message `stop` from process P1
-  Process P12. exits (normal)
-  Process P121 receives message `stop` from process P1
-  Process P121 exits (normal)
-  Process P122 receives message `stop` from process P1
-  Process P122 exits (normal)
-  Process P123 receives message `stop` from process P1
-  Process P123 exits (normal)
-  Process P124 receives message `stop` from process P1
-  Process P124 exits (normal)
-  Process P125 receives message `stop` from process P1
-  Process P125 exits (normal)
-  Process P126 receives message `stop` from process P1
-  Process P126 exits (normal)
-  Process P127 receives message `stop` from process P1
-  Process P127 exits (normal)
-  Process P128 receives message `stop` from process P1
-  Process P128 exits (normal)
-  Process P129 receives message `stop` from process P1
-  Process P129 exits (normal)
-  Process P13. receives message `stop` from process P1
-  Process P13. exits (normal)
-  Process P131 receives message `stop` from process P1
-  Process P131 exits (normal)
-  Process P132 receives message `stop` from process P1
-  Process P132 exits (normal)
-  Process P133 receives message `stop` from process P1
-  Process P133 exits (normal)
-  Process P134 receives message `stop` from process P1
-  Process P134 exits (normal)
-  Process P135 receives message `stop` from process P1
-  Process P135 exits (normal)
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
-  Process P136 receives message `stop` from process P1
-  Process P136 exits (normal)
-  Process P137 receives message `stop` from process P1
-  Process P137 exits (normal)
-  Process P138 receives message `stop` from process P1
-  Process P138 exits (normal)
-  Process P139 receives message `stop` from process P1
-  Process P139 exits (normal)
-  Process P14. receives message `stop` from process P1
-  Process P14. exits (normal)
-  Process P141 receives message `stop` from process P1
-  Process P141 exits (normal)
-  Process P142 receives message `stop` from process P1
-  Process P142 exits (normal)
-  Process P143 receives message `stop` from process P1
-  Process P143 exits (normal)
-  Process P144 receives message `stop` from process P1
-  Process P144 exits (normal)
-  Process P145 receives message `stop` from process P1
-  Process P145 exits (normal)
-  Process P146 receives message `stop` from process P1
-  Process P146 exits (normal)
-  Process P147 receives message `stop` from process P1
-  Process P147 exits (normal)
-  Process P148 receives message `stop` from process P1
-  Process P148 exits (normal)
-  Process P149 receives message `stop` from process P1
-  Process P149 exits (normal)
-  Process P15. receives message `stop` from process P1
-  Process P15. exits (normal)
-  Process P151 receives message `stop` from process P1
-  Process P151 exits (normal)
-  Process P152 receives message `stop` from process P1
-  Process P152 exits (normal)
-  Process P153 receives message `stop` from process P1
-  Process P153 exits (normal)
-  Process P154 receives message `stop` from process P1
-  Process P154 exits (normal)
-  Process P155 receives message `stop` from process P1
-  Process P155 exits (normal)
-  Process P156 receives message `stop` from process P1
-  Process P156 exits (normal)
-  Process P157 receives message `stop` from process P1
-  Process P157 exits (normal)
-  Process P158 receives message `stop` from process P1
-  Process P158 exits (normal)
 
 
-121273649
+133761434
 Error type        : Deadlock
-Blocked processes : P1
+Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
   Process P1: ets_new {busy,[public,named_table]}
   Process P1 spawns process P1.1
@@ -5194,9 +3752,7 @@ Blocked processes : P1
   Process P159: ets_insert {inode,[{16,7}]}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
-  Process P159 sends message `exit` to process P1
   Process P159 exits (normal)
-  Process P1 receives message `exit` from process P159
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
   Process P16. registers process P16. as `thread_15`
@@ -5214,9 +3770,7 @@ Blocked processes : P1
   Process P16.: ets_insert {inode,[{15,5}]}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
-  Process P16. sends message `exit` to process P1
   Process P16. exits (normal)
-  Process P1 receives message `exit` from process P16.
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
   Process P161 registers process P161 as `thread_14`
@@ -5234,9 +3788,7 @@ Blocked processes : P1
   Process P161: ets_insert {inode,[{14,3}]}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
-  Process P161 sends message `exit` to process P1
   Process P161 exits (normal)
-  Process P1 receives message `exit` from process P161
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
   Process P162 registers process P162 as `thread_13`
@@ -5254,9 +3806,7 @@ Blocked processes : P1
   Process P162: ets_insert {inode,[{13,1}]}
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_b_0'
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
-  Process P162 sends message `exit` to process P1
   Process P162 exits (normal)
-  Process P1 receives message `exit` from process P162
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
   Process P163 registers process P163 as `thread_12`
@@ -5274,9 +3824,7 @@ Blocked processes : P1
   Process P163: ets_insert {inode,[{12,25}]}
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_b_24'
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
-  Process P163 sends message `exit` to process P1
   Process P163 exits (normal)
-  Process P1 receives message `exit` from process P163
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
   Process P164 registers process P164 as `thread_11`
@@ -5294,9 +3842,7 @@ Blocked processes : P1
   Process P164: ets_insert {inode,[{11,23}]}
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_b_22'
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
-  Process P164 sends message `exit` to process P1
   Process P164 exits (normal)
-  Process P1 receives message `exit` from process P164
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
   Process P165 registers process P165 as `thread_10`
@@ -5314,9 +3860,7 @@ Blocked processes : P1
   Process P165: ets_insert {inode,[{10,21}]}
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_b_20'
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
-  Process P165 sends message `exit` to process P1
   Process P165 exits (normal)
-  Process P1 receives message `exit` from process P165
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
   Process P166 registers process P166 as `thread_9`
@@ -5334,9 +3878,7 @@ Blocked processes : P1
   Process P166: ets_insert {inode,[{9,19}]}
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_b_18'
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
-  Process P166 sends message `exit` to process P1
   Process P166 exits (normal)
-  Process P1 receives message `exit` from process P166
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
   Process P167 registers process P167 as `thread_8`
@@ -5354,9 +3896,7 @@ Blocked processes : P1
   Process P167: ets_insert {inode,[{8,17}]}
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_b_16'
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
-  Process P167 sends message `exit` to process P1
   Process P167 exits (normal)
-  Process P1 receives message `exit` from process P167
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
   Process P168 registers process P168 as `thread_7`
@@ -5374,9 +3914,7 @@ Blocked processes : P1
   Process P168: ets_insert {inode,[{7,15}]}
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_b_14'
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
-  Process P168 sends message `exit` to process P1
   Process P168 exits (normal)
-  Process P1 receives message `exit` from process P168
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
   Process P169 registers process P169 as `thread_6`
@@ -5394,9 +3932,7 @@ Blocked processes : P1
   Process P169: ets_insert {inode,[{6,13}]}
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_b_12'
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
-  Process P169 sends message `exit` to process P1
   Process P169 exits (normal)
-  Process P1 receives message `exit` from process P169
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
   Process P17. registers process P17. as `thread_5`
@@ -5414,9 +3950,7 @@ Blocked processes : P1
   Process P17.: ets_insert {inode,[{5,11}]}
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_b_10'
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
-  Process P17. sends message `exit` to process P1
   Process P17. exits (normal)
-  Process P1 receives message `exit` from process P17.
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
   Process P171 registers process P171 as `thread_4`
@@ -5434,9 +3968,7 @@ Blocked processes : P1
   Process P171: ets_insert {inode,[{4,9}]}
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_b_8'
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
-  Process P171 sends message `exit` to process P1
   Process P171 exits (normal)
-  Process P1 receives message `exit` from process P171
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
   Process P172 registers process P172 as `thread_3`
@@ -5461,9 +3993,7 @@ Blocked processes : P1
   Process P172: ets_insert {inode,[{3,8}]}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_7'
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
-  Process P172 sends message `exit` to process P1
   Process P172 exits (normal)
-  Process P1 receives message `exit` from process P172
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
   Process P14. receives message `'_._concuerror_lock_release'` from process P172
   Process P173 registers process P173 as `thread_2`
@@ -5488,9 +4018,7 @@ Blocked processes : P1
   Process P173: ets_insert {inode,[{2,6}]}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_5'
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
-  Process P173 sends message `exit` to process P1
   Process P173 exits (normal)
-  Process P1 receives message `exit` from process P173
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
   Process P138 receives message `'_._concuerror_lock_release'` from process P173
   Process P174 registers process P174 as `thread_1`
@@ -5515,184 +4043,8 @@ Blocked processes : P1
   Process P174: ets_insert {inode,[{1,4}]}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_3'
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
-  Process P174 sends message `exit` to process P1
   Process P174 exits (normal)
-  Process P1 receives message `exit` from process P174
-  Process P1 sends message `stop` to process named 'lock_i_0'
-  Process P1 sends message `stop` to process named 'lock_i_1'
-  Process P1 sends message `stop` to process named 'lock_i_2'
-  Process P1 sends message `stop` to process named 'lock_i_3'
-  Process P1 sends message `stop` to process named 'lock_i_4'
-  Process P1 sends message `stop` to process named 'lock_i_5'
-  Process P1 sends message `stop` to process named 'lock_i_6'
-  Process P1 sends message `stop` to process named 'lock_i_7'
-  Process P1 sends message `stop` to process named 'lock_i_8'
-  Process P1 sends message `stop` to process named 'lock_i_9'
-  Process P1 sends message `stop` to process named 'lock_i_10'
-  Process P1 sends message `stop` to process named 'lock_i_11'
-  Process P1 sends message `stop` to process named 'lock_i_12'
-  Process P1 sends message `stop` to process named 'lock_i_13'
-  Process P1 sends message `stop` to process named 'lock_i_14'
-  Process P1 sends message `stop` to process named 'lock_i_15'
-  Process P1 sends message `stop` to process named 'lock_i_16'
-  Process P1 sends message `stop` to process named 'lock_i_17'
-  Process P1 sends message `stop` to process named 'lock_i_18'
-  Process P1 sends message `stop` to process named 'lock_i_19'
-  Process P1 sends message `stop` to process named 'lock_i_20'
-  Process P1 sends message `stop` to process named 'lock_i_21'
-  Process P1 sends message `stop` to process named 'lock_i_22'
-  Process P1 sends message `stop` to process named 'lock_i_23'
-  Process P1 sends message `stop` to process named 'lock_i_24'
-  Process P1 sends message `stop` to process named 'lock_i_25'
-  Process P1 sends message `stop` to process named 'lock_i_26'
-  Process P1 sends message `stop` to process named 'lock_i_27'
-  Process P1 sends message `stop` to process named 'lock_i_28'
-  Process P1 sends message `stop` to process named 'lock_i_29'
-  Process P1 sends message `stop` to process named 'lock_i_30'
-  Process P1 sends message `stop` to process named 'lock_i_31'
-  Process P1 sends message `stop` to process named 'lock_b_0'
-  Process P1 sends message `stop` to process named 'lock_b_1'
-  Process P1 sends message `stop` to process named 'lock_b_2'
-  Process P1 sends message `stop` to process named 'lock_b_3'
-  Process P1 sends message `stop` to process named 'lock_b_4'
-  Process P1 sends message `stop` to process named 'lock_b_5'
-  Process P1 sends message `stop` to process named 'lock_b_6'
-  Process P1 sends message `stop` to process named 'lock_b_7'
-  Process P1 sends message `stop` to process named 'lock_b_8'
-  Process P1 sends message `stop` to process named 'lock_b_9'
-  Process P1 sends message `stop` to process named 'lock_b_10'
-  Process P1 sends message `stop` to process named 'lock_b_11'
-  Process P1 sends message `stop` to process named 'lock_b_12'
-  Process P1 sends message `stop` to process named 'lock_b_13'
-  Process P1 sends message `stop` to process named 'lock_b_14'
-  Process P1 sends message `stop` to process named 'lock_b_15'
-  Process P1 sends message `stop` to process named 'lock_b_16'
-  Process P1 sends message `stop` to process named 'lock_b_17'
-  Process P1 sends message `stop` to process named 'lock_b_18'
-  Process P1 sends message `stop` to process named 'lock_b_19'
-  Process P1 sends message `stop` to process named 'lock_b_20'
-  Process P1 sends message `stop` to process named 'lock_b_21'
-  Process P1 sends message `stop` to process named 'lock_b_22'
-  Process P1 sends message `stop` to process named 'lock_b_23'
-  Process P1 sends message `stop` to process named 'lock_b_24'
-  Process P1 sends message `stop` to process named 'lock_b_25'
-  Process P1.1 receives message `stop` from process P1
-  Process P1.1 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
-  Process P1.2 receives message `stop` from process P1
-  Process P1.2 exits (normal)
-  Process P1.3 receives message `stop` from process P1
-  Process P1.3 exits (normal)
-  Process P1.4 receives message `stop` from process P1
-  Process P1.4 exits (normal)
-  Process P1.5 receives message `stop` from process P1
-  Process P1.5 exits (normal)
-  Process P1.6 receives message `stop` from process P1
-  Process P1.6 exits (normal)
-  Process P1.7 receives message `stop` from process P1
-  Process P1.7 exits (normal)
-  Process P1.8 receives message `stop` from process P1
-  Process P1.8 exits (normal)
-  Process P1.9 receives message `stop` from process P1
-  Process P1.9 exits (normal)
-  Process P11. receives message `stop` from process P1
-  Process P11. exits (normal)
-  Process P111 receives message `stop` from process P1
-  Process P111 exits (normal)
-  Process P112 receives message `stop` from process P1
-  Process P112 exits (normal)
-  Process P113 receives message `stop` from process P1
-  Process P113 exits (normal)
-  Process P114 receives message `stop` from process P1
-  Process P114 exits (normal)
-  Process P115 receives message `stop` from process P1
-  Process P115 exits (normal)
-  Process P116 receives message `stop` from process P1
-  Process P116 exits (normal)
-  Process P117 receives message `stop` from process P1
-  Process P117 exits (normal)
-  Process P118 receives message `stop` from process P1
-  Process P118 exits (normal)
-  Process P119 receives message `stop` from process P1
-  Process P119 exits (normal)
-  Process P12. receives message `stop` from process P1
-  Process P12. exits (normal)
-  Process P121 receives message `stop` from process P1
-  Process P121 exits (normal)
-  Process P122 receives message `stop` from process P1
-  Process P122 exits (normal)
-  Process P123 receives message `stop` from process P1
-  Process P123 exits (normal)
-  Process P124 receives message `stop` from process P1
-  Process P124 exits (normal)
-  Process P125 receives message `stop` from process P1
-  Process P125 exits (normal)
-  Process P126 receives message `stop` from process P1
-  Process P126 exits (normal)
-  Process P127 receives message `stop` from process P1
-  Process P127 exits (normal)
-  Process P128 receives message `stop` from process P1
-  Process P128 exits (normal)
-  Process P129 receives message `stop` from process P1
-  Process P129 exits (normal)
-  Process P13. receives message `stop` from process P1
-  Process P13. exits (normal)
-  Process P131 receives message `stop` from process P1
-  Process P131 exits (normal)
-  Process P132 receives message `stop` from process P1
-  Process P132 exits (normal)
-  Process P133 receives message `stop` from process P1
-  Process P133 exits (normal)
-  Process P134 receives message `stop` from process P1
-  Process P134 exits (normal)
-  Process P135 receives message `stop` from process P1
-  Process P135 exits (normal)
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
-  Process P136 receives message `stop` from process P1
-  Process P136 exits (normal)
-  Process P137 receives message `stop` from process P1
-  Process P137 exits (normal)
-  Process P138 receives message `stop` from process P1
-  Process P138 exits (normal)
-  Process P139 receives message `stop` from process P1
-  Process P139 exits (normal)
-  Process P14. receives message `stop` from process P1
-  Process P14. exits (normal)
-  Process P141 receives message `stop` from process P1
-  Process P141 exits (normal)
-  Process P142 receives message `stop` from process P1
-  Process P142 exits (normal)
-  Process P143 receives message `stop` from process P1
-  Process P143 exits (normal)
-  Process P144 receives message `stop` from process P1
-  Process P144 exits (normal)
-  Process P145 receives message `stop` from process P1
-  Process P145 exits (normal)
-  Process P146 receives message `stop` from process P1
-  Process P146 exits (normal)
-  Process P147 receives message `stop` from process P1
-  Process P147 exits (normal)
-  Process P148 receives message `stop` from process P1
-  Process P148 exits (normal)
-  Process P149 receives message `stop` from process P1
-  Process P149 exits (normal)
-  Process P15. receives message `stop` from process P1
-  Process P15. exits (normal)
-  Process P151 receives message `stop` from process P1
-  Process P151 exits (normal)
-  Process P152 receives message `stop` from process P1
-  Process P152 exits (normal)
-  Process P153 receives message `stop` from process P1
-  Process P153 exits (normal)
-  Process P154 receives message `stop` from process P1
-  Process P154 exits (normal)
-  Process P155 receives message `stop` from process P1
-  Process P155 exits (normal)
-  Process P156 receives message `stop` from process P1
-  Process P156 exits (normal)
-  Process P157 receives message `stop` from process P1
-  Process P157 exits (normal)
-  Process P158 receives message `stop` from process P1
-  Process P158 exits (normal)
 
 

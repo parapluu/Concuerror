@@ -496,7 +496,7 @@ dependent(A, {Lid, {unregister, RegName}}, false) ->
 dependent({_Lid1, {send, {_Orig1, Lid, Msg1}}},
           {_Lid2, {send, {_Orig2, Lid, Msg2}}}, false) ->
     ReleaseAtom = lock_release_atom(),
-    Msg1 =/= Msg2 andalso Msg1 =/= ReleaseAtom andalso Msg2 =/= ReleaseAtom;
+    Msg1 =/= ReleaseAtom andalso Msg2 =/= ReleaseAtom;
 
 
 %% ETS operations live in their own small world.

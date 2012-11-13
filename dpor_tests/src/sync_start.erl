@@ -4,7 +4,7 @@
          sync_start/1]).
 
 sync_start() ->
-    sync_start(5).
+    sync_start(2).
 
 sync_start(N) ->
     Parent = self(),

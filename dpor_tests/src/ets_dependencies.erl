@@ -6,28 +6,17 @@ ets_dependencies() ->
     Parent = self(),
     ets:new(table, [public, named_table]),
     spawn(fun() ->
-                  ets:insert(table, {x, 1}),
-                  Parent ! ok
+                  ets:insert(table, {x, 1})
           end),
     spawn(fun() ->
                   ets:insert(table, {y, 2}),
-                  ets:lookup(table, x),
-                  Parent ! ok
+                  ets:lookup(table, x)
           end),
     spawn(fun() ->
                   ets:insert(table, {z, 3}),
-                  ets:lookup(table, x),
-                  Parent ! ok
+                  ets:lookup(table, x)
           end),
     receive
-        ok ->
-            receive
-                ok ->
-                    receive
-                        ok ->
-                            receive
-                                dead -> ok
-                            end
-                    end
-            end
+    after
+        infinity -> ok
     end.
