@@ -470,7 +470,7 @@ get_next(Lid) ->
 may_have_dependencies({_Lid, {error, _}}) -> false;
 may_have_dependencies({_Lid, {Spawn, _}})
   when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor -> false;
-may_have_dependencies({_Lid, {'receive', _}}) -> false;
+may_have_dependencies({_Lid, {'receive', {unblocked, _, _}}}) -> false;
 may_have_dependencies({_Lid, exited}) -> false;
 may_have_dependencies(_Else) -> true.
 
@@ -498,6 +498,10 @@ dependent({_Lid1, {send, {_Orig1, Lid, Msg1}}},
     ReleaseAtom = lock_release_atom(),
     Msg1 =/= ReleaseAtom andalso Msg2 =/= ReleaseAtom;
 
+dependent({Lid1, {send, {_Orig1, Lid2, Msg}}},
+          {Lid2, {'receive', {had_after, Lid1, Msg}}}, _Swap) ->
+    %% TODO: Add CV to the send messages
+    true;
 
 %% ETS operations live in their own small world.
 dependent({_Lid1, {ets, Op1}}, {_Lid2, {ets, Op2}}, false) ->
@@ -1030,10 +1034,10 @@ handle_instruction_al({Lid, {Spawn, unknown}}, TraceTop,
                          blocked = NewBlocked,
                          pollable = NewPollable,
                          nexts = NewNexts};
-handle_instruction_al({Lid, {'receive', _Tag}}, TraceTop, {From, CV, Msg}) ->
+handle_instruction_al({Lid, {'receive', Tag}}, TraceTop, {From, CV, Msg}) ->
     #trace_state{clock_map = ClockMap} = TraceTop,
     Vector = lookup_clock(Lid, ClockMap),
-    NewLast = {Lid, {'receive', {From, Msg}}},
+    NewLast = {Lid, {'receive', {Tag, From, Msg}}},
     NewVector = max_cv(Vector, CV),
     NewClockMap = dict:store(Lid, NewVector, ClockMap),
     TraceTop#trace_state{last = NewLast, clock_map = NewClockMap};
@@ -1181,7 +1185,7 @@ convert_error_trace({Lid, {Instr, Extra}}, Procs) ->
                     end,
                 {send, Lid, NewDest, Msg};
             'receive' ->
-                {Origin, Msg} = Extra,
+                {_Tag, Origin, Msg} = Extra,
                 {'receive', Lid, Origin, Msg};
             'after' ->
                 {'after', Lid};
