@@ -642,7 +642,8 @@ spawn_fun_wrapper(Fun) ->
 find_my_info() ->
     MyEts = find_my_ets_tables(),
     MyName = find_my_registered_name(),
-    {MyEts, MyName}.
+    MyLinks = find_my_links(),
+    {MyEts, MyName, MyLinks}.
 
 find_my_ets_tables() ->
     Self = self(),
