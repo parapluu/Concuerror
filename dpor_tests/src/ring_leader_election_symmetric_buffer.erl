@@ -4,11 +4,11 @@
          ring_leader_election_symmetric_buffer/2]).
 
 ring_leader_election_symmetric_buffer() ->
-    ring_leader_election_symmetric_buffer(3, [2,3]).
+    ring_leader_election_symmetric_buffer(3, [1]).
 
 ring_leader_election_symmetric_buffer(N, Leaders) ->
-    C = [Last|_] = [spawn(fun() -> channel() end) || _ <- lists:seq(1,N)],
-    Channels = lists:reverse(C),
+    C = [Last|Rest] = [spawn(fun() -> channel() end) || _ <- lists:seq(1,N)],
+    Channels = Rest ++ [Last],
     ring_member(1, N, Leaders, Last, Channels).
 
 ring_member(I, N, Leaders, From, [To|Rest]) ->
@@ -17,15 +17,20 @@ ring_member(I, N, Leaders, From, [To|Rest]) ->
             true -> ok; %% Last member links to original.
             false -> spawn(fun() -> ring_member(I+1, N, Leaders, To, Rest) end)
         end,
+    Name = my_name(I),
+    register(Name, self()),
     InitLeader =
         case lists:member(I, Leaders) of
             true -> channel_send(To,I), I; %% Process tries to be leader
             false -> 0
         end,
-    ring_member_loop(I, InitLeader, From, To).
+    ring_member_loop(I, Name, InitLeader, From, To).
 
-ring_member_loop(I, Leader, From, To) ->
-    case channel_receive(From) of
+my_name(I) ->
+    list_to_atom(lists:flatten(io_lib:format("p~w",[I]))).
+
+ring_member_loop(I, Name, Leader, From, To) ->
+    case channel_receive(Name, From) of
         {leader, Leader} = M ->
             case I =:= Leader of
                 false -> channel_send(To, M); %% Propagate the elected leader
@@ -38,11 +43,11 @@ ring_member_loop(I, Leader, From, To) ->
                 true -> channel_send(To,{leader, I}); %% Leader informs everyone
                 false -> ok %% Unelected leaders stay silent
             end,
-            ring_member_loop(I, Leader, From, To); %% Wait for {leader, L}
+            ring_member_loop(I, Name, Leader, From, To); %% Wait for {leader, L}
         J ->
             channel_send(To,J), %% Propagate other leader suggestions
             NewLeader = max(J, Leader), %% Update own leader info
-            ring_member_loop(I, NewLeader, From, To)
+            ring_member_loop(I, Name, NewLeader, From, To)
     end.
 
 channel() ->
@@ -78,8 +83,8 @@ channel(Buffer, Requests) ->
 channel_send(Chan, Msg) ->        
     Chan ! {put, Msg}.
 
-channel_receive(Chan) ->
-    Chan ! {get, self()},
+channel_receive(Name, Chan) ->
+    Chan ! {get, Name},
     receive
         Ans -> Ans
     end.

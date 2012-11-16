@@ -133,7 +133,6 @@
             analysis_ret().
 
 analyze(Target, Files, Options) ->
-    ?start_debug,
     PreBound =
         case lists:keyfind(preb, 1, Options) of
             {preb, inf} -> ?INFINITY;
@@ -185,7 +184,6 @@ analyze(Target, Files, Options) ->
             error -> {error, instr, {Target, 0}}
         end,
     concuerror_instr:delete_and_purge(Files),
-    ?stop_debug,
     Ret.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
@@ -223,6 +221,7 @@ interleave_dpor(Target, PreBound, Parent, DporFlavor) ->
     ?f_debug("Dpor is not really ready yet...\n"),
     register(?RP_SCHED, self()),
     Result = interleave_dpor(Target, PreBound, DporFlavor),
+    ?stop_debug,
     Parent ! {interleave_result, Result}.
 
 interleave_outer_loop(_T, RunCnt, Tickets, MaxBound, MaxBound) ->
@@ -726,19 +725,19 @@ add_all_backtracks_trace({Lid, _, _} = Transition, Trace, PreBound, Flavor) ->
     [#trace_state{i = I} = Top|
      [#trace_state{clock_map = ClockMap}|_] = PTrace] = Trace,
     ClockVector = dict:store(Lid, I, lookup_clock(Lid, ClockMap)),
-    add_all_backtracks_trace(Transition, ClockVector, PreBound,
+    add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
                              Flavor, PTrace, [Top]).
 
-add_all_backtracks_trace(_Transition, _ClockVector, _PreBound,
+add_all_backtracks_trace(_Transition, _Lid, _ClockVector, _PreBound,
                          _Flavor, [_] = Init, Acc) ->
     lists:reverse(Acc, Init);
-add_all_backtracks_trace(Transition, ClockVector, PreBound, Flavor,
+add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                          [#trace_state{preemptions = Preempt} = StateI|Trace],
                          Acc)
   when Preempt + 1 > PreBound ->
-    add_all_backtracks_trace(Transition, ClockVector, PreBound, Flavor,
+    add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                              Trace, [StateI|Acc]);
-add_all_backtracks_trace(Transition, ClockVector, PreBound, Flavor,
+add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                          [StateI|Trace], Acc) ->
     #trace_state{i = I,
                  last = {ProcSI, _, _} = SI,
@@ -746,7 +745,7 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, Flavor,
     Clock = lookup_clock_value(ProcSI, ClockVector),
     Action =
         case I > Clock andalso dependent(Transition, SI) of
-            false -> {continue, ClockVector};
+            false -> {continue, Lid, ClockVector};
             true ->
                 ?f_debug("~4w: ~p ~P Clock ~p\n",
                          [I, dependent(Transition, SI), SI, ?DEPTH, Clock]),
@@ -760,14 +759,17 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, Flavor,
                     full ->
                         Initial =
                             ordsets:del_element(ProcSI, find_initial(I, Acc)),
-                        ?f_debug("Initial: ~w\n",[Initial]),
-                        case ordsets:intersection(Initial, Backtrack) of
-                            [_|_] ->
+                        ?f_debug("  Backtrack: ~w\n", [Backtrack]),
+                        ?f_debug("  Predecess: ~w\n", [Predecessors]),
+                        ?f_debug("  SleepSet : ~w\n", [SleepSet]),
+                        ?f_debug("  Initial  : ~w\n", [Initial]),
+                        case ordsets:intersection(Initial, Backtrack) =/= [] of
+                            true ->
                                 ?f_debug("One initial already in backtrack.\n"),
                                 {done, Trace};
-                            [] ->
-                                case Predecessors of
-                                    [P|_] ->
+                            false ->
+                                case {ordsets:is_element(Lid, SleepSet), Predecessors} of
+                                    {false, [P|_]} ->
                                         NewBacktrack =
                                             ordsets:add_element(P, Backtrack),
                                         ?f_debug("     Add: ~w\n", [P]),
@@ -775,11 +777,11 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, Flavor,
                                             PreSI#trace_state{
                                               backtrack = NewBacktrack},
                                         {done, [NewPreSI|Rest]};
-                                    [] ->
+                                    _Else ->
                                         ?f_debug("     All sleeping...\n"),
                                         NewClockVector =
                                             lookup_clock(ProcSI, ClockMap),
-                                        {continue, NewClockVector}
+                                        {continue, ProcSI, NewClockVector}
                                 end
                         end;
                     flanagan ->
@@ -806,8 +808,8 @@ add_all_backtracks_trace(Transition, ClockVector, PreBound, Flavor,
                 end
         end,
     case Action of
-        {continue, UpdClockVector} ->
-            add_all_backtracks_trace(Transition, UpdClockVector, PreBound,
+        {continue, NewLid, UpdClockVector} ->
+            add_all_backtracks_trace(Transition, NewLid, UpdClockVector, PreBound,
                                      Flavor, Trace, [StateI|Acc]);
         {done, FinalTrace} ->
             lists:reverse(Acc, [StateI|FinalTrace])
@@ -1003,7 +1005,9 @@ filter_awaked(SleepSet, Nexts, Selected) ->
     Filter =
         fun(Lid) ->
                 Instr = dict:fetch(Lid, Nexts),
-                not dependent(Instr, Selected)
+                Dep = dependent(Instr, Selected),
+                ?f_debug(" vs ~p: ~p\n",[Instr, Dep]),
+                not Dep
         end,
     [S || S <- SleepSet, Filter(S)].
 
