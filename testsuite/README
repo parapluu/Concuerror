@@ -5,6 +5,8 @@ To run the testsuite:
   1) To run all the tests simple execute `./runtests.py'.
      For every test results are saved in
      `results/<suite_name>/<test_name>-<function_name>-<preem_bound>.txt'
+     (in the case of using partial order reduction the results are saved in
+     `results/<suite_name>/<test_name>-<function_name>-<preem_bound>-dpor.txt')
 
   2) To run all the tests from specific suites (SUITE1, SUITE2)
      execute `./runtests.py suites/SUITE1/src/* suites/SUITE2/src/*'.
@@ -26,13 +28,17 @@ To add test cases in any suite:
      the function `scenarios/0' which has to return a list of tuples each
      containing the function's name and preemption bounds to analyze
      (functions must be of arity 0).
+     Tupples may optionally contain a third term ('full' or 'dpor')
+     which specifies if we are going to use dynamic partial order
+     reduction algorithms.
 
   2) If analysis of more files is needed place them all in a new directory
      (TEST) in suite's `src' directory. In this directory there must be
      present a module called `test' exporting the function `scenarios/0'
      described above.
 
-  3) Create a file named TEST-<function_name>-<preem_bound>.txt containing
+  3) Create a file named TEST-<function_name>-<preem_bound>.txt
+     (or TEST-<function_name>-<preem_bound>-dpor.txt) containing
      the expected result in suite's `result' directory.
 
 ----------------------

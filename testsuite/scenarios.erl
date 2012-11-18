@@ -25,4 +25,13 @@ extractOne(File) ->
     %% Get the scenarios for one module
     Scenarios = apply(Module, scenarios, []),
     %% Put module name to it
-    lists:map(fun({Fun,Preb}) -> {Module, Fun, Preb} end, Scenarios).
+    FunMap =
+        fun(Scenario) ->
+                case Scenario of
+                    {Fun, Preb} ->
+                        {Module, Fun, Preb, full};
+                    {Fun, Preb, Flag} when Flag=:=full; Flag=:=dpor ->
+                        {Module, Fun, Preb, Flag}
+                end
+        end,
+    lists:map(FunMap, Scenarios).

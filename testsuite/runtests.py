@@ -46,7 +46,7 @@ def runTest(test):
         scen = scenario.strip("{}\n").split(",")
         # And run the test
         p = Process(target=runScenario,
-                args=(suite, name, modn, scen[1], scen[2], files))
+                args=(suite, name, modn, scen[1], scen[2], scen[3], files))
         p.start()
         procS.append(p)
     pout.stdout.close()
@@ -57,7 +57,7 @@ def runTest(test):
 #---------------------------------------------------------------------
 # Run the specified scenario and print the results
 
-def runScenario(suite, name, modn, funn, preb, files):
+def runScenario(suite, name, modn, funn, preb, flag, files):
     global concuerror
     global results
     global dirname
@@ -65,26 +65,35 @@ def runScenario(suite, name, modn, funn, preb, files):
     global lock
     global total_tests
     global total_failed
+    if flag == "dpor":
+        conc_flag = "--dpor"
+        file_ext  = "-dpor"
+    else:
+        conc_flag = ""
+        file_ext  = ""
     sema.acquire()
     # Run concuerror
-    os.system("%s --dpor --target %s %s --files %s --output %s/%s/dpor/%s-%s-%s.txt --preb %s --quiet"
+    os.system(("%s --target %s %s --files %s " +
+               "--output %s/%s/dpor/%s-%s-%s%s.txt --preb %s --quiet %s")
             % (concuerror, modn, funn, ' '.join(files), results, suite, name,
-               funn, preb, preb))
+               funn, preb, file_ext, preb, conc_flag))
     # Compare the results
-    a = "%s/suites/%s/dpor/%s-%s-%s.txt" % (dirname, suite, name, funn, preb)
-    b = "%s/%s/dpor/%s-%s-%s.txt" % (results, suite, name, funn, preb)
+    a = ("%s/suites/%s/dpor/%s-%s-%s%s.txt"
+            % (dirname, suite, name, funn, preb, file_ext))
+    b = ("%s/%s/dpor/%s-%s-%s%s.txt"
+            % (results, suite, name, funn, preb, file_ext))
     equalRes = equalResults(a, b)
     sema.release()
     # Print the results
     lock.acquire()
     total_tests.value += 1
     if equalRes:
-        print "%-10s %-20s %-40s  \033[01;32mok\033[00m" % \
-                (suite, name, "("+funn+",  "+preb+")")
+        print "%-10s %-20s %-50s  \033[01;32mok\033[00m" % \
+                (suite, name, "("+funn+",  "+preb+",  "+flag+")")
     else:
         total_failed.value += 1
-        print "%-10s %-20s %-40s  \033[01;31mfailed\033[00m" % \
-                (suite, name, "("+funn+",  "+preb+")")
+        print "%-10s %-20s %-50s  \033[01;31mfailed\033[00m" % \
+                (suite, name, "("+funn+",  "+preb+",  "+flag+")")
     lock.release()
 
 def equalResults(f1, f2):
@@ -150,10 +159,10 @@ if threads == "":
     threads = "4"
 
 print "Concuerror's Testsuite (%d threads)\n" % int(threads)
-print "%-10s %-20s %-40s  %s" % \
-        ("Suite", "Test", "(Function,  Preemption Bound)", "Result")
-print "---------------------------------------" + \
-      "------------------------------------------"
+print "%-10s %-20s %-50s  %s" % \
+        ("Suite", "Test", "(Function,  Preemption Bound,  Reduction)", "Result")
+print "---------------------------------------------" + \
+      "---------------------------------------------"
 
 # Create share integers to count tests and
 # a lock to protect printings
