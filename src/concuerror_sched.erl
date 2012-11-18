@@ -295,6 +295,7 @@ empty_clock_vector() -> dict:new().
          }).
 
 interleave_dpor(Target, PreBound, DporFlavor) ->
+    ?start_debug,
     ?f_debug("Interleave dpor!\n"),
     Procs = processes(),
     %% To be able to clean up we need to be trapping exits...
@@ -419,23 +420,22 @@ wait_next(Lid, Plan) ->
         case Plan of
             {Spawn, _Info}
               when Spawn =:= spawn; Spawn =:= spawn_link;
-                   Spawn =:= spawn_monitor ->
+                   Spawn =:= spawn_monitor; Spawn =:= spawn_opt ->
                 {true,
                  %% This interruption happens to make sure that a child has an
                  %% LID before the parent wants to do any operation with its PID.
                  receive
-                     #sched{msg = spawned,
+                     #sched{msg = Spawn,
                             lid = Lid,
                             misc = Info,
                             type = prev} = Msg ->
-                         case Spawn =:= spawn_monitor of
-                             true ->
-                                 {Pid, Ref} = Info,
+                         case Info of
+                             {Pid, Ref} ->
                                  ChildLid = concuerror_lid:new(Pid, Lid),
                                  MonRef = concuerror_lid:ref_new(ChildLid, Ref),
                                  Msg#sched{misc = {ChildLid, MonRef}};
-                             false ->
-                                 Msg#sched{misc = concuerror_lid:new(Info, Lid)}
+                             Pid ->
+                                 Msg#sched{misc = concuerror_lid:new(Pid, Lid)}
                          end
                  end};
             {ets, {new, _Info}} ->
@@ -474,7 +474,8 @@ get_next(Lid) ->
 
 may_have_dependencies({_Lid, {error, _}, []}) -> false;
 may_have_dependencies({_Lid, {Spawn, _}, []})
-  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor -> false;
+  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
+       Spawn =:= spawn_opt -> false;
 may_have_dependencies({_Lid, {'receive', {unblocked, _, _}}, []}) -> false;
 may_have_dependencies({_Lid, exited, []}) -> false;
 may_have_dependencies(_Else) -> true.
@@ -1037,19 +1038,20 @@ handle_instruction(Transition, TraceTop) ->
     handle_instruction_al(Transition, TraceTop, Variables).
 
 handle_instruction_op({Lid, {Spawn, _Info}, _Msgs})
-  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor ->
+  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
+       Spawn =:= spawn_opt ->
     ParentLid = Lid,
     Info =
         receive
             %% This is the replaced message
-            #sched{msg = spawned, lid = ParentLid,
+            #sched{msg = Spawn, lid = ParentLid,
                    misc = Info0, type = prev} ->
                 Info0
         end,
     ChildLid =
-        case Spawn =:= spawn_monitor of
-            true -> element(1, Info);
-            false -> Info
+        case Info of
+            {Lid0, _MonLid} -> Lid0;
+            Lid0 -> Lid0
         end,
     ChildNextInstr = wait_next(ChildLid, init),
     {Info, ChildNextInstr};
@@ -1080,11 +1082,12 @@ handle_instruction_al({Lid, {exit, _OldInfo}, Msgs}, TraceTop, Info) ->
                          last = NewLast};
 handle_instruction_al({Lid, {Spawn, _OldInfo}, Msgs}, TraceTop,
                       {Info, ChildNextInstr})
-  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor ->
+  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
+       Spawn =:= spawn_opt ->
     ChildLid =
-        case Spawn =:= spawn_monitor of
-            true -> element(1, Info);
-            false -> Info
+        case Info of
+            {Lid0, _MonLid} -> Lid0;
+            Lid0 -> Lid0
         end,
     #trace_state{enabled = Enabled, blocked = Blocked,
                  nexts = Nexts, pollable = Pollable,
@@ -1227,11 +1230,11 @@ convert_error_trace({Lid, {Instr, Extra}, _Msgs}, Procs) ->
     NewProcs =
         case Instr of
             Spawn when Spawn =:= spawn; Spawn =:= spawn_link;
-                       Spawn =:= spawn_monitor ->
+                       Spawn =:= spawn_monitor; Spawn =:= spawn_opt ->
                 NewLid =
-                    case Spawn =:= spawn_monitor of
-                        true -> element(1, Extra);
-                        false -> Extra
+                    case Extra of
+                        {Lid0, _MonLid} -> Lid0;
+                        Lid0 -> Lid0
                     end,
                 sets:add_element(NewLid, Procs);
             exit   -> sets:del_element(Lid, Procs);

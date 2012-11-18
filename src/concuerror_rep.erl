@@ -34,7 +34,8 @@
 -export([rep_send_dpor/2]).
 
 -export([rep_spawn_dpor/1, rep_spawn_dpor/3,
-         rep_spawn_link_dpor/1, rep_spawn_link_dpor/3]).
+         rep_spawn_link_dpor/1, rep_spawn_link_dpor/3,
+         rep_spawn_opt_dpor/2, rep_spawn_opt_dpor/4]).
 
 -export([rep_link_dpor/1, rep_unlink_dpor/1,
          rep_spawn_monitor_dpor/1, rep_spawn_monitor_dpor/3,
@@ -100,8 +101,10 @@
           fun rep_spawn_monitor_dpor/1},
          {{erlang, spawn_monitor, 3}, fun rep_spawn_monitor/3,
           fun rep_spawn_monitor_dpor/3},
-         {{erlang, spawn_opt, 2}, fun rep_spawn_opt/2},
-         {{erlang, spawn_opt, 4}, fun rep_spawn_opt/4},
+         {{erlang, spawn_opt, 2}, fun rep_spawn_opt/2,
+          fun rep_spawn_opt_dpor/2},
+         {{erlang, spawn_opt, 4}, fun rep_spawn_opt/4,
+          fun rep_spawn_opt_dpor/4},
          {{erlang, unlink, 1}, fun rep_unlink/1,
           fun rep_unlink_dpor/1},
          {{erlang, unregister, 1}, fun rep_unregister/1,
@@ -604,14 +607,14 @@ spawn_center_dpor(Kind, Fun) ->
         case Kind of
             spawn -> fun spawn/1;
             spawn_link -> fun spawn_link/1;
-            spawn_monitor -> fun spawn_monitor/1                              
+            spawn_monitor -> fun spawn_monitor/1
         end,
     case ?LID_FROM_PID(self()) of
         not_found -> Spawner(Fun);
         _Lid ->
             concuerror_sched:notify(Kind, unknown),
             Result = Spawner(fun() -> spawn_fun_wrapper(Fun) end),
-            concuerror_sched:notify(spawned, Result, prev),
+            concuerror_sched:notify(Kind, Result, prev),
             %% Wait before using the PID to be sure that an LID is assigned
             concuerror_sched:wait(),
             Result
@@ -802,6 +805,26 @@ rep_spawn_opt(Fun, Opt) ->
             Ret
     end.
 
+-spec rep_spawn_opt_dpor(function(),
+                         ['link' | 'monitor' |
+                          {'priority', process_priority_level()} |
+                          {'fullsweep_after', integer()} |
+                          {'min_heap_size', integer()} |
+                          {'min_bin_vheap_size', integer()}]) ->
+                                pid() | {pid(), reference()}.
+
+rep_spawn_opt_dpor(Fun, Opt) ->
+    case ?LID_FROM_PID(self()) of
+        not_found -> spawn_opt(Fun, Opt);
+        _Lid ->
+            concuerror_sched:notify(spawn_opt, unknown),
+            Result = spawn_opt(fun() -> spawn_fun_wrapper(Fun) end, Opt),
+            concuerror_sched:notify(spawn_opt, Result, prev),
+            %% Wait before using the PID to be sure that an LID is assigned
+            concuerror_sched:wait(),
+            Result
+    end.
+
 %% @spec rep_spawn_opt(atom(), atom(), [term()],
 %%       ['link' | 'monitor' |
 %%                   {'priority', process_priority_level()} |
@@ -823,6 +846,18 @@ rep_spawn_opt(Fun, Opt) ->
 rep_spawn_opt(Module, Function, Args, Opt) ->
     Fun = fun() -> apply(Module, Function, Args) end,
     rep_spawn_opt(Fun, Opt).
+
+-spec rep_spawn_opt_dpor(atom(), atom(), [term()],
+                         ['link' | 'monitor' |
+                          {'priority', process_priority_level()} |
+                          {'fullsweep_after', integer()} |
+                          {'min_heap_size', integer()} |
+                          {'min_bin_vheap_size', integer()}]) ->
+                                pid() | {pid(), reference()}.
+
+rep_spawn_opt_dpor(Module, Function, Args, Opt) ->
+    Fun = fun() -> apply(Module, Function, Args) end,
+    rep_spawn_opt_dpor(Fun, Opt).
 
 %% @spec: rep_unlink(pid() | port()) -> 'true'
 %% @doc: Replacement for `unlink/1'.
