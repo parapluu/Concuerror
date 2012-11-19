@@ -1,8 +1,0 @@
-Checked 1 interleaving(s). 1 errors found.
-
-117445566
-Error type        : Deadlock
-Blocked processes : P1, P1.1
-  Process P1 spawns process P1.1
-
-
