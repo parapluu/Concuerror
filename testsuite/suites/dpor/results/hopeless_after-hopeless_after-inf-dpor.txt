@@ -1,0 +1,13 @@
+Checked 1 interleaving(s). 1 errors found.
+
+102969576
+Error type        : Exception
+Details           : {{nocatch,no_hope},
+                     [{hopeless_after,hopeless_after,0,
+                          [{file,"suites/dpor/src/hopeless_after.erl"},
+                           {line,15}]}]}
+  Process P1 spawns process P1.1
+  Process P1 receives no matching messages
+  Process P1 exits ("Exception")
+
+

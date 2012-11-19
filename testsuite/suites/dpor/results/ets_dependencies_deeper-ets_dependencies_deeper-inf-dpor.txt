@@ -1,0 +1,1250 @@
+Checked 36 interleaving(s). 36 errors found.
+
+24718289
+Error type        : Exception
+Details           : {{nocatch,{1,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+67138271
+Error type        : Exception
+Details           : {{nocatch,{1,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+44569679
+Error type        : Exception
+Details           : {{nocatch,{1,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+127477082
+Error type        : Exception
+Details           : {{nocatch,{1,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+9597845
+Error type        : Exception
+Details           : {{nocatch,{1,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+49720137
+Error type        : Exception
+Details           : {{nocatch,{1,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+123357502
+Error type        : Exception
+Details           : {{nocatch,{1,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+48951002
+Error type        : Exception
+Details           : {{nocatch,{1,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+126865957
+Error type        : Exception
+Details           : {{nocatch,{1,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+72356515
+Error type        : Exception
+Details           : {{nocatch,{1,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+16453259
+Error type        : Exception
+Details           : {{nocatch,{1,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+79265618
+Error type        : Exception
+Details           : {{nocatch,{1,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+120240874
+Error type        : Exception
+Details           : {{nocatch,{0,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+95786234
+Error type        : Exception
+Details           : {{nocatch,{0,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+123813802
+Error type        : Exception
+Details           : {{nocatch,{0,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+130057141
+Error type        : Exception
+Details           : {{nocatch,{0,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+115194225
+Error type        : Exception
+Details           : {{nocatch,{0,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+130104860
+Error type        : Exception
+Details           : {{nocatch,{0,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+119938039
+Error type        : Exception
+Details           : {{nocatch,{0,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+11495011
+Error type        : Exception
+Details           : {{nocatch,{0,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+51729958
+Error type        : Exception
+Details           : {{nocatch,{0,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+55519034
+Error type        : Exception
+Details           : {{nocatch,{0,none}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{p3,none}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+69502592
+Error type        : Exception
+Details           : {{nocatch,{0,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+107549903
+Error type        : Exception
+Details           : {{nocatch,{0,2}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+64823554
+Error type        : Exception
+Details           : {{nocatch,{1,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+119777983
+Error type        : Exception
+Details           : {{nocatch,{1,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+53139831
+Error type        : Exception
+Details           : {{nocatch,{1,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+68392154
+Error type        : Exception
+Details           : {{nocatch,{1,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+126043748
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+13721546
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+121304835
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+123520980
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+11768482
+Error type        : Exception
+Details           : {{nocatch,{1,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+101300685
+Error type        : Exception
+Details           : {{nocatch,{1,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+47262905
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+35718656
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,
+                               "suites/dpor/src/ets_dependencies_deeper.erl"},
+                           {line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+

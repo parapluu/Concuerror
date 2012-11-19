@@ -1,0 +1,14 @@
+Checked 1 interleaving(s). 1 errors found.
+
+71904397
+Error type        : Exception
+Details           : {badarith,
+                        [{trigger_the_after,trigger_the_after,0,
+                             [{file,"suites/dpor/src/trigger_the_after.erl"},
+                              {line,12}]}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 exits ("Exception")
+
+

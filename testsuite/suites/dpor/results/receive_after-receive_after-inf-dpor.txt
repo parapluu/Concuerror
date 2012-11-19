@@ -1,0 +1,14 @@
+Checked 2 interleaving(s). 1 errors found.
+
+80803225
+Error type        : Exception
+Details           : {{nocatch,boom},
+                     [{receive_after,'-receive_after/0-fun-2-',1,
+                          [{file,"suites/dpor/src/receive_after.erl"},
+                           {line,16}]}]}
+  Process P1 spawns process P1.1
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 receives no matching messages
+  Process P1.1 exits ("Exception")
+
+

@@ -1,0 +1,83 @@
+Checked 6 interleaving(s). 3 errors found.
+
+121555607
+Error type        : Exception
+Details           : {{case_clause,{eulav,souffle}},
+                     [{simple_ets,simple_ets,0,
+                                  [{file,"suites/dpor/src/simple_ets.erl"},
+                                   {line,33}]}]}
+  Process P1: ets_new {simple_ets,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 sends message `ok` to process P1.2
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
+  Process P1.2 receives message `ok` from process P1
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {simple_ets,key}
+  Process P1: ets_lookup {simple_ets,clef}
+  Process P1 exits ("Exception")
+
+
+15255720
+Error type        : Exception
+Details           : {{case_clause,{new_value,elffuos}},
+                     [{simple_ets,simple_ets,0,
+                                  [{file,"suites/dpor/src/simple_ets.erl"},
+                                   {line,33}]}]}
+  Process P1: ets_new {simple_ets,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 sends message `ok` to process P1.2
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
+  Process P1.2 receives message `ok` from process P1
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {simple_ets,key}
+  Process P1: ets_lookup {simple_ets,clef}
+  Process P1 exits ("Exception")
+
+
+73148978
+Error type        : Exception
+Details           : {{case_clause,{new_value,elffuos}},
+                     [{simple_ets,simple_ets,0,
+                                  [{file,"suites/dpor/src/simple_ets.erl"},
+                                   {line,33}]}]}
+  Process P1: ets_new {simple_ets,[public,named_table]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 sends message `ok` to process P1.2
+  Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
+  Process P1.1: ets_insert {simple_ets,[{key,value}]}
+  Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
+  Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
+  Process P1.2 receives message `ok` from process P1
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {simple_ets,key}
+  Process P1: ets_lookup {simple_ets,clef}
+  Process P1 exits ("Exception")
+
+
