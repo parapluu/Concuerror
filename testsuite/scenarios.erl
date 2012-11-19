@@ -18,7 +18,7 @@
 extract(Files) ->
     S1 = lists:map(fun extractOne/1, Files),
     S2 = lists:flatten(S1),
-    lists:foreach(fun(S) -> io:format("~p\n", [S]) end, S2).
+    lists:foreach(fun(S) -> io:format("~w\n", [S]) end, S2).
 
 extractOne(File) ->
     Module = list_to_atom(filename:basename(File, ".erl")),
