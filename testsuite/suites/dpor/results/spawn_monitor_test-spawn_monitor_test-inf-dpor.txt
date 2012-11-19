@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 1 errors found.
 
-84553721
+1
 Error type        : Assertion violation
 Module:Line       : spawn_monitor_test.erl:18
 Expected          : result2

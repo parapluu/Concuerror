@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 1 errors found.
 
-19072905
+1
 Error type        : Exception
 Details           : {{badmatch,[msg1,msg2]},
                      [{send_using_names,send_using_names,0,

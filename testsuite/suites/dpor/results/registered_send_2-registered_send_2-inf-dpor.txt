@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 1 errors found.
 
-96161875
+1
 Error type        : Exception
 Details           : {badarg,[{erlang,register,[child,<0.46.0>],[]}]}
   Process P1 spawns process P1.1

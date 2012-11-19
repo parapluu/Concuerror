@@ -1,6 +1,6 @@
 Checked 3 interleaving(s). 2 errors found.
 
-22213138
+1
 Error type        : Exception
 Details           : {badarg,[{erlang,register,[child,<0.48.0>],[]},
                              {registered_send_3,registered_send_3,0,[]}]}
@@ -12,7 +12,7 @@ Details           : {badarg,[{erlang,register,[child,<0.48.0>],[]},
   Process P1 exits ("Exception")
 
 
-133777353
+2
 Error type        : Exception
 Details           : {badarg,[]}
   Process P1 spawns process P1.1

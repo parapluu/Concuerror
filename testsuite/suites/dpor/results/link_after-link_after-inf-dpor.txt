@@ -1,6 +1,6 @@
 Checked 5 interleaving(s). 1 errors found.
 
-130160129
+1
 Error type        : Exception
 Details           : {{nocatch,untrapped},
                      [{link_after,'-link_after/0-fun-2-',0,

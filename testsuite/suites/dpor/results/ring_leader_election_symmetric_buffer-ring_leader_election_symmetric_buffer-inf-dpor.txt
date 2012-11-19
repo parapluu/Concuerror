@@ -1,6 +1,6 @@
 Checked 32 interleaving(s). 32 errors found.
 
-25169727
+1
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -52,7 +52,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-34129010
+2
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -104,7 +104,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-44786540
+3
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -156,7 +156,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-39995752
+4
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -208,7 +208,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-62314375
+5
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -260,7 +260,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-112052523
+6
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -312,7 +312,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-32539250
+7
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -364,7 +364,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-57597986
+8
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -416,7 +416,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-18743767
+9
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -468,7 +468,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-43527038
+10
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -520,7 +520,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-11410136
+11
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -572,7 +572,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-94386043
+12
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -624,7 +624,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-2009676
+13
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -676,7 +676,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-110227346
+14
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -728,7 +728,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-5387416
+15
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -780,7 +780,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-90199668
+16
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -832,7 +832,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-35671182
+17
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -884,7 +884,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-126330284
+18
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -936,7 +936,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-20515505
+19
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -988,7 +988,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-33087204
+20
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1040,7 +1040,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-31596873
+21
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1092,7 +1092,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-19136605
+22
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1144,7 +1144,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-75706527
+23
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1196,7 +1196,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-75862347
+24
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1248,7 +1248,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-84493326
+25
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1300,7 +1300,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-134059508
+26
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1352,7 +1352,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-36201038
+27
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1404,7 +1404,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-68051609
+28
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1456,7 +1456,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-133311694
+29
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1508,7 +1508,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-65282736
+30
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1560,7 +1560,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-127112441
+31
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1
@@ -1612,7 +1612,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 exits (normal)
 
 
-109619711
+32
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1

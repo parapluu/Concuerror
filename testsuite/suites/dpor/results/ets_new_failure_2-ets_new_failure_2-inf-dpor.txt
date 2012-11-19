@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 2 errors found.
 
-121211441
+1
 Error type        : Exception
 Details           : {badarg,
                         [{ets,new,[table,[named_table,public]],[]},
@@ -15,7 +15,7 @@ Details           : {badarg,
   Process P1.2 exits ("Exception")
 
 
-23086699
+2
 Error type        : Exception
 Details           : {badarg,
                         [{ets,new,[table,[named_table,public]],[]},

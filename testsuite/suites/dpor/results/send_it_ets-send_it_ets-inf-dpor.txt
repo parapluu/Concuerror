@@ -1,6 +1,6 @@
 Checked 3 interleaving(s). 1 errors found.
 
-78611697
+1
 Error type        : Exception
 Details           : {{nocatch,boom},
                      [{send_it_ets,send_it_ets,0,

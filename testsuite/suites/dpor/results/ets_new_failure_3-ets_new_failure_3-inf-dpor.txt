@@ -1,6 +1,6 @@
 Checked 4 interleaving(s). 2 errors found.
 
-89984411
+1
 Error type        : Exception
 Details           : {badarg,[{ets,new,[table,[named_table,public]],[]}]}
   Process P1 spawns process P1.1
@@ -11,7 +11,7 @@ Details           : {badarg,[{ets,new,[table,[named_table,public]],[]}]}
   Process P1.2 exits ("Exception")
 
 
-94943623
+2
 Error type        : Exception
 Details           : {badarg,[{ets,new,[table,[named_table,public]],[]}]}
   Process P1 spawns process P1.1

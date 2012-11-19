@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 1 errors found.
 
-80803225
+1
 Error type        : Exception
 Details           : {{nocatch,boom},
                      [{receive_after,'-receive_after/0-fun-2-',1,

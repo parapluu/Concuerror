@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 2 errors found.
 
-87112809
+1
 Error type        : Exception
 Details           : {{badmatch,[one,two]},
                      [{spawned_sender_crasher,receive_two,0,
@@ -19,7 +19,7 @@ Details           : {{badmatch,[one,two]},
   Process P1.1 exits ("Exception")
 
 
-23425862
+2
 Error type        : Exception
 Details           : {{badmatch,[two,one]},
                      [{spawned_sender_crasher,receive_two,0,

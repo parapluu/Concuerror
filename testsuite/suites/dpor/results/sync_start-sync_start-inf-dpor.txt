@@ -1,6 +1,6 @@
 Checked 4 interleaving(s). 4 errors found.
 
-14078847
+1
 Error type        : Deadlock
 Blocked processes : P1
   Process P1 spawns process P1.1
@@ -25,7 +25,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
 
 
-28028589
+2
 Error type        : Deadlock
 Blocked processes : P1
   Process P1 spawns process P1.1
@@ -50,7 +50,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
-11577714
+3
 Error type        : Deadlock
 Blocked processes : P1
   Process P1 spawns process P1.1
@@ -75,7 +75,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
 
 
-24588937
+4
 Error type        : Deadlock
 Blocked processes : P1
   Process P1 spawns process P1.1

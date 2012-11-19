@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 1 errors found.
 
-94307569
+1
 Error type        : Exception
 Details           : {badarg,[]}
   Process P1 spawns process P1.1

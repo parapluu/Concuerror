@@ -454,8 +454,8 @@ writeDetails(_Ticket, {'error', _Reason}=Error) ->
     Error;
 writeDetails(Ticket, {Count, IoDevice}) ->
     Error = concuerror_ticket:get_error(Ticket),
-    Description = io_lib:format("~p\n~s\n",
-        [erlang:phash2(Ticket), concuerror_error:long(Error)]),
+    Description =
+        io_lib:format("~p\n~s\n", [Count, concuerror_error:long(Error)]),
     Details = lists:map(fun(M) -> "  " ++ M ++ "\n" end,
                     concuerror_ticket:details_to_strings(Ticket)),
     Msg = lists:flatten([Description | Details]),

@@ -1,6 +1,6 @@
 Checked 4 interleaving(s). 4 errors found.
 
-109976984
+1
 Error type        : Exception
 Details           : {{nocatch,too_bad},
                      [{ets_heir,'-ets_heir/0-fun-1-',0,
@@ -14,7 +14,7 @@ Details           : {{nocatch,too_bad},
   Process P1.2 exits ("Exception")
 
 
-116524561
+2
 Error type        : Exception
 Details           : {badarg,[{ets,lookup,[table,x],[]},
                              {ets_heir,'-ets_heir/0-fun-1-',0,[]}]}
@@ -27,7 +27,7 @@ Details           : {badarg,[{ets,lookup,[table,x],[]},
   Process P1.2 exits ("Exception")
 
 
-133982246
+3
 Error type        : Exception
 Details           : {{nocatch,too_bad},
                      [{ets_heir,'-ets_heir/0-fun-1-',0,
@@ -41,7 +41,7 @@ Details           : {{nocatch,too_bad},
   Process P1.2 exits ("Exception")
 
 
-92774118
+4
 Error type        : Exception
 Details           : {badarg,[{ets,lookup,[table,x],[]},
                              {ets_heir,'-ets_heir/0-fun-1-',0,[]}]}

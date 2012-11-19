@@ -1,6 +1,6 @@
 Checked 8 interleaving(s). 8 errors found.
 
-16896589
+1
 Error type        : Deadlock
 Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
@@ -506,7 +506,7 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
 
 
-7731787
+2
 Error type        : Deadlock
 Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
@@ -1012,7 +1012,7 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
 
 
-77156543
+3
 Error type        : Deadlock
 Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
@@ -1518,7 +1518,7 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
 
 
-58748191
+4
 Error type        : Deadlock
 Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
@@ -2024,7 +2024,7 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
 
 
-103057185
+5
 Error type        : Deadlock
 Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
@@ -2530,7 +2530,7 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
 
 
-63454277
+6
 Error type        : Deadlock
 Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
@@ -3036,7 +3036,7 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
 
 
-81590933
+7
 Error type        : Deadlock
 Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}
@@ -3542,7 +3542,7 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
 
 
-133761434
+8
 Error type        : Deadlock
 Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P11., P111, P112, P113, P114, P115, P116, P117, P118, P119, P12., P121, P122, P123, P124, P125, P126, P127, P128, P129, P13., P131, P132, P133, P134, P135, P136, P137, P138, P139, P14., P141, P142, P143, P144, P145, P146, P147, P148, P149, P15., P151, P152, P153, P154, P155, P156, P157, P158
   Process P1: ets_new {inode,[public,named_table]}

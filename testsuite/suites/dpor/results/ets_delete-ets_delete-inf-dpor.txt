@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 2 errors found.
 
-107178750
+1
 Error type        : Exception
 Details           : {badarg,[{ets,insert,[table,{key,value}],[]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -10,7 +10,7 @@ Details           : {badarg,[{ets,insert,[table,{key,value}],[]}]}
   Process P1.1 exits ("Exception")
 
 
-46533659
+2
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}

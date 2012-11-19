@@ -1,6 +1,6 @@
 Checked 6 interleaving(s). 5 errors found.
 
-103475238
+1
 Error type        : Exception
 Details           : {badarg,[]}
   Process P1 registers process P1 as `bank`
@@ -15,7 +15,7 @@ Details           : {badarg,[]}
   Process P1.1 exits ("Exception")
 
 
-110598907
+2
 Error type        : Deadlock
 Blocked processes : P1, P1.2
   Process P1 registers process P1 as `bank`
@@ -30,7 +30,7 @@ Blocked processes : P1, P1.2
   Process P1.3 exits (normal)
 
 
-36532476
+3
 Error type        : Deadlock
 Blocked processes : P1
   Process P1 registers process P1 as `bank`
@@ -48,7 +48,7 @@ Blocked processes : P1
   Process P1.2 exits (normal)
 
 
-129606493
+4
 Error type        : Exception
 Details           : {badarg,[]}
   Process P1 registers process P1 as `bank`
@@ -60,7 +60,7 @@ Details           : {badarg,[]}
   Process P1.1 exits ("Exception")
 
 
-26059244
+5
 Error type        : Exception
 Details           : {badarg,
                         [{erlang,unregister,[bank],[]},

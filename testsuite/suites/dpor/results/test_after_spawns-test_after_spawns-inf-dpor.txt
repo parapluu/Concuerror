@@ -1,6 +1,6 @@
 Checked 1 interleaving(s). 1 errors found.
 
-117636230
+1
 Error type        : Exception
 Details           : {{nocatch,{ok,{1,[]},{2,[]},{3,[]}}},
                      [{test_after_spawns,test_after_spawns,0,

@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 2 errors found.
 
-72537885
+1
 Error type        : Deadlock
 Blocked processes : P1
   Process P1 spawns process P1.1
@@ -10,7 +10,7 @@ Blocked processes : P1
   Process P1.1 exits (normal)
 
 
-12280549
+2
 Error type        : Deadlock
 Blocked processes : P1
   Process P1 spawns process P1.1

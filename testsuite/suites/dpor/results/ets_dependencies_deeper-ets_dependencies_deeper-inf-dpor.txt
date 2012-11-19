@@ -1,6 +1,6 @@
 Checked 36 interleaving(s). 36 errors found.
 
-24718289
+1
 Error type        : Exception
 Details           : {{nocatch,{1,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -34,7 +34,7 @@ Details           : {{nocatch,{1,none}},
   Process P1 exits ("Exception")
 
 
-67138271
+2
 Error type        : Exception
 Details           : {{nocatch,{1,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -68,7 +68,7 @@ Details           : {{nocatch,{1,none}},
   Process P1 exits ("Exception")
 
 
-44569679
+3
 Error type        : Exception
 Details           : {{nocatch,{1,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -102,7 +102,7 @@ Details           : {{nocatch,{1,none}},
   Process P1 exits ("Exception")
 
 
-127477082
+4
 Error type        : Exception
 Details           : {{nocatch,{1,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -136,7 +136,7 @@ Details           : {{nocatch,{1,none}},
   Process P1 exits ("Exception")
 
 
-9597845
+5
 Error type        : Exception
 Details           : {{nocatch,{1,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -170,7 +170,7 @@ Details           : {{nocatch,{1,none}},
   Process P1 exits ("Exception")
 
 
-49720137
+6
 Error type        : Exception
 Details           : {{nocatch,{1,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -204,7 +204,7 @@ Details           : {{nocatch,{1,none}},
   Process P1 exits ("Exception")
 
 
-123357502
+7
 Error type        : Exception
 Details           : {{nocatch,{1,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -239,7 +239,7 @@ Details           : {{nocatch,{1,2}},
   Process P1 exits ("Exception")
 
 
-48951002
+8
 Error type        : Exception
 Details           : {{nocatch,{1,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -274,7 +274,7 @@ Details           : {{nocatch,{1,2}},
   Process P1 exits ("Exception")
 
 
-126865957
+9
 Error type        : Exception
 Details           : {{nocatch,{1,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -309,7 +309,7 @@ Details           : {{nocatch,{1,2}},
   Process P1 exits ("Exception")
 
 
-72356515
+10
 Error type        : Exception
 Details           : {{nocatch,{1,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -344,7 +344,7 @@ Details           : {{nocatch,{1,2}},
   Process P1 exits ("Exception")
 
 
-16453259
+11
 Error type        : Exception
 Details           : {{nocatch,{1,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -379,7 +379,7 @@ Details           : {{nocatch,{1,2}},
   Process P1 exits ("Exception")
 
 
-79265618
+12
 Error type        : Exception
 Details           : {{nocatch,{1,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -414,7 +414,7 @@ Details           : {{nocatch,{1,2}},
   Process P1 exits ("Exception")
 
 
-120240874
+13
 Error type        : Exception
 Details           : {{nocatch,{0,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -448,7 +448,7 @@ Details           : {{nocatch,{0,none}},
   Process P1 exits ("Exception")
 
 
-95786234
+14
 Error type        : Exception
 Details           : {{nocatch,{0,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -482,7 +482,7 @@ Details           : {{nocatch,{0,none}},
   Process P1 exits ("Exception")
 
 
-123813802
+15
 Error type        : Exception
 Details           : {{nocatch,{0,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -516,7 +516,7 @@ Details           : {{nocatch,{0,none}},
   Process P1 exits ("Exception")
 
 
-130057141
+16
 Error type        : Exception
 Details           : {{nocatch,{0,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -550,7 +550,7 @@ Details           : {{nocatch,{0,none}},
   Process P1 exits ("Exception")
 
 
-115194225
+17
 Error type        : Exception
 Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -585,7 +585,7 @@ Details           : {{nocatch,{0,2}},
   Process P1 exits ("Exception")
 
 
-130104860
+18
 Error type        : Exception
 Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -620,7 +620,7 @@ Details           : {{nocatch,{0,2}},
   Process P1 exits ("Exception")
 
 
-119938039
+19
 Error type        : Exception
 Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -655,7 +655,7 @@ Details           : {{nocatch,{0,2}},
   Process P1 exits ("Exception")
 
 
-11495011
+20
 Error type        : Exception
 Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -690,7 +690,7 @@ Details           : {{nocatch,{0,2}},
   Process P1 exits ("Exception")
 
 
-51729958
+21
 Error type        : Exception
 Details           : {{nocatch,{0,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -724,7 +724,7 @@ Details           : {{nocatch,{0,none}},
   Process P1 exits ("Exception")
 
 
-55519034
+22
 Error type        : Exception
 Details           : {{nocatch,{0,none}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -758,7 +758,7 @@ Details           : {{nocatch,{0,none}},
   Process P1 exits ("Exception")
 
 
-69502592
+23
 Error type        : Exception
 Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -793,7 +793,7 @@ Details           : {{nocatch,{0,2}},
   Process P1 exits ("Exception")
 
 
-107549903
+24
 Error type        : Exception
 Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -828,7 +828,7 @@ Details           : {{nocatch,{0,2}},
   Process P1 exits ("Exception")
 
 
-64823554
+25
 Error type        : Exception
 Details           : {{nocatch,{1,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -863,7 +863,7 @@ Details           : {{nocatch,{1,0}},
   Process P1 exits ("Exception")
 
 
-119777983
+26
 Error type        : Exception
 Details           : {{nocatch,{1,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -898,7 +898,7 @@ Details           : {{nocatch,{1,0}},
   Process P1 exits ("Exception")
 
 
-53139831
+27
 Error type        : Exception
 Details           : {{nocatch,{1,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -933,7 +933,7 @@ Details           : {{nocatch,{1,0}},
   Process P1 exits ("Exception")
 
 
-68392154
+28
 Error type        : Exception
 Details           : {{nocatch,{1,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -968,7 +968,7 @@ Details           : {{nocatch,{1,0}},
   Process P1 exits ("Exception")
 
 
-126043748
+29
 Error type        : Exception
 Details           : {{nocatch,{0,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -1003,7 +1003,7 @@ Details           : {{nocatch,{0,0}},
   Process P1 exits ("Exception")
 
 
-13721546
+30
 Error type        : Exception
 Details           : {{nocatch,{0,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -1038,7 +1038,7 @@ Details           : {{nocatch,{0,0}},
   Process P1 exits ("Exception")
 
 
-121304835
+31
 Error type        : Exception
 Details           : {{nocatch,{0,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -1073,7 +1073,7 @@ Details           : {{nocatch,{0,0}},
   Process P1 exits ("Exception")
 
 
-123520980
+32
 Error type        : Exception
 Details           : {{nocatch,{0,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -1108,7 +1108,7 @@ Details           : {{nocatch,{0,0}},
   Process P1 exits ("Exception")
 
 
-11768482
+33
 Error type        : Exception
 Details           : {{nocatch,{1,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -1143,7 +1143,7 @@ Details           : {{nocatch,{1,0}},
   Process P1 exits ("Exception")
 
 
-101300685
+34
 Error type        : Exception
 Details           : {{nocatch,{1,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -1178,7 +1178,7 @@ Details           : {{nocatch,{1,0}},
   Process P1 exits ("Exception")
 
 
-47262905
+35
 Error type        : Exception
 Details           : {{nocatch,{0,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -1213,7 +1213,7 @@ Details           : {{nocatch,{0,0}},
   Process P1 exits ("Exception")
 
 
-35718656
+36
 Error type        : Exception
 Details           : {{nocatch,{0,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,

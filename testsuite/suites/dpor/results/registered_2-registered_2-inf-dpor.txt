@@ -1,6 +1,6 @@
 Checked 5 interleaving(s). 5 errors found.
 
-9729265
+1
 Error type        : Exception
 Details           : {badarg,[{erlang,register,[parent,<0.44.0>],[]}]}
   Process P1 spawns process P1.1
@@ -11,7 +11,7 @@ Details           : {badarg,[{erlang,register,[parent,<0.44.0>],[]}]}
   Process P1.1 exits ("Exception")
 
 
-3426319
+2
 Error type        : Exception
 Details           : {badarg,[{erlang,register,[parent,<0.46.0>],[]}]}
   Process P1 spawns process P1.1
@@ -21,7 +21,7 @@ Details           : {badarg,[{erlang,register,[parent,<0.46.0>],[]}]}
   Process P1.1 exits ("Exception")
 
 
-53248492
+3
 Error type        : Exception
 Details           : {badarg,[{erlang,register,[parent,<0.48.0>],[]}]}
   Process P1 spawns process P1.1
@@ -30,7 +30,7 @@ Details           : {badarg,[{erlang,register,[parent,<0.48.0>],[]}]}
   Process P1.1 exits ("Exception")
 
 
-98220944
+4
 Error type        : Exception
 Details           : {badarg,[{erlang,register,[child,<0.50.0>],[]}]}
   Process P1 spawns process P1.1
@@ -41,7 +41,7 @@ Details           : {badarg,[{erlang,register,[child,<0.50.0>],[]}]}
   Process P1 exits ("Exception")
 
 
-97225453
+5
 Error type        : Exception
 Details           : {badarg,[{erlang,register,[parent,<0.51.0>],[]},
                              {registered_2,registered_2,0,[]}]}

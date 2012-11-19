@@ -1,6 +1,6 @@
 Checked 1 interleaving(s). 1 errors found.
 
-113323378
+1
 Error type        : Exception
 Details           : {badarg,[{erlang,monitor,[process,1],[]}]}
   Process P1 exits ("Exception")

@@ -1,6 +1,6 @@
 Checked 24 interleaving(s). 24 errors found.
 
-9306232
+1
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -23,7 +23,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
 
 
-103301645
+2
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -46,7 +46,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
-61569823
+3
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -69,7 +69,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
 
 
-72686434
+4
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -92,7 +92,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.3
 
 
-51292125
+5
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -115,7 +115,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
-9244205
+6
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -138,7 +138,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.3
 
 
-81805558
+7
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -161,7 +161,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.3
 
 
-25490547
+8
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -184,7 +184,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
 
 
-107813448
+9
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -207,7 +207,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.3
 
 
-12213726
+10
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -230,7 +230,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
-96649296
+11
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -253,7 +253,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
 
 
-32255144
+12
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -276,7 +276,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
-95214374
+13
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -299,7 +299,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
 
 
-114142861
+14
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -322,7 +322,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
-52801101
+15
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -345,7 +345,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
-120834192
+16
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -368,7 +368,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.3
 
 
-39539818
+17
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -391,7 +391,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.3
 
 
-88557541
+18
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -414,7 +414,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
-26595098
+19
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -437,7 +437,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
 
 
-109800203
+20
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -460,7 +460,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
 
 
-124833185
+21
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -483,7 +483,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.2
 
 
-55026154
+22
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -506,7 +506,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.3
 
 
-3989892
+23
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -529,7 +529,7 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.3
 
 
-118492568
+24
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}

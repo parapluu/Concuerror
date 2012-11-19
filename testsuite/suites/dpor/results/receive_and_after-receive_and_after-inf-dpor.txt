@@ -1,6 +1,6 @@
 Checked 2 interleaving(s). 2 errors found.
 
-67263262
+1
 Error type        : Exception
 Details           : {{nocatch,boom},
                      [{receive_and_after,p1,0,
@@ -11,7 +11,7 @@ Details           : {{nocatch,boom},
   Process P1.1 exits ("Exception")
 
 
-78728007
+2
 Error type        : Exception
 Details           : {{nocatch,kaboom},
                      [{receive_and_after,p1,0,

@@ -1,6 +1,6 @@
 Checked 8 interleaving(s). 8 errors found.
 
-65747592
+1
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -21,7 +21,7 @@ Blocked processes : P1
   Process P1.4 exits (normal)
 
 
-12354133
+2
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -42,7 +42,7 @@ Blocked processes : P1
   Process P1.4 exits (normal)
 
 
-119142385
+3
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -63,7 +63,7 @@ Blocked processes : P1
   Process P1.4 exits (normal)
 
 
-103329209
+4
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -84,7 +84,7 @@ Blocked processes : P1
   Process P1.1 exits (normal)
 
 
-78236833
+5
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -105,7 +105,7 @@ Blocked processes : P1
   Process P1.3 exits (normal)
 
 
-47169812
+6
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -126,7 +126,7 @@ Blocked processes : P1
   Process P1.4 exits (normal)
 
 
-49762844
+7
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
@@ -147,7 +147,7 @@ Blocked processes : P1
   Process P1.2 exits (normal)
 
 
-61609269
+8
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}

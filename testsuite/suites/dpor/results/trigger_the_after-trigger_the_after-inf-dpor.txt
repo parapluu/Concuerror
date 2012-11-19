@@ -1,6 +1,6 @@
 Checked 1 interleaving(s). 1 errors found.
 
-71904397
+1
 Error type        : Exception
 Details           : {badarith,
                         [{trigger_the_after,trigger_the_after,0,

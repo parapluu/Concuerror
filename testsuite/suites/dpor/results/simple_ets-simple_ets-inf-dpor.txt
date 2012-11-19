@@ -1,6 +1,6 @@
 Checked 6 interleaving(s). 3 errors found.
 
-121555607
+1
 Error type        : Exception
 Details           : {{case_clause,{eulav,souffle}},
                      [{simple_ets,simple_ets,0,
@@ -27,7 +27,7 @@ Details           : {{case_clause,{eulav,souffle}},
   Process P1 exits ("Exception")
 
 
-15255720
+2
 Error type        : Exception
 Details           : {{case_clause,{new_value,elffuos}},
                      [{simple_ets,simple_ets,0,
@@ -54,7 +54,7 @@ Details           : {{case_clause,{new_value,elffuos}},
   Process P1 exits ("Exception")
 
 
-73148978
+3
 Error type        : Exception
 Details           : {{case_clause,{new_value,elffuos}},
                      [{simple_ets,simple_ets,0,

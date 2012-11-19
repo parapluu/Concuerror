@@ -1,6 +1,6 @@
 Checked 1 interleaving(s). 1 errors found.
 
-75567057
+1
 Error type        : Deadlock
 Blocked processes : P1
 

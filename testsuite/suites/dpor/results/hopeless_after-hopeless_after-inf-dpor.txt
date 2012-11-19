@@ -1,6 +1,6 @@
 Checked 1 interleaving(s). 1 errors found.
 
-102969576
+1
 Error type        : Exception
 Details           : {{nocatch,no_hope},
                      [{hopeless_after,hopeless_after,0,
