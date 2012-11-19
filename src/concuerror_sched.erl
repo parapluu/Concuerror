@@ -394,6 +394,8 @@ replay_lid_trace(Queue) ->
 replay_lid_trace(N, Queue) ->
     {V, NewQueue} = queue:out(Queue),
     case V of
+        {value, {{_Lid,  block, _},               _}} ->
+            replay_lid_trace(N, NewQueue);
         {value, {{Lid, Command, _} = Transition, VC}} ->
             ?f_debug(" ~-4w: ~P",[N, Transition, ?DEPTH]),
             _ = wait_next(Lid, Command),
@@ -927,8 +929,15 @@ update_trace({Lid, _, _} = Selected, Next, State) ->
     Messages = dead_process_send(RewrittenInstr, BaseMessages),
     PossiblyRewrittenSelected = {Lid, RewrittenInstr, Messages},
     ?f_debug("Selected: ~P\n",[PossiblyRewrittenSelected, ?DEPTH]),
-    NewLidTrace =
+    NewBaseLidTrace =
         queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
+    NewLidTrace =
+        case ordsets:is_element(Lid, NewBlocked) of
+            false -> NewBaseLidTrace;
+            true ->
+                ?f_debug("Blocking ~p\n",[Lid]),
+                queue:in({{Lid, block, []}, UpdatedClockVector}, NewBaseLidTrace)
+        end,
     NewTraceTop = check_pollable(InstrNewTraceTop),
     NewSleepSet =
         case Flavor of
@@ -984,7 +993,6 @@ update_lid_enabled(Lid, {_, Next, _}, Pollable, Enabled, Blocked) ->
         case is_enabled(Next) of
             true -> {Enabled, Blocked};
             false ->
-                ?f_debug("Blocking ~p\n",[Lid]),
                 {ordsets:del_element(Lid, Enabled),
                  ordsets:add_element(Lid, Blocked)}
         end,
@@ -1226,6 +1234,8 @@ convert_error_trace({Lid, {error, [ErrorOrThrow,Kind|_]}, _Msgs}, Procs)
     Msg =
         concuerror_error:type(concuerror_error:new({Kind, foo})),    
     {{exit, Lid, Msg}, Procs};
+convert_error_trace({Lid, block, []}, Procs) ->
+    {{block, Lid}, Procs};
 convert_error_trace({Lid, {Instr, Extra}, _Msgs}, Procs) ->
     NewProcs =
         case Instr of

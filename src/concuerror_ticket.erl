@@ -36,16 +36,13 @@ new(Error, ErrorDetails) ->
                 {exception, {Type, clean_stacktrace(Stacktrace)}};
             Error -> Error
         end,
-    {NewError, [Q || Q <- ErrorDetails, not_block(Q)]}.
+    {NewError, ErrorDetails}.
 
 clean_stacktrace(Stacktrace) ->
     [T || T <- Stacktrace, not is_rep_module(T)].
 
 is_rep_module({?REP_MOD, _, _, _}) -> true;
 is_rep_module(_Else) -> false.
-
-not_block({block, _}) -> false;
-not_block(_Else) -> true.
 
 -spec get_error(ticket()) -> concuerror_error:error().
 

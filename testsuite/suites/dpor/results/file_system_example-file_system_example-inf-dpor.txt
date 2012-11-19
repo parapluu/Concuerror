@@ -195,45 +195,62 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P1 spawns process P172
   Process P1 spawns process P173
   Process P1 spawns process P174
+  Process P1 blocks
   Process P159 registers process P159 as `thread_16`
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_i_16'
+  Process P159 blocks
   Process P117 receives message `{thread_16,acquire}` from process P159
   Process P117 sends message `acquired` to process named 'thread_16'
+  Process P117 blocks
   Process P159 receives message `acquired` from process P117
   Process P159: ets_lookup {inode,16}
   Process P172 registers process P172 as `thread_3`
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_i_3'
+  Process P172 blocks
   Process P1.4 receives message `{thread_3,acquire}` from process P172
   Process P1.4 sends message `acquired` to process named 'thread_3'
+  Process P1.4 blocks
   Process P16. registers process P16. as `thread_15`
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_i_15'
+  Process P16. blocks
   Process P116 receives message `{thread_15,acquire}` from process P16.
   Process P116 sends message `acquired` to process named 'thread_15'
+  Process P116 blocks
   Process P16. receives message `acquired` from process P116
   Process P16.: ets_lookup {inode,15}
   Process P173 registers process P173 as `thread_2`
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_i_2'
+  Process P173 blocks
   Process P1.3 receives message `{thread_2,acquire}` from process P173
   Process P1.3 sends message `acquired` to process named 'thread_2'
+  Process P1.3 blocks
   Process P161 registers process P161 as `thread_14`
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_i_14'
+  Process P161 blocks
   Process P115 receives message `{thread_14,acquire}` from process P161
   Process P115 sends message `acquired` to process named 'thread_14'
+  Process P115 blocks
   Process P161 receives message `acquired` from process P115
   Process P161: ets_lookup {inode,14}
   Process P174 registers process P174 as `thread_1`
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_i_1'
+  Process P174 blocks
   Process P1.2 receives message `{thread_1,acquire}` from process P174
   Process P1.2 sends message `acquired` to process named 'thread_1'
+  Process P1.2 blocks
   Process P162 registers process P162 as `thread_13`
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_i_13'
+  Process P162 blocks
   Process P114 receives message `{thread_13,acquire}` from process P162
   Process P114 sends message `acquired` to process named 'thread_13'
+  Process P114 blocks
   Process P162 receives message `acquired` from process P114
   Process P162: ets_lookup {inode,13}
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_b_0'
+  Process P162 blocks
   Process P133 receives message `{thread_13,acquire}` from process P162
   Process P133 sends message `acquired` to process named 'thread_13'
+  Process P133 blocks
   Process P162 receives message `acquired` from process P133
   Process P162: ets_lookup {busy,0}
   Process P162: ets_insert {busy,[{0,true}]}
@@ -242,16 +259,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
   Process P162 exits (normal)
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
+  Process P114 blocks
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
+  Process P133 blocks
   Process P163 registers process P163 as `thread_12`
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_i_12'
+  Process P163 blocks
   Process P113 receives message `{thread_12,acquire}` from process P163
   Process P113 sends message `acquired` to process named 'thread_12'
+  Process P113 blocks
   Process P163 receives message `acquired` from process P113
   Process P163: ets_lookup {inode,12}
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_b_24'
+  Process P163 blocks
   Process P157 receives message `{thread_12,acquire}` from process P163
   Process P157 sends message `acquired` to process named 'thread_12'
+  Process P157 blocks
   Process P163 receives message `acquired` from process P157
   Process P163: ets_lookup {busy,24}
   Process P163: ets_insert {busy,[{24,true}]}
@@ -260,16 +283,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
   Process P163 exits (normal)
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
+  Process P113 blocks
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
+  Process P157 blocks
   Process P164 registers process P164 as `thread_11`
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_i_11'
+  Process P164 blocks
   Process P112 receives message `{thread_11,acquire}` from process P164
   Process P112 sends message `acquired` to process named 'thread_11'
+  Process P112 blocks
   Process P164 receives message `acquired` from process P112
   Process P164: ets_lookup {inode,11}
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_b_22'
+  Process P164 blocks
   Process P155 receives message `{thread_11,acquire}` from process P164
   Process P155 sends message `acquired` to process named 'thread_11'
+  Process P155 blocks
   Process P164 receives message `acquired` from process P155
   Process P164: ets_lookup {busy,22}
   Process P164: ets_insert {busy,[{22,true}]}
@@ -278,16 +307,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
   Process P164 exits (normal)
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
+  Process P112 blocks
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
+  Process P155 blocks
   Process P165 registers process P165 as `thread_10`
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_i_10'
+  Process P165 blocks
   Process P111 receives message `{thread_10,acquire}` from process P165
   Process P111 sends message `acquired` to process named 'thread_10'
+  Process P111 blocks
   Process P165 receives message `acquired` from process P111
   Process P165: ets_lookup {inode,10}
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_b_20'
+  Process P165 blocks
   Process P153 receives message `{thread_10,acquire}` from process P165
   Process P153 sends message `acquired` to process named 'thread_10'
+  Process P153 blocks
   Process P165 receives message `acquired` from process P153
   Process P165: ets_lookup {busy,20}
   Process P165: ets_insert {busy,[{20,true}]}
@@ -296,16 +331,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
   Process P165 exits (normal)
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
+  Process P111 blocks
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
+  Process P153 blocks
   Process P166 registers process P166 as `thread_9`
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_i_9'
+  Process P166 blocks
   Process P11. receives message `{thread_9,acquire}` from process P166
   Process P11. sends message `acquired` to process named 'thread_9'
+  Process P11. blocks
   Process P166 receives message `acquired` from process P11.
   Process P166: ets_lookup {inode,9}
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_b_18'
+  Process P166 blocks
   Process P151 receives message `{thread_9,acquire}` from process P166
   Process P151 sends message `acquired` to process named 'thread_9'
+  Process P151 blocks
   Process P166 receives message `acquired` from process P151
   Process P166: ets_lookup {busy,18}
   Process P166: ets_insert {busy,[{18,true}]}
@@ -314,16 +355,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
   Process P166 exits (normal)
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
+  Process P11. blocks
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
+  Process P151 blocks
   Process P167 registers process P167 as `thread_8`
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_i_8'
+  Process P167 blocks
   Process P1.9 receives message `{thread_8,acquire}` from process P167
   Process P1.9 sends message `acquired` to process named 'thread_8'
+  Process P1.9 blocks
   Process P167 receives message `acquired` from process P1.9
   Process P167: ets_lookup {inode,8}
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_b_16'
+  Process P167 blocks
   Process P149 receives message `{thread_8,acquire}` from process P167
   Process P149 sends message `acquired` to process named 'thread_8'
+  Process P149 blocks
   Process P167 receives message `acquired` from process P149
   Process P167: ets_lookup {busy,16}
   Process P167: ets_insert {busy,[{16,true}]}
@@ -332,16 +379,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
   Process P167 exits (normal)
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
+  Process P1.9 blocks
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
+  Process P149 blocks
   Process P168 registers process P168 as `thread_7`
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_i_7'
+  Process P168 blocks
   Process P1.8 receives message `{thread_7,acquire}` from process P168
   Process P1.8 sends message `acquired` to process named 'thread_7'
+  Process P1.8 blocks
   Process P168 receives message `acquired` from process P1.8
   Process P168: ets_lookup {inode,7}
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_b_14'
+  Process P168 blocks
   Process P147 receives message `{thread_7,acquire}` from process P168
   Process P147 sends message `acquired` to process named 'thread_7'
+  Process P147 blocks
   Process P168 receives message `acquired` from process P147
   Process P168: ets_lookup {busy,14}
   Process P168: ets_insert {busy,[{14,true}]}
@@ -350,16 +403,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
   Process P168 exits (normal)
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
+  Process P1.8 blocks
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
+  Process P147 blocks
   Process P169 registers process P169 as `thread_6`
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_i_6'
+  Process P169 blocks
   Process P1.7 receives message `{thread_6,acquire}` from process P169
   Process P1.7 sends message `acquired` to process named 'thread_6'
+  Process P1.7 blocks
   Process P169 receives message `acquired` from process P1.7
   Process P169: ets_lookup {inode,6}
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_b_12'
+  Process P169 blocks
   Process P145 receives message `{thread_6,acquire}` from process P169
   Process P145 sends message `acquired` to process named 'thread_6'
+  Process P145 blocks
   Process P169 receives message `acquired` from process P145
   Process P169: ets_lookup {busy,12}
   Process P169: ets_insert {busy,[{12,true}]}
@@ -368,16 +427,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
   Process P169 exits (normal)
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
+  Process P1.7 blocks
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
+  Process P145 blocks
   Process P17. registers process P17. as `thread_5`
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_i_5'
+  Process P17. blocks
   Process P1.6 receives message `{thread_5,acquire}` from process P17.
   Process P1.6 sends message `acquired` to process named 'thread_5'
+  Process P1.6 blocks
   Process P17. receives message `acquired` from process P1.6
   Process P17.: ets_lookup {inode,5}
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_b_10'
+  Process P17. blocks
   Process P143 receives message `{thread_5,acquire}` from process P17.
   Process P143 sends message `acquired` to process named 'thread_5'
+  Process P143 blocks
   Process P17. receives message `acquired` from process P143
   Process P17.: ets_lookup {busy,10}
   Process P17.: ets_insert {busy,[{10,true}]}
@@ -386,16 +451,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
   Process P17. exits (normal)
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P1.6 blocks
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P143 blocks
   Process P171 registers process P171 as `thread_4`
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_i_4'
+  Process P171 blocks
   Process P1.5 receives message `{thread_4,acquire}` from process P171
   Process P1.5 sends message `acquired` to process named 'thread_4'
+  Process P1.5 blocks
   Process P171 receives message `acquired` from process P1.5
   Process P171: ets_lookup {inode,4}
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_b_8'
+  Process P171 blocks
   Process P141 receives message `{thread_4,acquire}` from process P171
   Process P141 sends message `acquired` to process named 'thread_4'
+  Process P141 blocks
   Process P171 receives message `acquired` from process P141
   Process P171: ets_lookup {busy,8}
   Process P171: ets_insert {busy,[{8,true}]}
@@ -404,13 +475,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
   Process P171 exits (normal)
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
+  Process P1.5 blocks
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
+  Process P141 blocks
   Process P172 receives message `acquired` from process P1.4
   Process P172: ets_lookup {inode,3}
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_6'
+  Process P172 blocks
   Process P139 receives message `{thread_3,acquire}` from process P172
   Process P139 sends message `acquired` to process named 'thread_3'
+  Process P139 blocks
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P159 blocks
   Process P172 receives message `acquired` from process P139
   Process P172: ets_lookup {busy,6}
   Process P172: ets_insert {busy,[{6,true}]}
@@ -419,16 +495,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
   Process P172 exits (normal)
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
+  Process P1.4 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `{thread_16,acquire}` from process P159
   Process P139 sends message `acquired` to process named 'thread_16'
+  Process P139 blocks
   Process P159 receives message `acquired` from process P139
   Process P159: ets_lookup {busy,6}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_7'
+  Process P159 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
+  Process P139 blocks
   Process P14. receives message `{thread_16,acquire}` from process P159
   Process P14. sends message `acquired` to process named 'thread_16'
+  Process P14. blocks
   Process P159 receives message `acquired` from process P14.
   Process P159: ets_lookup {busy,7}
   Process P159: ets_insert {busy,[{7,true}]}
@@ -437,13 +518,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
   Process P159 exits (normal)
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
+  Process P117 blocks
   Process P14. receives message `'_._concuerror_lock_release'` from process P159
+  Process P14. blocks
   Process P173 receives message `acquired` from process P1.3
   Process P173: ets_lookup {inode,2}
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_4'
+  Process P173 blocks
   Process P137 receives message `{thread_2,acquire}` from process P173
   Process P137 sends message `acquired` to process named 'thread_2'
+  Process P137 blocks
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P16. blocks
   Process P173 receives message `acquired` from process P137
   Process P173: ets_lookup {busy,4}
   Process P173: ets_insert {busy,[{4,true}]}
@@ -452,16 +538,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
   Process P173 exits (normal)
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
+  Process P1.3 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `{thread_15,acquire}` from process P16.
   Process P137 sends message `acquired` to process named 'thread_15'
+  Process P137 blocks
   Process P16. receives message `acquired` from process P137
   Process P16.: ets_lookup {busy,4}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_5'
+  Process P16. blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P137 blocks
   Process P138 receives message `{thread_15,acquire}` from process P16.
   Process P138 sends message `acquired` to process named 'thread_15'
+  Process P138 blocks
   Process P16. receives message `acquired` from process P138
   Process P16.: ets_lookup {busy,5}
   Process P16.: ets_insert {busy,[{5,true}]}
@@ -470,13 +561,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
   Process P16. exits (normal)
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P116 blocks
   Process P138 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P138 blocks
   Process P174 receives message `acquired` from process P1.2
   Process P174: ets_lookup {inode,1}
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_2'
+  Process P174 blocks
   Process P135 receives message `{thread_1,acquire}` from process P174
   Process P135 sends message `acquired` to process named 'thread_1'
+  Process P135 blocks
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P161 blocks
   Process P174 receives message `acquired` from process P135
   Process P174: ets_lookup {busy,2}
   Process P174: ets_insert {busy,[{2,true}]}
@@ -485,16 +581,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
   Process P174 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
+  Process P1.2 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `{thread_14,acquire}` from process P161
   Process P135 sends message `acquired` to process named 'thread_14'
+  Process P135 blocks
   Process P161 receives message `acquired` from process P135
   Process P161: ets_lookup {busy,2}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_3'
+  Process P161 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
+  Process P135 blocks
   Process P136 receives message `{thread_14,acquire}` from process P161
   Process P136 sends message `acquired` to process named 'thread_14'
+  Process P136 blocks
   Process P161 receives message `acquired` from process P136
   Process P161: ets_lookup {busy,3}
   Process P161: ets_insert {busy,[{3,true}]}
@@ -503,7 +604,9 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
   Process P161 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
+  Process P115 blocks
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
+  Process P136 blocks
 
 
 2
@@ -701,35 +804,48 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P1 spawns process P172
   Process P1 spawns process P173
   Process P1 spawns process P174
+  Process P1 blocks
   Process P159 registers process P159 as `thread_16`
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_i_16'
+  Process P159 blocks
   Process P117 receives message `{thread_16,acquire}` from process P159
   Process P117 sends message `acquired` to process named 'thread_16'
+  Process P117 blocks
   Process P159 receives message `acquired` from process P117
   Process P159: ets_lookup {inode,16}
   Process P172 registers process P172 as `thread_3`
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_i_3'
+  Process P172 blocks
   Process P1.4 receives message `{thread_3,acquire}` from process P172
   Process P1.4 sends message `acquired` to process named 'thread_3'
+  Process P1.4 blocks
   Process P16. registers process P16. as `thread_15`
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_i_15'
+  Process P16. blocks
   Process P116 receives message `{thread_15,acquire}` from process P16.
   Process P116 sends message `acquired` to process named 'thread_15'
+  Process P116 blocks
   Process P16. receives message `acquired` from process P116
   Process P16.: ets_lookup {inode,15}
   Process P173 registers process P173 as `thread_2`
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_i_2'
+  Process P173 blocks
   Process P1.3 receives message `{thread_2,acquire}` from process P173
   Process P1.3 sends message `acquired` to process named 'thread_2'
+  Process P1.3 blocks
   Process P161 registers process P161 as `thread_14`
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_i_14'
+  Process P161 blocks
   Process P115 receives message `{thread_14,acquire}` from process P161
   Process P115 sends message `acquired` to process named 'thread_14'
+  Process P115 blocks
   Process P161 receives message `acquired` from process P115
   Process P161: ets_lookup {inode,14}
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P161 blocks
   Process P135 receives message `{thread_14,acquire}` from process P161
   Process P135 sends message `acquired` to process named 'thread_14'
+  Process P135 blocks
   Process P161 receives message `acquired` from process P135
   Process P161: ets_lookup {busy,2}
   Process P161: ets_insert {busy,[{2,true}]}
@@ -738,16 +854,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
   Process P161 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
+  Process P115 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
+  Process P135 blocks
   Process P162 registers process P162 as `thread_13`
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_i_13'
+  Process P162 blocks
   Process P114 receives message `{thread_13,acquire}` from process P162
   Process P114 sends message `acquired` to process named 'thread_13'
+  Process P114 blocks
   Process P162 receives message `acquired` from process P114
   Process P162: ets_lookup {inode,13}
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_b_0'
+  Process P162 blocks
   Process P133 receives message `{thread_13,acquire}` from process P162
   Process P133 sends message `acquired` to process named 'thread_13'
+  Process P133 blocks
   Process P162 receives message `acquired` from process P133
   Process P162: ets_lookup {busy,0}
   Process P162: ets_insert {busy,[{0,true}]}
@@ -756,16 +878,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
   Process P162 exits (normal)
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
+  Process P114 blocks
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
+  Process P133 blocks
   Process P163 registers process P163 as `thread_12`
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_i_12'
+  Process P163 blocks
   Process P113 receives message `{thread_12,acquire}` from process P163
   Process P113 sends message `acquired` to process named 'thread_12'
+  Process P113 blocks
   Process P163 receives message `acquired` from process P113
   Process P163: ets_lookup {inode,12}
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_b_24'
+  Process P163 blocks
   Process P157 receives message `{thread_12,acquire}` from process P163
   Process P157 sends message `acquired` to process named 'thread_12'
+  Process P157 blocks
   Process P163 receives message `acquired` from process P157
   Process P163: ets_lookup {busy,24}
   Process P163: ets_insert {busy,[{24,true}]}
@@ -774,16 +902,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
   Process P163 exits (normal)
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
+  Process P113 blocks
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
+  Process P157 blocks
   Process P164 registers process P164 as `thread_11`
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_i_11'
+  Process P164 blocks
   Process P112 receives message `{thread_11,acquire}` from process P164
   Process P112 sends message `acquired` to process named 'thread_11'
+  Process P112 blocks
   Process P164 receives message `acquired` from process P112
   Process P164: ets_lookup {inode,11}
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_b_22'
+  Process P164 blocks
   Process P155 receives message `{thread_11,acquire}` from process P164
   Process P155 sends message `acquired` to process named 'thread_11'
+  Process P155 blocks
   Process P164 receives message `acquired` from process P155
   Process P164: ets_lookup {busy,22}
   Process P164: ets_insert {busy,[{22,true}]}
@@ -792,16 +926,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
   Process P164 exits (normal)
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
+  Process P112 blocks
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
+  Process P155 blocks
   Process P165 registers process P165 as `thread_10`
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_i_10'
+  Process P165 blocks
   Process P111 receives message `{thread_10,acquire}` from process P165
   Process P111 sends message `acquired` to process named 'thread_10'
+  Process P111 blocks
   Process P165 receives message `acquired` from process P111
   Process P165: ets_lookup {inode,10}
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_b_20'
+  Process P165 blocks
   Process P153 receives message `{thread_10,acquire}` from process P165
   Process P153 sends message `acquired` to process named 'thread_10'
+  Process P153 blocks
   Process P165 receives message `acquired` from process P153
   Process P165: ets_lookup {busy,20}
   Process P165: ets_insert {busy,[{20,true}]}
@@ -810,16 +950,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
   Process P165 exits (normal)
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
+  Process P111 blocks
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
+  Process P153 blocks
   Process P166 registers process P166 as `thread_9`
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_i_9'
+  Process P166 blocks
   Process P11. receives message `{thread_9,acquire}` from process P166
   Process P11. sends message `acquired` to process named 'thread_9'
+  Process P11. blocks
   Process P166 receives message `acquired` from process P11.
   Process P166: ets_lookup {inode,9}
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_b_18'
+  Process P166 blocks
   Process P151 receives message `{thread_9,acquire}` from process P166
   Process P151 sends message `acquired` to process named 'thread_9'
+  Process P151 blocks
   Process P166 receives message `acquired` from process P151
   Process P166: ets_lookup {busy,18}
   Process P166: ets_insert {busy,[{18,true}]}
@@ -828,16 +974,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
   Process P166 exits (normal)
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
+  Process P11. blocks
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
+  Process P151 blocks
   Process P167 registers process P167 as `thread_8`
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_i_8'
+  Process P167 blocks
   Process P1.9 receives message `{thread_8,acquire}` from process P167
   Process P1.9 sends message `acquired` to process named 'thread_8'
+  Process P1.9 blocks
   Process P167 receives message `acquired` from process P1.9
   Process P167: ets_lookup {inode,8}
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_b_16'
+  Process P167 blocks
   Process P149 receives message `{thread_8,acquire}` from process P167
   Process P149 sends message `acquired` to process named 'thread_8'
+  Process P149 blocks
   Process P167 receives message `acquired` from process P149
   Process P167: ets_lookup {busy,16}
   Process P167: ets_insert {busy,[{16,true}]}
@@ -846,16 +998,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
   Process P167 exits (normal)
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
+  Process P1.9 blocks
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
+  Process P149 blocks
   Process P168 registers process P168 as `thread_7`
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_i_7'
+  Process P168 blocks
   Process P1.8 receives message `{thread_7,acquire}` from process P168
   Process P1.8 sends message `acquired` to process named 'thread_7'
+  Process P1.8 blocks
   Process P168 receives message `acquired` from process P1.8
   Process P168: ets_lookup {inode,7}
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_b_14'
+  Process P168 blocks
   Process P147 receives message `{thread_7,acquire}` from process P168
   Process P147 sends message `acquired` to process named 'thread_7'
+  Process P147 blocks
   Process P168 receives message `acquired` from process P147
   Process P168: ets_lookup {busy,14}
   Process P168: ets_insert {busy,[{14,true}]}
@@ -864,16 +1022,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
   Process P168 exits (normal)
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
+  Process P1.8 blocks
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
+  Process P147 blocks
   Process P169 registers process P169 as `thread_6`
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_i_6'
+  Process P169 blocks
   Process P1.7 receives message `{thread_6,acquire}` from process P169
   Process P1.7 sends message `acquired` to process named 'thread_6'
+  Process P1.7 blocks
   Process P169 receives message `acquired` from process P1.7
   Process P169: ets_lookup {inode,6}
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_b_12'
+  Process P169 blocks
   Process P145 receives message `{thread_6,acquire}` from process P169
   Process P145 sends message `acquired` to process named 'thread_6'
+  Process P145 blocks
   Process P169 receives message `acquired` from process P145
   Process P169: ets_lookup {busy,12}
   Process P169: ets_insert {busy,[{12,true}]}
@@ -882,16 +1046,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
   Process P169 exits (normal)
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
+  Process P1.7 blocks
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
+  Process P145 blocks
   Process P17. registers process P17. as `thread_5`
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_i_5'
+  Process P17. blocks
   Process P1.6 receives message `{thread_5,acquire}` from process P17.
   Process P1.6 sends message `acquired` to process named 'thread_5'
+  Process P1.6 blocks
   Process P17. receives message `acquired` from process P1.6
   Process P17.: ets_lookup {inode,5}
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_b_10'
+  Process P17. blocks
   Process P143 receives message `{thread_5,acquire}` from process P17.
   Process P143 sends message `acquired` to process named 'thread_5'
+  Process P143 blocks
   Process P17. receives message `acquired` from process P143
   Process P17.: ets_lookup {busy,10}
   Process P17.: ets_insert {busy,[{10,true}]}
@@ -900,16 +1070,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
   Process P17. exits (normal)
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P1.6 blocks
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P143 blocks
   Process P171 registers process P171 as `thread_4`
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_i_4'
+  Process P171 blocks
   Process P1.5 receives message `{thread_4,acquire}` from process P171
   Process P1.5 sends message `acquired` to process named 'thread_4'
+  Process P1.5 blocks
   Process P171 receives message `acquired` from process P1.5
   Process P171: ets_lookup {inode,4}
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_b_8'
+  Process P171 blocks
   Process P141 receives message `{thread_4,acquire}` from process P171
   Process P141 sends message `acquired` to process named 'thread_4'
+  Process P141 blocks
   Process P171 receives message `acquired` from process P141
   Process P171: ets_lookup {busy,8}
   Process P171: ets_insert {busy,[{8,true}]}
@@ -918,13 +1094,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
   Process P171 exits (normal)
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
+  Process P1.5 blocks
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
+  Process P141 blocks
   Process P172 receives message `acquired` from process P1.4
   Process P172: ets_lookup {inode,3}
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_6'
+  Process P172 blocks
   Process P139 receives message `{thread_3,acquire}` from process P172
   Process P139 sends message `acquired` to process named 'thread_3'
+  Process P139 blocks
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P159 blocks
   Process P172 receives message `acquired` from process P139
   Process P172: ets_lookup {busy,6}
   Process P172: ets_insert {busy,[{6,true}]}
@@ -933,16 +1114,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
   Process P172 exits (normal)
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
+  Process P1.4 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `{thread_16,acquire}` from process P159
   Process P139 sends message `acquired` to process named 'thread_16'
+  Process P139 blocks
   Process P159 receives message `acquired` from process P139
   Process P159: ets_lookup {busy,6}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_7'
+  Process P159 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
+  Process P139 blocks
   Process P14. receives message `{thread_16,acquire}` from process P159
   Process P14. sends message `acquired` to process named 'thread_16'
+  Process P14. blocks
   Process P159 receives message `acquired` from process P14.
   Process P159: ets_lookup {busy,7}
   Process P159: ets_insert {busy,[{7,true}]}
@@ -951,13 +1137,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
   Process P159 exits (normal)
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
+  Process P117 blocks
   Process P14. receives message `'_._concuerror_lock_release'` from process P159
+  Process P14. blocks
   Process P173 receives message `acquired` from process P1.3
   Process P173: ets_lookup {inode,2}
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_4'
+  Process P173 blocks
   Process P137 receives message `{thread_2,acquire}` from process P173
   Process P137 sends message `acquired` to process named 'thread_2'
+  Process P137 blocks
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P16. blocks
   Process P173 receives message `acquired` from process P137
   Process P173: ets_lookup {busy,4}
   Process P173: ets_insert {busy,[{4,true}]}
@@ -966,16 +1157,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
   Process P173 exits (normal)
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
+  Process P1.3 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `{thread_15,acquire}` from process P16.
   Process P137 sends message `acquired` to process named 'thread_15'
+  Process P137 blocks
   Process P16. receives message `acquired` from process P137
   Process P16.: ets_lookup {busy,4}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_5'
+  Process P16. blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P137 blocks
   Process P138 receives message `{thread_15,acquire}` from process P16.
   Process P138 sends message `acquired` to process named 'thread_15'
+  Process P138 blocks
   Process P16. receives message `acquired` from process P138
   Process P16.: ets_lookup {busy,5}
   Process P16.: ets_insert {busy,[{5,true}]}
@@ -984,23 +1180,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
   Process P16. exits (normal)
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P116 blocks
   Process P138 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P138 blocks
   Process P174 registers process P174 as `thread_1`
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_i_1'
+  Process P174 blocks
   Process P1.2 receives message `{thread_1,acquire}` from process P174
   Process P1.2 sends message `acquired` to process named 'thread_1'
+  Process P1.2 blocks
   Process P174 receives message `acquired` from process P1.2
   Process P174: ets_lookup {inode,1}
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_2'
+  Process P174 blocks
   Process P135 receives message `{thread_1,acquire}` from process P174
   Process P135 sends message `acquired` to process named 'thread_1'
+  Process P135 blocks
   Process P174 receives message `acquired` from process P135
   Process P174: ets_lookup {busy,2}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_3'
+  Process P174 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
+  Process P135 blocks
   Process P136 receives message `{thread_1,acquire}` from process P174
   Process P136 sends message `acquired` to process named 'thread_1'
+  Process P136 blocks
   Process P174 receives message `acquired` from process P136
   Process P174: ets_lookup {busy,3}
   Process P174: ets_insert {busy,[{3,true}]}
@@ -1009,7 +1214,9 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
   Process P174 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
+  Process P1.2 blocks
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
+  Process P136 blocks
 
 
 3
@@ -1207,25 +1414,34 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P1 spawns process P172
   Process P1 spawns process P173
   Process P1 spawns process P174
+  Process P1 blocks
   Process P159 registers process P159 as `thread_16`
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_i_16'
+  Process P159 blocks
   Process P117 receives message `{thread_16,acquire}` from process P159
   Process P117 sends message `acquired` to process named 'thread_16'
+  Process P117 blocks
   Process P159 receives message `acquired` from process P117
   Process P159: ets_lookup {inode,16}
   Process P172 registers process P172 as `thread_3`
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_i_3'
+  Process P172 blocks
   Process P1.4 receives message `{thread_3,acquire}` from process P172
   Process P1.4 sends message `acquired` to process named 'thread_3'
+  Process P1.4 blocks
   Process P16. registers process P16. as `thread_15`
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_i_15'
+  Process P16. blocks
   Process P116 receives message `{thread_15,acquire}` from process P16.
   Process P116 sends message `acquired` to process named 'thread_15'
+  Process P116 blocks
   Process P16. receives message `acquired` from process P116
   Process P16.: ets_lookup {inode,15}
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P16. blocks
   Process P137 receives message `{thread_15,acquire}` from process P16.
   Process P137 sends message `acquired` to process named 'thread_15'
+  Process P137 blocks
   Process P16. receives message `acquired` from process P137
   Process P16.: ets_lookup {busy,4}
   Process P16.: ets_insert {busy,[{4,true}]}
@@ -1234,26 +1450,36 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
   Process P16. exits (normal)
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P116 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P137 blocks
   Process P161 registers process P161 as `thread_14`
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_i_14'
+  Process P161 blocks
   Process P115 receives message `{thread_14,acquire}` from process P161
   Process P115 sends message `acquired` to process named 'thread_14'
+  Process P115 blocks
   Process P161 receives message `acquired` from process P115
   Process P161: ets_lookup {inode,14}
   Process P174 registers process P174 as `thread_1`
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_i_1'
+  Process P174 blocks
   Process P1.2 receives message `{thread_1,acquire}` from process P174
   Process P1.2 sends message `acquired` to process named 'thread_1'
+  Process P1.2 blocks
   Process P162 registers process P162 as `thread_13`
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_i_13'
+  Process P162 blocks
   Process P114 receives message `{thread_13,acquire}` from process P162
   Process P114 sends message `acquired` to process named 'thread_13'
+  Process P114 blocks
   Process P162 receives message `acquired` from process P114
   Process P162: ets_lookup {inode,13}
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_b_0'
+  Process P162 blocks
   Process P133 receives message `{thread_13,acquire}` from process P162
   Process P133 sends message `acquired` to process named 'thread_13'
+  Process P133 blocks
   Process P162 receives message `acquired` from process P133
   Process P162: ets_lookup {busy,0}
   Process P162: ets_insert {busy,[{0,true}]}
@@ -1262,16 +1488,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
   Process P162 exits (normal)
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
+  Process P114 blocks
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
+  Process P133 blocks
   Process P163 registers process P163 as `thread_12`
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_i_12'
+  Process P163 blocks
   Process P113 receives message `{thread_12,acquire}` from process P163
   Process P113 sends message `acquired` to process named 'thread_12'
+  Process P113 blocks
   Process P163 receives message `acquired` from process P113
   Process P163: ets_lookup {inode,12}
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_b_24'
+  Process P163 blocks
   Process P157 receives message `{thread_12,acquire}` from process P163
   Process P157 sends message `acquired` to process named 'thread_12'
+  Process P157 blocks
   Process P163 receives message `acquired` from process P157
   Process P163: ets_lookup {busy,24}
   Process P163: ets_insert {busy,[{24,true}]}
@@ -1280,16 +1512,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
   Process P163 exits (normal)
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
+  Process P113 blocks
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
+  Process P157 blocks
   Process P164 registers process P164 as `thread_11`
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_i_11'
+  Process P164 blocks
   Process P112 receives message `{thread_11,acquire}` from process P164
   Process P112 sends message `acquired` to process named 'thread_11'
+  Process P112 blocks
   Process P164 receives message `acquired` from process P112
   Process P164: ets_lookup {inode,11}
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_b_22'
+  Process P164 blocks
   Process P155 receives message `{thread_11,acquire}` from process P164
   Process P155 sends message `acquired` to process named 'thread_11'
+  Process P155 blocks
   Process P164 receives message `acquired` from process P155
   Process P164: ets_lookup {busy,22}
   Process P164: ets_insert {busy,[{22,true}]}
@@ -1298,16 +1536,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
   Process P164 exits (normal)
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
+  Process P112 blocks
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
+  Process P155 blocks
   Process P165 registers process P165 as `thread_10`
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_i_10'
+  Process P165 blocks
   Process P111 receives message `{thread_10,acquire}` from process P165
   Process P111 sends message `acquired` to process named 'thread_10'
+  Process P111 blocks
   Process P165 receives message `acquired` from process P111
   Process P165: ets_lookup {inode,10}
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_b_20'
+  Process P165 blocks
   Process P153 receives message `{thread_10,acquire}` from process P165
   Process P153 sends message `acquired` to process named 'thread_10'
+  Process P153 blocks
   Process P165 receives message `acquired` from process P153
   Process P165: ets_lookup {busy,20}
   Process P165: ets_insert {busy,[{20,true}]}
@@ -1316,16 +1560,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
   Process P165 exits (normal)
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
+  Process P111 blocks
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
+  Process P153 blocks
   Process P166 registers process P166 as `thread_9`
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_i_9'
+  Process P166 blocks
   Process P11. receives message `{thread_9,acquire}` from process P166
   Process P11. sends message `acquired` to process named 'thread_9'
+  Process P11. blocks
   Process P166 receives message `acquired` from process P11.
   Process P166: ets_lookup {inode,9}
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_b_18'
+  Process P166 blocks
   Process P151 receives message `{thread_9,acquire}` from process P166
   Process P151 sends message `acquired` to process named 'thread_9'
+  Process P151 blocks
   Process P166 receives message `acquired` from process P151
   Process P166: ets_lookup {busy,18}
   Process P166: ets_insert {busy,[{18,true}]}
@@ -1334,16 +1584,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
   Process P166 exits (normal)
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
+  Process P11. blocks
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
+  Process P151 blocks
   Process P167 registers process P167 as `thread_8`
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_i_8'
+  Process P167 blocks
   Process P1.9 receives message `{thread_8,acquire}` from process P167
   Process P1.9 sends message `acquired` to process named 'thread_8'
+  Process P1.9 blocks
   Process P167 receives message `acquired` from process P1.9
   Process P167: ets_lookup {inode,8}
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_b_16'
+  Process P167 blocks
   Process P149 receives message `{thread_8,acquire}` from process P167
   Process P149 sends message `acquired` to process named 'thread_8'
+  Process P149 blocks
   Process P167 receives message `acquired` from process P149
   Process P167: ets_lookup {busy,16}
   Process P167: ets_insert {busy,[{16,true}]}
@@ -1352,16 +1608,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
   Process P167 exits (normal)
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
+  Process P1.9 blocks
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
+  Process P149 blocks
   Process P168 registers process P168 as `thread_7`
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_i_7'
+  Process P168 blocks
   Process P1.8 receives message `{thread_7,acquire}` from process P168
   Process P1.8 sends message `acquired` to process named 'thread_7'
+  Process P1.8 blocks
   Process P168 receives message `acquired` from process P1.8
   Process P168: ets_lookup {inode,7}
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_b_14'
+  Process P168 blocks
   Process P147 receives message `{thread_7,acquire}` from process P168
   Process P147 sends message `acquired` to process named 'thread_7'
+  Process P147 blocks
   Process P168 receives message `acquired` from process P147
   Process P168: ets_lookup {busy,14}
   Process P168: ets_insert {busy,[{14,true}]}
@@ -1370,16 +1632,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
   Process P168 exits (normal)
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
+  Process P1.8 blocks
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
+  Process P147 blocks
   Process P169 registers process P169 as `thread_6`
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_i_6'
+  Process P169 blocks
   Process P1.7 receives message `{thread_6,acquire}` from process P169
   Process P1.7 sends message `acquired` to process named 'thread_6'
+  Process P1.7 blocks
   Process P169 receives message `acquired` from process P1.7
   Process P169: ets_lookup {inode,6}
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_b_12'
+  Process P169 blocks
   Process P145 receives message `{thread_6,acquire}` from process P169
   Process P145 sends message `acquired` to process named 'thread_6'
+  Process P145 blocks
   Process P169 receives message `acquired` from process P145
   Process P169: ets_lookup {busy,12}
   Process P169: ets_insert {busy,[{12,true}]}
@@ -1388,16 +1656,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
   Process P169 exits (normal)
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
+  Process P1.7 blocks
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
+  Process P145 blocks
   Process P17. registers process P17. as `thread_5`
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_i_5'
+  Process P17. blocks
   Process P1.6 receives message `{thread_5,acquire}` from process P17.
   Process P1.6 sends message `acquired` to process named 'thread_5'
+  Process P1.6 blocks
   Process P17. receives message `acquired` from process P1.6
   Process P17.: ets_lookup {inode,5}
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_b_10'
+  Process P17. blocks
   Process P143 receives message `{thread_5,acquire}` from process P17.
   Process P143 sends message `acquired` to process named 'thread_5'
+  Process P143 blocks
   Process P17. receives message `acquired` from process P143
   Process P17.: ets_lookup {busy,10}
   Process P17.: ets_insert {busy,[{10,true}]}
@@ -1406,16 +1680,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
   Process P17. exits (normal)
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P1.6 blocks
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P143 blocks
   Process P171 registers process P171 as `thread_4`
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_i_4'
+  Process P171 blocks
   Process P1.5 receives message `{thread_4,acquire}` from process P171
   Process P1.5 sends message `acquired` to process named 'thread_4'
+  Process P1.5 blocks
   Process P171 receives message `acquired` from process P1.5
   Process P171: ets_lookup {inode,4}
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_b_8'
+  Process P171 blocks
   Process P141 receives message `{thread_4,acquire}` from process P171
   Process P141 sends message `acquired` to process named 'thread_4'
+  Process P141 blocks
   Process P171 receives message `acquired` from process P141
   Process P171: ets_lookup {busy,8}
   Process P171: ets_insert {busy,[{8,true}]}
@@ -1424,13 +1704,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
   Process P171 exits (normal)
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
+  Process P1.5 blocks
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
+  Process P141 blocks
   Process P172 receives message `acquired` from process P1.4
   Process P172: ets_lookup {inode,3}
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_6'
+  Process P172 blocks
   Process P139 receives message `{thread_3,acquire}` from process P172
   Process P139 sends message `acquired` to process named 'thread_3'
+  Process P139 blocks
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P159 blocks
   Process P172 receives message `acquired` from process P139
   Process P172: ets_lookup {busy,6}
   Process P172: ets_insert {busy,[{6,true}]}
@@ -1439,16 +1724,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
   Process P172 exits (normal)
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
+  Process P1.4 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `{thread_16,acquire}` from process P159
   Process P139 sends message `acquired` to process named 'thread_16'
+  Process P139 blocks
   Process P159 receives message `acquired` from process P139
   Process P159: ets_lookup {busy,6}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_7'
+  Process P159 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
+  Process P139 blocks
   Process P14. receives message `{thread_16,acquire}` from process P159
   Process P14. sends message `acquired` to process named 'thread_16'
+  Process P14. blocks
   Process P159 receives message `acquired` from process P14.
   Process P159: ets_lookup {busy,7}
   Process P159: ets_insert {busy,[{7,true}]}
@@ -1457,23 +1747,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
   Process P159 exits (normal)
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
+  Process P117 blocks
   Process P14. receives message `'_._concuerror_lock_release'` from process P159
+  Process P14. blocks
   Process P173 registers process P173 as `thread_2`
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_i_2'
+  Process P173 blocks
   Process P1.3 receives message `{thread_2,acquire}` from process P173
   Process P1.3 sends message `acquired` to process named 'thread_2'
+  Process P1.3 blocks
   Process P173 receives message `acquired` from process P1.3
   Process P173: ets_lookup {inode,2}
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_4'
+  Process P173 blocks
   Process P137 receives message `{thread_2,acquire}` from process P173
   Process P137 sends message `acquired` to process named 'thread_2'
+  Process P137 blocks
   Process P173 receives message `acquired` from process P137
   Process P173: ets_lookup {busy,4}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_5'
+  Process P173 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
+  Process P137 blocks
   Process P138 receives message `{thread_2,acquire}` from process P173
   Process P138 sends message `acquired` to process named 'thread_2'
+  Process P138 blocks
   Process P173 receives message `acquired` from process P138
   Process P173: ets_lookup {busy,5}
   Process P173: ets_insert {busy,[{5,true}]}
@@ -1482,13 +1781,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
   Process P173 exits (normal)
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
+  Process P1.3 blocks
   Process P138 receives message `'_._concuerror_lock_release'` from process P173
+  Process P138 blocks
   Process P174 receives message `acquired` from process P1.2
   Process P174: ets_lookup {inode,1}
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_2'
+  Process P174 blocks
   Process P135 receives message `{thread_1,acquire}` from process P174
   Process P135 sends message `acquired` to process named 'thread_1'
+  Process P135 blocks
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P161 blocks
   Process P174 receives message `acquired` from process P135
   Process P174: ets_lookup {busy,2}
   Process P174: ets_insert {busy,[{2,true}]}
@@ -1497,16 +1801,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
   Process P174 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
+  Process P1.2 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `{thread_14,acquire}` from process P161
   Process P135 sends message `acquired` to process named 'thread_14'
+  Process P135 blocks
   Process P161 receives message `acquired` from process P135
   Process P161: ets_lookup {busy,2}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_3'
+  Process P161 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
+  Process P135 blocks
   Process P136 receives message `{thread_14,acquire}` from process P161
   Process P136 sends message `acquired` to process named 'thread_14'
+  Process P136 blocks
   Process P161 receives message `acquired` from process P136
   Process P161: ets_lookup {busy,3}
   Process P161: ets_insert {busy,[{3,true}]}
@@ -1515,7 +1824,9 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
   Process P161 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
+  Process P115 blocks
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
+  Process P136 blocks
 
 
 4
@@ -1713,25 +2024,34 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P1 spawns process P172
   Process P1 spawns process P173
   Process P1 spawns process P174
+  Process P1 blocks
   Process P159 registers process P159 as `thread_16`
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_i_16'
+  Process P159 blocks
   Process P117 receives message `{thread_16,acquire}` from process P159
   Process P117 sends message `acquired` to process named 'thread_16'
+  Process P117 blocks
   Process P159 receives message `acquired` from process P117
   Process P159: ets_lookup {inode,16}
   Process P172 registers process P172 as `thread_3`
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_i_3'
+  Process P172 blocks
   Process P1.4 receives message `{thread_3,acquire}` from process P172
   Process P1.4 sends message `acquired` to process named 'thread_3'
+  Process P1.4 blocks
   Process P16. registers process P16. as `thread_15`
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_i_15'
+  Process P16. blocks
   Process P116 receives message `{thread_15,acquire}` from process P16.
   Process P116 sends message `acquired` to process named 'thread_15'
+  Process P116 blocks
   Process P16. receives message `acquired` from process P116
   Process P16.: ets_lookup {inode,15}
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P16. blocks
   Process P137 receives message `{thread_15,acquire}` from process P16.
   Process P137 sends message `acquired` to process named 'thread_15'
+  Process P137 blocks
   Process P16. receives message `acquired` from process P137
   Process P16.: ets_lookup {busy,4}
   Process P16.: ets_insert {busy,[{4,true}]}
@@ -1740,16 +2060,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
   Process P16. exits (normal)
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P116 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P137 blocks
   Process P161 registers process P161 as `thread_14`
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_i_14'
+  Process P161 blocks
   Process P115 receives message `{thread_14,acquire}` from process P161
   Process P115 sends message `acquired` to process named 'thread_14'
+  Process P115 blocks
   Process P161 receives message `acquired` from process P115
   Process P161: ets_lookup {inode,14}
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P161 blocks
   Process P135 receives message `{thread_14,acquire}` from process P161
   Process P135 sends message `acquired` to process named 'thread_14'
+  Process P135 blocks
   Process P161 receives message `acquired` from process P135
   Process P161: ets_lookup {busy,2}
   Process P161: ets_insert {busy,[{2,true}]}
@@ -1758,16 +2084,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
   Process P161 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
+  Process P115 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
+  Process P135 blocks
   Process P162 registers process P162 as `thread_13`
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_i_13'
+  Process P162 blocks
   Process P114 receives message `{thread_13,acquire}` from process P162
   Process P114 sends message `acquired` to process named 'thread_13'
+  Process P114 blocks
   Process P162 receives message `acquired` from process P114
   Process P162: ets_lookup {inode,13}
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_b_0'
+  Process P162 blocks
   Process P133 receives message `{thread_13,acquire}` from process P162
   Process P133 sends message `acquired` to process named 'thread_13'
+  Process P133 blocks
   Process P162 receives message `acquired` from process P133
   Process P162: ets_lookup {busy,0}
   Process P162: ets_insert {busy,[{0,true}]}
@@ -1776,16 +2108,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
   Process P162 exits (normal)
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
+  Process P114 blocks
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
+  Process P133 blocks
   Process P163 registers process P163 as `thread_12`
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_i_12'
+  Process P163 blocks
   Process P113 receives message `{thread_12,acquire}` from process P163
   Process P113 sends message `acquired` to process named 'thread_12'
+  Process P113 blocks
   Process P163 receives message `acquired` from process P113
   Process P163: ets_lookup {inode,12}
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_b_24'
+  Process P163 blocks
   Process P157 receives message `{thread_12,acquire}` from process P163
   Process P157 sends message `acquired` to process named 'thread_12'
+  Process P157 blocks
   Process P163 receives message `acquired` from process P157
   Process P163: ets_lookup {busy,24}
   Process P163: ets_insert {busy,[{24,true}]}
@@ -1794,16 +2132,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
   Process P163 exits (normal)
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
+  Process P113 blocks
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
+  Process P157 blocks
   Process P164 registers process P164 as `thread_11`
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_i_11'
+  Process P164 blocks
   Process P112 receives message `{thread_11,acquire}` from process P164
   Process P112 sends message `acquired` to process named 'thread_11'
+  Process P112 blocks
   Process P164 receives message `acquired` from process P112
   Process P164: ets_lookup {inode,11}
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_b_22'
+  Process P164 blocks
   Process P155 receives message `{thread_11,acquire}` from process P164
   Process P155 sends message `acquired` to process named 'thread_11'
+  Process P155 blocks
   Process P164 receives message `acquired` from process P155
   Process P164: ets_lookup {busy,22}
   Process P164: ets_insert {busy,[{22,true}]}
@@ -1812,16 +2156,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
   Process P164 exits (normal)
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
+  Process P112 blocks
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
+  Process P155 blocks
   Process P165 registers process P165 as `thread_10`
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_i_10'
+  Process P165 blocks
   Process P111 receives message `{thread_10,acquire}` from process P165
   Process P111 sends message `acquired` to process named 'thread_10'
+  Process P111 blocks
   Process P165 receives message `acquired` from process P111
   Process P165: ets_lookup {inode,10}
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_b_20'
+  Process P165 blocks
   Process P153 receives message `{thread_10,acquire}` from process P165
   Process P153 sends message `acquired` to process named 'thread_10'
+  Process P153 blocks
   Process P165 receives message `acquired` from process P153
   Process P165: ets_lookup {busy,20}
   Process P165: ets_insert {busy,[{20,true}]}
@@ -1830,16 +2180,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
   Process P165 exits (normal)
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
+  Process P111 blocks
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
+  Process P153 blocks
   Process P166 registers process P166 as `thread_9`
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_i_9'
+  Process P166 blocks
   Process P11. receives message `{thread_9,acquire}` from process P166
   Process P11. sends message `acquired` to process named 'thread_9'
+  Process P11. blocks
   Process P166 receives message `acquired` from process P11.
   Process P166: ets_lookup {inode,9}
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_b_18'
+  Process P166 blocks
   Process P151 receives message `{thread_9,acquire}` from process P166
   Process P151 sends message `acquired` to process named 'thread_9'
+  Process P151 blocks
   Process P166 receives message `acquired` from process P151
   Process P166: ets_lookup {busy,18}
   Process P166: ets_insert {busy,[{18,true}]}
@@ -1848,16 +2204,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
   Process P166 exits (normal)
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
+  Process P11. blocks
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
+  Process P151 blocks
   Process P167 registers process P167 as `thread_8`
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_i_8'
+  Process P167 blocks
   Process P1.9 receives message `{thread_8,acquire}` from process P167
   Process P1.9 sends message `acquired` to process named 'thread_8'
+  Process P1.9 blocks
   Process P167 receives message `acquired` from process P1.9
   Process P167: ets_lookup {inode,8}
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_b_16'
+  Process P167 blocks
   Process P149 receives message `{thread_8,acquire}` from process P167
   Process P149 sends message `acquired` to process named 'thread_8'
+  Process P149 blocks
   Process P167 receives message `acquired` from process P149
   Process P167: ets_lookup {busy,16}
   Process P167: ets_insert {busy,[{16,true}]}
@@ -1866,16 +2228,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
   Process P167 exits (normal)
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
+  Process P1.9 blocks
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
+  Process P149 blocks
   Process P168 registers process P168 as `thread_7`
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_i_7'
+  Process P168 blocks
   Process P1.8 receives message `{thread_7,acquire}` from process P168
   Process P1.8 sends message `acquired` to process named 'thread_7'
+  Process P1.8 blocks
   Process P168 receives message `acquired` from process P1.8
   Process P168: ets_lookup {inode,7}
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_b_14'
+  Process P168 blocks
   Process P147 receives message `{thread_7,acquire}` from process P168
   Process P147 sends message `acquired` to process named 'thread_7'
+  Process P147 blocks
   Process P168 receives message `acquired` from process P147
   Process P168: ets_lookup {busy,14}
   Process P168: ets_insert {busy,[{14,true}]}
@@ -1884,16 +2252,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
   Process P168 exits (normal)
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
+  Process P1.8 blocks
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
+  Process P147 blocks
   Process P169 registers process P169 as `thread_6`
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_i_6'
+  Process P169 blocks
   Process P1.7 receives message `{thread_6,acquire}` from process P169
   Process P1.7 sends message `acquired` to process named 'thread_6'
+  Process P1.7 blocks
   Process P169 receives message `acquired` from process P1.7
   Process P169: ets_lookup {inode,6}
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_b_12'
+  Process P169 blocks
   Process P145 receives message `{thread_6,acquire}` from process P169
   Process P145 sends message `acquired` to process named 'thread_6'
+  Process P145 blocks
   Process P169 receives message `acquired` from process P145
   Process P169: ets_lookup {busy,12}
   Process P169: ets_insert {busy,[{12,true}]}
@@ -1902,16 +2276,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
   Process P169 exits (normal)
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
+  Process P1.7 blocks
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
+  Process P145 blocks
   Process P17. registers process P17. as `thread_5`
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_i_5'
+  Process P17. blocks
   Process P1.6 receives message `{thread_5,acquire}` from process P17.
   Process P1.6 sends message `acquired` to process named 'thread_5'
+  Process P1.6 blocks
   Process P17. receives message `acquired` from process P1.6
   Process P17.: ets_lookup {inode,5}
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_b_10'
+  Process P17. blocks
   Process P143 receives message `{thread_5,acquire}` from process P17.
   Process P143 sends message `acquired` to process named 'thread_5'
+  Process P143 blocks
   Process P17. receives message `acquired` from process P143
   Process P17.: ets_lookup {busy,10}
   Process P17.: ets_insert {busy,[{10,true}]}
@@ -1920,16 +2300,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
   Process P17. exits (normal)
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P1.6 blocks
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P143 blocks
   Process P171 registers process P171 as `thread_4`
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_i_4'
+  Process P171 blocks
   Process P1.5 receives message `{thread_4,acquire}` from process P171
   Process P1.5 sends message `acquired` to process named 'thread_4'
+  Process P1.5 blocks
   Process P171 receives message `acquired` from process P1.5
   Process P171: ets_lookup {inode,4}
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_b_8'
+  Process P171 blocks
   Process P141 receives message `{thread_4,acquire}` from process P171
   Process P141 sends message `acquired` to process named 'thread_4'
+  Process P141 blocks
   Process P171 receives message `acquired` from process P141
   Process P171: ets_lookup {busy,8}
   Process P171: ets_insert {busy,[{8,true}]}
@@ -1938,13 +2324,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
   Process P171 exits (normal)
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
+  Process P1.5 blocks
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
+  Process P141 blocks
   Process P172 receives message `acquired` from process P1.4
   Process P172: ets_lookup {inode,3}
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_6'
+  Process P172 blocks
   Process P139 receives message `{thread_3,acquire}` from process P172
   Process P139 sends message `acquired` to process named 'thread_3'
+  Process P139 blocks
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P159 blocks
   Process P172 receives message `acquired` from process P139
   Process P172: ets_lookup {busy,6}
   Process P172: ets_insert {busy,[{6,true}]}
@@ -1953,16 +2344,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
   Process P172 exits (normal)
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
+  Process P1.4 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
   Process P139 receives message `{thread_16,acquire}` from process P159
   Process P139 sends message `acquired` to process named 'thread_16'
+  Process P139 blocks
   Process P159 receives message `acquired` from process P139
   Process P159: ets_lookup {busy,6}
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_7'
+  Process P159 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
+  Process P139 blocks
   Process P14. receives message `{thread_16,acquire}` from process P159
   Process P14. sends message `acquired` to process named 'thread_16'
+  Process P14. blocks
   Process P159 receives message `acquired` from process P14.
   Process P159: ets_lookup {busy,7}
   Process P159: ets_insert {busy,[{7,true}]}
@@ -1971,23 +2367,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
   Process P159 exits (normal)
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
+  Process P117 blocks
   Process P14. receives message `'_._concuerror_lock_release'` from process P159
+  Process P14. blocks
   Process P173 registers process P173 as `thread_2`
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_i_2'
+  Process P173 blocks
   Process P1.3 receives message `{thread_2,acquire}` from process P173
   Process P1.3 sends message `acquired` to process named 'thread_2'
+  Process P1.3 blocks
   Process P173 receives message `acquired` from process P1.3
   Process P173: ets_lookup {inode,2}
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_4'
+  Process P173 blocks
   Process P137 receives message `{thread_2,acquire}` from process P173
   Process P137 sends message `acquired` to process named 'thread_2'
+  Process P137 blocks
   Process P173 receives message `acquired` from process P137
   Process P173: ets_lookup {busy,4}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_5'
+  Process P173 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
+  Process P137 blocks
   Process P138 receives message `{thread_2,acquire}` from process P173
   Process P138 sends message `acquired` to process named 'thread_2'
+  Process P138 blocks
   Process P173 receives message `acquired` from process P138
   Process P173: ets_lookup {busy,5}
   Process P173: ets_insert {busy,[{5,true}]}
@@ -1996,23 +2401,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
   Process P173 exits (normal)
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
+  Process P1.3 blocks
   Process P138 receives message `'_._concuerror_lock_release'` from process P173
+  Process P138 blocks
   Process P174 registers process P174 as `thread_1`
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_i_1'
+  Process P174 blocks
   Process P1.2 receives message `{thread_1,acquire}` from process P174
   Process P1.2 sends message `acquired` to process named 'thread_1'
+  Process P1.2 blocks
   Process P174 receives message `acquired` from process P1.2
   Process P174: ets_lookup {inode,1}
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_2'
+  Process P174 blocks
   Process P135 receives message `{thread_1,acquire}` from process P174
   Process P135 sends message `acquired` to process named 'thread_1'
+  Process P135 blocks
   Process P174 receives message `acquired` from process P135
   Process P174: ets_lookup {busy,2}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_3'
+  Process P174 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
+  Process P135 blocks
   Process P136 receives message `{thread_1,acquire}` from process P174
   Process P136 sends message `acquired` to process named 'thread_1'
+  Process P136 blocks
   Process P174 receives message `acquired` from process P136
   Process P174: ets_lookup {busy,3}
   Process P174: ets_insert {busy,[{3,true}]}
@@ -2021,7 +2435,9 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
   Process P174 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
+  Process P1.2 blocks
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
+  Process P136 blocks
 
 
 5
@@ -2219,15 +2635,20 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P1 spawns process P172
   Process P1 spawns process P173
   Process P1 spawns process P174
+  Process P1 blocks
   Process P159 registers process P159 as `thread_16`
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_i_16'
+  Process P159 blocks
   Process P117 receives message `{thread_16,acquire}` from process P159
   Process P117 sends message `acquired` to process named 'thread_16'
+  Process P117 blocks
   Process P159 receives message `acquired` from process P117
   Process P159: ets_lookup {inode,16}
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P159 blocks
   Process P139 receives message `{thread_16,acquire}` from process P159
   Process P139 sends message `acquired` to process named 'thread_16'
+  Process P139 blocks
   Process P159 receives message `acquired` from process P139
   Process P159: ets_lookup {busy,6}
   Process P159: ets_insert {busy,[{6,true}]}
@@ -2236,36 +2657,50 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
   Process P159 exits (normal)
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
+  Process P117 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
+  Process P139 blocks
   Process P16. registers process P16. as `thread_15`
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_i_15'
+  Process P16. blocks
   Process P116 receives message `{thread_15,acquire}` from process P16.
   Process P116 sends message `acquired` to process named 'thread_15'
+  Process P116 blocks
   Process P16. receives message `acquired` from process P116
   Process P16.: ets_lookup {inode,15}
   Process P173 registers process P173 as `thread_2`
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_i_2'
+  Process P173 blocks
   Process P1.3 receives message `{thread_2,acquire}` from process P173
   Process P1.3 sends message `acquired` to process named 'thread_2'
+  Process P1.3 blocks
   Process P161 registers process P161 as `thread_14`
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_i_14'
+  Process P161 blocks
   Process P115 receives message `{thread_14,acquire}` from process P161
   Process P115 sends message `acquired` to process named 'thread_14'
+  Process P115 blocks
   Process P161 receives message `acquired` from process P115
   Process P161: ets_lookup {inode,14}
   Process P174 registers process P174 as `thread_1`
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_i_1'
+  Process P174 blocks
   Process P1.2 receives message `{thread_1,acquire}` from process P174
   Process P1.2 sends message `acquired` to process named 'thread_1'
+  Process P1.2 blocks
   Process P162 registers process P162 as `thread_13`
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_i_13'
+  Process P162 blocks
   Process P114 receives message `{thread_13,acquire}` from process P162
   Process P114 sends message `acquired` to process named 'thread_13'
+  Process P114 blocks
   Process P162 receives message `acquired` from process P114
   Process P162: ets_lookup {inode,13}
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_b_0'
+  Process P162 blocks
   Process P133 receives message `{thread_13,acquire}` from process P162
   Process P133 sends message `acquired` to process named 'thread_13'
+  Process P133 blocks
   Process P162 receives message `acquired` from process P133
   Process P162: ets_lookup {busy,0}
   Process P162: ets_insert {busy,[{0,true}]}
@@ -2274,16 +2709,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
   Process P162 exits (normal)
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
+  Process P114 blocks
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
+  Process P133 blocks
   Process P163 registers process P163 as `thread_12`
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_i_12'
+  Process P163 blocks
   Process P113 receives message `{thread_12,acquire}` from process P163
   Process P113 sends message `acquired` to process named 'thread_12'
+  Process P113 blocks
   Process P163 receives message `acquired` from process P113
   Process P163: ets_lookup {inode,12}
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_b_24'
+  Process P163 blocks
   Process P157 receives message `{thread_12,acquire}` from process P163
   Process P157 sends message `acquired` to process named 'thread_12'
+  Process P157 blocks
   Process P163 receives message `acquired` from process P157
   Process P163: ets_lookup {busy,24}
   Process P163: ets_insert {busy,[{24,true}]}
@@ -2292,16 +2733,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
   Process P163 exits (normal)
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
+  Process P113 blocks
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
+  Process P157 blocks
   Process P164 registers process P164 as `thread_11`
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_i_11'
+  Process P164 blocks
   Process P112 receives message `{thread_11,acquire}` from process P164
   Process P112 sends message `acquired` to process named 'thread_11'
+  Process P112 blocks
   Process P164 receives message `acquired` from process P112
   Process P164: ets_lookup {inode,11}
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_b_22'
+  Process P164 blocks
   Process P155 receives message `{thread_11,acquire}` from process P164
   Process P155 sends message `acquired` to process named 'thread_11'
+  Process P155 blocks
   Process P164 receives message `acquired` from process P155
   Process P164: ets_lookup {busy,22}
   Process P164: ets_insert {busy,[{22,true}]}
@@ -2310,16 +2757,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
   Process P164 exits (normal)
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
+  Process P112 blocks
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
+  Process P155 blocks
   Process P165 registers process P165 as `thread_10`
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_i_10'
+  Process P165 blocks
   Process P111 receives message `{thread_10,acquire}` from process P165
   Process P111 sends message `acquired` to process named 'thread_10'
+  Process P111 blocks
   Process P165 receives message `acquired` from process P111
   Process P165: ets_lookup {inode,10}
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_b_20'
+  Process P165 blocks
   Process P153 receives message `{thread_10,acquire}` from process P165
   Process P153 sends message `acquired` to process named 'thread_10'
+  Process P153 blocks
   Process P165 receives message `acquired` from process P153
   Process P165: ets_lookup {busy,20}
   Process P165: ets_insert {busy,[{20,true}]}
@@ -2328,16 +2781,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
   Process P165 exits (normal)
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
+  Process P111 blocks
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
+  Process P153 blocks
   Process P166 registers process P166 as `thread_9`
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_i_9'
+  Process P166 blocks
   Process P11. receives message `{thread_9,acquire}` from process P166
   Process P11. sends message `acquired` to process named 'thread_9'
+  Process P11. blocks
   Process P166 receives message `acquired` from process P11.
   Process P166: ets_lookup {inode,9}
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_b_18'
+  Process P166 blocks
   Process P151 receives message `{thread_9,acquire}` from process P166
   Process P151 sends message `acquired` to process named 'thread_9'
+  Process P151 blocks
   Process P166 receives message `acquired` from process P151
   Process P166: ets_lookup {busy,18}
   Process P166: ets_insert {busy,[{18,true}]}
@@ -2346,16 +2805,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
   Process P166 exits (normal)
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
+  Process P11. blocks
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
+  Process P151 blocks
   Process P167 registers process P167 as `thread_8`
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_i_8'
+  Process P167 blocks
   Process P1.9 receives message `{thread_8,acquire}` from process P167
   Process P1.9 sends message `acquired` to process named 'thread_8'
+  Process P1.9 blocks
   Process P167 receives message `acquired` from process P1.9
   Process P167: ets_lookup {inode,8}
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_b_16'
+  Process P167 blocks
   Process P149 receives message `{thread_8,acquire}` from process P167
   Process P149 sends message `acquired` to process named 'thread_8'
+  Process P149 blocks
   Process P167 receives message `acquired` from process P149
   Process P167: ets_lookup {busy,16}
   Process P167: ets_insert {busy,[{16,true}]}
@@ -2364,16 +2829,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
   Process P167 exits (normal)
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
+  Process P1.9 blocks
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
+  Process P149 blocks
   Process P168 registers process P168 as `thread_7`
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_i_7'
+  Process P168 blocks
   Process P1.8 receives message `{thread_7,acquire}` from process P168
   Process P1.8 sends message `acquired` to process named 'thread_7'
+  Process P1.8 blocks
   Process P168 receives message `acquired` from process P1.8
   Process P168: ets_lookup {inode,7}
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_b_14'
+  Process P168 blocks
   Process P147 receives message `{thread_7,acquire}` from process P168
   Process P147 sends message `acquired` to process named 'thread_7'
+  Process P147 blocks
   Process P168 receives message `acquired` from process P147
   Process P168: ets_lookup {busy,14}
   Process P168: ets_insert {busy,[{14,true}]}
@@ -2382,16 +2853,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
   Process P168 exits (normal)
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
+  Process P1.8 blocks
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
+  Process P147 blocks
   Process P169 registers process P169 as `thread_6`
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_i_6'
+  Process P169 blocks
   Process P1.7 receives message `{thread_6,acquire}` from process P169
   Process P1.7 sends message `acquired` to process named 'thread_6'
+  Process P1.7 blocks
   Process P169 receives message `acquired` from process P1.7
   Process P169: ets_lookup {inode,6}
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_b_12'
+  Process P169 blocks
   Process P145 receives message `{thread_6,acquire}` from process P169
   Process P145 sends message `acquired` to process named 'thread_6'
+  Process P145 blocks
   Process P169 receives message `acquired` from process P145
   Process P169: ets_lookup {busy,12}
   Process P169: ets_insert {busy,[{12,true}]}
@@ -2400,16 +2877,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
   Process P169 exits (normal)
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
+  Process P1.7 blocks
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
+  Process P145 blocks
   Process P17. registers process P17. as `thread_5`
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_i_5'
+  Process P17. blocks
   Process P1.6 receives message `{thread_5,acquire}` from process P17.
   Process P1.6 sends message `acquired` to process named 'thread_5'
+  Process P1.6 blocks
   Process P17. receives message `acquired` from process P1.6
   Process P17.: ets_lookup {inode,5}
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_b_10'
+  Process P17. blocks
   Process P143 receives message `{thread_5,acquire}` from process P17.
   Process P143 sends message `acquired` to process named 'thread_5'
+  Process P143 blocks
   Process P17. receives message `acquired` from process P143
   Process P17.: ets_lookup {busy,10}
   Process P17.: ets_insert {busy,[{10,true}]}
@@ -2418,16 +2901,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
   Process P17. exits (normal)
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P1.6 blocks
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P143 blocks
   Process P171 registers process P171 as `thread_4`
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_i_4'
+  Process P171 blocks
   Process P1.5 receives message `{thread_4,acquire}` from process P171
   Process P1.5 sends message `acquired` to process named 'thread_4'
+  Process P1.5 blocks
   Process P171 receives message `acquired` from process P1.5
   Process P171: ets_lookup {inode,4}
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_b_8'
+  Process P171 blocks
   Process P141 receives message `{thread_4,acquire}` from process P171
   Process P141 sends message `acquired` to process named 'thread_4'
+  Process P141 blocks
   Process P171 receives message `acquired` from process P141
   Process P171: ets_lookup {busy,8}
   Process P171: ets_insert {busy,[{8,true}]}
@@ -2436,23 +2925,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
   Process P171 exits (normal)
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
+  Process P1.5 blocks
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
+  Process P141 blocks
   Process P172 registers process P172 as `thread_3`
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_i_3'
+  Process P172 blocks
   Process P1.4 receives message `{thread_3,acquire}` from process P172
   Process P1.4 sends message `acquired` to process named 'thread_3'
+  Process P1.4 blocks
   Process P172 receives message `acquired` from process P1.4
   Process P172: ets_lookup {inode,3}
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_6'
+  Process P172 blocks
   Process P139 receives message `{thread_3,acquire}` from process P172
   Process P139 sends message `acquired` to process named 'thread_3'
+  Process P139 blocks
   Process P172 receives message `acquired` from process P139
   Process P172: ets_lookup {busy,6}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_7'
+  Process P172 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
+  Process P139 blocks
   Process P14. receives message `{thread_3,acquire}` from process P172
   Process P14. sends message `acquired` to process named 'thread_3'
+  Process P14. blocks
   Process P172 receives message `acquired` from process P14.
   Process P172: ets_lookup {busy,7}
   Process P172: ets_insert {busy,[{7,true}]}
@@ -2461,13 +2959,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
   Process P172 exits (normal)
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
+  Process P1.4 blocks
   Process P14. receives message `'_._concuerror_lock_release'` from process P172
+  Process P14. blocks
   Process P173 receives message `acquired` from process P1.3
   Process P173: ets_lookup {inode,2}
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_4'
+  Process P173 blocks
   Process P137 receives message `{thread_2,acquire}` from process P173
   Process P137 sends message `acquired` to process named 'thread_2'
+  Process P137 blocks
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P16. blocks
   Process P173 receives message `acquired` from process P137
   Process P173: ets_lookup {busy,4}
   Process P173: ets_insert {busy,[{4,true}]}
@@ -2476,16 +2979,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
   Process P173 exits (normal)
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
+  Process P1.3 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `{thread_15,acquire}` from process P16.
   Process P137 sends message `acquired` to process named 'thread_15'
+  Process P137 blocks
   Process P16. receives message `acquired` from process P137
   Process P16.: ets_lookup {busy,4}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_5'
+  Process P16. blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P137 blocks
   Process P138 receives message `{thread_15,acquire}` from process P16.
   Process P138 sends message `acquired` to process named 'thread_15'
+  Process P138 blocks
   Process P16. receives message `acquired` from process P138
   Process P16.: ets_lookup {busy,5}
   Process P16.: ets_insert {busy,[{5,true}]}
@@ -2494,13 +3002,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
   Process P16. exits (normal)
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P116 blocks
   Process P138 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P138 blocks
   Process P174 receives message `acquired` from process P1.2
   Process P174: ets_lookup {inode,1}
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_2'
+  Process P174 blocks
   Process P135 receives message `{thread_1,acquire}` from process P174
   Process P135 sends message `acquired` to process named 'thread_1'
+  Process P135 blocks
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P161 blocks
   Process P174 receives message `acquired` from process P135
   Process P174: ets_lookup {busy,2}
   Process P174: ets_insert {busy,[{2,true}]}
@@ -2509,16 +3022,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
   Process P174 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
+  Process P1.2 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `{thread_14,acquire}` from process P161
   Process P135 sends message `acquired` to process named 'thread_14'
+  Process P135 blocks
   Process P161 receives message `acquired` from process P135
   Process P161: ets_lookup {busy,2}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_3'
+  Process P161 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
+  Process P135 blocks
   Process P136 receives message `{thread_14,acquire}` from process P161
   Process P136 sends message `acquired` to process named 'thread_14'
+  Process P136 blocks
   Process P161 receives message `acquired` from process P136
   Process P161: ets_lookup {busy,3}
   Process P161: ets_insert {busy,[{3,true}]}
@@ -2527,7 +3045,9 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
   Process P161 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
+  Process P115 blocks
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
+  Process P136 blocks
 
 
 6
@@ -2725,15 +3245,20 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P1 spawns process P172
   Process P1 spawns process P173
   Process P1 spawns process P174
+  Process P1 blocks
   Process P159 registers process P159 as `thread_16`
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_i_16'
+  Process P159 blocks
   Process P117 receives message `{thread_16,acquire}` from process P159
   Process P117 sends message `acquired` to process named 'thread_16'
+  Process P117 blocks
   Process P159 receives message `acquired` from process P117
   Process P159: ets_lookup {inode,16}
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P159 blocks
   Process P139 receives message `{thread_16,acquire}` from process P159
   Process P139 sends message `acquired` to process named 'thread_16'
+  Process P139 blocks
   Process P159 receives message `acquired` from process P139
   Process P159: ets_lookup {busy,6}
   Process P159: ets_insert {busy,[{6,true}]}
@@ -2742,26 +3267,36 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
   Process P159 exits (normal)
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
+  Process P117 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
+  Process P139 blocks
   Process P16. registers process P16. as `thread_15`
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_i_15'
+  Process P16. blocks
   Process P116 receives message `{thread_15,acquire}` from process P16.
   Process P116 sends message `acquired` to process named 'thread_15'
+  Process P116 blocks
   Process P16. receives message `acquired` from process P116
   Process P16.: ets_lookup {inode,15}
   Process P173 registers process P173 as `thread_2`
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_i_2'
+  Process P173 blocks
   Process P1.3 receives message `{thread_2,acquire}` from process P173
   Process P1.3 sends message `acquired` to process named 'thread_2'
+  Process P1.3 blocks
   Process P161 registers process P161 as `thread_14`
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_i_14'
+  Process P161 blocks
   Process P115 receives message `{thread_14,acquire}` from process P161
   Process P115 sends message `acquired` to process named 'thread_14'
+  Process P115 blocks
   Process P161 receives message `acquired` from process P115
   Process P161: ets_lookup {inode,14}
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P161 blocks
   Process P135 receives message `{thread_14,acquire}` from process P161
   Process P135 sends message `acquired` to process named 'thread_14'
+  Process P135 blocks
   Process P161 receives message `acquired` from process P135
   Process P161: ets_lookup {busy,2}
   Process P161: ets_insert {busy,[{2,true}]}
@@ -2770,16 +3305,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
   Process P161 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
+  Process P115 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
+  Process P135 blocks
   Process P162 registers process P162 as `thread_13`
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_i_13'
+  Process P162 blocks
   Process P114 receives message `{thread_13,acquire}` from process P162
   Process P114 sends message `acquired` to process named 'thread_13'
+  Process P114 blocks
   Process P162 receives message `acquired` from process P114
   Process P162: ets_lookup {inode,13}
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_b_0'
+  Process P162 blocks
   Process P133 receives message `{thread_13,acquire}` from process P162
   Process P133 sends message `acquired` to process named 'thread_13'
+  Process P133 blocks
   Process P162 receives message `acquired` from process P133
   Process P162: ets_lookup {busy,0}
   Process P162: ets_insert {busy,[{0,true}]}
@@ -2788,16 +3329,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
   Process P162 exits (normal)
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
+  Process P114 blocks
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
+  Process P133 blocks
   Process P163 registers process P163 as `thread_12`
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_i_12'
+  Process P163 blocks
   Process P113 receives message `{thread_12,acquire}` from process P163
   Process P113 sends message `acquired` to process named 'thread_12'
+  Process P113 blocks
   Process P163 receives message `acquired` from process P113
   Process P163: ets_lookup {inode,12}
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_b_24'
+  Process P163 blocks
   Process P157 receives message `{thread_12,acquire}` from process P163
   Process P157 sends message `acquired` to process named 'thread_12'
+  Process P157 blocks
   Process P163 receives message `acquired` from process P157
   Process P163: ets_lookup {busy,24}
   Process P163: ets_insert {busy,[{24,true}]}
@@ -2806,16 +3353,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
   Process P163 exits (normal)
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
+  Process P113 blocks
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
+  Process P157 blocks
   Process P164 registers process P164 as `thread_11`
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_i_11'
+  Process P164 blocks
   Process P112 receives message `{thread_11,acquire}` from process P164
   Process P112 sends message `acquired` to process named 'thread_11'
+  Process P112 blocks
   Process P164 receives message `acquired` from process P112
   Process P164: ets_lookup {inode,11}
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_b_22'
+  Process P164 blocks
   Process P155 receives message `{thread_11,acquire}` from process P164
   Process P155 sends message `acquired` to process named 'thread_11'
+  Process P155 blocks
   Process P164 receives message `acquired` from process P155
   Process P164: ets_lookup {busy,22}
   Process P164: ets_insert {busy,[{22,true}]}
@@ -2824,16 +3377,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
   Process P164 exits (normal)
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
+  Process P112 blocks
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
+  Process P155 blocks
   Process P165 registers process P165 as `thread_10`
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_i_10'
+  Process P165 blocks
   Process P111 receives message `{thread_10,acquire}` from process P165
   Process P111 sends message `acquired` to process named 'thread_10'
+  Process P111 blocks
   Process P165 receives message `acquired` from process P111
   Process P165: ets_lookup {inode,10}
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_b_20'
+  Process P165 blocks
   Process P153 receives message `{thread_10,acquire}` from process P165
   Process P153 sends message `acquired` to process named 'thread_10'
+  Process P153 blocks
   Process P165 receives message `acquired` from process P153
   Process P165: ets_lookup {busy,20}
   Process P165: ets_insert {busy,[{20,true}]}
@@ -2842,16 +3401,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
   Process P165 exits (normal)
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
+  Process P111 blocks
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
+  Process P153 blocks
   Process P166 registers process P166 as `thread_9`
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_i_9'
+  Process P166 blocks
   Process P11. receives message `{thread_9,acquire}` from process P166
   Process P11. sends message `acquired` to process named 'thread_9'
+  Process P11. blocks
   Process P166 receives message `acquired` from process P11.
   Process P166: ets_lookup {inode,9}
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_b_18'
+  Process P166 blocks
   Process P151 receives message `{thread_9,acquire}` from process P166
   Process P151 sends message `acquired` to process named 'thread_9'
+  Process P151 blocks
   Process P166 receives message `acquired` from process P151
   Process P166: ets_lookup {busy,18}
   Process P166: ets_insert {busy,[{18,true}]}
@@ -2860,16 +3425,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
   Process P166 exits (normal)
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
+  Process P11. blocks
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
+  Process P151 blocks
   Process P167 registers process P167 as `thread_8`
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_i_8'
+  Process P167 blocks
   Process P1.9 receives message `{thread_8,acquire}` from process P167
   Process P1.9 sends message `acquired` to process named 'thread_8'
+  Process P1.9 blocks
   Process P167 receives message `acquired` from process P1.9
   Process P167: ets_lookup {inode,8}
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_b_16'
+  Process P167 blocks
   Process P149 receives message `{thread_8,acquire}` from process P167
   Process P149 sends message `acquired` to process named 'thread_8'
+  Process P149 blocks
   Process P167 receives message `acquired` from process P149
   Process P167: ets_lookup {busy,16}
   Process P167: ets_insert {busy,[{16,true}]}
@@ -2878,16 +3449,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
   Process P167 exits (normal)
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
+  Process P1.9 blocks
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
+  Process P149 blocks
   Process P168 registers process P168 as `thread_7`
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_i_7'
+  Process P168 blocks
   Process P1.8 receives message `{thread_7,acquire}` from process P168
   Process P1.8 sends message `acquired` to process named 'thread_7'
+  Process P1.8 blocks
   Process P168 receives message `acquired` from process P1.8
   Process P168: ets_lookup {inode,7}
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_b_14'
+  Process P168 blocks
   Process P147 receives message `{thread_7,acquire}` from process P168
   Process P147 sends message `acquired` to process named 'thread_7'
+  Process P147 blocks
   Process P168 receives message `acquired` from process P147
   Process P168: ets_lookup {busy,14}
   Process P168: ets_insert {busy,[{14,true}]}
@@ -2896,16 +3473,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
   Process P168 exits (normal)
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
+  Process P1.8 blocks
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
+  Process P147 blocks
   Process P169 registers process P169 as `thread_6`
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_i_6'
+  Process P169 blocks
   Process P1.7 receives message `{thread_6,acquire}` from process P169
   Process P1.7 sends message `acquired` to process named 'thread_6'
+  Process P1.7 blocks
   Process P169 receives message `acquired` from process P1.7
   Process P169: ets_lookup {inode,6}
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_b_12'
+  Process P169 blocks
   Process P145 receives message `{thread_6,acquire}` from process P169
   Process P145 sends message `acquired` to process named 'thread_6'
+  Process P145 blocks
   Process P169 receives message `acquired` from process P145
   Process P169: ets_lookup {busy,12}
   Process P169: ets_insert {busy,[{12,true}]}
@@ -2914,16 +3497,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
   Process P169 exits (normal)
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
+  Process P1.7 blocks
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
+  Process P145 blocks
   Process P17. registers process P17. as `thread_5`
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_i_5'
+  Process P17. blocks
   Process P1.6 receives message `{thread_5,acquire}` from process P17.
   Process P1.6 sends message `acquired` to process named 'thread_5'
+  Process P1.6 blocks
   Process P17. receives message `acquired` from process P1.6
   Process P17.: ets_lookup {inode,5}
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_b_10'
+  Process P17. blocks
   Process P143 receives message `{thread_5,acquire}` from process P17.
   Process P143 sends message `acquired` to process named 'thread_5'
+  Process P143 blocks
   Process P17. receives message `acquired` from process P143
   Process P17.: ets_lookup {busy,10}
   Process P17.: ets_insert {busy,[{10,true}]}
@@ -2932,16 +3521,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
   Process P17. exits (normal)
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P1.6 blocks
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P143 blocks
   Process P171 registers process P171 as `thread_4`
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_i_4'
+  Process P171 blocks
   Process P1.5 receives message `{thread_4,acquire}` from process P171
   Process P1.5 sends message `acquired` to process named 'thread_4'
+  Process P1.5 blocks
   Process P171 receives message `acquired` from process P1.5
   Process P171: ets_lookup {inode,4}
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_b_8'
+  Process P171 blocks
   Process P141 receives message `{thread_4,acquire}` from process P171
   Process P141 sends message `acquired` to process named 'thread_4'
+  Process P141 blocks
   Process P171 receives message `acquired` from process P141
   Process P171: ets_lookup {busy,8}
   Process P171: ets_insert {busy,[{8,true}]}
@@ -2950,23 +3545,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
   Process P171 exits (normal)
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
+  Process P1.5 blocks
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
+  Process P141 blocks
   Process P172 registers process P172 as `thread_3`
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_i_3'
+  Process P172 blocks
   Process P1.4 receives message `{thread_3,acquire}` from process P172
   Process P1.4 sends message `acquired` to process named 'thread_3'
+  Process P1.4 blocks
   Process P172 receives message `acquired` from process P1.4
   Process P172: ets_lookup {inode,3}
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_6'
+  Process P172 blocks
   Process P139 receives message `{thread_3,acquire}` from process P172
   Process P139 sends message `acquired` to process named 'thread_3'
+  Process P139 blocks
   Process P172 receives message `acquired` from process P139
   Process P172: ets_lookup {busy,6}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_7'
+  Process P172 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
+  Process P139 blocks
   Process P14. receives message `{thread_3,acquire}` from process P172
   Process P14. sends message `acquired` to process named 'thread_3'
+  Process P14. blocks
   Process P172 receives message `acquired` from process P14.
   Process P172: ets_lookup {busy,7}
   Process P172: ets_insert {busy,[{7,true}]}
@@ -2975,13 +3579,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
   Process P172 exits (normal)
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
+  Process P1.4 blocks
   Process P14. receives message `'_._concuerror_lock_release'` from process P172
+  Process P14. blocks
   Process P173 receives message `acquired` from process P1.3
   Process P173: ets_lookup {inode,2}
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_4'
+  Process P173 blocks
   Process P137 receives message `{thread_2,acquire}` from process P173
   Process P137 sends message `acquired` to process named 'thread_2'
+  Process P137 blocks
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P16. blocks
   Process P173 receives message `acquired` from process P137
   Process P173: ets_lookup {busy,4}
   Process P173: ets_insert {busy,[{4,true}]}
@@ -2990,16 +3599,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
   Process P173 exits (normal)
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
+  Process P1.3 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
   Process P137 receives message `{thread_15,acquire}` from process P16.
   Process P137 sends message `acquired` to process named 'thread_15'
+  Process P137 blocks
   Process P16. receives message `acquired` from process P137
   Process P16.: ets_lookup {busy,4}
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_5'
+  Process P16. blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P137 blocks
   Process P138 receives message `{thread_15,acquire}` from process P16.
   Process P138 sends message `acquired` to process named 'thread_15'
+  Process P138 blocks
   Process P16. receives message `acquired` from process P138
   Process P16.: ets_lookup {busy,5}
   Process P16.: ets_insert {busy,[{5,true}]}
@@ -3008,23 +3622,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
   Process P16. exits (normal)
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P116 blocks
   Process P138 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P138 blocks
   Process P174 registers process P174 as `thread_1`
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_i_1'
+  Process P174 blocks
   Process P1.2 receives message `{thread_1,acquire}` from process P174
   Process P1.2 sends message `acquired` to process named 'thread_1'
+  Process P1.2 blocks
   Process P174 receives message `acquired` from process P1.2
   Process P174: ets_lookup {inode,1}
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_2'
+  Process P174 blocks
   Process P135 receives message `{thread_1,acquire}` from process P174
   Process P135 sends message `acquired` to process named 'thread_1'
+  Process P135 blocks
   Process P174 receives message `acquired` from process P135
   Process P174: ets_lookup {busy,2}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_3'
+  Process P174 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
+  Process P135 blocks
   Process P136 receives message `{thread_1,acquire}` from process P174
   Process P136 sends message `acquired` to process named 'thread_1'
+  Process P136 blocks
   Process P174 receives message `acquired` from process P136
   Process P174: ets_lookup {busy,3}
   Process P174: ets_insert {busy,[{3,true}]}
@@ -3033,7 +3656,9 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
   Process P174 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
+  Process P1.2 blocks
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
+  Process P136 blocks
 
 
 7
@@ -3231,15 +3856,20 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P1 spawns process P172
   Process P1 spawns process P173
   Process P1 spawns process P174
+  Process P1 blocks
   Process P159 registers process P159 as `thread_16`
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_i_16'
+  Process P159 blocks
   Process P117 receives message `{thread_16,acquire}` from process P159
   Process P117 sends message `acquired` to process named 'thread_16'
+  Process P117 blocks
   Process P159 receives message `acquired` from process P117
   Process P159: ets_lookup {inode,16}
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P159 blocks
   Process P139 receives message `{thread_16,acquire}` from process P159
   Process P139 sends message `acquired` to process named 'thread_16'
+  Process P139 blocks
   Process P159 receives message `acquired` from process P139
   Process P159: ets_lookup {busy,6}
   Process P159: ets_insert {busy,[{6,true}]}
@@ -3248,16 +3878,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
   Process P159 exits (normal)
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
+  Process P117 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
+  Process P139 blocks
   Process P16. registers process P16. as `thread_15`
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_i_15'
+  Process P16. blocks
   Process P116 receives message `{thread_15,acquire}` from process P16.
   Process P116 sends message `acquired` to process named 'thread_15'
+  Process P116 blocks
   Process P16. receives message `acquired` from process P116
   Process P16.: ets_lookup {inode,15}
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P16. blocks
   Process P137 receives message `{thread_15,acquire}` from process P16.
   Process P137 sends message `acquired` to process named 'thread_15'
+  Process P137 blocks
   Process P16. receives message `acquired` from process P137
   Process P16.: ets_lookup {busy,4}
   Process P16.: ets_insert {busy,[{4,true}]}
@@ -3266,26 +3902,36 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
   Process P16. exits (normal)
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P116 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P137 blocks
   Process P161 registers process P161 as `thread_14`
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_i_14'
+  Process P161 blocks
   Process P115 receives message `{thread_14,acquire}` from process P161
   Process P115 sends message `acquired` to process named 'thread_14'
+  Process P115 blocks
   Process P161 receives message `acquired` from process P115
   Process P161: ets_lookup {inode,14}
   Process P174 registers process P174 as `thread_1`
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_i_1'
+  Process P174 blocks
   Process P1.2 receives message `{thread_1,acquire}` from process P174
   Process P1.2 sends message `acquired` to process named 'thread_1'
+  Process P1.2 blocks
   Process P162 registers process P162 as `thread_13`
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_i_13'
+  Process P162 blocks
   Process P114 receives message `{thread_13,acquire}` from process P162
   Process P114 sends message `acquired` to process named 'thread_13'
+  Process P114 blocks
   Process P162 receives message `acquired` from process P114
   Process P162: ets_lookup {inode,13}
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_b_0'
+  Process P162 blocks
   Process P133 receives message `{thread_13,acquire}` from process P162
   Process P133 sends message `acquired` to process named 'thread_13'
+  Process P133 blocks
   Process P162 receives message `acquired` from process P133
   Process P162: ets_lookup {busy,0}
   Process P162: ets_insert {busy,[{0,true}]}
@@ -3294,16 +3940,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
   Process P162 exits (normal)
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
+  Process P114 blocks
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
+  Process P133 blocks
   Process P163 registers process P163 as `thread_12`
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_i_12'
+  Process P163 blocks
   Process P113 receives message `{thread_12,acquire}` from process P163
   Process P113 sends message `acquired` to process named 'thread_12'
+  Process P113 blocks
   Process P163 receives message `acquired` from process P113
   Process P163: ets_lookup {inode,12}
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_b_24'
+  Process P163 blocks
   Process P157 receives message `{thread_12,acquire}` from process P163
   Process P157 sends message `acquired` to process named 'thread_12'
+  Process P157 blocks
   Process P163 receives message `acquired` from process P157
   Process P163: ets_lookup {busy,24}
   Process P163: ets_insert {busy,[{24,true}]}
@@ -3312,16 +3964,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
   Process P163 exits (normal)
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
+  Process P113 blocks
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
+  Process P157 blocks
   Process P164 registers process P164 as `thread_11`
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_i_11'
+  Process P164 blocks
   Process P112 receives message `{thread_11,acquire}` from process P164
   Process P112 sends message `acquired` to process named 'thread_11'
+  Process P112 blocks
   Process P164 receives message `acquired` from process P112
   Process P164: ets_lookup {inode,11}
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_b_22'
+  Process P164 blocks
   Process P155 receives message `{thread_11,acquire}` from process P164
   Process P155 sends message `acquired` to process named 'thread_11'
+  Process P155 blocks
   Process P164 receives message `acquired` from process P155
   Process P164: ets_lookup {busy,22}
   Process P164: ets_insert {busy,[{22,true}]}
@@ -3330,16 +3988,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
   Process P164 exits (normal)
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
+  Process P112 blocks
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
+  Process P155 blocks
   Process P165 registers process P165 as `thread_10`
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_i_10'
+  Process P165 blocks
   Process P111 receives message `{thread_10,acquire}` from process P165
   Process P111 sends message `acquired` to process named 'thread_10'
+  Process P111 blocks
   Process P165 receives message `acquired` from process P111
   Process P165: ets_lookup {inode,10}
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_b_20'
+  Process P165 blocks
   Process P153 receives message `{thread_10,acquire}` from process P165
   Process P153 sends message `acquired` to process named 'thread_10'
+  Process P153 blocks
   Process P165 receives message `acquired` from process P153
   Process P165: ets_lookup {busy,20}
   Process P165: ets_insert {busy,[{20,true}]}
@@ -3348,16 +4012,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
   Process P165 exits (normal)
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
+  Process P111 blocks
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
+  Process P153 blocks
   Process P166 registers process P166 as `thread_9`
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_i_9'
+  Process P166 blocks
   Process P11. receives message `{thread_9,acquire}` from process P166
   Process P11. sends message `acquired` to process named 'thread_9'
+  Process P11. blocks
   Process P166 receives message `acquired` from process P11.
   Process P166: ets_lookup {inode,9}
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_b_18'
+  Process P166 blocks
   Process P151 receives message `{thread_9,acquire}` from process P166
   Process P151 sends message `acquired` to process named 'thread_9'
+  Process P151 blocks
   Process P166 receives message `acquired` from process P151
   Process P166: ets_lookup {busy,18}
   Process P166: ets_insert {busy,[{18,true}]}
@@ -3366,16 +4036,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
   Process P166 exits (normal)
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
+  Process P11. blocks
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
+  Process P151 blocks
   Process P167 registers process P167 as `thread_8`
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_i_8'
+  Process P167 blocks
   Process P1.9 receives message `{thread_8,acquire}` from process P167
   Process P1.9 sends message `acquired` to process named 'thread_8'
+  Process P1.9 blocks
   Process P167 receives message `acquired` from process P1.9
   Process P167: ets_lookup {inode,8}
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_b_16'
+  Process P167 blocks
   Process P149 receives message `{thread_8,acquire}` from process P167
   Process P149 sends message `acquired` to process named 'thread_8'
+  Process P149 blocks
   Process P167 receives message `acquired` from process P149
   Process P167: ets_lookup {busy,16}
   Process P167: ets_insert {busy,[{16,true}]}
@@ -3384,16 +4060,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
   Process P167 exits (normal)
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
+  Process P1.9 blocks
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
+  Process P149 blocks
   Process P168 registers process P168 as `thread_7`
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_i_7'
+  Process P168 blocks
   Process P1.8 receives message `{thread_7,acquire}` from process P168
   Process P1.8 sends message `acquired` to process named 'thread_7'
+  Process P1.8 blocks
   Process P168 receives message `acquired` from process P1.8
   Process P168: ets_lookup {inode,7}
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_b_14'
+  Process P168 blocks
   Process P147 receives message `{thread_7,acquire}` from process P168
   Process P147 sends message `acquired` to process named 'thread_7'
+  Process P147 blocks
   Process P168 receives message `acquired` from process P147
   Process P168: ets_lookup {busy,14}
   Process P168: ets_insert {busy,[{14,true}]}
@@ -3402,16 +4084,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
   Process P168 exits (normal)
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
+  Process P1.8 blocks
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
+  Process P147 blocks
   Process P169 registers process P169 as `thread_6`
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_i_6'
+  Process P169 blocks
   Process P1.7 receives message `{thread_6,acquire}` from process P169
   Process P1.7 sends message `acquired` to process named 'thread_6'
+  Process P1.7 blocks
   Process P169 receives message `acquired` from process P1.7
   Process P169: ets_lookup {inode,6}
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_b_12'
+  Process P169 blocks
   Process P145 receives message `{thread_6,acquire}` from process P169
   Process P145 sends message `acquired` to process named 'thread_6'
+  Process P145 blocks
   Process P169 receives message `acquired` from process P145
   Process P169: ets_lookup {busy,12}
   Process P169: ets_insert {busy,[{12,true}]}
@@ -3420,16 +4108,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
   Process P169 exits (normal)
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
+  Process P1.7 blocks
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
+  Process P145 blocks
   Process P17. registers process P17. as `thread_5`
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_i_5'
+  Process P17. blocks
   Process P1.6 receives message `{thread_5,acquire}` from process P17.
   Process P1.6 sends message `acquired` to process named 'thread_5'
+  Process P1.6 blocks
   Process P17. receives message `acquired` from process P1.6
   Process P17.: ets_lookup {inode,5}
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_b_10'
+  Process P17. blocks
   Process P143 receives message `{thread_5,acquire}` from process P17.
   Process P143 sends message `acquired` to process named 'thread_5'
+  Process P143 blocks
   Process P17. receives message `acquired` from process P143
   Process P17.: ets_lookup {busy,10}
   Process P17.: ets_insert {busy,[{10,true}]}
@@ -3438,16 +4132,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
   Process P17. exits (normal)
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P1.6 blocks
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P143 blocks
   Process P171 registers process P171 as `thread_4`
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_i_4'
+  Process P171 blocks
   Process P1.5 receives message `{thread_4,acquire}` from process P171
   Process P1.5 sends message `acquired` to process named 'thread_4'
+  Process P1.5 blocks
   Process P171 receives message `acquired` from process P1.5
   Process P171: ets_lookup {inode,4}
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_b_8'
+  Process P171 blocks
   Process P141 receives message `{thread_4,acquire}` from process P171
   Process P141 sends message `acquired` to process named 'thread_4'
+  Process P141 blocks
   Process P171 receives message `acquired` from process P141
   Process P171: ets_lookup {busy,8}
   Process P171: ets_insert {busy,[{8,true}]}
@@ -3456,23 +4156,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
   Process P171 exits (normal)
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
+  Process P1.5 blocks
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
+  Process P141 blocks
   Process P172 registers process P172 as `thread_3`
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_i_3'
+  Process P172 blocks
   Process P1.4 receives message `{thread_3,acquire}` from process P172
   Process P1.4 sends message `acquired` to process named 'thread_3'
+  Process P1.4 blocks
   Process P172 receives message `acquired` from process P1.4
   Process P172: ets_lookup {inode,3}
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_6'
+  Process P172 blocks
   Process P139 receives message `{thread_3,acquire}` from process P172
   Process P139 sends message `acquired` to process named 'thread_3'
+  Process P139 blocks
   Process P172 receives message `acquired` from process P139
   Process P172: ets_lookup {busy,6}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_7'
+  Process P172 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
+  Process P139 blocks
   Process P14. receives message `{thread_3,acquire}` from process P172
   Process P14. sends message `acquired` to process named 'thread_3'
+  Process P14. blocks
   Process P172 receives message `acquired` from process P14.
   Process P172: ets_lookup {busy,7}
   Process P172: ets_insert {busy,[{7,true}]}
@@ -3481,23 +4190,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
   Process P172 exits (normal)
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
+  Process P1.4 blocks
   Process P14. receives message `'_._concuerror_lock_release'` from process P172
+  Process P14. blocks
   Process P173 registers process P173 as `thread_2`
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_i_2'
+  Process P173 blocks
   Process P1.3 receives message `{thread_2,acquire}` from process P173
   Process P1.3 sends message `acquired` to process named 'thread_2'
+  Process P1.3 blocks
   Process P173 receives message `acquired` from process P1.3
   Process P173: ets_lookup {inode,2}
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_4'
+  Process P173 blocks
   Process P137 receives message `{thread_2,acquire}` from process P173
   Process P137 sends message `acquired` to process named 'thread_2'
+  Process P137 blocks
   Process P173 receives message `acquired` from process P137
   Process P173: ets_lookup {busy,4}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_5'
+  Process P173 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
+  Process P137 blocks
   Process P138 receives message `{thread_2,acquire}` from process P173
   Process P138 sends message `acquired` to process named 'thread_2'
+  Process P138 blocks
   Process P173 receives message `acquired` from process P138
   Process P173: ets_lookup {busy,5}
   Process P173: ets_insert {busy,[{5,true}]}
@@ -3506,13 +4224,18 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
   Process P173 exits (normal)
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
+  Process P1.3 blocks
   Process P138 receives message `'_._concuerror_lock_release'` from process P173
+  Process P138 blocks
   Process P174 receives message `acquired` from process P1.2
   Process P174: ets_lookup {inode,1}
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_2'
+  Process P174 blocks
   Process P135 receives message `{thread_1,acquire}` from process P174
   Process P135 sends message `acquired` to process named 'thread_1'
+  Process P135 blocks
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P161 blocks
   Process P174 receives message `acquired` from process P135
   Process P174: ets_lookup {busy,2}
   Process P174: ets_insert {busy,[{2,true}]}
@@ -3521,16 +4244,21 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
   Process P174 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
+  Process P1.2 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
   Process P135 receives message `{thread_14,acquire}` from process P161
   Process P135 sends message `acquired` to process named 'thread_14'
+  Process P135 blocks
   Process P161 receives message `acquired` from process P135
   Process P161: ets_lookup {busy,2}
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_3'
+  Process P161 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
+  Process P135 blocks
   Process P136 receives message `{thread_14,acquire}` from process P161
   Process P136 sends message `acquired` to process named 'thread_14'
+  Process P136 blocks
   Process P161 receives message `acquired` from process P136
   Process P161: ets_lookup {busy,3}
   Process P161: ets_insert {busy,[{3,true}]}
@@ -3539,7 +4267,9 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
   Process P161 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
+  Process P115 blocks
   Process P136 receives message `'_._concuerror_lock_release'` from process P161
+  Process P136 blocks
 
 
 8
@@ -3737,15 +4467,20 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P1 spawns process P172
   Process P1 spawns process P173
   Process P1 spawns process P174
+  Process P1 blocks
   Process P159 registers process P159 as `thread_16`
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_i_16'
+  Process P159 blocks
   Process P117 receives message `{thread_16,acquire}` from process P159
   Process P117 sends message `acquired` to process named 'thread_16'
+  Process P117 blocks
   Process P159 receives message `acquired` from process P117
   Process P159: ets_lookup {inode,16}
   Process P159 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P159 blocks
   Process P139 receives message `{thread_16,acquire}` from process P159
   Process P139 sends message `acquired` to process named 'thread_16'
+  Process P139 blocks
   Process P159 receives message `acquired` from process P139
   Process P159: ets_lookup {busy,6}
   Process P159: ets_insert {busy,[{6,true}]}
@@ -3754,16 +4489,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P159 sends message `'_._concuerror_lock_release'` to process named 'lock_i_16'
   Process P159 exits (normal)
   Process P117 receives message `'_._concuerror_lock_release'` from process P159
+  Process P117 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P159
+  Process P139 blocks
   Process P16. registers process P16. as `thread_15`
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_i_15'
+  Process P16. blocks
   Process P116 receives message `{thread_15,acquire}` from process P16.
   Process P116 sends message `acquired` to process named 'thread_15'
+  Process P116 blocks
   Process P16. receives message `acquired` from process P116
   Process P16.: ets_lookup {inode,15}
   Process P16. sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P16. blocks
   Process P137 receives message `{thread_15,acquire}` from process P16.
   Process P137 sends message `acquired` to process named 'thread_15'
+  Process P137 blocks
   Process P16. receives message `acquired` from process P137
   Process P16.: ets_lookup {busy,4}
   Process P16.: ets_insert {busy,[{4,true}]}
@@ -3772,16 +4513,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P16. sends message `'_._concuerror_lock_release'` to process named 'lock_i_15'
   Process P16. exits (normal)
   Process P116 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P116 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P16.
+  Process P137 blocks
   Process P161 registers process P161 as `thread_14`
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_i_14'
+  Process P161 blocks
   Process P115 receives message `{thread_14,acquire}` from process P161
   Process P115 sends message `acquired` to process named 'thread_14'
+  Process P115 blocks
   Process P161 receives message `acquired` from process P115
   Process P161: ets_lookup {inode,14}
   Process P161 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P161 blocks
   Process P135 receives message `{thread_14,acquire}` from process P161
   Process P135 sends message `acquired` to process named 'thread_14'
+  Process P135 blocks
   Process P161 receives message `acquired` from process P135
   Process P161: ets_lookup {busy,2}
   Process P161: ets_insert {busy,[{2,true}]}
@@ -3790,16 +4537,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P161 sends message `'_._concuerror_lock_release'` to process named 'lock_i_14'
   Process P161 exits (normal)
   Process P115 receives message `'_._concuerror_lock_release'` from process P161
+  Process P115 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P161
+  Process P135 blocks
   Process P162 registers process P162 as `thread_13`
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_i_13'
+  Process P162 blocks
   Process P114 receives message `{thread_13,acquire}` from process P162
   Process P114 sends message `acquired` to process named 'thread_13'
+  Process P114 blocks
   Process P162 receives message `acquired` from process P114
   Process P162: ets_lookup {inode,13}
   Process P162 sends message `{thread_13,acquire}` to process named 'lock_b_0'
+  Process P162 blocks
   Process P133 receives message `{thread_13,acquire}` from process P162
   Process P133 sends message `acquired` to process named 'thread_13'
+  Process P133 blocks
   Process P162 receives message `acquired` from process P133
   Process P162: ets_lookup {busy,0}
   Process P162: ets_insert {busy,[{0,true}]}
@@ -3808,16 +4561,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P162 sends message `'_._concuerror_lock_release'` to process named 'lock_i_13'
   Process P162 exits (normal)
   Process P114 receives message `'_._concuerror_lock_release'` from process P162
+  Process P114 blocks
   Process P133 receives message `'_._concuerror_lock_release'` from process P162
+  Process P133 blocks
   Process P163 registers process P163 as `thread_12`
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_i_12'
+  Process P163 blocks
   Process P113 receives message `{thread_12,acquire}` from process P163
   Process P113 sends message `acquired` to process named 'thread_12'
+  Process P113 blocks
   Process P163 receives message `acquired` from process P113
   Process P163: ets_lookup {inode,12}
   Process P163 sends message `{thread_12,acquire}` to process named 'lock_b_24'
+  Process P163 blocks
   Process P157 receives message `{thread_12,acquire}` from process P163
   Process P157 sends message `acquired` to process named 'thread_12'
+  Process P157 blocks
   Process P163 receives message `acquired` from process P157
   Process P163: ets_lookup {busy,24}
   Process P163: ets_insert {busy,[{24,true}]}
@@ -3826,16 +4585,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P163 sends message `'_._concuerror_lock_release'` to process named 'lock_i_12'
   Process P163 exits (normal)
   Process P113 receives message `'_._concuerror_lock_release'` from process P163
+  Process P113 blocks
   Process P157 receives message `'_._concuerror_lock_release'` from process P163
+  Process P157 blocks
   Process P164 registers process P164 as `thread_11`
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_i_11'
+  Process P164 blocks
   Process P112 receives message `{thread_11,acquire}` from process P164
   Process P112 sends message `acquired` to process named 'thread_11'
+  Process P112 blocks
   Process P164 receives message `acquired` from process P112
   Process P164: ets_lookup {inode,11}
   Process P164 sends message `{thread_11,acquire}` to process named 'lock_b_22'
+  Process P164 blocks
   Process P155 receives message `{thread_11,acquire}` from process P164
   Process P155 sends message `acquired` to process named 'thread_11'
+  Process P155 blocks
   Process P164 receives message `acquired` from process P155
   Process P164: ets_lookup {busy,22}
   Process P164: ets_insert {busy,[{22,true}]}
@@ -3844,16 +4609,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P164 sends message `'_._concuerror_lock_release'` to process named 'lock_i_11'
   Process P164 exits (normal)
   Process P112 receives message `'_._concuerror_lock_release'` from process P164
+  Process P112 blocks
   Process P155 receives message `'_._concuerror_lock_release'` from process P164
+  Process P155 blocks
   Process P165 registers process P165 as `thread_10`
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_i_10'
+  Process P165 blocks
   Process P111 receives message `{thread_10,acquire}` from process P165
   Process P111 sends message `acquired` to process named 'thread_10'
+  Process P111 blocks
   Process P165 receives message `acquired` from process P111
   Process P165: ets_lookup {inode,10}
   Process P165 sends message `{thread_10,acquire}` to process named 'lock_b_20'
+  Process P165 blocks
   Process P153 receives message `{thread_10,acquire}` from process P165
   Process P153 sends message `acquired` to process named 'thread_10'
+  Process P153 blocks
   Process P165 receives message `acquired` from process P153
   Process P165: ets_lookup {busy,20}
   Process P165: ets_insert {busy,[{20,true}]}
@@ -3862,16 +4633,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P165 sends message `'_._concuerror_lock_release'` to process named 'lock_i_10'
   Process P165 exits (normal)
   Process P111 receives message `'_._concuerror_lock_release'` from process P165
+  Process P111 blocks
   Process P153 receives message `'_._concuerror_lock_release'` from process P165
+  Process P153 blocks
   Process P166 registers process P166 as `thread_9`
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_i_9'
+  Process P166 blocks
   Process P11. receives message `{thread_9,acquire}` from process P166
   Process P11. sends message `acquired` to process named 'thread_9'
+  Process P11. blocks
   Process P166 receives message `acquired` from process P11.
   Process P166: ets_lookup {inode,9}
   Process P166 sends message `{thread_9,acquire}` to process named 'lock_b_18'
+  Process P166 blocks
   Process P151 receives message `{thread_9,acquire}` from process P166
   Process P151 sends message `acquired` to process named 'thread_9'
+  Process P151 blocks
   Process P166 receives message `acquired` from process P151
   Process P166: ets_lookup {busy,18}
   Process P166: ets_insert {busy,[{18,true}]}
@@ -3880,16 +4657,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P166 sends message `'_._concuerror_lock_release'` to process named 'lock_i_9'
   Process P166 exits (normal)
   Process P11. receives message `'_._concuerror_lock_release'` from process P166
+  Process P11. blocks
   Process P151 receives message `'_._concuerror_lock_release'` from process P166
+  Process P151 blocks
   Process P167 registers process P167 as `thread_8`
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_i_8'
+  Process P167 blocks
   Process P1.9 receives message `{thread_8,acquire}` from process P167
   Process P1.9 sends message `acquired` to process named 'thread_8'
+  Process P1.9 blocks
   Process P167 receives message `acquired` from process P1.9
   Process P167: ets_lookup {inode,8}
   Process P167 sends message `{thread_8,acquire}` to process named 'lock_b_16'
+  Process P167 blocks
   Process P149 receives message `{thread_8,acquire}` from process P167
   Process P149 sends message `acquired` to process named 'thread_8'
+  Process P149 blocks
   Process P167 receives message `acquired` from process P149
   Process P167: ets_lookup {busy,16}
   Process P167: ets_insert {busy,[{16,true}]}
@@ -3898,16 +4681,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P167 sends message `'_._concuerror_lock_release'` to process named 'lock_i_8'
   Process P167 exits (normal)
   Process P1.9 receives message `'_._concuerror_lock_release'` from process P167
+  Process P1.9 blocks
   Process P149 receives message `'_._concuerror_lock_release'` from process P167
+  Process P149 blocks
   Process P168 registers process P168 as `thread_7`
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_i_7'
+  Process P168 blocks
   Process P1.8 receives message `{thread_7,acquire}` from process P168
   Process P1.8 sends message `acquired` to process named 'thread_7'
+  Process P1.8 blocks
   Process P168 receives message `acquired` from process P1.8
   Process P168: ets_lookup {inode,7}
   Process P168 sends message `{thread_7,acquire}` to process named 'lock_b_14'
+  Process P168 blocks
   Process P147 receives message `{thread_7,acquire}` from process P168
   Process P147 sends message `acquired` to process named 'thread_7'
+  Process P147 blocks
   Process P168 receives message `acquired` from process P147
   Process P168: ets_lookup {busy,14}
   Process P168: ets_insert {busy,[{14,true}]}
@@ -3916,16 +4705,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P168 sends message `'_._concuerror_lock_release'` to process named 'lock_i_7'
   Process P168 exits (normal)
   Process P1.8 receives message `'_._concuerror_lock_release'` from process P168
+  Process P1.8 blocks
   Process P147 receives message `'_._concuerror_lock_release'` from process P168
+  Process P147 blocks
   Process P169 registers process P169 as `thread_6`
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_i_6'
+  Process P169 blocks
   Process P1.7 receives message `{thread_6,acquire}` from process P169
   Process P1.7 sends message `acquired` to process named 'thread_6'
+  Process P1.7 blocks
   Process P169 receives message `acquired` from process P1.7
   Process P169: ets_lookup {inode,6}
   Process P169 sends message `{thread_6,acquire}` to process named 'lock_b_12'
+  Process P169 blocks
   Process P145 receives message `{thread_6,acquire}` from process P169
   Process P145 sends message `acquired` to process named 'thread_6'
+  Process P145 blocks
   Process P169 receives message `acquired` from process P145
   Process P169: ets_lookup {busy,12}
   Process P169: ets_insert {busy,[{12,true}]}
@@ -3934,16 +4729,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P169 sends message `'_._concuerror_lock_release'` to process named 'lock_i_6'
   Process P169 exits (normal)
   Process P1.7 receives message `'_._concuerror_lock_release'` from process P169
+  Process P1.7 blocks
   Process P145 receives message `'_._concuerror_lock_release'` from process P169
+  Process P145 blocks
   Process P17. registers process P17. as `thread_5`
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_i_5'
+  Process P17. blocks
   Process P1.6 receives message `{thread_5,acquire}` from process P17.
   Process P1.6 sends message `acquired` to process named 'thread_5'
+  Process P1.6 blocks
   Process P17. receives message `acquired` from process P1.6
   Process P17.: ets_lookup {inode,5}
   Process P17. sends message `{thread_5,acquire}` to process named 'lock_b_10'
+  Process P17. blocks
   Process P143 receives message `{thread_5,acquire}` from process P17.
   Process P143 sends message `acquired` to process named 'thread_5'
+  Process P143 blocks
   Process P17. receives message `acquired` from process P143
   Process P17.: ets_lookup {busy,10}
   Process P17.: ets_insert {busy,[{10,true}]}
@@ -3952,16 +4753,22 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P17. sends message `'_._concuerror_lock_release'` to process named 'lock_i_5'
   Process P17. exits (normal)
   Process P1.6 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P1.6 blocks
   Process P143 receives message `'_._concuerror_lock_release'` from process P17.
+  Process P143 blocks
   Process P171 registers process P171 as `thread_4`
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_i_4'
+  Process P171 blocks
   Process P1.5 receives message `{thread_4,acquire}` from process P171
   Process P1.5 sends message `acquired` to process named 'thread_4'
+  Process P1.5 blocks
   Process P171 receives message `acquired` from process P1.5
   Process P171: ets_lookup {inode,4}
   Process P171 sends message `{thread_4,acquire}` to process named 'lock_b_8'
+  Process P171 blocks
   Process P141 receives message `{thread_4,acquire}` from process P171
   Process P141 sends message `acquired` to process named 'thread_4'
+  Process P141 blocks
   Process P171 receives message `acquired` from process P141
   Process P171: ets_lookup {busy,8}
   Process P171: ets_insert {busy,[{8,true}]}
@@ -3970,23 +4777,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P171 sends message `'_._concuerror_lock_release'` to process named 'lock_i_4'
   Process P171 exits (normal)
   Process P1.5 receives message `'_._concuerror_lock_release'` from process P171
+  Process P1.5 blocks
   Process P141 receives message `'_._concuerror_lock_release'` from process P171
+  Process P141 blocks
   Process P172 registers process P172 as `thread_3`
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_i_3'
+  Process P172 blocks
   Process P1.4 receives message `{thread_3,acquire}` from process P172
   Process P1.4 sends message `acquired` to process named 'thread_3'
+  Process P1.4 blocks
   Process P172 receives message `acquired` from process P1.4
   Process P172: ets_lookup {inode,3}
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_6'
+  Process P172 blocks
   Process P139 receives message `{thread_3,acquire}` from process P172
   Process P139 sends message `acquired` to process named 'thread_3'
+  Process P139 blocks
   Process P172 receives message `acquired` from process P139
   Process P172: ets_lookup {busy,6}
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_b_6'
   Process P172 sends message `{thread_3,acquire}` to process named 'lock_b_7'
+  Process P172 blocks
   Process P139 receives message `'_._concuerror_lock_release'` from process P172
+  Process P139 blocks
   Process P14. receives message `{thread_3,acquire}` from process P172
   Process P14. sends message `acquired` to process named 'thread_3'
+  Process P14. blocks
   Process P172 receives message `acquired` from process P14.
   Process P172: ets_lookup {busy,7}
   Process P172: ets_insert {busy,[{7,true}]}
@@ -3995,23 +4811,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P172 sends message `'_._concuerror_lock_release'` to process named 'lock_i_3'
   Process P172 exits (normal)
   Process P1.4 receives message `'_._concuerror_lock_release'` from process P172
+  Process P1.4 blocks
   Process P14. receives message `'_._concuerror_lock_release'` from process P172
+  Process P14. blocks
   Process P173 registers process P173 as `thread_2`
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_i_2'
+  Process P173 blocks
   Process P1.3 receives message `{thread_2,acquire}` from process P173
   Process P1.3 sends message `acquired` to process named 'thread_2'
+  Process P1.3 blocks
   Process P173 receives message `acquired` from process P1.3
   Process P173: ets_lookup {inode,2}
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_4'
+  Process P173 blocks
   Process P137 receives message `{thread_2,acquire}` from process P173
   Process P137 sends message `acquired` to process named 'thread_2'
+  Process P137 blocks
   Process P173 receives message `acquired` from process P137
   Process P173: ets_lookup {busy,4}
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_b_4'
   Process P173 sends message `{thread_2,acquire}` to process named 'lock_b_5'
+  Process P173 blocks
   Process P137 receives message `'_._concuerror_lock_release'` from process P173
+  Process P137 blocks
   Process P138 receives message `{thread_2,acquire}` from process P173
   Process P138 sends message `acquired` to process named 'thread_2'
+  Process P138 blocks
   Process P173 receives message `acquired` from process P138
   Process P173: ets_lookup {busy,5}
   Process P173: ets_insert {busy,[{5,true}]}
@@ -4020,23 +4845,32 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P173 sends message `'_._concuerror_lock_release'` to process named 'lock_i_2'
   Process P173 exits (normal)
   Process P1.3 receives message `'_._concuerror_lock_release'` from process P173
+  Process P1.3 blocks
   Process P138 receives message `'_._concuerror_lock_release'` from process P173
+  Process P138 blocks
   Process P174 registers process P174 as `thread_1`
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_i_1'
+  Process P174 blocks
   Process P1.2 receives message `{thread_1,acquire}` from process P174
   Process P1.2 sends message `acquired` to process named 'thread_1'
+  Process P1.2 blocks
   Process P174 receives message `acquired` from process P1.2
   Process P174: ets_lookup {inode,1}
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_2'
+  Process P174 blocks
   Process P135 receives message `{thread_1,acquire}` from process P174
   Process P135 sends message `acquired` to process named 'thread_1'
+  Process P135 blocks
   Process P174 receives message `acquired` from process P135
   Process P174: ets_lookup {busy,2}
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_b_2'
   Process P174 sends message `{thread_1,acquire}` to process named 'lock_b_3'
+  Process P174 blocks
   Process P135 receives message `'_._concuerror_lock_release'` from process P174
+  Process P135 blocks
   Process P136 receives message `{thread_1,acquire}` from process P174
   Process P136 sends message `acquired` to process named 'thread_1'
+  Process P136 blocks
   Process P174 receives message `acquired` from process P136
   Process P174: ets_lookup {busy,3}
   Process P174: ets_insert {busy,[{3,true}]}
@@ -4045,6 +4879,8 @@ Blocked processes : P1, P1.1, P1.2, P1.3, P1.4, P1.5, P1.6, P1.7, P1.8, P1.9, P1
   Process P174 sends message `'_._concuerror_lock_release'` to process named 'lock_i_1'
   Process P174 exits (normal)
   Process P1.2 receives message `'_._concuerror_lock_release'` from process P174
+  Process P1.2 blocks
   Process P136 receives message `'_._concuerror_lock_release'` from process P174
+  Process P136 blocks
 
 

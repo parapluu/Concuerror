@@ -10,7 +10,9 @@ Blocked processes : P1
   Process P1 sends message `ok` to process P1.1
   Process P1.1 receives message `ok` from process P1
   Process P1.1 sends message `ok` to process P1.2
+  Process P1.1 blocks
   Process P1 sends message `ok` to process P1.2
+  Process P1 blocks
   Process P1.2 receives message `ok` from process P1.1
   Process P1.2 sends message `ok` to process P1.1
   Process P1.2 receives message `ok` from process P1
@@ -20,9 +22,11 @@ Blocked processes : P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
 
 
 2
@@ -35,7 +39,9 @@ Blocked processes : P1
   Process P1 sends message `ok` to process P1.1
   Process P1.1 receives message `ok` from process P1
   Process P1.1 sends message `ok` to process P1.2
+  Process P1.1 blocks
   Process P1 sends message `ok` to process P1.2
+  Process P1 blocks
   Process P1.2 receives message `ok` from process P1.1
   Process P1.2 sends message `ok` to process P1.1
   Process P1.2 receives message `ok` from process P1
@@ -43,11 +49,13 @@ Blocked processes : P1
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
   Process P1.1 receives message `ok` from process P1.2
   Process P1.1: ets_insert {table,[{<0.50.0>,1}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
 
 
 3
@@ -59,8 +67,10 @@ Blocked processes : P1
   Process P1: ets_insert {table,[{pids,[<0.44.0>,<0.45.0>]}]}
   Process P1 sends message `ok` to process P1.1
   Process P1 sends message `ok` to process P1.2
+  Process P1 blocks
   Process P1.1 receives message `ok` from process P1
   Process P1.1 sends message `ok` to process P1.2
+  Process P1.1 blocks
   Process P1.2 receives message `ok` from process P1
   Process P1.2 sends message `ok` to process P1.1
   Process P1.2 receives message `ok` from process P1.1
@@ -70,9 +80,11 @@ Blocked processes : P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
 
 
 4
@@ -84,8 +96,10 @@ Blocked processes : P1
   Process P1: ets_insert {table,[{pids,[<0.44.0>,<0.45.0>]}]}
   Process P1 sends message `ok` to process P1.1
   Process P1 sends message `ok` to process P1.2
+  Process P1 blocks
   Process P1.1 receives message `ok` from process P1
   Process P1.1 sends message `ok` to process P1.2
+  Process P1.1 blocks
   Process P1.2 receives message `ok` from process P1
   Process P1.2 sends message `ok` to process P1.1
   Process P1.2 receives message `ok` from process P1.1
@@ -93,10 +107,12 @@ Blocked processes : P1
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
   Process P1.1 receives message `ok` from process P1.2
   Process P1.1: ets_insert {table,[{<0.44.0>,1}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
 
 

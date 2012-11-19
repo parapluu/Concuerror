@@ -8,6 +8,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
+  Process P1 blocks
   Process P1.1: ets_insert {table,[{x,42}]}
   Process P1.1 exits (normal)
   Process P1.2: ets_lookup {table,1}
@@ -29,6 +30,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
+  Process P1 blocks
   Process P1.2: ets_lookup {table,1}
   Process P1.2: ets_lookup {table,x}
   Process P1.2 exits (normal)
@@ -50,6 +52,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
+  Process P1 blocks
   Process P1.2: ets_lookup {table,1}
   Process P1.2: ets_lookup {table,x}
   Process P1.2 exits (normal)
@@ -71,6 +74,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
+  Process P1 blocks
   Process P1.2: ets_lookup {table,1}
   Process P1.2: ets_lookup {table,x}
   Process P1.2 exits (normal)
@@ -92,6 +96,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
+  Process P1 blocks
   Process P1.2: ets_lookup {table,1}
   Process P1.2: ets_lookup {table,x}
   Process P1.2 exits (normal)
@@ -113,6 +118,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
+  Process P1 blocks
   Process P1.2: ets_lookup {table,1}
   Process P1.3: ets_lookup {table,2}
   Process P1.3: ets_lookup {table,x}
@@ -134,6 +140,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
+  Process P1 blocks
   Process P1.2: ets_lookup {table,1}
   Process P1.3: ets_lookup {table,2}
   Process P1.3: ets_lookup {table,x}
@@ -155,6 +162,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
+  Process P1 blocks
   Process P1.2: ets_lookup {table,1}
   Process P1.3: ets_lookup {table,2}
   Process P1.4: ets_lookup {table,3}

@@ -6,6 +6,7 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1 receives no matching messages
+  Process P1 blocks
   Process P1.1 sends message `one` to process P1
   Process P1.1 exits (normal)
 
@@ -18,5 +19,6 @@ Blocked processes : P1
   Process P1.1 sends message `one` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `one` from process P1.1
+  Process P1 blocks
 
 

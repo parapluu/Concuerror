@@ -12,12 +12,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -46,12 +51,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -80,12 +90,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -114,12 +129,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -148,12 +168,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -182,12 +207,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -216,12 +246,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -250,12 +285,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -284,12 +324,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -318,12 +363,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -352,12 +402,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -386,12 +441,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -420,12 +480,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -454,12 +519,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -488,12 +558,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -522,12 +597,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -556,12 +636,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -590,12 +675,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -624,12 +714,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -658,12 +753,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -692,12 +792,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -726,12 +831,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -760,12 +870,17 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -794,12 +909,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -828,12 +948,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -862,12 +987,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -896,12 +1026,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -930,12 +1065,17 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -964,12 +1104,17 @@ Details           : {{nocatch,{[{x,0,0}],[],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -998,12 +1143,17 @@ Details           : {{nocatch,{[{x,0,0}],[],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1032,12 +1182,17 @@ Details           : {{nocatch,{[{x,0,0}],[],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1066,12 +1221,17 @@ Details           : {{nocatch,{[{x,0,0}],[],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1100,12 +1260,17 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1134,12 +1299,17 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1168,12 +1338,17 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1202,12 +1377,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1236,12 +1416,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1270,12 +1455,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1304,12 +1494,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1338,12 +1533,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1372,12 +1572,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1406,12 +1611,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1440,12 +1650,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1474,12 +1689,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1508,12 +1728,17 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1542,12 +1767,17 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1576,12 +1806,17 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1610,12 +1845,17 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1644,12 +1884,17 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1678,12 +1923,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1712,12 +1962,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1746,12 +2001,17 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1780,12 +2040,17 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1814,12 +2079,17 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1848,12 +2118,17 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1882,12 +2157,17 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1916,12 +2196,17 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1950,12 +2235,17 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1984,12 +2274,17 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2018,12 +2313,17 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2052,12 +2352,17 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2086,12 +2391,17 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2120,12 +2430,17 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2154,12 +2469,17 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2188,12 +2508,17 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2222,12 +2547,17 @@ Details           : {{nocatch,{[],[],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2256,12 +2586,17 @@ Details           : {{nocatch,{[],[],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2290,12 +2625,17 @@ Details           : {{nocatch,{[],[],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2324,12 +2664,17 @@ Details           : {{nocatch,{[],[],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2358,12 +2703,17 @@ Details           : {{nocatch,{[],[],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -2392,12 +2742,17 @@ Details           : {{nocatch,{[],[],[]}},
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 spawns process P1.5
+  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
   Process P1.1: ets_lookup {table,y}
   Process P1.1: ets_lookup {table,z}
+  Process P1.1 blocks
   Process P1.4: ets_insert {table,[{z,0},{x,0,0}]}
+  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,0},{z,0,0}]}
+  Process P1.3 blocks
   Process P1.2: ets_insert {table,[{x,0},{y,0,0}]}
+  Process P1.2 blocks
   Process P1.5: ets_insert {table,[{w,0},{q,0,0}]}
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
