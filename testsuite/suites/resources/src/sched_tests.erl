@@ -47,6 +47,10 @@
 %%%
 -spec scenarios() -> [{term(), non_neg_integer()}].
 scenarios() ->
+    [{N,P,R} || {N,P} <- scenario_names(),
+                 R <- [dpor, full]].
+
+scenario_names() ->
     [{test_spawn, 0}, {test_spawn, 1}, {test_spawn, inf}
     ,{test_send, 0}, {test_send, 1}, {test_send, inf}
     ,{test_send_2, 0}, {test_send_2, 1}, {test_send_2, inf}

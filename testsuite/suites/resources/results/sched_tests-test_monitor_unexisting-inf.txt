@@ -2,7 +2,7 @@ Checked 4 interleaving(s). 1 errors found.
 
 1
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:394
+Module:Line       : sched_tests.erl:398
 Expected          : ok
 Value             : not_ok
   Process P1 spawns process P1.1

@@ -2,7 +2,7 @@ Checked 4 interleaving(s). 1 errors found.
 
 1
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:339
+Module:Line       : sched_tests.erl:343
 Expected          : ok
 Value             : not_ok
   Process P1 sets flag `trap_exit` to `true`

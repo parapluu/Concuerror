@@ -2,7 +2,7 @@ Checked 9 interleaving(s). 6 errors found.
 
 1
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
 Value             : result2
   Process P1 spawns process P1.1
@@ -15,7 +15,7 @@ Value             : result2
 
 2
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
 Value             : result2
   Process P1 spawns process P1.1
@@ -27,7 +27,7 @@ Value             : result2
 
 3
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
 Value             : result2
   Process P1 spawns process P1.1
@@ -40,7 +40,7 @@ Value             : result2
 
 4
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
 Value             : result1
   Process P1 spawns process P1.1
@@ -52,7 +52,7 @@ Value             : result1
 
 5
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
 Value             : result1
   Process P1 spawns process P1.1
@@ -63,7 +63,7 @@ Value             : result1
 
 6
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
 Value             : result1
   Process P1 spawns process P1.1

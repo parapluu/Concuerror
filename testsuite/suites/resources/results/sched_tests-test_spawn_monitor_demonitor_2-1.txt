@@ -2,7 +2,7 @@ Checked 4 interleaving(s). 1 errors found.
 
 1
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:426
+Module:Line       : sched_tests.erl:430
 Expected          : result2
 Value             : result1
   Process P1 spawns and monitors process P1.1
