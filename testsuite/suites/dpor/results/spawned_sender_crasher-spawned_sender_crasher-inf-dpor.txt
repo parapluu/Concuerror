@@ -4,8 +4,7 @@ Checked 2 interleaving(s). 2 errors found.
 Error type        : Exception
 Details           : {{badmatch,[one,two]},
                      [{spawned_sender_crasher,receive_two,0,
-                          [{file,"suites/dpor/src/spawned_sender_crasher.erl"},
-                           {line,21}]}]}
+                          [{file,"spawned_sender_crasher.erl"},{line,21}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
@@ -24,8 +23,7 @@ Details           : {{badmatch,[one,two]},
 Error type        : Exception
 Details           : {{badmatch,[two,one]},
                      [{spawned_sender_crasher,receive_two,0,
-                          [{file,"suites/dpor/src/spawned_sender_crasher.erl"},
-                           {line,20}]}]}
+                          [{file,"spawned_sender_crasher.erl"},{line,20}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3

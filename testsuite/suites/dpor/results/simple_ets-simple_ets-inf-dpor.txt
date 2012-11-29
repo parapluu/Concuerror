@@ -4,8 +4,7 @@ Checked 6 interleaving(s). 3 errors found.
 Error type        : Exception
 Details           : {{case_clause,{eulav,souffle}},
                      [{simple_ets,simple_ets,0,
-                                  [{file,"suites/dpor/src/simple_ets.erl"},
-                                   {line,33}]}]}
+                                  [{file,"simple_ets.erl"},{line,33}]}]}
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -32,8 +31,7 @@ Details           : {{case_clause,{eulav,souffle}},
 Error type        : Exception
 Details           : {{case_clause,{new_value,elffuos}},
                      [{simple_ets,simple_ets,0,
-                                  [{file,"suites/dpor/src/simple_ets.erl"},
-                                   {line,33}]}]}
+                                  [{file,"simple_ets.erl"},{line,33}]}]}
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -61,8 +59,7 @@ Details           : {{case_clause,{new_value,elffuos}},
 Error type        : Exception
 Details           : {{case_clause,{new_value,elffuos}},
                      [{simple_ets,simple_ets,0,
-                                  [{file,"suites/dpor/src/simple_ets.erl"},
-                                   {line,33}]}]}
+                                  [{file,"simple_ets.erl"},{line,33}]}]}
   Process P1: ets_new {simple_ets,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2

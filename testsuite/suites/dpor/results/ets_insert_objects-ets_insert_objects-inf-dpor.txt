@@ -4,8 +4,7 @@ Checked 71 interleaving(s). 71 errors found.
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -43,8 +42,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -82,8 +80,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -121,8 +118,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -160,8 +156,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -199,8 +194,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -238,8 +232,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -277,8 +270,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -316,8 +308,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -355,8 +346,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -394,8 +384,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -433,8 +422,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -472,8 +460,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -511,8 +498,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -550,8 +536,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -589,8 +574,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -628,8 +612,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -667,8 +650,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -706,8 +688,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -745,8 +726,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -784,8 +764,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -823,8 +802,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -862,8 +840,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -901,8 +878,7 @@ Details           : {{nocatch,{[{x,0}],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -940,8 +916,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -979,8 +954,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1018,8 +992,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1057,8 +1030,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1096,8 +1068,7 @@ Details           : {{nocatch,{[{x,0,0}],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1135,8 +1106,7 @@ Details           : {{nocatch,{[{x,0,0}],[],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1174,8 +1144,7 @@ Details           : {{nocatch,{[{x,0,0}],[],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1213,8 +1182,7 @@ Details           : {{nocatch,{[{x,0,0}],[],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[{x,0,0}],[],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1252,8 +1220,7 @@ Details           : {{nocatch,{[{x,0,0}],[],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1291,8 +1258,7 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1330,8 +1296,7 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1369,8 +1334,7 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1408,8 +1372,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1447,8 +1410,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1486,8 +1448,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1525,8 +1486,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1564,8 +1524,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1603,8 +1562,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1642,8 +1600,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1681,8 +1638,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1720,8 +1676,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1759,8 +1714,7 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1798,8 +1752,7 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1837,8 +1790,7 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1876,8 +1828,7 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1915,8 +1866,7 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1954,8 +1904,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -1993,8 +1942,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2032,8 +1980,7 @@ Details           : {{nocatch,{[],[{y,0,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2071,8 +2018,7 @@ Details           : {{nocatch,{[],[{y,0}],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2110,8 +2056,7 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2149,8 +2094,7 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2188,8 +2132,7 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2227,8 +2170,7 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2266,8 +2208,7 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2305,8 +2246,7 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2344,8 +2284,7 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2383,8 +2322,7 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2422,8 +2360,7 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2461,8 +2398,7 @@ Details           : {{nocatch,{[],[],[{z,0,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2500,8 +2436,7 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[{z,0}]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2539,8 +2474,7 @@ Details           : {{nocatch,{[],[],[{z,0}]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2578,8 +2512,7 @@ Details           : {{nocatch,{[],[],[]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2617,8 +2550,7 @@ Details           : {{nocatch,{[],[],[]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2656,8 +2588,7 @@ Details           : {{nocatch,{[],[],[]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2695,8 +2626,7 @@ Details           : {{nocatch,{[],[],[]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
@@ -2734,8 +2664,7 @@ Details           : {{nocatch,{[],[],[]}},
 Error type        : Exception
 Details           : {{nocatch,{[],[],[]}},
                      [{ets_insert_objects,'-ets_insert_objects/0-fun-1-',1,
-                          [{file,"suites/dpor/src/ets_insert_objects.erl"},
-                           {line,16}]}]}
+                          [{file,"ets_insert_objects.erl"},{line,16}]}]}
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2

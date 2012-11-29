@@ -4,8 +4,7 @@ Checked 3 interleaving(s). 3 errors found.
 Error type        : Exception
 Details           : {{nocatch,{c,a}},
                      [{after_test_3,'-after_test_3/0-fun-3-',0,
-                                    [{file,"suites/dpor/src/after_test_3.erl"},
-                                     {line,16}]}]}
+                                    [{file,"after_test_3.erl"},{line,16}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 receives no matching messages
@@ -24,8 +23,7 @@ Details           : {{nocatch,{c,a}},
 Error type        : Exception
 Details           : {{nocatch,{a,c}},
                      [{after_test_3,'-after_test_3/0-fun-3-',0,
-                                    [{file,"suites/dpor/src/after_test_3.erl"},
-                                     {line,16}]}]}
+                                    [{file,"after_test_3.erl"},{line,16}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 receives no matching messages
@@ -43,8 +41,7 @@ Details           : {{nocatch,{a,c}},
 Error type        : Exception
 Details           : {{nocatch,{a,b}},
                      [{after_test_3,'-after_test_3/0-fun-3-',0,
-                                    [{file,"suites/dpor/src/after_test_3.erl"},
-                                     {line,16}]}]}
+                                    [{file,"after_test_3.erl"},{line,16}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1.2 sends message `a` to process P1.1

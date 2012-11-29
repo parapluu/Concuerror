@@ -4,8 +4,7 @@ Checked 2 interleaving(s). 1 errors found.
 Error type        : Exception
 Details           : {{nocatch,saved},
                      [{late_hope,late_hope,0,
-                                 [{file,"suites/dpor/src/late_hope.erl"},
-                                  {line,14}]}]}
+                                 [{file,"late_hope.erl"},{line,14}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1.2 sends message `ignore` to process P1.1

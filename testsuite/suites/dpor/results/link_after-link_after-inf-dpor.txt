@@ -4,8 +4,7 @@ Checked 5 interleaving(s). 1 errors found.
 Error type        : Exception
 Details           : {{nocatch,untrapped},
                      [{link_after,'-link_after/0-fun-2-',0,
-                                  [{file,"suites/dpor/src/link_after.erl"},
-                                   {line,13}]}]}
+                                  [{file,"link_after.erl"},{line,13}]}]}
   Process P1 spawns process P1.1
   Process P1 links to process P1.1
   Process P1.1 sets flag `trap_exit` to `true`

@@ -4,8 +4,7 @@ Checked 2 interleaving(s). 2 errors found.
 Error type        : Exception
 Details           : {{nocatch,boom},
                      [{receive_and_after,p1,0,
-                          [{file,"suites/dpor/src/receive_and_after.erl"},
-                           {line,16}]}]}
+                          [{file,"receive_and_after.erl"},{line,16}]}]}
   Process P1 spawns process P1.1
   Process P1.1 receives no matching messages
   Process P1.1 exits ("Exception")
@@ -15,8 +14,7 @@ Details           : {{nocatch,boom},
 Error type        : Exception
 Details           : {{nocatch,kaboom},
                      [{receive_and_after,p1,0,
-                          [{file,"suites/dpor/src/receive_and_after.erl"},
-                           {line,13}]}]}
+                          [{file,"receive_and_after.erl"},{line,13}]}]}
   Process P1 spawns process P1.1
   Process P1 sends message `enable` to process P1.1
   Process P1 exits (normal)

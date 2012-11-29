@@ -4,7 +4,7 @@
 -export([indexer12/0, indexer15/0]).
 -export([scenarios/0]).
 
-scenarios() -> [{?MODULE, inf, dpor}].
+scenarios() -> []. %%[{?MODULE, inf, dpor}].
 
 -define(size, 128).
 -define(max, 4).

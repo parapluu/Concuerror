@@ -4,8 +4,7 @@ Checked 2 interleaving(s). 1 errors found.
 Error type        : Exception
 Details           : {{badmatch,[msg1,msg2]},
                      [{send_using_names,send_using_names,0,
-                          [{file,"suites/dpor/src/send_using_names.erl"},
-                           {line,18}]}]}
+                          [{file,"send_using_names.erl"},{line,18}]}]}
   Process P1 registers process P1 as `name`
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
