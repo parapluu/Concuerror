@@ -360,7 +360,7 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
     ?f_debug("------------\nExplore ~p\n------------\n",
              [TraceTop#trace_state.i + 1]),
     case ordsets:subtract(Backtrack, Done) of
-	[] ->
+        [] ->
             ?f_debug("Backtrack set explored\n",[]),
             none;
         [SelectedLid|_RestLids] ->
@@ -369,11 +369,11 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
                     true -> replay_trace(MightNeedReplayState);
                     false -> MightNeedReplayState
                 end,
-	    Instruction = dict:fetch(SelectedLid, TraceTop#trace_state.nexts),
+            Instruction = dict:fetch(SelectedLid, TraceTop#trace_state.nexts),
             NewDone = ordsets:add_element(SelectedLid, Done),
             NewTraceTop = TraceTop#trace_state{done = NewDone},
             NewState = State#dpor_state{trace = [NewTraceTop|RestTrace]},
-	    {ok, Instruction, NewState}
+            {ok, Instruction, NewState}
     end.
 
 replay_trace(#dpor_state{proc_before = ProcBefore,
@@ -987,7 +987,7 @@ dynamic_loop_acc(Fun, Arg) ->
         {done, Ret} -> Ret;
         {cont, NewArg} -> dynamic_loop_acc(Fun, NewArg)
     end.
-    
+
 update_lid_enabled(Lid, {_, Next, _}, Pollable, Enabled, Blocked) ->
     {NewEnabled, NewBlocked} =
         case is_enabled(Next) of
@@ -1882,7 +1882,6 @@ notify(Msg, Misc, Type) ->
             end
     end.
 
-%% TODO: Maybe move into lid module.
 -spec lid_from_pid(pid()) -> concuerror_lid:lid() | 'not_found'.
 
 lid_from_pid(Pid) ->
