@@ -73,7 +73,7 @@ def runScenario(suite, name, modn, funn, preb, flag, dirn, files):
         conc_flag = "--dpor"
         file_ext  = "-dpor"
     else:
-        conc_flag = ""
+        conc_flag = "--dpor_fake"
         file_ext  = ""
     sema.acquire()
     # Run concuerror
