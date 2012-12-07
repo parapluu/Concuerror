@@ -13,7 +13,7 @@
 %%%----------------------------------------------------------------------
 
 -module(concuerror_instr).
--export([delete_and_purge/1, instrument_and_compile/4, load/1]).
+-export([delete_and_purge/1, instrument_and_compile/3, load/1]).
 
 -export_type([macros/0]).
 
@@ -102,26 +102,19 @@ delete_and_purge(Files) ->
     Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
     lists:foreach(Fun, ModsToPurge).
 
-%% @spec instrument(Files::[file:filename()], Includes::[file:name()],
-%%              Defines::macros()) -> 'ok' | 'error'
+%% @spec instrument_and_compile(Files::[file:filename()],
+%%              Includes::[file:name()], Defines::macros()) -> 'ok' | 'error'
 %% @doc: Instrument and compile a list of files.
 %%
 %% Each file is first validated (i.e. checked whether it will compile
 %% successfully). If no errors are encountered, the file gets instrumented and
 %% compiled. If these actions are successfull, the function returns `{ok, Bin}',
 %% otherwise `error' is returned. No `.beam' files are produced.
--spec instrument_and_compile([file:filename()], [file:name()], macros(), boolean()) ->
+-spec instrument_and_compile([file:filename()], [file:name()], macros()) ->
     {'ok', [mfb()]} | 'error'.
 
-instrument_and_compile(Files, Includes, Defines, Dpor) ->
-    put(dpor, Dpor),
+instrument_and_compile(Files, Includes, Defines) ->
     instrument_and_compile_aux(Files, Includes, Defines, []).
-
--define(default_or_dpor(Default, Dpor),
-        case get(dpor) of
-            true -> Dpor;
-            false -> Default
-        end).
 
 instrument_and_compile_aux([], _Includes, _Defines, Acc) ->
     {ok, lists:reverse(Acc)};
@@ -313,25 +306,20 @@ needs_instrument(Module, Function, ArgTrees) ->
 
 instrument_application({erlang, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
-    DporSuffix = ?default_or_dpor("", "_dpor"),
-    FunAtom = list_to_atom("rep_" ++ atom_to_list(Function) ++ DporSuffix),
-    RepFun = erl_syntax:atom(FunAtom),
+    RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Function))),
     erl_syntax:application(RepMod, RepFun, ArgTrees);
 instrument_application({Module, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
-    DporSuffix = ?default_or_dpor("", "_dpor"),
     RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Module)
                                           ++ "_"
-                                          ++ atom_to_list(Function)
-                                          ++ DporSuffix)),
+                                          ++ atom_to_list(Function))),
     erl_syntax:application(RepMod, RepFun, ArgTrees).
 
 instrument_var_application({ModTree, FunTree, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
     RepFun = erl_syntax:atom(rep_var),
     ArgList = erl_syntax:list(ArgTrees),
-    Version = erl_syntax:atom(?default_or_dpor(default, dpor)),
-    erl_syntax:application(RepMod, RepFun, [Version, ModTree, FunTree, ArgList]).
+    erl_syntax:application(RepMod, RepFun, [ModTree, FunTree, ArgList]).
 
 %% Instrument a receive expression.
 %% ----------------------------------------------------------------------
@@ -414,10 +402,7 @@ instrument_receive(Tree) ->
             Action = erl_syntax:receive_expr_action(Tree),
             AfterBlock = erl_syntax:block_expr(Action),
             ModTree = erl_syntax:atom(?REP_MOD),
-            RepBlock =
-                ?default_or_dpor(rep_receive_block,
-                                     rep_receive_block_dpor),
-            FunTree = erl_syntax:atom(RepBlock),
+            FunTree = erl_syntax:atom(rep_receive_block),
             Fun = erl_syntax:application(ModTree, FunTree, []),
             transform_receive_timeout(Fun, AfterBlock, Timeout);
         _Other ->
@@ -430,9 +415,7 @@ instrument_receive(Tree) ->
             FunExpr = erl_syntax:fun_expr([FunClause]),
             %% Create ?REP_MOD:rep_receive(fun(X) -> ...).
             Module = erl_syntax:atom(?REP_MOD),
-            RepReceiveFun =
-                ?default_or_dpor(rep_receive, rep_receive_dpor),
-            Function = erl_syntax:atom(RepReceiveFun),
+            Function = erl_syntax:atom(rep_receive),
             Timeout = erl_syntax:receive_expr_timeout(Tree),
             HasNoTimeout = Timeout =:= none,
             HasTimeoutExpr =
@@ -454,20 +437,14 @@ instrument_receive(Tree) ->
                 false ->
                     Action = erl_syntax:receive_expr_action(Tree),
                     RepMod = erl_syntax:atom(?REP_MOD),
-                    RepAfterNotify =
-                        ?default_or_dpor(rep_after_notify,
-                                             rep_after_notify_dpor),
-                    RepFun = erl_syntax:atom(RepAfterNotify),
+                    RepFun = erl_syntax:atom(rep_after_notify),
                     RepApp = erl_syntax:application(RepMod, RepFun, []),
                     NewAction = [RepApp|Action],
                     %% receive NewPatterns -> NewActions after 0 -> NewAfter end
                     ZeroTimeout = erl_syntax:integer(0),
                     AfterExpr = erl_syntax:receive_expr(NewClauses,
                                                         ZeroTimeout, NewAction),
-                    AfterBlock =
-                        ?default_or_dpor(AfterExpr,
-                                            erl_syntax:block_expr([RepReceive,
-                                                                   AfterExpr])),
+                    AfterBlock = erl_syntax:block_expr([RepReceive,AfterExpr]),
                     transform_receive_timeout(Block, AfterBlock, Timeout)
             end
     end.
@@ -503,17 +480,10 @@ transform_receive_clause_regular(Clause) ->
     InstrAtom = erl_syntax:atom(?INSTR_MSG),
     PidVar = new_variable(),
     CV = new_variable(),
-    NewPattern =
-        [erl_syntax:tuple(
-           ?default_or_dpor([InstrAtom, PidVar, OldPattern],
-                            [InstrAtom, PidVar, CV, OldPattern]))],
+    NewPattern = [erl_syntax:tuple([InstrAtom, PidVar, CV, OldPattern])],
     Module = erl_syntax:atom(?REP_MOD),
-    RepReceiveNotify =
-        ?default_or_dpor(rep_receive_notify, rep_receive_notify_dpor),
-    Function = erl_syntax:atom(RepReceiveNotify),
-    Arguments =
-        ?default_or_dpor([PidVar, OldPattern],
-                         [PidVar, CV, OldPattern]),
+    Function = erl_syntax:atom(rep_receive_notify),
+    Arguments = [PidVar, CV, OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),
     NewBody = [Notify|OldBody],
     erl_syntax:clause(NewPattern, OldGuard, NewBody).
@@ -527,9 +497,7 @@ transform_receive_clause_special(Clause) ->
     OldGuard = erl_syntax:clause_guard(Clause),
     OldBody = erl_syntax:clause_body(Clause),
     Module = erl_syntax:atom(?REP_MOD),
-    RepReceiveNotify =
-        ?default_or_dpor(rep_receive_notify, rep_receive_notify_dpor),
-    Function = erl_syntax:atom(RepReceiveNotify),
+    Function = erl_syntax:atom(rep_receive_notify),
     Arguments = [OldPattern],
     Notify = erl_syntax:application(Module, Function, Arguments),
     NewBody = [Notify|OldBody],

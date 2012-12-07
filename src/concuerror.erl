@@ -59,6 +59,7 @@
     | {'output',  file:filename()}
     | {'include', [file:name()]}
     | {'define',  concuerror_instr:macros()}
+    | {'dpor'}
     | {'noprogress'}
     | {'quiet'}
     | {'preb',    concuerror_sched:bound()}
@@ -294,14 +295,8 @@ parse([{Opt, Param} | Args], Options) ->
             help(),
             erlang:halt();
         "-dpor" ->
-            NewOptions = lists:keystore(dpor, 1, Options, {dpor, full}),
-            parse([{'-noprogress',[]}|Args], NewOptions);
-        "-dpor_fake" ->
-            NewOptions = lists:keystore(dpor, 1, Options, {dpor, fake}),
-            parse([{'-noprogress',[]}|Args], NewOptions);
-        "-dpor_flanagan" ->
-            NewOptions = lists:keystore(dpor, 1, Options, {dpor, flanagan}),
-            parse([{'-noprogress',[]}|Args], NewOptions);
+            NewOptions = lists:keystore(dpor, 1, Options, {dpor}),
+            parse(Args, NewOptions);
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
             EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa";
             EF=:="cookie" ->
@@ -363,8 +358,6 @@ help() ->
      "  -q|--quiet              Disable logging (implies --noprogress)\n"
      "  --gui                   Run concuerror with graphics\n"
      "  --dpor                  Runs the experimental optimal DPOR version\n"
-     "  --dpor_fake             Runs a 'sanity check' experimental version\n"
-     "  --dpor_flanagan         Runs an experimental reference DPOR version\n"
      "  --help                  Show this help message\n"
      "\n"
      "Examples:\n"
@@ -478,7 +471,7 @@ init(Options) ->
             {noprogress} -> noprogress;
             false -> {0,-1,1,0}
         end,
-    {ok, Progress}.
+    {ok, noprogress}.
 
 -spec terminate(term(), state()) -> 'ok'.
 terminate(_Reason, _State) -> ok.

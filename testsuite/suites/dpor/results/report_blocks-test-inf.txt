@@ -15,6 +15,7 @@ Blocked processes : P1
 Error type        : Deadlock
 Blocked processes : P1
   Process P1 spawns process P1.1
+  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks

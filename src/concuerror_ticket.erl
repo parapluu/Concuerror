@@ -65,4 +65,3 @@ details_to_strings({_Error, ErrorDetails}) ->
 sort(Tickets) ->
     Compare = fun(T1, T2) -> get_details(T1) =< get_details(T2) end,
     lists:sort(Compare, Tickets).
-
