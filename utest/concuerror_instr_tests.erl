@@ -45,5 +45,5 @@ syntax_test_() ->
 
 test_ok(File) ->
     Path = filename:join([?TEST_PATH, File]),
-    Result = concuerror_instr:instrument_and_compile([Path], [], [], false),
+    Result = concuerror_instr:instrument_and_compile([Path], [], []),
     ?assertMatch({ok, _Bin}, Result).

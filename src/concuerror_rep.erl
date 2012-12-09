@@ -231,12 +231,14 @@ find_my_links() ->
     AllLids = [?LID_FROM_PID(Pid) || Pid <- AllPids],
     [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].                  
 
-%% @spec rep_receive(fun((function()) -> term())) -> term()
+%% @spec rep_receive(fun((term()) -> 'block' | 'continue'),
+%%                   integer() | 'infinity') -> 'ok'.
 %% @doc: Function called right before a receive statement.
 %%
 %% If a matching message is found in the process' message queue, continue
 %% to actual receive statement, else block and when unblocked do the same.
--spec rep_receive(fun((term()) -> 'block' | 'continue'), boolean()) -> 'ok'.
+-spec rep_receive(fun((term()) -> 'block' | 'continue'),
+                  integer() | 'infinity') -> 'ok'.
 rep_receive(Fun, HasTimeout) ->
     case ?LID_FROM_PID(self()) of
         not_found ->
@@ -658,7 +660,7 @@ ets_insert_center(Type, Tab, Obj) ->
             Ret
     end.
 
--spec rep_ets_lookup(tid()|atom(), term()) -> tuple().
+-spec rep_ets_lookup(tid()|atom(), term()) -> [tuple()].
 rep_ets_lookup(Tab, Key) ->
     Lid = ?LID_FROM_PID(Tab),
     concuerror_sched:notify(ets, {lookup, [Lid, Tab, Key]}),
@@ -672,7 +674,7 @@ rep_ets_delete(Tab) ->
 -spec rep_ets_delete(tid()|atom(), term()) -> true.
 rep_ets_delete(Tab, Key) ->
     concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab, Key]}),
-    concuerror_log:interlan("Missing function: ~p\n", [rep_ets_delete]).
+    ets:delete(Tab, Key).
 
 -type match_spec()    :: [{match_pattern(), [term()], [term()]}].
 -type match_pattern() :: atom() | tuple().

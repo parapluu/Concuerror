@@ -183,7 +183,7 @@ interleave_aux(Target, PreBound, Parent, Dpor) ->
 
 -type s_i()        :: non_neg_integer().
 -type instr()      :: term().
--type transition() :: {concuerror_lid:lid(), instr()}.
+-type transition() :: {concuerror_lid:lid(), instr(), list()}.
 -type clock_map()  :: dict(). %% dict(concuerror_lid:lid(), clock_vector()).
 %% -type clock_vector() :: dict(). %% dict(concuerror_lid:lid(), s_i()).
 
@@ -701,7 +701,7 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
                         ?f_debug("One initial already in backtrack.\n"),
                         {done, Trace};
                     false ->
-                        case {ordsets:is_element(Lid, SleepSet), Predecessors} of
+                        case {ordsets:is_element(Lid, SleepSet),Predecessors} of
                             {false, [P|_]} ->
                                 NewBacktrack =
                                     ordsets:add_element(P, Backtrack),
