@@ -191,7 +191,7 @@ for p in procT:
 print "\nOVERALL SUMMARY for test run"
 print "  %d total tests, which gave rise to" % len(tests)
 print "  %d test cases, of which" % total_tests.value
-print "  %d caused expected failures! :-)" % total_failed.value
+print "  %d caused unexpected failures!" % total_failed.value
 
 # Cleanup temp files
 os.system("find %s -name '*.beam' -exec rm {} \;" % dirname)
