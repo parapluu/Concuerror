@@ -178,6 +178,7 @@ interleave_aux(Target, PreBound, Parent, Dpor) ->
     ?f_debug("Dpor is not really ready yet...\n"),
     register(?RP_SCHED, self()),
     Result = interleave_dpor(Target, PreBound, Dpor),
+    unregister(?RP_SCHED),
     ?stop_debug,
     Parent ! {interleave_result, Result}.
 
@@ -263,25 +264,29 @@ start_target_op(Target) ->
     concuerror_lid:new(FirstPid, noparent).
 
 explore(MightNeedReplayState) ->
-    case select_from_backtrack(MightNeedReplayState) of
-        {ok, {Lid, Cmd, _} = Selected, State} ->
-            case Cmd of
-                {error, _ErrorInfo} ->
-                    NewState = report_error(Selected, State),
-                    explore(NewState);
-                _Else ->
-                    Next = wait_next(Lid, Cmd),
-                    UpdState = update_trace(Selected, Next, State),
-                    AllAddState = add_all_backtracks(UpdState),
-                    NewState = add_some_next_to_backtrack(AllAddState),
-                    explore(NewState)
-            end;
-        none ->
-            NewState = report_possible_deadlock(MightNeedReplayState),
-            case finished(NewState) of
-                false -> explore(NewState);
-                true -> dpor_return(NewState)
-            end
+    receive
+        stop_analysis -> dpor_return(MightNeedReplayState)
+    after 0 ->
+        case select_from_backtrack(MightNeedReplayState) of
+            {ok, {Lid, Cmd, _} = Selected, State} ->
+                case Cmd of
+                    {error, _ErrorInfo} ->
+                        NewState = report_error(Selected, State),
+                        explore(NewState);
+                    _Else ->
+                        Next = wait_next(Lid, Cmd),
+                        UpdState = update_trace(Selected, Next, State),
+                        AllAddState = add_all_backtracks(UpdState),
+                        NewState = add_some_next_to_backtrack(AllAddState),
+                        explore(NewState)
+                end;
+            none ->
+                NewState = report_possible_deadlock(MightNeedReplayState),
+                case finished(NewState) of
+                    false -> explore(NewState);
+                    true -> dpor_return(NewState)
+                end
+        end
     end.
 
 select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
