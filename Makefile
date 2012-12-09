@@ -156,7 +156,7 @@ utest_target:   $(UTEST_MODULES:%=$(EBIN)/%.beam)
 scripts_target: concuerror
 
 utest: all
-	erl -noinput -sname $(APP_STRING) -pa $(EBIN) \
+	erl -noinput -pa $(EBIN) \
 		-s concuerror_util test -s init stop
 
 test: all
