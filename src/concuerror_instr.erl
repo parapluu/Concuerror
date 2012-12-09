@@ -73,7 +73,7 @@
          {ets, insert, 2},
          {ets, delete, 1},
          {ets, delete, 2},
-         {ets, match_object, 1},
+         {ets, match_object, 2},
          {ets, match_object, 3},
          {ets, match_delete, 2},
          {ets, new, 2},

@@ -30,8 +30,10 @@
          rep_after_notify/0, rep_receive_notify/3,
          rep_receive_notify/1]).
 
--export([rep_ets_insert/2, rep_ets_new/2, rep_ets_lookup/2,
-         rep_ets_insert_new/2, rep_ets_delete/1]).
+-export([rep_ets_insert_new/2, rep_ets_lookup/2, rep_ets_select_delete/2,
+         rep_ets_insert/2, rep_ets_delete/1, rep_ets_delete/2,
+         rep_ets_match_object/2, rep_ets_match_object/3,
+         rep_ets_match_delete/2, rep_ets_new/2, rep_ets_foldl/3]).
 
 -export([rep_register/2,
          rep_is_process_alive/1,
@@ -82,7 +84,7 @@
          {{ets, insert, 2}, fun rep_ets_insert/2},
          {{ets, delete, 1}, fun rep_ets_delete/1},
          {{ets, delete, 2}, fun rep_ets_delete/2},
-         {{ets, match_object, 1}, fun rep_ets_match_object/1},
+         {{ets, match_object, 2}, fun rep_ets_match_object/2},
          {{ets, match_object, 3}, fun rep_ets_match_object/3},
          {{ets, match_delete, 2}, fun rep_ets_match_delete/2},
          {{ets, new, 2}, fun rep_ets_new/2},
@@ -315,7 +317,7 @@ rep_receive_notify(From, CV, Msg) ->
 %%
 %% Similar to rep_receive/2, but used to handle 'EXIT' and 'DOWN' messages.
 -spec rep_receive_notify(term()) -> no_return().
-rep_receive_notify(Msg) ->
+rep_receive_notify(_Msg) ->
     %% XXX: Received uninstrumented message
     ok.
 
@@ -603,6 +605,16 @@ rep_whereis(RegName) ->
 %%%----------------------------------------------------------------------
 %%% ETS replacements
 %%%----------------------------------------------------------------------
+-type tid() :: term().
+-type tab() :: atom() | tid().
+-type ets_new_option() :: ets_new_type() | ets_new_access() | named_table
+                        | {keypos,integer()} | {heir,pid(),term()} | {heir,none}
+                        | ets_new_tweaks().
+-type ets_new_type()   :: set | ordered_set | bag | duplicate_bag.
+-type ets_new_access() :: public | protected | private.
+-type ets_new_tweaks() :: {write_concurrency,boolean()}
+                        | {read_concurrency,boolean()} | compressed.
+-spec rep_ets_new(atom(), [ets_new_option()]) -> tid() | atom().
 rep_ets_new(Name, Options) ->
     concuerror_sched:notify(ets, {new, [unknown, Name, Options]}),
     try
@@ -619,9 +631,11 @@ rep_ets_new(Name, Options) ->
             ets:new(Name, Options)
     end.
 
+-spec rep_ets_insert(tid()|atom(), tuple()|[tuple()]) -> true.
 rep_ets_insert(Tab, Obj) ->
     ets_insert_center(insert, Tab, Obj).
 
+-spec rep_ets_insert_new(tid()|atom(), tuple()|[tuple()]) -> boolean().
 rep_ets_insert_new(Tab, Obj) ->
     ets_insert_center(insert_new, Tab, Obj).
 
@@ -644,14 +658,54 @@ ets_insert_center(Type, Tab, Obj) ->
             Ret
     end.
 
+-spec rep_ets_lookup(tid()|atom(), term()) -> tuple().
 rep_ets_lookup(Tab, Key) ->
     Lid = ?LID_FROM_PID(Tab),
     concuerror_sched:notify(ets, {lookup, [Lid, Tab, Key]}),
     ets:lookup(Tab, Key).
 
+-spec rep_ets_delete(tid()|atom()) -> true.
 rep_ets_delete(Tab) ->
     concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab]}),
     ets:delete(Tab).
+
+-spec rep_ets_delete(tid()|atom(), term()) -> true.
+rep_ets_delete(Tab, Key) ->
+    concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab, Key]}),
+    concuerror_log:interlan("Missing function: ~p\n", [rep_ets_delete]).
+
+-type match_spec()    :: [{match_pattern(), [term()], [term()]}].
+-type match_pattern() :: atom() | tuple().
+-spec rep_ets_select_delete(tid()|atom(), match_spec()) -> integer().
+rep_ets_select_delete(Tab, MatchSpec) ->
+    concuerror_sched:notify(ets,
+        {select_delete, [?LID_FROM_PID(Tab), Tab, MatchSpec]}),
+    ets:select_delete(Tab, MatchSpec).
+
+-spec rep_ets_match_delete(tab(), match_pattern()) -> true.
+rep_ets_match_delete(Tab, Pattern) ->
+    concuerror_sched:notify(ets,
+        {match_delete, [?LID_FROM_PID(Tab), Tab, Pattern]}),
+    ets:match_delete(Tab, Pattern).
+
+-spec rep_ets_match_object(tid()|atom(), tuple()) -> [tuple()].
+rep_ets_match_object(Tab, Pattern) ->
+    concuerror_sched:notify(ets,
+        {match_object, [?LID_FROM_PID(Tab), Tab, Pattern]}),
+    ets:match_object(Tab, Pattern).
+
+-spec rep_ets_match_object(tid()|atom(), tuple(), integer()) ->
+    {[[term()]],term()} | '$end_of_table'.
+rep_ets_match_object(Tab, Pattern, Limit) ->
+    concuerror_sched:notify(ets,
+        {match_object, [?LID_FROM_PID(Tab), Tab, Pattern, Limit]}),
+    ets:match_object(Tab, Pattern, Limit).
+
+-spec rep_ets_foldl(fun((term(), term()) -> term()), term(), tab()) -> term().
+rep_ets_foldl(Function, Acc, Tab) ->
+    concuerror_sched:notify(ets,
+        {foldl, [?LID_FROM_PID(Tab), Function, Acc, Tab]}),
+    ets:foldl(Function, Acc, Tab).
 
 %%%----------------------------------------------------------------------
 %%% Helper functions
@@ -663,25 +717,3 @@ find_pid(Atom) when is_atom(Atom) ->
     whereis(Atom);
 find_pid(Other) ->
     Other.
-
-
-%%%-------------------------------------------------------------------
-%%% Missing
-%%%-------------------------------------------------------------------
-rep_ets_delete(_, _) ->
-    concuerror_log:interlan("Missing function: ~p\n", [rep_ets_delete]).
-
-rep_ets_foldl(_, _, _) ->
-    concuerror_log:interlan("Missing function: ~p\n", [rep_ets_foldl]).
-
-rep_ets_match_delete(_, _) ->
-    concuerror_log:interlan("Missing function: ~p\n", [rep_ets_match_delete]).
-
-rep_ets_match_object(_) ->
-    concuerror_log:interlan("Missing function: ~p\n", [rep_ets_match_object]).
-
-rep_ets_match_object(_, _, _) ->
-    concuerror_log:interlan("Missing function: ~p\n", [rep_ets_match_object]).
-
-rep_ets_select_delete(_, _) ->
-    concuerror_log:interlan("Missing function: ~p\n", [rep_ets_select_delete]).
