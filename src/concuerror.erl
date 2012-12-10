@@ -43,12 +43,10 @@
 
 %% Log event handler internal state.
 %% The state (if we want to have progress bar) contains
-%% the current preemption number,
-%% the progress in per cent,
-%% the number of interleaving contained in this preemption number,
-%% the number of errors we have found so far.
--type progress() :: {non_neg_integer(), -1..100,
-                     non_neg_integer(), non_neg_integer()}.
+%% the number of interleaving checked so far,
+%% the number of errors we have found so far,
+%% the timer.
+-type progress() :: {non_neg_integer(), non_neg_integer(), pid()}.
 
 -type state() :: progress() | 'noprogress'.
 
@@ -127,8 +125,11 @@ cli() ->
     end.
 
 cliAux(Options) ->
+    %% Initialize timer table.
+    concuerror_util:timer_init(),
     %% Start the log manager.
     _ = concuerror_log:start(),
+    %% Parse options
     case lists:keyfind('gui', 1, Options) of
         {'gui'} -> gui(Options);
         false ->
@@ -161,6 +162,8 @@ cliAux(Options) ->
     end,
     %% Stop event handler
     concuerror_log:stop(),
+    %% Destroy timer table.
+    concuerror_util:timer_destroy(),
     'true'.
 
 %% Parse command line arguments
@@ -469,45 +472,41 @@ init(Options) ->
     Progress =
         case lists:keyfind(noprogress, 1, Options) of
             {noprogress} -> noprogress;
-            false -> {0,-1,1,0}
+            false -> {0, 0, concuerror_util:timer_start(1000)}
         end,
-    {ok, noprogress}.
+    {ok, Progress}.
 
 -spec terminate(term(), state()) -> 'ok'.
-terminate(_Reason, _State) -> ok.
+terminate(_Reason, 'noprogress') ->
+    ok;
+terminate(_Reason, {_RunCnt, _Errors, Timer}) ->
+    concuerror_util:timer_stop(Timer),
+    ok.
 
 -spec handle_event(concuerror_log:event(), state()) -> {'ok', state()}.
 handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};
-handle_event({error, _Ticket}, {CurrPreb,Progress,Total,Errors}) ->
-    progress_bar(CurrPreb, Progress, Errors+1),
-    {ok, {CurrPreb,Progress,Total,Errors+1}};
-handle_event({error, _Ticket}, 'noprogress') ->
-    {ok, 'noprogress'};
-handle_event({progress_log, Remain}, {CurrPreb,Progress,Total,Errors}=State) ->
-    NewProgress = erlang:trunc(100 - Remain*100/Total),
-    case NewProgress > Progress of
-        true ->
-            progress_bar(CurrPreb, NewProgress, Errors),
-            {ok, {CurrPreb,NewProgress,Total,Errors}};
-        false ->
-            {ok, State}
-    end;
-handle_event({progress_log, _Remain}, 'noprogress') ->
-    {ok, 'noprogress'};
-handle_event({progress_swap, NewTotal}, {CurrPreb,_Progress,_Total,Errors}) ->
-    %% Clear last two lines from screen
-    io:format("\033[J"),
-    NextPreb = CurrPreb + 1,
-    {ok, {NextPreb,-1,NewTotal,Errors}};
-handle_event({progress_swap, _NewTotal}, 'noprogress') ->
+
+handle_event({progress, ok}, {RunCnt, Errors, Timer}) ->
+    NewRunCnt = RunCnt + 1,
+    case concuerror_util:timer(Timer) of
+        true  -> progress_bar(NewRunCnt, Errors);
+        false -> ok
+    end,
+    {ok, {NewRunCnt, Errors, Timer}};
+handle_event({progress, _Ticket}, {RunCnt, Errors, Timer}) ->
+    NewRunCnt = RunCnt + 1,
+    NewErrors = Errors + 1,
+    case concuerror_util:timer(Timer) of
+        true  -> progress_bar(NewRunCnt, NewErrors);
+        false -> ok
+    end,
+    {ok, {NewRunCnt, NewErrors, Timer}};
+handle_event({progress, _Result}, 'noprogress') ->
     {ok, 'noprogress'}.
 
-progress_bar(CurrPreb, PerCent, Errors) ->
-    Bar = string:chars($=, PerCent div 2, ">"),
-    StrPerCent = io_lib:format("~p", [PerCent]),
-    io:format("Preemption: ~p\n"
-        " ~3s% [~.51s]  ~p errors found"
-        "\033[1A\r",
-        [CurrPreb, StrPerCent, Bar, Errors]).
+progress_bar(RunCnt, Errors) ->
+    io:format("\r\033[K"
+        "[ ~p checked interleavings, ~p errors ]",
+        [RunCnt, Errors]).

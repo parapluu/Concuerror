@@ -139,14 +139,15 @@ analyze(Target, Files, Options) ->
             {ok, Bin} ->
                 %% Note: No error checking for load
                 ok = concuerror_instr:load(Bin),
-                concuerror_log:log("Running analysis...~n~n"),
+                concuerror_log:log("\nRunning analysis with preemption "
+                    "bound ~p..\n", [PreBound]),
                 {T1, _} = statistics(wall_clock),
                 Result = interleave(Target, PreBound, Dpor),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = elapsed_time(T1, T2),
                 case Result of
                     {ok, RunCount} ->
-                        concuerror_log:log("Analysis complete (checked ~w "
+                        concuerror_log:log("~n~nAnalysis complete (checked ~w "
                                 "interleaving(s) in ~wm~.2fs):~n",
                                 [RunCount, Mins, Secs]),
                         concuerror_log:log("No errors found.~n"),
@@ -1139,7 +1140,8 @@ create_ticket(Error, LidTrace) ->
     {ErrorState, _Procs} =
         lists:mapfoldl(fun convert_error_trace/2, InitSet, Trace),
     Ticket = concuerror_ticket:new(Error, ErrorState),
-    concuerror_log:show_error(Ticket),
+    %% Report the error to the progress logger.
+    concuerror_log:progress(Ticket),
     Ticket.
 
 convert_error_trace({Lid, {error, [ErrorOrThrow,Kind|_]}, _Msgs}, Procs)
@@ -1243,6 +1245,9 @@ report_possible_deadlock(State) ->
                 case TraceTop#trace_state.blocked of
                     [] ->
                         ?f_debug("NORMAL!\n"),
+                        %% Report that we finish an interleaving
+                        %% without errors in the progress logger.
+                        concuerror_log:progress(ok),
                         Tickets;
                     Blocked ->
                         ?f_debug("DEADLOCK!\n"),

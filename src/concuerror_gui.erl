@@ -82,17 +82,15 @@ terminate(_Reason, _State) ->
 handle_event({msg, String}, State) ->
     wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), String),
     {ok, State};
-handle_event({error, Ticket}, State) ->
+handle_event({progress, ok}, State) ->
+    {ok, State};
+handle_event({progress, Ticket}, State) ->
     Error = concuerror_ticket:get_error(Ticket),
     ErrorItem = concuerror_util:flat_format("~s~n~s",
         [concuerror_error:type(Error), concuerror_error:short(Error)]),
     List = ref_lookup(?ERROR_LIST),
     wxControlWithItems:append(List, ErrorItem),
     addListData(?ERROR_LIST, [Ticket]),
-    {ok, State};
-handle_event({progress_log, _Remain}, State) ->
-    {ok, State};
-handle_event({progress_swap, _NewState}, State) ->
     {ok, State}.
 
 %%%----------------------------------------------------------------------

@@ -14,7 +14,8 @@
 
 -module(concuerror_util).
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0,
-         is_erl_source/1, funs/1, funs/2, funLine/3]).
+         is_erl_source/1, funs/1, funs/2, funLine/3,
+         timer_init/0, timer_start/1, timer/1, timer_stop/1, timer_destroy/0]).
 
 -include_lib("kernel/include/file.hrl").
 -include("gen.hrl").
@@ -156,4 +157,60 @@ getFunLine([Node|Rest], Function, Arity) ->
                 false -> getFunLine(Rest, Function, Arity)
             end;
         _Other -> getFunLine(Rest, Function, Arity)
+    end.
+
+
+%% -------------------------------------------------------------------
+%% A timer function
+%% It returns true only after X msec since the last time.
+
+-spec timer_init() -> ok.
+timer_init() ->
+    Tweaks = [{write_concurrency,true}, {read_concurrency,true}],
+    ?NT_TIMER = ets:new(?NT_TIMER, [set, public, named_table | Tweaks]),
+    ok.
+
+-spec timer_start(non_neg_integer()) -> pid().
+timer_start(MSec) ->
+    %% Create clock
+    ClockPid = spawn(fun() -> timer_clock(MSec) end),
+    %% Create timer entry
+    ets:insert(?NT_TIMER, {ClockPid, false}),
+    %% Return the clock pid
+    ClockPid.
+
+-spec timer(pid()) -> boolean().
+timer(ClockPid) ->
+    %% Get Value
+    Value = ets:lookup_element(?NT_TIMER, ClockPid, 2),
+    %% Reset Value
+    case Value of
+        true ->
+            ets:insert(?NT_TIMER, {ClockPid, false}),
+            true;
+        false ->
+            false
+    end.
+
+-spec timer_stop(pid()) -> ok.
+timer_stop(ClockPid) ->
+    ClockPid ! {self(), stop},
+    receive ok -> ok end.
+
+-spec timer_destroy() -> ok.
+timer_destroy() ->
+    ets:delete(?NT_TIMER).
+
+timer_clock(MSec) ->
+    timer_clock(MSec, self()).
+
+timer_clock(MSec, Self) ->
+    receive
+        {From, stop} ->
+            ets:delete(?NT_TIMER, Self),
+            From ! ok
+    after MSec ->
+            %% Set Value
+            ets:insert(?NT_TIMER, {Self, true}),
+            timer_clock(MSec, Self)
     end.
