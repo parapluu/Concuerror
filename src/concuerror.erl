@@ -41,15 +41,6 @@
       concuerror_sched:analysis_ret()
     | {'error', 'arguments', string()}.
 
-%% Log event handler internal state.
-%% The state (if we want to have progress bar) contains
-%% the number of interleaving checked so far,
-%% the number of errors we have found so far,
-%% the timer.
--type progress() :: {non_neg_integer(), non_neg_integer(), pid()}.
-
--type state() :: progress() | 'noprogress'.
-
 %% Command line options
 -type option() ::
       {'target',  concuerror_sched:analysis_target()}
@@ -465,6 +456,8 @@ writeDetails(Ticket, {Count, IoDevice}) ->
 %%% Log event handler callback functions
 %%%----------------------------------------------------------------------
 
+-type state() :: concuerror_util:progress() | 'noprogress'.
+
 -spec init(term()) -> {'ok', state()}.
 
 %% @doc: Initialize the event handler.
@@ -472,7 +465,7 @@ init(Options) ->
     Progress =
         case lists:keyfind(noprogress, 1, Options) of
             {noprogress} -> noprogress;
-            false -> {0, 0, concuerror_util:timer_start(1000)}
+            false -> concuerror_util:init_state()
         end,
     {ok, Progress}.
 
@@ -490,23 +483,25 @@ handle_event({msg, String}, State) ->
 
 handle_event({progress, ok}, {RunCnt, Errors, Timer}) ->
     NewRunCnt = RunCnt + 1,
-    case concuerror_util:timer(Timer) of
-        true  -> progress_bar(NewRunCnt, Errors);
-        false -> ok
-    end,
+    progress_bar(NewRunCnt, Errors, Timer),
     {ok, {NewRunCnt, Errors, Timer}};
 handle_event({progress, _Ticket}, {RunCnt, Errors, Timer}) ->
     NewRunCnt = RunCnt + 1,
     NewErrors = Errors + 1,
-    case concuerror_util:timer(Timer) of
-        true  -> progress_bar(NewRunCnt, NewErrors);
-        false -> ok
-    end,
+    progress_bar(NewRunCnt, NewErrors, Timer),
     {ok, {NewRunCnt, NewErrors, Timer}};
 handle_event({progress, _Result}, 'noprogress') ->
-    {ok, 'noprogress'}.
+    {ok, 'noprogress'};
 
-progress_bar(RunCnt, Errors) ->
-    io:format("\r\033[K"
-        "[ ~p checked interleavings, ~p errors ]",
-        [RunCnt, Errors]).
+handle_event('reset', 'noprogress') ->
+    {ok, 'noprogress'};
+handle_event('reset', _State) ->
+    {ok, concuerror_util:init_state()}.
+
+progress_bar(RunCnt, Errors, Timer) ->
+    case concuerror_util:timer(Timer) of
+        true  ->
+            io:fwrite("\r\033[K" ++
+                concuerror_util:progress_bar(RunCnt, Errors));
+        false -> ok
+    end.

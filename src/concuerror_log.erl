@@ -16,7 +16,8 @@
 %% Non gen_evt exports.
 -export([internal/1, internal/2]).
 %% Log API exports.
--export([attach/2, detach/2, start/0, stop/0, log/1, log/2, progress/1]).
+-export([attach/2, detach/2, start/0, stop/0, log/1, log/2,
+         progress/1, reset/0]).
 %% Log callback exports.
 -export([init/1, terminate/2, handle_call/2, handle_info/2,
          handle_event/2, code_change/3]).
@@ -113,6 +114,12 @@ progress(ok) ->
 progress(Ticket) ->
     gen_event:notify(concuerror_log, {progress, Ticket}).
 
+%% @spec reset() -> 'ok'
+%% @doc: Reset logger's internal state.
+-spec reset() -> 'ok'.
+
+reset() ->
+    gen_event:notify(concuerror_log, 'reset').
 %%%----------------------------------------------------------------------
 %%% Callback functions
 %%%----------------------------------------------------------------------
@@ -133,7 +140,9 @@ handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};
 handle_event({progress, _Result}, State) ->
-    {ok, State}.
+    {ok, State};
+handle_event('reset', _State) ->
+    {ok, []}.
 
 -spec code_change(term(), term(), term()) -> no_return().
 

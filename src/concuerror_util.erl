@@ -15,7 +15,10 @@
 -module(concuerror_util).
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0,
          is_erl_source/1, funs/1, funs/2, funLine/3,
-         timer_init/0, timer_start/1, timer/1, timer_stop/1, timer_destroy/0]).
+         timer_init/0, timer_start/1, timer/1, timer_stop/1, timer_destroy/0,
+         init_state/0, progress_bar/2]).
+
+-export_type([progress/0]).
 
 -include_lib("kernel/include/file.hrl").
 -include("gen.hrl").
@@ -214,3 +217,22 @@ timer_clock(MSec, Self) ->
             ets:insert(?NT_TIMER, {Self, true}),
             timer_clock(MSec, Self)
     end.
+
+
+%% -------------------------------------------------------------------
+%% Progress bar
+
+%% Log event handler internal state.
+%% The state (if we want to have progress bar) contains
+%% the number of interleaving checked so far,
+%% the number of errors we have found so far,
+%% the timer.
+-type progress() :: {non_neg_integer(), non_neg_integer(), pid()}.
+
+-spec init_state() -> progress().
+init_state() ->
+    {0, 0, concuerror_util:timer_start(1000)}.
+
+-spec progress_bar(non_neg_integer(),non_neg_integer()) -> string().
+progress_bar(RunCnt, Errors) ->
+    io_lib:format("[ ~p checked interleavings, ~p errors ]", [RunCnt, Errors]).

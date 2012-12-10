@@ -24,7 +24,7 @@
 -include("gui.hrl").
 
 %% Log event handler internal state.
--type state() :: [].
+-type state() :: concuerror_util:progress() | 'noprogress'.
 
 %%%----------------------------------------------------------------------
 %%% UI functions
@@ -43,7 +43,7 @@ start(Options) ->
     wxFrame:show(Frame),
     setSplitterInitSizes(),
     %% Attach the event handler below.
-    _ = concuerror_log:attach(?MODULE, wx:get_env()),
+    _ = concuerror_log:attach(?MODULE, {wx:get_env(), Options}),
     %% Load preferences from Options.
     loadPrefs(Options),
     refresh(),
@@ -68,13 +68,21 @@ start(Options) ->
 %%       environment (e.g. new elements added dynamically), `set_env' will have
 %%       to be called again (by manually calling a special update_environment
 %%       function for each update?).
-init(Env) ->
+init({Env, Options}) ->
     wx:set_env(Env),
-    {ok, []}.
+    Progress =
+        case lists:keyfind(noprogress, 1, Options) of
+            {noprogress} -> noprogress;
+            false -> concuerror_util:init_state()
+        end,
+    {ok, Progress}.
 
 -spec terminate(term(), state()) -> 'ok'.
 
-terminate(_Reason, _State) ->
+terminate(_Reason, 'noprogress') ->
+    ok;
+terminate(_Reason, {_RunCnt, _NumErrors, Timer}) ->
+    concuerror_util:timer_stop(Timer),
     ok.
 
 -spec handle_event(concuerror_log:event(), state()) -> {'ok', state()}.
@@ -82,16 +90,43 @@ terminate(_Reason, _State) ->
 handle_event({msg, String}, State) ->
     wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), String),
     {ok, State};
-handle_event({progress, ok}, State) ->
-    {ok, State};
-handle_event({progress, Ticket}, State) ->
+
+handle_event({progress, ok}, {RunCnt, NumErrors, Timer}) ->
+    NewRunCnt = RunCnt + 1,
+    progress_bar(NewRunCnt, NumErrors, Timer),
+    {ok, {NewRunCnt, NumErrors, Timer}};
+handle_event({progress, Ticket}, {RunCnt, NumErrors, Timer}) ->
     Error = concuerror_ticket:get_error(Ticket),
     ErrorItem = concuerror_util:flat_format("~s~n~s",
         [concuerror_error:type(Error), concuerror_error:short(Error)]),
     List = ref_lookup(?ERROR_LIST),
     wxControlWithItems:append(List, ErrorItem),
     addListData(?ERROR_LIST, [Ticket]),
-    {ok, State}.
+    %% Progress
+    NewRunCnt = RunCnt + 1,
+    NewNumErrors = NumErrors + 1,
+    progress_bar(NewRunCnt, NewNumErrors, Timer),
+    {ok, {NewRunCnt, NewNumErrors, Timer}};
+handle_event({progress, _Result}, 'noprogress') ->
+    {ok, 'noprogress'};
+
+handle_event('reset', 'noprogress') ->
+    {ok, 'noprogress'};
+handle_event('reset', _State) ->
+    {ok, concuerror_util:init_state()}.
+
+progress_bar(RunCnt, NumErrors, Timer) ->
+    case concuerror_util:timer(Timer) of
+        true ->
+            %% Replace last line
+            This = ref_lookup(?LOG_TEXT),
+            NumLines = wxTextCtrl:getNumberOfLines(This),
+            FromPos = wxTextCtrl:xYToPosition(This, 0, NumLines-1),
+            EndPos  = wxTextCtrl:getLastPosition(This),
+            Text = concuerror_util:progress_bar(RunCnt, NumErrors),
+            wxTextCtrl:replace(This, FromPos, EndPos, Text);
+        false -> ok
+    end.
 
 %%%----------------------------------------------------------------------
 %%% Setup functions
@@ -633,6 +668,8 @@ analyze_aux(Module, Function, Args, Files) ->
 analysis_init() ->
     Separator = "----o----o----o----o----o----o----o----o----o----o----o\n",
     wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), Separator),
+    %% Reset logger's internal state
+    concuerror_log:reset(),
     clearProbs(),
     clearErrors(),
     clearIleaves(),
