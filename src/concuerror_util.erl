@@ -202,7 +202,8 @@ timer_stop(ClockPid) ->
 
 -spec timer_destroy() -> ok.
 timer_destroy() ->
-    ets:delete(?NT_TIMER).
+    ets:delete(?NT_TIMER),
+    ok.
 
 timer_clock(MSec) ->
     timer_clock(MSec, self()).
