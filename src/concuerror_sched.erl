@@ -1197,16 +1197,16 @@ convert_error_trace({Lid, {Instr, Extra}, _Msgs}, Procs) ->
                 {Monitor, Lid, check_lid_liveness(TLid, NewProcs)};
             ets ->
                 case Extra of
-                    {new, [_EtsLid, Name, Options]} ->
-                        {ets_new, Lid, {Name, Options}};
                     {insert, [_EtsLid, Tid, _K, _KP, Objects, _Status]} ->
                         {ets_insert, Lid, {Tid, Objects}};
                     {insert_new, [_EtsLid, Tid, _K, _KP, Objects, _Status]} ->
                         {ets_insert_new, Lid, {Tid, Objects}};
-                    {lookup, [_EtsLid, Tid, Key]} ->
-                        {ets_lookup, Lid, {Tid, Key}};
                     {delete, [_EtsLid, Tid]} ->
-                        {ets_delete, Lid, Tid}
+                        {ets_delete, Lid, Tid};
+                    {C, [_EtsLid | Options]} ->
+                        ListC = atom_to_list(C),
+                        AtomC = list_to_atom("ets_" ++ ListC),
+                        {AtomC, Lid, list_to_tuple(Options)}
                 end;
             _ ->
                 {Instr, Lid, Extra}

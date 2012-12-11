@@ -33,6 +33,7 @@
 -export([rep_ets_insert_new/2, rep_ets_lookup/2, rep_ets_select_delete/2,
          rep_ets_insert/2, rep_ets_delete/1, rep_ets_delete/2,
          rep_ets_match_object/2, rep_ets_match_object/3,
+         rep_ets_info/1, rep_ets_info/2,
          rep_ets_match_delete/2, rep_ets_new/2, rep_ets_foldl/3]).
 
 -export([rep_register/2,
@@ -88,6 +89,8 @@
          {{ets, match_object, 3}, fun rep_ets_match_object/3},
          {{ets, match_delete, 2}, fun rep_ets_match_delete/2},
          {{ets, new, 2}, fun rep_ets_new/2},
+         {{ets, info, 1}, fun rep_ets_info/1},
+         {{ets, info, 2}, fun rep_ets_info/2},
          {{ets, foldl, 3}, fun rep_ets_foldl/3}]).
 
 %%%----------------------------------------------------------------------
@@ -708,6 +711,18 @@ rep_ets_foldl(Function, Acc, Tab) ->
     concuerror_sched:notify(ets,
         {foldl, [?LID_FROM_PID(Tab), Function, Acc, Tab]}),
     ets:foldl(Function, Acc, Tab).
+
+-spec rep_ets_info(tab()) -> [{atom(), term()}] | undefined.
+rep_ets_info(Tab) ->
+    concuerror_sched:notify(ets,
+        {info, [?LID_FROM_PID(Tab), Tab]}),
+    ets:info(Tab).
+
+-spec rep_ets_info(tab(), atom()) -> term() | undefined.
+rep_ets_info(Tab, Item) ->
+    concuerror_sched:notify(ets,
+        {info, [?LID_FROM_PID(Tab), Tab, Item]}),
+    ets:info(Tab, Item).
 
 %%%----------------------------------------------------------------------
 %%% Helper functions

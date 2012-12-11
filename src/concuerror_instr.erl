@@ -77,6 +77,8 @@
          {ets, match_object, 3},
          {ets, match_delete, 2},
          {ets, new, 2},
+         {ets, info, 1},
+         {ets, info, 2},
          {ets, foldl, 3}]).
 
 %% Instrumented mod:fun.
