@@ -48,7 +48,7 @@
     | {'output',  file:filename()}
     | {'include', [file:name()]}
     | {'define',  concuerror_instr:macros()}
-    | {'dpor'}
+    | {'dpor', 'full' | 'flanagan'}
     | {'noprogress'}
     | {'quiet'}
     | {'preb',    concuerror_sched:bound()}
@@ -289,7 +289,10 @@ parse([{Opt, Param} | Args], Options) ->
             help(),
             erlang:halt();
         "-dpor" ->
-            NewOptions = lists:keystore(dpor, 1, Options, {dpor}),
+            NewOptions = lists:keystore(dpor, 1, Options, {dpor, full}),
+            parse(Args, NewOptions);
+        "-dpor_flanagan" ->
+            NewOptions = lists:keystore(dpor, 1, Options, {dpor, flanagan}),
             parse(Args, NewOptions);
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
             EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa";
@@ -352,6 +355,7 @@ help() ->
      "  -q|--quiet              Disable logging (implies --noprogress)\n"
      "  --gui                   Run concuerror with graphics\n"
      "  --dpor                  Runs the experimental optimal DPOR version\n"
+     "  --dpor_flanagan         Runs an experimental reference DPOR version\n"
      "  --help                  Show this help message\n"
      "\n"
      "Examples:\n"
