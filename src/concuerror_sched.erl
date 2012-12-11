@@ -362,10 +362,10 @@ run_no_block(#context{state = State} = Context, {Next, Rest, W}) ->
     end.
 
 insert_states(State, {Lids, current}) ->
-    Extend = lists:map(fun(L) -> concuerror_state:extend(State, L) end, Lids),
+    Extend = [concuerror_state:extend(State, L) || L <- Lids],
     state_save(Extend);
 insert_states(State, {Lids, next}) ->
-    Extend = lists:map(fun(L) -> concuerror_state:extend(State, L) end, Lids),
+    Extend = [concuerror_state:extend(State, L) || L <- Lids],
     state_save_next(Extend).
 
 %% Run process Lid in context Context until it encounters a preemption point.

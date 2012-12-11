@@ -131,8 +131,8 @@ instrument_and_compile_one(File, Includes, Defines) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
     concuerror_log:log("Validating file ~p...~n", [File]),
-    OptIncludes = lists:map(fun(I) -> {i, I} end, Includes),
-    OptDefines  = lists:map(fun({M,V}) -> {d,M,V} end, Defines),
+    OptIncludes = [{i, I} || I <- Includes],
+    OptDefines  = [{d, M, V} || {M, V} <- Defines],
     PreOptions = [strong_validation,verbose,return | OptIncludes++OptDefines],
     case compile:file(File, PreOptions) of
         {ok, Module, Warnings} ->
