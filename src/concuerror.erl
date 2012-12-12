@@ -175,6 +175,20 @@ parse([{Opt, Param} | Args], Options) ->
                                 Options, {target, Target}),
                             parse(Args, NewOptions)
                     end;
+                %% Run Eunit tests for specific module
+                [Module] ->
+                    AtomModule = 'eunit',
+                    AtomFunc   = 'test',
+                    Pars = ["[{module, " ++ Module ++ "}]", "[verbose]"],
+                    case validateTerms(Pars, []) of
+                        {'error',_,_}=Error -> Error;
+                        AtomParams ->
+                            Target = {AtomModule, AtomFunc, AtomParams},
+                            NewOptions = lists:keystore(target, 1,
+                                Options, {target, Target}),
+                            NewArgs = [{'D',["TEST"]} | Args],
+                            parse(NewArgs, NewOptions)
+                    end;
                 _Other -> wrongArgument('number', Opt)
             end;
 
@@ -203,7 +217,7 @@ parse([{Opt, Param} | Args], Options) ->
                     parse(Args, NewOptions);
                 _Other -> wrongArgument('number', Opt)
             end;
-        [$I | Include] ->
+        "I" ++ Include ->
             case Param of
                 [] -> parse([{'I', [Include]} | Args], Options);
                 _Other -> wrongArgument('number', Opt)
@@ -235,7 +249,7 @@ parse([{Opt, Param} | Args], Options) ->
                     end;
                 _Other -> wrongArgument('number', Opt)
             end;
-        [$D | Define] ->
+        "D" ++ Define ->
             case Param of
                 [] -> parse([{'D', [Define]} | Args], Options);
                 _Other -> wrongArgument('number', Opt)
@@ -344,6 +358,7 @@ help() ->
      "\n"
      "usage: concuerror [<args>]\n"
      "Arguments:\n"
+     "  -t|--target module      Run eunit tests for this module\n"
      "  -t|--target module function [args]\n"
      "                          Specify the function to execute\n"
      "  -f|--files  modules     Specify the files (modules) to instrument\n"
@@ -433,7 +448,7 @@ exportAux({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
     case file:write(IoDevice, Msg) of
         ok ->
             case lists:foldl(fun writeDetails/2, {1, IoDevice},
-                    concuerror_ticket:sort(Tickets)) of
+                             concuerror_ticket:sort(Tickets)) of
                 {'error', _Reason}=Error -> Error;
                 _Ok -> ok
             end;
@@ -445,10 +460,10 @@ writeDetails(_Ticket, {'error', _Reason}=Error) ->
     Error;
 writeDetails(Ticket, {Count, IoDevice}) ->
     Error = concuerror_ticket:get_error(Ticket),
-    Description =
-        io_lib:format("~p\n~s\n", [Count, concuerror_error:long(Error)]),
-    Details = lists:map(fun(M) -> "  " ++ M ++ "\n" end,
-                    concuerror_ticket:details_to_strings(Ticket)),
+    Description = io_lib:format("~p\n~s\n",
+        [Count, concuerror_error:long(Error)]),
+    Details = ["  " ++ M ++ "\n"
+            || M <- concuerror_ticket:details_to_strings(Ticket)],
     Msg = lists:flatten([Description | Details]),
     case file:write(IoDevice, Msg ++ "\n\n") of
         ok -> {Count+1, IoDevice};

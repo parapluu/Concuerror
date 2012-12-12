@@ -230,7 +230,8 @@ empty_clock_vector() -> dict:new().
           must_replay  = false   :: boolean(),
           proc_before  = []      :: [pid()],
           dpor_flavor  = 'none'  :: 'full' | 'flanagan' | 'none',
-          preemption_bound = inf :: non_neg_integer() | 'inf'
+          preemption_bound = inf :: non_neg_integer() | 'inf',
+          group_leader           :: pid()
          }).
 
 interleave_dpor(Target, PreBound, Dpor) ->
@@ -239,14 +240,15 @@ interleave_dpor(Target, PreBound, Dpor) ->
     Procs = processes(),
     %% To be able to clean up we need to be trapping exits...
     process_flag(trap_exit, true),
-    Trace = start_target(Target),
+    {Trace, GroupLeader} = start_target(Target),
     ?f_debug("Target started!\n"),
     NewState = #dpor_state{trace = Trace, target = Target, proc_before = Procs,
-                           dpor_flavor = Dpor, preemption_bound = PreBound},
+                           dpor_flavor = Dpor, preemption_bound = PreBound,
+                           group_leader = GroupLeader},
     explore(NewState).
 
 start_target(Target) ->
-    FirstLid = start_target_op(Target),
+    {FirstLid, GroupLeader} = start_target_op(Target),
     Next = wait_next(FirstLid, init),
     New = ordsets:new(),
     MaybeEnabled = ordsets:add_element(FirstLid, New),
@@ -258,15 +260,19 @@ start_target(Target) ->
         #trace_state{nexts = dict:store(FirstLid, Next, dict:new()),
                      enabled = Enabled, blocked = Blocked, backtrack = Enabled,
                      pollable = Pollable},
-    [TraceTop].
+    {[TraceTop], GroupLeader}.
 
 start_target_op(Target) ->
     concuerror_lid:start(),
+    %% Initialize a new group leader
+    GroupLeader = concuerror_io_server:new_group_leader(self()),
     {Mod, Fun, Args} = Target,
     NewFun = fun() -> apply(Mod, Fun, Args) end,
     SpawnFun = fun() -> concuerror_rep:spawn_fun_wrapper(NewFun) end,
     FirstPid = spawn(SpawnFun),
-    concuerror_lid:new(FirstPid, noparent).
+    %% Set our io_server as the group leader
+    group_leader(GroupLeader, FirstPid),
+    {concuerror_lid:new(FirstPid, noparent), GroupLeader}.
 
 explore(MightNeedReplayState) ->
     receive
@@ -321,15 +327,21 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
 
 replay_trace(#dpor_state{proc_before = ProcBefore,
                          run_count = RunCnt,
+                         group_leader = GroupLeader,
                          target = Target} = State) ->
     ?f_debug("\nReplay (~p) is required...\n", [RunCnt + 1]),
     [#trace_state{lid_trace = LidTrace}|_] = State#dpor_state.trace,
     concuerror_lid:stop(),
+    %% Get buffered output from group leader
+    %% TODO: For now just ignore it. Maybe we can print it
+    %% only when we have an error (after the backtrace?)
+    _Output = concuerror_io_server:group_leader_sync(GroupLeader),
     proc_cleanup(processes() -- ProcBefore),
-    start_target_op(Target),
+    {_FirstLid, NewGroupLeader} = start_target_op(Target),
     replay_lid_trace(LidTrace),
     ?f_debug("Done replaying...\n\n"),
-    State#dpor_state{run_count = RunCnt + 1, must_replay = false}.
+    State#dpor_state{run_count = RunCnt + 1, must_replay = false,
+                     group_leader = NewGroupLeader}.
 
 replay_lid_trace(Queue) ->
     replay_lid_trace(0, Queue).
