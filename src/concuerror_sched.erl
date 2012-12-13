@@ -459,50 +459,68 @@ dependent(A, {Lid, {unregister, RegName}, Msgs}, true, true) ->
 %% Decisions depending on messages sent and receive statements:
 
 %% Sending to the same process:
-dependent({_Lid1, _Instr1, [_|_] = Msgs1} = Trans1,
-          {_Lid2, _Instr2, [_|_] = Msgs2} = Trans2,
+dependent({_Lid1, Instr1, PreMsgs1} = Trans1,
+          {_Lid2, Instr2, PreMsgs2} = Trans2,
           true, true) ->
-    Lids1 = ordsets:from_list(orddict:fetch_keys(Msgs1)),
-    Lids2 = ordsets:from_list(orddict:fetch_keys(Msgs2)),
-    case ordsets:intersection(Lids1, Lids2) of
-        [] -> dependent(Trans1, Trans2, false, true);
-        [Key] ->
-            case {orddict:fetch(Key, Msgs1), orddict:fetch(Key, Msgs2)} of
-                {[V1], [V2]} ->
-                    LockReleaseAtom = lock_release_atom(),
-                    V1 =/= LockReleaseAtom andalso V2 =/= LockReleaseAtom;
-                _Else -> true
-            end;
-        _ -> true
-    end;
-
-%% Sending the message that triggered a receive's 'had_after'
-dependent({Lid1,                             _Instr1, [_|_] = Msgs1} = Trans1,
-          {Lid2, {'receive', {had_after, Lid1, Msg}},        _Msgs2} = Trans2,
-          ChkMsg, Swap) ->
-    %% TODO: Add CV to the send messages?
-    Dependent =
-        case orddict:find(Lid2, Msgs1) of
-            {ok, MsgsToLid2} -> lists:member(Msg, MsgsToLid2);
-            error -> false
+    Check =
+        case {PreMsgs1, Instr1, PreMsgs2, Instr2} of
+            {[_|_], _, [_|_], _} ->
+                {PreMsgs1, PreMsgs2};
+            {[_|_], _, [], {send, {_RegName, Lid, Msg}}} ->
+                {PreMsgs1, [{Lid, [Msg]}]};
+            {[], {send, {_RegName, Lid, Msg}}, [_|_], _} ->
+                {[{Lid, [Msg]}], PreMsgs2};
+            _ -> false
         end,
-    case Dependent of
-        true -> true;
-        false ->
-            case Swap of
-                true -> dependent(Trans2, Trans1, ChkMsg, false);
-                false -> false
+    case Check of
+        false -> dependent(Trans1, Trans2, false, true);
+        {Msgs1, Msgs2} ->
+            Lids1 = ordsets:from_list(orddict:fetch_keys(Msgs1)),
+            Lids2 = ordsets:from_list(orddict:fetch_keys(Msgs2)),
+            case ordsets:intersection(Lids1, Lids2) of
+                [] -> dependent(Trans1, Trans2, false, true);
+                [Key] ->
+                    case {orddict:fetch(Key, Msgs1), orddict:fetch(Key, Msgs2)} of
+                        {[V1], [V2]} ->
+                            LockReleaseAtom = lock_release_atom(),
+                            V1 =/= LockReleaseAtom andalso V2 =/= LockReleaseAtom;
+                        _Else -> true
+                    end;
+                _ -> true
             end
     end;
 
-%% Sending to an activated after clause depends on that receive's patterns
-dependent({_Lid1,        _Instr1, [_|_] = Msgs1} = Trans1,
-          { Lid2, {'after', Fun},        _Msgs2} = Trans2,
-          ChkMsg, Swap) ->
+%% Sending to an activated after clause depends on that receive's patterns OR
+%% Sending the message that triggered a receive's 'had_after'
+dependent({ Lid1,         Instr1, PreMsgs1} = Trans1,
+          { Lid2, {Tag, Info},   _Msgs2} = Trans2,
+          ChkMsg, Swap) when
+      Tag =:= 'after';
+      (Tag =:= 'receive' andalso
+       element(1, Info) =:= had_after andalso
+       element(2, Info) =:= Lid1) ->
+    Check =
+        case {PreMsgs1, Instr1} of
+            {[_|_], _} -> {ok, PreMsgs1};
+            {[], {send, {_RegName, Lid, Msg}}} -> {ok, [{Lid, [Msg]}]};
+            _ -> false
+        end,
     Dependent =
-        case orddict:find(Lid2, Msgs1) of
-            {ok, MsgsToLid2} -> lists:any(Fun, MsgsToLid2);
-            error -> false
+        case Check of
+            false -> false;
+            {ok, Msgs1} ->
+                case orddict:find(Lid2, Msgs1) of
+                    {ok, MsgsToLid2} ->
+                        Fun =
+                            case Tag of
+                                'after' -> Info;
+                                'receive' ->
+                                    Target = element(3, Info),
+                                    fun(X) -> X =:= Target end
+                            end,
+                        lists:any(Fun, MsgsToLid2);
+                    error -> false
+                end
         end,
     case Dependent of
         true -> true;
@@ -881,8 +899,7 @@ update_trace({Lid, _, _} = Selected, Next, State) ->
     UpdatedClockVector =
         lookup_clock(Lid, InstrNewTraceTop#trace_state.clock_map),
     {Lid, RewrittenInstr, _Msgs} = InstrNewTraceTop#trace_state.last,
-    BaseMessages = orddict:from_list(replace_messages(Lid, UpdatedClockVector)),
-    Messages = dead_process_send(RewrittenInstr, BaseMessages),
+    Messages = orddict:from_list(replace_messages(Lid, UpdatedClockVector)),
     PossiblyRewrittenSelected = {Lid, RewrittenInstr, Messages},
     ?f_debug("Selected: ~P\n",[PossiblyRewrittenSelected, ?DEPTH]),
     NewBaseLidTrace =
@@ -1095,14 +1112,6 @@ handle_instruction_al(_Transition, TraceTop, {}) ->
 max_cv(D1, D2) ->
     Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
     dict:merge(Merger, D1, D2).
-
-dead_process_send({send, {_, TLid, Msg}}, Messages) ->
-    case orddict:is_key(TLid, Messages) of
-        true -> Messages;
-        false -> orddict:store(TLid, [Msg], Messages)
-    end;
-dead_process_send(_Else, Messages) ->
-    Messages.
 
 check_pollable(TraceTop) ->
     #trace_state{pollable = Pollable} = TraceTop,
