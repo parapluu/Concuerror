@@ -81,7 +81,7 @@ init({Env, Options}) ->
 
 terminate(_Reason, 'noprogress') ->
     ok;
-terminate(_Reason, {_RunCnt, _NumErrors, Timer}) ->
+terminate(_Reason, {_RunCnt, _NumErrors, _Elapsed, Timer}) ->
     concuerror_util:timer_stop(Timer),
     ok.
 
@@ -91,11 +91,11 @@ handle_event({msg, String}, State) ->
     wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), String),
     {ok, State};
 
-handle_event({progress, ok}, {RunCnt, NumErrors, Timer}) ->
+handle_event({progress, ok}, {RunCnt, NumErrors, Elapsed, Timer}) ->
     NewRunCnt = RunCnt + 1,
-    progress_bar(NewRunCnt, NumErrors, Timer),
-    {ok, {NewRunCnt, NumErrors, Timer}};
-handle_event({progress, Ticket}, {RunCnt, NumErrors, Timer}) ->
+    NewElapsed = progress_bar(NewRunCnt, NumErrors, Elapsed, Timer),
+    {ok, {NewRunCnt, NumErrors, NewElapsed, Timer}};
+handle_event({progress, Ticket}, {RunCnt, NumErrors, Elapsed, Timer}) ->
     Error = concuerror_ticket:get_error(Ticket),
     ErrorItem = concuerror_util:flat_format("~s~n~s",
         [concuerror_error:type(Error), concuerror_error:short(Error)]),
@@ -105,8 +105,8 @@ handle_event({progress, Ticket}, {RunCnt, NumErrors, Timer}) ->
     %% Progress
     NewRunCnt = RunCnt + 1,
     NewNumErrors = NumErrors + 1,
-    progress_bar(NewRunCnt, NewNumErrors, Timer),
-    {ok, {NewRunCnt, NewNumErrors, Timer}};
+    NewElapsed = progress_bar(NewRunCnt, NewNumErrors, Elapsed, Timer),
+    {ok, {NewRunCnt, NewNumErrors, NewElapsed, Timer}};
 handle_event({progress, _Result}, 'noprogress') ->
     {ok, 'noprogress'};
 
@@ -115,17 +115,20 @@ handle_event('reset', 'noprogress') ->
 handle_event('reset', _State) ->
     {ok, concuerror_util:init_state()}.
 
-progress_bar(RunCnt, NumErrors, Timer) ->
+progress_bar(RunCnt, NumErrors, Elapsed, Timer) ->
     case concuerror_util:timer(Timer) of
-        true ->
+        false -> Elapsed;
+        Time ->
+            NewElapsed = Elapsed + Time,
+            ElapsedTime = concuerror_util:to_elapsed_time(NewElapsed),
             %% Replace last line
             This = ref_lookup(?LOG_TEXT),
             NumLines = wxTextCtrl:getNumberOfLines(This),
             FromPos = wxTextCtrl:xYToPosition(This, 0, NumLines-1),
             EndPos  = wxTextCtrl:getLastPosition(This),
-            Text = concuerror_util:progress_bar(RunCnt, NumErrors),
-            wxTextCtrl:replace(This, FromPos, EndPos, Text);
-        false -> ok
+            Text = concuerror_util:progress_bar(RunCnt, NumErrors, ElapsedTime),
+            wxTextCtrl:replace(This, FromPos, EndPos, Text),
+            NewElapsed
     end.
 
 %%%----------------------------------------------------------------------
@@ -668,8 +671,6 @@ analyze_aux(Module, Function, Args, Files) ->
 analysis_init() ->
     Separator = "----o----o----o----o----o----o----o----o----o----o----o\n",
     wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), Separator),
-    %% Reset logger's internal state
-    concuerror_log:reset(),
     clearProbs(),
     clearErrors(),
     clearIleaves(),

@@ -491,7 +491,7 @@ init(Options) ->
 -spec terminate(term(), state()) -> 'ok'.
 terminate(_Reason, 'noprogress') ->
     ok;
-terminate(_Reason, {_RunCnt, _Errors, Timer}) ->
+terminate(_Reason, {_RunCnt, _Errors, _Elapsed, Timer}) ->
     concuerror_util:timer_stop(Timer),
     ok.
 
@@ -500,15 +500,15 @@ handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};
 
-handle_event({progress, ok}, {RunCnt, Errors, Timer}) ->
+handle_event({progress, ok}, {RunCnt, Errors, Elapsed, Timer}) ->
     NewRunCnt = RunCnt + 1,
-    progress_bar(NewRunCnt, Errors, Timer),
-    {ok, {NewRunCnt, Errors, Timer}};
-handle_event({progress, _Ticket}, {RunCnt, Errors, Timer}) ->
+    NewElapsed = progress_bar(NewRunCnt, Errors, Elapsed, Timer),
+    {ok, {NewRunCnt, Errors, NewElapsed, Timer}};
+handle_event({progress, _Ticket}, {RunCnt, Errors, Elapsed, Timer}) ->
     NewRunCnt = RunCnt + 1,
     NewErrors = Errors + 1,
-    progress_bar(NewRunCnt, NewErrors, Timer),
-    {ok, {NewRunCnt, NewErrors, Timer}};
+    NewElapsed = progress_bar(NewRunCnt, NewErrors, Elapsed, Timer),
+    {ok, {NewRunCnt, NewErrors, NewElapsed, Timer}};
 handle_event({progress, _Result}, 'noprogress') ->
     {ok, 'noprogress'};
 
@@ -517,10 +517,13 @@ handle_event('reset', 'noprogress') ->
 handle_event('reset', _State) ->
     {ok, concuerror_util:init_state()}.
 
-progress_bar(RunCnt, Errors, Timer) ->
+progress_bar(RunCnt, Errors, Elapsed, Timer) ->
     case concuerror_util:timer(Timer) of
-        true  ->
+        false -> Elapsed;
+        Time  ->
+            NewElapsed = Elapsed + Time,
+            ElapsedTime = concuerror_util:to_elapsed_time(NewElapsed),
             io:fwrite("\r\033[K" ++
-                concuerror_util:progress_bar(RunCnt, Errors));
-        false -> ok
+                concuerror_util:progress_bar(RunCnt, Errors, ElapsedTime)),
+            NewElapsed
     end.

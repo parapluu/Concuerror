@@ -16,7 +16,7 @@
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0,
          is_erl_source/1, funs/1, funs/2, funLine/3,
          timer_init/0, timer_start/1, timer/1, timer_stop/1, timer_destroy/0,
-         init_state/0, progress_bar/2]).
+         init_state/0, progress_bar/3, to_elapsed_time/1, to_elapsed_time/2]).
 
 -export_type([progress/0]).
 
@@ -171,53 +171,46 @@ getFunLine([Node|Rest], Function, Arity) ->
 timer_init() ->
     Tweaks = [{write_concurrency,true}, {read_concurrency,true}],
     ?NT_TIMER = ets:new(?NT_TIMER, [set, public, named_table | Tweaks]),
+    true = ets:insert(?NT_TIMER, {ets_counter, 0}),
     ok.
 
--spec timer_start(non_neg_integer()) -> pid().
+-spec timer_start(non_neg_integer()) -> pos_integer().
 timer_start(MSec) ->
     %% Create clock
-    ClockPid = spawn(fun() -> timer_clock(MSec) end),
-    %% Create timer entry
-    ets:insert(?NT_TIMER, {ClockPid, false}),
-    %% Return the clock pid
-    ClockPid.
+    N = ets:update_counter(?NT_TIMER, ets_counter, 1),
+    {T, _} = statistics(wall_clock),
+    true = ets:insert(?NT_TIMER, {N, MSec, T}),
+    %% Return the clock id
+    N.
 
--spec timer(pid()) -> boolean().
-timer(ClockPid) ->
-    %% Get Value
-    Value = ets:lookup_element(?NT_TIMER, ClockPid, 2),
-    %% Reset Value
-    case Value of
+-spec timer(pos_integer()) -> pos_integer() | 'false'.
+timer(ClockId) ->
+    %% Get old value
+    [{ClockId, MSec, T1}] = ets:lookup(?NT_TIMER, ClockId),
+    %% Get new value
+    {T2, _} = statistics(wall_clock),
+    %% Compare
+    T = T2 - T1,
+    if
+        T >= MSec ->
+            %% Update the value (last time we asked)
+            true = ets:update_element(?NT_TIMER, ClockId, {3, T2}),
+            %% Return elapsed time
+            T;
         true ->
-            ets:insert(?NT_TIMER, {ClockPid, false}),
-            true;
-        false ->
+            %% Not there yet, return false
             false
     end.
 
--spec timer_stop(pid()) -> ok.
-timer_stop(ClockPid) ->
-    ClockPid ! {self(), stop},
-    receive ok -> ok end.
+-spec timer_stop(pos_integer()) -> ok.
+timer_stop(ClockId) ->
+    true = ets:delete(?NT_TIMER, ClockId),
+    ok.
 
 -spec timer_destroy() -> ok.
 timer_destroy() ->
-    ets:delete(?NT_TIMER),
+    true = ets:delete(?NT_TIMER),
     ok.
-
-timer_clock(MSec) ->
-    timer_clock(MSec, self()).
-
-timer_clock(MSec, Self) ->
-    receive
-        {From, stop} ->
-            ets:delete(?NT_TIMER, Self),
-            From ! ok
-    after MSec ->
-            %% Set Value
-            ets:insert(?NT_TIMER, {Self, true}),
-            timer_clock(MSec, Self)
-    end.
 
 
 %% -------------------------------------------------------------------
@@ -227,13 +220,33 @@ timer_clock(MSec, Self) ->
 %% The state (if we want to have progress bar) contains
 %% the number of interleaving checked so far,
 %% the number of errors we have found so far,
+%% the elapsed time (in msecs),
 %% the timer.
--type progress() :: {non_neg_integer(), non_neg_integer(), pid()}.
+-type progress() :: {non_neg_integer(), non_neg_integer(),
+                     non_neg_integer(), pos_integer()}.
 
 -spec init_state() -> progress().
 init_state() ->
-    {0, 0, concuerror_util:timer_start(1000)}.
+    {0, 0, 0, concuerror_util:timer_start(1000)}.
 
--spec progress_bar(non_neg_integer(),non_neg_integer()) -> string().
-progress_bar(RunCnt, Errors) ->
-    io_lib:format("[ ~p checked interleavings, ~p errors ]", [RunCnt, Errors]).
+-spec progress_bar(non_neg_integer(), non_neg_integer(), elapsed_time()) ->
+    string().
+progress_bar(RunCnt, Errors, {Mins, Secs}) ->
+    io_lib:format("[ ~p checked interleavings, ~p errors in ~wm~.2fs ]",
+        [RunCnt, Errors, Mins, Secs]).
+
+
+%% -------------------------------------------------------------------
+%% Elapsed time (from msecs to {Mins, Secs})
+
+-type elapsed_time() :: {integer(), float()}.
+
+-spec to_elapsed_time(pos_integer(), pos_integer()) -> elapsed_time().
+to_elapsed_time(T1, T2) ->
+    to_elapsed_time(T2 - T1).
+
+-spec to_elapsed_time(non_neg_integer()) -> elapsed_time().
+to_elapsed_time(ElapsedTime) ->
+    Mins = ElapsedTime div 60000,
+    Secs = (ElapsedTime rem 60000) / 1000,
+    {Mins, Secs}.

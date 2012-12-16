@@ -145,10 +145,13 @@ analyze(Target, Files, Options) ->
                 ok = concuerror_instr:load(Bin),
                 concuerror_log:log("\nRunning analysis with preemption "
                     "bound ~p..\n", [PreBound]),
+                %% Reset the internal state for the progress logger
+                concuerror_log:reset(),
                 {T1, _} = statistics(wall_clock),
                 Result = interleave(Target, PreBound, Dpor),
                 {T2, _} = statistics(wall_clock),
-                {Mins, Secs} = elapsed_time(T1, T2),
+                {Mins, Secs} = concuerror_util:to_elapsed_time(T1, T2),
+                ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
                 case Result of
                     {ok, RunCount} ->
                         concuerror_log:log("~n~nAnalysis complete (checked ~w "
@@ -1340,14 +1343,6 @@ proc_cleanup(ProcList) ->
 wait_for_exit([]) -> ok;
 wait_for_exit([P|Rest]) ->
     receive {'EXIT', P, _Reason} -> wait_for_exit(Rest) end.
-
-%% Calculate and print elapsed time between T1 and T2.
-elapsed_time(T1, T2) ->
-    ElapsedTime = T2 - T1,
-    Mins = ElapsedTime div 60000,
-    Secs = (ElapsedTime rem 60000) / 1000,
-    ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
-    {Mins, Secs}.
 
 
 %%%----------------------------------------------------------------------
