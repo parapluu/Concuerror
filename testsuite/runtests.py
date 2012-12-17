@@ -82,16 +82,18 @@ def runScenario(suite, name, modn, funn, preb, flag, dirn, files):
             % (dirn, concuerror, modn, funn, ' '.join(files), results,
                suite, name, funn, preb, file_ext, preb, conc_flag))
     # Compare the results
-    a = ("%s/suites/%s/results/%s-%s-%s%s.txt"
+    orig = ("%s/suites/%s/results/%s-%s-%s%s.txt"
             % (dirname, suite, name, funn, preb, file_ext))
-    b = ("%s/%s/results/%s-%s-%s%s.txt"
+    rslt = ("%s/%s/results/%s-%s-%s%s.txt"
             % (results, suite, name, funn, preb, file_ext))
-    equalRes = equalResults(a, b)
+    equalRes = equalResults(orig, rslt)
     sema.release()
     # Print the results
     lock.acquire()
     total_tests.value += 1
     if equalRes:
+        # We don't need to keep the results file
+        os.remove(rslt)
         print "%-10s %-20s %-50s  \033[01;32mok\033[00m" % \
                 (suite, name, "("+funn+",  "+preb+",  "+flag+")")
     else:
