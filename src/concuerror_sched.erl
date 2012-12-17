@@ -321,11 +321,12 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
                     true -> replay_trace(MightNeedReplayState);
                     false -> MightNeedReplayState
                 end,
-            Instruction = dict:fetch(SelectedLid, TraceTop#trace_state.nexts),
+            [NewTraceTop|RestTrace] = State#dpor_state.trace,
+            Instruction = dict:fetch(SelectedLid, NewTraceTop#trace_state.nexts),
             NewDone = ordsets:add_element(SelectedLid, Done),
-            NewTraceTop = TraceTop#trace_state{done = NewDone},
-            NewState = State#dpor_state{trace = [NewTraceTop|RestTrace]},
-            {ok, Instruction, NewState}
+            FinalTraceTop = NewTraceTop#trace_state{done = NewDone},
+            FinalState = State#dpor_state{trace = [FinalTraceTop|RestTrace]},
+            {ok, Instruction, FinalState}
     end.
 
 replay_trace(#dpor_state{proc_before = ProcBefore,
@@ -333,7 +334,8 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
                          group_leader = GroupLeader,
                          target = Target} = State) ->
     ?f_debug("\nReplay (~p) is required...\n", [RunCnt + 1]),
-    [#trace_state{lid_trace = LidTrace}|_] = State#dpor_state.trace,
+    [TraceTop|TraceRest] = State#dpor_state.trace,
+    LidTrace = TraceTop#trace_state.lid_trace,
     concuerror_lid:stop(),
     %% Get buffered output from group leader
     %% TODO: For now just ignore it. Maybe we can print it
@@ -341,30 +343,31 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
     _Output = concuerror_io_server:group_leader_sync(GroupLeader),
     proc_cleanup(processes() -- ProcBefore),
     {_FirstLid, NewGroupLeader} = start_target_op(Target),
-    replay_lid_trace(LidTrace),
+    NewLidTrace = replay_lid_trace(LidTrace),
     ?f_debug("Done replaying...\n\n"),
+    NewTrace = [TraceTop#trace_state{lid_trace = NewLidTrace}|TraceRest],
     State#dpor_state{run_count = RunCnt + 1, must_replay = false,
-                     group_leader = NewGroupLeader}.
+                     group_leader = NewGroupLeader, trace = NewTrace}.
 
 replay_lid_trace(Queue) ->
-    replay_lid_trace(0, Queue).
+    replay_lid_trace(0, Queue, queue:new()).
 
-replay_lid_trace(N, Queue) ->
+replay_lid_trace(N, Queue, Acc) ->
     {V, NewQueue} = queue:out(Queue),
     case V of
-        {value, {{_Lid,  block, _},               _}} ->
-            replay_lid_trace(N, NewQueue);
+        {value, {{_Lid,  block, _},  _VC} = Entry} ->
+            replay_lid_trace(N, NewQueue, queue:in(Entry, Acc));
         {value, {{Lid, Command, _} = Transition, VC}} ->
             ?f_debug(" ~-4w: ~P",[N, Transition, ?DEPTH]),
             _ = wait_next(Lid, Command),
             ?f_debug("."),
-            _ = handle_instruction_op(Transition),
+            {NewTransition, _} = handle_instruction_op(Transition),
             ?f_debug("."),
             _ = replace_messages(Lid, VC),
             ?f_debug("\n"),
-            replay_lid_trace(N+1, NewQueue);
+            replay_lid_trace(N+1, NewQueue, queue:in({NewTransition, VC}, Acc));
         empty ->
-            ok
+            Acc
     end.
 
 wait_next(Lid, {exit, {normal, _Info}}) ->
@@ -1018,10 +1021,10 @@ rewrite_while_awaked({P, _, _} = Transition, Original,
 
 %% Handle instruction is broken in two parts to reuse code in replay.
 handle_instruction(Transition, TraceTop) ->
-    Variables = handle_instruction_op(Transition),
-    handle_instruction_al(Transition, TraceTop, Variables).
+    {NewTransition, Extra} = handle_instruction_op(Transition),
+    handle_instruction_al(NewTransition, TraceTop, Extra).
 
-handle_instruction_op({Lid, {Spawn, _Info}, _Msgs})
+handle_instruction_op({Lid, {Spawn, _Info}, Msgs})
   when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
        Spawn =:= spawn_opt ->
     ParentLid = Lid,
@@ -1038,34 +1041,37 @@ handle_instruction_op({Lid, {Spawn, _Info}, _Msgs})
             Lid0 -> Lid0
         end,
     ChildNextInstr = wait_next(ChildLid, init),
-    {Info, ChildNextInstr};
-handle_instruction_op({Lid, {ets, {Updatable, _Info}}, _Msgs})
-  when Updatable =:= new; Updatable =:= insert_new ->
+    {{Lid, {Spawn, Info}, Msgs}, ChildNextInstr};
+handle_instruction_op({Lid, {ets, {Updatable, _Info}}, Msgs})
+  when Updatable =:= new; Updatable =:= insert_new; Updatable =:= insert ->
     receive
         %% This is the replaced message
         #sched{msg = ets, lid = Lid, misc = {Updatable, Info}, type = prev} ->
-            Info
+            {{Lid, {ets, {Updatable, Info}}, Msgs}, {}}
     end;
-handle_instruction_op({Lid, {Updatable, _Info}, _Msgs})
+handle_instruction_op({Lid, {'receive', Tag}, Msgs}) ->
+    receive
+        #sched{msg = 'receive', lid = Lid,
+               misc = {From, CV, Msg}, type = prev} ->
+            {{Lid, {'receive', {Tag, From, Msg}}, Msgs}, CV}
+    end;
+handle_instruction_op({Lid, {Updatable, _Info}, Msgs})
   when Updatable =:= exit; Updatable =:= send; Updatable =:= whereis;
-       Updatable =:= monitor; Updatable =:= 'receive';
-       Updatable =:= process_flag ->
+       Updatable =:= monitor; Updatable =:= process_flag ->
     receive
         #sched{msg = Updatable, lid = Lid, misc = Info, type = prev} ->
-            Info
+            {{Lid, {Updatable, Info}, Msgs}, {}}
     end;
-handle_instruction_op(_) ->
-    {}.
+handle_instruction_op(Instr) ->
+    {Instr, {}}.
 
-handle_instruction_al({Lid, {exit, _OldInfo}, Msgs}, TraceTop, Info) ->
+handle_instruction_al({Lid, {exit, _Info}, _Msgs} = Trans, TraceTop, {}) ->
     #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
     NewEnabled = ordsets:del_element(Lid, Enabled),
     NewNexts = dict:erase(Lid, Nexts),
-    NewLast = {Lid, {exit, Info}, Msgs},
-    TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts,
-                         last = NewLast};
-handle_instruction_al({Lid, {Spawn, _OldInfo}, Msgs}, TraceTop,
-                      {Info, ChildNextInstr})
+    TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts, last = Trans};
+handle_instruction_al({Lid, {Spawn, Info}, _Msgs} = Trans,
+                      TraceTop, ChildNextInstr)
   when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
        Spawn =:= spawn_opt ->
     ChildLid =
@@ -1083,30 +1089,27 @@ handle_instruction_al({Lid, {Spawn, _OldInfo}, Msgs}, TraceTop,
     {NewPollable, NewEnabled, NewBlocked} =
         update_lid_enabled(ChildLid, ChildNextInstr, Pollable,
                            MaybeEnabled, Blocked),
-    NewLast = {Lid, {Spawn, Info}, Msgs},
-    TraceTop#trace_state{last = NewLast,
+    TraceTop#trace_state{last = Trans,
                          clock_map = NewClockMap,
                          enabled = NewEnabled,
                          blocked = NewBlocked,
                          pollable = NewPollable,
                          nexts = NewNexts};
-handle_instruction_al({Lid, {'receive', Tag}, Msgs},
-                      TraceTop, {From, CV, Msg}) ->
+handle_instruction_al({Lid, {'receive', _Info}, _Msgs} = Trans,
+                      TraceTop, CV) ->
     #trace_state{clock_map = ClockMap} = TraceTop,
     Vector = lookup_clock(Lid, ClockMap),
-    NewLast = {Lid, {'receive', {Tag, From, Msg}}, Msgs},
     NewVector = max_cv(Vector, CV),
     NewClockMap = dict:store(Lid, NewVector, ClockMap),
-    TraceTop#trace_state{last = NewLast, clock_map = NewClockMap};
-handle_instruction_al({Lid, {ets, {Updatable, _Info}}, Msgs}, TraceTop, Info)
-  when Updatable =:= new; Updatable =:= insert_new ->
-    NewLast = {Lid, {ets, {Updatable, Info}}, Msgs},
-    TraceTop#trace_state{last = NewLast};
-handle_instruction_al({Lid, {Updatable, _Info}, Msgs}, TraceTop, Info)
+    TraceTop#trace_state{last = Trans, clock_map = NewClockMap};
+handle_instruction_al({_Lid, {ets, {Updatable, _Info}}, _Msgs} = Trans,
+                      TraceTop, {})
+  when Updatable =:= new; Updatable =:= insert_new; Updatable =:= insert ->
+    TraceTop#trace_state{last = Trans};
+handle_instruction_al({_Lid, {Updatable, _Info}, _Msgs} = Trans, TraceTop, {})
   when Updatable =:= send; Updatable =:= whereis; Updatable =:= monitor;
        Updatable =:= process_flag ->
-    NewLast = {Lid, {Updatable, Info}, Msgs},
-    TraceTop#trace_state{last = NewLast};
+    TraceTop#trace_state{last = Trans};
 handle_instruction_al({_Lid, {halt, _Status}, _Msgs}, TraceTop, {}) ->
     TraceTop#trace_state{enabled = [], blocked = [], error_nxt = none};
 handle_instruction_al(_Transition, TraceTop, {}) ->

@@ -629,7 +629,7 @@ rep_ets_new(Name, Options) ->
         Tid
     catch
         _:_ ->
-	        %% Report a fake tid...
+            %% Report a fake tid...
             concuerror_sched:notify(ets, {new, [-1, Name, Options]}, prev),
             concuerror_sched:wait(),
             %% And throw the error again...
@@ -654,13 +654,23 @@ ets_insert_center(Type, Tab, Obj) ->
         end,
     Keys = ordsets:from_list([element(KeyPos, O) || O <- ConvObj]),
     concuerror_sched:notify(ets, {Type, [Lid, Tab, Keys, KeyPos, ConvObj, true]}),
-    case Type of
-        insert -> ets:insert(Tab, Obj);
-        insert_new ->
-            Ret = ets:insert_new(Tab, Obj),
-            Info = {Type, [Lid, Tab, Keys, KeyPos, ConvObj, Ret]},
-            concuerror_sched:notify(ets, Info, prev),
-            Ret
+    Fun =
+        case Type of
+            insert -> fun ets:insert/2;
+            insert_new -> fun ets:insert_new/2
+        end,
+    try
+        Ret = Fun(Tab, Obj),
+        Info = {Type, [Lid, Tab, Keys, KeyPos, ConvObj, Ret]},
+        concuerror_sched:notify(ets, Info, prev),
+        Ret
+    catch
+        _:_ ->
+            %% Report a fake result...
+            FailInfo = {Type, [Lid, Tab, Keys, KeyPos, ConvObj, false]},
+            concuerror_sched:notify(ets, FailInfo, prev),
+            %% And throw the error again...
+            Fun(Tab, Obj)
     end.
 
 -spec rep_ets_lookup(tid()|atom(), term()) -> [tuple()].
