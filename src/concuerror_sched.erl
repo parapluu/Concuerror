@@ -30,7 +30,7 @@
 %%% Definitions
 %%%----------------------------------------------------------------------
 
--define(INFINITY, 1000000).
+-define(INFINITY, infinity).
 -define(NO_ERROR, undef).
 
 %%-define(F_DEBUG, true).
@@ -716,7 +716,7 @@ add_all_backtracks_trace(_Transition, _Lid, _ClockVector, _PreBound,
 add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                          [#trace_state{preemptions = Preempt} = StateI|Trace],
                          Acc)
-  when Preempt + 1 > PreBound ->
+  when Preempt + 1 > PreBound, PreBound =/= ?INFINITY ->
     add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                              Trace, [StateI|Acc]);
 add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
