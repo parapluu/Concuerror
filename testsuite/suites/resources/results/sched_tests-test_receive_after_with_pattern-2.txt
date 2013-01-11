@@ -2,7 +2,7 @@ Checked 5 interleaving(s). 2 errors found.
 
 1
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:197
+Module:Line       : sched_tests.erl:201
 Expected          : result2
 Value             : result1
   Process P1 spawns process P1.1
@@ -14,7 +14,7 @@ Value             : result1
 
 2
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:197
+Module:Line       : sched_tests.erl:201
 Expected          : result2
 Value             : result1
   Process P1 spawns process P1.1

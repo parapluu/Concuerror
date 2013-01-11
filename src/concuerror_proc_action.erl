@@ -200,5 +200,5 @@ to_string({whereis, Proc, RegName, RegLid}) ->
     io_lib:format("Process ~s requests the pid of process `~p` (~s)",
                   [concuerror_lid:to_string(Proc), RegName,
                    concuerror_lid:to_string(RegLid)]);
-to_string({CallMsg, Proc, _Args}) ->
-    io_lib:format("Process ~s: ~p", [concuerror_lid:to_string(Proc), CallMsg]).
+to_string({CallMsg, Proc, Args}) ->
+    io_lib:format("Process ~s: ~p ~p", [concuerror_lid:to_string(Proc), CallMsg, Args]).

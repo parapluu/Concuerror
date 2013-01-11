@@ -17,7 +17,7 @@
 -export([test/0]).
 
 scenarios() ->
-    [{test, inf}].
+    [{test, inf, full}, {test, inf, dpor}].
 
 test() ->
     spawn(fun child/0),

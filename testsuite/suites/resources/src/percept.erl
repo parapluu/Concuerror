@@ -24,8 +24,8 @@
 %%%---------------------------------------
 %%% Tests scenarios
 %%%
-scenarios() ->
-    [{test, 0}, {test, 1}, {test, 2}].
+scenarios() -> [].
+%%    [{test, 0}, {test, 1}, {test, 2}].
 
 test() -> spawn(fun start/0), spawn(fun start/0).
 

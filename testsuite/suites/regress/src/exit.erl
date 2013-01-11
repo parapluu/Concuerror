@@ -23,6 +23,7 @@ scenarios() ->
 
 %% Here lies is a deadlock
 test1() ->
+    throw(exit_2_is_not_supported),
     Pid = spawn_link(fun() ->
                 process_flag(trap_exit, true),
                 receive _ -> ok end
@@ -31,6 +32,7 @@ test1() ->
 
 %% Here lies is an exception
 test2() ->
+    throw(exit_2_is_not_supported),
     Pid = spawn_link(fun() ->
                 process_flag(trap_exit, true),
                 receive _ -> ok end

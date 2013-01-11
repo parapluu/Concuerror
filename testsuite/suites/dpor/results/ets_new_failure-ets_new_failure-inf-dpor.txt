@@ -1,0 +1,10 @@
+Checked 1 interleaving(s). 1 errors found.
+
+1
+Error type        : Exception
+Details           : {badarg,[{ets,new,[table,[named_table,public]],[]}]}
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1 exits ("Exception")
+
+

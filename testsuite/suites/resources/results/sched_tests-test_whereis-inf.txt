@@ -2,7 +2,7 @@ Checked 4 interleaving(s). 2 errors found.
 
 1
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:377
+Module:Line       : sched_tests.erl:381
 Expected          : <0.50.0>
 Value             : undefined
   Process P1 spawns process P1.1
@@ -16,7 +16,7 @@ Value             : undefined
 
 2
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:377
+Module:Line       : sched_tests.erl:381
 Expected          : <0.60.0>
 Value             : undefined
   Process P1 spawns process P1.1

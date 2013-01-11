@@ -1,8 +1,8 @@
-Checked 9 interleaving(s). 6 errors found.
+Checked 7 interleaving(s). 4 errors found.
 
 1
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
 Value             : result2
   Process P1 spawns process P1.1
@@ -15,7 +15,7 @@ Value             : result2
 
 2
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
 Value             : result2
   Process P1 spawns process P1.1
@@ -27,49 +27,24 @@ Value             : result2
 
 3
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
-Value             : result2
+Value             : result1
   Process P1 spawns process P1.1
-  Process P1 receives no matching messages
   Process P1.1 sends message `foo` to process P1
-  Process P1 receives message `foo` from process P1.1
   Process P1.1 exits (normal)
+  Process P1 receives message `foo` from process P1.1
   Process P1 exits ("Assertion violation")
 
 
 4
 Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
-Expected          : result3
-Value             : result1
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `foo` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `foo` from process P1.1
-  Process P1 exits ("Assertion violation")
-
-
-5
-Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
+Module:Line       : sched_tests.erl:228
 Expected          : result3
 Value             : result1
   Process P1 spawns process P1.1
   Process P1.1 sends message `foo` to process P1
   Process P1 receives message `foo` from process P1.1
-  Process P1 exits ("Assertion violation")
-
-
-6
-Error type        : Assertion violation
-Module:Line       : sched_tests.erl:224
-Expected          : result3
-Value             : result1
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `foo` to process P1
-  Process P1 receives message `foo` from process P1.1
-  Process P1.1 exits (normal)
   Process P1 exits ("Assertion violation")
 
 

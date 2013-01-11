@@ -20,6 +20,7 @@
 %% @doc: Create a new process to act as group leader.
 -spec new_group_leader(pid()) -> pid().
 new_group_leader(Runner) ->
+    process_flag(trap_exit, true),
     spawn_link(fun() -> group_leader_process(Runner) end).
 
 group_leader_process(Runner) ->
@@ -57,9 +58,8 @@ buffer_to_binary(Buf) -> list_to_binary(lists:reverse(Buf)).
 -spec group_leader_sync(pid()) -> unicode:chardata().
 group_leader_sync(G) ->
     G ! stop,
-    receive
-        {G, Buf} -> Buf
-    end.
+    receive {'EXIT', G, normal} -> ok end,
+    receive {G, Buf} -> Buf end.
 
 %% Implementation of buffering I/O for group leader processes. (Note that
 %% each batch of characters is just pushed on the buffer, so it needs to

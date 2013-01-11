@@ -17,7 +17,7 @@
 -export([internal/1, internal/2]).
 %% Log API exports.
 -export([attach/2, detach/2, start/0, stop/0, log/1, log/2,
-         show_error/1, progress/2]).
+         progress/1, reset/0]).
 %% Log callback exports.
 -export([init/1, terminate/2, handle_call/2, handle_info/2,
          handle_event/2, code_change/3]).
@@ -30,7 +30,8 @@
 %%% Callback types
 %%%----------------------------------------------------------------------
 
--type event() :: {'msg', string()} | {'error', concuerror_ticket:ticket()}.
+-type event() :: {'msg', string()}
+               | {'progress', 'ok' | concuerror_ticket:ticket()}.
 -type state() :: [].
 
 -export_type([event/0, state/0]).
@@ -104,22 +105,21 @@ log(String, Args) when is_list(String), is_list(Args) ->
     LogMsg = io_lib:format(String, Args),
     gen_event:notify(concuerror_log, {msg, LogMsg}).
 
-%% @spec show_error(concuerror_ticket:ticket()) -> 'ok'
-%% @doc: Shows an error.
--spec show_error(concuerror_ticket:ticket()) -> 'ok'.
-
-show_error(Ticket) ->
-    gen_event:notify(concuerror_log, {error, Ticket}).
-
-%% @spec progress(log|swap, non_neg_integer()) -> 'ok'
+%% @spec progress(concuerror_ticket:ticket() | 'ok') -> 'ok'
 %% @doc: Shows analysis progress.
--spec progress(log|swap, non_neg_integer()) -> 'ok'.
+-spec progress(concuerror_ticket:ticket() | 'ok') -> 'ok'.
 
-progress(log, Remain) ->
-    gen_event:notify(concuerror_log, {progress_log, Remain});
-progress(swap, NewState) ->
-    gen_event:notify(concuerror_log, {progress_swap, NewState}).
+progress(ok) ->
+    gen_event:notify(concuerror_log, {progress, ok});
+progress(Ticket) ->
+    gen_event:notify(concuerror_log, {progress, Ticket}).
 
+%% @spec reset() -> 'ok'
+%% @doc: Reset logger's internal state.
+-spec reset() -> 'ok'.
+
+reset() ->
+    gen_event:notify(concuerror_log, 'reset').
 %%%----------------------------------------------------------------------
 %%% Callback functions
 %%%----------------------------------------------------------------------
@@ -139,12 +139,10 @@ terminate(_Reason, _State) ->
 handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};
-handle_event({error, _Ticket}, State) ->
+handle_event({progress, _Result}, State) ->
     {ok, State};
-handle_event({progress_log, _Remain}, State) ->
-    {ok, State};
-handle_event({progress_swap, _NewState}, State) ->
-    {ok, State}.
+handle_event('reset', _State) ->
+    {ok, []}.
 
 -spec code_change(term(), term(), term()) -> no_return().
 

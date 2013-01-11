@@ -5,6 +5,5 @@ Error type        : Deadlock
 Blocked processes : P1, P1.1
   Process P1 spawns process P1.1
   Process P1 blocks
-  Process P1.1 blocks
 
 

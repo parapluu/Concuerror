@@ -41,17 +41,6 @@
       concuerror_sched:analysis_ret()
     | {'error', 'arguments', string()}.
 
-%% Log event handler internal state.
-%% The state (if we want to have progress bar) contains
-%% the current preemption number,
-%% the progress in per cent,
-%% the number of interleaving contained in this preemption number,
-%% the number of errors we have found so far.
--type progress() :: {non_neg_integer(), -1..100,
-                     non_neg_integer(), non_neg_integer()}.
-
--type state() :: progress() | 'noprogress'.
-
 %% Command line options
 -type option() ::
       {'target',  concuerror_sched:analysis_target()}
@@ -59,6 +48,7 @@
     | {'output',  file:filename()}
     | {'include', [file:name()]}
     | {'define',  concuerror_instr:macros()}
+    | {'dpor', 'full' | 'flanagan'}
     | {'noprogress'}
     | {'quiet'}
     | {'preb',    concuerror_sched:bound()}
@@ -126,8 +116,11 @@ cli() ->
     end.
 
 cliAux(Options) ->
+    %% Initialize timer table.
+    concuerror_util:timer_init(),
     %% Start the log manager.
     _ = concuerror_log:start(),
+    %% Parse options
     case lists:keyfind('gui', 1, Options) of
         {'gui'} -> gui(Options);
         false ->
@@ -160,6 +153,8 @@ cliAux(Options) ->
     end,
     %% Stop event handler
     concuerror_log:stop(),
+    %% Destroy timer table.
+    concuerror_util:timer_destroy(),
     'true'.
 
 %% Parse command line arguments
@@ -307,7 +302,12 @@ parse([{Opt, Param} | Args], Options) ->
         "-help" ->
             help(),
             erlang:halt();
-
+        "-dpor" ->
+            NewOptions = lists:keystore(dpor, 1, Options, {dpor, full}),
+            parse(Args, NewOptions);
+        "-dpor_flanagan" ->
+            NewOptions = lists:keystore(dpor, 1, Options, {dpor, flanagan}),
+            parse(Args, NewOptions);
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
             EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa";
             EF=:="cookie" ->
@@ -369,6 +369,8 @@ help() ->
      "  --noprogress            Disable progress bar\n"
      "  -q|--quiet              Disable logging (implies --noprogress)\n"
      "  --gui                   Run concuerror with graphics\n"
+     "  --dpor                  Runs the experimental optimal DPOR version\n"
+     "  --dpor_flanagan         Runs an experimental reference DPOR version\n"
      "  --help                  Show this help message\n"
      "\n"
      "Examples:\n"
@@ -446,7 +448,7 @@ exportAux({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
     case file:write(IoDevice, Msg) of
         ok ->
             case lists:foldl(fun writeDetails/2, {1, IoDevice},
-			     concuerror_ticket:sort(Tickets)) of
+                             concuerror_ticket:sort(Tickets)) of
                 {'error', _Reason}=Error -> Error;
                 _Ok -> ok
             end;
@@ -459,9 +461,9 @@ writeDetails(_Ticket, {'error', _Reason}=Error) ->
 writeDetails(Ticket, {Count, IoDevice}) ->
     Error = concuerror_ticket:get_error(Ticket),
     Description = io_lib:format("~p\n~s\n",
-				[Count, concuerror_error:long(Error)]),
+        [Count, concuerror_error:long(Error)]),
     Details = ["  " ++ M ++ "\n"
-	       || M <- concuerror_ticket:details_to_strings(Ticket)],
+            || M <- concuerror_ticket:details_to_strings(Ticket)],
     Msg = lists:flatten([Description | Details]),
     case file:write(IoDevice, Msg ++ "\n\n") of
         ok -> {Count+1, IoDevice};
@@ -473,6 +475,8 @@ writeDetails(Ticket, {Count, IoDevice}) ->
 %%% Log event handler callback functions
 %%%----------------------------------------------------------------------
 
+-type state() :: concuerror_util:progress() | 'noprogress'.
+
 -spec init(term()) -> {'ok', state()}.
 
 %% @doc: Initialize the event handler.
@@ -480,45 +484,46 @@ init(Options) ->
     Progress =
         case lists:keyfind(noprogress, 1, Options) of
             {noprogress} -> noprogress;
-            false -> {0,-1,1,0}
+            false -> concuerror_util:init_state()
         end,
     {ok, Progress}.
 
 -spec terminate(term(), state()) -> 'ok'.
-terminate(_Reason, _State) -> ok.
+terminate(_Reason, 'noprogress') ->
+    ok;
+terminate(_Reason, {_RunCnt, _Errors, _Elapsed, Timer}) ->
+    concuerror_util:timer_stop(Timer),
+    ok.
 
 -spec handle_event(concuerror_log:event(), state()) -> {'ok', state()}.
 handle_event({msg, String}, State) ->
     io:format("~s", [String]),
     {ok, State};
-handle_event({error, _Ticket}, {CurrPreb,Progress,Total,Errors}) ->
-    progress_bar(CurrPreb, Progress, Errors+1),
-    {ok, {CurrPreb,Progress,Total,Errors+1}};
-handle_event({error, _Ticket}, 'noprogress') ->
-    {ok, 'noprogress'};
-handle_event({progress_log, Remain}, {CurrPreb,Progress,Total,Errors}=State) ->
-    NewProgress = erlang:trunc(100 - Remain*100/Total),
-    case NewProgress > Progress of
-        true ->
-            progress_bar(CurrPreb, NewProgress, Errors),
-            {ok, {CurrPreb,NewProgress,Total,Errors}};
-        false ->
-            {ok, State}
-    end;
-handle_event({progress_log, _Remain}, 'noprogress') ->
-    {ok, 'noprogress'};
-handle_event({progress_swap, NewTotal}, {CurrPreb,_Progress,_Total,Errors}) ->
-    %% Clear last two lines from screen
-    io:format("\033[J"),
-    NextPreb = CurrPreb + 1,
-    {ok, {NextPreb,-1,NewTotal,Errors}};
-handle_event({progress_swap, _NewTotal}, 'noprogress') ->
-    {ok, 'noprogress'}.
 
-progress_bar(CurrPreb, PerCent, Errors) ->
-    Bar = string:chars($=, PerCent div 2, ">"),
-    StrPerCent = io_lib:format("~p", [PerCent]),
-    io:format("Preemption: ~p\n"
-        " ~3s% [~.51s]  ~p errors found"
-        "\033[1A\r",
-        [CurrPreb, StrPerCent, Bar, Errors]).
+handle_event({progress, ok}, {RunCnt, Errors, Elapsed, Timer}) ->
+    NewRunCnt = RunCnt + 1,
+    NewElapsed = progress_bar(NewRunCnt, Errors, Elapsed, Timer),
+    {ok, {NewRunCnt, Errors, NewElapsed, Timer}};
+handle_event({progress, _Ticket}, {RunCnt, Errors, Elapsed, Timer}) ->
+    NewRunCnt = RunCnt + 1,
+    NewErrors = Errors + 1,
+    NewElapsed = progress_bar(NewRunCnt, NewErrors, Elapsed, Timer),
+    {ok, {NewRunCnt, NewErrors, NewElapsed, Timer}};
+handle_event({progress, _Result}, 'noprogress') ->
+    {ok, 'noprogress'};
+
+handle_event('reset', 'noprogress') ->
+    {ok, 'noprogress'};
+handle_event('reset', _State) ->
+    {ok, concuerror_util:init_state()}.
+
+progress_bar(RunCnt, Errors, Elapsed, Timer) ->
+    case concuerror_util:timer(Timer) of
+        false -> Elapsed;
+        Time  ->
+            NewElapsed = Elapsed + Time,
+            ElapsedTime = concuerror_util:to_elapsed_time(NewElapsed),
+            io:fwrite("\r\033[K" ++
+                concuerror_util:progress_bar(RunCnt, Errors, ElapsedTime)),
+            NewElapsed
+    end.

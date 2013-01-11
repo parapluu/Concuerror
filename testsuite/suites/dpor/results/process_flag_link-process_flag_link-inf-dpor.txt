@@ -1,0 +1,21 @@
+Checked 2 interleaving(s). 1 errors found.
+
+1
+Error type        : Exception
+Details           : {{badmatch,{'EXIT',<0.48.0>,normal}},
+                     [{process_flag_link,process_flag_link,0,
+                          [{file,"process_flag_link.erl"},{line,17}]}]}
+  Process P1 sets flag `trap_exit` to `true`
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2 links to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `{'EXIT',<0.48.0>,normal}` from process P1.2
+  Process P1 blocks
+  Process P1.1 sends message `message` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `message` from process P1.1
+  Process P1 exits ("Exception")
+
+

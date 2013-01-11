@@ -1,0 +1,2206 @@
+Checked 32 interleaving(s). 32 errors found.
+
+1
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+2
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+3
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+4
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+5
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+6
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+7
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+8
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+9
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+10
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+11
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+12
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+13
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+14
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+15
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+16
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+17
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+18
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+19
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+20
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+21
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+22
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+23
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+24
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+25
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+26
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+27
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+28
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+29
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+30
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+31
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+
+32
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{put,1}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,1}` from process P1
+  Process P1.2 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `1` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `1` from process P1.2
+  Process P1.4 sends message `{put,1}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,1}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `1` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `1` from process P1.3
+  Process P1.4.1 sends message `{put,1}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,1}` from process P1.4.1
+  Process P1.1 sends message `1` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `1` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,1}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,1}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,1}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,1}` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 exits (normal)
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,1}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,1}` from process P1.1
+  Process P1 exits (normal)
+
+

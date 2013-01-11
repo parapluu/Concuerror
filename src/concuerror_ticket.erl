@@ -30,7 +30,19 @@
             -> ticket().
 
 new(Error, ErrorDetails) ->
-    {Error, ErrorDetails}.
+    NewError =
+        case Error of
+            {exception, {Type, Stacktrace}} ->
+                {exception, {Type, clean_stacktrace(Stacktrace)}};
+            Error -> Error
+        end,
+    {NewError, ErrorDetails}.
+
+clean_stacktrace(Stacktrace) ->
+    [T || T <- Stacktrace, not is_rep_module(T)].
+
+is_rep_module({?REP_MOD, _, _, _}) -> true;
+is_rep_module(_Else) -> false.
 
 -spec get_error(ticket()) -> concuerror_error:error().
 
