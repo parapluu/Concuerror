@@ -118,16 +118,41 @@ delete_and_purge(Files) ->
     {'ok', [mfb()]} | 'error'.
 
 instrument_and_compile(Files, Includes, Defines) ->
+    %% Initialize `NT_CALLED_MOD' table to save all
+    %% the modules that our instrumented files call.
+    ?NT_CALLED_MOD = ets:new(?NT_CALLED_MOD,
+        [named_table, public, set, {write_concurrency, true}]),
     concuerror_log:log(0, "Instrumenting files..\n"),
     InstrOne =
         fun(File) ->
             instrument_and_compile_one(File,Includes,Defines)
         end,
     MFBs = concuerror_util:pmap(InstrOne, Files),
-    case lists:member('error', MFBs) of
-        true -> error;
-        false -> {ok, MFBs}
-    end.
+    Result =
+        case lists:member('error', MFBs) of
+            true ->
+                error;
+            false ->
+                %% Get list of instrumented modules
+                Instr_Modules  = [IM || {IM, _F, _B} <- MFBs],
+                %% Get a list of called modules
+                Called_Modules = [CM || {CM} <- ets:tab2list(?NT_CALLED_MOD)],
+                %% Substruct
+                case (Called_Modules -- Instr_Modules) of
+                    [] ->
+                        ok;
+                    Black_Modules ->
+                        concuerror_log:log(2,
+                            "Un-Instrumented (blackboxed) modules:\n\t~w\n",
+                            [Black_Modules])
+                end,
+                %% Return MFBs
+                {ok, MFBs}
+        end,
+    %% Destroy `NT_CALLED_MOD' table.
+    ets:delete(?NT_CALLED_MOD),
+    %% Return
+    Result.
 
 %% Instrument and compile a single file.
 instrument_and_compile_one(File, Includes, Defines) ->
@@ -298,6 +323,8 @@ needs_instrument(Function, ArgTrees) ->
 
 %% Determine whether a `foo:bar(...)` call needs instrumentation.
 needs_instrument(Module, Function, ArgTrees) ->
+    %% Add `Module' to the called modules table.
+    ets:insert(?NT_CALLED_MOD, {Module}),
     Arity = length(ArgTrees),
     case lists:member({Module, Function, Arity}, ?INSTR_MOD_FUN) of
         true -> {normal, {Module, Function, ArgTrees}};

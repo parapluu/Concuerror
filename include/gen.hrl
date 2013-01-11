@@ -38,6 +38,7 @@
 -define(NT_STATELEN, '_._state_len').
 -define(NT_USED, '_._used').
 -define(NT_TIMER, '_._timer').
+-define(NT_CALLED_MOD, '_._called_mod').
 
 %% Module containing replacement functions.
 -define(REP_MOD, concuerror_rep).
