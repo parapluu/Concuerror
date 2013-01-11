@@ -118,6 +118,7 @@ delete_and_purge(Files) ->
     {'ok', [mfb()]} | 'error'.
 
 instrument_and_compile(Files, Includes, Defines) ->
+    concuerror_log:log(0, "Instrumenting files..\n"),
     InstrOne =
         fun(File) ->
             instrument_and_compile_one(File,Includes,Defines)
@@ -132,7 +133,7 @@ instrument_and_compile(Files, Includes, Defines) ->
 instrument_and_compile_one(File, Includes, Defines) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
-    concuerror_log:log("Validating file ~p...~n", [File]),
+    concuerror_log:log(1, "Validating file ~p...~n", [File]),
     OptIncludes = [{i, I} || I <- Includes],
     OptDefines  = [{d, M, V} || {M, V} <- Defines],
     PreOptions = [strong_validation,verbose,return | OptIncludes++OptDefines],
@@ -141,7 +142,7 @@ instrument_and_compile_one(File, Includes, Defines) ->
             %% Log warning messages.
             log_warning_list(Warnings),
             %% Instrument given source file.
-            concuerror_log:log("Instrumenting file ~p...~n", [File]),
+            concuerror_log:log(1, "Instrumenting file ~p...~n", [File]),
             case instrument(File, Includes, Defines) of
                 {ok, NewForms} ->
                     %% Compile instrumented code.
@@ -150,12 +151,12 @@ instrument_and_compile_one(File, Includes, Defines) ->
                     case compile:forms(NewForms, CompOptions) of
                         {ok, Module, Binary} -> {Module, File, Binary};
                         error ->
-                            concuerror_log:log("Failed to compile "
+                            concuerror_log:log(0, "Failed to compile "
                                 "instrumented file ~p.~n", [File]),
                             error
                     end;
                 {error, Error} ->
-                    concuerror_log:log("Failed to instrument "
+                    concuerror_log:log(0, "Failed to instrument "
                         "file ~p: ~p~n", [File, Error]),
                     error
             end;
@@ -178,7 +179,7 @@ load_one({Module, File, Binary}) ->
     case code:load_binary(Module, File, Binary) of
         {module, Module} -> ok;
         {error, Error} ->
-            concuerror_log:log("error~n~p~n", [Error]),
+            concuerror_log:log(0, "error~n~p~n", [Error]),
             error
     end.
 
@@ -555,16 +556,16 @@ is_fresh(Atom, Set) ->
 
 %% Log a list of errors, as returned by compile:file/2.
 log_error_list(List) ->
-    log_list(List, "").
+    log_list(List, "", 0).
 
 %% Log a list of warnings, as returned by compile:file/2.
-log_warning_list(_List) -> ok.
-    %log_list(List, "Warning:").
+log_warning_list(List) ->
+    log_list(List, "Warning:", 1).
 
 %% Log a list of error or warning descriptors, as returned by compile:file/2.
-log_list(List, Pre) ->
+log_list(List, Pre, Verbosity) ->
     Strings = [io_lib:format("~s:~p: ~s ~s\n",
                     [File, Line, Pre, Mod:format_error(Descr)])
               || {File, Info} <- List, {Line, Mod, Descr} <- Info],
-    concuerror_log:log(lists:flatten(Strings)),
+    concuerror_log:log(Verbosity, lists:flatten(Strings)),
     ok.

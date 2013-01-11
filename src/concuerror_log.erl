@@ -16,7 +16,7 @@
 %% Non gen_evt exports.
 -export([internal/1, internal/2]).
 %% Log API exports.
--export([attach/2, detach/2, start/0, stop/0, log/1, log/2,
+-export([attach/2, detach/2, start/0, stop/0, log/2, log/3,
          progress/1, reset/0]).
 %% Log callback exports.
 -export([init/1, terminate/2, handle_call/2, handle_info/2,
@@ -30,7 +30,7 @@
 %%% Callback types
 %%%----------------------------------------------------------------------
 
--type event() :: {'msg', string()}
+-type event() :: {'msg', string(), non_neg_integer()}
                | {'progress', 'ok' | concuerror_ticket:ticket()}.
 -type state() :: [].
 
@@ -90,20 +90,20 @@ start() ->
 stop() ->
     gen_event:stop(concuerror_log).
 
-%% @spec log(string()) -> 'ok'
+%% @spec log(non_neg_integer(), string()) -> 'ok'
 %% @doc: Logs a string.
--spec log(string()) -> 'ok'.
+-spec log(non_neg_integer(), string()) -> 'ok'.
 
-log(String) when is_list(String) ->
-    log(String, []).
+log(Verbosity, String) when is_list(String) ->
+    log(Verbosity, String, []).
 
-%% @spec log(string(), [term()]) -> 'ok'
+%% @spec log(non_neg_integer(), string(), [term()]) -> 'ok'
 %% @doc: Logs a formatted string.
--spec log(string(), [term()]) -> 'ok'.
+-spec log(non_neg_integer(), string(), [term()]) -> 'ok'.
 
-log(String, Args) when is_list(String), is_list(Args) ->
+log(Verbosity, String, Args) when is_list(String), is_list(Args) ->
     LogMsg = io_lib:format(String, Args),
-    gen_event:notify(concuerror_log, {msg, LogMsg}).
+    gen_event:notify(concuerror_log, {msg, LogMsg, Verbosity}).
 
 %% @spec progress(concuerror_ticket:ticket() | 'ok') -> 'ok'
 %% @doc: Shows analysis progress.
@@ -136,7 +136,7 @@ terminate(_Reason, _State) ->
 
 -spec handle_event(event(), state()) -> {'ok', state()}.
 
-handle_event({msg, String}, State) ->
+handle_event({msg, String, _MsgVerb}, State) ->
     io:format("~s", [String]),
     {ok, State};
 handle_event({progress, _Result}, State) ->

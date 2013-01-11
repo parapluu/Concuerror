@@ -24,7 +24,8 @@
 -include("gui.hrl").
 
 %% Log event handler internal state.
--type state() :: concuerror_util:progress() | 'noprogress'.
+-type state() :: {non_neg_integer(), %% Verbose level
+                  concuerror_util:progress() | 'noprogress'}.
 
 %%%----------------------------------------------------------------------
 %%% UI functions
@@ -75,27 +76,37 @@ init({Env, Options}) ->
             {noprogress} -> noprogress;
             false -> concuerror_util:init_state()
         end,
-    {ok, Progress}.
+    Verbosity =
+        case lists:keyfind('verbose', 1, Options) of
+            {'verbose', V} -> V;
+            false -> 0
+        end,
+    {ok, {Verbosity, Progress}}.
 
 -spec terminate(term(), state()) -> 'ok'.
 
-terminate(_Reason, 'noprogress') ->
+terminate(_Reason, {_Verb, 'noprogress'}) ->
     ok;
-terminate(_Reason, {_RunCnt, _NumErrors, _Elapsed, Timer}) ->
+terminate(_Reason, {_Verb, {_RunCnt, _NumErrors, _Elapsed, Timer}}) ->
     concuerror_util:timer_stop(Timer),
     ok.
 
 -spec handle_event(concuerror_log:event(), state()) -> {'ok', state()}.
 
-handle_event({msg, String}, State) ->
-    wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), String),
+handle_event({msg, String, MsgVerb}, {Verb, _Progress}=State) ->
+    if
+        Verb >= MsgVerb ->
+            wxTextCtrl:appendText(ref_lookup(?LOG_TEXT), String);
+        true ->
+            ok
+    end,
     {ok, State};
 
-handle_event({progress, ok}, {RunCnt, NumErrors, Elapsed, Timer}) ->
+handle_event({progress, ok}, {Verb, {RunCnt, NumErrors, Elapsed, Timer}}) ->
     NewRunCnt = RunCnt + 1,
     NewElapsed = progress_bar(NewRunCnt, NumErrors, Elapsed, Timer),
-    {ok, {NewRunCnt, NumErrors, NewElapsed, Timer}};
-handle_event({progress, Ticket}, {RunCnt, NumErrors, Elapsed, Timer}) ->
+    {ok, {Verb, {NewRunCnt, NumErrors, NewElapsed, Timer}}};
+handle_event({progress, Ticket}, {Verb, {RunCnt, NumErrors, Elapsed, Timer}}) ->
     Error = concuerror_ticket:get_error(Ticket),
     ErrorItem = concuerror_util:flat_format("~s~n~s",
         [concuerror_error:type(Error), concuerror_error:short(Error)]),
@@ -106,14 +117,14 @@ handle_event({progress, Ticket}, {RunCnt, NumErrors, Elapsed, Timer}) ->
     NewRunCnt = RunCnt + 1,
     NewNumErrors = NumErrors + 1,
     NewElapsed = progress_bar(NewRunCnt, NewNumErrors, Elapsed, Timer),
-    {ok, {NewRunCnt, NewNumErrors, NewElapsed, Timer}};
-handle_event({progress, _Result}, 'noprogress') ->
-    {ok, 'noprogress'};
+    {ok, {Verb, {NewRunCnt, NewNumErrors, NewElapsed, Timer}}};
+handle_event({progress, _Result}, {_Verb, 'noprogress'}=State) ->
+    {ok, State};
 
-handle_event('reset', 'noprogress') ->
-    {ok, 'noprogress'};
-handle_event('reset', _State) ->
-    {ok, concuerror_util:init_state()}.
+handle_event('reset', {_Verb, 'noprogress'}=State) ->
+    {ok, State};
+handle_event('reset', {Verb, _Progress}) ->
+    {ok, {Verb, concuerror_util:init_state()}}.
 
 progress_bar(RunCnt, NumErrors, Elapsed, Timer) ->
     case concuerror_util:timer(Timer) of
@@ -960,12 +971,12 @@ exportDialog(Parent) ->
         ?wxID_OK ->
             AnalysisRet = ref_lookup(?ANALYSIS_RET),
             Output = wxFileDialog:getPath(Dialog),
-            concuerror_log:log("Writing output to file ~s..", [Output]),
+            concuerror_log:log(0, "Writing output to file ~s..", [Output]),
             case concuerror:export(AnalysisRet, Output) of
                 {'error', Msg} ->
-                    concuerror_log:log("~s\n", [file:format_error(Msg)]);
+                    concuerror_log:log(0, "~s\n", [file:format_error(Msg)]);
                 ok ->
-                    concuerror_log:log("done\n")
+                    concuerror_log:log(0, "done\n")
             end;
         _Other -> continue
     end,

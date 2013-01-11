@@ -53,6 +53,7 @@
     | {'quiet'}
     | {'preb',    concuerror_sched:bound()}
     | {'gui'}
+    | {'verbose', non_neg_integer()}
     | {'help'}.
 
 -type options() :: [option()].
@@ -108,7 +109,7 @@ cli() ->
         [PlArg|_] ->
             io:format("~s: unrecognised argument: ~s\n", [?APP_STRING, PlArg]);
         [] ->
-            case parse(Args, []) of
+            case parse(Args, [{'verbose', 0}]) of
                 {'error', 'arguments', Msg1} ->
                     io:format("~s: ~s\n", [?APP_STRING, Msg1]);
                 Opts -> cliAux(Opts)
@@ -142,12 +143,14 @@ cliAux(Options) ->
                             {output, O} -> O;
                             false -> ?EXPORT_FILE
                         end,
-                    concuerror_log:log("Writing output to file ~s..", [Output]),
+                    concuerror_log:log(0,
+                        "Writing output to file ~s..", [Output]),
                     case export(Result, Output) of
                         {'error', Msg2} ->
-                            concuerror_log:log("~s\n", [file:format_error(Msg2)]);
+                            concuerror_log:log(0,
+                                "~s\n", [file:format_error(Msg2)]);
                         ok ->
-                            concuerror_log:log("done\n")
+                            concuerror_log:log(0, "done\n")
                     end
             end
     end,
@@ -299,15 +302,22 @@ parse([{Opt, Param} | Args], Options) ->
                 _Other -> wrongArgument('number', Opt)
             end;
 
+        "v" ->
+            NewOptions = keyIncrease('verbose', 1, Options),
+            parse(Args, NewOptions);
+
         "-help" ->
             help(),
             erlang:halt();
+
         "-dpor" ->
             NewOptions = lists:keystore(dpor, 1, Options, {dpor, full}),
             parse(Args, NewOptions);
+
         "-dpor_flanagan" ->
             NewOptions = lists:keystore(dpor, 1, Options, {dpor, flanagan}),
             parse(Args, NewOptions);
+
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
             EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa";
             EF=:="cookie" ->
@@ -345,6 +355,15 @@ keyAppend(Key, Pos, TupleList, Value) ->
             [{Key, Value} | TupleList]
     end.
 
+keyIncrease(Key, Pos, TupleList) ->
+    case lists:keytake(Key, Pos, TupleList) of
+        {value, {Key, PrevValue}, TupleList2} ->
+            [{Key, PrevValue+1} | TupleList2];
+        false ->
+            %% Key must always exist
+            [{Key, 1} | TupleList]
+    end.
+
 wrongArgument('number', Option) ->
     Msg = io_lib:format("wrong number of arguments for option -~s", [Option]),
     {'error', 'arguments', Msg};
@@ -368,6 +387,7 @@ help() ->
      "  -D          name=value  Define a macro\n"
      "  --noprogress            Disable progress bar\n"
      "  -q|--quiet              Disable logging (implies --noprogress)\n"
+     "  -v                      Verbose [use twice to be more verbose]\n"
      "  --gui                   Run concuerror with graphics\n"
      "  --dpor                  Runs the experimental optimal DPOR version\n"
      "  --dpor_flanagan         Runs an experimental reference DPOR version\n"
@@ -475,7 +495,8 @@ writeDetails(Ticket, {Count, IoDevice}) ->
 %%% Log event handler callback functions
 %%%----------------------------------------------------------------------
 
--type state() :: concuerror_util:progress() | 'noprogress'.
+-type state() :: {non_neg_integer(), %% Verbose level
+                  concuerror_util:progress() | 'noprogress'}.
 
 -spec init(term()) -> {'ok', state()}.
 
@@ -486,36 +507,46 @@ init(Options) ->
             {noprogress} -> noprogress;
             false -> concuerror_util:init_state()
         end,
-    {ok, Progress}.
+    Verbosity =
+        case lists:keyfind('verbose', 1, Options) of
+            {'verbose', V} -> V;
+            false -> 0
+        end,
+    {ok, {Verbosity, Progress}}.
 
 -spec terminate(term(), state()) -> 'ok'.
-terminate(_Reason, 'noprogress') ->
+terminate(_Reason, {_Verb, 'noprogress'}) ->
     ok;
-terminate(_Reason, {_RunCnt, _Errors, _Elapsed, Timer}) ->
+terminate(_Reason, {_Verb, {_RunCnt, _Errors, _Elapsed, Timer}}) ->
     concuerror_util:timer_stop(Timer),
     ok.
 
 -spec handle_event(concuerror_log:event(), state()) -> {'ok', state()}.
-handle_event({msg, String}, State) ->
-    io:format("~s", [String]),
+handle_event({msg, String, MsgVerb}, {Verb, _Progress}=State) ->
+    if
+        Verb >= MsgVerb ->
+            io:format("~s", [String]);
+        true ->
+            ok
+    end,
     {ok, State};
 
-handle_event({progress, ok}, {RunCnt, Errors, Elapsed, Timer}) ->
+handle_event({progress, ok}, {Verb, {RunCnt, Errors, Elapsed, Timer}}) ->
     NewRunCnt = RunCnt + 1,
     NewElapsed = progress_bar(NewRunCnt, Errors, Elapsed, Timer),
-    {ok, {NewRunCnt, Errors, NewElapsed, Timer}};
-handle_event({progress, _Ticket}, {RunCnt, Errors, Elapsed, Timer}) ->
+    {ok, {Verb, {NewRunCnt, Errors, NewElapsed, Timer}}};
+handle_event({progress, _Ticket}, {Verb, {RunCnt, Errors, Elapsed, Timer}}) ->
     NewRunCnt = RunCnt + 1,
     NewErrors = Errors + 1,
     NewElapsed = progress_bar(NewRunCnt, NewErrors, Elapsed, Timer),
-    {ok, {NewRunCnt, NewErrors, NewElapsed, Timer}};
-handle_event({progress, _Result}, 'noprogress') ->
-    {ok, 'noprogress'};
+    {ok, {Verb, {NewRunCnt, NewErrors, NewElapsed, Timer}}};
+handle_event({progress, _Result}, {_Verb, 'noprogress'}=State) ->
+    {ok, State};
 
-handle_event('reset', 'noprogress') ->
-    {ok, 'noprogress'};
-handle_event('reset', _State) ->
-    {ok, concuerror_util:init_state()}.
+handle_event('reset', {_Verb, 'noprogress'}=State) ->
+    {ok, State};
+handle_event('reset', {Verb, _Progress}) ->
+    {ok, {Verb, concuerror_util:init_state()}}.
 
 progress_bar(RunCnt, Errors, Elapsed, Timer) ->
     case concuerror_util:timer(Timer) of

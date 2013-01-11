@@ -35,7 +35,8 @@
 
 %%-define(F_DEBUG, true).
 -ifdef(F_DEBUG).
--define(f_debug(A,B), case get(debug) of true -> concuerror_log:log(A,B); undefined -> ok end).
+-define(f_debug(A,B),
+    case get(debug) of true -> concuerror_log:log(0,A,B); undefined -> ok end).
 -define(f_debug(A), ?f_debug(A,[])).
 -define(start_debug, put(debug,true)).
 -define(stop_debug, erase(debug)).
@@ -143,7 +144,7 @@ analyze(Target, Files, Options) ->
             {ok, Bin} ->
                 %% Note: No error checking for load
                 ok = concuerror_instr:load(Bin),
-                concuerror_log:log("\nRunning analysis with preemption "
+                concuerror_log:log(0, "\nRunning analysis with preemption "
                     "bound ~p..\n", [PreBound]),
                 %% Reset the internal state for the progress logger
                 concuerror_log:reset(),
@@ -154,17 +155,17 @@ analyze(Target, Files, Options) ->
                 ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
                 case Result of
                     {ok, RunCount} ->
-                        concuerror_log:log("~n~nAnalysis complete (checked ~w "
-                                "interleaving(s) in ~wm~.2fs):~n",
+                        concuerror_log:log(0, "~n~nAnalysis complete (checked "
+                                "~w interleaving(s) in ~wm~.2fs):~n",
                                 [RunCount, Mins, Secs]),
-                        concuerror_log:log("No errors found.~n"),
+                        concuerror_log:log(0, "No errors found.~n"),
                         {ok, {Target, RunCount}};
                     {error, RunCount, Tickets} ->
                         TicketCount = length(Tickets),
-                        concuerror_log:log("Analysis complete (checked ~w "
-                                "interleaving(s) in ~wm~.2fs):~n",
+                        concuerror_log:log(0, "~n~nAnalysis complete (checked "
+                                "~w interleaving(s) in ~wm~.2fs):~n",
                                 [RunCount, Mins, Secs]),
-                        concuerror_log:log(
+                        concuerror_log:log(0,
                                 "Found ~p erroneous interleaving(s).~n",
                                 [TicketCount]),
                         {error, analysis, {Target, RunCount}, Tickets}
