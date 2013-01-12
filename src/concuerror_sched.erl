@@ -79,10 +79,6 @@
 
 -type analysis_info() :: {analysis_target(), non_neg_integer()}.
 
--type analysis_options() :: [{'preb', bound()} |
-                             {'include', [file:name()]} |
-                             {'define', concuerror_instr:macros()}].
-
 
 %% Analysis result tuple.
 -type analysis_ret() ::
@@ -111,10 +107,10 @@
 %%% User interface
 %%%----------------------------------------------------------------------
 
-%% @spec: analyze(analysis_target(), [file:filename()], analysis_options()) ->
+%% @spec: analyze(analysis_target(), [file:filename()], concuerror:options()) ->
 %%          analysis_ret()
 %% @doc: Produce all interleavings of running `Target'.
--spec analyze(analysis_target(), [file:filename()], analysis_options()) ->
+-spec analyze(analysis_target(), [file:filename()], concuerror:options()) ->
             analysis_ret().
 
 analyze(Target, Files, Options) ->
@@ -124,23 +120,19 @@ analyze(Target, Files, Options) ->
             {preb, Bound} -> Bound;
             false -> ?DEFAULT_PREB
         end,
-    Include =
-        case lists:keyfind('include', 1, Options) of
-            {'include', I} -> I;
-            false -> ?DEFAULT_INCLUDE
-        end,
-    Define =
-        case lists:keyfind('define', 1, Options) of
-            {'define', D} -> D;
-            false -> ?DEFAULT_DEFINE
-        end,
     Dpor =
         case lists:keyfind(dpor, 1, Options) of
             {dpor, Flavor} -> Flavor;
             false -> 'none'
         end,
+    %% Initialize `NT_CALLED_MOD' and `NT_INSTR_MOD' table to save
+    %% all the modules that we call or instrument.
+    ?NT_CALLED_MOD = ets:new(?NT_CALLED_MOD,
+        [named_table, public, set, {write_concurrency, true}]),
+    ?NT_INSTR_MOD  = ets:new(?NT_INSTR_MOD,
+        [named_table, public, set, {read_concurrency, true}]),
     Ret =
-        case concuerror_instr:instrument_and_compile(Files, Include, Define) of
+        case concuerror_instr:instrument_and_compile(Files, Options) of
             {ok, Bin} ->
                 %% Note: No error checking for load
                 ok = concuerror_instr:load(Bin),
@@ -173,6 +165,20 @@ analyze(Target, Files, Options) ->
             error -> {error, instr, {Target, 0}}
         end,
     concuerror_instr:delete_and_purge(Files),
+    %% Show unistrumented (blackboxed) modules.
+    Instr_Modules  = [IM || {IM} <- ets:tab2list(?NT_INSTR_MOD)],
+    Called_Modules = [CM || {CM} <- ets:tab2list(?NT_CALLED_MOD)],
+    case (Called_Modules -- Instr_Modules) of
+        [] ->
+            ok;
+        Black_Modules ->
+            concuerror_log:log(2,
+                "\nUn-Instrumented (blackboxed) modules:\n    ~w\n",
+                [Black_Modules])
+    end,
+    %% Destroy `NT_CALLED_MOD' and `NT_INSTR_MOD'
+    ets:delete(?NT_CALLED_MOD),
+    ets:delete(?NT_INSTR_MOD),
     Ret.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).

@@ -13,7 +13,7 @@
 %%%----------------------------------------------------------------------
 
 -module(concuerror_util).
--export([doc/1, test/0, flat_format/2, flush_mailbox/0,
+-export([doc/1, test/0, flat_format/2, flush_mailbox/0, get_module_name/1,
          is_erl_source/1, funs/1, funs/2, funLine/3, pmap/2,
          timer_init/0, timer_start/1, timer/1, timer_stop/1, timer_destroy/0,
          init_state/0, progress_bar/3, to_elapsed_time/1, to_elapsed_time/2]).
@@ -75,6 +75,13 @@ is_erl_source(File) ->
             end;
         _Other -> false
     end.
+
+%% @spec get_module_name(file:filename()) -> atom()
+%% @doc: Get the module name of an erlang file name
+-spec get_module_name(file:filename()) -> atom().
+
+get_module_name(File) ->
+    list_to_atom(filename:basename(File, ".erl")).
 
 %% @spec funs(string()) -> [{atom(), non_neg_integer()}]
 %% @doc: Same as `funs(File, tuple)'.

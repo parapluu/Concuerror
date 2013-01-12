@@ -13,7 +13,7 @@
 %%%----------------------------------------------------------------------
 
 -module(concuerror_instr).
--export([delete_and_purge/1, instrument_and_compile/3, load/1]).
+-export([delete_and_purge/1, instrument_and_compile/2, load/1]).
 
 -export_type([macros/0]).
 
@@ -100,13 +100,11 @@
 -spec delete_and_purge([file:filename()]) -> 'ok'.
 
 delete_and_purge(Files) ->
-    ModsToPurge = [list_to_atom(filename:basename(F, ".erl")) || F <- Files],
+    ModsToPurge = [concuerror_util:get_module_name(F) || F <- Files],
     Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
     lists:foreach(Fun, ModsToPurge).
 
-%% @spec instrument_and_compile(Files::[file:filename()],
-%%                              Includes::[file:name()],
-%%                              Defines::macros())
+%% @spec instrument_and_compile(Files::[file:filename()], concuerror:options())
 %%          -> {'ok', [mfb()]} | 'error'
 %% @doc: Instrument and compile a list of files.
 %%
@@ -114,54 +112,52 @@ delete_and_purge(Files) ->
 %% successfully). If no errors are encountered, the file gets instrumented and
 %% compiled. If these actions are successfull, the function returns `{ok, Bin}',
 %% otherwise `error' is returned. No `.beam' files are produced.
--spec instrument_and_compile([file:filename()], [file:name()], macros()) ->
+-spec instrument_and_compile([file:filename()], concuerror:options()) ->
     {'ok', [mfb()]} | 'error'.
 
-instrument_and_compile(Files, Includes, Defines) ->
-    %% Initialize `NT_CALLED_MOD' table to save all
-    %% the modules that our instrumented files call.
-    ?NT_CALLED_MOD = ets:new(?NT_CALLED_MOD,
-        [named_table, public, set, {write_concurrency, true}]),
+instrument_and_compile(Files, Options) ->
+    Includes =
+        case lists:keyfind('include', 1, Options) of
+            {'include', I} -> I;
+            false -> ?DEFAULT_INCLUDE
+        end,
+    Defines =
+        case lists:keyfind('define', 1, Options) of
+            {'define', D} -> D;
+            false -> ?DEFAULT_DEFINE
+        end,
+    Verbosity =
+        case lists:keyfind('verbose', 1, Options) of
+            {'verbose', V} -> V;
+            false -> ?DEFAULT_VERBOSITY
+        end,
+    %% If `Verbosity' level is 2 or greater then check
+    %% for uninstrumented (blackboxed) modules.
+    CheckBBModules = Verbosity >= 2,
+    %% Get the modules we are going to instrument and save
+    %% them to `NT_INSTR_MOD' for future reference.
+    InstrModules = [{concuerror_util:get_module_name(F)} || F <- Files],
+    ets:insert(?NT_INSTR_MOD, [{erlang}, {ets} | InstrModules]),
     concuerror_log:log(0, "Instrumenting files..\n"),
     InstrOne =
         fun(File) ->
-            instrument_and_compile_one(File,Includes,Defines)
+            instrument_and_compile_one(File, Includes, Defines, CheckBBModules)
         end,
     MFBs = concuerror_util:pmap(InstrOne, Files),
-    Result =
-        case lists:member('error', MFBs) of
-            true ->
-                error;
-            false ->
-                %% Get list of instrumented modules
-                Instr_Modules  = [IM || {IM, _F, _B} <- MFBs],
-                %% Get a list of called modules
-                Called_Modules = [CM || {CM} <- ets:tab2list(?NT_CALLED_MOD)],
-                %% Substruct
-                case (Called_Modules -- Instr_Modules) of
-                    [] ->
-                        ok;
-                    Black_Modules ->
-                        concuerror_log:log(2,
-                            "Un-Instrumented (blackboxed) modules:\n\t~w\n",
-                            [Black_Modules])
-                end,
-                %% Return MFBs
-                {ok, MFBs}
-        end,
-    %% Destroy `NT_CALLED_MOD' table.
-    ets:delete(?NT_CALLED_MOD),
-    %% Return
-    Result.
+    case lists:member('error', MFBs) of
+        true  -> error;
+        false -> {ok, MFBs}
+    end.
 
 %% Instrument and compile a single file.
-instrument_and_compile_one(File, Includes, Defines) ->
+instrument_and_compile_one(File, Includes, Defines, CheckBBModules) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
     concuerror_log:log(1, "Validating file ~p...~n", [File]),
     OptIncludes = [{i, I} || I <- Includes],
     OptDefines  = [{d, M, V} || {M, V} <- Defines],
     PreOptions = [strong_validation,verbose,return | OptIncludes++OptDefines],
+    put('check_bb_modules', CheckBBModules),
     case compile:file(File, PreOptions) of
         {ok, Module, Warnings} ->
             %% Log warning messages.
@@ -346,7 +342,9 @@ instrument_var_application({ModTree, FunTree, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
     RepFun = erl_syntax:atom(rep_var),
     ArgList = erl_syntax:list(ArgTrees),
-    erl_syntax:application(RepMod, RepFun, [ModTree, FunTree, ArgList]).
+    CheckBBModules = erl_syntax:abstract(get('check_bb_modules')),
+    erl_syntax:application(RepMod, RepFun,
+        [ModTree, FunTree, ArgList, CheckBBModules]).
 
 %% Instrument a receive expression.
 %% ----------------------------------------------------------------------

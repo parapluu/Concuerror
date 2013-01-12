@@ -15,6 +15,7 @@
 -module(concuerror_instr_tests).
 
 -include_lib("eunit/include/eunit.hrl").
+-include("gen.hrl").
 
 -define(TEST_PATH, "./resources/syntax/").
 
@@ -28,9 +29,18 @@ syntax_test_() ->
     Setup =
         fun() ->
                 _ = concuerror_log:start(),
-                concuerror_log:attach(concuerror_log, [])
+                _ = concuerror_log:attach(concuerror_log, []),
+                ?NT_CALLED_MOD = ets:new(?NT_CALLED_MOD,
+                    [named_table, public, set, {write_concurrency, true}]),
+                ?NT_INSTR_MOD = ets:new(?NT_INSTR_MOD,
+                    [named_table, public, set, {read_concurrency, true}])
         end,
-    Cleanup = fun(_Any) -> concuerror_log:stop() end,
+    Cleanup =
+        fun(_Any) ->
+                concuerror_log:stop(),
+                ets:delete(?NT_CALLED_MOD),
+                ets:delete(?NT_INSTR_MOD)
+        end,
     Test01 = {"Block expression in after clause",
 	      fun(_Any) -> test_ok("block_after.erl") end},
     Test02 = {"Assignments to non-local variables in patterns",
@@ -45,5 +55,5 @@ syntax_test_() ->
 
 test_ok(File) ->
     Path = filename:join([?TEST_PATH, File]),
-    Result = concuerror_instr:instrument_and_compile([Path], [], []),
+    Result = concuerror_instr:instrument_and_compile([Path], []),
     ?assertMatch({ok, _Bin}, Result).

@@ -39,6 +39,7 @@
 -define(NT_USED, '_._used').
 -define(NT_TIMER, '_._timer').
 -define(NT_CALLED_MOD, '_._called_mod').
+-define(NT_INSTR_MOD, '_._instr_mod').
 
 %% Module containing replacement functions.
 -define(REP_MOD, concuerror_rep).
@@ -54,6 +55,7 @@
 -define(DEFAULT_PREB, 2).
 -define(DEFAULT_INCLUDE, []).
 -define(DEFAULT_DEFINE, []).
+-define(DEFAULT_VERBOSITY, 0).
 
 %% Default export file.
 -define(EXPORT_EXT,  ".txt").

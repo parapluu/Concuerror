@@ -144,7 +144,7 @@ cliAux(Options) ->
                             false -> ?EXPORT_FILE
                         end,
                     concuerror_log:log(0,
-                        "Writing output to file ~s..", [Output]),
+                        "\nWriting output to file ~s..", [Output]),
                     case export(Result, Output) of
                         {'error', Msg2} ->
                             concuerror_log:log(0,
@@ -360,8 +360,7 @@ keyIncrease(Key, Pos, TupleList) ->
         {value, {Key, PrevValue}, TupleList2} ->
             [{Key, PrevValue+1} | TupleList2];
         false ->
-            %% Key must always exist
-            [{Key, 1} | TupleList]
+            [{Key, ?DEFAULT_VERBOSITY + 1} | TupleList]
     end.
 
 wrongArgument('number', Option) ->

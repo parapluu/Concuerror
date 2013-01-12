@@ -723,8 +723,8 @@ analysis_cleanup() ->
     wxSizer:layout(AnalStopSizer).
 
 checkDuplicates(OldFiles, NewFiles) ->
-    OldBase = [filename:basename(O, ".erl") || O <- OldFiles],
-    NewBase = [filename:basename(N, ".erl") || N <- NewFiles],
+    OldBase = [concuerror_util:get_module_name(O) || O <- OldFiles],
+    NewBase = [concuerror_util:get_module_name(N) || N <- NewFiles],
     IBase = sets:intersection(sets:from_list(OldBase), sets:from_list(NewBase)),
     case sets:size(IBase) of
         0 -> false;

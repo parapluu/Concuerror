@@ -16,7 +16,7 @@
 
 -export([spawn_fun_wrapper/1]).
 
--export([rep_var/3, rep_send/2, rep_send/3]).
+-export([rep_var/4, rep_send/2, rep_send/3]).
 
 -export([rep_spawn/1, rep_spawn/3,
          rep_spawn_link/1, rep_spawn_link/3,
@@ -98,12 +98,20 @@
 %%%----------------------------------------------------------------------
 
 %% Handle Mod:Fun(Args) calls.
--spec rep_var(module(), atom(), [term()]) -> term().
-rep_var(Mod, Fun, Args) ->
+-spec rep_var(module(), atom(), [term()], boolean()) -> term().
+rep_var(Mod, Fun, Args, CheckBBModules) ->
     Key = {Mod, Fun, length(Args)},
     case lists:keyfind(Key, 1, ?INSTR_MOD_FUN) of
-        {Key, Callback} -> apply(Callback, Args);
-        false -> apply(Mod, Fun, Args)
+        {Key, Callback} ->
+            apply(Callback, Args);
+        false ->
+            if
+                CheckBBModules ->
+                    ets:insert(?NT_CALLED_MOD, {Mod});
+                true ->
+                    true
+            end,
+            apply(Mod, Fun, Args)
     end.
 
 %% @spec: rep_demonitor(reference()) -> 'true'
