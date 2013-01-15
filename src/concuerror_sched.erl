@@ -33,25 +33,9 @@
 -define(INFINITY, infinity).
 -define(NO_ERROR, undef).
 
-%%-define(F_DEBUG, true).
--ifdef(F_DEBUG).
--define(f_debug(A,B),
-    case get(debug) of true -> concuerror_log:log(0,A,B); undefined -> ok end).
--define(f_debug(A), ?f_debug(A,[])).
--define(start_debug, put(debug,true)).
--define(stop_debug, erase(debug)).
--define(DEPTH, 12).
--else.
--define(f_debug(_A,_B), ok).
--define(f_debug(A), ok).
--define(start_debug, ok).
--define(stop_debug, ok).
--endif.
-
 %%%----------------------------------------------------------------------
 %%% Records
 %%%----------------------------------------------------------------------
-
 
 %% 'next' messages are about next instrumented instruction not yet dispatched
 %% 'prev' messages are about additional effects of a dispatched instruction
@@ -144,7 +128,7 @@ analyze(Target, Files, Options) ->
                 Result = interleave(Target, PreBound, Dpor),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = concuerror_util:to_elapsed_time(T1, T2),
-                ?debug_1("Done in ~wm~.2fs\n", [Mins, Secs]),
+                ?debug("Done in ~wm~.2fs\n", [Mins, Secs]),
                 case Result of
                     {ok, RunCount} ->
                         concuerror_log:log(0, "~n~nAnalysis complete (checked "
@@ -190,11 +174,10 @@ interleave(Target, PreBound, Dpor) ->
     end.
 
 interleave_aux(Target, PreBound, Parent, Dpor) ->
-    ?f_debug("Dpor is not really ready yet...\n"),
+    ?debug("Dpor is not really ready yet...\n"),
     register(?RP_SCHED, self()),
     Result = interleave_dpor(Target, PreBound, Dpor),
     unregister(?RP_SCHED),
-    ?stop_debug,
     Parent ! {interleave_result, Result}.
 
 -type s_i()        :: non_neg_integer().
@@ -245,13 +228,12 @@ empty_clock_vector() -> dict:new().
          }).
 
 interleave_dpor(Target, PreBound, Dpor) ->
-    ?start_debug,
-    ?f_debug("Interleave dpor!\n"),
+    ?debug("Interleave dpor!\n"),
     Procs = processes(),
     %% To be able to clean up we need to be trapping exits...
     process_flag(trap_exit, true),
     {Trace, GroupLeader} = start_target(Target),
-    ?f_debug("Target started!\n"),
+    ?debug("Target started!\n"),
     NewState = #dpor_state{trace = Trace, target = Target, proc_before = Procs,
                            dpor_flavor = Dpor, preemption_bound = PreBound,
                            group_leader = GroupLeader},
@@ -316,11 +298,11 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
     [TraceTop|RestTrace] = Trace,
     Backtrack = TraceTop#trace_state.backtrack,
     Done = TraceTop#trace_state.done,
-    ?f_debug("------------\nExplore ~p\n------------\n",
+    ?debug("------------\nExplore ~p\n------------\n",
              [TraceTop#trace_state.i + 1]),
     case ordsets:subtract(Backtrack, Done) of
         [] ->
-            ?f_debug("Backtrack set explored\n",[]),
+            ?debug("Backtrack set explored\n",[]),
             none;
         [SelectedLid|_RestLids] ->
             State =
@@ -340,7 +322,7 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
                          run_count = RunCnt,
                          group_leader = GroupLeader,
                          target = Target} = State) ->
-    ?f_debug("\nReplay (~p) is required...\n", [RunCnt + 1]),
+    ?debug("\nReplay (~p) is required...\n", [RunCnt + 1]),
     [TraceTop|TraceRest] = State#dpor_state.trace,
     LidTrace = TraceTop#trace_state.lid_trace,
     concuerror_lid:stop(),
@@ -351,7 +333,7 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
     proc_cleanup(processes() -- ProcBefore),
     {_FirstLid, NewGroupLeader} = start_target_op(Target),
     NewLidTrace = replay_lid_trace(LidTrace),
-    ?f_debug("Done replaying...\n\n"),
+    ?debug("Done replaying...\n\n"),
     NewTrace = [TraceTop#trace_state{lid_trace = NewLidTrace}|TraceRest],
     State#dpor_state{run_count = RunCnt + 1, must_replay = false,
                      group_leader = NewGroupLeader, trace = NewTrace}.
@@ -365,13 +347,13 @@ replay_lid_trace(N, Queue, Acc) ->
         {value, {{_Lid,  block, _},  _VC} = Entry} ->
             replay_lid_trace(N, NewQueue, queue:in(Entry, Acc));
         {value, {{Lid, Command, _} = Transition, VC}} ->
-            ?f_debug(" ~-4w: ~P",[N, Transition, ?DEPTH]),
+            ?debug(" ~-4w: ~P",[N, Transition, ?DEBUG_DEPTH]),
             _ = wait_next(Lid, Command),
-            ?f_debug("."),
+            ?debug("."),
             {NewTransition, _} = handle_instruction_op(Transition),
-            ?f_debug("."),
+            ?debug("."),
             _ = replace_messages(Lid, VC),
-            ?f_debug("\n"),
+            ?debug("\n"),
             replay_lid_trace(N+1, NewQueue, queue:in({NewTransition, VC}, Acc));
         empty ->
             Acc
@@ -736,8 +718,9 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
         case I > Clock andalso dependent(Transition, SI) of
             false -> {continue, Lid, ClockVector};
             true ->
-                ?f_debug("~4w: ~p ~P Clock ~p\n",
-                         [I, dependent(Transition, SI), SI, ?DEPTH, Clock]),
+                ?debug("~4w: ~p ~P Clock ~p\n",
+                         [I, dependent(Transition, SI), SI,
+                          ?DEBUG_DEPTH, Clock]),
                 [#trace_state{enabled = Enabled,
                               backtrack = Backtrack,
                               sleep_set = SleepSet} =
@@ -748,13 +731,13 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                     full ->
                         Initial =
                             ordsets:del_element(ProcSI, find_initial(I, Acc)),
-                        ?f_debug("  Backtrack: ~w\n", [Backtrack]),
-                        ?f_debug("  Predecess: ~w\n", [Predecessors]),
-                        ?f_debug("  SleepSet : ~w\n", [SleepSet]),
-                        ?f_debug("  Initial  : ~w\n", [Initial]),
+                        ?debug("  Backtrack: ~w\n", [Backtrack]),
+                        ?debug("  Predecess: ~w\n", [Predecessors]),
+                        ?debug("  SleepSet : ~w\n", [SleepSet]),
+                        ?debug("  Initial  : ~w\n", [Initial]),
                         case ordsets:intersection(Initial, Backtrack) =/= [] of
                             true ->
-                                ?f_debug("One initial already in backtrack.\n"),
+                                ?debug("One initial already in backtrack.\n"),
                                 {done, Trace};
                             false ->
                                 case {ordsets:is_element(Lid, SleepSet),
@@ -762,13 +745,13 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                                     {false, [P|_]} ->
                                         NewBacktrack =
                                             ordsets:add_element(P, Backtrack),
-                                        ?f_debug("     Add: ~w\n", [P]),
+                                        ?debug("     Add: ~w\n", [P]),
                                         NewPreSI =
                                             PreSI#trace_state{
                                               backtrack = NewBacktrack},
                                         {done, [NewPreSI|Rest]};
                                     _Else ->
-                                        ?f_debug("     All sleeping...\n"),
+                                        ?debug("     All sleeping...\n"),
                                         NewClockVector =
                                             lookup_clock(ProcSI, ClockMap),
                                         {continue, ProcSI, NewClockVector}
@@ -777,17 +760,17 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                     flanagan ->
                         case ordsets:intersection(Predecessors, Backtrack) of
                             [_|_] ->
-                                ?f_debug("One predecessor already"
+                                ?debug("One predecessor already"
                                          " in backtrack.\n"),
                                 {done, Trace};
                             [] ->
                                 NewBacktrack =
                                     case Predecessors of
                                         [P|_] ->
-                                            ?f_debug(" Add: ~w\n", [P]),
+                                            ?debug(" Add: ~w\n", [P]),
                                             ordsets:add_element(P, Backtrack);
                                         [] ->
-                                            ?f_debug(" Add: ~w\n",
+                                            ?debug(" Add: ~w\n",
                                                      [Candidates]),
                                             ordsets:union(Candidates, Backtrack)
                                     end,
@@ -857,7 +840,7 @@ predecessors(Candidates, I, ClockVector) ->
     Fold =
         fun(Lid, Acc) ->
                 Clock = lookup_clock_value(Lid, ClockVector),
-                ?f_debug("  ~p: ~p\n",[Lid, Clock]),
+                ?debug("  ~p: ~p\n",[Lid, Clock]),
                 case Clock > I of
                     false -> Acc;
                     true -> ordsets:add_element({Clock, Lid}, Acc)
@@ -878,7 +861,7 @@ update_trace({Lid, _, _} = Selected, Next, State) ->
                  preemptions = Preemptions, last = {LLid,_,_}} = PrevTraceTop,
     NewN = I+1,
     ClockVector = lookup_clock(Lid, ClockMap),
-    ?f_debug("Happened before: ~p\n", [dict:to_list(ClockVector)]),
+    ?debug("Happened before: ~p\n", [dict:to_list(ClockVector)]),
     BaseClockVector = dict:store(Lid, NewN, ClockVector),
     LidsClockVector = recent_dependency_cv(Selected, BaseClockVector, LidTrace),
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
@@ -914,14 +897,14 @@ update_trace({Lid, _, _} = Selected, Next, State) ->
     {Lid, RewrittenInstr, _Msgs} = InstrNewTraceTop#trace_state.last,
     Messages = orddict:from_list(replace_messages(Lid, UpdatedClockVector)),
     PossiblyRewrittenSelected = {Lid, RewrittenInstr, Messages},
-    ?f_debug("Selected: ~P\n",[PossiblyRewrittenSelected, ?DEPTH]),
+    ?debug("Selected: ~P\n",[PossiblyRewrittenSelected, ?DEBUG_DEPTH]),
     NewBaseLidTrace =
         queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
     NewLidTrace =
         case ordsets:is_element(Lid, NewBlocked) of
             false -> NewBaseLidTrace;
             true ->
-                ?f_debug("Blocking ~p\n",[Lid]),
+                ?debug("Blocking ~p\n",[Lid]),
                 queue:in({{Lid, block, []}, UpdatedClockVector}, NewBaseLidTrace)
         end,
     NewTraceTop = check_pollable(InstrNewTraceTop),
@@ -1001,7 +984,7 @@ filter_awaked(SleepSet, Nexts, Selected) ->
         fun(Lid) ->
                 Instr = dict:fetch(Lid, Nexts),
                 Dep = dependent(Instr, Selected),
-                ?f_debug(" vs ~p: ~p\n",[Instr, Dep]),
+                ?debug(" vs ~p: ~p\n",[Instr, Dep]),
                 not Dep
         end,
     [S || S <- SleepSet, Filter(S)].
@@ -1162,7 +1145,7 @@ add_some_next_to_backtrack(State) ->
     #trace_state{enabled = Enabled, sleep_set = SleepSet,
                  error_nxt = ErrorNext, last = {Lid, _, _},
                  preemptions = Preemptions} = TraceTop,
-    ?f_debug("Pick next: Enabled: ~w Sleeping: ~w\n", [Enabled, SleepSet]),
+    ?debug("Pick next: Enabled: ~w Sleeping: ~w\n", [Enabled, SleepSet]),
     Backtrack =
         case ErrorNext of
             none ->
@@ -1185,13 +1168,13 @@ add_some_next_to_backtrack(State) ->
                 end;
             Else -> [Else]
         end,
-    ?f_debug("Picked: ~w\n",[Backtrack]),
+    ?debug("Picked: ~w\n",[Backtrack]),
     NewTraceTop = TraceTop#trace_state{backtrack = Backtrack},
     State#dpor_state{trace = [NewTraceTop|Rest]}.
 
 report_error(Transition, State) ->
     #dpor_state{trace = [TraceTop|_], tickets = Tickets} = State,
-    ?f_debug("ERROR!\n~P\n",[Transition, ?DEPTH]),
+    ?debug("ERROR!\n~P\n",[Transition, ?DEBUG_DEPTH]),
     Error = convert_error_info(Transition),
     LidTrace = queue:in({Transition, foo}, TraceTop#trace_state.lid_trace),
     Ticket = create_ticket(Error, LidTrace),
@@ -1308,13 +1291,13 @@ report_possible_deadlock(State) ->
             [] ->
                 case TraceTop#trace_state.blocked of
                     [] ->
-                        ?f_debug("NORMAL!\n"),
+                        ?debug("NORMAL!\n"),
                         %% Report that we finish an interleaving
                         %% without errors in the progress logger.
                         concuerror_log:progress(ok),
                         Tickets;
                     Blocked ->
-                        ?f_debug("DEADLOCK!\n"),
+                        ?debug("DEADLOCK!\n"),
                         Error = {deadlock, Blocked},
                         LidTrace = TraceTop#trace_state.lid_trace,
                         Ticket = create_ticket(Error, LidTrace),
@@ -1323,7 +1306,7 @@ report_possible_deadlock(State) ->
             _Else ->
                 Tickets
         end,
-    ?f_debug("Stack frame dropped\n"),
+    ?debug("Stack frame dropped\n"),
     State#dpor_state{must_replay = true, trace = Trace, tickets = NewTickets}.
 
 finished(#dpor_state{trace = Trace}) ->

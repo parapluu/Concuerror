@@ -77,18 +77,11 @@ A systematic testing tool for concurrent Erlang programs.
 ").
 
 %% Debug macros.
--ifdef(DEBUG_LEVEL_1).
--define(debug_1(S_, L_), io:format("(D-1) " ++ S_, L_)).
--define(debug_1(S_), io:format("(D-1) " ++ S_)).
+-ifdef(DEBUG).
+-define(debug(S_, L_), io:format(S_, L_)).
+-define(debug(S_), io:format(S_)).
+-define(DEBUG_DEPTH, 12).
 -else.
--define(debug_1(S_, L_), ok).
--define(debug_1(S_), ok).
--endif.
-
--ifdef(DEBUG_LEVEL_2).
--define(debug_2(S_, L_), io:format("|--(D-2) " ++ S_, L_)).
--define(debug_2(S_), io:format("|--(D-2) " ++ S_)).
--else.
--define(debug_2(S_, L_), ok).
--define(debug_2(S_), ok).
+-define(debug(S_, L_), ok).
+-define(debug(S_), ok).
 -endif.

@@ -43,9 +43,7 @@ DEFAULT_ERL_COMPILE_FLAGS = +warn_exported_vars +warn_unused_import \
 
 ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS)
 
-DEBUG1_ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS) -DDEBUG_LEVEL_1
-
-DEBUG2_ERL_COMPILE_FLAGS = $(DEBUG1_ERL_COMPILE_FLAGS) -DDEBUG_LEVEL_2
+DEBUG_ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS) -DDEBUG
 
 DIALYZER_FLAGS = -Wunmatched_returns
 
@@ -120,23 +118,13 @@ release:
 	make
 endif
 
-ifneq ($(ERL_COMPILE_FLAGS), $(DEBUG1_ERL_COMPILE_FLAGS))
-debug1:
+ifneq ($(ERL_COMPILE_FLAGS), $(DEBUG_ERL_COMPILE_FLAGS))
+debug:
 	make clean
-	printf "ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_1" > $(OPTS)
+	printf "ERL_COMPILE_FLAGS += -DDEBUG" > $(OPTS)
 	make
 else
-debug1:
-	make
-endif
-
-ifneq ($(ERL_COMPILE_FLAGS), $(DEBUG2_ERL_COMPILE_FLAGS))
-debug2:
-	make clean
-	printf "ERL_COMPILE_FLAGS += -DDEBUG_LEVEL_1 -DDEBUG_LEVEL_2" > $(OPTS)
-	make
-else
-debug2:
+debug:
 	make
 endif
 
