@@ -303,8 +303,12 @@ parse([{Opt, Param} | Args], Options) ->
             end;
 
         "v" ->
-            NewOptions = keyIncrease('verbose', 1, Options),
-            parse(Args, NewOptions);
+            case Param of
+                [] ->
+                    NewOptions = keyIncrease('verbose', 1, Options),
+                    parse(Args, NewOptions);
+                _Other -> wrongArgument('number', Opt)
+            end;
 
         "-help" ->
             help(),

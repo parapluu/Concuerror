@@ -105,13 +105,17 @@ rep_var(Mod, Fun, Args, CheckBBModules) ->
         {Key, Callback} ->
             apply(Callback, Args);
         false ->
+            %% If CheckBBModules, add module to `NT_CALLED_MOD' table
             if
                 CheckBBModules ->
-                    ets:insert(?NT_CALLED_MOD, {Mod});
+                    OldMod = concuerror_instr:old_module_name(Mod),
+                    ets:insert(?NT_CALLED_MOD, {OldMod});
                 true ->
                     true
             end,
-            apply(Mod, Fun, Args)
+            %% Rename module
+            RenameMod = concuerror_instr:check_new_module_name(Mod),
+            apply(RenameMod, Fun, Args)
     end.
 
 %% @spec: rep_demonitor(reference()) -> 'true'
@@ -489,7 +493,9 @@ find_my_registered_name() ->
 %% See `rep_spawn/1'.
 -spec rep_spawn(atom(), atom(), [term()]) -> pid().
 rep_spawn(Module, Function, Args) ->
-    Fun = fun() -> apply(Module, Function, Args) end,
+    %% Rename module
+    NewModule = concuerror_instr:check_new_module_name(Module),
+    Fun = fun() -> apply(NewModule, Function, Args) end,
     rep_spawn(Fun).
 
 %% @spec rep_spawn_link(function()) -> pid()
@@ -497,7 +503,6 @@ rep_spawn(Module, Function, Args) ->
 %%
 %% Before spawned, the new process has to yield.
 -spec rep_spawn_link(function()) -> pid().
-
 rep_spawn_link(Fun) ->
     spawn_center(spawn_link, Fun).
 
@@ -507,7 +512,9 @@ rep_spawn_link(Fun) ->
 %% See `rep_spawn_link/1'.
 -spec rep_spawn_link(atom(), atom(), [term()]) -> pid().
 rep_spawn_link(Module, Function, Args) ->
-    Fun = fun() -> apply(Module, Function, Args) end,
+    %% Rename module
+    NewModule = concuerror_instr:check_new_module_name(Module),
+    Fun = fun() -> apply(NewModule, Function, Args) end,
     rep_spawn_link(Fun).
 
 %% @spec rep_spawn_monitor(function()) -> {pid(), reference()}
@@ -524,7 +531,9 @@ rep_spawn_monitor(Fun) ->
 %% See rep_spawn_monitor/1.
 -spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}.
 rep_spawn_monitor(Module, Function, Args) ->
-    Fun = fun() -> apply(Module, Function, Args) end,
+    %% Rename module
+    NewModule = concuerror_instr:check_new_module_name(Module),
+    Fun = fun() -> apply(NewModule, Function, Args) end,
     rep_spawn_monitor(Fun).
 
 %% @spec rep_spawn_opt(function(),
@@ -573,9 +582,10 @@ rep_spawn_opt(Fun, Opt) ->
                      {'min_heap_size', integer()} |
                      {'min_bin_vheap_size', integer()}]) ->
                            pid() | {pid(), reference()}.
-
 rep_spawn_opt(Module, Function, Args, Opt) ->
-    Fun = fun() -> apply(Module, Function, Args) end,
+    %% Rename module
+    NewModule = concuerror_instr:check_new_module_name(Module),
+    Fun = fun() -> apply(NewModule, Function, Args) end,
     rep_spawn_opt(Fun, Opt).
 
 %% @spec: rep_unlink(pid() | port()) -> 'true'

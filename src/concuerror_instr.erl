@@ -13,7 +13,8 @@
 %%%----------------------------------------------------------------------
 
 -module(concuerror_instr).
--export([delete_and_purge/1, instrument_and_compile/2, load/1]).
+-export([delete_and_purge/0, instrument_and_compile/2, load/1,
+         check_new_module_name/1, new_module_name/1, old_module_name/1]).
 
 -export_type([macros/0]).
 
@@ -84,6 +85,9 @@
 %% Instrumented mod:fun.
 -define(INSTR_MOD_FUN, ?INSTR_ERL_MOD_FUN ++ ?INSTR_ETS_FUN).
 
+%% Temp directory we use to save our module renamed code.
+-define(INSTR_TEMP_DIR, '_._instr_temp_dir').
+
 %%%----------------------------------------------------------------------
 %%% Types
 %%%----------------------------------------------------------------------
@@ -96,14 +100,44 @@
 %%% Instrumentation utilities
 %%%----------------------------------------------------------------------
 
-%% Delete and purge all modules in Files.
--spec delete_and_purge([file:filename()]) -> 'ok'.
-
-delete_and_purge(Files) ->
-    ModsToPurge = [concuerror_util:get_module_name(F) || F <- Files],
+%% ---------------------------
+%% Delete and purge all modules in `?INSTR_TEMP_DIR'.
+-spec delete_and_purge() -> 'ok'.
+delete_and_purge() ->
+    %% Unload and purge modules.
+    ModsToPurge = [IM || {IM} <- ets:tab2list(?NT_INSTR_MOD)],
     Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
-    lists:foreach(Fun, ModsToPurge).
+    lists:foreach(Fun, ModsToPurge),
+    %% Delete temp directory (ignore errors).
+    TmpDir = get(?INSTR_TEMP_DIR),
+    {ok, Files} = file:list_dir(TmpDir),
+    DelFile = fun(F) -> file:delete(filename:join(TmpDir, F)) end,
+    lists:foreach(DelFile, Files),
+    file:del_dir(TmpDir).
 
+%% ---------------------------
+%% Rename a module for the instrumentation.
+-spec new_module_name(atom() | string()) -> atom().
+new_module_name(Module) when is_atom(Module) ->
+    new_module_name(atom_to_list(Module));
+new_module_name(Module) when is_list(Module) ->
+    list_to_atom(?INSTR_PREFIX ++ Module).
+
+-spec check_new_module_name(atom()) -> atom().
+check_new_module_name(Module) ->
+    case ets:member(?NT_INSTR_MOD, Module) of
+        true  -> new_module_name(Module);
+        false -> Module
+    end.
+
+-spec old_module_name(atom()) -> atom().
+old_module_name(NewModule) ->
+    case atom_to_list(NewModule) of
+        (?INSTR_PREFIX ++ OldModule) -> list_to_atom(OldModule);
+        _Module -> NewModule
+    end.
+
+%% ---------------------------
 %% @spec instrument_and_compile(Files::[file:filename()], concuerror:options())
 %%          -> {'ok', [mfb()]} | 'error'
 %% @doc: Instrument and compile a list of files.
@@ -114,7 +148,6 @@ delete_and_purge(Files) ->
 %% otherwise `error' is returned. No `.beam' files are produced.
 -spec instrument_and_compile([file:filename()], concuerror:options()) ->
     {'ok', [mfb()]} | 'error'.
-
 instrument_and_compile(Files, Options) ->
     Includes =
         case lists:keyfind('include', 1, Options) of
@@ -137,20 +170,28 @@ instrument_and_compile(Files, Options) ->
     %% Get the modules we are going to instrument and save
     %% them to `NT_INSTR_MOD' for future reference.
     InstrModules = [{concuerror_util:get_module_name(F)} || F <- Files],
-    ets:insert(?NT_INSTR_MOD, [{erlang}, {ets} | InstrModules]),
-    concuerror_log:log(0, "Instrumenting files..\n"),
-    InstrOne =
-        fun(File) ->
-            instrument_and_compile_one(File, Includes, Defines, CheckBBModules)
-        end,
-    MFBs = concuerror_util:pmap(InstrOne, Files),
-    case lists:member('error', MFBs) of
-        true  -> error;
-        false -> {ok, MFBs}
+    ets:insert(?NT_INSTR_MOD, InstrModules),
+    %% Create a temp dir to save renamed code
+    case create_tmp_dir() of
+        {ok, DirName} ->
+            put(?INSTR_TEMP_DIR, DirName),
+            concuerror_log:log(0, "Instrumenting files..\n"),
+            InstrOne =
+                fun(File) ->
+                    instrument_and_compile_one(File, Includes,
+                        Defines, DirName, CheckBBModules)
+                end,
+            MFBs = concuerror_util:pmap(InstrOne, Files),
+            case lists:member('error', MFBs) of
+                true  -> error;
+                false -> {ok, MFBs}
+            end;
+        error ->
+            error
     end.
 
 %% Instrument and compile a single file.
-instrument_and_compile_one(File, Includes, Defines, CheckBBModules) ->
+instrument_and_compile_one(File, Includes, Defines, TmpDir, CheckBBModules) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
     concuerror_log:log(1, "Validating file ~p...~n", [File]),
@@ -158,22 +199,24 @@ instrument_and_compile_one(File, Includes, Defines, CheckBBModules) ->
     OptDefines  = [{d, M, V} || {M, V} <- Defines],
     PreOptions = [strong_validation,verbose,return | OptIncludes++OptDefines],
     put('check_bb_modules', CheckBBModules),
+    put(?INSTR_TEMP_DIR, TmpDir),
     case compile:file(File, PreOptions) of
-        {ok, Module, Warnings} ->
+        {ok, OldModule, Warnings} ->
             %% Log warning messages.
             log_warning_list(Warnings),
             %% Instrument given source file.
             concuerror_log:log(1, "Instrumenting file ~p...~n", [File]),
-            case instrument(File, Includes, Defines) of
-                {ok, NewForms} ->
+            case instrument(OldModule, File, Includes, Defines) of
+                {ok, NewFile, NewForms} ->
                     %% Compile instrumented code.
                     %% TODO: More compile options?
                     CompOptions = [binary],
                     case compile:forms(NewForms, CompOptions) of
-                        {ok, Module, Binary} -> {Module, File, Binary};
+                        {ok, NewModule, Binary} ->
+                            {NewModule, NewFile, Binary};
                         error ->
                             concuerror_log:log(0, "Failed to compile "
-                                "instrumented file ~p.~n", [File]),
+                                "instrumented file ~p.~n", [NewFile]),
                             error
                     end;
                 {error, Error} ->
@@ -187,8 +230,8 @@ instrument_and_compile_one(File, Includes, Defines, CheckBBModules) ->
             error
     end.
 
+%% ---------------------------
 -spec load([mfb()]) -> 'ok' | 'error'.
-
 load([]) -> ok;
 load([MFB|Rest]) ->
     case load_one(MFB) of
@@ -204,29 +247,86 @@ load_one({Module, File, Binary}) ->
             error
     end.
 
-instrument(File, Includes, Defines) ->
+%% ---------------------------
+instrument(Module, File, Includes, Defines) ->
     NewIncludes = [filename:dirname(File) | Includes],
-    case epp:parse_file(File, NewIncludes, Defines) of
-        {ok, OldForms} ->
-            %% Remove `type` and `spec` attributes to avoid errors
-            %% due to record expansion below.
-            StrippedForms = strip_attributes(OldForms, []),
-            ExpRecForms = erl_expand_records:module(StrippedForms, []),
-            %% Convert `erl_parse tree` to `abstract syntax tree`.
-            Tree = erl_recomment:recomment_forms(ExpRecForms, []),
-            MapFun = fun(T) -> instrument_toplevel(T) end,
-            Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
-            %% Return an `erl_parse-compatible` representation.
-            Abstract = erl_syntax:revert(Transformed),
-            ?print(Abstract),
-            NewForms = erl_syntax:form_list_elements(Abstract),
-            {ok, NewForms};
+    %% Rename module
+    case rename_module(Module, File) of
+        {ok, NewFile} ->
+            case epp:parse_file(NewFile, NewIncludes, Defines) of
+                {ok, OldForms} ->
+                    %% Remove `type` and `spec` attributes to avoid
+                    %% errors due to record expansion below.
+                    %% Also rename our module.
+                    StrippedForms = strip_attributes(OldForms, []),
+                    ExpRecForms = erl_expand_records:module(StrippedForms, []),
+                    %% Convert `erl_parse tree` to `abstract syntax tree`.
+                    Tree = erl_recomment:recomment_forms(ExpRecForms, []),
+                    MapFun = fun(T) -> instrument_toplevel(T) end,
+                    Transformed = erl_syntax_lib:map_subtrees(MapFun, Tree),
+                    %% Return an `erl_parse-compatible` representation.
+                    Abstract = erl_syntax:revert(Transformed),
+                    ?print(Abstract),
+                    NewForms = erl_syntax:form_list_elements(Abstract),
+                    {ok, NewFile, NewForms};
+                {error, _} = Error -> Error
+            end;
         {error, _} = Error -> Error
     end.
 
+%% ---------------------------
+rename_module(Module, File) ->
+    ModuleStr = atom_to_list(Module),
+    NewModuleStr = atom_to_list(new_module_name(Module)),
+    TmpDir = get(?INSTR_TEMP_DIR),
+    NewFile = filename:join(TmpDir, NewModuleStr ++ ".erl"),
+    case file:read_file(File) of
+        {ok, Binary} ->
+            %% Replace the first occurrence of `-module(Module).'
+            Pattern = binary:list_to_bin(
+                "-module(" ++ ModuleStr ++ ")."),
+            Replacement = binary:list_to_bin(
+                "-module(" ++ NewModuleStr ++ ")."),
+            NewBinary = binary:replace(Binary, Pattern, Replacement),
+            %% Write new file in temp directory
+            case file:write_file(NewFile, NewBinary) of
+                ok    -> {ok, NewFile};
+                Error -> Error
+            end;
+        Error ->
+            Error
+    end.
+
+%% ---------------------------
+%% Create an unique temp directory based on (starting with) Stem.
+%% A directory name of the form <Stem><Number> is generated.
+%% We use this directory to save our renamed code.
+create_tmp_dir() ->
+    DirName = temp_name("./.conc_temp_"),
+    concuerror_log:log(1, "Create temp dir ~p..\n", [DirName]),
+    case file:make_dir(DirName) of
+        ok ->
+            {ok, DirName};
+        {error, eexist} ->
+            %% Directory exists, try again
+            create_tmp_dir();
+        {error, Reason} ->
+            concuerror_log:log(0, "error: ~p\n", [Reason]),
+            error
+    end.
+
+temp_name(Stem) ->
+    {A, B, C}   = erlang:now(),
+    RandomNum   = A bxor B bxor C,
+    RandomName  = Stem ++ integer_to_list(RandomNum),
+    RandomName.
+
+
+%% ---------------------------
 %% XXX: Implementation dependent.
-strip_attributes([], Acc) -> lists:reverse(Acc);
-strip_attributes([{attribute, _Line, Name, _Misc} = Head|Rest], Acc) ->
+strip_attributes([], Acc) ->
+    lists:reverse(Acc);
+strip_attributes([{attribute, _Line, Name, _Misc}=Head | Rest], Acc) ->
     case lists:member(Name, ?ATTR_STRIP) of
         true -> strip_attributes(Rest, Acc);
         false -> strip_attributes(Rest, [Head|Acc])
@@ -234,6 +334,7 @@ strip_attributes([{attribute, _Line, Name, _Misc} = Head|Rest], Acc) ->
 strip_attributes([Head|Rest], Acc) ->
     strip_attributes(Rest, [Head|Acc]).
 
+%% ---------------------------
 %% Instrument a "top-level" element.
 %% Of the "top-level" elements, i.e. functions, specs, etc., only functions are
 %% transformed, so leave everything else as is.
@@ -261,9 +362,10 @@ instrument_term(Tree) ->
     case erl_syntax:type(Tree) of
         application ->
             case get_mfa(Tree) of
-                no_instr -> Tree;
+                no_instr      -> Tree;
+                {rename, Mfa} -> instrument_rename(Mfa);
                 {normal, Mfa} -> instrument_application(Mfa);
-                {var, Mfa} -> instrument_var_application(Mfa)
+                {var, Mfa}    -> instrument_var_application(Mfa)
             end;
         infix_expr ->
             Operator = erl_syntax:infix_expr_operator(Tree),
@@ -320,11 +422,17 @@ needs_instrument(Function, ArgTrees) ->
 %% Determine whether a `foo:bar(...)` call needs instrumentation.
 needs_instrument(Module, Function, ArgTrees) ->
     %% Add `Module' to the called modules table.
-    ets:insert(?NT_CALLED_MOD, {Module}),
+    ets:insert(?NT_CALLED_MOD, {old_module_name(Module)}),
     Arity = length(ArgTrees),
     case lists:member({Module, Function, Arity}, ?INSTR_MOD_FUN) of
-        true -> {normal, {Module, Function, ArgTrees}};
-        false -> no_instr
+        true ->
+            {normal, {Module, Function, ArgTrees}};
+        false ->
+            %% Check if module needs to be renamed
+            case ets:member(?NT_INSTR_MOD, Module) of
+                true  -> {rename, {Module, Function, ArgTrees}};
+                false -> no_instr
+            end
     end.
 
 instrument_application({erlang, Function, ArgTrees}) ->
@@ -334,8 +442,7 @@ instrument_application({erlang, Function, ArgTrees}) ->
 instrument_application({Module, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
     RepFun = erl_syntax:atom(list_to_atom("rep_" ++ atom_to_list(Module)
-                                          ++ "_"
-                                          ++ atom_to_list(Function))),
+            ++ "_" ++ atom_to_list(Function))),
     erl_syntax:application(RepMod, RepFun, ArgTrees).
 
 instrument_var_application({ModTree, FunTree, ArgTrees}) ->
@@ -345,6 +452,11 @@ instrument_var_application({ModTree, FunTree, ArgTrees}) ->
     CheckBBModules = erl_syntax:abstract(get('check_bb_modules')),
     erl_syntax:application(RepMod, RepFun,
         [ModTree, FunTree, ArgList, CheckBBModules]).
+
+instrument_rename({Module, Function, ArgTrees}) ->
+    RepMod = erl_syntax:atom(new_module_name(Module)),
+    RepFun = erl_syntax:atom(Function),
+    erl_syntax:application(RepMod, RepFun, ArgTrees).
 
 %% Instrument a receive expression.
 %% ----------------------------------------------------------------------

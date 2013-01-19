@@ -97,7 +97,7 @@
 -spec analyze(analysis_target(), [file:filename()], concuerror:options()) ->
             analysis_ret().
 
-analyze(Target, Files, Options) ->
+analyze({Mod,Fun,Args}=_Target, Files, Options) ->
     PreBound =
         case lists:keyfind(preb, 1, Options) of
             {preb, inf} -> ?INFINITY;
@@ -109,6 +109,9 @@ analyze(Target, Files, Options) ->
             {dpor, Flavor} -> Flavor;
             false -> 'none'
         end,
+    %% Rename Target's module
+    NewMod = concuerror_instr:new_module_name(Mod),
+    Target = {NewMod, Fun, Args},
     %% Initialize `NT_CALLED_MOD' and `NT_INSTR_MOD' table to save
     %% all the modules that we call or instrument.
     ?NT_CALLED_MOD = ets:new(?NT_CALLED_MOD,
@@ -148,11 +151,11 @@ analyze(Target, Files, Options) ->
                 end;
             error -> {error, instr, {Target, 0}}
         end,
-    concuerror_instr:delete_and_purge(Files),
+    concuerror_instr:delete_and_purge(),
     %% Show unistrumented (blackboxed) modules.
     Instr_Modules  = [IM || {IM} <- ets:tab2list(?NT_INSTR_MOD)],
     Called_Modules = [CM || {CM} <- ets:tab2list(?NT_CALLED_MOD)],
-    case (Called_Modules -- Instr_Modules) of
+    case (Called_Modules -- ['erlang', 'ets' | Instr_Modules]) of
         [] ->
             ok;
         Black_Modules ->

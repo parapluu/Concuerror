@@ -38,12 +38,25 @@ new(Error, ErrorDetails) ->
         end,
     {NewError, ErrorDetails}.
 
+%% ---------------------------
 clean_stacktrace(Stacktrace) ->
-    [T || T <- Stacktrace, not is_rep_module(T)].
+    clean_stacktrace(Stacktrace, []).
 
-is_rep_module({?REP_MOD, _, _, _}) -> true;
-is_rep_module(_Else) -> false.
+clean_stacktrace([], Acc) ->
+    lists:reverse(Acc);
+clean_stacktrace([{?REP_MOD, _, _, _} | Ts], Acc) ->
+    %% Ignore concuerror's rep module
+    clean_stacktrace(Ts, Acc);
+clean_stacktrace([{Mod, Fun, Args, Pos} | Ts], Acc) ->
+    %% Rename modules back to their original names
+    OldMod = concuerror_instr:old_module_name(Mod),
+    %% Rename files after their modules (for now).
+    %% TODO: Rename files back to their original names.
+    OldFile = atom_to_list(OldMod) ++ ".erl",
+    OldPos = lists:keyreplace(file, 1, Pos, {file, OldFile}),
+    clean_stacktrace(Ts, [{OldMod, Fun, Args, OldPos} | Acc]).
 
+%% ---------------------------
 -spec get_error(ticket()) -> concuerror_error:error().
 
 get_error({Error, _ErrorDetails}) ->

@@ -46,6 +46,8 @@
 
 %% Instrumented message atom.
 -define(INSTR_MSG, '_._instr_msg').
+%% Instrumented modules prefix.
+-define(INSTR_PREFIX, "conc__").
 
 %% Set-like data structure used in sched, lid and error modules.
 -define(SETS, ordsets).
