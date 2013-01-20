@@ -105,7 +105,7 @@
 -spec delete_and_purge() -> 'ok'.
 delete_and_purge() ->
     %% Unload and purge modules.
-    ModsToPurge = [IM || {IM} <- ets:tab2list(?NT_INSTR_MOD)],
+    ModsToPurge = [new_module_name(IM) || {IM} <- ets:tab2list(?NT_INSTR_MOD)],
     Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
     lists:foreach(Fun, ModsToPurge),
     %% Delete temp directory (ignore errors).
@@ -164,9 +164,6 @@ instrument_and_compile(Files, Options) ->
             {'verbose', V} -> V;
             false -> ?DEFAULT_VERBOSITY
         end,
-    %% If `Verbosity' level is 2 or greater then check
-    %% for uninstrumented (blackboxed) modules.
-    CheckBBModules = Verbosity >= 2,
     %% Get the modules we are going to instrument and save
     %% them to `NT_INSTR_MOD' for future reference.
     InstrModules = [{concuerror_util:get_module_name(F)} || F <- Files],
@@ -179,7 +176,7 @@ instrument_and_compile(Files, Options) ->
             InstrOne =
                 fun(File) ->
                     instrument_and_compile_one(File, Includes,
-                        Defines, DirName, CheckBBModules)
+                        Defines, DirName, Verbosity)
                 end,
             MFBs = concuerror_util:pmap(InstrOne, Files),
             case lists:member('error', MFBs) of
@@ -191,15 +188,25 @@ instrument_and_compile(Files, Options) ->
     end.
 
 %% Instrument and compile a single file.
-instrument_and_compile_one(File, Includes, Defines, TmpDir, CheckBBModules) ->
+instrument_and_compile_one(File, Includes, Defines, TmpDir, Verbosity) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
     concuerror_log:log(1, "Validating file ~p...~n", [File]),
     OptIncludes = [{i, I} || I <- Includes],
     OptDefines  = [{d, M, V} || {M, V} <- Defines],
-    PreOptions = [strong_validation,verbose,return | OptIncludes++OptDefines],
+    OptRest =
+        case Verbosity >= 1 of
+            true  -> [strong_validation, return, verbose];
+            false -> [strong_validation, return]
+        end,
+    PreOptions = OptIncludes ++ OptDefines ++ OptRest,
+    %% If `Verbosity' level is 2 or greater then check
+    %% for uninstrumented (blackboxed) modules.
+    CheckBBModules = Verbosity >= 2,
     put('check_bb_modules', CheckBBModules),
+    %% Temp directory.
     put(?INSTR_TEMP_DIR, TmpDir),
+    %% Compile module.
     case compile:file(File, PreOptions) of
         {ok, OldModule, Warnings} ->
             %% Log warning messages.
