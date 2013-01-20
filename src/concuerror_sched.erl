@@ -157,7 +157,8 @@ analyze({Mod,Fun,Args}=_Target, Files, Options) ->
     Called_Modules = [CM || {CM} <- ets:tab2list(?NT_CALLED_MOD)],
     case (Called_Modules -- ['erlang', 'ets' | Instr_Modules]) of
         [] ->
-            ok;
+            concuerror_log:log(2,
+                "\nNo Un-Instrumented (blackboxed) modules.\n");
         Black_Modules ->
             concuerror_log:log(2,
                 "\nUn-Instrumented (blackboxed) modules:\n    ~w\n",

@@ -422,7 +422,18 @@ needs_instrument(Function, ArgTrees) ->
 %% Determine whether a `foo:bar(...)` call needs instrumentation.
 needs_instrument(Module, Function, ArgTrees) ->
     %% Add `Module' to the called modules table.
-    ets:insert(?NT_CALLED_MOD, {old_module_name(Module)}),
+    %% XXX: Well we expect `Module' to be an atom() but it turns
+    %% out that `erl_syntax:atom_value/1' doesn't return always an
+    %% atom(). In particular, `eunit.hrl' uses the module `.erlang'
+    %% which when parsed by concuerror (and transformed with
+    %% `erl_syntax:atom_value/1') it returns
+    %% [{atom, Line, ''}, {atom, Line, erlang}].
+    if
+        is_atom(Module) ->
+            ets:insert(?NT_CALLED_MOD, {old_module_name(Module)});
+        true ->
+            true
+    end,
     Arity = length(ArgTrees),
     case lists:member({Module, Function, Arity}, ?INSTR_MOD_FUN) of
         true ->
