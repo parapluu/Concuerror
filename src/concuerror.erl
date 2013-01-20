@@ -54,6 +54,7 @@
     | {'preb',    concuerror_sched:bound()}
     | {'gui'}
     | {'verbose', non_neg_integer()}
+    | {'keep_temp'}
     | {'help'}.
 
 -type options() :: [option()].
@@ -310,6 +311,15 @@ parse([{Opt, Param} | Args], Options) ->
                 _Other -> wrongArgument('number', Opt)
             end;
 
+        "-keep-tmp-files" ->
+            case Param of
+                [] ->
+                    NewOptions = lists:keystore('keep_temp', 1,
+                        Options, {'keep_temp'}),
+                    parse(Args, NewOptions);
+                _Other -> wrongArgument('number', Opt)
+            end;
+
         "-help" ->
             help(),
             erlang:halt();
@@ -391,6 +401,7 @@ help() ->
      "  --noprogress            Disable progress bar\n"
      "  -q|--quiet              Disable logging (implies --noprogress)\n"
      "  -v                      Verbose [use twice to be more verbose]\n"
+     "  --keep-tmp-files        Retain all intermediate temporary files\n"
      "  --gui                   Run concuerror with graphics\n"
      "  --dpor                  Runs the experimental optimal DPOR version\n"
      "  --dpor_flanagan         Runs an experimental reference DPOR version\n"

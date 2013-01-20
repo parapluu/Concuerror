@@ -13,7 +13,7 @@
 %%%----------------------------------------------------------------------
 
 -module(concuerror_instr).
--export([delete_and_purge/0, instrument_and_compile/2, load/1,
+-export([delete_and_purge/1, instrument_and_compile/2, load/1,
          check_new_module_name/1, new_module_name/1, old_module_name/1]).
 
 -export_type([macros/0]).
@@ -102,18 +102,25 @@
 
 %% ---------------------------
 %% Delete and purge all modules in `?INSTR_TEMP_DIR'.
--spec delete_and_purge() -> 'ok'.
-delete_and_purge() ->
+-spec delete_and_purge(concuerror:options()) -> 'ok'.
+delete_and_purge(Options) ->
     %% Unload and purge modules.
     ModsToPurge = [new_module_name(IM) || {IM} <- ets:tab2list(?NT_INSTR_MOD)],
     Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
     lists:foreach(Fun, ModsToPurge),
     %% Delete temp directory (ignore errors).
-    TmpDir = get(?INSTR_TEMP_DIR),
-    {ok, Files} = file:list_dir(TmpDir),
-    DelFile = fun(F) -> file:delete(filename:join(TmpDir, F)) end,
-    lists:foreach(DelFile, Files),
-    file:del_dir(TmpDir).
+    case lists:keymember('keep_temp', 1, Options) of
+        true ->
+            %% Retain temporary files
+            ok;
+        false ->
+            TmpDir = get(?INSTR_TEMP_DIR),
+            {ok, Files} = file:list_dir(TmpDir),
+            DelFile = fun(F) -> _ = file:delete(filename:join(TmpDir, F)) end,
+            lists:foreach(DelFile, Files),
+            _ = file:del_dir(TmpDir),
+            ok
+    end.
 
 %% ---------------------------
 %% Rename a module for the instrumentation.

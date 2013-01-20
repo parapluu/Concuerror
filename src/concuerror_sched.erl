@@ -151,7 +151,7 @@ analyze({Mod,Fun,Args}=_Target, Files, Options) ->
                 end;
             error -> {error, instr, {Target, 0}}
         end,
-    concuerror_instr:delete_and_purge(),
+    concuerror_instr:delete_and_purge(Options),
     %% Show unistrumented (blackboxed) modules.
     Instr_Modules  = [IM || {IM} <- ets:tab2list(?NT_INSTR_MOD)],
     Called_Modules = [CM || {CM} <- ets:tab2list(?NT_CALLED_MOD)],

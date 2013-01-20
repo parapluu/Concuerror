@@ -56,7 +56,7 @@ test_ok(File) ->
     Path = filename:join([?TEST_PATH, File]),
     Result = concuerror_instr:instrument_and_compile([Path], []),
     %% Cleanup test
-    concuerror_instr:delete_and_purge(),
+    concuerror_instr:delete_and_purge([]),
     ets:delete(?NT_CALLED_MOD),
     ets:delete(?NT_INSTR_MOD),
     %% Assert Result
