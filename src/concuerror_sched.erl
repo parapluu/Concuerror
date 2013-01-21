@@ -351,13 +351,13 @@ replay_lid_trace(N, Queue, Acc) ->
         {value, {{_Lid,  block, _},  _VC} = Entry} ->
             replay_lid_trace(N, NewQueue, queue:in(Entry, Acc));
         {value, {{Lid, Command, _} = Transition, VC}} ->
-            ?debug(" ~-4w: ~P",[N, Transition, ?DEBUG_DEPTH]),
+            %% ?debug(" ~-4w: ~P",[N, Transition, ?DEBUG_DEPTH]),
             _ = wait_next(Lid, Command),
-            ?debug("."),
+            %% ?debug("."),
             {NewTransition, _} = handle_instruction_op(Transition),
-            ?debug("."),
+            %% ?debug("."),
             _ = replace_messages(Lid, VC),
-            ?debug("\n"),
+            %% ?debug("\n"),
             replay_lid_trace(N+1, NewQueue, queue:in({NewTransition, VC}, Acc));
         empty ->
             Acc
@@ -747,9 +747,17 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                                 case {ordsets:is_element(Lid, SleepSet),
                                       Predecessors} of
                                     {false, [P|_]} ->
+                                        Element =
+                                            case lists:member(Lid, Predecessors) of
+                                                true -> Lid;
+                                                false ->
+                                                    P
+                                            end
+                                            ,
                                         NewBacktrack =
-                                            ordsets:add_element(P, Backtrack),
-                                        ?debug("     Add: ~w\n", [P]),
+                                            ordsets:add_element(Element, Backtrack),
+                                        ?debug("     Add: ~w (~w)\n",
+                                                 [Element, NewBacktrack]),
                                         NewPreSI =
                                             PreSI#trace_state{
                                               backtrack = NewBacktrack},
@@ -758,7 +766,9 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                                         ?debug("     All sleeping...\n"),
                                         NewClockVector =
                                             lookup_clock(ProcSI, ClockMap),
-                                        {continue, ProcSI, NewClockVector}
+                                        MaxClockVector =
+                                            max_cv(NewClockVector, ClockVector),
+                                        {continue, ProcSI, MaxClockVector}
                                 end
                         end;
                     flanagan ->
@@ -1308,6 +1318,12 @@ report_possible_deadlock(State) ->
                         [Ticket|Tickets]
                 end;
             _Else ->
+                case TraceTop#trace_state.sleep_set =/= []
+                    andalso TraceTop#trace_state.done =:= [] of
+                    false -> ok;
+                    true ->
+                        ?debug("SLEEP SET BLOCK\n")
+                end,
                 Tickets
         end,
     ?debug("Stack frame dropped\n"),
