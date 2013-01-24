@@ -709,7 +709,7 @@ rep_ets_delete(Tab, Key) ->
 
 -type match_spec()    :: [{match_pattern(), [term()], [term()]}].
 -type match_pattern() :: atom() | tuple().
--spec rep_ets_select_delete(tid()|atom(), match_spec()) -> integer().
+-spec rep_ets_select_delete(tid()|atom(), match_spec()) -> non_neg_integer().
 rep_ets_select_delete(Tab, MatchSpec) ->
     concuerror_sched:notify(ets,
         {select_delete, [?LID_FROM_PID(Tab), Tab, MatchSpec]}),

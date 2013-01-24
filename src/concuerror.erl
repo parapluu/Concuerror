@@ -74,14 +74,14 @@ stop() ->
     end,
     ok.
 
-%% @spec stop_node([string()]) -> ok
+%% @spec stop_node([string(),...]) -> ok
 %% @doc: Stop the Concuerror analysis
--spec stop([string()]) -> ok.
+-spec stop([string(),...]) -> ok.
 stop([Name]) ->
     %% Disable error logging messages.
     ?tty(),
     Node = list_to_atom(Name ++ ?HOST),
-    case rpc:call(Node, concuerror, stop, []) of
+    case rpc:call(Node, ?MODULE, stop, []) of
         {badrpc, _Reason} ->
             %% Retry
             stop([Name]);
