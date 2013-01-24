@@ -239,8 +239,14 @@ init_state() ->
 -spec progress_bar(non_neg_integer(), non_neg_integer(), elapsed_time()) ->
     string().
 progress_bar(RunCnt, Errors, {Mins, Secs}) ->
-    io_lib:format("[ ~p checked interleavings, ~p errors in ~wm~.2fs ]",
-        [RunCnt, Errors, Mins, Secs]).
+    TruncSecs = erlang:trunc(Secs),
+    StrSecs =
+        case TruncSecs < 10 of
+            true  -> "0" ++ integer_to_list(TruncSecs);
+            false -> integer_to_list(TruncSecs)
+        end,
+    io_lib:format("[ ~p checked interleavings, ~p errors in ~wm~ss ]",
+        [RunCnt, Errors, Mins, StrSecs]).
 
 
 %% -------------------------------------------------------------------
