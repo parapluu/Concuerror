@@ -1,7 +1,7 @@
 ###----------------------------------------------------------------------
-### Copyright (c) 2011, Alkis Gotovos <el3ctrologos@hotmail.com>,
-###                     Maria Christakis <mchrista@softlab.ntua.gr>
-###                 and Kostis Sagonas <kostis@cs.ntua.gr>.
+### Copyright (c) 2011-2013, Alkis Gotovos <el3ctrologos@hotmail.com>,
+###                          Maria Christakis <mchrista@softlab.ntua.gr>
+###                      and Kostis Sagonas <kostis@cs.ntua.gr>.
 ### All rights reserved.
 ###
 ### This file is distributed under the Simplified BSD License.
@@ -37,9 +37,8 @@ OPTS =    $(TOP)/opts.mk
 ### Flags
 ###----------------------------------------------------------------------
 
-# Removed for now: +warn_untyped_record
 DEFAULT_ERL_COMPILE_FLAGS = +warn_exported_vars +warn_unused_import \
-+warn_missing_spec +debug_info
++warn_missing_spec +warn_untyped_record -Werror +debug_info
 
 ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS)
 
