@@ -520,7 +520,7 @@ dependent(A, B) ->
 
 dependent({Lid, _Instr1, _Msgs1}, {Lid, _Instr2, _Msgs2}, true, true) ->
     %% No need to take care of same Lid dependencies
-    false;
+    true;
 
 %% Register and unregister have the same dependencies.
 %% Use a unique value for the Pid to avoid checks there.
@@ -808,12 +808,11 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                 Predecessors = predecessors(Candidates, I, ClockVector),
                 case Flavor of
                     full ->
-                        Initial0 =
-                            ordsets:del_element(ProcSI, find_initial(I, Acc)),
+                        All = find_all_not_racing(SI, Acc),
                         Initial =
                             case ordsets:is_element(Lid, Predecessors) of
-                                true  -> ordsets:add_element(Lid, Initial0);
-                                false -> Initial0
+                                true  -> ordsets:add_element(Lid, All);
+                                false -> All
                             end,
                         ?debug("  Backtrack: ~w\n", [Backtrack]),
                         ?debug("  Predecess: ~w\n", [Predecessors]),
@@ -893,41 +892,25 @@ lookup_clock_value(P, CV) ->
         error -> 0
     end.
 
-find_initial(I, RevTrace) ->
+find_all_not_racing(Transition, RevTrace) ->
     Empty = ordsets:new(),
-    find_initial(I, RevTrace, Empty, Empty).
+    find_all(Transition, RevTrace, Empty, Empty).
 
-find_initial(_I, [], Initial, _NotInitial) ->
-    Initial;
-find_initial(I, [TraceTop|Rest], Initial, NotInitial) ->
-    #trace_state{last = {P,_,_}, clock_map = ClockMap} = TraceTop,
-    Add =
-        case ordsets:is_element(P, Initial) orelse
-            ordsets:is_element(P, NotInitial) of
-            true -> false;
-            false ->
-                Clock = lookup_clock(P, ClockMap),
-                case has_dependency_after(Clock, P, I) of
-                    true -> not_initial;
-                    false -> initial
-                end
-        end,
-    case Add of
-        false -> find_initial(I, Rest, Initial, NotInitial);
-        initial ->
-            NewInitial = ordsets:add_element(P, Initial),
-            find_initial(I, Rest, NewInitial, NotInitial);
-        not_initial ->
-            NewNotInitial = ordsets:add_element(P, NotInitial),
-            find_initial(I, Rest, Initial, NewNotInitial)            
+find_all(_Transition, [], _Racing, Acc) -> Acc;
+find_all(Transition, [#trace_state{last = {P,_,_} = SI}|Rest], Racing, Acc) ->
+    case ordsets:is_element(P, Racing)
+        orelse ordsets:is_element(P, Acc) of
+        true  -> find_all(Transition, Rest, Racing, Acc);
+        false ->
+            {NewRacing, NewAcc} =
+                case dependent(Transition, SI) of
+                    true ->
+                        {ordsets:add_element(P, Racing), Acc};
+                    false ->
+                        {Racing, ordsets:add_element(P, Acc)}
+                end,
+            find_all(Transition, Rest, NewRacing, NewAcc)
     end.
-
-has_dependency_after(Clock, P, I) ->
-    Fold =
-        fun(_Key, _Value, true) -> true;
-           (Key, Value, false) -> P =/= Key andalso Value >= I
-        end,
-    dict:fold(Fold, false, Clock).                
 
 predecessors(Candidates, I, ClockVector) ->
     Fold =
