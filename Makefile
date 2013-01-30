@@ -37,10 +37,13 @@ OPTS =    $(TOP)/opts.mk
 ### Flags
 ###----------------------------------------------------------------------
 
-DEFAULT_ERL_COMPILE_FLAGS = +warn_exported_vars +warn_unused_import \
-+warn_missing_spec +warn_untyped_record -Werror +debug_info
+DEF_WARNS = +warn_exported_vars +warn_unused_import +warn_missing_spec +warn_untyped_record
+
+DEFAULT_ERL_COMPILE_FLAGS = +debug_info $(DEF_WARNS) -Werror
 
 ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS)
+
+NATIVE_ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS) +native
 
 DEBUG_ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS) -DDEBUG
 
@@ -114,6 +117,16 @@ release:
 	make
 else
 release:
+	make
+endif
+
+ifneq ($(ERL_COMPILE_FLAGS), $(NATIVE_ERL_COMPILE_FLAGS))
+native:
+	make clean
+	printf "ERL_COMPILE_FLAGS += +native" > $(OPTS)
+	make
+else
+native:
 	make
 endif
 
