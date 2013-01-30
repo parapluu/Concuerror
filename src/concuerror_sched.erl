@@ -189,7 +189,7 @@ interleave_aux(Target, PreBound, Parent, Dpor) ->
 -type instr()      :: term().
 -type transition() :: {concuerror_lid:lid(), instr(), list()}.
 -type clock_map()  :: dict(). %% dict(concuerror_lid:lid(), clock_vector()).
-%% -type clock_vector() :: dict(). %% dict(concuerror_lid:lid(), s_i()).
+%% -type clock_vector() :: orddict(). %% dict(concuerror_lid:lid(), s_i()).
 
 select_one_shallow_except_with_fix(DeepList, Exceptions) ->
     select_one_shallow_except_with_fix(DeepList, Exceptions, []).
@@ -288,7 +288,7 @@ empty_clock_map() -> dict:new().
 new_lid_trace() ->
     queue:in({init_tr(), empty_clock_vector()}, queue:new()).
 
-empty_clock_vector() -> dict:new().
+empty_clock_vector() -> orddict:new().
 
 -type trace_state() :: #trace_state{}.
 
@@ -774,7 +774,7 @@ add_all_backtracks(#dpor_state{preemption_bound = PreBound,
 add_all_backtracks_trace({Lid, _, _} = Transition, Trace, PreBound, Flavor) ->
     [#trace_state{i = I} = Top|
      [#trace_state{clock_map = ClockMap}|_] = PTrace] = Trace,
-    ClockVector = dict:store(Lid, I, lookup_clock(Lid, ClockMap)),
+    ClockVector = orddict:store(Lid, I, lookup_clock(Lid, ClockMap)),
     add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
                              Flavor, PTrace, [Top]).
 
@@ -883,11 +883,11 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
 lookup_clock(P, ClockMap) ->
     case dict:find(P, ClockMap) of
         {ok, Clock} -> Clock;
-        error -> dict:new()
+        error -> orddict:new()
     end.
 
 lookup_clock_value(P, CV) ->
-    case dict:find(P, CV) of
+    case orddict:find(P, CV) of
         {ok, Value} -> Value;
         error -> 0
     end.
@@ -937,8 +937,8 @@ update_trace({Lid, _, _} = Selected, Next, State) ->
                  preemptions = Preemptions, last = {LLid,_,_}} = PrevTraceTop,
     NewN = I+1,
     ClockVector = lookup_clock(Lid, ClockMap),
-    ?debug("Happened before: ~p\n", [dict:to_list(ClockVector)]),
-    BaseClockVector = dict:store(Lid, NewN, ClockVector),
+    ?debug("Happened before: ~p\n", [orddict:to_list(ClockVector)]),
+    BaseClockVector = orddict:store(Lid, NewN, ClockVector),
     LidsClockVector = recent_dependency_cv(Selected, BaseClockVector, LidTrace),
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
     NewNexts = dict:store(Lid, Next, Nexts),
@@ -1183,7 +1183,7 @@ handle_instruction_al(_Transition, TraceTop, {}) ->
 
 max_cv(D1, D2) ->
     Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
-    dict:merge(Merger, D1, D2).
+    orddict:merge(Merger, D1, D2).
 
 check_pollable(TraceTop) ->
     #trace_state{pollable = Pollable} = TraceTop,
