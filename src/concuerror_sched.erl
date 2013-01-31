@@ -802,17 +802,19 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                           ?DEBUG_DEPTH, Clock]),
                 [#trace_state{enabled = Enabled,
                               backtrack = Backtrack,
+                              nexts = Nexts,
                               sleep_set = SleepSet} =
                      PreSI|Rest] = Trace,
                 Candidates = ordsets:subtract(Enabled, SleepSet),
                 Predecessors = predecessors(Candidates, I, ClockVector),
                 case Flavor of
                     full ->
-                        All = find_all_not_racing(SI, Acc),
+                        All = find_all_not_racing(SI, Enabled, Nexts),
+                        Possible = find_could_have_run(All, [PreSI,StateI|Acc]),
                         Initial =
                             case ordsets:is_element(Lid, Predecessors) of
-                                true  -> ordsets:add_element(Lid, All);
-                                false -> All
+                                true  -> ordsets:add_element(Lid, Possible);
+                                false -> Possible
                             end,
                         ?debug("  Backtrack: ~w\n", [Backtrack]),
                         ?debug("  Predecess: ~w\n", [Predecessors]),
@@ -892,25 +894,30 @@ lookup_clock_value(P, CV) ->
         error -> 0
     end.
 
-find_all_not_racing(Transition, RevTrace) ->
-    Empty = ordsets:new(),
-    find_all(Transition, RevTrace, Empty, Empty).
+find_all_not_racing(Transition, Ps, Nexts) ->
+    Filter =
+        fun(P) ->
+                Next = dict:fetch(P, Nexts),
+                not dependent(Transition, Next)
+        end,
+    lists:filter(Filter, Ps).
 
-find_all(_Transition, [], _Racing, Acc) -> Acc;
-find_all(Transition, [#trace_state{last = {P,_,_} = SI}|Rest], Racing, Acc) ->
-    case ordsets:is_element(P, Racing)
-        orelse ordsets:is_element(P, Acc) of
-        true  -> find_all(Transition, Rest, Racing, Acc);
-        false ->
-            {NewRacing, NewAcc} =
-                case dependent(Transition, SI) of
-                    true ->
-                        {ordsets:add_element(P, Racing), Acc};
-                    false ->
-                        {Racing, ordsets:add_element(P, Acc)}
-                end,
-            find_all(Transition, Rest, NewRacing, NewAcc)
-    end.
+find_could_have_run(Ps, Trace) ->
+    find_could_have_run(Ps, Trace, ordsets:new()).
+
+find_could_have_run([],     _, Acc) -> Acc;
+find_could_have_run( _, [_,_], Acc) -> Acc;
+find_could_have_run(Ps, [TraceTop|Rest], Acc) -> 
+    #trace_state{last = {P,_,_}, done = Done, sleep_set = SleepSet} = TraceTop,
+    NotAllowed = ordsets:union(SleepSet, Done),
+    Could1 = ordsets:subtract(Ps, NotAllowed),
+    Could =
+        case ordsets:is_element(P, Ps) of
+            true  -> ordsets:add_element(P, Could1);
+            false -> Could1
+        end,
+    find_could_have_run(ordsets:subtract(Ps, Could),
+                        Rest, ordsets:union(Could, Acc)).
 
 predecessors(Candidates, I, ClockVector) ->
     Fold =
