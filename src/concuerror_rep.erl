@@ -16,7 +16,7 @@
 
 -export([spawn_fun_wrapper/1]).
 
--export([rep_var/4, rep_send/2, rep_send/3]).
+-export([rep_var/3, rep_send/2, rep_send/3]).
 
 -export([rep_spawn/1, rep_spawn/3,
          rep_spawn_link/1, rep_spawn_link/3,
@@ -98,21 +98,16 @@
 %%%----------------------------------------------------------------------
 
 %% Handle Mod:Fun(Args) calls.
--spec rep_var(module(), atom(), [term()], boolean()) -> term().
-rep_var(Mod, Fun, Args, CheckBBModules) ->
+-spec rep_var(module(), atom(), [term()]) -> term().
+rep_var(Mod, Fun, Args) ->
     Key = {Mod, Fun, length(Args)},
     case lists:keyfind(Key, 1, ?INSTR_MOD_FUN) of
         {Key, Callback} ->
             apply(Callback, Args);
         false ->
-            %% If CheckBBModules, add module to `NT_CALLED_MOD' table
-            if
-                CheckBBModules ->
-                    OldMod = concuerror_instr:old_module_name(Mod),
-                    ets:insert(?NT_CALLED_MOD, {OldMod});
-                true ->
-                    true
-            end,
+            %% Add module to `NT_CALLED_MOD' table
+            OldMod = concuerror_instr:old_module_name(Mod),
+            ets:insert(?NT_CALLED_MOD, {OldMod}),
             %% Rename module
             RenameMod = concuerror_instr:check_new_module_name(Mod),
             apply(RenameMod, Fun, Args)
@@ -493,6 +488,9 @@ find_my_registered_name() ->
 %% See `rep_spawn/1'.
 -spec rep_spawn(atom(), atom(), [term()]) -> pid().
 rep_spawn(Module, Function, Args) ->
+    %% Add module to `NT_CALLED_MOD' table
+    OldModule = concuerror_instr:old_module_name(Module),
+    ets:insert(?NT_CALLED_MOD, {OldModule}),
     %% Rename module
     NewModule = concuerror_instr:check_new_module_name(Module),
     Fun = fun() -> apply(NewModule, Function, Args) end,
@@ -512,6 +510,9 @@ rep_spawn_link(Fun) ->
 %% See `rep_spawn_link/1'.
 -spec rep_spawn_link(atom(), atom(), [term()]) -> pid().
 rep_spawn_link(Module, Function, Args) ->
+    %% Add module to `NT_CALLED_MOD' table
+    OldModule = concuerror_instr:old_module_name(Module),
+    ets:insert(?NT_CALLED_MOD, {OldModule}),
     %% Rename module
     NewModule = concuerror_instr:check_new_module_name(Module),
     Fun = fun() -> apply(NewModule, Function, Args) end,
@@ -531,6 +532,9 @@ rep_spawn_monitor(Fun) ->
 %% See rep_spawn_monitor/1.
 -spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}.
 rep_spawn_monitor(Module, Function, Args) ->
+    %% Add module to `NT_CALLED_MOD' table
+    OldModule = concuerror_instr:old_module_name(Module),
+    ets:insert(?NT_CALLED_MOD, {OldModule}),
     %% Rename module
     NewModule = concuerror_instr:check_new_module_name(Module),
     Fun = fun() -> apply(NewModule, Function, Args) end,
@@ -583,6 +587,9 @@ rep_spawn_opt(Fun, Opt) ->
                      {'min_bin_vheap_size', integer()}]) ->
                            pid() | {pid(), reference()}.
 rep_spawn_opt(Module, Function, Args, Opt) ->
+    %% Add module to `NT_CALLED_MOD' table
+    OldModule = concuerror_instr:old_module_name(Module),
+    ets:insert(?NT_CALLED_MOD, {OldModule}),
     %% Rename module
     NewModule = concuerror_instr:check_new_module_name(Module),
     Fun = fun() -> apply(NewModule, Function, Args) end,

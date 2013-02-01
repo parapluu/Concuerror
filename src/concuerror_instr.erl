@@ -207,10 +207,6 @@ instrument_and_compile_one(File, Includes, Defines, TmpDir, Verbosity) ->
             false -> [strong_validation, return]
         end,
     PreOptions = OptIncludes ++ OptDefines ++ OptRest,
-    %% If `Verbosity' level is 2 or greater then check
-    %% for uninstrumented (blackboxed) modules.
-    CheckBBModules = Verbosity >= 2,
-    put('check_bb_modules', CheckBBModules),
     %% Temp directory.
     put(?INSTR_TEMP_DIR, TmpDir),
     %% Compile module.
@@ -474,9 +470,7 @@ instrument_var_application({ModTree, FunTree, ArgTrees}) ->
     RepMod = erl_syntax:atom(?REP_MOD),
     RepFun = erl_syntax:atom(rep_var),
     ArgList = erl_syntax:list(ArgTrees),
-    CheckBBModules = erl_syntax:abstract(get('check_bb_modules')),
-    erl_syntax:application(RepMod, RepFun,
-        [ModTree, FunTree, ArgList, CheckBBModules]).
+    erl_syntax:application(RepMod, RepFun, [ModTree, FunTree, ArgList]).
 
 instrument_rename({Module, Function, ArgTrees}) ->
     RepMod = erl_syntax:atom(new_module_name(Module)),
