@@ -11,26 +11,24 @@ from multiprocessing import Process, Lock, Value, BoundedSemaphore
 
 #---------------------------------------------------------------------
 # Extract scenarios from the specified test
-
 def runTest(test):
     global dirname
     global results
     # test has the format of '.*/suites/<suite_name>/src/<test_name>(.erl)?'
     # Split the test in suite and name components using pattern matching
     rest1, name = os.path.split(test)
-    rest2       = os.path.split(rest1)[0]
-    suite       = os.path.split(rest2)[1]
+    rest2 = os.path.split(rest1)[0]
+    suite = os.path.split(rest2)[1]
     name = os.path.splitext(name)[0]
     if os.path.isdir(test):
         # Our test is a multi module directory
         dirn = test     # directory
         modn = "test"   # module name
         files = glob.glob(dirn + "/*.erl")
-        files = [os.path.basename(f) for f in files]
     else:
         dirn = rest1
         modn = name
-        files = [name + '.erl']
+        files = [test]
     # Create a dir to save the results
     try:
         os.makedirs(results + "/" + suite + "/results")
@@ -41,16 +39,17 @@ def runTest(test):
     os.system("erlc -W0 -o %s %s/%s.erl" % (dirn, dirn, modn))
     # And extract scenarios from it
     pout = subprocess.Popen(
-            ["erl -noinput -pa %s -pa %s -s scenarios extract %s -s init stop"
-            % (dirname, dirn, modn)], stdout=subprocess.PIPE, shell=True)
+        ["erl -noinput -pa %s -pa %s -s scenarios extract %s -s init stop"
+         % (dirname, dirn, modn)], stdout=subprocess.PIPE, shell=True)
     sema.release()
     procS = []
     for scenario in pout.stdout:
         # scenario has the format of {<mod_name>,<func_name>,<preb>}\n
         scen = scenario.strip("{}\n").split(",")
         # And run the test
-        p = Process(target=runScenario,
-                args=(suite, name, modn, scen[1], scen[2], scen[3], dirn, files))
+        p = Process(
+            target=runScenario,
+            args=(suite, name, modn, scen[1], scen[2], scen[3], files))
         p.start()
         procS.append(p)
     pout.stdout.close()
@@ -58,10 +57,10 @@ def runTest(test):
     for p in procS:
         p.join()
 
+
 #---------------------------------------------------------------------
 # Run the specified scenario and print the results
-
-def runScenario(suite, name, modn, funn, preb, flag, dirn, files):
+def runScenario(suite, name, modn, funn, preb, flag, files):
     global concuerror
     global results
     global dirname
@@ -71,16 +70,16 @@ def runScenario(suite, name, modn, funn, preb, flag, dirn, files):
     global total_failed
     if flag == "dpor":
         conc_flag = "--dpor"
-        file_ext  = "-dpor"
+        file_ext = "-dpor"
     else:
         conc_flag = ""
-        file_ext  = ""
+        file_ext = ""
     sema.acquire()
     # Run concuerror
-    os.system(("cd %s && %s --target %s %s --files %s " +
+    os.system(("%s --target %s %s --files %s " +
                "--output %s/%s/results/%s-%s-%s%s.txt --preb %s --quiet %s")
-            % (dirn, concuerror, modn, funn, ' '.join(files), results,
-               suite, name, funn, preb, file_ext, preb, conc_flag))
+              % (concuerror, modn, funn, ' '.join(files), results,
+                 suite, name, funn, preb, file_ext, preb, conc_flag))
     # Compare the results
     orig = ("%s/suites/%s/results/%s-%s-%s%s.txt"
             % (dirname, suite, name, funn, preb, file_ext))
@@ -95,12 +94,13 @@ def runScenario(suite, name, modn, funn, preb, flag, dirn, files):
         # We don't need to keep the results file
         os.remove(rslt)
         print "%-10s %-20s %-50s  \033[01;32mok\033[00m" % \
-                (suite, name, "("+funn+",  "+preb+",  "+flag+")")
+              (suite, name, "("+funn+",  "+preb+",  "+flag+")")
     else:
         total_failed.value += 1
         print "%-10s %-20s %-50s  \033[01;31mfailed\033[00m" % \
-                (suite, name, "("+funn+",  "+preb+",  "+flag+")")
+              (suite, name, "("+funn+",  "+preb+",  "+flag+")")
     lock.release()
+
 
 def equalResults(f1, f2):
     try:
@@ -116,11 +116,14 @@ def equalResults(f1, f2):
         l1 = fp1.readline()
         l2 = fp2.readline()
         if (l1 != l2) and (not ignoreLine(l1)):
-            fp1.close(); fp2.close()
+            fp1.close()
+            fp2.close()
             return False
         if not l1:
-            fp1.close(); fp2.close()
+            fp1.close()
+            fp2.close()
             return True
+
 
 def ignoreLine(line):
     global ignore_matches
@@ -145,7 +148,8 @@ results = os.path.abspath(dirname + "/results")
 
 # Cleanup temp files
 # TODO: make it os independent
-os.system("find %s \( -name '*.beam' -o -name '*.dump' \) -exec rm {} \;" % dirname)
+os.system("find %s \( -name '*.beam' -o -name '*.dump' \) -exec rm {} \;"
+          % dirname)
 os.system("rm -rf %s/*" % results)
 
 # Compile scenarios.erl
@@ -167,7 +171,7 @@ if threads == "":
 # Print header
 print "Concuerror's Testsuite (%d threads)\n" % int(threads)
 print "%-10s %-20s %-50s  %s" % \
-        ("Suite", "Test", "(Function,  Preemption Bound,  Reduction)", "Result")
+      ("Suite", "Test", "(Function,  Preemption Bound,  Reduction)", "Result")
 print "---------------------------------------------" + \
       "---------------------------------------------"
 
