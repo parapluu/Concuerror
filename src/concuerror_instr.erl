@@ -400,8 +400,8 @@ get_mfa(Tree) ->
         module_qualifier ->
             ModTree = erl_syntax:module_qualifier_argument(Qualifier),
             FunTree = erl_syntax:module_qualifier_body(Qualifier),
-            case has_atoms_only(ModTree) andalso
-                has_atoms_only(FunTree) of
+            case erl_syntax:type(ModTree) =:= atom andalso
+		 erl_syntax:type(FunTree) =:= atom of
                 true ->
                     Module = erl_syntax:atom_value(ModTree),
                     Function = erl_syntax:atom_value(FunTree),
@@ -410,16 +410,6 @@ get_mfa(Tree) ->
             end;
         _Other -> no_instr
     end.
-
-%% Returns true if Tree is an atom or a qualified name containing only atoms.
-has_atoms_only(Tree) ->
-    Type = erl_syntax:type(Tree),
-    IsAtom = fun(T) -> erl_syntax:type(T) =:= atom end,
-    IsAtom(Tree)
-        orelse
-          (Type =:= qualified_name andalso
-           lists:all(IsAtom, erl_syntax:qualified_name_segments(Tree))).
-
 
 %% Determine whether an auto-exported BIF call needs instrumentation.
 needs_instrument(Function, ArgTrees) ->
