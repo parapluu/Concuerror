@@ -62,7 +62,9 @@
 %%% Types
 %%%----------------------------------------------------------------------
 
--type analysis_info() :: {analysis_target(), non_neg_integer()}.
+-type analysis_info() :: {analysis_target(),
+                          non_neg_integer(),  %% Number of interleavings
+                          non_neg_integer()}. %% Sleep-Set blocked traces
 
 
 %% Analysis result tuple.
@@ -133,22 +135,29 @@ analyze({Mod,Fun,Args}=_Target, Files, Options) ->
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = concuerror_util:to_elapsed_time(T1, T2),
                 ?debug("Done in ~wm~.2fs\n", [Mins, Secs]),
+                %% Print analysis summary
+                RunCount = element(2, Result),
+                SBlocked = element(3, Result),
+                StrB =
+                    case SBlocked of
+                        0 -> " ";
+                        _ -> io_lib:format(
+                                " (encountered ~w sleep-set blocked traces) ",
+                                [SBlocked])
+                    end,
+                concuerror_log:log(0, "\n\nAnalysis complete. Checked "
+                    "~w interleaving(s)~sin ~wm~.2fs:\n",
+                    [RunCount, StrB, Mins, Secs]),
                 case Result of
-                    {ok, RunCount} ->
-                        concuerror_log:log(0, "~n~nAnalysis complete (checked "
-                                "~w interleaving(s) in ~wm~.2fs):~n",
-                                [RunCount, Mins, Secs]),
+                    {ok, _, _} ->
                         concuerror_log:log(0, "No errors found.~n"),
-                        {ok, {Target, RunCount}};
-                    {error, RunCount, Tickets} ->
+                        {ok, {Target, RunCount, SBlocked}};
+                    {error, _, _, Tickets} ->
                         TicketCount = length(Tickets),
-                        concuerror_log:log(0, "~n~nAnalysis complete (checked "
-                                "~w interleaving(s) in ~wm~.2fs):~n",
-                                [RunCount, Mins, Secs]),
                         concuerror_log:log(0,
                                 "Found ~p erroneous interleaving(s).~n",
                                 [TicketCount]),
-                        {error, analysis, {Target, RunCount}, Tickets}
+                        {error, analysis, {Target, RunCount, SBlocked}, Tickets}
                 end;
             error -> {error, instr, {Target, 0}}
         end,
@@ -293,15 +302,16 @@ empty_clock_vector() -> orddict:new().
 -type trace_state() :: #trace_state{}.
 
 -record(dpor_state, {
-          target                 :: analysis_target(),
-          run_count    = 1       :: pos_integer(),
-          tickets      = []      :: [concuerror_ticket:ticket()],
-          trace        = []      :: [trace_state()],
-          must_replay  = false   :: boolean(),
-          proc_before  = []      :: [pid()],
-          dpor_flavor  = 'none'  :: 'full' | 'flanagan' | 'none',
-          preemption_bound = inf :: non_neg_integer() | 'inf',
-          group_leader           :: pid()
+          target                  :: analysis_target(),
+          run_count    = 1        :: pos_integer(),
+          sleep_blocked_count = 0 :: non_neg_integer(),
+          tickets      = []       :: [concuerror_ticket:ticket()],
+          trace        = []       :: [trace_state()],
+          must_replay  = false    :: boolean(),
+          proc_before  = []       :: [pid()],
+          dpor_flavor  = 'none'   :: 'full' | 'flanagan' | 'none',
+          preemption_bound = inf  :: non_neg_integer() | 'inf',
+          group_leader            :: pid()
          }).
 
 interleave_dpor(Target, PreBound, Dpor) ->
@@ -1368,8 +1378,9 @@ convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}, _Msgs})->
     {Tag, Info}.
 
 report_possible_deadlock(State) ->
-    #dpor_state{trace = [TraceTop|Trace], tickets = Tickets} = State,
-    NewTickets =
+    #dpor_state{trace = [TraceTop|Trace], tickets = Tickets,
+                sleep_blocked_count = SBlocked} = State,
+    {NewTickets, NewSBlocked} =
         case TraceTop#trace_state.enabled of
             [] ->
                 case TraceTop#trace_state.blocked of
@@ -1378,34 +1389,37 @@ report_possible_deadlock(State) ->
                         %% Report that we finish an interleaving
                         %% without errors in the progress logger.
                         concuerror_log:progress(ok),
-                        Tickets;
+                        {Tickets, SBlocked};
                     Blocked ->
                         ?debug("DEADLOCK!\n"),
                         Error = {deadlock, Blocked},
                         LidTrace = TraceTop#trace_state.lid_trace,
                         Ticket = create_ticket(Error, LidTrace),
-                        [Ticket|Tickets]
+                        {[Ticket|Tickets], SBlocked}
                 end;
             _Else ->
                 case TraceTop#trace_state.sleep_set =/= []
                     andalso TraceTop#trace_state.done =:= [] of
-                    false -> ok;
+                    false ->
+                        {Tickets, SBlocked};
                     true ->
-                        ?debug("SLEEP SET BLOCK\n")
-                end,
-                Tickets
+                        ?debug("SLEEP SET BLOCK\n"),
+                        {Tickets, SBlocked+1}
+                end
         end,
     ?debug("Stack frame dropped\n"),
-    State#dpor_state{must_replay = true, trace = Trace, tickets = NewTickets}.
+    State#dpor_state{must_replay = true, trace = Trace, tickets = NewTickets,
+                     sleep_blocked_count = NewSBlocked}.
 
 finished(#dpor_state{trace = Trace}) ->
     Trace =:= [].
 
 dpor_return(State) ->
     RunCnt = State#dpor_state.run_count,
+    SBlocked = State#dpor_state.sleep_blocked_count,
     case State#dpor_state.tickets of
-        [] -> {ok, RunCnt};
-        Tickets -> {error, RunCnt, Tickets}
+        [] -> {ok, RunCnt, SBlocked};
+        Tickets -> {error, RunCnt, SBlocked, Tickets}
     end.
 
 %%%----------------------------------------------------------------------

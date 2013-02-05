@@ -468,14 +468,16 @@ export(Results, File) ->
         Error -> Error
     end.
 
-exportAux({'ok', {_Target, RunCount}}, IoDevice) ->
+exportAux({'ok', {_Target, RunCount, _SBlocked}}, IoDevice) ->
     Msg = io_lib:format("Checked ~w interleaving(s). No errors found.\n",
         [RunCount]),
     file:write(IoDevice, Msg);
-exportAux({error, instr, {_Target, _RunCount}}, IoDevice) ->
+exportAux({error, instr,
+        {_Target, _RunCount, _SBlocked}}, IoDevice) ->
     Msg = "Instrumentation error.\n",
     file:write(IoDevice, Msg);
-exportAux({error, analysis, {_Target, RunCount}, Tickets}, IoDevice) ->
+exportAux({error, analysis,
+        {_Target, RunCount, _Sblocked}, Tickets}, IoDevice) ->
     TickLen = length(Tickets),
     Msg = io_lib:format("Checked ~w interleaving(s). ~w errors found.\n\n",
         [RunCount, TickLen]),
