@@ -30,11 +30,16 @@
 %%% Callback types
 %%%----------------------------------------------------------------------
 
--type event() :: {'msg', string(), non_neg_integer()}
-               | {'progress', 'ok' | concuerror_ticket:ticket()}.
+-type progress_type() ::
+    {'new', pos_integer(), non_neg_integer()} |
+    {'error', concuerror_ticket:ticket()}.
+
+-type event() ::
+    {'msg', string(), non_neg_integer()} |
+    {'progress', progress_type()}.
 -type state() :: [].
 
--export_type([event/0, state/0]).
+-export_type([progress_type/0, event/0, state/0]).
 
 %%%----------------------------------------------------------------------
 %%% Non gen_evt functions.
@@ -105,14 +110,18 @@ log(Verbosity, String, Args) when is_list(String), is_list(Args) ->
     LogMsg = io_lib:format(String, Args),
     gen_event:notify(concuerror_log, {msg, LogMsg, Verbosity}).
 
-%% @spec progress(concuerror_ticket:ticket() | 'ok') -> 'ok'
+%% @spec progress({new, pos_integer(), non_neg_integer()
+%%              | {error, concuerror_ticket:ticket()}) -> 'ok'
 %% @doc: Shows analysis progress.
--spec progress(concuerror_ticket:ticket() | 'ok') -> 'ok'.
+-spec progress({new, pos_integer(), non_neg_integer()}
+             | {error, concuerror_ticket:ticket()}) -> ok.
 
-progress(ok) ->
-    gen_event:notify(concuerror_log, {progress, ok});
-progress(Ticket) ->
-    gen_event:notify(concuerror_log, {progress, Ticket}).
+progress({new, _RunCnt, _SBlocked}=New) ->
+    %% Start a new interleaving
+    gen_event:notify(concuerror_log, {progress, New});
+progress({error, _Ticket}=Error) ->
+    %% Encountered error (Ticket)
+    gen_event:notify(concuerror_log, {progress, Error}).
 
 %% @spec reset() -> 'ok'
 %% @doc: Reset logger's internal state.
@@ -139,7 +148,7 @@ terminate(_Reason, _State) ->
 handle_event({msg, String, _MsgVerb}, State) ->
     io:format("~s", [String]),
     {ok, State};
-handle_event({progress, _Result}, State) ->
+handle_event({progress, _Progress}, State) ->
     {ok, State};
 handle_event('reset', _State) ->
     {ok, []}.

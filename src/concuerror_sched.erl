@@ -409,9 +409,11 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
 
 replay_trace(#dpor_state{proc_before = ProcBefore,
                          run_count = RunCnt,
+                         sleep_blocked_count = SBlocked,
                          group_leader = GroupLeader,
                          target = Target} = State) ->
-    ?debug("\nReplay (~p) is required...\n", [RunCnt + 1]),
+    NewRunCnt = RunCnt + 1,
+    ?debug("\nReplay (~p) is required...\n", [NewRunCnt]),
     [TraceTop|TraceRest] = State#dpor_state.trace,
     LidTrace = TraceTop#trace_state.lid_trace,
     concuerror_lid:stop(),
@@ -423,8 +425,10 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
     {_FirstLid, NewGroupLeader} = start_target_op(Target),
     NewLidTrace = replay_lid_trace(LidTrace),
     ?debug("Done replaying...\n\n"),
+    %% Report the start of a new interleaving
+    concuerror_log:progress({'new', NewRunCnt, SBlocked}),
     NewTrace = [TraceTop#trace_state{lid_trace = NewLidTrace}|TraceRest],
-    State#dpor_state{run_count = RunCnt + 1, must_replay = false,
+    State#dpor_state{run_count = NewRunCnt, must_replay = false,
                      group_leader = NewGroupLeader, trace = NewTrace}.
 
 replay_lid_trace(Queue) ->
@@ -1271,6 +1275,8 @@ report_error(Transition, State) ->
     Error = convert_error_info(Transition),
     LidTrace = queue:in({Transition, foo}, TraceTop#trace_state.lid_trace),
     Ticket = create_ticket(Error, LidTrace),
+    %% Report the error to the progress logger.
+    concuerror_log:progress({'error', Ticket}),
     State#dpor_state{must_replay = true, tickets = [Ticket|Tickets]}.
 
 create_ticket(Error, LidTrace) ->
@@ -1279,10 +1285,7 @@ create_ticket(Error, LidTrace) ->
     InitSet = sets:add_element(P1, sets:new()),
     {ErrorState, _Procs} =
         lists:mapfoldl(fun convert_error_trace/2, InitSet, Trace),
-    Ticket = concuerror_ticket:new(Error, ErrorState),
-    %% Report the error to the progress logger.
-    concuerror_log:progress(Ticket),
-    Ticket.
+    concuerror_ticket:new(Error, ErrorState).
 
 convert_error_trace({Lid, {error, [ErrorOrThrow,Kind|_]}, _Msgs}, Procs)
   when ErrorOrThrow =:= error; ErrorOrThrow =:= throw ->
@@ -1386,15 +1389,14 @@ report_possible_deadlock(State) ->
                 case TraceTop#trace_state.blocked of
                     [] ->
                         ?debug("NORMAL!\n"),
-                        %% Report that we finish an interleaving
-                        %% without errors in the progress logger.
-                        concuerror_log:progress(ok),
                         {Tickets, SBlocked};
                     Blocked ->
                         ?debug("DEADLOCK!\n"),
                         Error = {deadlock, Blocked},
                         LidTrace = TraceTop#trace_state.lid_trace,
                         Ticket = create_ticket(Error, LidTrace),
+                        %% Report error
+                        concuerror_log:progress({'error', Ticket}),
                         {[Ticket|Tickets], SBlocked}
                 end;
             _Else ->

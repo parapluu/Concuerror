@@ -16,7 +16,7 @@
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0, get_module_name/1,
          is_erl_source/1, funs/1, funs/2, funLine/3, pmap/2,
          timer_init/0, timer_start/1, timer/1, timer_stop/1, timer_destroy/0,
-         init_state/0, progress_bar/3, to_elapsed_time/1, to_elapsed_time/2]).
+         init_state/0, progress_bar/2, to_elapsed_time/1, to_elapsed_time/2]).
 
 -export_type([progress/0]).
 
@@ -225,28 +225,37 @@ timer_destroy() ->
 
 %% Log event handler internal state.
 %% The state (if we want to have progress bar) contains
-%% the number of interleaving checked so far,
 %% the number of errors we have found so far,
 %% the elapsed time (in msecs),
 %% the timer.
--type progress() :: {non_neg_integer(), non_neg_integer(),
-                     non_neg_integer(), pos_integer()}.
+-type progress() :: {non_neg_integer(), non_neg_integer(), pos_integer()}.
 
 -spec init_state() -> progress().
 init_state() ->
-    {0, 0, 0, concuerror_util:timer_start(1000)}.
+    {0, 0, concuerror_util:timer_start(1000)}.
 
--spec progress_bar(non_neg_integer(), non_neg_integer(), elapsed_time()) ->
-    string().
-progress_bar(RunCnt, Errors, {Mins, Secs}) ->
-    TruncSecs = erlang:trunc(Secs),
-    StrSecs =
-        case TruncSecs < 10 of
-            true  -> "0" ++ integer_to_list(TruncSecs);
-            false -> integer_to_list(TruncSecs)
-        end,
-    io_lib:format("[ ~p checked interleavings, ~p errors in ~wm~ss ]",
-        [RunCnt, Errors, Mins, StrSecs]).
+-spec progress_bar(concuerror_log:progress_type(), progress()) ->
+    {progress(), string()}.
+progress_bar({'new', RunCnt, SBlocked}, {Errors, Elapsed, Timer}=State) ->
+    case timer(Timer) of
+        false -> {State, ""};
+        Time  ->
+            NewElapsed = Elapsed + Time,
+            {Mins, Secs} = to_elapsed_time(NewElapsed),
+            TruncSecs = erlang:trunc(Secs),
+            StrSecs =
+                case TruncSecs < 10 of
+                    true  -> "0" ++ integer_to_list(TruncSecs);
+                    false -> integer_to_list(TruncSecs)
+                end,
+            Msg = io_lib:format(
+                "[ ~p checked interleavings, ~p sleep set blocked,"
+                " ~p errors in ~wm~ss ]",
+                [RunCnt, SBlocked, Errors, Mins, StrSecs]),
+            {{Errors, NewElapsed, Timer}, Msg}
+    end;
+progress_bar({'error', _Ticket}, {Error, Elapsed, Timer}) ->
+    {{Error+1, Elapsed, Timer}, ""}.
 
 
 %% -------------------------------------------------------------------

@@ -102,45 +102,38 @@ handle_event({msg, String, MsgVerb}, {Verb, _Progress}=State) ->
     end,
     {ok, State};
 
-handle_event({progress, ok}, {Verb, {RunCnt, NumErrors, Elapsed, Timer}}) ->
-    NewRunCnt = RunCnt + 1,
-    NewElapsed = progress_bar(NewRunCnt, NumErrors, Elapsed, Timer),
-    {ok, {Verb, {NewRunCnt, NumErrors, NewElapsed, Timer}}};
-handle_event({progress, Ticket}, {Verb, {RunCnt, NumErrors, Elapsed, Timer}}) ->
-    Error = concuerror_ticket:get_error(Ticket),
-    ErrorItem = concuerror_util:flat_format("~s~n~s",
-        [concuerror_error:type(Error), concuerror_error:short(Error)]),
-    List = ref_lookup(?ERROR_LIST),
-    wxControlWithItems:append(List, ErrorItem),
-    addListData(?ERROR_LIST, [Ticket]),
-    %% Progress
-    NewRunCnt = RunCnt + 1,
-    NewNumErrors = NumErrors + 1,
-    NewElapsed = progress_bar(NewRunCnt, NewNumErrors, Elapsed, Timer),
-    {ok, {Verb, {NewRunCnt, NewNumErrors, NewElapsed, Timer}}};
-handle_event({progress, _Result}, {_Verb, 'noprogress'}=State) ->
+handle_event({progress, _Type}, {_Verb, 'noprogress'}=State) ->
     {ok, State};
+handle_event({progress, Type}, {Verb, Progress}) ->
+    case Type of
+        {error, Ticket} ->
+            Error = concuerror_ticket:get_error(Ticket),
+            ErrorItem = concuerror_util:flat_format("~s~n~s",
+                [concuerror_error:type(Error), concuerror_error:short(Error)]),
+            List = ref_lookup(?ERROR_LIST),
+            wxControlWithItems:append(List, ErrorItem),
+            addListData(?ERROR_LIST, [Ticket]),
+            ok;
+        _Other ->
+            ok
+    end,
+    case concuerror_util:progress_bar(Type, Progress) of
+        {NewProgress, ""} ->
+            {ok, {Verb, NewProgress}};
+        {NewProgress, Msg} ->
+            This = ref_lookup(?LOG_TEXT),
+            NumLines = wxTextCtrl:getNumberOfLines(This),
+            FromPos = wxTextCtrl:xYToPosition(This, 0, NumLines-1),
+            EndPos  = wxTextCtrl:getLastPosition(This),
+            wxTextCtrl:replace(This, FromPos, EndPos, Msg),
+            {ok, {Verb, NewProgress}}
+    end;
 
 handle_event('reset', {_Verb, 'noprogress'}=State) ->
     {ok, State};
 handle_event('reset', {Verb, _Progress}) ->
     {ok, {Verb, concuerror_util:init_state()}}.
 
-progress_bar(RunCnt, NumErrors, Elapsed, Timer) ->
-    case concuerror_util:timer(Timer) of
-        false -> Elapsed;
-        Time ->
-            NewElapsed = Elapsed + Time,
-            ElapsedTime = concuerror_util:to_elapsed_time(NewElapsed),
-            %% Replace last line
-            This = ref_lookup(?LOG_TEXT),
-            NumLines = wxTextCtrl:getNumberOfLines(This),
-            FromPos = wxTextCtrl:xYToPosition(This, 0, NumLines-1),
-            EndPos  = wxTextCtrl:getLastPosition(This),
-            Text = concuerror_util:progress_bar(RunCnt, NumErrors, ElapsedTime),
-            wxTextCtrl:replace(This, FromPos, EndPos, Text),
-            NewElapsed
-    end.
 
 %%%----------------------------------------------------------------------
 %%% Setup functions
