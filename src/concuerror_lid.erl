@@ -18,7 +18,7 @@
          new/2, start/0, stop/0, to_string/1, root_lid/0,
          ets_new/1, ref_new/2, lookup_ref_lid/1]).
 
--export_type([lid/0, ets_lid/0, ref_lid/0]).
+-export_type([lid/0, maybe_lid/0, ets_lid/0, ref_lid/0]).
 
 -include("gen.hrl").
 
@@ -50,6 +50,7 @@
 -type lid() :: integer().
 -type ets_lid() :: integer().
 -type ref_lid() :: integer().
+-type maybe_lid() :: lid() | 'not_found'.
 
 %%%----------------------------------------------------------------------
 %%% User interface
@@ -134,10 +135,13 @@ ref_new(Lid, Ref) ->
     true = ets:insert(?NT_PID, {Ref, N, Lid}),
     N.
 
--spec lookup_ref_lid(reference()) -> lid().
+-spec lookup_ref_lid(reference()) -> maybe_lid().
 
 lookup_ref_lid(RefLid) ->
-    ets:lookup_element(?NT_PID, RefLid, 3).
+    case catch ets:lookup_element(?NT_PID, RefLid, 3) of
+        {badarg, _Exception} -> not_found;
+        Lid -> Lid
+    end.
 
 %% Initialize LID tables.
 %% Must be called before any other call to lid interface functions.

@@ -29,22 +29,25 @@
 %%% Types
 %%%----------------------------------------------------------------------
 
--type maybe_lid() :: concuerror_lid:lid() | 'not_found'.
-
 -type spawn_opt_opts() :: ['link' | 'monitor'].
 
 %% Tuples providing information about a process' action.
 -type proc_action() :: {'after', concuerror_lid:lid()} |
                        {'block', concuerror_lid:lid()} |
-                       {'demonitor', concuerror_lid:lid(), maybe_lid()} |
+                       {'demonitor', concuerror_lid:lid(),
+                                    concuerror_lid:maybe_lid()} |
                        {'exit', concuerror_lid:lid(), term()} |
-                       {'fun_exit', concuerror_lid:lid(), maybe_lid(), term()} |
+                       {'fun_exit', concuerror_lid:lid(),
+                                    concuerror_lid:maybe_lid(), term()} |
                        {'halt', concuerror_lid:lid()} |
                        {'halt', concuerror_lid:lid(),
                                     non_neg_integer() | string()} |
-                       {'is_process_alive', concuerror_lid:lid(), maybe_lid()} |
-                       {'link', concuerror_lid:lid(), maybe_lid()} |
-                       {'monitor', concuerror_lid:lid(), maybe_lid()} |
+                       {'is_process_alive', concuerror_lid:lid(),
+                                    concuerror_lid:maybe_lid()} |
+                       {'link', concuerror_lid:lid(),
+                                    concuerror_lid:maybe_lid()} |
+                       {'monitor', concuerror_lid:lid(),
+                                    concuerror_lid:maybe_lid()} |
                        {'process_flag', concuerror_lid:lid(),
                                     'trap_exit', boolean()} |
                        {'receive', concuerror_lid:lid(),
@@ -52,15 +55,21 @@
                        {'receive_no_instr', concuerror_lid:lid(), term()} |
                        {'register', concuerror_lid:lid(),
                                     atom(), concuerror_lid:lid()} |
-                       {'send', concuerror_lid:lid(), maybe_lid(), term()} |
-                       {'spawn', maybe_lid(), concuerror_lid:lid()} |
-                       {'spawn_link', maybe_lid(), concuerror_lid:lid()} |
-                       {'spawn_monitor', maybe_lid(), concuerror_lid:lid()} |
-                       {'spawn_opt', maybe_lid(),
+                       {'send', concuerror_lid:lid(),
+                                    concuerror_lid:maybe_lid(), term()} |
+                       {'spawn', concuerror_lid:maybe_lid(),
+                                    concuerror_lid:lid()} |
+                       {'spawn_link', concuerror_lid:maybe_lid(),
+                                    concuerror_lid:lid()} |
+                       {'spawn_monitor', concuerror_lid:maybe_lid(),
+                                    concuerror_lid:lid()} |
+                       {'spawn_opt', concuerror_lid:maybe_lid(),
                                     concuerror_lid:lid(), spawn_opt_opts()} |
-                       {'unlink', concuerror_lid:lid(), maybe_lid()} |
+                       {'unlink', concuerror_lid:lid(),
+                                    concuerror_lid:maybe_lid()} |
                        {'unregister', concuerror_lid:lid(), atom()} |
-                       {'whereis', concuerror_lid:lid(), atom(), maybe_lid()}.
+                       {'whereis', concuerror_lid:lid(), atom(),
+                                    concuerror_lid:maybe_lid()}.
 
 %%%----------------------------------------------------------------------
 %%% User interface
