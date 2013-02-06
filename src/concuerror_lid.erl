@@ -139,7 +139,7 @@ ref_new(Lid, Ref) ->
 
 lookup_ref_lid(RefLid) ->
     case catch ets:lookup_element(?NT_PID, RefLid, 3) of
-        {badarg, _Exception} -> not_found;
+        {'EXIT', {badarg, _Exception}} -> not_found;
         Lid -> Lid
     end.
 
