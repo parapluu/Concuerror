@@ -64,6 +64,7 @@ MAIN_MODULES = \
 	concuerror
 
 CORE_MODULES = \
+	concuerror_deps \
 	concuerror_gui \
 	concuerror_error \
 	concuerror_instr \

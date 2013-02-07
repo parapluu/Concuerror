@@ -42,13 +42,13 @@ acquire_lock(N, T, I) ->
     end.
 
 release_lock(T, I) ->
-     lock_name(T, I) ! concuerror_sched:lock_release_atom().
+     lock_name(T, I) ! concuerror_deps:lock_release_atom().
 
 lock() ->
     receive
         {Pid, acquire} ->
             Pid ! acquired,
-            ReleaseAtom = concuerror_sched:lock_release_atom(),
+            ReleaseAtom = concuerror_deps:lock_release_atom(),
             receive
                 ReleaseAtom -> lock()
             end;
