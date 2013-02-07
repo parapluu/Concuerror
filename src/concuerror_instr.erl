@@ -19,6 +19,7 @@
 -export_type([macros/0]).
 
 -include("gen.hrl").
+-include("instr.hrl").
 
 %%%----------------------------------------------------------------------
 %%% Debug
@@ -30,65 +31,6 @@
 -else.
 -define(print(S_), ok).
 -endif.
-
-%%%----------------------------------------------------------------------
-%%% Definitions
-%%%----------------------------------------------------------------------
-
-%% List of attributes that should be stripped.
--define(ATTR_STRIP, [type, spec, opaque, export_type, import_type]).
-
-%% Instrumented auto-imported functions of 'erlang' module.
--define(INSTR_ERL_FUN,
-        [{demonitor, 1},
-         {demonitor, 2},
-         {halt, 0},
-         {halt, 1},
-         {is_process_alive, 1},
-         {link, 1},
-         {monitor, 2},
-         {process_flag, 2},
-         {register, 2},
-         {spawn, 1},
-         {spawn, 3},
-         {spawn_link, 1},
-         {spawn_link, 3},
-         {spawn_monitor, 1},
-         {spawn_monitor, 3},
-         {spawn_opt, 2},
-         {spawn_opt, 4},
-         {unlink, 1},
-         {unregister, 1},
-         {whereis, 1}]).
-
-%% Instrumented functions called as erlang:FUNCTION.
--define(INSTR_ERL_MOD_FUN,
-        [{erlang, send, 2}, {erlang, send, 3}] ++
-            [{erlang, F, A} || {F, A} <- ?INSTR_ERL_FUN]).
-
-%% Instrumented functions from ets module.
--define(INSTR_ETS_FUN,
-        [{ets, insert_new, 2},
-         {ets, lookup, 2},
-         {ets, select_delete, 2},
-         {ets, insert, 2},
-         {ets, delete, 1},
-         {ets, delete, 2},
-         {ets, match_object, 2},
-         {ets, match_object, 3},
-         {ets, match_delete, 2},
-         {ets, new, 2},
-         {ets, info, 1},
-         {ets, info, 2},
-         {ets, foldl, 3}]).
-
-%% Instrumented mod:fun.
--define(INSTR_MOD_FUN, ?INSTR_ERL_MOD_FUN ++ ?INSTR_ETS_FUN).
-
-%% Key in ?NT_INSTR to use for temp directory.
--define(INSTR_TEMP_DIR, '_._instr_temp_dir').
-%% Key in ?NT_INSTR to use for `fail-uninstrumented' flag.
--define(FAIL_BB, '_._instr_fail_bb').
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -231,7 +173,8 @@ instrument_and_compile(Files, Options) ->
     ets:insert(?NT_INSTR_MODS, InstrModules),
     ?NT_INSTR_BIFS = ets:new(?NT_INSTR_BIFS,
         [named_table, public, set, {read_concurrency, true}]),
-    ets:insert(?NT_INSTR_BIFS, []),
+    PredefBifs = [{PBif} || PBif <- ?PREDEF_BIFS],
+    ets:insert(?NT_INSTR_BIFS, PredefBifs),
     ?NT_INSTR_IGNORED = ets:new(?NT_INSTR_IGNORED,
         [named_table, public, set, {read_concurrency, true}]),
     ets:insert(?NT_INSTR_IGNORED, []),
