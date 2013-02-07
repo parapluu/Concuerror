@@ -31,30 +31,48 @@ may_have_dependencies(_Else) -> true.
 
 lock_release_atom() -> '_._concuerror_lock_release'.
 
+-define( ONLY_INITIALLY, true).
+-define(      SYMMETRIC, true).
+-define(      CHECK_MSG, true).
+-define(     ALLOW_SWAP, true).
+-define(DONT_ALLOW_SWAP, false).
+-define( DONT_CHECK_MSG, false).
+
 -spec dependent(concuerror_sched:transition(),
                 concuerror_sched:transition()) -> boolean().
 
 dependent(A, B) ->
-    dependent(A, B, true, true).
+    dependent(A, B, ?CHECK_MSG, ?ALLOW_SWAP).
 
-dependent({Lid, _Instr1, _Msgs1}, {Lid, _Instr2, _Msgs2}, true, true) ->
-    %% No need to take care of same Lid dependencies
+%% Instructions from the same process are always dependent
+dependent({Lid, _Instr1, _Msgs1},
+          {Lid, _Instr2, _Msgs2}, ?ONLY_INITIALLY, ?ONLY_INITIALLY) ->
     true;
+
+%% XXX: This should be fixed in sched:recent_dependency_cv and removed
+dependent({_Lid1, _Instr1, _Msgs1},
+          {_Lid2, Special, _Msgs2}, ?ONLY_INITIALLY, ?ONLY_INITIALLY)
+  when Special =:= 'block'; Special =:= 'init' ->
+    false;
 
 %% Register and unregister have the same dependencies.
 %% Use a unique value for the Pid to avoid checks there.
-dependent({Lid, {unregister, RegName}, Msgs}, B, true, true) ->
-    dependent({Lid, {register, {RegName, make_ref()}}, Msgs}, B, true, true);
-dependent(A, {Lid, {unregister, RegName}, Msgs}, true, true) ->
-    dependent(A, {Lid, {register, {RegName, make_ref()}}, Msgs}, true, true);
+dependent({Lid, {unregister, RegName}, Msgs}, B,
+          ?ONLY_INITIALLY, ?ONLY_INITIALLY) ->
+    dependent({Lid, {register, {RegName, make_ref()}}, Msgs}, B,
+              ?ONLY_INITIALLY, ?ONLY_INITIALLY);
+dependent(A, {Lid, {unregister, RegName}, Msgs},
+          ?ONLY_INITIALLY, ?ONLY_INITIALLY) ->
+    dependent(A, {Lid, {register, {RegName, make_ref()}}, Msgs},
+              ?ONLY_INITIALLY, ?ONLY_INITIALLY);
 
 
-%% Decisions depending on messages sent and receive statements:
+%% Decisions depending on send and receive statements:
 
 %% Sending to the same process:
 dependent({_Lid1, Instr1, PreMsgs1} = Trans1,
           {_Lid2, Instr2, PreMsgs2} = Trans2,
-          true, true) ->
+          ?CHECK_MSG, ?ONLY_INITIALLY) ->
     Check =
         case {PreMsgs1, Instr1, PreMsgs2, Instr2} of
             {[_|_], _, [_|_], _} ->
@@ -66,20 +84,22 @@ dependent({_Lid1, Instr1, PreMsgs1} = Trans1,
             _ -> false
         end,
     case Check of
-        false -> dependent(Trans1, Trans2, false, true);
+        false -> dependent(Trans1, Trans2, ?DONT_CHECK_MSG, ?ONLY_INITIALLY);
         {Msgs1, Msgs2} ->
             Lids1 = ordsets:from_list(orddict:fetch_keys(Msgs1)),
             Lids2 = ordsets:from_list(orddict:fetch_keys(Msgs2)),
             case ordsets:intersection(Lids1, Lids2) of
-                [] -> dependent(Trans1, Trans2, false, true);
+                [] ->
+                    dependent(Trans1, Trans2, ?DONT_CHECK_MSG, ?ONLY_INITIALLY);
                 [Key] ->
+                    %% XXX: Can be refined
                     case {orddict:fetch(Key, Msgs1), orddict:fetch(Key, Msgs2)} of
                         {[V1], [V2]} ->
                             LockReleaseAtom = lock_release_atom(),
                             V1 =/= LockReleaseAtom andalso V2 =/= LockReleaseAtom;
                         _Else -> true
                     end;
-                _ -> true
+                _ -> true %% XXX: Can be refined
             end
     end;
 
@@ -87,7 +107,7 @@ dependent({_Lid1, Instr1, PreMsgs1} = Trans1,
 %% Sending the message that triggered a receive's 'had_after'
 dependent({ Lid1,         Instr1, PreMsgs1} = Trans1,
           { Lid2, {Tag, Info},   _Msgs2} = Trans2,
-          ChkMsg, Swap) when
+          CheckMsg, AllowSwap) when
       Tag =:= 'after';
       (Tag =:= 'receive' andalso
        element(1, Info) =:= had_after andalso
@@ -118,8 +138,8 @@ dependent({ Lid1,         Instr1, PreMsgs1} = Trans1,
     case Dependent of
         true -> true;
         false ->
-            case Swap of
-                true -> dependent(Trans2, Trans1, ChkMsg, false);
+            case AllowSwap of
+                true -> dependent(Trans2, Trans1, CheckMsg, ?DONT_ALLOW_SWAP);
                 false -> false
             end
     end;
@@ -128,13 +148,13 @@ dependent({ Lid1,         Instr1, PreMsgs1} = Trans1,
 %% ETS operations live in their own small world.
 dependent({_Lid1, {ets, Op1}, _Msgs1},
           {_Lid2, {ets, Op2}, _Msgs2},
-          _ChkMsg, true) ->
+          _CheckMsg, ?SYMMETRIC) ->
     dependent_ets(Op1, Op2);
 
 %% Registering a table with the same name as an existing one.
 dependent({_Lid1, { ets, {   new,           [_Table, Name, Options]}}, _Msgs1},
           {_Lid2, {exit, {normal, {{_Heirs, Tables}, _Name, _Links}}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     NamedTables = [N || {_Lid, {ok, N}} <- Tables],
     lists:member(named_table, Options) andalso
         lists:member(Name, NamedTables);
@@ -142,14 +162,14 @@ dependent({_Lid1, { ets, {   new,           [_Table, Name, Options]}}, _Msgs1},
 %% Table owners exits mess things up.
 dependent({_Lid1, { ets, {   _Op,                     [Table|_Rest]}}, _Msgs1},
           {_Lid2, {exit, {normal, {{_Heirs, Tables}, _Name, _Links}}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     lists:keymember(Table, 1, Tables);
 
 %% Heirs exit should also be monitored.
 %% Links exit should be monitored to be sure that messages are captured.
 dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _Name1, Links1}}}, _Msgs1},
           {Lid2, {exit, {normal, {{Heirs2, _Tbls2}, _Name2, Links2}}}, _Msgs2},
-          _ChkMsg, true) ->
+          _CheckMsg, ?SYMMETRIC) ->
     lists:member(Lid1, Heirs2) orelse lists:member(Lid2, Heirs1) orelse
         lists:member(Lid1, Links2) orelse lists:member(Lid2, Links1);
 
@@ -159,83 +179,95 @@ dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _Name1, Links1}}}, _Msgs1},
 %% Sending using name to a process that may exit and unregister.
 dependent({_Lid1, {send,                     {TName, _TLid, _Msg}}, _Msgs1},
           {_Lid2, {exit, {normal, {_Tables, {ok, TName}, _Links}}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     true;
 
 %% Send using name before process has registered itself (or after ungeristering).
 dependent({_Lid1, {register,      {RegName, _TLid}}, _Msgs1},
           {_Lid2, {    send, {RegName, _Lid, _Msg}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     true;
 
 %% Two registers using the same name or the same process.
 dependent({_Lid1, {register, {RegName1, TLid1}}, _Msgs1},
           {_Lid2, {register, {RegName2, TLid2}}, _Msgs2},
-          _ChkMsg, true) ->
+          _CheckMsg, ?SYMMETRIC) ->
     RegName1 =:= RegName2 orelse TLid1 =:= TLid2;
 
 %% Register a process that may exit.
 dependent({_Lid1, {register, {_RegName, TLid}}, _Msgs1},
           { TLid, {    exit,  {normal, _Info}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     true;
 
 %% Register for a name that might be in use.
 dependent({_Lid1, {register,                           {Name, _TLid}}, _Msgs1},
           {_Lid2, {    exit, {normal, {_Tables, {ok, Name}, _Links}}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     true;
 
 %% Whereis using name before process has registered itself.
 dependent({_Lid1, {register, {RegName, _TLid1}}, _Msgs1},
           {_Lid2, { whereis, {RegName, _TLid2}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     true;
 
 %% Process alive and exits
 dependent({_Lid1, {is_process_alive,            TLid}, _Msgs1},
           { TLid, {            exit, {normal, _Info}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     true;
 
 %% Process registered and exits
 dependent({_Lid1, {whereis,                          {Name, _TLid1}}, _Msgs1},
           {_Lid2, {   exit, {normal, {_Tables, {ok, Name}, _Links}}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     true;
 
 %% Monitor/Demonitor and exit.
 dependent({_Lid, {Linker,            TLid}, _Msgs1},
           {TLid, {  exit, {normal, _Info}}, _Msgs2},
-          _ChkMsg, _Swap)
+          _CheckMsg, _AllowSwap)
   when Linker =:= demonitor; Linker =:= link; Linker =:= unlink ->
     true;
 
 dependent({_Lid, {monitor, {TLid, _MonRef}}, _Msgs1},
           {TLid, {   exit, {normal, _Info}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     true;
 
 %% Trap exits flag and linked process exiting.
 dependent({Lid1, {process_flag,        {trap_exit, _Value, Links1}}, _Msgs1},
           {Lid2, {        exit, {normal, {_Tables, _Name, Links2}}}, _Msgs2},
-          _ChkMsg, _Swap) ->
+          _CheckMsg, _AllowSwap) ->
     lists:member(Lid2, Links1) orelse lists:member(Lid1, Links2);
 
 %% Swap the two arguments if the test is not symmetric by itself.
-dependent(TransitionA, TransitionB, ChkMsgs, true) ->
-    dependent(TransitionB, TransitionA, ChkMsgs, false);
-dependent(_TransitionA, _TransitionB, _ChkMsgs, false) ->
-    false.
+dependent(TransitionA, TransitionB, CheckMsg, ?ALLOW_SWAP) ->
+    case independent(TransitionA, TransitionB) of
+        true -> false;
+        maybe ->
+            dependent(TransitionB, TransitionA, CheckMsg, ?DONT_ALLOW_SWAP)
+    end;
+dependent(TransitionA, TransitionB, _CheckMsg, ?DONT_ALLOW_SWAP) ->
+    case independent(TransitionA, TransitionB) of
+        true -> false;
+        maybe -> false %% This should be changed to true.
+    end.
 
+-spec independent(concuerror_sched:transition(),
+                  concuerror_sched:transition()) -> 'true' | 'maybe'.
+
+independent({_Lid1, {_Op1, _}, _Msgs1}, {_Lid2, {_Op2, _}, _Msgs2}) ->
+    maybe.
 
 %% ETS table dependencies:
 
 dependent_ets(Op1, Op2) ->
-    dependent_ets(Op1, Op2, false).
+    dependent_ets(Op1, Op2, ?ALLOW_SWAP).
 
 dependent_ets({insert, [T, _, Keys1, KP, Objects1, true]},
-              {insert, [T, _, Keys2, KP, Objects2, true]}, false) ->
+              {insert, [T, _, Keys2, KP, Objects2, true]}, ?SYMMETRIC) ->
     case ordsets:intersection(Keys1, Keys2) of
         [] -> false;
         Keys ->
@@ -248,25 +280,37 @@ dependent_ets({insert, [T, _, Keys1, KP, Objects1, true]},
             lists:foldl(Fold, false, Keys)
     end;
 dependent_ets({insert_new, [_, _, _, _, _, false]},
-              {insert_new, [_, _, _, _, _, false]}, false) ->
+              {insert_new, [_, _, _, _, _, false]}, ?SYMMETRIC) ->
     false;
 dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1, _Status1]},
-              {insert_new, [T, _, Keys2, KP, _Objects2, _Status2]}, false) ->
+              {insert_new, [T, _, Keys2, KP, _Objects2, _Status2]},
+              ?SYMMETRIC) ->
     ordsets:intersection(Keys1, Keys2) =/= [];
 dependent_ets({insert_new, [T, _, Keys1, KP, _Objects1, _Status1]},
-              {insert, [T, _, Keys2, KP, _Objects2, true]}, _Swap) ->
+              {insert, [T, _, Keys2, KP, _Objects2, true]}, _AllowSwap) ->
     ordsets:intersection(Keys1, Keys2) =/= [];
 dependent_ets({Insert, [T, _, Keys, _KP, _Objects1, true]},
-              {lookup, [T, _, K]}, _Swap)
+              {lookup, [T, _, K]}, _AllowSwap)
   when Insert =:= insert; Insert =:= insert_new ->
     ordsets:is_element(K, Keys);
-dependent_ets({delete, [T, _]}, {_, [T|_]}, _Swap) ->
+dependent_ets({delete, [T, _]}, {_, [T|_]}, _AllowSwap) ->
     true;
 dependent_ets({new, [_Tid1, Name, Options1]},
-              {new, [_Tid2, Name, Options2]}, false) ->
+              {new, [_Tid2, Name, Options2]}, ?SYMMETRIC) ->
     lists:member(named_table, Options1) andalso
         lists:member(named_table, Options2);
-dependent_ets(Op1, Op2, false) ->
-    dependent_ets(Op2, Op1, true);
-dependent_ets(_Op1, _Op2, true) ->
-    false.
+dependent_ets(Op1, Op2, ?ALLOW_SWAP) ->
+    case independent_ets(Op1, Op2) of
+        true -> false;
+        maybe -> dependent_ets(Op2, Op1, ?DONT_ALLOW_SWAP)
+    end;
+dependent_ets(Op1, Op2, ?DONT_ALLOW_SWAP) ->
+    case independent_ets(Op1, Op2) of
+        true -> false;
+        maybe -> false %% This should be changed to true.
+    end.
+
+-spec independent_ets(term(), term()) -> 'true' | 'maybe'.
+
+independent_ets({_Tag1, _}, {_Tag2, _}) ->
+    maybe.
