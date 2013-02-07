@@ -443,6 +443,17 @@ dependent_ets(Op1, Op2) ->
 
 %%==============================================================================
 
+dependent_ets({info, [T|_]}, {_, [T|_]}, _AllowSwap) ->
+    true;
+
+dependent_ets({info, [_,T|_]}, {_, [_,T|_]}, _AllowSwap) ->
+    true;
+
+dependent_ets({info, _}, {_Any, _}, _AllowSwap) ->
+    false;
+
+%%==============================================================================
+
 dependent_ets({insert, [T, _, Keys1, KP, Objects1, true]},
               {insert, [T, _, Keys2, KP, Objects2, true]}, ?SYMMETRIC) ->
     case ordsets:intersection(Keys1, Keys2) of
@@ -511,7 +522,10 @@ dependent_ets({lookup, _Details1},
 dependent_ets({delete, [T, _]}, {_, [T|_]}, _AllowSwap) ->
     true;
 
-dependent_ets({delete, _Details1}, { _, _Details2}, _AllowSwap) ->
+dependent_ets({delete, [_, Name|_]}, {_, [_, Name|_]}, _AllowSwap) ->
+    true;
+
+dependent_ets({delete, _Details1}, {_, _Details2}, _AllowSwap) ->
     false;
 
 %%==============================================================================
