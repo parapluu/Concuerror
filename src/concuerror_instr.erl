@@ -167,7 +167,9 @@ check_module_name(Module, Function, Arity) ->
         rename    -> new_module_name(Module)
     end.
 
--spec new_module_name(atom()) -> atom().
+-spec new_module_name(atom() | string()) -> atom().
+new_module_name(Module) when is_list(Module) ->
+    new_module_name(list_to_atom(Module));
 new_module_name(Module) ->
     %% Check that module is not already renamed.
     StrModule = atom_to_list(Module),

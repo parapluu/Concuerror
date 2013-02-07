@@ -100,7 +100,7 @@
 -spec analyze(analysis_target(), [file:filename()], concuerror:options()) ->
             analysis_ret().
 
-analyze({Mod,Fun,Args}=_Target, Files, Options) ->
+analyze({Mod,Fun,Args}=Target, Files, Options) ->
     PreBound =
         case lists:keyfind(preb, 1, Options) of
             {preb, inf} -> ?INFINITY;
@@ -112,20 +112,20 @@ analyze({Mod,Fun,Args}=_Target, Files, Options) ->
             {dpor, Flavor} -> Flavor;
             false -> 'none'
         end,
-    %% Rename Target's module
-    NewMod = concuerror_instr:new_module_name(Mod),
-    Target = {NewMod, Fun, Args},
     Ret =
         case concuerror_instr:instrument_and_compile(Files, Options) of
             {ok, Bin} ->
                 %% Note: No error checking for load
                 ok = concuerror_instr:load(Bin),
+                %% Rename Target's module
+                NewMod = concuerror_instr:check_module_name(Mod, Fun, 0),
+                NewTarget = {NewMod, Fun, Args},
                 concuerror_log:log(0, "\nRunning analysis with preemption "
                     "bound ~p..\n", [PreBound]),
                 %% Reset the internal state for the progress logger
                 concuerror_log:reset(),
                 {T1, _} = statistics(wall_clock),
-                Result = interleave(Target, PreBound, Dpor),
+                Result = interleave(NewTarget, PreBound, Dpor),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = concuerror_util:to_elapsed_time(T1, T2),
                 ?debug("Done in ~wm~.2fs\n", [Mins, Secs]),
