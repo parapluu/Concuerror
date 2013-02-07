@@ -100,16 +100,14 @@
 %% Handle Mod:Fun(Args) calls.
 -spec rep_var(module(), atom(), [term()]) -> term().
 rep_var(Mod, Fun, Args) ->
-    Key = {Mod, Fun, length(Args)},
+    LenArgs = length(Args),
+    Key = {Mod, Fun, LenArgs},
     case lists:keyfind(Key, 1, ?INSTR_MOD_FUN) of
         {Key, Callback} ->
             apply(Callback, Args);
         false ->
-            %% Add module to `NT_CALLED_MOD' table
-            OldMod = concuerror_instr:old_module_name(Mod),
-            ets:insert(?NT_CALLED_MOD, {OldMod}),
             %% Rename module
-            RenameMod = concuerror_instr:check_new_module_name(Mod),
+            RenameMod = concuerror_instr:check_module_name(Mod, Fun, LenArgs),
             apply(RenameMod, Fun, Args)
     end.
 
@@ -488,11 +486,9 @@ find_my_registered_name() ->
 %% See `rep_spawn/1'.
 -spec rep_spawn(atom(), atom(), [term()]) -> pid().
 rep_spawn(Module, Function, Args) ->
-    %% Add module to `NT_CALLED_MOD' table
-    OldModule = concuerror_instr:old_module_name(Module),
-    ets:insert(?NT_CALLED_MOD, {OldModule}),
     %% Rename module
-    NewModule = concuerror_instr:check_new_module_name(Module),
+    LenArgs = length(Args),
+    NewModule = concuerror_instr:check_module_name(Module, Function, LenArgs),
     Fun = fun() -> apply(NewModule, Function, Args) end,
     rep_spawn(Fun).
 
@@ -510,11 +506,9 @@ rep_spawn_link(Fun) ->
 %% See `rep_spawn_link/1'.
 -spec rep_spawn_link(atom(), atom(), [term()]) -> pid().
 rep_spawn_link(Module, Function, Args) ->
-    %% Add module to `NT_CALLED_MOD' table
-    OldModule = concuerror_instr:old_module_name(Module),
-    ets:insert(?NT_CALLED_MOD, {OldModule}),
     %% Rename module
-    NewModule = concuerror_instr:check_new_module_name(Module),
+    LenArgs = length(Args),
+    NewModule = concuerror_instr:check_module_name(Module, Function, LenArgs),
     Fun = fun() -> apply(NewModule, Function, Args) end,
     rep_spawn_link(Fun).
 
@@ -532,11 +526,9 @@ rep_spawn_monitor(Fun) ->
 %% See rep_spawn_monitor/1.
 -spec rep_spawn_monitor(atom(), atom(), [term()]) -> {pid(), reference()}.
 rep_spawn_monitor(Module, Function, Args) ->
-    %% Add module to `NT_CALLED_MOD' table
-    OldModule = concuerror_instr:old_module_name(Module),
-    ets:insert(?NT_CALLED_MOD, {OldModule}),
     %% Rename module
-    NewModule = concuerror_instr:check_new_module_name(Module),
+    LenArgs = length(Args),
+    NewModule = concuerror_instr:check_module_name(Module, Function, LenArgs),
     Fun = fun() -> apply(NewModule, Function, Args) end,
     rep_spawn_monitor(Fun).
 
@@ -587,11 +579,9 @@ rep_spawn_opt(Fun, Opt) ->
                      {'min_bin_vheap_size', integer()}]) ->
                            pid() | {pid(), reference()}.
 rep_spawn_opt(Module, Function, Args, Opt) ->
-    %% Add module to `NT_CALLED_MOD' table
-    OldModule = concuerror_instr:old_module_name(Module),
-    ets:insert(?NT_CALLED_MOD, {OldModule}),
     %% Rename module
-    NewModule = concuerror_instr:check_new_module_name(Module),
+    LenArgs = length(Args),
+    NewModule = concuerror_instr:check_module_name(Module, Function, LenArgs),
     Fun = fun() -> apply(NewModule, Function, Args) end,
     rep_spawn_opt(Fun, Opt).
 

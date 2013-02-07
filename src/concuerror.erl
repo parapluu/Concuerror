@@ -55,6 +55,7 @@
     | {'gui'}
     | {'verbose', non_neg_integer()}
     | {'keep_temp'}
+    | {'fail_uninstrumented'}
     | {'help'}.
 
 -type options() :: [option()].
@@ -320,6 +321,15 @@ parse([{Opt, Param} | Args], Options) ->
                 _Other -> wrongArgument('number', Opt)
             end;
 
+        "-fail-uninstrumented" ->
+            case Param of
+                [] ->
+                    NewOptions = lists:keystore('fail_uninstrumented', 1,
+                        Options, {'fail_uninstrumented'}),
+                    parse(Args, NewOptions);
+                _Ohter -> wrongArgument('number', Opt)
+            end;
+
         "-help" ->
             help(),
             erlang:halt();
@@ -402,6 +412,7 @@ help() ->
      "  -q|--quiet              Disable logging (implies --noprogress)\n"
      "  -v                      Verbose [use twice to be more verbose]\n"
      "  --keep-tmp-files        Retain all intermediate temporary files\n"
+     "  --fail-uninstrumented   Fail if there are uninstrumented modules\n"
      "  --gui                   Run concuerror with graphics\n"
      "  --dpor                  Runs the experimental optimal DPOR version\n"
      "  --dpor_flanagan         Runs an experimental reference DPOR version\n"

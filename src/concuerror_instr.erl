@@ -14,7 +14,7 @@
 
 -module(concuerror_instr).
 -export([delete_and_purge/1, instrument_and_compile/2, load/1,
-         check_new_module_name/1, new_module_name/1, old_module_name/1]).
+         new_module_name/1, check_module_name/3, old_module_name/1]).
 
 -export_type([macros/0]).
 
@@ -85,8 +85,10 @@
 %% Instrumented mod:fun.
 -define(INSTR_MOD_FUN, ?INSTR_ERL_MOD_FUN ++ ?INSTR_ETS_FUN).
 
-%% Temp directory we use to save our module renamed code.
+%% Key in ?NT_INSTR to use for temp directory.
 -define(INSTR_TEMP_DIR, '_._instr_temp_dir').
+%% Key in ?NT_INSTR to use for `fail-uninstrumented' flag.
+-define(FAIL_BB, '_._instr_fail_bb').
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -101,40 +103,84 @@
 %%%----------------------------------------------------------------------
 
 %% ---------------------------
-%% Delete and purge all modules in `?INSTR_TEMP_DIR'.
+%% Delete and purge all modules.
 -spec delete_and_purge(concuerror:options()) -> 'ok'.
 delete_and_purge(Options) ->
     %% Unload and purge modules.
-    ModsToPurge = [new_module_name(IM) || {IM} <- ets:tab2list(?NT_INSTR_MOD)],
+    ModsToPurge = [new_module_name(IM) || {IM} <- ets:tab2list(?NT_INSTR_MODS)],
     Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
     lists:foreach(Fun, ModsToPurge),
     %% Delete temp directory (ignore errors).
     case lists:keymember('keep_temp', 1, Options) of
         true ->
-            %% Retain temporary files
+            %% Retain temporary files.
             ok;
         false ->
-            TmpDir = get(?INSTR_TEMP_DIR),
-            {ok, Files} = file:list_dir(TmpDir),
+            TmpDir = ets:lookup_element(?NT_INSTR, ?INSTR_TEMP_DIR, 2),
+            {ok, TmpFiles} = file:list_dir(TmpDir),
             DelFile = fun(F) -> _ = file:delete(filename:join(TmpDir, F)) end,
-            lists:foreach(DelFile, Files),
+            lists:foreach(DelFile, TmpFiles),
             _ = file:del_dir(TmpDir),
             ok
-    end.
+    end,
+    %% Delete ?NT_INSTR_MODS, ?NT_INSTR_BIFS,
+    %% ?NT_INSTR_IGNORED and ?NT_INSTR tables.
+    ets:delete(?NT_INSTR_MODS),
+    ets:delete(?NT_INSTR_BIFS),
+    ets:delete(?NT_INSTR_IGNORED),
+    ets:delete(?NT_INSTR),
+    ok.
 
 %% ---------------------------
 %% Rename a module for the instrumentation.
--spec new_module_name(atom() | string()) -> atom().
-new_module_name(Module) when is_atom(Module) ->
-    new_module_name(atom_to_list(Module));
-new_module_name(Module) when is_list(Module) ->
-    list_to_atom(?INSTR_PREFIX ++ Module).
+%% 1. Don't rename BIFS.
+%% 2. If module is instrumented rename it.
+%% 3. If we are in `fail_uninstrumented' mode rename all modules.
+%%    (except `ignored' ones)
+-spec check_module_name(atom(), atom(), non_neg_integer()) -> atom().
+check_module_name(Module, Function, Arity) ->
+    try
+        %% Check if this function is a BIF.
+        case ets:member(?NT_INSTR_BIFS, {Module, Function, Arity}) of
+            true  -> throw(no_rename);
+            false -> ok
+        end,
+        %% Check if module is instrumented.
+        case ets:member(?NT_INSTR_MODS, Module) of
+            true  -> throw(rename);
+            false -> ok
+        end,
+        %% Check if we are in `fail_uninstrumented' mode.
+        case ets:lookup_element(?NT_INSTR, ?FAIL_BB, 2) of
+            true ->
+                %% Check if we are ignoring this module.
+                case ets:member(?NT_INSTR_IGNORED, Module) of
+                    true  -> throw(no_rename);
+                    false -> throw(rename)
+                end;
+            false -> ok
+        end,
+        %% Don't rename the module otherwise.
+        throw(no_rename)
+    catch
+        no_rename -> Module;
+        rename    -> new_module_name(Module)
+    end.
 
--spec check_new_module_name(atom()) -> atom().
-check_new_module_name(Module) ->
-    case ets:member(?NT_INSTR_MOD, Module) of
-        true  -> new_module_name(Module);
-        false -> Module
+-spec new_module_name(atom()) -> atom().
+new_module_name(Module) ->
+    %% Check that module is not already renamed.
+    StrModule = atom_to_list(Module),
+    case StrModule of
+        (?INSTR_PREFIX ++ _OldModule) ->
+            %% No need to rename it
+            Module;
+        _OldModule ->
+            %% Don't rename `erlang' or `ets'.
+            case lists:member(Module, ['erlang', 'ets']) of
+                true  -> Module;
+                false -> list_to_atom(?INSTR_PREFIX ++ StrModule)
+            end
     end.
 
 -spec old_module_name(atom()) -> atom().
@@ -171,19 +217,34 @@ instrument_and_compile(Files, Options) ->
             {'verbose', V} -> V;
             false -> ?DEFAULT_VERBOSITY
         end,
-    %% Get the modules we are going to instrument and save
-    %% them to `NT_INSTR_MOD' for future reference.
+    FailBB =
+        case lists:keyfind('fail_uninstrumented', 1, Options) of
+            {'fail_uninstrumented'} -> true;
+            false -> false
+        end,
+    %% Initialize tables
+    ?NT_INSTR_MODS = ets:new(?NT_INSTR_MODS,
+        [named_table, public, set, {read_concurrency, true}]),
     InstrModules = [{concuerror_util:get_module_name(F)} || F <- Files],
-    ets:insert(?NT_INSTR_MOD, InstrModules),
+    ets:insert(?NT_INSTR_MODS, InstrModules),
+    ?NT_INSTR_BIFS = ets:new(?NT_INSTR_BIFS,
+        [named_table, public, set, {read_concurrency, true}]),
+    ets:insert(?NT_INSTR_BIFS, []),
+    ?NT_INSTR_IGNORED = ets:new(?NT_INSTR_IGNORED,
+        [named_table, public, set, {read_concurrency, true}]),
+    ets:insert(?NT_INSTR_IGNORED, []),
+    ?NT_INSTR = ets:new(?NT_INSTR,
+        [named_table, public, set, {read_concurrency, true}]),
+    ets:insert(?NT_INSTR, {?FAIL_BB, FailBB}),
     %% Create a temp dir to save renamed code
     case create_tmp_dir() of
         {ok, DirName} ->
-            put(?INSTR_TEMP_DIR, DirName),
+            ets:insert(?NT_INSTR, {?INSTR_TEMP_DIR, DirName}),
             concuerror_log:log(0, "Instrumenting files..\n"),
             InstrOne =
                 fun(File) ->
                     instrument_and_compile_one(File, Includes,
-                        Defines, DirName, Verbosity)
+                        Defines, Verbosity)
                 end,
             MFBs = concuerror_util:pmap(InstrOne, Files),
             case lists:member('error', MFBs) of
@@ -195,20 +256,18 @@ instrument_and_compile(Files, Options) ->
     end.
 
 %% Instrument and compile a single file.
-instrument_and_compile_one(File, Includes, Defines, TmpDir, Verbosity) ->
+instrument_and_compile_one(File, Includes, Defines, Verbosity) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
     concuerror_log:log(1, "Validating file ~p...~n", [File]),
     OptIncludes = [{i, I} || I <- Includes],
     OptDefines  = [{d, M, V} || {M, V} <- Defines],
     OptRest =
-        case Verbosity >= 1 of
+        case Verbosity >= 2 of
             true  -> [strong_validation, return, verbose];
             false -> [strong_validation, return]
         end,
     PreOptions = OptIncludes ++ OptDefines ++ OptRest,
-    %% Temp directory.
-    put(?INSTR_TEMP_DIR, TmpDir),
     %% Compile module.
     case compile:file(File, PreOptions) of
         {ok, OldModule, Warnings} ->
@@ -220,7 +279,13 @@ instrument_and_compile_one(File, Includes, Defines, TmpDir, Verbosity) ->
                 {ok, NewFile, NewForms} ->
                     %% Compile instrumented code.
                     %% TODO: More compile options?
-                    CompOptions = [binary],
+                    CompOptions =
+                        case Verbosity >= 2 of
+                            true ->
+                                [binary, report_errors, verbose];
+                            false ->
+                                [binary, report_errors]
+                        end,
                     case compile:forms(NewForms, CompOptions) of
                         {ok, NewModule, Binary} ->
                             {NewModule, NewFile, Binary};
@@ -288,7 +353,7 @@ instrument(Module, File, Includes, Defines) ->
 rename_module(Module, File) ->
     ModuleStr = atom_to_list(Module),
     NewModuleStr = atom_to_list(new_module_name(Module)),
-    TmpDir = get(?INSTR_TEMP_DIR),
+    TmpDir = ets:lookup_element(?NT_INSTR, ?INSTR_TEMP_DIR, 2),
     NewFile = filename:join(TmpDir, NewModuleStr ++ ".erl"),
     case file:read_file(File) of
         {ok, Binary} ->
@@ -421,29 +486,12 @@ needs_instrument(Function, ArgTrees) ->
 
 %% Determine whether a `foo:bar(...)` call needs instrumentation.
 needs_instrument(Module, Function, ArgTrees) ->
-    %% Add `Module' to the called modules table.
-    %% XXX: Well we expect `Module' to be an atom() but it turns
-    %% out that `erl_syntax:atom_value/1' doesn't return always an
-    %% atom(). In particular, `eunit.hrl' uses the module `.erlang'
-    %% which when parsed by concuerror (and transformed with
-    %% `erl_syntax:atom_value/1') it returns
-    %% [{atom, Line, ''}, {atom, Line, erlang}].
-    if
-        is_atom(Module) ->
-            ets:insert(?NT_CALLED_MOD, {old_module_name(Module)});
-        true ->
-            true
-    end,
     Arity = length(ArgTrees),
     case lists:member({Module, Function, Arity}, ?INSTR_MOD_FUN) of
         true ->
             {normal, {Module, Function, ArgTrees}};
         false ->
-            %% Check if module needs to be renamed
-            case ets:member(?NT_INSTR_MOD, Module) of
-                true  -> {rename, {Module, Function, ArgTrees}};
-                false -> no_instr
-            end
+            {rename, {Module, Function, ArgTrees}}
     end.
 
 instrument_application({erlang, Function, ArgTrees}) ->
@@ -463,7 +511,8 @@ instrument_var_application({ModTree, FunTree, ArgTrees}) ->
     erl_syntax:application(RepMod, RepFun, [ModTree, FunTree, ArgList]).
 
 instrument_rename({Module, Function, ArgTrees}) ->
-    RepMod = erl_syntax:atom(new_module_name(Module)),
+    Arity = length(ArgTrees),
+    RepMod = erl_syntax:atom(check_module_name(Module, Function, Arity)),
     RepFun = erl_syntax:atom(Function),
     erl_syntax:application(RepMod, RepFun, ArgTrees).
 

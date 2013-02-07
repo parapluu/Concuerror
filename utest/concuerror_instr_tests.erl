@@ -49,15 +49,9 @@ syntax_test_() ->
 
 test_ok(File) ->
     %% Initialize test
-    ?NT_CALLED_MOD = ets:new(?NT_CALLED_MOD,
-        [named_table, public, set, {write_concurrency, true}]),
-    ?NT_INSTR_MOD = ets:new(?NT_INSTR_MOD,
-        [named_table, public, set, {read_concurrency, true}]),
     Path = filename:join([?TEST_PATH, File]),
     Result = concuerror_instr:instrument_and_compile([Path], []),
     %% Cleanup test
     concuerror_instr:delete_and_purge([]),
-    ets:delete(?NT_CALLED_MOD),
-    ets:delete(?NT_INSTR_MOD),
     %% Assert Result
     ?assertMatch({ok, _Bin}, Result).

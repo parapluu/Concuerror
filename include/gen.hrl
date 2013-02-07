@@ -38,8 +38,10 @@
 -define(NT_STATELEN, '_._state_len').
 -define(NT_USED, '_._used').
 -define(NT_TIMER, '_._timer').
--define(NT_CALLED_MOD, '_._called_mod').
--define(NT_INSTR_MOD, '_._instr_mod').
+-define(NT_INSTR_MODS, '_._instr_mods').
+-define(NT_INSTR_BIFS, '_._instr_bifs').
+-define(NT_INSTR_IGNORED, '_._instr_ignored').
+-define(NT_INSTR, '_._instr_table').
 
 %% Module containing replacement functions.
 -define(REP_MOD, concuerror_rep).
