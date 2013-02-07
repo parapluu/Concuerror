@@ -123,6 +123,16 @@ dependent({ Lid1,          Instr1, PreMsgs1} = Trans1,
         case {PreMsgs1, Instr1} of
             {[_|_], _} -> {ok, PreMsgs1};
             {[], {send, {_RegName, Lid, Msg}}} -> {ok, [{Lid, [Msg]}]};
+            {[], {exit, _}} ->
+                case Receive of
+                    'after' ->
+                        Links = element(2, Info),
+                        case lists:member(Lid1, Links) of
+                            true -> {ok, [{Lid2, [{'EXIT', Lid1, normal}]}]};
+                            false -> false
+                        end;
+                    'receive' -> false
+                end;
             _ -> false
         end,
     Dependent =
@@ -133,7 +143,7 @@ dependent({ Lid1,          Instr1, PreMsgs1} = Trans1,
                     {ok, MsgsToLid2} ->
                         Fun =
                             case Receive of
-                                'after' -> Info;
+                                'after' -> element(1, Info);
                                 'receive' ->
                                     Target = element(3, Info),
                                     fun(X) -> X =:= Target end
@@ -212,13 +222,11 @@ dependent({_Lid1, { ets, _Details1}, _Msgs1},
 %%==============================================================================
 
 %% Heirs exit should also be monitored.
-%% Links exit should be monitored to be sure that messages are captured.
-%% XXX: Should eventually be removed
-dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _Name1, Links1}}}, _Msgs1},
-          {Lid2, {exit, {normal, {{Heirs2, _Tbls2}, _Name2, Links2}}}, _Msgs2},
+%% XXX: Maybe should be removed
+dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _Name1, _Links1}}}, _Msgs1},
+          {Lid2, {exit, {normal, {{Heirs2, _Tbls2}, _Name2, _Links2}}}, _Msgs2},
           _CheckMsg, ?SYMMETRIC) ->
-    lists:member(Lid1, Heirs2) orelse lists:member(Lid2, Heirs1) orelse
-        lists:member(Lid1, Links2) orelse lists:member(Lid2, Links1);
+    lists:member(Lid1, Heirs2) orelse lists:member(Lid2, Heirs1);
 
 %%==============================================================================
 

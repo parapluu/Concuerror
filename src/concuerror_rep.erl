@@ -241,7 +241,10 @@ rep_process_flag(Flag, Value) ->
     process_flag(Flag, Value).
 
 find_my_links() ->
-    {links, AllPids} = process_info(self(), links),
+    find_links(self()).
+
+find_links(PPid) ->
+    {links, AllPids} = process_info(PPid, links),
     AllLids = [?LID_FROM_PID(Pid) || Pid <- AllPids],
     [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].                  
 
@@ -281,7 +284,8 @@ rep_receive_loop(Act, Fun, HasTimeout) ->
                                             continue -> true
                                         end
                                     end,
-                                concuerror_sched:notify('after', NewFun)
+                                Links = find_trappable_links(self()),
+                                concuerror_sched:notify('after', {NewFun, Links})
                         end,
                     rep_receive_loop(NewAct, Fun, HasTimeout);
                 continue ->
@@ -293,6 +297,12 @@ rep_receive_loop(Act, Fun, HasTimeout) ->
                     continue = concuerror_sched:notify('receive', Tag),
                     ok
             end
+    end.
+
+find_trappable_links(Pid) ->
+    case erlang:process_info(Pid, trap_exit) of
+        {trap_exit, true} -> find_my_links();
+        _ -> []
     end.
 
 rep_receive_match(_Fun, []) ->
@@ -316,6 +326,7 @@ rep_receive_block() ->
 %% Called first thing after an `after' clause has been entered.
 -spec rep_after_notify() -> 'ok'.
 rep_after_notify() ->
+    concuerror_sched:notify('after', find_trappable_links(self()), prev),
     ok.
 
 %% @spec rep_receive_notify(pid(), term()) -> 'ok'

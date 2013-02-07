@@ -810,7 +810,7 @@ is_enabled({'receive', blocked}) -> false;
 is_enabled(_Else) -> true.
 
 is_pollable({'receive', blocked}) -> true;
-is_pollable({'after', _Fun}) -> true;
+is_pollable({'after', _Info}) -> true;
 is_pollable(_Else) -> false.
 
 filter_awaked(SleepSet, Nexts, Selected) ->
@@ -879,6 +879,12 @@ handle_instruction_op({Lid, {'receive', Tag}, Msgs}) ->
                misc = {From, CV, Msg}, type = prev} ->
             {{Lid, {'receive', {Tag, From, Msg}}, Msgs}, CV}
     end;
+handle_instruction_op({Lid, {'after', {Fun, _OldLinks}}, Msgs}) ->
+    receive
+        #sched{msg = 'after', lid = Lid,
+               misc = Links, type = prev} ->
+            {{Lid, {'after', {Fun, Links}}, Msgs}, {}}
+    end;
 handle_instruction_op({Lid, {Updatable, _Info}, Msgs})
   when Updatable =:= exit; Updatable =:= send; Updatable =:= whereis;
        Updatable =:= monitor; Updatable =:= process_flag ->
@@ -932,7 +938,7 @@ handle_instruction_al({_Lid, {ets, {Updatable, _Info}}, _Msgs} = Trans,
     TraceTop#trace_state{last = Trans};
 handle_instruction_al({_Lid, {Updatable, _Info}, _Msgs} = Trans, TraceTop, {})
   when Updatable =:= send; Updatable =:= whereis; Updatable =:= monitor;
-       Updatable =:= process_flag ->
+       Updatable =:= process_flag; Updatable =:= 'after' ->
     TraceTop#trace_state{last = Trans};
 handle_instruction_al({_Lid, {halt, _Status}, _Msgs}, TraceTop, {}) ->
     TraceTop#trace_state{enabled = [], blocked = [], error_nxt = none};
