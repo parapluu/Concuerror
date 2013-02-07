@@ -153,7 +153,7 @@ analyze({Mod,Fun,Args}=_Target, Files, Options) ->
                                 [TicketCount]),
                         {error, analysis, {Target, RunCount, SBlocked}, Tickets}
                 end;
-            error -> {error, instr, {Target, 0}}
+            error -> {error, instr, {Target, 0, 0}}
         end,
     concuerror_instr:delete_and_purge(Options),
     Ret.
