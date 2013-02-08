@@ -1146,6 +1146,12 @@ finished(#dpor_state{trace = Trace}) ->
     Trace =:= [].
 
 dpor_return(State) ->
+    %% First clean up the last interleaving
+    GroupLeader = State#dpor_state.group_leader,
+    _Output = concuerror_io_server:group_leader_sync(GroupLeader),
+    ProcBefore = State#dpor_state.proc_before,
+    proc_cleanup(processes() -- ProcBefore),
+    %% Return the analysis result
     RunCnt = State#dpor_state.run_count,
     SBlocked = State#dpor_state.sleep_blocked_count,
     case State#dpor_state.tickets of
