@@ -50,7 +50,7 @@
 delete_and_purge(Options) ->
     %% Unload and purge modules.
     ModsToPurge = [new_module_name(IM) || {IM} <- ets:tab2list(?NT_INSTR_MODS)],
-    Fun = fun (M) -> code:purge(M), code:delete(M), code:purge(M) end,
+    Fun = fun (M) -> code:purge(M), code:delete(M) end,
     lists:foreach(Fun, ModsToPurge),
     %% Delete temp directory (ignore errors).
     case lists:keymember('keep_temp', 1, Options) of
