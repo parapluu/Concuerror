@@ -67,27 +67,23 @@ dependent({_Lid1, _Instr1, _Msgs1},
 %%==============================================================================
 
 %% Sending to the same process:
-dependent({_Lid1, Instr1, PreMsgs1} = Trans1,
-          {_Lid2, Instr2, PreMsgs2} = Trans2,
-          ?CHECK_MSG, ?ONLY_INITIALLY) ->
-    Check =
-        case {PreMsgs1, Instr1, PreMsgs2, Instr2} of
-            {[_|_], _, [_|_], _} ->
-                {PreMsgs1, PreMsgs2};
-            {[_|_], _, [], {send, {_RegName, Lid, Msg}}} ->
-                {PreMsgs1, [{Lid, [Msg]}]};
-            {[], {send, {_RegName, Lid, Msg}}, [_|_], _} ->
-                {[{Lid, [Msg]}], PreMsgs2};
-            _ -> false
+dependent({_Lid1,  Instr1, PreMsgs1} = Trans1,
+          {_Lid2, _Instr2,    Msgs2} = Trans2,
+          ?CHECK_MSG, AllowSwap) ->
+    Msgs1 =
+        case Instr1 of
+            {send, {_RegName, Lid, Msg}} ->
+                add_missing_message(Lid, Msg, PreMsgs1);
+            _ -> PreMsgs1
         end,
-    case Check of
-        false -> dependent(Trans1, Trans2, ?DONT_CHECK_MSG, ?ONLY_INITIALLY);
-        {Msgs1, Msgs2} ->
+    case Msgs1 =:= [] orelse Msgs2 =:= [] of
+        true -> dependent(Trans1, Trans2, ?DONT_CHECK_MSG, AllowSwap);
+        false ->
             Lids1 = ordsets:from_list(orddict:fetch_keys(Msgs1)),
             Lids2 = ordsets:from_list(orddict:fetch_keys(Msgs2)),
             case ordsets:intersection(Lids1, Lids2) of
                 [] ->
-                    dependent(Trans1, Trans2, ?DONT_CHECK_MSG, ?ONLY_INITIALLY);
+                    dependent(Trans1, Trans2, ?DONT_CHECK_MSG, AllowSwap);
                 [Key] ->
                     %% XXX: Can be refined
                     case {orddict:fetch(Key, Msgs1), orddict:fetch(Key, Msgs2)} of
@@ -102,43 +98,26 @@ dependent({_Lid1, Instr1, PreMsgs1} = Trans1,
 
 %%==============================================================================
 
-%% Two sends are independent if not caught by the previous message checking.
-dependent({_Lid1, {send, _Details1}, _Msgs1},
-          {_Lid2, {send, _Details2}, _Msgs2},
-          _CheckMsg, ?SYMMETRIC) ->
-    false;
-
-%%==============================================================================
-
 %% Sending to an activated after clause depends on that receive's patterns OR
 %% Sending the message that triggered a receive's 'had_after'
-dependent({ Lid1,          Instr1, PreMsgs1} = Trans1,
-          { Lid2, {Receive, Info},   _Msgs2} = Trans2,
+dependent({Lid1,          Instr1, PreMsgs1} = Trans1,
+          {Lid2, {Receive, Info},   _Msgs2} = Trans2,
           CheckMsg, AllowSwap) when
       Receive =:= 'after';
       (Receive =:= 'receive' andalso
        element(1, Info) =:= had_after andalso
        element(2, Info) =:= Lid1) ->
-    Check =
-        case {PreMsgs1, Instr1} of
-            {[_|_], _} -> {ok, PreMsgs1};
-            {[], {send, {_RegName, Lid, Msg}}} -> {ok, [{Lid, [Msg]}]};
-            {[], {exit, _}} ->
-                case Receive of
-                    'after' ->
-                        Links = element(2, Info),
-                        case lists:member(Lid1, Links) of
-                            true -> {ok, [{Lid2, [{'EXIT', Lid1, normal}]}]};
-                            false -> false
-                        end;
-                    'receive' -> false
-                end;
-            _ -> false
+    Links =
+        case Receive =:= 'after' of
+            true ->
+                element(2, Info);
+            false -> []
         end,
+    Msgs1 = add_missing_messages(Instr1, Lid1, PreMsgs1, Lid2, Links),
     Dependent =
-        case Check of
-            false -> false;
-            {ok, Msgs1} ->
+        case Msgs1 =:= [] of
+            true -> false;
+            false ->
                 case orddict:find(Lid2, Msgs1) of
                     {ok, MsgsToLid2} ->
                         Fun =
@@ -403,18 +382,15 @@ dependent({_Lid1, {Spawn, _Details1}, _Msgs1},
 %%==============================================================================
 
 %% Swap the two arguments if the test is not symmetric by itself.
-dependent(TransitionA, TransitionB, CheckMsg, ?ALLOW_SWAP) ->
-    case independent(TransitionA, TransitionB) of
-        true -> false;
-        maybe ->
-            dependent(TransitionB, TransitionA, CheckMsg, ?DONT_ALLOW_SWAP)
-    end;
+dependent(TransitionA, TransitionB, _CheckMsg, ?ALLOW_SWAP) ->
+    dependent(TransitionB, TransitionA, ?CHECK_MSG, ?DONT_ALLOW_SWAP);
+
 dependent(TransitionA, TransitionB, _CheckMsg, ?DONT_ALLOW_SWAP) ->
     case independent(TransitionA, TransitionB) of
         true -> false;
         maybe ->
-            concuerror_log:log(3, "Not certainly independent:\n ~p\n ~p\n",
-                               [TransitionA, TransitionB]),
+            io:format("Not certainly independent:\n ~p\n ~p\n",
+                      [TransitionA, TransitionB]),
             true
     end.
 
@@ -425,23 +401,46 @@ dependent(TransitionA, TransitionB, _CheckMsg, ?DONT_ALLOW_SWAP) ->
                   concuerror_sched:transition()) -> 'true' | 'maybe'.
 
 independent({_Lid1, {Op1, _}, _Msgs1}, {_Lid2, {Op2, _}, _Msgs2}) ->
-    
+    Independent =
+        [
+         {     monitor, demonitor},
+         {     monitor,      send},
+         {   demonitor,      send},
+         {     whereis,      send},
+         {        link,      send},
+         {      unlink,      send},
+         {process_flag,      send}
+        ],
     case
-        %% Assuming that all the races of an instruction with itself have been
-        %% already caught.
+        %% Assuming that all the races of an instruction with another instance
+        %% of itself have already been caught.
         Op1 =:= Op2
-        orelse
-        %% 
-        lists:member({Op1, Op2},[
-                                 {  monitor, demonitor},
-                                 {  monitor,      send},
-                                 {demonitor,      send},
-                                 {  whereis,      send},
-                                 {     link,      send},
-                                 {   unlink,      send}
-                                 ]) of
+        orelse lists:member({Op1, Op2},Independent)
+        orelse lists:member({Op2, Op1},Independent)
+    of
         true -> true;
         false -> maybe
+    end.
+
+add_missing_messages(Instr1, Lid1, PreMsgs1, Lid2, Links) ->
+    case Instr1 of
+        {send, {_RegName, Lid, Msg}} ->
+            add_missing_message(Lid, Msg, PreMsgs1);
+        {exit, _} ->
+            case lists:member(Lid1, Links) of
+                true ->
+                    Msg = {'EXIT', Lid1, normal},
+                    add_missing_message(Lid2, Msg, PreMsgs1);
+                false -> PreMsgs1
+            end;
+        _ -> PreMsgs1
+    end.
+
+add_missing_message(Lid, Msg, Msgs) ->
+    try true = lists:member(Msg, orddict:fetch(Lid, Msgs)) of
+        true -> Msgs
+    catch
+        _:_ -> orddict:append(Lid, Msg, Msgs)
     end.
 
 %% ETS table dependencies:
