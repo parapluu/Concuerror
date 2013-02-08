@@ -161,10 +161,11 @@ instrument_and_compile(Files, Options) ->
             {'verbose', V} -> V;
             false -> ?DEFAULT_VERBOSITY
         end,
-    FailBB =
-        case lists:keyfind('fail_uninstrumented', 1, Options) of
-            {'fail_uninstrumented'} -> true;
-            false -> false
+    FailBB = lists:keymember('fail_uninstrumented', 1, Options),
+    Ignores =
+        case lists:keyfind('ignore', 1, Options) of
+            {'ignore', Igns} -> [{Ign} || Ign <- Igns];
+            false -> []
         end,
     %% Initialize tables
     ?NT_INSTR_MODS = ets:new(?NT_INSTR_MODS,
@@ -177,7 +178,7 @@ instrument_and_compile(Files, Options) ->
     ets:insert(?NT_INSTR_BIFS, PredefBifs),
     ?NT_INSTR_IGNORED = ets:new(?NT_INSTR_IGNORED,
         [named_table, public, set, {read_concurrency, true}]),
-    ets:insert(?NT_INSTR_IGNORED, []),
+    ets:insert(?NT_INSTR_IGNORED, Ignores),
     ?NT_INSTR = ets:new(?NT_INSTR,
         [named_table, public, set, {read_concurrency, true}]),
     ets:insert(?NT_INSTR, {?FAIL_BB, FailBB}),

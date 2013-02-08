@@ -57,6 +57,7 @@
     | {'keep_temp'}
     | {'show_output'}
     | {'fail_uninstrumented'}
+    | {'ignore',  [module()]}
     | {'help'}.
 
 -type options() :: [option()].
@@ -333,6 +334,15 @@ parse([{Opt, Param} | Args], Options) ->
                 _Ohter -> wrongArgument('number', Opt)
             end;
 
+        "-ignore" ->
+            case Param of
+                [] -> wrongArgument('number', Opt);
+                Ignores ->
+                    AtomIgns = [list_to_atom(Ign) || Ign <- Ignores],
+                    NewOptions = keyAppend('ignore', 1, Options, AtomIgns),
+                    parse(Args, NewOptions)
+            end;
+
         "-show-output" ->
             case Param of
                 [] ->
@@ -426,6 +436,7 @@ help() ->
      "  -v                      Verbose [use twice to be more verbose]\n"
      "  --keep-tmp-files        Retain all intermediate temporary files\n"
      "  --fail-uninstrumented   Fail if there are uninstrumented modules\n"
+     "  --ignore    modules     Don't rename this modules\n"
      "  --show-output           Allow program under test to print to stdout\n"
      "  --gui                   Run concuerror with graphics\n"
      "  --dpor                  Runs the experimental optimal DPOR version\n"
