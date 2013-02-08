@@ -185,7 +185,7 @@ instrument_and_compile(Files, Options) ->
     case create_tmp_dir() of
         {ok, DirName} ->
             ets:insert(?NT_INSTR, {?INSTR_TEMP_DIR, DirName}),
-            concuerror_log:log(0, "Instrumenting files..\n"),
+            concuerror_log:log(0, "Instrumenting files.."),
             InstrOne =
                 fun(File) ->
                     instrument_and_compile_one(File, Includes,
@@ -193,8 +193,16 @@ instrument_and_compile(Files, Options) ->
                 end,
             MFBs = concuerror_util:pmap(InstrOne, Files),
             case lists:member('error', MFBs) of
-                true  -> error;
-                false -> {ok, MFBs}
+                true  ->
+                    concuerror_log:log(0, "\nInstrumenting files.. failed\n"),
+                    error;
+                false ->
+                    case Verbosity of
+                        0 -> concuerror_log:log(0, " done\n");
+                        _ -> concuerror_log:log(0,
+                                "\nInstrumenting files.. done\n")
+                    end,
+                    {ok, MFBs}
             end;
         error ->
             error
@@ -204,7 +212,7 @@ instrument_and_compile(Files, Options) ->
 instrument_and_compile_one(File, Includes, Defines, Verbosity) ->
     %% Compilation of original file without emitting code, just to show
     %% warnings or stop if an error is found, before instrumenting it.
-    concuerror_log:log(1, "Validating file ~p...~n", [File]),
+    concuerror_log:log(1, "\nValidating file ~p...", [File]),
     OptIncludes = [{i, I} || I <- Includes],
     OptDefines  = [{d, M, V} || {M, V} <- Defines],
     OptRest =
@@ -219,7 +227,7 @@ instrument_and_compile_one(File, Includes, Defines, Verbosity) ->
             %% Log warning messages.
             log_warning_list(Warnings),
             %% Instrument given source file.
-            concuerror_log:log(1, "Instrumenting file ~p...~n", [File]),
+            concuerror_log:log(1, "\nInstrumenting file ~p...", [File]),
             case instrument(OldModule, File, Includes, Defines) of
                 {ok, NewFile, NewForms} ->
                     %% Compile instrumented code.
@@ -235,13 +243,13 @@ instrument_and_compile_one(File, Includes, Defines, Verbosity) ->
                         {ok, NewModule, Binary} ->
                             {NewModule, NewFile, Binary};
                         error ->
-                            concuerror_log:log(0, "Failed to compile "
-                                "instrumented file ~p.~n", [NewFile]),
+                            concuerror_log:log(0, "\nFailed to compile "
+                                "instrumented file ~p.\n", [NewFile]),
                             error
                     end;
                 {error, Error} ->
-                    concuerror_log:log(0, "Failed to instrument "
-                        "file ~p: ~p~n", [File, Error]),
+                    concuerror_log:log(0, "\nFailed to instrument "
+                        "file ~p: ~p\n", [File, Error]),
                     error
             end;
         {error, Errors, Warnings} ->
@@ -263,7 +271,7 @@ load_one({Module, File, Binary}) ->
     case code:load_binary(Module, File, Binary) of
         {module, Module} -> ok;
         {error, Error} ->
-            concuerror_log:log(0, "error~n~p~n", [Error]),
+            concuerror_log:log(0, "\nerror\n~p\n", [Error]),
             error
     end.
 
@@ -331,7 +339,7 @@ create_tmp_dir() ->
             %% Directory exists, try again
             create_tmp_dir();
         {error, Reason} ->
-            concuerror_log:log(0, "error: ~p\n", [Reason]),
+            concuerror_log:log(0, "\nerror: ~p\n", [Reason]),
             error
     end.
 
@@ -704,7 +712,7 @@ log_warning_list(List) ->
 
 %% Log a list of error or warning descriptors, as returned by compile:file/2.
 log_list(List, Pre, Verbosity) ->
-    Strings = [io_lib:format("~s:~p: ~s ~s\n",
+    Strings = [io_lib:format("\n~s:~p: ~s ~s",
                     [File, Line, Pre, Mod:format_error(Descr)])
               || {File, Info} <- List, {Line, Mod, Descr} <- Info],
     concuerror_log:log(Verbosity, lists:flatten(Strings)),
