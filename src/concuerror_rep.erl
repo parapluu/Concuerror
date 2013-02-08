@@ -300,9 +300,10 @@ rep_receive_loop(Act, Fun, HasTimeout) ->
     end.
 
 find_trappable_links(Pid) ->
-    case erlang:process_info(Pid, trap_exit) of
-        {trap_exit, true} -> find_my_links();
-        _ -> []
+    try {trap_exit, true} = erlang:process_info(find_pid(Pid), trap_exit) of
+        _ -> find_my_links()
+    catch
+        _:_ -> []
     end.
 
 rep_receive_match(_Fun, []) ->
@@ -369,18 +370,8 @@ rep_register(RegName, P) ->
 %% and continue without yielding.
 -spec rep_send(dest(), term()) -> term().
 rep_send(Dest, Msg) ->
-    case ?LID_FROM_PID(self()) of
-        not_found ->
-            %% Unknown process sends using instrumented code. Allow it.
-            %% It will be reported at the receive point.
-            Dest ! Msg;
-        _SelfLid ->
-            PlanLid = ?LID_FROM_PID(find_pid(Dest)),
-            concuerror_sched:notify(send, {Dest, PlanLid, Msg}),
-            SendLid = ?LID_FROM_PID(find_pid(Dest)),
-            concuerror_sched:notify(send, {Dest, SendLid, Msg}, prev),
-            Dest ! Msg
-    end.
+    send_center(Dest, Msg),
+    Dest ! Msg.
 
 %% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
 %%                      'ok' | 'nosuspend' | 'noconnect'
@@ -390,17 +381,23 @@ rep_send(Dest, Msg) ->
 -spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
                       'ok' | 'nosuspend' | 'noconnect'.
 rep_send(Dest, Msg, Opt) ->
+    send_center(Dest, Msg),
+    erlang:send(Dest, Msg, Opt).
+
+send_center(Dest, Msg) ->
     case ?LID_FROM_PID(self()) of
         not_found ->
             %% Unknown process sends using instrumented code. Allow it.
             %% It will be reported at the receive point.
-            erlang:send(Dest, Msg, Opt);
+            ok;
         _SelfLid ->
             PlanLid = ?LID_FROM_PID(find_pid(Dest)),
-            concuerror_sched:notify(send, {Dest, PlanLid, Msg}),
+            PlanLinks = find_trappable_links(Dest),
+            concuerror_sched:notify(send, {Dest, PlanLid, Msg, PlanLinks}),
             SendLid = ?LID_FROM_PID(find_pid(Dest)),
-            concuerror_sched:notify(send, {Dest, SendLid, Msg}, prev),
-            erlang:send(Dest, Msg, Opt)
+            SendLinks = find_trappable_links(Dest),
+            concuerror_sched:notify(send, {Dest, SendLid, Msg, SendLinks}, prev),
+            ok
     end.
 
 %% @spec rep_spawn(function()) -> pid()

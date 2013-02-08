@@ -1054,7 +1054,7 @@ convert_error_trace({Lid, {Instr, Extra}, _Msgs}, Procs) ->
     NewInstr =
         case Instr of
             send ->
-                {Orig, Dest, Msg} = Extra,
+                {Orig, Dest, Msg, _Links} = Extra,
                 NewDest =
                     case is_atom(Orig) of
                         true -> {name, Orig};

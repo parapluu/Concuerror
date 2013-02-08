@@ -67,15 +67,15 @@ dependent({_Lid1, _Instr1, _Msgs1},
 %%==============================================================================
 
 %% Sending to the same process:
-dependent({_Lid1,  Instr1, PreMsgs1} = Trans1,
-          {_Lid2, _Instr2,    Msgs2} = Trans2,
+dependent({Lid1, Instr1, PreMsgs1} = Trans1,
+          {Lid2, Instr2,    Msgs2} = Trans2,
           ?CHECK_MSG, AllowSwap) ->
-    Msgs1 =
-        case Instr1 of
-            {send, {_RegName, Lid, Msg}} ->
-                add_missing_message(Lid, Msg, PreMsgs1);
-            _ -> PreMsgs1
+    Links =
+        case Instr2 of
+            {send, {_TName, _TLid, _Msg, L}} -> L;
+            _ -> []
         end,
+    Msgs1 = add_missing_messages(Instr1, Lid1, PreMsgs1, Lid2, Links),
     case Msgs1 =:= [] orelse Msgs2 =:= [] of
         true -> dependent(Trans1, Trans2, ?DONT_CHECK_MSG, AllowSwap);
         false ->
@@ -102,7 +102,7 @@ dependent({_Lid1,  Instr1, PreMsgs1} = Trans1,
 %% Sending the message that triggered a receive's 'had_after'
 dependent({Lid1,          Instr1, PreMsgs1} = Trans1,
           {Lid2, {Receive, Info},   _Msgs2} = Trans2,
-          CheckMsg, AllowSwap) when
+          _CheckMsg, AllowSwap) when
       Receive =:= 'after';
       (Receive =:= 'receive' andalso
        element(1, Info) =:= had_after andalso
@@ -135,7 +135,7 @@ dependent({Lid1,          Instr1, PreMsgs1} = Trans1,
         true -> true;
         false ->
             case AllowSwap of
-                true -> dependent(Trans2, Trans1, CheckMsg, ?DONT_ALLOW_SWAP);
+                true -> dependent(Trans2, Trans1, ?CHECK_MSG, ?DONT_ALLOW_SWAP);
                 false -> false
             end
     end;
@@ -212,7 +212,7 @@ dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _Name1, _Links1}}}, _Msgs1},
 %% Registered processes:
 
 %% Sending using name to a process that may exit and unregister.
-dependent({_Lid1, {send,                     {TName, _TLid, _Msg}}, _Msgs1},
+dependent({_Lid1, {send,              {TName, _TLid, _Msg, _Link}}, _Msgs1},
           {_Lid2, {exit, {normal, {_Tables, {ok, TName}, _Links}}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     true;
@@ -235,8 +235,8 @@ dependent(A, {Lid, {unregister, RegName}, Msgs}, CheckMsg, AllowSwap) ->
 %%==============================================================================
 
 %% Send using name before process has registered itself (or after ungeristering).
-dependent({_Lid1, {register,      {RegName, _TLid}}, _Msgs1},
-          {_Lid2, {    send, {RegName, _Lid, _Msg}}, _Msgs2},
+dependent({_Lid1, {register,             {RegName, _TLid}}, _Msgs1},
+          {_Lid2, {    send, {RegName, _Lid, _Msg, _Link}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     true;
 
@@ -424,7 +424,7 @@ independent({_Lid1, {Op1, _}, _Msgs1}, {_Lid2, {Op2, _}, _Msgs2}) ->
 
 add_missing_messages(Instr1, Lid1, PreMsgs1, Lid2, Links) ->
     case Instr1 of
-        {send, {_RegName, Lid, Msg}} ->
+        {send, {_RegName, Lid, Msg, _Links}} ->
             add_missing_message(Lid, Msg, PreMsgs1);
         {exit, _} ->
             case lists:member(Lid1, Links) of
@@ -438,7 +438,7 @@ add_missing_messages(Instr1, Lid1, PreMsgs1, Lid2, Links) ->
 
 add_missing_message(Lid, Msg, Msgs) ->
     try true = lists:member(Msg, orddict:fetch(Lid, Msgs)) of
-        true -> Msgs
+        _ -> Msgs
     catch
         _:_ -> orddict:append(Lid, Msg, Msgs)
     end.
