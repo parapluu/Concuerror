@@ -16,7 +16,7 @@
 
 -export([spawn_fun_wrapper/1]).
 
--export([rep_var/3, rep_send/2, rep_send/3]).
+-export([rep_var/3, rep_apply/3, rep_send/2, rep_send/3]).
 
 -export([rep_spawn/1, rep_spawn/3,
          rep_spawn_link/1, rep_spawn_link/3,
@@ -79,6 +79,7 @@
          {{erlang, unlink, 1}, fun rep_unlink/1},
          {{erlang, unregister, 1}, fun rep_unregister/1},
          {{erlang, whereis, 1}, fun rep_whereis/1},
+         {{erlang, apply, 3}, fun rep_apply/3},
          {{ets, insert_new, 2}, fun rep_ets_insert_new/2},
          {{ets, lookup, 2}, fun rep_ets_lookup/2},
          {{ets, select_delete, 2}, fun rep_ets_select_delete/2},
@@ -110,6 +111,11 @@ rep_var(Mod, Fun, Args) ->
             RenameMod = concuerror_instr:check_module_name(Mod, Fun, LenArgs),
             apply(RenameMod, Fun, Args)
     end.
+
+%% Handle apply/3
+-spec rep_apply(module(), atom(), [term()]) -> term().
+rep_apply(Mod, Fun, Args) ->
+    rep_var(Mod, Fun, Args).
 
 %% @spec: rep_demonitor(reference()) -> 'true'
 %% @doc: Replacement for `demonitor/1'.

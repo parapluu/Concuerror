@@ -39,6 +39,7 @@
          {spawn_opt, 4},
          {unlink, 1},
          {unregister, 1},
+         {apply, 3},
          {whereis, 1}]).
 
 %% Instrumented functions called as erlang:FUNCTION.
