@@ -125,7 +125,7 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
                 %% Reset the internal state for the progress logger
                 concuerror_log:reset(),
                 {T1, _} = statistics(wall_clock),
-                Result = interleave(NewTarget, PreBound, Dpor),
+                Result = interleave(NewTarget, PreBound, Dpor, Options),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = concuerror_util:to_elapsed_time(T1, T2),
                 ?debug("Done in ~wm~.2fs\n", [Mins, Secs]),
@@ -159,17 +159,18 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
     Ret.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
-interleave(Target, PreBound, Dpor) ->
+interleave(Target, PreBound, Dpor, Options) ->
     Self = self(),
-    spawn_link(fun() -> interleave_aux(Target, PreBound, Self, Dpor) end),
+    Fun = fun() -> interleave_aux(Target, PreBound, Self, Dpor, Options) end,
+    spawn_link(Fun),
     receive
         {interleave_result, Result} -> Result
     end.
 
-interleave_aux(Target, PreBound, Parent, Dpor) ->
+interleave_aux(Target, PreBound, Parent, Dpor, Options) ->
     ?debug("Dpor is not really ready yet...\n"),
     register(?RP_SCHED, self()),
-    Result = interleave_dpor(Target, PreBound, Dpor),
+    Result = interleave_dpor(Target, PreBound, Dpor, Options),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
 
@@ -284,6 +285,7 @@ empty_clock_vector() -> orddict:new().
           target                  :: analysis_target(),
           run_count    = 1        :: pos_integer(),
           sleep_blocked_count = 0 :: non_neg_integer(),
+          show_output  = false    :: boolean(),
           tickets      = []       :: [concuerror_ticket:ticket()],
           trace        = []       :: [trace_state()],
           must_replay  = false    :: boolean(),
@@ -293,16 +295,18 @@ empty_clock_vector() -> orddict:new().
           group_leader            :: pid()
          }).
 
-interleave_dpor(Target, PreBound, Dpor) ->
+interleave_dpor(Target, PreBound, Dpor, Options) ->
     ?debug("Interleave dpor!\n"),
     Procs = processes(),
     %% To be able to clean up we need to be trapping exits...
     process_flag(trap_exit, true),
+    %% Get `show_output' flag from options
+    ShowOutput = lists:keymember('show_output', 1, Options),
     {Trace, GroupLeader} = start_target(Target),
     ?debug("Target started!\n"),
     NewState = #dpor_state{trace = Trace, target = Target, proc_before = Procs,
-                           dpor_flavor = Dpor, preemption_bound = PreBound,
-                           group_leader = GroupLeader},
+        dpor_flavor = Dpor, preemption_bound = PreBound,
+        show_output = ShowOutput, group_leader = GroupLeader},
     explore(NewState).
 
 start_target(Target) ->
@@ -399,7 +403,11 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
     %% Get buffered output from group leader
     %% TODO: For now just ignore it. Maybe we can print it
     %% only when we have an error (after the backtrace?)
-    _Output = concuerror_io_server:group_leader_sync(GroupLeader),
+    Output = concuerror_io_server:group_leader_sync(GroupLeader),
+    case State#dpor_state.show_output of
+        true  -> io:put_chars(Output);
+        false -> ok
+    end,
     proc_cleanup(processes() -- ProcBefore),
     {_FirstLid, NewGroupLeader} = start_target_op(Target),
     NewLidTrace = replay_lid_trace(LidTrace),
@@ -1148,7 +1156,11 @@ finished(#dpor_state{trace = Trace}) ->
 dpor_return(State) ->
     %% First clean up the last interleaving
     GroupLeader = State#dpor_state.group_leader,
-    _Output = concuerror_io_server:group_leader_sync(GroupLeader),
+    Output = concuerror_io_server:group_leader_sync(GroupLeader),
+    case State#dpor_state.show_output of
+        true  -> io:put_chars(Output);
+        false -> ok
+    end,
     ProcBefore = State#dpor_state.proc_before,
     proc_cleanup(processes() -- ProcBefore),
     %% Return the analysis result
