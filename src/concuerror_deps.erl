@@ -405,7 +405,7 @@ dependent(TransitionA, TransitionB, _CheckMsg, ?DONT_ALLOW_SWAP) ->
     case independent(TransitionA, TransitionB) of
         true -> false;
         maybe ->
-            concuerror_log:log("Not certainly independent:\n ~p\n ~p\n",
+            concuerror_log:log(3, "Not certainly independent:\n ~p\n ~p\n",
                                [TransitionA, TransitionB]),
             true
     end.
@@ -546,6 +546,6 @@ dependent_ets({ new, _Details1},
 dependent_ets(Op1, Op2, ?ALLOW_SWAP) ->
     dependent_ets(Op2, Op1, ?DONT_ALLOW_SWAP);
 dependent_ets(Op1, Op2, ?DONT_ALLOW_SWAP) ->
-    concuerror_log:log("Not certainly independent (ETS):\n ~p\n ~p\n",
+    concuerror_log:log(3, "Not certainly independent (ETS):\n ~p\n ~p\n",
                        [Op1, Op2]),
     true.
