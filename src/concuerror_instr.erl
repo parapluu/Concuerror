@@ -245,12 +245,12 @@ instrument_and_compile_one(File, Includes, Defines, Verbosity) ->
                             {NewModule, NewFile, Binary};
                         error ->
                             concuerror_log:log(0, "\nFailed to compile "
-                                "instrumented file ~p.\n", [NewFile]),
+                                "instrumented file ~p.", [NewFile]),
                             error
                     end;
                 {error, Error} ->
                     concuerror_log:log(0, "\nFailed to instrument "
-                        "file ~p: ~p\n", [File, Error]),
+                        "file ~p: ~p", [File, Error]),
                     error
             end;
         {error, Errors, Warnings} ->

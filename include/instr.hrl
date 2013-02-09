@@ -16,7 +16,7 @@
 %%%----------------------------------------------------------------------
 
 %% List of attributes that should be stripped.
--define(ATTR_STRIP, [type, spec, opaque, export_type, import_type]).
+-define(ATTR_STRIP, [type, spec, opaque, export_type, import_type, callback]).
 
 %% Instrumented auto-imported functions of 'erlang' module.
 -define(INSTR_ERL_FUN,
