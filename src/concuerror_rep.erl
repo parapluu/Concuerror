@@ -639,8 +639,6 @@ rep_whereis(RegName) ->
 %%%----------------------------------------------------------------------
 %%% ETS replacements
 %%%----------------------------------------------------------------------
--type tid() :: term().
--type tab() :: atom() | tid().
 -type ets_new_option() :: ets_new_type() | ets_new_access() | named_table
                         | {keypos,integer()} | {heir,pid(),term()} | {heir,none}
                         | ets_new_tweaks().
@@ -648,7 +646,8 @@ rep_whereis(RegName) ->
 -type ets_new_access() :: public | protected | private.
 -type ets_new_tweaks() :: {write_concurrency,boolean()}
                         | {read_concurrency,boolean()} | compressed.
--spec rep_ets_new(atom(), [ets_new_option()]) -> tid() | atom().
+
+-spec rep_ets_new(atom(), [ets_new_option()]) -> ets:tab().
 rep_ets_new(Name, Options) ->
     concuerror_sched:notify(ets, {new, [unknown, Name, Options]}),
     try
@@ -665,11 +664,11 @@ rep_ets_new(Name, Options) ->
             ets:new(Name, Options)
     end.
 
--spec rep_ets_insert(tid()|atom(), tuple()|[tuple()]) -> true.
+-spec rep_ets_insert(ets:tab(), tuple() | [tuple()]) -> true.
 rep_ets_insert(Tab, Obj) ->
     ets_insert_center(insert, Tab, Obj).
 
--spec rep_ets_insert_new(tid()|atom(), tuple()|[tuple()]) -> boolean().
+-spec rep_ets_insert_new(ets:tab(), tuple()|[tuple()]) -> boolean().
 rep_ets_insert_new(Tab, Obj) ->
     ets_insert_center(insert_new, Tab, Obj).
 
@@ -702,62 +701,62 @@ ets_insert_center(Type, Tab, Obj) ->
             Fun(Tab, Obj)
     end.
 
--spec rep_ets_lookup(tid()|atom(), term()) -> [tuple()].
+-spec rep_ets_lookup(ets:tab(), term()) -> [tuple()].
 rep_ets_lookup(Tab, Key) ->
     Lid = ?LID_FROM_PID(Tab),
     concuerror_sched:notify(ets, {lookup, [Lid, Tab, Key]}),
     ets:lookup(Tab, Key).
 
--spec rep_ets_delete(tid()|atom()) -> true.
+-spec rep_ets_delete(ets:tab()) -> true.
 rep_ets_delete(Tab) ->
     concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab]}),
     ets:delete(Tab).
 
--spec rep_ets_delete(tid()|atom(), term()) -> true.
+-spec rep_ets_delete(ets:tab(), term()) -> true.
 rep_ets_delete(Tab, Key) ->
     concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab, Key]}),
     ets:delete(Tab, Key).
 
 -type match_spec()    :: [{match_pattern(), [term()], [term()]}].
 -type match_pattern() :: atom() | tuple().
--spec rep_ets_select_delete(tid()|atom(), match_spec()) -> non_neg_integer().
+-spec rep_ets_select_delete(ets:tab(), match_spec()) -> non_neg_integer().
 rep_ets_select_delete(Tab, MatchSpec) ->
     concuerror_sched:notify(ets,
         {select_delete, [?LID_FROM_PID(Tab), Tab, MatchSpec]}),
     ets:select_delete(Tab, MatchSpec).
 
--spec rep_ets_match_delete(tab(), match_pattern()) -> true.
+-spec rep_ets_match_delete(ets:tab(), match_pattern()) -> true.
 rep_ets_match_delete(Tab, Pattern) ->
     concuerror_sched:notify(ets,
         {match_delete, [?LID_FROM_PID(Tab), Tab, Pattern]}),
     ets:match_delete(Tab, Pattern).
 
--spec rep_ets_match_object(tid()|atom(), tuple()) -> [tuple()].
+-spec rep_ets_match_object(ets:tab(), tuple()) -> [tuple()].
 rep_ets_match_object(Tab, Pattern) ->
     concuerror_sched:notify(ets,
         {match_object, [?LID_FROM_PID(Tab), Tab, Pattern]}),
     ets:match_object(Tab, Pattern).
 
--spec rep_ets_match_object(tid()|atom(), tuple(), integer()) ->
+-spec rep_ets_match_object(ets:tab(), tuple(), integer()) ->
     {[[term()]],term()} | '$end_of_table'.
 rep_ets_match_object(Tab, Pattern, Limit) ->
     concuerror_sched:notify(ets,
         {match_object, [?LID_FROM_PID(Tab), Tab, Pattern, Limit]}),
     ets:match_object(Tab, Pattern, Limit).
 
--spec rep_ets_foldl(fun((term(), term()) -> term()), term(), tab()) -> term().
+-spec rep_ets_foldl(fun((term(), term()) -> term()), term(), ets:tab()) -> term().
 rep_ets_foldl(Function, Acc, Tab) ->
     concuerror_sched:notify(ets,
         {foldl, [?LID_FROM_PID(Tab), Function, Acc, Tab]}),
     ets:foldl(Function, Acc, Tab).
 
--spec rep_ets_info(tab()) -> [{atom(), term()}] | undefined.
+-spec rep_ets_info(ets:tab()) -> [{atom(), term()}] | undefined.
 rep_ets_info(Tab) ->
     concuerror_sched:notify(ets,
         {info, [?LID_FROM_PID(Tab), Tab]}),
     ets:info(Tab).
 
--spec rep_ets_info(tab(), atom()) -> term() | undefined.
+-spec rep_ets_info(ets:tab(), atom()) -> term() | undefined.
 rep_ets_info(Tab, Item) ->
     concuerror_sched:notify(ets,
         {info, [?LID_FROM_PID(Tab), Tab, Item]}),
