@@ -1,5 +1,5 @@
 %%%----------------------------------------------------------------------
-%%% Copyright (c) 2012, Alkis Gotovos <el3ctrologos@hotmail.com>,
+%%% Copyright (c) 2013, Alkis Gotovos <el3ctrologos@hotmail.com>,
 %%%                     Maria Christakis <mchrista@softlab.ntua.gr>
 %%%                 and Kostis Sagonas <kostis@cs.ntua.gr>.
 %%% All rights reserved.
@@ -131,14 +131,8 @@ dependent({Lid1,          Instr1, PreMsgs1} = Trans1,
                     error -> false
                 end
         end,
-    case Dependent of
-        true -> true;
-        false ->
-            case AllowSwap of
-                true -> dependent(Trans2, Trans1, ?CHECK_MSG, ?DONT_ALLOW_SWAP);
-                false -> false
-            end
-    end;
+    Dependent orelse (AllowSwap andalso
+		      dependent(Trans2, Trans1, ?CHECK_MSG, ?DONT_ALLOW_SWAP));
 %%==============================================================================
 
 %% Other instructions are not in race with receive or after, if not caught by
@@ -150,7 +144,7 @@ dependent({_Lid1, {   _Any, _Details1}, _Msgs1},
       Receive =:= 'receive' ->
     false;
 
-%% %% Swapped version, as the message checking code can force a swap.
+%% Swapped version, as the message checking code can force a swap.
 dependent({_Lid1, {Receive, _Details1}, _Msgs1},
           {_Lid2, {   _Any, _Details2}, _Msgs2},
           _CheckMsg, ?ONLY_AFTER_SWAP) when
