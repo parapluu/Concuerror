@@ -345,10 +345,9 @@ create_tmp_dir() ->
     end.
 
 temp_name(Stem) ->
-    {A, B, C}   = erlang:now(),
-    RandomNum   = A bxor B bxor C,
-    RandomName  = Stem ++ integer_to_list(RandomNum),
-    RandomName.
+    {A, B, C} = erlang:now(),
+    RandomNum = A bxor B bxor C,
+    Stem ++ integer_to_list(RandomNum).
 
 
 %% ---------------------------
