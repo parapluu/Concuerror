@@ -227,15 +227,13 @@ bfs_serial(Moves, Env, [State | Rest], NextOpen, Opts) ->
 		false -> Moves
 	    end;
 	false ->
-	    IsNew = fun(E) -> is_new(E, Opts) end,
-	    CompressEntry = fun(E) -> compress_entry(E, Opts) end,
 	    Entries = next_entries(Env, State, Opts),
 	    Entries2 = case Opts#opts.solution of
 			   true  -> Entries;
 			   false -> [trim_backstep(E) || E <- Entries]
 		       end,
-	    NewEntries = lists:filter(IsNew, Entries2),
-	    CompNewEntries = lists:map(CompressEntry, NewEntries),
+	    NewEntries = [E || E <- Entries2, is_new(E, Opts)],
+	    CompNewEntries = [compress_entry(E, Opts) || E <- NewEntries],
 	    hash_insert(CompNewEntries),
 	    NewStates = [get_state(E) || E <- NewEntries],
 	    bfs_serial(Moves, Env, Rest, NewStates ++ NextOpen, Opts)
@@ -325,10 +323,8 @@ coordinator_loop(Left, States, NextLeft, NextStates, NextWorker, Moves, Workers,
 		    _ ->
 			States
 		end,
-	    IsNew = fun(E) -> is_new(E, Opts) end,
-	    Prepare = fun(E) -> coord_prep(E, Opts) end,
-	    NewEntries = lists:filter(IsNew, Entries),
-	    PrepedNewEntries = lists:map(Prepare, NewEntries),
+	    NewEntries = [E || E <- Entries, is_new(E, Opts)],
+	    PrepedNewEntries = [coord_prep(E, Opts) || E <- NewEntries],
 	    hash_insert(PrepedNewEntries),
 	    NewStates = [get_state(E) || E <- NewEntries],
 	    NumNewStates = length(NewStates),
@@ -383,13 +379,11 @@ worker_loop(Load, Env, Opts) ->
 			stop -> exit(normal)
 		    end;
 		false ->
-		    Prepare = fun(E) -> worker_prep(E, Opts) end,
-		    IsNew = fun(E) -> is_new(E, Opts) end,
 		    NextEntries = next_entries(Env, FilteredState, Opts),
-		    PrepedEntries = lists:map(Prepare, NextEntries),
+		    PrepedEntries = [worker_prep(E, Opts) || E <- NextEntries],
 		    NewEntries =
 			case Opts#opts.precheck of
-			    true  -> lists:filter(IsNew, PrepedEntries);
+			    true  -> [E || E <- PrepedEntries, is_new(E, Opts)];
 			    false -> PrepedEntries
 			end,
 		    coordinator ! {entries, NewEntries, self()},
