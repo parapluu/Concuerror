@@ -148,7 +148,7 @@ cliAux(Options) ->
                             false -> ?EXPORT_FILE
                         end,
                     concuerror_log:log(0,
-                        "\nWriting output to file ~s..", [Output]),
+                        "\nWriting output to file ~s... ", [Output]),
                     case export(Result, Output) of
                         {'error', Msg2} ->
                             concuerror_log:log(0,

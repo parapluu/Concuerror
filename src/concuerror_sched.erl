@@ -121,7 +121,7 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
                 NewMod = concuerror_instr:check_module_name(Mod, Fun, 0),
                 NewTarget = {NewMod, Fun, Args},
                 concuerror_log:log(0, "\nRunning analysis with preemption "
-                    "bound ~p..\n", [PreBound]),
+                    "bound ~p... \n", [PreBound]),
                 %% Reset the internal state for the progress logger
                 concuerror_log:reset(),
                 {T1, _} = statistics(wall_clock),

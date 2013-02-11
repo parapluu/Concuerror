@@ -186,7 +186,7 @@ instrument_and_compile(Files, Options) ->
     case create_tmp_dir() of
         {ok, DirName} ->
             ets:insert(?NT_INSTR, {?INSTR_TEMP_DIR, DirName}),
-            concuerror_log:log(0, "Instrumenting files.."),
+            concuerror_log:log(0, "Instrumenting files..."),
             InstrOne =
                 fun(File) ->
                     instrument_and_compile_one(File, Includes,
@@ -195,13 +195,13 @@ instrument_and_compile(Files, Options) ->
             MFBs = concuerror_util:pmap(InstrOne, Files),
             case lists:member('error', MFBs) of
                 true  ->
-                    concuerror_log:log(0, "\nInstrumenting files.. failed\n"),
+                    concuerror_log:log(0, "\nInstrumenting files... failed\n"),
                     error;
                 false ->
                     case Verbosity of
                         0 -> concuerror_log:log(0, " done\n");
                         _ -> concuerror_log:log(0,
-                                "\nInstrumenting files.. done\n")
+                                "\nInstrumenting files... done\n")
                     end,
                     {ok, MFBs}
             end;
@@ -228,7 +228,7 @@ instrument_and_compile_one(File, Includes, Defines, Verbosity) ->
             %% Log warning messages.
             log_warning_list(Warnings),
             %% Instrument given source file.
-            concuerror_log:log(1, "\nInstrumenting file ~p...", [File]),
+            concuerror_log:log(1, "\nInstrumenting file ~p... ", [File]),
             case instrument(OldModule, File, Includes, Defines) of
                 {ok, NewFile, NewForms} ->
                     %% Compile instrumented code.

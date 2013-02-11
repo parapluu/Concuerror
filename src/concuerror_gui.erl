@@ -964,7 +964,7 @@ exportDialog(Parent) ->
         ?wxID_OK ->
             AnalysisRet = ref_lookup(?ANALYSIS_RET),
             Output = wxFileDialog:getPath(Dialog),
-            concuerror_log:log(0, "Writing output to file ~s..", [Output]),
+            concuerror_log:log(0, "Writing output to file ~s... ", [Output]),
             case concuerror:export(AnalysisRet, Output) of
                 {'error', Msg} ->
                     concuerror_log:log(0, "~s\n", [file:format_error(Msg)]);
