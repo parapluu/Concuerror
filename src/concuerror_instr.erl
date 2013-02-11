@@ -168,19 +168,16 @@ instrument_and_compile(Files, Options) ->
             false -> []
         end,
     %% Initialize tables
-    ?NT_INSTR_MODS = ets:new(?NT_INSTR_MODS,
-        [named_table, public, set, {read_concurrency, true}]),
+    EtsNewOpts = [named_table, public, set, {read_concurrency, true}],
+    ?NT_INSTR_MODS = ets:new(?NT_INSTR_MODS, EtsNewOpts),
     InstrModules = [{concuerror_util:get_module_name(F)} || F <- Files],
     ets:insert(?NT_INSTR_MODS, InstrModules),
-    ?NT_INSTR_BIFS = ets:new(?NT_INSTR_BIFS,
-        [named_table, public, set, {read_concurrency, true}]),
+    ?NT_INSTR_BIFS = ets:new(?NT_INSTR_BIFS, EtsNewOpts),
     PredefBifs = [{PBif} || PBif <- ?PREDEF_BIFS],
     ets:insert(?NT_INSTR_BIFS, PredefBifs),
-    ?NT_INSTR_IGNORED = ets:new(?NT_INSTR_IGNORED,
-        [named_table, public, set, {read_concurrency, true}]),
+    ?NT_INSTR_IGNORED = ets:new(?NT_INSTR_IGNORED, EtsNewOpts),
     ets:insert(?NT_INSTR_IGNORED, Ignores),
-    ?NT_INSTR = ets:new(?NT_INSTR,
-        [named_table, public, set, {read_concurrency, true}]),
+    ?NT_INSTR = ets:new(?NT_INSTR, EtsNewOpts),
     ets:insert(?NT_INSTR, {?FAIL_BB, FailBB}),
     %% Create a temp dir to save renamed code
     case create_tmp_dir() of
