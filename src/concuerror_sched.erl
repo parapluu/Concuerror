@@ -362,7 +362,8 @@ explore(MightNeedReplayState) ->
         end
     end.
 
-select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
+select_from_backtrack(#dpor_state{must_replay = MustReplay,
+				  trace = Trace} = MightNeedReplayState) ->
     %% FIXME: Pick first and don't really subtract.
     %% FIXME: This is actually the trace bottom...
     [TraceTop|RestTrace] = Trace,
@@ -376,7 +377,7 @@ select_from_backtrack(#dpor_state{trace = Trace} = MightNeedReplayState) ->
             none;
         {ok, SelectedLid, NewBacktrack} ->
             State =
-                case MightNeedReplayState#dpor_state.must_replay of
+                case MustReplay of
                     true -> replay_trace(MightNeedReplayState);
                     false -> MightNeedReplayState
                 end,
@@ -394,17 +395,19 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
                          run_count = RunCnt,
                          sleep_blocked_count = SBlocked,
                          group_leader = GroupLeader,
-                         target = Target} = State) ->
+                         target = Target,
+			 trace = Trace,
+			 show_output = ShowOutput} = State) ->
     NewRunCnt = RunCnt + 1,
     ?debug("\nReplay (~p) is required...\n", [NewRunCnt]),
-    [TraceTop|TraceRest] = State#dpor_state.trace,
+    [TraceTop|TraceRest] = Trace,
     LidTrace = TraceTop#trace_state.lid_trace,
     concuerror_lid:stop(),
     %% Get buffered output from group leader
     %% TODO: For now just ignore it. Maybe we can print it
     %% only when we have an error (after the backtrace?)
     Output = concuerror_io_server:group_leader_sync(GroupLeader),
-    case State#dpor_state.show_output of
+    case ShowOutput of
         true  -> io:put_chars(Output);
         false -> ok
     end,
@@ -505,12 +508,13 @@ get_next(Lid) ->
     end.
 
 add_all_backtracks(#dpor_state{preemption_bound = PreBound,
-                               trace = Trace} = State) ->
-    case State#dpor_state.dpor_flavor of
+                               trace = Trace,
+			       dpor_flavor = Flavor} = State) ->
+    case Flavor of
         none ->
             %% add_some_next will take care of all the backtracks.
             State;
-        Flavor ->
+        _ ->
             [#trace_state{last = Transition}|_] = Trace,
             case concuerror_deps:may_have_dependencies(Transition) of
                 true ->
