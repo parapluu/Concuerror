@@ -50,7 +50,7 @@
 %% The logical id (LID) for each process reflects the process' logical
 %% position in the program's "process creation tree" and doesn't change
 %% between different runs of the same program (as opposed to erlang pids).
--type lid() :: integer().
+-type lid() :: string().
 -type ets_lid() :: integer().
 -type ref_lid() :: integer().
 -type maybe_lid() :: lid() | 'not_found'.
@@ -104,7 +104,7 @@ fold_pids(Fun, InitAcc) ->
 -spec mock(integer()) -> lid().
 
 mock(Seed) ->
-    Seed.
+    lists:flatten(io_lib:format("~p", [Seed])).
 
 %% "Register" a new process using its pid (Pid) and its parent's LID (Parent).
 %% If called without a `noparent' argument, "register" the first process.
@@ -191,14 +191,14 @@ set_children(Lid, Children) ->
 %%% Helper functions
 %%%----------------------------------------------------------------------
 
--spec root_lid() -> 1.
+-spec root_lid() -> lid().
 
 root_lid() ->
-    1.
+    "1".
 
 %% Create new lid from parent and its number of children.
 next_lid(ParentLid, Children) ->
-    100 * ParentLid + Children + 1.
+    lists:flatten(io_lib:format("~s.~p", [ParentLid, Children+1])).
 
 -spec to_string(lid() | {dead, lid()}) -> string().
 
@@ -207,9 +207,7 @@ to_string({dead, Lid}) ->
 to_string({name, Name}) when is_atom(Name)->
     lists:flatten(io_lib:format("named '~p'", [Name]));
 to_string(Lid) ->
-    LidString = lists:flatten(io_lib:format("P~p", [Lid])),
-    NewLidString = re:replace(LidString, "0", ".", [global]),
-    lists:flatten(io_lib:format("~s", [NewLidString])).
+    "P" ++ Lid.
 
 %%%----------------------------------------------------------------------
 %%% Functions to manipulate LID sets
@@ -231,7 +229,7 @@ make_backtrack(LidList) ->
 %% simply lids(). If a set of lids() has more than one element the first is
 %% picked and the rest are thrown away.
 -spec select_one_shallow_except_with_fix(lid_sets_list(), [lid()]) ->
-                                                'none' | 
+                                                'none' |
                                                 {'ok', lid(), lid_sets_list()}.
 
 select_one_shallow_except_with_fix(DeepList, Exceptions) ->
