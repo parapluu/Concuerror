@@ -571,7 +571,7 @@ find_could_have_run(Ps, Trace) ->
 
 find_could_have_run([],     _, Acc) -> Acc;
 find_could_have_run( _, [_,_], Acc) -> Acc;
-find_could_have_run(Ps, [TraceTop|Rest], Acc) -> 
+find_could_have_run(Ps, [TraceTop|Rest], Acc) ->
     #trace_state{last = {P,_,_}, done = Done, sleep_set = SleepSet} = TraceTop,
     NotAllowed = ordsets:union(SleepSet, Done),
     Could1 = ordsets:subtract(Ps, NotAllowed),
@@ -625,7 +625,7 @@ decide_flanagan(Predecessors, Backtrack, Candidates, PreSI, Rest) ->
                 PreSI#trace_state{backtrack = NewBacktrack},
             {done, [NewPreSI|Rest]}
     end.
-                                             
+
 %% - add new entry with new entry
 %% - wait any possible additional messages
 %% - check for async
@@ -977,7 +977,7 @@ create_ticket(Error, LidTrace) ->
 convert_error_trace({Lid, {error, [ErrorOrThrow,Kind|_]}, _Msgs}, Procs)
   when ErrorOrThrow =:= error; ErrorOrThrow =:= throw ->
     Msg =
-        concuerror_error:type(concuerror_error:new({Kind, foo})),    
+        concuerror_error:type(concuerror_error:new({Kind, foo})),
     {{exit, Lid, Msg}, Procs};
 convert_error_trace({Lid, block, []}, Procs) ->
     {{block, Lid}, Procs};
