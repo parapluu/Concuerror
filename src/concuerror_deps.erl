@@ -383,7 +383,7 @@ dependent(TransitionA, TransitionB, _CheckMsg, ?DONT_ALLOW_SWAP) ->
     case independent(TransitionA, TransitionB) of
         true -> false;
         maybe ->
-            io:format("Not certainly independent:\n ~p\n ~p\n",
+            concuerror_log:log(3, "Not certainly independent:\n ~p\n ~p\n",
                       [TransitionA, TransitionB]),
             true
     end.
