@@ -184,11 +184,9 @@ parse([{Opt, Param} | Args], Options) ->
                     end;
                 %% Run Eunit tests for specific module
                 [Module] ->
-                    AtomModule = 'eunit',
-                    AtomFunc   = 'test',
-                    RenamedMod =
-                        atom_to_list(concuerror_instr:new_module_name(Module)),
-                    Pars = ["[{module, " ++ RenamedMod ++ "}]", "[verbose]"],
+                    AtomModule = ?REP_MOD,
+                    AtomFunc   = 'rep_eunit',
+                    Pars = [Module],
                     case validateTerms(Pars, []) of
                         {'error',_,_}=Error -> Error;
                         AtomParams ->

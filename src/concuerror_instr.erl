@@ -121,7 +121,7 @@ new_module_name(Module) ->
             Module;
         _OldModule ->
             %% Don't rename `erlang' or `ets'.
-            case lists:member(Module, ['erlang', 'ets']) of
+            case lists:member(Module, ['erlang', 'ets', ?REP_MOD]) of
                 true  -> Module;
                 false -> list_to_atom(?INSTR_PREFIX ++ StrModule)
             end
