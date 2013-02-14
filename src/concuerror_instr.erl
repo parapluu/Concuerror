@@ -49,7 +49,8 @@
 -spec delete_and_purge(concuerror:options()) -> 'ok'.
 delete_and_purge(Options) ->
     %% Unload and purge modules.
-    ModsToPurge = [new_module_name(IM) || {IM} <- ets:tab2list(?NT_INSTR_MODS)],
+    ModsToPurge =
+        [check_module_name(IM, none, 0) || {IM}<-ets:tab2list(?NT_INSTR_MODS)],
     Fun = fun (M) -> code:purge(M), code:delete(M) end,
     lists:foreach(Fun, ModsToPurge),
     %% Delete temp directory (ignore errors).
@@ -75,57 +76,33 @@ delete_and_purge(Options) ->
 
 %% ---------------------------
 %% Rename a module for the instrumentation.
-%% 1. Don't rename BIFS.
-%% 2. If module is instrumented rename it.
-%% 3. If we are in `fail_uninstrumented' mode rename all modules.
-%%    (except `ignored' ones)
+%% 1. Don't rename `ignored' modules
+%% 2. Don't rename `BIFS'.
+%% 3. If module is instrumented rename it.
+%% 4. If we are in `fail_uninstrumented' mode rename all modules.
 -spec check_module_name(atom(), atom(), non_neg_integer()) -> atom().
 check_module_name(Module, Function, Arity) ->
-    try
-        %% Check if this function is a BIF.
-        case ets:member(?NT_INSTR_BIFS, {Module, Function, Arity}) of
-            true  -> throw(no_rename);
-            false -> ok
-        end,
-        %% Check if module is instrumented.
-        case ets:member(?NT_INSTR_MODS, Module) of
-            true  -> throw(rename);
-            false -> ok
-        end,
-        %% Check if we are in `fail_uninstrumented' mode.
-        case ets:lookup_element(?NT_INSTR, ?FAIL_BB, 2) of
-            true ->
-                %% Check if we are ignoring this module.
-                case ets:member(?NT_INSTR_IGNORED, Module) of
-                    true  -> throw(no_rename);
-                    false -> throw(rename)
-                end;
-            false -> ok
-        end,
-        %% Don't rename the module otherwise.
-        throw(no_rename)
-    catch
-        no_rename -> Module;
-        rename    -> new_module_name(Module)
+    Rename = (not ets:member(?NT_INSTR_IGNORED, Module))
+        andalso (not ets:member(?NT_INSTR_BIFS, {Module, Function, Arity}))
+        andalso (ets:member(?NT_INSTR_MODS, Module)
+            orelse ets:lookup_element(?NT_INSTR, ?FAIL_BB, 2)),
+    case Rename of
+        true  -> new_module_name(Module);
+        false -> Module
     end.
 
 -spec new_module_name(atom() | string()) -> atom().
-new_module_name(Module) when is_list(Module) ->
-    new_module_name(list_to_atom(Module));
-new_module_name(Module) ->
+new_module_name(StrModule) when is_list(StrModule) ->
     %% Check that module is not already renamed.
-    StrModule = atom_to_list(Module),
     case StrModule of
         (?INSTR_PREFIX ++ _OldModule) ->
             %% No need to rename it
-            Module;
+            list_to_atom(StrModule);
         _OldModule ->
-            %% Don't rename `erlang' or `ets'.
-            case lists:member(Module, ['erlang', 'ets', ?REP_MOD]) of
-                true  -> Module;
-                false -> list_to_atom(?INSTR_PREFIX ++ StrModule)
-            end
-    end.
+            list_to_atom(?INSTR_PREFIX ++ StrModule)
+    end;
+new_module_name(Module) ->
+    new_module_name(atom_to_list(Module)).
 
 -spec old_module_name(atom()) -> atom().
 old_module_name(NewModule) ->
@@ -176,7 +153,7 @@ instrument_and_compile(Files, Options) ->
     PredefBifs = [{PBif} || PBif <- ?PREDEF_BIFS],
     ets:insert(?NT_INSTR_BIFS, PredefBifs),
     ?NT_INSTR_IGNORED = ets:new(?NT_INSTR_IGNORED, EtsNewOpts),
-    ets:insert(?NT_INSTR_IGNORED, Ignores),
+    ets:insert(?NT_INSTR_IGNORED, [{erlang},{ets},{?REP_MOD}] ++ Ignores),
     ?NT_INSTR = ets:new(?NT_INSTR, EtsNewOpts),
     ets:insert(?NT_INSTR, {?FAIL_BB, FailBB}),
     %% Create a temp dir to save renamed code
