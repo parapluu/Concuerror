@@ -3,7 +3,7 @@ Checked 1 interleaving(s). 1 errors found.
 1
 Error type        : Exception
 Details           : {{badmatch,2},
-                     [{lid_test,test,0,[{file,"lid_test.erl"},{line,26}]}]}
+                     [{lid_test,test,0,[{file,"lid_test.erl"},{line,25}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3

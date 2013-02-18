@@ -9,7 +9,6 @@
 %%%----------------------------------------------------------------------
 %%% Authors     : Ilias Tsitsimpis <iliastsi@hotmail.com>
 %%% Description : Test the lids when we have many processes
-%%%                 (This test should currenty fail)
 %%%----------------------------------------------------------------------
 
 -module(lid_test).
