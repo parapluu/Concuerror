@@ -784,5 +784,5 @@ find_pid(Other) ->
 rep_eunit(Module) ->
     ReModule = concuerror_instr:check_module_name(Module,none,0),
     rep_apply(eunit, start, []),
-    rep_apply(eunit, test, [[{module, ReModule}], [verbose]]),
+    rep_apply(eunit, test, [[{module, ReModule}], [no_tty]]),
     rep_apply(eunit, stop, []).
