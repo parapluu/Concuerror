@@ -80,7 +80,10 @@ delete_and_purge(Options) ->
 %% 2. Don't rename `BIFS'.
 %% 3. If module is instrumented rename it.
 %% 4. If we are in `fail_uninstrumented' mode rename all modules.
--spec check_module_name(atom(), atom(), non_neg_integer()) -> atom().
+-spec check_module_name(module() | {module(),term()}, atom(), non_neg_integer())
+                        -> module() | {module(), term()}.
+check_module_name({Module, Term}, Function, Arity) ->
+    {check_module_name(Module, Function, Arity), Term};
 check_module_name(Module, Function, Arity) ->
     Rename = (not ets:member(?NT_INSTR_IGNORED, Module))
         andalso (not ets:member(?NT_INSTR_BIFS, {Module, Function, Arity}))
