@@ -500,10 +500,10 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                                 true  -> ordsets:add_element(Lid, Possible);
                                 false -> Possible
                             end,
-                        ?debug("  Backtrack: ~w\n", [Backtrack]),
-                        ?debug("  Predecess: ~w\n", [Predecessors]),
-                        ?debug("  SleepSet : ~w\n", [SleepSet]),
-                        ?debug("  Initial  : ~w\n", [Initial]),
+                        ?debug("  Backtrack: ~p\n", [Backtrack]),
+                        ?debug("  Predecess: ~p\n", [Predecessors]),
+                        ?debug("  SleepSet : ~p\n", [SleepSet]),
+                        ?debug("  Initial  : ~p\n", [Initial]),
                         case concuerror_lid:deep_intersect_with_fix(Backtrack,
                                                                     Initial) of
                             {true, NewBacktrack} ->
@@ -519,7 +519,7 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                                         NewBacktrack =
                                             concuerror_lid:insert_to_deep_list(
                                               Backtrack, Predecessors),
-                                        ?debug("     Add: ~w (~w)\n",
+                                        ?debug("     Add: ~p (~p)\n",
                                                  [Predecessors, NewBacktrack]),
                                         NewPreSI =
                                             PreSI#trace_state{
@@ -604,11 +604,11 @@ decide_flanagan(Predecessors, Backtrack, Candidates, PreSI, Rest) ->
             NewBacktrack =
                 case Predecessors =:= [] of
                     false ->
-                        ?debug(" Add as 'choose-one': ~w\n", [Predecessors]),
+                        ?debug(" Add as 'choose-one': ~p\n", [Predecessors]),
                         concuerror_lid:insert_to_deep_list(Backtrack,
                                                            Predecessors);
                     true ->
-                        ?debug(" Add as 'choose every': ~w\n", [Candidates]),
+                        ?debug(" Add as 'choose every': ~p\n", [Candidates]),
                         Fold =
                             fun(E, AccBacktrack) ->
                                     case concuerror_lid:deep_intersect_with_fix(
@@ -929,7 +929,7 @@ add_some_next_to_backtrack(State) ->
     #trace_state{enabled = Enabled, sleep_set = SleepSet,
                  error_nxt = ErrorNext, last = {Lid, _, _},
                  preemptions = Preemptions} = TraceTop,
-    ?debug("Pick next: Enabled: ~w Sleeping: ~w\n", [Enabled, SleepSet]),
+    ?debug("Pick next: Enabled: ~p Sleeping: ~p\n", [Enabled, SleepSet]),
     Choice =
         case ErrorNext of
             none ->
@@ -951,7 +951,7 @@ add_some_next_to_backtrack(State) ->
                 end;
             Else -> [Else]
         end,
-    ?debug("Picked: ~w\n",[Choice]),
+    ?debug("Picked: ~p\n",[Choice]),
     Backtrack = concuerror_lid:make_backtrack(Choice),
     NewTraceTop = TraceTop#trace_state{backtrack = Backtrack},
     State#dpor_state{trace = [NewTraceTop|Rest]}.
