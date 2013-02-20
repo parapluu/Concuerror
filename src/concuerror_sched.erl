@@ -818,10 +818,15 @@ handle_instruction_op({Lid, {ets, {Updatable, _Info}}, Msgs})
             {{Lid, {ets, {Updatable, Info}}, Msgs}, {}}
     end;
 handle_instruction_op({Lid, {'receive', Tag}, Msgs}) ->
+    NewTag =
+        case Tag of
+            {T, _, _} -> T;
+            T -> T
+        end,
     receive
         #sched{msg = 'receive', lid = Lid,
                misc = {From, CV, Msg}, type = prev} ->
-            {{Lid, {'receive', {Tag, From, Msg}}, Msgs}, CV}
+            {{Lid, {'receive', {NewTag, From, Msg}}, Msgs}, CV}
     end;
 handle_instruction_op({Lid, {'after', {Fun, _OldLinks}}, Msgs}) ->
     receive
