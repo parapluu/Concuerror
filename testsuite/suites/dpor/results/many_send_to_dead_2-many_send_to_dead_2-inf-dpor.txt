@@ -25,9 +25,9 @@ Blocked processes : P1
   Process P1 blocks
   Process P1.1 receives no matching messages
   Process P1.2 sends message `msg1` to process P1.1
-  Process P1.2 exits (normal)
   Process P1.1 receives message `msg1` from process P1.2
   Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
   Process P1.3 sends message `msg2` to process P1.1 (dead)
   Process P1.3 exits (normal)
 
@@ -41,11 +41,11 @@ Blocked processes : P1
   Process P1 blocks
   Process P1.1 receives no matching messages
   Process P1.3 sends message `msg2` to process P1.1
-  Process P1.3 exits (normal)
   Process P1.1 receives message `msg2` from process P1.3
-  Process P1.1 exits (normal)
-  Process P1.2 sends message `msg1` to process P1.1 (dead)
+  Process P1.2 sends message `msg1` to process P1.1
   Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
 
 
 4
@@ -56,10 +56,10 @@ Blocked processes : P1
   Process P1 spawns process P1.3
   Process P1 blocks
   Process P1.2 sends message `msg1` to process P1.1
-  Process P1.2 exits (normal)
   Process P1.1 receives message `msg1` from process P1.2
   Process P1.1 receives no matching messages
   Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
   Process P1.3 sends message `msg2` to process P1.1 (dead)
   Process P1.3 exits (normal)
 
@@ -72,12 +72,12 @@ Blocked processes : P1
   Process P1 spawns process P1.3
   Process P1 blocks
   Process P1.2 sends message `msg1` to process P1.1
-  Process P1.2 exits (normal)
   Process P1.1 receives message `msg1` from process P1.2
   Process P1.3 sends message `msg2` to process P1.1
-  Process P1.3 exits (normal)
   Process P1.1 receives message `msg2` from process P1.3
   Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 6
@@ -88,12 +88,12 @@ Blocked processes : P1
   Process P1 spawns process P1.3
   Process P1 blocks
   Process P1.3 sends message `msg2` to process P1.1
-  Process P1.3 exits (normal)
   Process P1.1 receives message `msg2` from process P1.3
   Process P1.1 receives no matching messages
-  Process P1.1 exits (normal)
-  Process P1.2 sends message `msg1` to process P1.1 (dead)
+  Process P1.2 sends message `msg1` to process P1.1
   Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
 
 
 7
@@ -104,11 +104,11 @@ Blocked processes : P1
   Process P1 spawns process P1.3
   Process P1 blocks
   Process P1.3 sends message `msg2` to process P1.1
-  Process P1.3 exits (normal)
   Process P1.1 receives message `msg2` from process P1.3
   Process P1.2 sends message `msg1` to process P1.1
   Process P1.2 exits (normal)
   Process P1.1 receives message `msg1` from process P1.2
   Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
 
 

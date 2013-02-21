@@ -1,8 +1,8 @@
-Checked 5 interleaving(s). 5 errors found.
+Checked 4 interleaving(s). 4 errors found.
 
 1
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[parent,<0.44.0>],[]}]}
+Details           : {badarg,[{erlang,register,[parent,<0.48.0>],[]}]}
   Process P1 spawns process P1.1
   Process P1 registers process P1 as `parent`
   Process P1 registers process P1.1 as `child`
@@ -13,7 +13,7 @@ Details           : {badarg,[{erlang,register,[parent,<0.44.0>],[]}]}
 
 2
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[parent,<0.46.0>],[]}]}
+Details           : {badarg,[{erlang,register,[parent,<0.51.0>],[]}]}
   Process P1 spawns process P1.1
   Process P1 registers process P1 as `parent`
   Process P1 registers process P1.1 as `child`
@@ -23,7 +23,7 @@ Details           : {badarg,[{erlang,register,[parent,<0.46.0>],[]}]}
 
 3
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[parent,<0.48.0>],[]}]}
+Details           : {badarg,[{erlang,register,[parent,<0.54.0>],[]}]}
   Process P1 spawns process P1.1
   Process P1 registers process P1 as `parent`
   Process P1.1 registers process P1.1 as `parent`
@@ -32,18 +32,7 @@ Details           : {badarg,[{erlang,register,[parent,<0.48.0>],[]}]}
 
 4
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[child,<0.50.0>],[]}]}
-  Process P1 spawns process P1.1
-  Process P1.1 registers process P1.1 as `parent`
-  Process P1.1 exits (normal)
-  Process P1 registers process P1 as `parent`
-  Process P1 registers process P1.1 (dead) as `child`
-  Process P1 exits ("Exception")
-
-
-5
-Error type        : Exception
-Details           : {badarg,[{erlang,register,[parent,<0.51.0>],[]},
+Details           : {badarg,[{erlang,register,[parent,<0.56.0>],[]},
                              {registered_2,registered_2,0,[]}]}
   Process P1 spawns process P1.1
   Process P1.1 registers process P1.1 as `parent`

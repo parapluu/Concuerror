@@ -14,17 +14,15 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
 
 
 2
@@ -41,17 +39,15 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 3
@@ -72,13 +68,12 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
+  Process P1.3 exits (normal)
 
 
 4
@@ -118,21 +113,19 @@ Blocked processes : P1
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
+  Process P1.2 sends message `ok` to process P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 6
@@ -145,15 +138,14 @@ Blocked processes : P1
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
+  Process P1.2 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
@@ -207,13 +199,12 @@ Blocked processes : P1
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
+  Process P1.3 exits (normal)
 
 
 9
@@ -228,15 +219,14 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
+  Process P1.2 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
   Process P1.3 sends message `ok` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok` from process P1.3
@@ -255,19 +245,17 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
+  Process P1.2 sends message `ok` to process P1
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 11
@@ -281,20 +269,18 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.1: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
 
 
 12
@@ -308,20 +294,18 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1: ets_lookup {table,x}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.2 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 13
@@ -338,17 +322,15 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
 
 
 14
@@ -365,17 +347,15 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 15
@@ -390,19 +370,17 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 16
@@ -417,13 +395,12 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
@@ -446,13 +423,12 @@ Blocked processes : P1
   Process P1.3: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
   Process P1.3 sends message `ok` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok` from process P1.3
@@ -473,17 +449,15 @@ Blocked processes : P1
   Process P1.3: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 19
@@ -498,19 +472,17 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.1 sends message `ok` to process P1
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
+  Process P1.3 exits (normal)
 
 
 20
@@ -525,19 +497,17 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
+  Process P1.3 exits (normal)
 
 
 21
@@ -558,13 +528,12 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
+  Process P1.3 exits (normal)
 
 
 22
@@ -637,14 +606,13 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.3 sends message `ok` to process P1
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
+  Process P1.3 exits (normal)
 
 

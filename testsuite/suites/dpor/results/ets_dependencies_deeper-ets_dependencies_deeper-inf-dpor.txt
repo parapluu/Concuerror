@@ -1,4 +1,4 @@
-Checked 28 interleaving(s). 28 errors found.
+Checked 36 interleaving(s). 36 errors found.
 
 1
 Error type        : Exception
@@ -20,15 +20,11 @@ Details           : {{nocatch,{1,none}},
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
@@ -55,15 +51,11 @@ Details           : {{nocatch,{1,none}},
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
@@ -87,18 +79,14 @@ Details           : {{nocatch,{1,none}},
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
@@ -122,13 +110,12 @@ Details           : {{nocatch,{1,none}},
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
@@ -164,11 +151,9 @@ Details           : {{nocatch,{1,none}},
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
@@ -225,22 +210,18 @@ Details           : {{nocatch,{1,2}},
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.1 sends message `ok` to process P1
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
   Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
+  Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -261,21 +242,17 @@ Details           : {{nocatch,{1,2}},
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
@@ -297,22 +274,18 @@ Details           : {{nocatch,{1,2}},
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
   Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.1
   Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -333,22 +306,21 @@ Details           : {{nocatch,{1,2}},
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
   Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
   Process P1.3 sends message `ok` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -369,12 +341,6 @@ Details           : {{nocatch,{1,2}},
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
@@ -382,8 +348,12 @@ Details           : {{nocatch,{1,2}},
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
@@ -405,22 +375,22 @@ Details           : {{nocatch,{1,2}},
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -440,21 +410,17 @@ Details           : {{nocatch,{0,none}},
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
   Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
@@ -475,21 +441,17 @@ Details           : {{nocatch,{0,none}},
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
@@ -510,22 +472,18 @@ Details           : {{nocatch,{0,none}},
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -545,16 +503,15 @@ Details           : {{nocatch,{0,none}},
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
@@ -580,22 +537,20 @@ Details           : {{nocatch,{0,none}},
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{p3,none}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
+  Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -615,15 +570,15 @@ Details           : {{nocatch,{0,none}},
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
   Process P1 blocks
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
@@ -650,23 +605,19 @@ Details           : {{nocatch,{0,2}},
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.3: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
+  Process P1.1 sends message `ok` to process P1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
+  Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -686,22 +637,18 @@ Details           : {{nocatch,{0,2}},
   Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.3: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{p3,2}]}
   Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
@@ -710,7 +657,7 @@ Details           : {{nocatch,{0,2}},
 
 21
 Error type        : Exception
-Details           : {{nocatch,{1,0}},
+Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
                           [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -720,25 +667,21 @@ Details           : {{nocatch,{1,0}},
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.2
   Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -746,7 +689,7 @@ Details           : {{nocatch,{1,0}},
 
 22
 Error type        : Exception
-Details           : {{nocatch,{1,0}},
+Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
                           [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -756,25 +699,24 @@ Details           : {{nocatch,{1,0}},
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.1
   Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
   Process P1.3 sends message `ok` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -782,7 +724,7 @@ Details           : {{nocatch,{1,0}},
 
 23
 Error type        : Exception
-Details           : {{nocatch,{1,0}},
+Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
                           [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -792,25 +734,23 @@ Details           : {{nocatch,{1,0}},
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 blocks
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
   Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -818,7 +758,7 @@ Details           : {{nocatch,{1,0}},
 
 24
 Error type        : Exception
-Details           : {{nocatch,{1,0}},
+Details           : {{nocatch,{0,2}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
                           [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -828,25 +768,25 @@ Details           : {{nocatch,{1,0}},
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 blocks
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `ok` from process P1.1
   Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
+  Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{p3,2}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -866,23 +806,19 @@ Details           : {{nocatch,{1,0}},
   Process P1 blocks
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.1 sends message `ok` to process P1
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.1
+  Process P1 receives message `ok` from process P1.2
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -902,23 +838,19 @@ Details           : {{nocatch,{1,0}},
   Process P1 blocks
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
+  Process P1.3: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
   Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
@@ -926,7 +858,7 @@ Details           : {{nocatch,{1,0}},
 
 27
 Error type        : Exception
-Details           : {{nocatch,{0,0}},
+Details           : {{nocatch,{1,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
                           [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -938,29 +870,130 @@ Details           : {{nocatch,{0,0}},
   Process P1 blocks
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
 
 
 28
+Error type        : Exception
+Details           : {{nocatch,{1,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+29
+Error type        : Exception
+Details           : {{nocatch,{1,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.3: ets_lookup {table,y}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+30
+Error type        : Exception
+Details           : {{nocatch,{1,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.3: ets_lookup {table,y}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{p2,1}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+31
 Error type        : Exception
 Details           : {{nocatch,{0,0}},
                      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
@@ -975,22 +1008,187 @@ Details           : {{nocatch,{0,0}},
   Process P1.3: ets_insert {table,[{z,3}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_lookup {table,y}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.1 sends message `ok` to process P1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+32
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+33
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+34
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.2 exits (normal)
   Process P1.3: ets_insert {table,[{p3,0}]}
   Process P1.3 sends message `ok` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok` from process P1.3
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+35
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
   Process P1 blocks
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{y,2}]}
   Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.2: ets_insert {table,[{p2,0}]}
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.3
+  Process P1 receives message `ok` from process P1.2
+  Process P1: ets_lookup {table,p2}
+  Process P1: ets_lookup {table,p3}
+  Process P1 exits ("Exception")
+
+
+36
+Error type        : Exception
+Details           : {{nocatch,{0,0}},
+                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3: ets_insert {table,[{z,3}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.2: ets_insert {table,[{y,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
   Process P1.2: ets_insert {table,[{p2,0}]}
   Process P1.2 sends message `ok` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok` from process P1.2
   Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
+  Process P1.3: ets_insert {table,[{p3,0}]}
+  Process P1.3 sends message `ok` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok` from process P1.3
   Process P1: ets_lookup {table,p2}
   Process P1: ets_lookup {table,p3}
   Process P1 exits ("Exception")
