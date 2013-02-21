@@ -1241,7 +1241,9 @@ wait_poll_or_continue(Msg) ->
 
 replace_messages(Lid, VC) ->
     %% Let "black" processes send any remaining messages.
-    erlang:yield(),
+    P = process_flag(priority, low),
+    receive after 2 -> ok end,
+    process_flag(priority, P),
     Fun =
         fun(Pid, MsgAcc) ->
             Pid ! ?VECTOR_MSG(Lid, VC),
