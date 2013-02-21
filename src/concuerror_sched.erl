@@ -1241,9 +1241,7 @@ wait_poll_or_continue(Msg) ->
 
 replace_messages(Lid, VC) ->
     %% Let "black" processes send any remaining messages.
-    P = process_flag(priority, low),
-    receive after 2 -> ok end,
-    process_flag(priority, P),
+    wait_black_messages(),
     Fun =
         fun(Pid, MsgAcc) ->
             Pid ! ?VECTOR_MSG(Lid, VC),
@@ -1256,6 +1254,20 @@ replace_messages(Lid, VC) ->
             end
         end,
     concuerror_lid:fold_pids(Fun, []).
+
+wait_black_messages() ->
+    %% Check if there is any processes able to run (apart from current)
+    %% thus check that there is only one processes with status
+    %% different than waiting.
+    Check =
+        fun() ->
+                erlang:yield(),
+                Running = [P ||
+                    P <- processes(),
+                    process_info(P, status) =/= {status, waiting}],
+                length(Running) == 1
+        end,
+    concuerror_util:wait_until(Check, 1).
 
 -define(IS_INSTR_MSG(Msg),
         (is_tuple(Msg) andalso

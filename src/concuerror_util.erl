@@ -14,7 +14,7 @@
 
 -module(concuerror_util).
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0, get_module_name/1,
-         is_erl_source/1, funs/1, funs/2, funLine/3, pmap/2,
+         is_erl_source/1, funs/1, funs/2, funLine/3, pmap/2, wait_until/2,
          timer_init/0, timer_start/1, timer/1, timer_stop/1, timer_destroy/0,
          init_state/0, progress_bar/2, to_elapsed_time/1, to_elapsed_time/2]).
 
@@ -280,3 +280,13 @@ pmap(Fun, List) ->
     Parent = self(),
     Pids = [spawn(fun() -> Parent ! Fun(L) end) || L <- List],
     [receive Ret -> Ret end || _Pid <- Pids].
+
+
+%% -------------------------------------------------------------------
+%% Wait for something to happen
+-spec wait_until(fun(() -> boolean()), non_neg_integer()) -> ok.
+wait_until(Fun, Time) ->
+    case Fun() of
+        true  -> ok;
+        false -> receive after Time -> wait_until(Fun, Time) end
+    end.
