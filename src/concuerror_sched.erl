@@ -438,8 +438,7 @@ get_next(Lid) ->
             {Lid, {Type, Misc}, []}
     end.
 
-add_all_backtracks(#dpor_state{preemption_bound = PreBound,
-                               trace = Trace,
+add_all_backtracks(#dpor_state{preemption_bound = Bound, trace = Trace,
 			       dpor_flavor = Flavor} = State) ->
     case Flavor of
         none ->
@@ -449,16 +448,14 @@ add_all_backtracks(#dpor_state{preemption_bound = PreBound,
             [#trace_state{last = Transition}|_] = Trace,
             case concuerror_deps:may_have_dependencies(Transition) of
                 true ->
-                    NewTrace =
-                        add_all_backtracks_trace(Transition, Trace,
-                                                 PreBound, Flavor),
+                    NewTrace = add_all_backtracks_trace(Trace, Bound, Flavor),
                     State#dpor_state{trace = NewTrace};
                 false -> State
             end
     end.
 
-add_all_backtracks_trace({Lid, _, _} = Transition, Trace, PreBound, Flavor) ->
-    [#trace_state{i = I} = Top|
+add_all_backtracks_trace(Trace, PreBound, Flavor) ->
+    [#trace_state{i = I, last = {Lid, _, _} = Transition} = Top|
      [#trace_state{clock_map = ClockMap}|_] = PTrace] = Trace,
     ClockVector = orddict:store(Lid, I, lookup_clock(Lid, ClockMap)),
     add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
