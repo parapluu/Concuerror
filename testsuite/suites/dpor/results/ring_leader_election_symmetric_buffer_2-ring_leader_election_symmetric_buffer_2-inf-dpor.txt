@@ -1,4 +1,4 @@
-Checked 56 interleaving(s). 56 errors found.
+Checked 64 interleaving(s). 64 errors found.
 
 1
 Error type        : Deadlock
@@ -286,26 +286,24 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 sends message `{put,3}` to process P1.2
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
+  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -319,13 +317,14 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
-  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -352,28 +351,24 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 sends message `{put,3}` to process P1.2
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
+  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -385,11 +380,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -419,30 +415,28 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 sends message `{put,3}` to process P1.2
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 blocks
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -453,13 +447,14 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
-  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -486,32 +481,28 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 sends message `{put,3}` to process P1.2
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 blocks
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -520,11 +511,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,{leader,...}}` from process P1
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -563,11 +555,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -628,11 +621,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -694,15 +688,16 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -760,15 +755,16 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -806,10 +802,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 registers process P1 as `p1`
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -820,24 +812,27 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
+  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
-  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -851,14 +846,13 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
-  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
+  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -873,10 +867,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 registers process P1 as `p1`
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -887,24 +877,29 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
+  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
-  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -916,12 +911,11 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -939,10 +933,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 registers process P1 as `p1`
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -953,28 +943,31 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 blocks
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
-  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -985,14 +978,13 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
-  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
+  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -1007,10 +999,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 registers process P1 as `p1`
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -1021,28 +1009,33 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 blocks
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
-  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1051,12 +1044,11 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,{leader,...}}` from process P1
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -1088,10 +1080,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
@@ -1106,7 +1094,10 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1120,13 +1111,14 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
-  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -1155,10 +1147,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
@@ -1173,9 +1161,10 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1187,11 +1176,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -1223,10 +1213,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
@@ -1245,7 +1231,10 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1256,13 +1245,14 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
-  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -1291,10 +1281,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
@@ -1313,9 +1299,10 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1324,11 +1311,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,{leader,...}}` from process P1
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -1360,10 +1348,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
@@ -1377,7 +1361,10 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1391,13 +1378,14 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
-  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -1426,10 +1414,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
@@ -1443,9 +1427,10 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1457,11 +1442,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -1493,10 +1479,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
@@ -1514,7 +1496,10 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1525,13 +1510,14 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
-  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -1560,10 +1546,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
@@ -1581,9 +1563,10 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1592,11 +1575,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,{leader,...}}` from process P1
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -1612,39 +1596,41 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 registers process P1 as `p1`
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
-  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
-  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1658,14 +1644,13 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
-  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
+  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -1678,39 +1663,43 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 registers process P1 as `p1`
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
-  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
-  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1722,12 +1711,11 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -1743,43 +1731,45 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 registers process P1 as `p1`
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
-  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
-  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1790,14 +1780,13 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
-  Process P1.3 blocks
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
+  Process P1.4 exits (normal)
   Process P1.4.1 receives message `{leader,3}` from process P1.3
   Process P1.4.1 exits (normal)
 
@@ -1810,43 +1799,47 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 registers process P1 as `p1`
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
-  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
-  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `{leader,3}` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `{leader,3}` from process P1.1
@@ -1855,12 +1848,11 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,{leader,...}}` from process P1
   Process P1.2 sends message `{leader,3}` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `{leader,3}` from process P1.2
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.4 sends message `{put,{leader,...}}` to process P1.3
   Process P1.4 exits (normal)
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 receives message `{put,{leader,...}}` from process P1.4
   Process P1.3 sends message `{leader,3}` to process named 'p3'
   Process P1.3 blocks
@@ -1876,35 +1868,35 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 registers process P1 as `p1`
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
   Process P1 sends message `{get,p1}` to process P1.1
   Process P1 blocks
   Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
-  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -1942,35 +1934,35 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 registers process P1 as `p1`
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
   Process P1 sends message `{get,p1}` to process P1.1
   Process P1 blocks
   Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
-  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -2009,41 +2001,41 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 registers process P1 as `p1`
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
   Process P1 sends message `{get,p1}` to process P1.1
   Process P1 blocks
   Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
-  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
+  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
@@ -2076,41 +2068,41 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.3
   Process P1 spawns process P1.4
   Process P1 registers process P1 as `p1`
-  Process P1 sends message `{get,p1}` to process P1.1
-  Process P1 blocks
-  Process P1.1 receives message `{get,p1}` from process P1
-  Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
   Process P1 sends message `{get,p1}` to process P1.1
   Process P1 blocks
   Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
-  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
   Process P1.4 receives message `3` from process P1.2
-  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
+  Process P1.4 sends message `{put,3}` to process P1.3
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1.4.1 sends message `{get,p3}` to process P1.3
@@ -2152,8 +2144,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.4 registers process P1.4 as `p2`
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -2165,11 +2155,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -2219,8 +2210,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.4 registers process P1.4 as `p2`
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -2232,11 +2221,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -2285,8 +2275,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.4 registers process P1.4 as `p2`
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -2298,17 +2286,18 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -2353,8 +2342,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.4 registers process P1.4 as `p2`
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -2366,17 +2353,18 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -2420,8 +2408,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.4 registers process P1.4 as `p2`
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -2437,11 +2423,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -2487,8 +2474,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.4 registers process P1.4 as `p2`
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -2504,11 +2489,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -2555,8 +2541,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.4 registers process P1.4 as `p2`
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -2572,17 +2556,18 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
@@ -2623,8 +2608,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.4 registers process P1.4 as `p2`
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -2640,17 +2623,18 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1.4.1 sends message `{get,p3}` to process P1.3
@@ -2690,26 +2674,26 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -2757,26 +2741,26 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -2823,32 +2807,32 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -2891,32 +2875,32 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -2958,30 +2942,30 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
   Process P1 sends message `{get,p1}` to process P1.1
   Process P1 blocks
   Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -3025,30 +3009,30 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
   Process P1 sends message `{get,p1}` to process P1.1
   Process P1 blocks
   Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -3093,36 +3077,36 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
   Process P1 sends message `{get,p1}` to process P1.1
   Process P1 blocks
   Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
@@ -3161,36 +3145,36 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.1 blocks
   Process P1.4 spawns process P1.4.1
   Process P1.4 registers process P1.4 as `p2`
-  Process P1.4 sends message `{get,p2}` to process P1.2
-  Process P1.4 blocks
-  Process P1.2 receives message `{get,p2}` from process P1.4
-  Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
   Process P1 receives message `3` from process P1.1
   Process P1 sends message `{put,3}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
   Process P1 sends message `{get,p1}` to process P1.1
   Process P1 blocks
   Process P1.1 receives message `{get,p1}` from process P1
   Process P1.1 blocks
   Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1.4.1 sends message `{get,p3}` to process P1.3
@@ -3236,8 +3220,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -3246,11 +3228,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -3304,8 +3287,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -3314,11 +3295,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -3371,8 +3353,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -3381,17 +3361,18 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -3440,8 +3421,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -3450,17 +3429,18 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
   Process P1.4 sends message `{get,p2}` to process P1.2
   Process P1.4 blocks
   Process P1.2 receives message `{get,p2}` from process P1.4
   Process P1.2 blocks
-  Process P1.3 receives message `{put,3}` from process P1.4
-  Process P1.3 sends message `3` to process named 'p3'
-  Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
   Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
   Process P1 sends message `{get,p1}` to process P1.1
@@ -3508,8 +3488,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -3522,11 +3500,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -3576,8 +3555,6 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
-  Process P1.4.1 sends message `{get,p3}` to process P1.3
-  Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
   Process P1.1 sends message `3` to process named 'p1'
   Process P1.1 blocks
@@ -3590,11 +3567,12 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 receives message `{put,3}` from process P1
   Process P1.2 sends message `3` to process named 'p2'
   Process P1.2 blocks
-  Process P1.3 receives message `{get,p3}` from process P1.4.1
-  Process P1.3 blocks
   Process P1.4 receives message `3` from process P1.2
   Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
   Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
   Process P1.3 sends message `3` to process named 'p3'
   Process P1.3 blocks
   Process P1.4.1 receives message `3` from process P1.3
@@ -3645,6 +3623,552 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.2 blocks
   Process P1.4.1 registers process P1.4.1 as `p3`
   Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 sends message `3` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `3` from process P1.1
+  Process P1 sends message `{put,3}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 sends message `3` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 receives message `3` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,3}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,3}` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 exits (normal)
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,3}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,3}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4 exits (normal)
+  Process P1.4.1 receives message `{leader,3}` from process P1.3
+  Process P1.4.1 exits (normal)
+
+
+56
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 sends message `3` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `3` from process P1.1
+  Process P1 sends message `{put,3}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 sends message `3` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 receives message `3` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,3}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,3}` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 exits (normal)
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,3}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,3}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,3}` from process P1.3
+  Process P1.4.1 exits (normal)
+
+
+57
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 sends message `3` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `3` from process P1.1
+  Process P1 sends message `{put,3}` to process P1.2
+  Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 sends message `3` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `3` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,3}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,3}` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 exits (normal)
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,3}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,3}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,3}` from process P1.3
+  Process P1.4.1 exits (normal)
+
+
+58
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 sends message `3` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `3` from process P1.1
+  Process P1 sends message `{put,3}` to process P1.2
+  Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 sends message `3` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `3` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,3}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,3}` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 exits (normal)
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,3}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,3}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,3}` from process P1.3
+  Process P1.4.1 exits (normal)
+
+
+59
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 sends message `3` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `3` from process P1.1
+  Process P1 sends message `{put,3}` to process P1.2
+  Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 sends message `3` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `3` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,3}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,3}` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 exits (normal)
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,3}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 blocks
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,3}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,3}` from process P1.3
+  Process P1.4.1 exits (normal)
+
+
+60
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 sends message `3` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `3` from process P1.1
+  Process P1 sends message `{put,3}` to process P1.2
+  Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 sends message `3` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `3` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 sends message `{leader,3}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,3}` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1 exits (normal)
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 sends message `{leader,3}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,3}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,3}` from process P1.3
+  Process P1.4.1 exits (normal)
+
+
+61
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 sends message `3` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `3` from process P1.1
+  Process P1 sends message `{put,3}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 sends message `3` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `3` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,3}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,3}` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 exits (normal)
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,3}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 sends message `{leader,3}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4 exits (normal)
+  Process P1.4.1 receives message `{leader,3}` from process P1.3
+  Process P1.4.1 exits (normal)
+
+
+62
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{put,3}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,3}` from process P1.4.1
+  Process P1.1 sends message `3` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `3` from process P1.1
+  Process P1 sends message `{put,3}` to process P1.2
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.2 receives message `{put,3}` from process P1
+  Process P1.2 sends message `3` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `3` from process P1.2
+  Process P1.4 sends message `{put,3}` to process P1.3
+  Process P1.3 receives message `{put,3}` from process P1.4
+  Process P1.3 sends message `3` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `3` from process P1.3
+  Process P1.4.1 sends message `{put,{leader,...}}` to process P1.1
+  Process P1.4.1 sends message `{get,p3}` to process P1.3
+  Process P1.4.1 blocks
+  Process P1.1 receives message `{put,{leader,...}}` from process P1.4.1
+  Process P1.1 sends message `{leader,3}` to process named 'p1'
+  Process P1.1 blocks
+  Process P1 receives message `{leader,3}` from process P1.1
+  Process P1 sends message `{put,{leader,...}}` to process P1.2
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1 exits (normal)
+  Process P1.2 receives message `{put,{leader,...}}` from process P1
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 sends message `{leader,3}` to process named 'p2'
+  Process P1.2 blocks
+  Process P1.3 receives message `{get,p3}` from process P1.4.1
+  Process P1.3 blocks
+  Process P1.4 receives message `{leader,3}` from process P1.2
+  Process P1.4 sends message `{put,{leader,...}}` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `{put,{leader,...}}` from process P1.4
+  Process P1.3 sends message `{leader,3}` to process named 'p3'
+  Process P1.3 blocks
+  Process P1.4.1 receives message `{leader,3}` from process P1.3
+  Process P1.4.1 exits (normal)
+
+
+63
+Error type        : Deadlock
+Blocked processes : P1.1, P1.2, P1.3
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 registers process P1 as `p1`
+  Process P1 sends message `{get,p1}` to process P1.1
+  Process P1 blocks
+  Process P1.1 receives message `{get,p1}` from process P1
+  Process P1.1 blocks
+  Process P1.4 spawns process P1.4.1
+  Process P1.4 registers process P1.4 as `p2`
+  Process P1.4 sends message `{get,p2}` to process P1.2
+  Process P1.4 blocks
+  Process P1.2 receives message `{get,p2}` from process P1.4
+  Process P1.2 blocks
+  Process P1.4.1 registers process P1.4.1 as `p3`
+  Process P1.4.1 sends message `{put,3}` to process P1.1
   Process P1.4.1 sends message `{get,p3}` to process P1.3
   Process P1.4.1 blocks
   Process P1.1 receives message `{put,3}` from process P1.4.1
@@ -3694,7 +4218,7 @@ Blocked processes : P1.1, P1.2, P1.3
   Process P1.4.1 exits (normal)
 
 
-56
+64
 Error type        : Deadlock
 Blocked processes : P1.1, P1.2, P1.3
   Process P1 spawns process P1.1

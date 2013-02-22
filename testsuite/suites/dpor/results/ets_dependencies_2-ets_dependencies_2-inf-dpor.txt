@@ -1,4 +1,5 @@
-Checked 42 interleaving(s). 42 errors found.
+Checked 46 interleaving(s). 42 errors found.
+  Encountered 4 sleep-set blocked trace(s).
 
 1
 Error type        : Exception

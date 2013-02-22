@@ -445,11 +445,8 @@ add_all_backtracks(#dpor_state{preemption_bound = Bound, trace = Trace,
             %% add_some_next will take care of all the backtracks.
             State;
         _ ->
-            [#trace_state{last = Transition,
-                          sleep_set = SleepSet}|_] = Trace,
-            case concuerror_deps:may_have_dependencies(Transition) andalso
-                SleepSet =:= []
-            of
+            [#trace_state{last = Transition}|_] = Trace,
+            case concuerror_deps:may_have_dependencies(Transition) of
                 true ->
                     NewTrace = add_all_backtracks_trace(Trace, Bound, Flavor),
                     State#dpor_state{trace = NewTrace};
@@ -489,10 +486,10 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                               sleep_set = SleepSet,
                               done = Done} =
                      PreSI|Rest] = Trace,
-                Candidates = ordsets:subtract(Enabled, SleepSet),
-                Sleepers = ordsets:union(SleepSet, Done),
-                {Safe, Predecessors, Initial} =
-                    find_preds_and_initials(Lid, ProcSI, Candidates, Sleepers,
+                Candidates =
+                    ordsets:subtract(Enabled, ordsets:union(SleepSet, Done)),
+                {Predecessors, Initial} =
+                    find_preds_and_initials(Lid, ProcSI, Candidates,
                                             I, ClockVector, Acc),
                 case Flavor of
                     full ->
@@ -500,34 +497,31 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                         ?debug("  Predecess: ~p\n", [Predecessors]),
                         ?debug("  SleepSet : ~p\n", [SleepSet]),
                         ?debug("  Initial  : ~p\n", [Initial]),
-                        case concuerror_lid:deep_intersect_with_fix(Backtrack,
-                                                                    Initial) of
-                            {true, NewBacktrack} ->
-                                ?debug("One initial already in backtrack.\n"),
-                                {done,
-                                 [PreSI#trace_state{
-                                    backtrack = NewBacktrack
-                                   }|Rest]};
+                        case Predecessors =:= [] of
+                            true ->
+                                ?debug("    All sleeping...\n"),
+                                NewClockVector =
+                                    lookup_clock(ProcSI, ClockMap),
+                                MaxClockVector =
+                                    max_cv(NewClockVector, ClockVector),
+                                {continue, ProcSI, MaxClockVector};
                             false ->
-                                case Safe andalso Predecessors =/= [] of
-                                    true ->
-                                        NewBacktrack =
+                                NewBacktrack =
+                                    case concuerror_lid:deep_intersect_with_fix(
+                                           Backtrack, Initial) of
+                                        {true, R} ->
+                                            ?debug("    Init in backtrack\n"),
+                                            R;
+                                        false ->
+                                            ?debug("    Add: ~p\n",
+                                                   [Predecessors]),
                                             concuerror_lid:insert_to_deep_list(
-                                              Backtrack, Predecessors),
-                                        ?debug("     Add: ~p (~p)\n",
-                                                 [Predecessors, NewBacktrack]),
-                                        NewPreSI =
-                                            PreSI#trace_state{
-                                              backtrack = NewBacktrack},
-                                        {done, [NewPreSI|Rest]};
-                                    false ->
-                                        ?debug("     All sleeping...\n"),
-                                        NewClockVector =
-                                            lookup_clock(ProcSI, ClockMap),
-                                        MaxClockVector =
-                                            max_cv(NewClockVector, ClockVector),
-                                        {continue, ProcSI, MaxClockVector}
-                                end
+                                              Backtrack, Predecessors)
+                                    end,
+                                ?debug("    NewBacktrack: ~p\n",[NewBacktrack]),
+                                {done,
+                                 [PreSI#trace_state{backtrack = NewBacktrack}
+                                  |Rest]}
                         end;
                     flanagan ->
                         decide_flanagan(Predecessors, Backtrack,
@@ -536,8 +530,8 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
         end,
     case Action of
         {continue, NewLid, UpdClockVector} ->
-            add_all_backtracks_trace(Transition, NewLid, UpdClockVector, PreBound,
-                                     Flavor, Trace, [StateI|Acc]);
+            add_all_backtracks_trace(Transition, NewLid, UpdClockVector,
+                                     PreBound, Flavor, Trace, [StateI|Acc]);
         {done, FinalTrace} ->
             lists:reverse(Acc, [StateI|FinalTrace])
     end.
@@ -554,10 +548,8 @@ lookup_clock_value(P, CV) ->
         error -> 0
     end.
 
-find_preds_and_initials(Lid, ProcSI, Candidates, SleepSet,
-                        I, ClockVector, RevTrace) ->
-    {Safe, Racing, NonRacing} =
-        find_initials(Candidates, SleepSet, ProcSI, I, RevTrace),
+find_preds_and_initials(Lid, ProcSI, Candidates, I, ClockVector, RevTrace) ->
+    {Racing, NonRacing} = find_initials(Candidates, ProcSI, I, RevTrace),
     Initial =
         case not ordsets:is_element(Lid, Candidates)
             orelse ordsets:is_element(Lid, Racing) of
@@ -566,41 +558,22 @@ find_preds_and_initials(Lid, ProcSI, Candidates, SleepSet,
         end,
     Predecessors =
         ordsets:add_element(Lid, predecessors(Candidates, I, ClockVector)),
-    {Safe, ordsets:intersection(Predecessors, Initial), Initial}.
+    {ordsets:intersection(Predecessors, Initial), Initial}.
 
-find_initials(Candidates, SleepSet, ProcSI, I, RevTrace) ->
+find_initials(Candidates, ProcSI, I, RevTrace) ->
     RealCandidates = ordsets:del_element(ProcSI, Candidates),
-    RealSleep = ordsets:del_element(ProcSI, SleepSet),
-    find_initials(RealCandidates, RealSleep, I, RevTrace, [ProcSI], [], true).
+    find_initials(RealCandidates, I, RevTrace, [ProcSI], []).
 
-find_initials(Candidates, SleepSet, _I,        [_], Racing, NonRacing, Safe) ->
-    {Safe,
-     ordsets:union(SleepSet, Racing),
-     ordsets:subtract(ordsets:union(Candidates, NonRacing), SleepSet)};
-find_initials(        [],        [], _I,     _Trace, Racing, NonRacing, Safe) ->
-    {Safe, Racing, NonRacing};
-find_initials(Candidates,  SleepSet,  I, [Top|Rest], Racing, NonRacing, Safe) ->
+find_initials(Candidates, _I,        [_], Racing, NonRacing) ->
+    {Racing,ordsets:union(Candidates, NonRacing)};
+find_initials(        [], _I,     _Trace, Racing, NonRacing) ->
+    {Racing, NonRacing};
+find_initials(Candidates,  I, [Top|Rest], Racing, NonRacing) ->
     #trace_state{last = {P,_,_}, clock_map = CM} = Top,
     ClockVector = lookup_clock(P, CM),
-    {NewSafe, NewSleepSet} =
-        case ordsets:is_element(P, SleepSet) of
-            false -> {Safe, SleepSet};
-            true ->
-                Fun1 =
-                    fun(K, V, A) ->
-                            case V > I andalso K =/= P of
-                                false -> A;
-                                true -> ordsets:add_element(K, A)
-                            end
-                    end,
-                Deps = orddict:fold(Fun1, ordsets:new(), ClockVector),
-                {ordsets:intersection(Deps, Racing) =:= [],
-                 ordsets:del_element(P, SleepSet)}
-        end,
     case ordsets:is_element(P, Candidates) of
         false ->
-            find_initials(Candidates, NewSleepSet, I, Rest,
-                          Racing, NonRacing, NewSafe);
+            find_initials(Candidates, I, Rest, Racing, NonRacing);
         true ->
             Fun2 = fun(K, V, A) -> A andalso (K =:= P orelse V < I) end,
             {NewRacing, NewNonRacing} =
@@ -611,8 +584,7 @@ find_initials(Candidates,  SleepSet,  I, [Top|Rest], Racing, NonRacing, Safe) ->
                         {Racing, ordsets:add_element(P, NonRacing)}
                 end,
             NewCandidates = ordsets:del_element(P, Candidates),
-            find_initials(NewCandidates, NewSleepSet, I, Rest,
-                          NewRacing, NewNonRacing, NewSafe)
+            find_initials(NewCandidates, I, Rest, NewRacing, NewNonRacing)
     end.
 
 predecessors(Candidates, I, ClockVector) ->

@@ -1,4 +1,5 @@
-Checked 3 interleaving(s). 3 errors found.
+Checked 4 interleaving(s). 3 errors found.
+  Encountered 1 sleep-set blocked trace(s).
 
 1
 Error type        : Deadlock
