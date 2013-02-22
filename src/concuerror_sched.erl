@@ -1259,15 +1259,18 @@ wait_black_messages() ->
     %% Check if there is any processes able to run (apart from current)
     %% thus check that there is only one processes with status
     %% different than waiting.
+    Priority = process_flag(priority, low),
+    receive after 2 -> ok end,
     Check =
         fun() ->
-                erlang:yield(),
                 Running = [P ||
                     P <- processes(),
                     process_info(P, status) =/= {status, waiting}],
                 length(Running) == 1
         end,
-    concuerror_util:wait_until(Check, 1).
+    concuerror_util:wait_until(Check, 1),
+    process_flag(priority, Priority),
+    ok.
 
 -define(IS_INSTR_MSG(Msg),
         (is_tuple(Msg) andalso
