@@ -440,11 +440,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.72: ets_lookup {inode,3}
   Process P1.72 sends message `{thread_3,acquire}` to process named 'lock_b_6'
   Process P1.72 blocks
+  Process P1.59 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P1.59 blocks
   Process P1.39 receives message `{thread_3,acquire}` from process P1.72
   Process P1.39 sends message `acquired` to process named 'thread_3'
   Process P1.39 blocks
-  Process P1.59 sends message `{thread_16,acquire}` to process named 'lock_b_6'
-  Process P1.59 blocks
   Process P1.72 receives message `acquired` from process P1.39
   Process P1.72: ets_lookup {busy,6}
   Process P1.72: ets_insert {busy,[{6,true}]}
@@ -483,11 +483,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.73: ets_lookup {inode,2}
   Process P1.73 sends message `{thread_2,acquire}` to process named 'lock_b_4'
   Process P1.73 blocks
+  Process P1.60 sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P1.60 blocks
   Process P1.37 receives message `{thread_2,acquire}` from process P1.73
   Process P1.37 sends message `acquired` to process named 'thread_2'
   Process P1.37 blocks
-  Process P1.60 sends message `{thread_15,acquire}` to process named 'lock_b_4'
-  Process P1.60 blocks
   Process P1.73 receives message `acquired` from process P1.37
   Process P1.73: ets_lookup {busy,4}
   Process P1.73: ets_insert {busy,[{4,true}]}
@@ -526,11 +526,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.74: ets_lookup {inode,1}
   Process P1.74 sends message `{thread_1,acquire}` to process named 'lock_b_2'
   Process P1.74 blocks
+  Process P1.61 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P1.61 blocks
   Process P1.35 receives message `{thread_1,acquire}` from process P1.74
   Process P1.35 sends message `acquired` to process named 'thread_1'
   Process P1.35 blocks
-  Process P1.61 sends message `{thread_14,acquire}` to process named 'lock_b_2'
-  Process P1.61 blocks
   Process P1.74 receives message `acquired` from process P1.35
   Process P1.74: ets_lookup {busy,2}
   Process P1.74: ets_insert {busy,[{2,true}]}
@@ -1059,11 +1059,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.72: ets_lookup {inode,3}
   Process P1.72 sends message `{thread_3,acquire}` to process named 'lock_b_6'
   Process P1.72 blocks
+  Process P1.59 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P1.59 blocks
   Process P1.39 receives message `{thread_3,acquire}` from process P1.72
   Process P1.39 sends message `acquired` to process named 'thread_3'
   Process P1.39 blocks
-  Process P1.59 sends message `{thread_16,acquire}` to process named 'lock_b_6'
-  Process P1.59 blocks
   Process P1.72 receives message `acquired` from process P1.39
   Process P1.72: ets_lookup {busy,6}
   Process P1.72: ets_insert {busy,[{6,true}]}
@@ -1102,11 +1102,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.73: ets_lookup {inode,2}
   Process P1.73 sends message `{thread_2,acquire}` to process named 'lock_b_4'
   Process P1.73 blocks
+  Process P1.60 sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P1.60 blocks
   Process P1.37 receives message `{thread_2,acquire}` from process P1.73
   Process P1.37 sends message `acquired` to process named 'thread_2'
   Process P1.37 blocks
-  Process P1.60 sends message `{thread_15,acquire}` to process named 'lock_b_4'
-  Process P1.60 blocks
   Process P1.73 receives message `acquired` from process P1.37
   Process P1.73: ets_lookup {busy,4}
   Process P1.73: ets_insert {busy,[{4,true}]}
@@ -1669,11 +1669,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.72: ets_lookup {inode,3}
   Process P1.72 sends message `{thread_3,acquire}` to process named 'lock_b_6'
   Process P1.72 blocks
+  Process P1.59 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P1.59 blocks
   Process P1.39 receives message `{thread_3,acquire}` from process P1.72
   Process P1.39 sends message `acquired` to process named 'thread_3'
   Process P1.39 blocks
-  Process P1.59 sends message `{thread_16,acquire}` to process named 'lock_b_6'
-  Process P1.59 blocks
   Process P1.72 receives message `acquired` from process P1.39
   Process P1.72: ets_lookup {busy,6}
   Process P1.72: ets_insert {busy,[{6,true}]}
@@ -1746,11 +1746,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.74: ets_lookup {inode,1}
   Process P1.74 sends message `{thread_1,acquire}` to process named 'lock_b_2'
   Process P1.74 blocks
+  Process P1.61 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P1.61 blocks
   Process P1.35 receives message `{thread_1,acquire}` from process P1.74
   Process P1.35 sends message `acquired` to process named 'thread_1'
   Process P1.35 blocks
-  Process P1.61 sends message `{thread_14,acquire}` to process named 'lock_b_2'
-  Process P1.61 blocks
   Process P1.74 receives message `acquired` from process P1.35
   Process P1.74: ets_lookup {busy,2}
   Process P1.74: ets_insert {busy,[{2,true}]}
@@ -2289,11 +2289,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.72: ets_lookup {inode,3}
   Process P1.72 sends message `{thread_3,acquire}` to process named 'lock_b_6'
   Process P1.72 blocks
+  Process P1.59 sends message `{thread_16,acquire}` to process named 'lock_b_6'
+  Process P1.59 blocks
   Process P1.39 receives message `{thread_3,acquire}` from process P1.72
   Process P1.39 sends message `acquired` to process named 'thread_3'
   Process P1.39 blocks
-  Process P1.59 sends message `{thread_16,acquire}` to process named 'lock_b_6'
-  Process P1.59 blocks
   Process P1.72 receives message `acquired` from process P1.39
   Process P1.72: ets_lookup {busy,6}
   Process P1.72: ets_insert {busy,[{6,true}]}
@@ -2924,11 +2924,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.73: ets_lookup {inode,2}
   Process P1.73 sends message `{thread_2,acquire}` to process named 'lock_b_4'
   Process P1.73 blocks
+  Process P1.60 sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P1.60 blocks
   Process P1.37 receives message `{thread_2,acquire}` from process P1.73
   Process P1.37 sends message `acquired` to process named 'thread_2'
   Process P1.37 blocks
-  Process P1.60 sends message `{thread_15,acquire}` to process named 'lock_b_4'
-  Process P1.60 blocks
   Process P1.73 receives message `acquired` from process P1.37
   Process P1.73: ets_lookup {busy,4}
   Process P1.73: ets_insert {busy,[{4,true}]}
@@ -2967,11 +2967,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.74: ets_lookup {inode,1}
   Process P1.74 sends message `{thread_1,acquire}` to process named 'lock_b_2'
   Process P1.74 blocks
+  Process P1.61 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P1.61 blocks
   Process P1.35 receives message `{thread_1,acquire}` from process P1.74
   Process P1.35 sends message `acquired` to process named 'thread_1'
   Process P1.35 blocks
-  Process P1.61 sends message `{thread_14,acquire}` to process named 'lock_b_2'
-  Process P1.61 blocks
   Process P1.74 receives message `acquired` from process P1.35
   Process P1.74: ets_lookup {busy,2}
   Process P1.74: ets_insert {busy,[{2,true}]}
@@ -3544,11 +3544,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.73: ets_lookup {inode,2}
   Process P1.73 sends message `{thread_2,acquire}` to process named 'lock_b_4'
   Process P1.73 blocks
+  Process P1.60 sends message `{thread_15,acquire}` to process named 'lock_b_4'
+  Process P1.60 blocks
   Process P1.37 receives message `{thread_2,acquire}` from process P1.73
   Process P1.37 sends message `acquired` to process named 'thread_2'
   Process P1.37 blocks
-  Process P1.60 sends message `{thread_15,acquire}` to process named 'lock_b_4'
-  Process P1.60 blocks
   Process P1.73 receives message `acquired` from process P1.37
   Process P1.73: ets_lookup {busy,4}
   Process P1.73: ets_insert {busy,[{4,true}]}
@@ -4189,11 +4189,11 @@ Blocked processes : P1, P1.1, P1.10, P1.11, P1.12, P1.13, P1.14, P1.15, P1.16, P
   Process P1.74: ets_lookup {inode,1}
   Process P1.74 sends message `{thread_1,acquire}` to process named 'lock_b_2'
   Process P1.74 blocks
+  Process P1.61 sends message `{thread_14,acquire}` to process named 'lock_b_2'
+  Process P1.61 blocks
   Process P1.35 receives message `{thread_1,acquire}` from process P1.74
   Process P1.35 sends message `acquired` to process named 'thread_1'
   Process P1.35 blocks
-  Process P1.61 sends message `{thread_14,acquire}` to process named 'lock_b_2'
-  Process P1.61 blocks
   Process P1.74 receives message `acquired` from process P1.35
   Process P1.74: ets_lookup {busy,2}
   Process P1.74: ets_insert {busy,[{2,true}]}

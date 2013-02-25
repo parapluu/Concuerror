@@ -1,0 +1,81 @@
+Checked 6 interleaving(s). 5 errors found.
+  Encountered 1 sleep-set blocked trace(s).
+
+1
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1: ets_insert {table,[{y,1}]}
+  Process P1: ets_insert {table,[{x,42}]}
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,42}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,y}
+  Process P1.2 exits (normal)
+
+
+2
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1: ets_insert {table,[{y,1}]}
+  Process P1: ets_insert {table,[{x,42}]}
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,42}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,y}
+  Process P1.2 exits (normal)
+
+
+3
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1: ets_insert {table,[{y,1}]}
+  Process P1.1: ets_insert {table,[{x,42}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1: ets_insert {table,[{x,42}]}
+  Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,y}
+  Process P1.2 exits (normal)
+
+
+4
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1: ets_insert {table,[{y,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1: ets_insert {table,[{x,42}]}
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,42}]}
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+5
+Error type        : Exception
+Details           : {{nocatch,yes},
+                     [{ets_writing_same,'-ets_writing_same/0-fun-1-',0,
+                          [{file,"ets_writing_same.erl"},{line,17}]}]}
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.1: ets_insert {table,[{x,42}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,y}
+  Process P1.2 exits ("Exception")
+
+

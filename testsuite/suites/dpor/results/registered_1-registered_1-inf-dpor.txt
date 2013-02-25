@@ -2,7 +2,7 @@ Checked 2 interleaving(s). 1 errors found.
 
 1
 Error type        : Exception
-Details           : {badarg,[{erlang,register,[parent,<0.46.0>],[]}]}
+Details           : {badarg,[{erlang,register,[parent,<0.51.0>],[]}]}
   Process P1 registers process P1 as `parent`
   Process P1 spawns process P1.1
   Process P1 sends message `go` to process P1.1
