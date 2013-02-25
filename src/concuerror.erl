@@ -502,20 +502,33 @@ export(Results, File) ->
         Error -> Error
     end.
 
-exportAux({'ok', {_Target, RunCount, _SBlocked}}, IoDevice) ->
+exportAux({'ok', {_Target, RunCount, SBlocked}}, IoDevice) ->
     Msg = io_lib:format("Checked ~w interleaving(s). No errors found.\n",
         [RunCount]),
-    file:write(IoDevice, Msg);
+    SBMsg =
+        case SBlocked of
+            0 -> "";
+            _ -> io_lib:format("  Encountered ~w sleep-set blocked trace(s).\n",
+                    [SBlocked])
+        end,
+    file:write(IoDevice, Msg++SBMsg);
 exportAux({error, instr,
         {_Target, _RunCount, _SBlocked}}, IoDevice) ->
     Msg = "Instrumentation error.\n",
     file:write(IoDevice, Msg);
 exportAux({error, analysis,
-        {_Target, RunCount, _Sblocked}, Tickets}, IoDevice) ->
+        {_Target, RunCount, SBlocked}, Tickets}, IoDevice) ->
     TickLen = length(Tickets),
-    Msg = io_lib:format("Checked ~w interleaving(s). ~w errors found.\n\n",
+    Msg = io_lib:format("Checked ~w interleaving(s). ~w errors found.\n",
         [RunCount, TickLen]),
-    case file:write(IoDevice, Msg) of
+    SBMsg =
+        case SBlocked of
+            0 -> "\n";
+            _ -> io_lib:format(
+                    "  Encountered ~w sleep-set blocked trace(s).\n\n",
+                    [SBlocked])
+        end,
+    case file:write(IoDevice, Msg++SBMsg) of
         ok ->
             case lists:foldl(fun writeDetails/2, {1, IoDevice},
                              concuerror_ticket:sort(Tickets)) of
