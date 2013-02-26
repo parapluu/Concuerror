@@ -1283,7 +1283,10 @@ wait_black_messages() ->
                 Running = [P ||
                     P <- processes(),
                     process_info(P, status) =/= {status, waiting}],
-                length(Running) == 1
+                case Running of
+		    [_] -> true;
+		    _ -> false
+		end
         end,
     concuerror_util:wait_until(Check, 1),
     process_flag(priority, Priority),
