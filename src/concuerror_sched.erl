@@ -183,6 +183,7 @@ interleave_aux(Target, PreBound, Parent, Dpor, Options) ->
 -record(trace_state, {
           i         = 0                 :: s_i(),
           last      = init_tr()         :: transition(),
+          last_blocked = false          :: boolean(),
           enabled   = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
           blocked   = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
           pollable  = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
@@ -191,23 +192,15 @@ interleave_aux(Target, PreBound, Parent, Dpor, Options) ->
                                               concuerror_lid:lid())],
           done      = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
           sleep_set = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
-          nexts     = dict:new()        :: dict(), %% dict(concuerror_lid:lid(), instr()),
+          nexts     = dict:new()        :: dict(), % dict(lid(), instr()),
           error_nxt = []                :: [concuerror_lid:lid()],
           clock_map = empty_clock_map() :: clock_map(),
-          preemptions = 0               :: non_neg_integer(),
-          lid_trace = new_lid_trace()   :: queue() %% queue({transition(),
-                                                   %%        clock_vector()})
+          preemptions = 0               :: non_neg_integer()
          }).
 
-init_tr() ->
-	{concuerror_lid:root_lid(), init, []}.
+init_tr() -> {concuerror_lid:root_lid(), init, []}.
 
 empty_clock_map() -> dict:new().
-
-new_lid_trace() ->
-    queue:in({init_tr(), empty_clock_vector()}, queue:new()).
-
-empty_clock_vector() -> orddict:new().
 
 -type trace_state() :: #trace_state{}.
 
@@ -278,6 +271,7 @@ explore(MightNeedReplayState) ->
                         NewState = report_error(Selected, State),
                         explore(NewState);
                     _Else ->
+                        ?debug("Plan: ~p\n",[Selected]),
                         Next = wait_next(Lid, Cmd),
                         UpdState = update_trace(Selected, Next, State),
                         AllAddState = add_all_backtracks(UpdState),
@@ -297,7 +291,7 @@ select_from_backtrack(#dpor_state{must_replay = MustReplay,
 				  trace = Trace} = MightNeedReplayState) ->
     %% FIXME: Pick first and don't really subtract.
     %% FIXME: This is actually the trace bottom...
-    [TraceTop|RestTrace] = Trace,
+    [TraceTop|_] = Trace,
     Backtrack = TraceTop#trace_state.backtrack,
     Done = TraceTop#trace_state.done,
     ?debug("------------\nExplore ~p\n------------\n",
@@ -331,8 +325,6 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
 			 show_output = ShowOutput} = State) ->
     NewRunCnt = RunCnt + 1,
     ?debug("\nReplay (~p) is required...\n", [NewRunCnt]),
-    [TraceTop|TraceRest] = Trace,
-    LidTrace = TraceTop#trace_state.lid_trace,
     concuerror_lid:stop(),
     %% Get buffered output from group leader
     %% TODO: For now just ignore it. Maybe we can print it
@@ -343,35 +335,28 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
         false -> ok
     end,
     proc_cleanup(processes() -- ProcBefore),
-    {_FirstLid, NewGroupLeader} = start_target_op(Target),
-    NewLidTrace = replay_lid_trace(LidTrace),
+    {FirstLid, NewGroupLeader} = start_target_op(Target),
+    _ = wait_next(FirstLid, init),
+    NewTrace = replay_trace_aux(Trace),
     ?debug("Done replaying...\n\n"),
     %% Report the start of a new interleaving
     concuerror_log:progress({'new', NewRunCnt, SBlocked}),
-    NewTrace = [TraceTop#trace_state{lid_trace = NewLidTrace}|TraceRest],
     State#dpor_state{run_count = NewRunCnt, must_replay = false,
                      group_leader = NewGroupLeader, trace = NewTrace}.
 
-replay_lid_trace(Queue) ->
-    replay_lid_trace(0, Queue, queue:new()).
+replay_trace_aux(Trace) ->
+    [Init|Rest] = lists:reverse(Trace),
+    replay_trace_aux(Rest, [Init]).
 
-replay_lid_trace(N, Queue, Acc) ->
-    {V, NewQueue} = queue:out(Queue),
-    case V of
-        {value, {{_Lid,  block, _},  _VC} = Entry} ->
-            replay_lid_trace(N, NewQueue, queue:in(Entry, Acc));
-        {value, {{Lid, Command, _} = Transition, VC}} ->
-            %% ?debug(" ~-4w: ~P",[N, Transition, ?DEBUG_DEPTH]),
-            _ = wait_next(Lid, Command),
-            %% ?debug("."),
-            {NewTransition, _} = handle_instruction_op(Transition),
-            %% ?debug("."),
-            _ = replace_messages(Lid, VC),
-            %% ?debug("\n"),
-            replay_lid_trace(N+1, NewQueue, queue:in({NewTransition, VC}, Acc));
-        empty ->
-            Acc
-    end.
+replay_trace_aux([], Acc) -> Acc;
+replay_trace_aux([TraceState|Rest], Acc) ->
+    #trace_state{i = _I, last = {Lid, Cmd, _} = _Last} = TraceState,
+    %% ?debug(" ~-4w: ~P\n",[_I, _Last, ?DEBUG_DEPTH]),
+    _Next = wait_next(Lid, Cmd),
+    %% ?debug("."),
+    UpdAcc = replay_update_trace(TraceState, Acc),
+    %% ?debug(".\n"),
+    replay_trace_aux(Rest, UpdAcc).
 
 wait_next(Lid, {exit, {normal, _Info}}) ->
     Pid = concuerror_lid:get_pid(Lid),
@@ -633,19 +618,21 @@ decide_flanagan(Predecessors, Backtrack, Candidates, PreSI, Rest) ->
 %% - add new entry with new entry
 %% - wait any possible additional messages
 %% - check for async
-update_trace({Lid, _, _} = Selected, Next, State) ->
-    #dpor_state{trace = [PrevTraceTop|Rest],
-                dpor_flavor = Flavor} = State,
+update_trace(Selected, Next, State) ->
+    #dpor_state{trace = Trace, dpor_flavor = Flavor} = State,
+    NewTrace = update_trace(Selected, Next, Trace, Flavor),
+    State#dpor_state{trace = NewTrace}.
+
+update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace, Flavor) ->
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  pollable = Pollable, done = Done, error_nxt = OldErrorNxt,
-                 nexts = Nexts, lid_trace = LidTrace,
-                 clock_map = ClockMap, sleep_set = SleepSet,
+                 nexts = Nexts, clock_map = ClockMap, sleep_set = SleepSet,
                  preemptions = Preemptions, last = {LLid,_,_}} = PrevTraceTop,
     NewN = I+1,
     ClockVector = lookup_clock(Lid, ClockMap),
     ?debug("Happened before: ~p\n", [orddict:to_list(ClockVector)]),
     BaseClockVector = orddict:store(Lid, NewN, ClockVector),
-    LidsClockVector = recent_dependency_cv(Selected, BaseClockVector, LidTrace),
+    LidsClockVector = recent_dependency_cv(Selected, BaseClockVector, Trace),
     NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
     NewNexts = dict:store(Lid, Next, Nexts),
     MaybeNotPollable = ordsets:del_element(Lid, Pollable),
@@ -667,23 +654,17 @@ update_trace({Lid, _, _} = Selected, Next, State) ->
                      enabled = NewEnabled, blocked = NewBlocked,
                      clock_map = NewClockMap, sleep_set = NewSleepSetCandidates,
                      pollable = NewPollable, preemptions = NewPreemptions},
-    InstrNewTraceTop = handle_instruction(Selected, CommonNewTraceTop),
-    UpdatedClockVector =
-        lookup_clock(Lid, InstrNewTraceTop#trace_state.clock_map),
-    {Lid, RewrittenInstr, _Msgs} = InstrNewTraceTop#trace_state.last,
-    Messages = orddict:from_list(replace_messages(Lid, UpdatedClockVector)),
-    PossiblyRewrittenSelected = {Lid, RewrittenInstr, Messages},
-    ?debug("Selected: ~P\n",[PossiblyRewrittenSelected, ?DEBUG_DEPTH]),
-    NewBaseLidTrace =
-        queue:in({PossiblyRewrittenSelected, UpdatedClockVector}, LidTrace),
-    NewLidTrace =
-        case ordsets:is_element(Lid, NewBlocked) of
-            false -> NewBaseLidTrace;
-            true ->
-                ?debug("Blocking ~p\n",[Lid]),
-                queue:in({{Lid, block, []}, UpdatedClockVector}, NewBaseLidTrace)
-        end,
+    InstrNewTraceTop = update_instr_info(Lid, Selected, CommonNewTraceTop),
     NewTraceTop = check_pollable(InstrNewTraceTop),
+    PossiblyRewrittenSelected = NewTraceTop#trace_state.last,
+    ?debug("Selected: ~P\n",[PossiblyRewrittenSelected, ?DEBUG_DEPTH]),
+    Expected = dict:fetch(Lid, Nexts),
+    PrevTrace =
+        case PossiblyRewrittenSelected =:= Expected of
+            true -> Trace;
+            false ->
+                rewrite_while_awaked(PossiblyRewrittenSelected, Selected, Trace)
+        end,
     NewSleepSet =
         case Flavor =:= 'none' of
             true -> [];
@@ -694,7 +675,6 @@ update_trace({Lid, _, _} = Selected, Next, State) ->
                               AfterPollingNexts,
                               PossiblyRewrittenSelected)
         end,
-    Awakened = ordsets:subtract(NewSleepSetCandidates, NewSleepSet),
     NewErrorNext =
         case {Next, Selected} of
             {_, {_, { halt, _}, _}} -> [];
@@ -703,49 +683,48 @@ update_trace({Lid, _, _} = Selected, Next, State) ->
                 case Flavor =:= 'none' of
                     true -> [];
                     false ->
+                        Awakened = ordsets:subtract(
+                                     NewSleepSetCandidates, NewSleepSet),
                         RestError = ordsets:del_element(Lid, OldErrorNxt),
                         ordsets:union(Awakened, RestError)
                 end
         end,
+    NewLastBlocked = ordsets:is_element(Lid, NewBlocked),    
+    [NewTraceTop#trace_state{
+       last_blocked = NewLastBlocked,
+       error_nxt = NewErrorNext,
+       sleep_set = NewSleepSet}|
+     PrevTrace].
+
+replay_update_trace(#trace_state{last = {Lid, _, _} = Selected} = ReplayTop,
+                    Trace) ->
+    CommonNewTraceTop = ReplayTop#trace_state{last = Selected},
+    NewTraceTop = update_instr_info(Lid, Selected, CommonNewTraceTop),
+    PossiblyRewrittenSelected = NewTraceTop#trace_state.last,
     PrevTrace =
         case PossiblyRewrittenSelected =:= Selected of
-            true -> [PrevTraceTop|Rest];
-            false -> rewrite_while_awaked(PossiblyRewrittenSelected,
-                                          Selected,
-                                          [PrevTraceTop|Rest])
+            true -> Trace;
+            false ->
+                rewrite_while_awaked(PossiblyRewrittenSelected, Selected, Trace)
         end,
-    NewTrace =
-        [NewTraceTop#trace_state{
-           last = PossiblyRewrittenSelected,
-           lid_trace = NewLidTrace,
-           error_nxt = NewErrorNext,
-           sleep_set = NewSleepSet}|
-         PrevTrace],
-    State#dpor_state{trace = NewTrace}.
+    [NewTraceTop|PrevTrace].
 
 recent_dependency_cv({_Lid, {ets, _Info}, _} = Transition,
-                     ClockVector, LidTrace) ->
+                     ClockVector, Trace) ->
     Fun =
-        fun({Queue, CVAcc}) ->
-            {Ret, NewQueue} = queue:out_r(Queue),
-            case Ret of
-                empty -> {done, CVAcc};
-                {value, {Transition2, CV}} ->
-                    case concuerror_deps:dependent(Transition, Transition2) of
-                        true -> {cont, {NewQueue, max_cv(CVAcc, CV)}};
-                        false -> {cont, {NewQueue, CVAcc}}
-                    end
-            end
+        fun(#trace_state{
+            last = {Lid, _, _} = Transition2,
+            clock_map = CM}, CVAcc) ->
+                case concuerror_deps:dependent(Transition, Transition2) of
+                    true ->
+                        CV = lookup_clock(Lid, CM),
+                        max_cv(CVAcc, CV);
+                    false -> CVAcc
+                end
         end,
-    dynamic_loop_acc(Fun, {LidTrace, ClockVector});
+    lists:foldl(Fun, ClockVector, Trace);
 recent_dependency_cv(_Transition, ClockVector, _Trace) ->
     ClockVector.
-
-dynamic_loop_acc(Fun, Arg) ->
-    case Fun(Arg) of
-        {done, Ret} -> Ret;
-        {cont, NewArg} -> dynamic_loop_acc(Fun, NewArg)
-    end.
 
 update_lid_enabled(Lid, {_, Next, _}, Pollable, Enabled, Blocked) ->
     {NewEnabled, NewBlocked} =
@@ -768,6 +747,14 @@ is_enabled(_Else) -> true.
 is_pollable({'receive', blocked}) -> true;
 is_pollable({'after', _Info}) -> true;
 is_pollable(_Else) -> false.
+
+update_instr_info(Lid, Selected, CommonNewTraceTop) ->
+    IntermediateTraceTop = handle_instruction(Selected, CommonNewTraceTop),
+    UpdatedClockVector =
+        lookup_clock(Lid, IntermediateTraceTop#trace_state.clock_map),
+    {Lid, RewrittenInstr, _Msgs} = IntermediateTraceTop#trace_state.last,
+    Messages = orddict:from_list(replace_messages(Lid, UpdatedClockVector)),
+    IntermediateTraceTop#trace_state{last = {Lid, RewrittenInstr, Messages}}.
 
 filter_awaked(SleepSet, Nexts, Selected) ->
     Filter =
@@ -974,18 +961,30 @@ add_some_next_to_backtrack(State) ->
     State#dpor_state{trace = [NewTraceTop|Rest]}.
 
 report_error(Transition, State) ->
-    #dpor_state{trace = [TraceTop|_], tickets = Tickets} = State,
+    #dpor_state{trace = Trace, tickets = Tickets} = State,
     ?debug("ERROR!\n~P\n",[Transition, ?DEBUG_DEPTH]),
     Error = convert_error_info(Transition),
-    LidTrace = queue:in({Transition, foo}, TraceTop#trace_state.lid_trace),
+    LidTrace = convert_trace_to_error_trace(Trace, [Transition]),
     Ticket = create_ticket(Error, LidTrace),
     %% Report the error to the progress logger.
     concuerror_log:progress({'error', Ticket}),
     State#dpor_state{must_replay = true, tickets = [Ticket|Tickets]}.
 
+convert_trace_to_error_trace([], Acc) -> Acc;
+convert_trace_to_error_trace([#trace_state{
+                                 last = {Lid, _, _} = Entry,
+                                 last_blocked = Blocked}|Rest], Acc) ->
+    NewAcc =
+        [Entry|
+         case Blocked of
+             false -> Acc;
+             true -> [{Lid, block, []}|Acc]
+         end],
+    convert_trace_to_error_trace(Rest, NewAcc).
+
 create_ticket(Error, LidTrace) ->
     InitTr = init_tr(),
-    [{P1, init, []} = InitTr|Trace] = [S || {S,_V} <- queue:to_list(LidTrace)],
+    [{P1, init, []} = InitTr|Trace] = LidTrace,
     InitSet = sets:add_element(P1, sets:new()),
     {ErrorState, _Procs} =
         lists:mapfoldl(fun convert_error_trace/2, InitSet, Trace),
@@ -1085,7 +1084,7 @@ convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}, _Msgs})->
     {Tag, Info}.
 
 report_possible_deadlock(State) ->
-    #dpor_state{trace = [TraceTop|Trace], tickets = Tickets,
+    #dpor_state{trace = [TraceTop|RestTrace] = Trace, tickets = Tickets,
                 sleep_blocked_count = SBlocked} = State,
     {NewTickets, NewSBlocked} =
         case TraceTop#trace_state.enabled of
@@ -1097,7 +1096,7 @@ report_possible_deadlock(State) ->
                     Blocked ->
                         ?debug("DEADLOCK!\n"),
                         Error = {deadlock, Blocked},
-                        LidTrace = TraceTop#trace_state.lid_trace,
+                        LidTrace = convert_trace_to_error_trace(Trace, []),
                         Ticket = create_ticket(Error, LidTrace),
                         %% Report error
                         concuerror_log:progress({'error', Ticket}),
@@ -1114,8 +1113,8 @@ report_possible_deadlock(State) ->
                 end
         end,
     ?debug("Stack frame dropped\n"),
-    State#dpor_state{must_replay = true, trace = Trace, tickets = NewTickets,
-                     sleep_blocked_count = NewSBlocked}.
+    State#dpor_state{must_replay = true, trace = RestTrace,
+                     tickets = NewTickets, sleep_blocked_count = NewSBlocked}.
 
 finished(#dpor_state{trace = Trace}) ->
     Trace =:= [].
@@ -1181,8 +1180,7 @@ send_message(Pid, Message) when is_pid(Pid) ->
     ok;
 send_message(Lid, Message) ->
     Pid = concuerror_lid:get_pid(Lid),
-    Pid ! #sched{msg = Message},
-    ok.
+    send_message(Pid, Message).
 
 %% Notify the scheduler of an event.
 %% If the calling user process has an associated LID, then send
@@ -1311,3 +1309,10 @@ instrument_my_messages(Lid, VC) ->
                 end
         end,
     dynamic_loop_acc(Fun, []).
+
+
+dynamic_loop_acc(Fun, Arg) ->
+    case Fun(Arg) of
+        {done, Ret} -> Ret;
+        {cont, NewArg} -> dynamic_loop_acc(Fun, NewArg)
+    end.
