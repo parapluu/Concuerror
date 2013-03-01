@@ -350,11 +350,11 @@ replay_trace_aux(Trace) ->
 
 replay_trace_aux([], Acc) -> Acc;
 replay_trace_aux([TraceState|Rest], Acc) ->
-    #trace_state{i = _I, last = {Lid, Cmd, _} = _Last} = TraceState,
-    %% ?debug(" ~-4w: ~P\n",[_I, _Last, ?DEBUG_DEPTH]),
-    _Next = wait_next(Lid, Cmd),
+    #trace_state{i = _I, last = {Lid, Cmd, _} = Last} = TraceState,
+    %% ?debug(" ~-4w: ~P\n",[_I, Last, ?DEBUG_DEPTH]),
+    Next = wait_next(Lid, Cmd),
     %% ?debug("."),
-    UpdAcc = replay_update_trace(TraceState, Acc),
+    UpdAcc = update_trace(Last, Next, Acc, irrelevant, {true, TraceState}),
     %% ?debug(".\n"),
     replay_trace_aux(Rest, UpdAcc).
 
@@ -620,94 +620,98 @@ decide_flanagan(Predecessors, Backtrack, Candidates, PreSI, Rest) ->
 %% - check for async
 update_trace(Selected, Next, State) ->
     #dpor_state{trace = Trace, dpor_flavor = Flavor} = State,
-    NewTrace = update_trace(Selected, Next, Trace, Flavor),
+    NewTrace = update_trace(Selected, Next, Trace, Flavor, false),
     State#dpor_state{trace = NewTrace}.
 
-update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace, Flavor) ->
+update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
+             Flavor, Replaying) ->
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
                  pollable = Pollable, done = Done, error_nxt = OldErrorNxt,
                  nexts = Nexts, clock_map = ClockMap, sleep_set = SleepSet,
                  preemptions = Preemptions, last = {LLid,_,_}} = PrevTraceTop,
-    NewN = I+1,
-    ClockVector = lookup_clock(Lid, ClockMap),
-    ?debug("Happened before: ~p\n", [orddict:to_list(ClockVector)]),
-    BaseClockVector = orddict:store(Lid, NewN, ClockVector),
-    LidsClockVector = recent_dependency_cv(Selected, BaseClockVector, Trace),
-    NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
+                NewNexts = dict:store(Lid, Next, Nexts),
+    Expected = dict:fetch(Lid, Nexts),
     NewNexts = dict:store(Lid, Next, Nexts),
     MaybeNotPollable = ordsets:del_element(Lid, Pollable),
     {NewPollable, NewEnabled, NewBlocked} =
         update_lid_enabled(Lid, Next, MaybeNotPollable, Enabled, Blocked),
-    NewPreemptions =
-        case ordsets:is_element(LLid, Enabled) of
-            true ->
-                case Lid =:= LLid of
-                    false -> Preemptions + 1;
-                    true -> Preemptions
-                end;
-            false -> Preemptions
-        end,
-    NewSleepSetCandidates =
-        ordsets:union(ordsets:del_element(Lid, Done), SleepSet),
     CommonNewTraceTop =
-        #trace_state{i = NewN, last = Selected, nexts = NewNexts,
-                     enabled = NewEnabled, blocked = NewBlocked,
-                     clock_map = NewClockMap, sleep_set = NewSleepSetCandidates,
-                     pollable = NewPollable, preemptions = NewPreemptions},
+        case Replaying of
+            false ->
+                NewN = I+1,
+                ClockVector = lookup_clock(Lid, ClockMap),
+                ?debug("Happened before: ~p\n", [orddict:to_list(ClockVector)]),
+                BaseClockVector = orddict:store(Lid, NewN, ClockVector),
+                LidsClockVector =
+                    recent_dependency_cv(Selected, BaseClockVector, Trace),
+                NewClockMap = dict:store(Lid, LidsClockVector, ClockMap),
+                NewPreemptions =
+                    case ordsets:is_element(LLid, Enabled) of
+                        true ->
+                            case Lid =:= LLid of
+                                false -> Preemptions + 1;
+                                true -> Preemptions
+                            end;
+                        false -> Preemptions
+                    end,
+                NewSleepSetCandidates =
+                    ordsets:union(ordsets:del_element(Lid, Done), SleepSet),
+                #trace_state{
+                   i = NewN, last = Selected, nexts = NewNexts,
+                   enabled = NewEnabled, sleep_set = NewSleepSetCandidates,
+                   blocked = NewBlocked, clock_map = NewClockMap,
+                   pollable = NewPollable, preemptions = NewPreemptions};
+            {true, ReplayTop} ->
+                ReplayTop#trace_state{
+                  last = Selected, nexts = NewNexts, pollable = NewPollable}
+        end,
     InstrNewTraceTop = update_instr_info(Lid, Selected, CommonNewTraceTop),
     NewTraceTop = check_pollable(InstrNewTraceTop),
     PossiblyRewrittenSelected = NewTraceTop#trace_state.last,
-    ?debug("Selected: ~P\n",[PossiblyRewrittenSelected, ?DEBUG_DEPTH]),
-    Expected = dict:fetch(Lid, Nexts),
     PrevTrace =
         case PossiblyRewrittenSelected =:= Expected of
             true -> Trace;
             false ->
-                rewrite_while_awaked(PossiblyRewrittenSelected, Selected, Trace)
+                rewrite_while_awaked(PossiblyRewrittenSelected, Expected, Trace)
         end,
-    NewSleepSet =
-        case Flavor =:= 'none' of
-            true -> [];
+    FinalTraceTop =
+        case Replaying of
             false ->
-                AfterPollingSleepSet = NewTraceTop#trace_state.sleep_set,
-                AfterPollingNexts = NewTraceTop#trace_state.nexts,
-                filter_awaked(AfterPollingSleepSet,
-                              AfterPollingNexts,
-                              PossiblyRewrittenSelected)
+                ?debug("Selected: ~P\n",
+                       [PossiblyRewrittenSelected, ?DEBUG_DEPTH]),
+                NewSleepSet =
+                    case Flavor =:= 'none' of
+                        true -> [];
+                        false ->
+                            filter_awaked(NewTraceTop#trace_state.sleep_set,
+                                          NewTraceTop#trace_state.nexts,
+                                          PossiblyRewrittenSelected)
+                    end,
+                Awakened =
+                    ordsets:subtract(CommonNewTraceTop#trace_state.sleep_set,
+                                     NewSleepSet),
+                NewErrorNext =
+                    case {Next, Selected} of
+                        {_, {_, { halt, _}, _}} -> [];
+                        {{_, {error, _}, _}, _} -> [Lid];
+                        _Else ->
+                            case Flavor =:= 'none' of
+                                true -> [];
+                                false ->
+                                    RestError =
+                                        ordsets:del_element(Lid, OldErrorNxt),
+                                    ordsets:union(Awakened, RestError)
+                            end
+                    end,
+                NewLastBlocked = ordsets:is_element(Lid, NewBlocked),    
+                NewTraceTop#trace_state{
+                  last_blocked = NewLastBlocked,
+                  error_nxt = NewErrorNext,
+                  sleep_set = NewSleepSet};
+            {true, _ReplayTop} ->
+                NewTraceTop
         end,
-    NewErrorNext =
-        case {Next, Selected} of
-            {_, {_, { halt, _}, _}} -> [];
-            {{_, {error, _}, _}, _} -> [Lid];
-            _Else ->
-                case Flavor =:= 'none' of
-                    true -> [];
-                    false ->
-                        Awakened = ordsets:subtract(
-                                     NewSleepSetCandidates, NewSleepSet),
-                        RestError = ordsets:del_element(Lid, OldErrorNxt),
-                        ordsets:union(Awakened, RestError)
-                end
-        end,
-    NewLastBlocked = ordsets:is_element(Lid, NewBlocked),    
-    [NewTraceTop#trace_state{
-       last_blocked = NewLastBlocked,
-       error_nxt = NewErrorNext,
-       sleep_set = NewSleepSet}|
-     PrevTrace].
-
-replay_update_trace(#trace_state{last = {Lid, _, _} = Selected} = ReplayTop,
-                    Trace) ->
-    CommonNewTraceTop = ReplayTop#trace_state{last = Selected},
-    NewTraceTop = update_instr_info(Lid, Selected, CommonNewTraceTop),
-    PossiblyRewrittenSelected = NewTraceTop#trace_state.last,
-    PrevTrace =
-        case PossiblyRewrittenSelected =:= Selected of
-            true -> Trace;
-            false ->
-                rewrite_while_awaked(PossiblyRewrittenSelected, Selected, Trace)
-        end,
-    [NewTraceTop|PrevTrace].
+    [FinalTraceTop|PrevTrace].
 
 recent_dependency_cv({_Lid, {ets, _Info}, _} = Transition,
                      ClockVector, Trace) ->
@@ -888,6 +892,9 @@ handle_instruction_al({_Lid, {Updatable, _Info}, _Msgs} = Trans, TraceTop, {})
   when Updatable =:= send; Updatable =:= whereis; Updatable =:= monitor;
        Updatable =:= process_flag; Updatable =:= 'after' ->
     TraceTop#trace_state{last = Trans};
+handle_instruction_al({_Lid, {register, {Name, PLid}}, _Msgs},
+                      #trace_state{nexts = Nexts} = TraceTop, {}) ->
+    TraceTop#trace_state{nexts = update_named_sends(Name, PLid, Nexts)};
 handle_instruction_al({_Lid, {halt, _Status}, _Msgs}, TraceTop, {}) ->
     TraceTop#trace_state{enabled = [], blocked = []};
 handle_instruction_al(_Transition, TraceTop, {}) ->
@@ -896,6 +903,17 @@ handle_instruction_al(_Transition, TraceTop, {}) ->
 max_cv(D1, D2) ->
     Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
     orddict:merge(Merger, D1, D2).
+
+update_named_sends(Name, PLid, Nexts) ->
+    Map =
+        fun(Lid, Instr) ->
+                case Instr of
+                    {Lid, {send, {Name, _OldPLid, Msg}}, Msgs} ->
+                        {Lid, {send, {Name, PLid, Msg}}, Msgs};
+                    _Other -> Instr
+                end
+        end,
+    dict:map(Map, Nexts).
 
 check_pollable(TraceTop) ->
     #trace_state{pollable = Pollable} = TraceTop,
