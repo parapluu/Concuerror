@@ -1014,7 +1014,7 @@ convert_error_trace({Lid, {Instr, Extra}, _Msgs}, Procs) ->
     NewInstr =
         case Instr of
             send ->
-                {Orig, Dest, Msg, _Links} = Extra,
+                {Orig, Dest, Msg} = Extra,
                 NewDest =
                     case is_atom(Orig) of
                         true -> {name, Orig};
@@ -1261,10 +1261,10 @@ replace_messages(Lid, VC) ->
         fun(Pid, MsgAcc) ->
             Pid ! ?VECTOR_MSG(Lid, VC),
             receive
-                ?VECTOR_MSG(PidsLid, Msgs) ->
+                ?VECTOR_MSG(PidsLid, {Msgs, _} = MsgInfo) ->
                     case Msgs =:= [] of
                         true -> MsgAcc;
-                        false -> [{PidsLid, Msgs}|MsgAcc]
+                        false -> [{PidsLid, MsgInfo}|MsgAcc]
                     end
             end
         end,
@@ -1305,7 +1305,13 @@ instrument_my_messages(Lid, VC) ->
                         Self ! Instr,
                         {cont, [Msg|Acc]}
                 after
-                    0 -> {done, Acc}
+                    0 ->
+                        Links =
+                            case Acc =:= [] of
+                                true -> [];
+                                false -> concuerror_rep:find_my_links()
+                            end,
+                        {done, {Acc, Links}}
                 end
         end,
     dynamic_loop_acc(Fun, []).

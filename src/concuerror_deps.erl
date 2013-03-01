@@ -67,15 +67,12 @@ dependent({_Lid1, _Instr1, _Msgs1},
 %%==============================================================================
 
 %% Sending to the same process:
-dependent({Lid1, Instr1, PreMsgs1} = Trans1,
-          {Lid2, Instr2,    Msgs2} = Trans2,
+dependent({ Lid1,  Instr1, PreMsgs1} = Trans1,
+          {_Lid2, _Instr2, PreMsgs2} = Trans2,
           ?CHECK_MSG, AllowSwap) ->
-    Links =
-        case Instr2 of
-            {send, {_TName, _TLid, _Msg, L}} -> L;
-            _ -> []
-        end,
-    Msgs1 = add_missing_messages(Instr1, Lid1, PreMsgs1, Lid2, Links),
+    ProcEvidence = [{P, L} || {P, {_M, L}} <- PreMsgs2],
+    Msgs2 = [{P, M} || {P, {M, _L}} <- PreMsgs2],
+    Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence),
     case Msgs1 =:= [] orelse Msgs2 =:= [] of
         true -> dependent(Trans1, Trans2, ?DONT_CHECK_MSG, AllowSwap);
         false ->
@@ -105,31 +102,25 @@ dependent({Lid1,          Instr1, PreMsgs1} = Trans1,
           _CheckMsg, AllowSwap) when
       Receive =:= 'after';
       (Receive =:= 'receive' andalso
-       element(1, Info) =:= had_after andalso
-       element(2, Info) =:= Lid1) ->
-    Links =
+       element(1, Info) =:= had_after) ->
+    ProcEvidence =
         case Receive =:= 'after' of
-            true ->
-                element(2, Info);
+            true  -> [{Lid2, element(2, Info)}];
             false -> []
         end,
-    Msgs1 = add_missing_messages(Instr1, Lid1, PreMsgs1, Lid2, Links),
+    Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence),
     Dependent =
-        case Msgs1 =:= [] of
-            true -> false;
-            false ->
-                case orddict:find(Lid2, Msgs1) of
-                    {ok, MsgsToLid2} ->
-                        Fun =
-                            case Receive of
-                                'after' -> element(1, Info);
-                                'receive' ->
-                                    Target = element(3, Info),
-                                    fun(X) -> X =:= Target end
-                            end,
-                        lists:any(Fun, MsgsToLid2);
-                    error -> false
-                end
+        case orddict:find(Lid2, Msgs1) of
+            {ok, MsgsToLid2} ->
+                Fun =
+                    case Receive of
+                        'after' -> element(1, Info);
+                        'receive' ->
+                            Target = element(3, Info),
+                            fun(X) -> X =:= Target end
+                    end,
+                lists:any(Fun, MsgsToLid2);
+            error -> false
         end,
     Dependent orelse (AllowSwap andalso
 		      dependent(Trans2, Trans1, ?CHECK_MSG, ?DONT_ALLOW_SWAP));
@@ -206,7 +197,7 @@ dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _Name1, _Links1}}}, _Msgs1},
 %% Registered processes:
 
 %% Sending using name to a process that may exit and unregister.
-dependent({_Lid1, {send,              {TName, _TLid, _Msg, _Link}}, _Msgs1},
+dependent({_Lid1, {send,                     {TName, _TLid, _Msg}}, _Msgs1},
           {_Lid2, {exit, {normal, {_Tables, {ok, TName}, _Links}}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     true;
@@ -229,8 +220,8 @@ dependent(A, {Lid, {unregister, RegName}, Msgs}, CheckMsg, AllowSwap) ->
 %%==============================================================================
 
 %% Send using name before process has registered itself (or after ungeristering).
-dependent({_Lid1, {register,             {RegName, _TLid}}, _Msgs1},
-          {_Lid2, {    send, {RegName, _Lid, _Msg, _Link}}, _Msgs2},
+dependent({_Lid1, {register,      {RegName, _TLid}}, _Msgs1},
+          {_Lid2, {    send, {RegName, _Lid, _Msg}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     true;
 
@@ -416,18 +407,23 @@ independent({_Lid1, {Op1, _}, _Msgs1}, {_Lid2, {Op2, _}, _Msgs2}) ->
         false -> maybe
     end.
 
-add_missing_messages(Instr1, Lid1, PreMsgs1, Lid2, Links) ->
-    case Instr1 of
-        {send, {_RegName, Lid, Msg, _Links}} ->
-            add_missing_message(Lid, Msg, PreMsgs1);
+add_missing_messages(Lid, Instr, PreMsgs, ProcEvidence) ->
+    Msgs = [{P, M} || {P, {M, _L}} <- PreMsgs],
+    case Instr of
+        {send, {_RegName, Lid2, Msg}} ->
+            add_missing_message(Lid2, Msg, Msgs);
         {exit, _} ->
-            case lists:member(Lid1, Links) of
-                true ->
-                    Msg = {'EXIT', Lid1, normal},
-                    add_missing_message(Lid2, Msg, PreMsgs1);
-                false -> PreMsgs1
-            end;
-        _ -> PreMsgs1
+            Msg = {'EXIT', Lid, normal},
+            Adder = fun(P, M) -> add_missing_message(P, Msg, M) end,
+            Fold =
+                fun({P, Links}, Acc) ->
+                        case lists:member(Lid, Links) of
+                            true -> Adder(P, Acc);
+                            false -> Acc
+                        end
+                end,
+            lists:foldl(Fold, Msgs, ProcEvidence);
+        _ -> Msgs
     end.
 
 add_missing_message(Lid, Msg, Msgs) ->
