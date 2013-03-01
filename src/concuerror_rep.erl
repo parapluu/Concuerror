@@ -14,7 +14,8 @@
 
 -module(concuerror_rep).
 
--export([spawn_fun_wrapper/1]).
+-export([spawn_fun_wrapper/1,
+         find_my_links/0]).
 
 -export([rep_var/3, rep_apply/3, rep_send/2, rep_send/3]).
 
@@ -242,10 +243,10 @@ rep_process_flag(trap_exit = Flag, Value) ->
 rep_process_flag(Flag, Value) ->
     process_flag(Flag, Value).
 
-find_my_links() ->
-    find_links(self()).
+-spec find_my_links() -> [concuerror_lid:lid()].
 
-find_links(PPid) ->
+find_my_links() ->
+    PPid = self(),
     {links, AllPids} = process_info(PPid, links),
     AllLids = [?LID_FROM_PID(Pid) || Pid <- AllPids],
     [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].                  
@@ -394,11 +395,9 @@ send_center(Dest, Msg) ->
             ok;
         _SelfLid ->
             PlanLid = ?LID_FROM_PID(find_pid(Dest)),
-            PlanLinks = find_trappable_links(Dest),
-            concuerror_sched:notify(send, {Dest, PlanLid, Msg, PlanLinks}),
+            concuerror_sched:notify(send, {Dest, PlanLid, Msg}),
             SendLid = ?LID_FROM_PID(find_pid(Dest)),
-            SendLinks = find_trappable_links(Dest),
-            concuerror_sched:notify(send, {Dest, SendLid, Msg, SendLinks}, prev),
+            concuerror_sched:notify(send, {Dest, SendLid, Msg}, prev),
             ok
     end.
 
