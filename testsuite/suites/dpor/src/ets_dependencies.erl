@@ -6,7 +6,6 @@
 scenarios() -> [{?MODULE, inf, dpor}].
 
 ets_dependencies() ->
-    Parent = self(),
     ets:new(table, [public, named_table]),
     spawn(fun() ->
                   ets:insert(table, {x, 1})

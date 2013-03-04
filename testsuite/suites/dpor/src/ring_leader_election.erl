@@ -14,7 +14,6 @@ ring_leader_election(N) ->
     [First|Rest] = Pids,
     Fold =
         fun(Pid, {Links, Last}) ->
-            NewAcc =
                 case Links of
                     [] ->
                         Pid ! {l, Last},

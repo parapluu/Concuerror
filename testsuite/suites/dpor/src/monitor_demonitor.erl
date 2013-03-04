@@ -6,7 +6,6 @@
 scenarios() -> [{?MODULE, inf, dpor}].
 
 monitor_demonitor() ->
-    Parent = self(),
     Pid1 = spawn(fun() -> receive ok -> ok end end),
     spawn(fun() ->
                   Pid1 ! ok,

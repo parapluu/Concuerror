@@ -8,10 +8,10 @@ scenarios() -> [{?MODULE, inf, dpor}].
 proxy2() ->
     C = self(),
     B = proxy(100, C),
-    A = spawn(fun() ->
-                      B ! world,
-                      C ! hello
-              end),
+    _A = spawn(fun() ->
+                       B ! world,
+                       C ! hello
+               end),
     receive Msg1 -> ok end,
     receive Msg2 -> ok end,
     {Msg1, Msg2}.

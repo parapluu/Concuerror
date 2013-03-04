@@ -7,14 +7,13 @@ scenarios() -> [{?MODULE, inf, dpor}].
 
 registered_send_1() ->
     Parent = self(),
-    Pid =
-        spawn(fun() ->
-                      Parent ! ok,
-                      register(child, self()),
-                      receive
-                          ok -> ok
-                      end
-                end),
+    spawn(fun() ->
+                  Parent ! ok,
+                  register(child, self()),
+                  receive
+                      ok -> ok
+                  end
+          end),
     receive
         ok -> child ! ok
     end.

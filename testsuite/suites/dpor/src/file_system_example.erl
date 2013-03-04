@@ -94,9 +94,9 @@ init(Slots, Lock, Data, Init) ->
 
 spawn_threads(0) -> ok;
 spawn_threads(N) ->
-    Pid = spawn(fun() ->
-                        Name = thread_name(N),
-                        register(Name, self()),
-                        thread(Name, N)
-                end),
+    spawn(fun() ->
+                  Name = thread_name(N),
+                  register(Name, self()),
+                  thread(Name, N)
+          end),
     spawn_threads(N-1).

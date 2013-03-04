@@ -14,8 +14,8 @@ replay_sanity() ->
     PidX = spawn(fun() -> receive ok -> ok end end),
     PidY = spawn(fun() -> receive ok -> ok end end),
     Pid0 ! {ok, self()},
-    PidK = spawn(fun() -> Pid0 ! {p, PidX} end),
-    PidL = spawn(fun() -> Pid0 ! {p, PidY} end),
+    _PidK = spawn(fun() -> Pid0 ! {p, PidX} end),
+    _PidL = spawn(fun() -> Pid0 ! {p, PidY} end),
     receive
     after
         infinity -> deadlock

@@ -6,7 +6,6 @@
 scenarios() -> [{?MODULE, inf, dpor}].
 
 manywrite_2() ->
-    Parent = self(),
     ets:new(table, [public, named_table]),
     ets:insert(table, {w, 0}),
     ets:insert(table, {x, 0}),

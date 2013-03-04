@@ -1,6 +1,5 @@
 -module(spawn_monitor_test).
 
--export([spawn_monitor_test/0]).
 -export([scenarios/0]).
 
 scenarios() -> [{?MODULE, inf, dpor}].

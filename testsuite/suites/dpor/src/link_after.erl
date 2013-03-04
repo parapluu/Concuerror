@@ -6,7 +6,6 @@
 scenarios() -> [{?MODULE, inf, dpor}].
 
 link_after() ->
-    P = self(),
     P1 = spawn(fun() ->
                        process_flag(trap_exit, true),
                        receive

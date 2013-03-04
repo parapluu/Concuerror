@@ -9,8 +9,8 @@ independent_receivers() ->
     Parent = self(),
     Rec1 = spawn(fun() -> receiver(Parent, 1) end),
     Rec2 = spawn(fun() -> receiver(Parent, 2) end),
-    Snd1 = spawn(fun() -> sender(Rec1) end),
-    Snd2 = spawn(fun() -> sender(Rec2) end),
+    _Snd1 = spawn(fun() -> sender(Rec1) end),
+    _Snd2 = spawn(fun() -> sender(Rec2) end),
     receive
         _Msg1 ->
             receive

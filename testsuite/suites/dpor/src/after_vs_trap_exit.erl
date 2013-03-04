@@ -7,7 +7,7 @@ scenarios() -> [{?MODULE, inf, dpor}].
 
 after_vs_trap_exit() ->
     P1 = self(),
-    P2 = spawn_link(
+     _ = spawn_link(
            fun() ->
                    process_flag(trap_exit, true),
                    P1 ! ok,

@@ -11,7 +11,7 @@ receive_after() ->
         spawn(fun() ->
                       P ! ok,
                       receive
-                          Sth -> saved
+                          _Sth -> saved
                       after
                           0 -> throw(boom)
                       end

@@ -6,7 +6,6 @@
 scenarios() -> [{?MODULE, inf, dpor}].
 
 send_receive_dependencies() ->
-    P = self(),
     P101 = spawn(fun() ->
                        receive
                            p ->

@@ -9,9 +9,7 @@ trigger_the_after() ->
     Receiver = spawn(fun receive_two/0),
     spawn(sender(Receiver, two)),
     spawn(sender(Receiver, one)),
-    1/0.
-
-    
+    error(error).
 
 receive_two() ->
     receive

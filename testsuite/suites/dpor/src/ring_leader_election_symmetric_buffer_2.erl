@@ -10,16 +10,15 @@ ring_leader_election_symmetric_buffer_2() ->
     ring_leader_election_symmetric_buffer_2(3, [3]).
 
 ring_leader_election_symmetric_buffer_2(N, Leaders) ->
-    C = [Last|Rest] = [spawn(fun() -> channel() end) || _ <- lists:seq(1,N)],
+    [Last|Rest] = [spawn(fun() -> channel() end) || _ <- lists:seq(1,N)],
     Channels = Rest ++ [Last],
     ring_member(1, N, Leaders, Last, Channels).
 
 ring_member(I, N, Leaders, From, [To|Rest]) ->
-    Next =
-        case I =:= N of
-            true -> ok; %% Last member links to original.
-            false -> spawn(fun() -> ring_member(I+1, N, Leaders, To, Rest) end)
-        end,
+    case I =:= N of
+        true -> ok; %% Last member links to original.
+        false -> spawn(fun() -> ring_member(I+1, N, Leaders, To, Rest) end)
+    end,
     Name = my_name(I),
     register(Name, self()),
     InitLeader =
@@ -91,6 +90,3 @@ channel_receive(Name, Chan) ->
     receive
         Ans -> Ans
     end.
-
-channel_destroy(Chan) ->
-    Chan ! exit.

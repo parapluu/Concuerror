@@ -2,7 +2,7 @@ Checked 1 interleaving(s). 1 errors found.
 
 1
 Error type        : Exception
-Details           : {badarith,
+Details           : {error,
                         [{trigger_the_after,trigger_the_after,0,
                              [{file,"trigger_the_after.erl"},{line,12}]}]}
   Process P1 spawns process P1.1

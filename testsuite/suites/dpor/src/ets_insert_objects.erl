@@ -6,7 +6,6 @@
 scenarios() -> [{?MODULE, inf, dpor}].
 
 ets_insert_objects() ->
-    P = self(),
     T = ets:new(table, [public, named_table]),
     P1 = spawn(fun() ->
                        X = ets:lookup(T, x),
