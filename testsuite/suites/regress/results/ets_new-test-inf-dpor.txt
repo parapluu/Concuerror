@@ -1,5 +1,4 @@
 Checked 3 interleaving(s). 1 errors found.
-  Encountered 1 sleep-set blocked trace(s).
 
 1
 Error type        : Exception

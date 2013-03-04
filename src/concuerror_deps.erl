@@ -440,14 +440,9 @@ dependent_ets(Op1, Op2) ->
 
 %%==============================================================================
 
-dependent_ets({info, [T|_]}, {_, [T|_]}, _AllowSwap) ->
-    true;
-
-dependent_ets({info, [_,T|_]}, {_, [_,T|_]}, _AllowSwap) ->
-    true;
-
-dependent_ets({info, _}, {_Any, _}, _AllowSwap) ->
-    false;
+dependent_ets({MajorOp, [Tid1, Name1|_]}, {_, [Tid2, Name2|_]}, _AllowSwap)
+  when MajorOp =:= info; MajorOp =:= delete ->
+    (Tid1 =:= Tid2) orelse (Name1 =:= Name2);
 
 %%==============================================================================
 
@@ -510,19 +505,7 @@ dependent_ets({Insert, _Details1},
 
 %%==============================================================================
 
-dependent_ets({lookup, _Details1},
-              {lookup, _Details2}, ?SYMMETRIC) ->
-    false;
-
-%%==============================================================================
-
-dependent_ets({delete, [T, _]}, {_, [T|_]}, _AllowSwap) ->
-    true;
-
-dependent_ets({delete, [_, Name|_]}, {_, [_, Name|_]}, _AllowSwap) ->
-    true;
-
-dependent_ets({delete, _Details1}, {_, _Details2}, _AllowSwap) ->
+dependent_ets({lookup, _Details1}, {lookup, _Details2}, ?SYMMETRIC) ->
     false;
 
 %%==============================================================================
@@ -534,8 +517,10 @@ dependent_ets({new, [_Tid1, Name, Options1]},
 
 %%==============================================================================
 
-dependent_ets({ new, _Details1},
-              {_Any, _Details2}, _AllowSwap) ->
+dependent_ets({ new, _Details1}, {_Any, _Details2}, ?DONT_ALLOW_SWAP) ->
+    false;
+
+dependent_ets({_Any, _Details1}, { new, _Details2}, ?DONT_ALLOW_SWAP) ->
     false;
 
 %%==============================================================================
