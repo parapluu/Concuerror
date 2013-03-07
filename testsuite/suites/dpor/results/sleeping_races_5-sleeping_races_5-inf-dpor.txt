@@ -1,0 +1,778 @@
+Checked 24 interleaving(s). 24 errors found.
+
+1
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.48.0>,14}]}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_insert {table,[{<0.49.0>,18}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.50.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.50.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.4: ets_insert {table,[{<0.51.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.51.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.52.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+2
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.55.0>,14}]}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_insert {table,[{<0.56.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.57.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.57.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.4: ets_insert {table,[{<0.58.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.58.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.59.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+3
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.62.0>,14}]}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_insert {table,[{<0.63.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.64.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.65.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.64.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.66.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+4
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.69.0>,14}]}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_insert {table,[{<0.70.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.71.0>,22}]}
+  Process P1.4: ets_insert {table,[{<0.72.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.71.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.73.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+5
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.76.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.77.0>,18}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.78.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.78.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4: ets_insert {table,[{<0.79.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.79.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.80.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+6
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.83.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.84.0>,18}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.85.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.85.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.4: ets_insert {table,[{<0.86.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.86.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.87.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+7
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.90.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.91.0>,18}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.92.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.92.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.4: ets_insert {table,[{<0.93.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.93.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{<0.94.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5 exits (normal)
+
+
+8
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.97.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.98.0>,18}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.99.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.99.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.4: ets_insert {table,[{<0.100.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.100.0>,33}]}
+  Process P1.5: ets_insert {table,[{<0.101.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.5 exits (normal)
+
+
+9
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.104.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.105.0>,18}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.106.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.106.0>,24}]}
+  Process P1.4: ets_insert {table,[{<0.107.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.107.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.108.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+10
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.111.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.112.0>,18}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.113.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.113.0>,24}]}
+  Process P1.4: ets_insert {table,[{<0.114.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.114.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{<0.115.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5 exits (normal)
+
+
+11
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.118.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.119.0>,18}]}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.120.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.120.0>,24}]}
+  Process P1.4: ets_insert {table,[{<0.121.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.121.0>,33}]}
+  Process P1.5: ets_insert {table,[{<0.122.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.5 exits (normal)
+
+
+12
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.125.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.126.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.127.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.127.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4: ets_insert {table,[{<0.128.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.128.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.129.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+13
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.132.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.133.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.134.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.134.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.4: ets_insert {table,[{<0.135.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.135.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.136.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+14
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.139.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.140.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.141.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.141.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.4: ets_insert {table,[{<0.142.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.142.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{<0.143.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5 exits (normal)
+
+
+15
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.146.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.147.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.148.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.148.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.4: ets_insert {table,[{<0.149.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.149.0>,33}]}
+  Process P1.5: ets_insert {table,[{<0.150.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.5 exits (normal)
+
+
+16
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.153.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.154.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.155.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.155.0>,24}]}
+  Process P1.4: ets_insert {table,[{<0.156.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.156.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.157.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+17
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.160.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.161.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.162.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.162.0>,24}]}
+  Process P1.4: ets_insert {table,[{<0.163.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.163.0>,33}]}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{<0.164.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5 exits (normal)
+
+
+18
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.167.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.168.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.169.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.169.0>,24}]}
+  Process P1.4: ets_insert {table,[{<0.170.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.170.0>,33}]}
+  Process P1.5: ets_insert {table,[{<0.171.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.5 exits (normal)
+
+
+19
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.174.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.175.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.176.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.177.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.176.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.178.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+20
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.181.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.182.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.183.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.184.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.183.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{<0.185.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5 exits (normal)
+
+
+21
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.188.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.189.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.190.0>,22}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{<0.191.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
+  Process P1.3: ets_insert {table,[{<0.190.0>,24}]}
+  Process P1.5: ets_insert {table,[{<0.192.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5 exits (normal)
+
+
+22
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.195.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.196.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.197.0>,22}]}
+  Process P1.4: ets_insert {table,[{<0.198.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.197.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5: ets_insert {table,[{<0.199.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5 exits (normal)
+
+
+23
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.202.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.203.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.204.0>,22}]}
+  Process P1.4: ets_insert {table,[{<0.205.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.204.0>,24}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{<0.206.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5 exits (normal)
+
+
+24
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{<0.209.0>,14}]}
+  Process P1.2: ets_insert {table,[{<0.210.0>,18}]}
+  Process P1.3: ets_insert {table,[{<0.211.0>,22}]}
+  Process P1.4: ets_insert {table,[{<0.212.0>,28}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3: ets_insert {table,[{<0.211.0>,24}]}
+  Process P1.5: ets_insert {table,[{<0.213.0>,38}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{y,1}]}
+  Process P1.3: ets_lookup {table,y}
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.4 exits (normal)
+  Process P1.5 exits (normal)
+
+
