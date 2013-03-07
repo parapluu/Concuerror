@@ -18,10 +18,7 @@
          new/2, start/0, stop/0, to_string/1, root_lid/0,
          ets_new/1, ref_new/2, lookup_ref_lid/1]).
 
--export([make_backtrack/1, select_one_shallow_except_with_fix/2,
-         deep_intersect_with_fix/2, insert_to_deep_list/2]).
-
--export_type([lid/0, maybe_lid/0, ets_lid/0, ref_lid/0, lid_sets_list/0]).
+-export_type([lid/0, maybe_lid/0, ets_lid/0, ref_lid/0]).
 
 -include("gen.hrl").
 
@@ -208,84 +205,3 @@ to_string({name, Name}) when is_atom(Name)->
     lists:flatten(io_lib:format("named '~p'", [Name]));
 to_string(Lid) ->
     "P" ++ Lid.
-
-%%%----------------------------------------------------------------------
-%%% Functions to manipulate LID sets
-%%%----------------------------------------------------------------------
-
--type lid_sets_list() :: [[lid()]].
-
-%% Converts the initail enabled set to an lid_sets_list().
--spec make_backtrack([lid()]) -> lid_sets_list().
-
-make_backtrack(LidList) ->
-    case LidList =:= [] of
-        true -> [];
-        false -> [[H] || H <- LidList]
-    end.
-
-%% Picks and returns the first lid of the first list of DeepList if it is not
-%% one of those in Exceptions, returning also a changed DeepList. Exceptions has
-%% simply lids(). If a set of lids() has more than one element the first is
-%% picked and the rest are thrown away.
--spec select_one_shallow_except_with_fix(lid_sets_list(), [lid()]) ->
-                                                'none' |
-                                                {'ok', lid(), lid_sets_list()}.
-
-select_one_shallow_except_with_fix(DeepList, Exceptions) ->
-    select_one_shallow_except_with_fix(DeepList, Exceptions, []).
-
-select_one_shallow_except_with_fix([[DH,_|_]|T]     ,      _, Acc) ->
-    {ok, DH, lists:reverse(Acc, [[DH]|T])};
-select_one_shallow_except_with_fix([     [H]|_] = DL,     [], Acc) ->
-    {ok,  H, lists:reverse(Acc, DL)};
-select_one_shallow_except_with_fix([     [H]|T]     , [H|XT], Acc) ->
-    select_one_shallow_except_with_fix(T, XT, [[H]|Acc]);
-select_one_shallow_except_with_fix([     [H]|_] = DL, [X|XT], Acc) ->
-    case H < X of
-        true  -> {ok, H, lists:reverse(Acc, DL)};
-        false -> select_one_shallow_except_with_fix(DL, XT, Acc)
-    end;
-select_one_shallow_except_with_fix(        []     ,      _,   _) ->
-    none.
-
-%% Checks if any of the elements in List is also in one of the sets in
-%% DeepList. Returns a changed DeepList if a matching set is found: the matching
-%% set is intersectioned with the elements of the List.
--spec deep_intersect_with_fix(lid_sets_list(), [lid()]) ->
-                                     'false' |
-                                     {'true', lid_sets_list()}.
-
-deep_intersect_with_fix(DeepList, List) ->
-    deep_intersect_with_fix(DeepList, List, []).
-
-deep_intersect_with_fix([H|T] = DL, L, Acc) ->
-    case H of
-        [Single] ->
-            case ordsets:is_element(Single, L) of
-                true  -> {true, lists:reverse(Acc, DL)};
-                false -> deep_intersect_with_fix(T, L, [H|Acc])
-            end;
-        _Other ->
-            case ordsets:intersection(H, L) of
-                [] -> deep_intersect_with_fix(T, L,  [H|Acc]);
-                Else ->
-                    {true, lists:reverse(Acc, insert_to_deep_list(T, Else))}
-            end
-    end;
-deep_intersect_with_fix([], _, _) -> false.
-
-%% Adds a List to a DeepList with which it did not satisfy
-%% deep_intersect_with_list.
--spec insert_to_deep_list(lid_sets_list(), [lid()]) -> lid_sets_list().
-
-insert_to_deep_list(DeepList, List) ->
-    insert_to_deep_list(DeepList, List, []).
-
-insert_to_deep_list([[DH|_] = H|T], [NH|_] = N, Acc) ->
-    case NH < DH of
-        true  -> lists:reverse(Acc, [N, H|T]);
-        false -> insert_to_deep_list(T, N, [H|Acc])
-    end;
-insert_to_deep_list([], N, Acc) ->
-    lists:reverse([N|Acc]).
