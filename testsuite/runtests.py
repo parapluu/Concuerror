@@ -49,7 +49,7 @@ def runTest(test):
         # And run the test
         p = Process(
             target=runScenario,
-            args=(suite, name, modn, scen[1], scen[2], scen[3], files))
+            args=(suite, name, modn, scen[1], scen[2], scen[3:], files))
         p.start()
         procS.append(p)
     pout.stdout.close()
@@ -60,7 +60,7 @@ def runTest(test):
 
 #---------------------------------------------------------------------
 # Run the specified scenario and print the results
-def runScenario(suite, name, modn, funn, preb, flag, files):
+def runScenario(suite, name, modn, funn, preb, flags, files):
     global concuerror
     global results
     global dirname
@@ -68,37 +68,47 @@ def runScenario(suite, name, modn, funn, preb, flag, files):
     global lock
     global total_tests
     global total_failed
-    if flag == "dpor":
-        conc_flag = "--dpor"
+    if "dpor" in flags:
+        dpor_flag = "--dpor"
         file_ext = "-dpor"
+        dpor_output = "dpor"
     else:
-        conc_flag = ""
+        dpor_flag = ""
         file_ext = ""
+        dpor_output = "full"
     sema.acquire()
     # Run concuerror
-    os.system(("%s --target %s %s --files %s " +
-               "--output %s/%s/results/%s-%s-%s%s.txt --preb %s --quiet %s")
-              % (concuerror, modn, funn, ' '.join(files), results,
-                 suite, name, funn, preb, file_ext, preb, conc_flag))
+    status = os.system(
+        ("%s --target %s %s --files %s --output %s/%s/results/%s-%s-%s%s.txt "
+         "--preb %s --quiet %s > /dev/null 2>&1")
+        % (concuerror, modn, funn, ' '.join(files), results,
+           suite, name, funn, preb, file_ext, preb, dpor_flag))
     # Compare the results
-    orig = ("%s/suites/%s/results/%s-%s-%s%s.txt"
-            % (dirname, suite, name, funn, preb, file_ext))
-    rslt = ("%s/%s/results/%s-%s-%s%s.txt"
-            % (results, suite, name, funn, preb, file_ext))
-    equalRes = equalResults(orig, rslt)
-    sema.release()
+    has_crash = "crash" in flags
+    if status == 0 and not has_crash:
+        orig = ("%s/suites/%s/results/%s-%s-%s%s.txt"
+                % (dirname, suite, name, funn, preb, file_ext))
+        rslt = ("%s/%s/results/%s-%s-%s%s.txt"
+                % (results, suite, name, funn, preb, file_ext))
+        equalRes = equalResults(orig, rslt)
+        sema.release()
+    elif status == 0 and has_crash:
+        equalRes = False
+    else:
+        equalRes = has_crash
     # Print the results
     lock.acquire()
     total_tests.value += 1
     if equalRes:
         # We don't need to keep the results file
-        os.remove(rslt)
+        if not has_crash:
+            os.remove(rslt)
         print "%-10s %-20s %-50s  \033[01;32mok\033[00m" % \
-              (suite, name, "("+funn+",  "+preb+",  "+flag+")")
+              (suite, name, "("+funn+",  "+preb+",  "+dpor_output+")")
     else:
         total_failed.value += 1
         print "%-10s %-20s %-50s  \033[01;31mfailed\033[00m" % \
-              (suite, name, "("+funn+",  "+preb+",  "+flag+")")
+              (suite, name, "("+funn+",  "+preb+",  "+dpor_output+")")
     lock.release()
 
 

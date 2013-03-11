@@ -27,11 +27,6 @@ extractOne(File) ->
     %% Put module name to it
     FunMap =
         fun(Scenario) ->
-                case Scenario of
-                    {Fun, Preb} ->
-                        {Module, Fun, Preb, full};
-                    {Fun, Preb, Flag} when Flag=:=full; Flag=:=dpor ->
-                        {Module, Fun, Preb, Flag}
-                end
+                list_to_tuple([Module | tuple_to_list(Scenario)])
         end,
     lists:map(FunMap, Scenarios).
