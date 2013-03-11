@@ -42,6 +42,7 @@
 -define(NT_INSTR_BIFS, '_._instr_bifs').
 -define(NT_INSTR_IGNORED, '_._instr_ignored').
 -define(NT_INSTR, '_._instr_table').
+-define(NT_OPTIONS, '_._conc_options').
 
 %% Module containing replacement functions.
 -define(REP_MOD, concuerror_rep).

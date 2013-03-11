@@ -1300,7 +1300,10 @@ wait_poll_or_continue(Msg) ->
 
 replace_messages(Lid, VC) ->
     %% Let "black" processes send any remaining messages.
-    wait_black_messages(),
+    case ets:member(?NT_OPTIONS, 'wait_messages') of
+        true  -> wait_black_messages();
+        false -> ok
+    end,
     Fun =
         fun(Pid, MsgAcc) ->
             Pid ! ?VECTOR_MSG(Lid, VC),
@@ -1332,7 +1335,7 @@ wait_black_messages() ->
 		    _ -> false
 		end
         end,
-    concuerror_util:wait_until(Check, 1),
+    concuerror_util:wait_until(Check, 2),
     process_flag(priority, Priority),
     ok.
 

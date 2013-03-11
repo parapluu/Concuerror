@@ -57,6 +57,7 @@
     | {'keep_temp'}
     | {'show_output'}
     | {'fail_uninstrumented'}
+    | {'wait_messages'}
     | {'ignore',  [module()]}
     | {'help'}.
 
@@ -351,6 +352,15 @@ parse([{Opt, Param} | Args], Options) ->
                 _Other -> wrongArgument('number', Opt)
             end;
 
+        "-wait-messages" ->
+            case Param of
+                [] ->
+                    NewOptions = lists:keystore('wait_messages', 1,
+                        Options, {'wait_messages'}),
+                    parse(Args, NewOptions);
+                _Ohter -> wrongArgument('number', Opt)
+            end;
+
         "-help" ->
             help(),
             erlang:halt();
@@ -436,6 +446,7 @@ help() ->
      "  --fail-uninstrumented   Fail if there are uninstrumented modules\n"
      "  --ignore    modules     Don't rename this modules\n"
      "  --show-output           Allow program under test to print to stdout\n"
+     "  --wait-messages         Wait for uninstrumented messages to arive\n"
      "  --gui                   Run concuerror with graphics\n"
      "  --dpor                  Runs the experimental optimal DPOR version\n"
      "  --dpor_flanagan         Runs an experimental reference DPOR version\n"
@@ -465,22 +476,30 @@ analyze(Options) ->
     Res.
 
 analyzeAux(Options) ->
+    %% Create table to save options
+    ?NT_OPTIONS = ets:new(?NT_OPTIONS, [named_table, public, set]),
+    ets:insert(?NT_OPTIONS, Options),
     %% Get target
-    case lists:keyfind(target, 1, Options) of
-        false ->
-            Msg1 = "no target specified",
-            {'error', 'arguments', Msg1};
-        {target, Target} ->
-            %% Get input files
-            case lists:keyfind(files, 1, Options) of
-                false ->
-                    Msg2 = "no input files specified",
-                    {'error', 'arguments', Msg2};
-                {files, Files} ->
-                    %% Start the analysis
-                    concuerror_sched:analyze(Target, Files, Options)
-            end
-    end.
+    Result =
+        case lists:keyfind(target, 1, Options) of
+            false ->
+                Msg1 = "no target specified",
+                {'error', 'arguments', Msg1};
+            {target, Target} ->
+                %% Get input files
+                case lists:keyfind(files, 1, Options) of
+                    false ->
+                        Msg2 = "no input files specified",
+                        {'error', 'arguments', Msg2};
+                    {files, Files} ->
+                        %% Start the analysis
+                        concuerror_sched:analyze(Target, Files, Options)
+                end
+        end,
+    %% Remove options table
+    ets:delete(?NT_OPTIONS),
+    %% Return result
+    Result.
 
 
 %%%----------------------------------------------------------------------
