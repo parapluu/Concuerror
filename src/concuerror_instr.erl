@@ -14,7 +14,8 @@
 
 -module(concuerror_instr).
 -export([delete_and_purge/1, instrument_and_compile/2, load/1,
-         new_module_name/1, check_module_name/3, old_module_name/1]).
+         new_module_name/1, check_module_name/3, old_module_name/1,
+         delete_temp_files/1]).
 
 -export_type([macros/0]).
 
@@ -47,25 +48,12 @@
 %% ---------------------------
 %% Delete and purge all modules.
 -spec delete_and_purge(concuerror:options()) -> 'ok'.
-delete_and_purge(Options) ->
+delete_and_purge(_Options) ->
     %% Unload and purge modules.
     ModsToPurge =
         [check_module_name(IM, none, 0) || {IM}<-ets:tab2list(?NT_INSTR_MODS)],
     Fun = fun (M) -> code:purge(M), code:delete(M) end,
     lists:foreach(Fun, ModsToPurge),
-    %% Delete temp directory (ignore errors).
-    case lists:keymember('keep_temp', 1, Options) of
-        true ->
-            %% Retain temporary files.
-            ok;
-        false ->
-            TmpDir = ets:lookup_element(?NT_INSTR, ?INSTR_TEMP_DIR, 2),
-            {ok, TmpFiles} = file:list_dir(TmpDir),
-            DelFile = fun(F) -> _ = file:delete(filename:join(TmpDir, F)) end,
-            lists:foreach(DelFile, TmpFiles),
-            _ = file:del_dir(TmpDir),
-            ok
-    end,
     %% Delete ?NT_INSTR_MODS, ?NT_INSTR_BIFS,
     %% ?NT_INSTR_IGNORED and ?NT_INSTR tables.
     ets:delete(?NT_INSTR_MODS),
@@ -170,6 +158,7 @@ instrument_and_compile(Files, Options) ->
                         Defines, Verbosity)
                 end,
             MFBs = concuerror_util:pmap(InstrOne, Files),
+            delete_temp_files(Options),
             case lists:member('error', MFBs) of
                 true  ->
                     concuerror_log:log(0, "\nInstrumenting files... failed\n"),
@@ -251,6 +240,23 @@ load_one({Module, File, Binary}) ->
         {error, Error} ->
             concuerror_log:log(0, "\nerror\n~p\n", [Error]),
             error
+    end.
+
+%% ---------------------------
+-spec delete_temp_files(concuerror:options()) -> 'ok'.
+delete_temp_files(Options) ->
+    %% Delete temp directory (ignore errors).
+    case lists:keymember('keep_temp', 1, Options) of
+        true ->
+            %% Retain temporary files.
+            ok;
+        false ->
+            TmpDir = ets:lookup_element(?NT_INSTR, ?INSTR_TEMP_DIR, 2),
+            {ok, TmpFiles} = file:list_dir(TmpDir),
+            DelFile = fun(F) -> _ = file:delete(filename:join(TmpDir, F)) end,
+            lists:foreach(DelFile, TmpFiles),
+            _ = file:del_dir(TmpDir),
+            ok
     end.
 
 %% ---------------------------
