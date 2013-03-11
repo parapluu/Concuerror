@@ -33,6 +33,7 @@
 
 -define(INFINITY, infinity).
 -define(NO_ERROR, undef).
+-define(TIME_LIMIT, 20*1000). % (in ms)
 
 %%%----------------------------------------------------------------------
 %%% Records
@@ -162,9 +163,13 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
 interleave(Target, PreBound, Dpor, Options) ->
     Self = self(),
     Fun = fun() -> interleave_aux(Target, PreBound, Self, Dpor, Options) end,
-    spawn_link(Fun),
+    process_flag(trap_exit, true),
+    Backend = spawn_link(Fun),
     receive
-        {interleave_result, Result} -> Result
+        {interleave_result, Result} -> Result;
+        {'EXIT', Backend, Reason} ->
+            Msg = io_lib:format("Backend exited with reason:\n ~p\n", [Reason]),
+            concuerror_log:internal(Msg)
     end.
 
 interleave_aux(Target, PreBound, Parent, Dpor, Options) ->
@@ -358,14 +363,17 @@ replay_trace_aux([TraceState|Rest], Acc) ->
     %% ?debug(".\n"),
     replay_trace_aux(Rest, UpdAcc).
 
-wait_next(Lid, {exit, {normal, _Info}}) ->
+wait_next(Lid, {exit, {normal, _Info}} = Arg2) ->
     Pid = concuerror_lid:get_pid(Lid),
     link(Pid),
     continue(Lid),
     receive
         {'EXIT', Pid, normal} -> {Lid, exited, []}
+    after
+        ?TIME_LIMIT -> error(time_limit, [Lid, Arg2])
     end;
 wait_next(Lid, Plan) ->
+    DebugArgs = [Lid, Plan],
     continue(Lid),
     Replace =
         case Plan of
@@ -388,6 +396,8 @@ wait_next(Lid, Plan) ->
                              Pid ->
                                  Msg#sched{misc = concuerror_lid:new(Pid, Lid)}
                          end
+                 after
+                     ?TIME_LIMIT -> error(time_limit, DebugArgs)
                  end};
             {ets, {new, _Info}} ->
                 {true,
@@ -396,6 +406,8 @@ wait_next(Lid, Plan) ->
                             type = prev} = Msg ->
                          NewMisc = {new, [concuerror_lid:ets_new(Tid)|Rest]},
                          Msg#sched{misc = NewMisc}
+                 after
+                     ?TIME_LIMIT -> error(time_limit, DebugArgs)
                  end};
             {monitor, _Info} ->
                 {true,
@@ -404,6 +416,8 @@ wait_next(Lid, Plan) ->
                             type = prev} = Msg ->
                          NewMisc = {TLid, concuerror_lid:ref_new(TLid, Ref)},
                          Msg#sched{misc = NewMisc}
+                 after
+                     ?TIME_LIMIT -> error(time_limit, DebugArgs)
                  end};
             _Other ->
                 false
@@ -421,6 +435,8 @@ get_next(Lid) ->
     receive
         #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
             {Lid, {Type, Misc}, []}
+    after
+        ?TIME_LIMIT -> error(time_limit, [Lid])
     end.
 
 add_all_backtracks(#dpor_state{preemption_bound = Bound, trace = Trace,
@@ -795,7 +811,7 @@ handle_instruction(Transition, TraceTop) ->
     {NewTransition, Extra} = handle_instruction_op(Transition),
     handle_instruction_al(NewTransition, TraceTop, Extra).
 
-handle_instruction_op({Lid, {Spawn, _Info}, Msgs})
+handle_instruction_op({Lid, {Spawn, _Info}, Msgs} = DebugArg)
   when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
        Spawn =:= spawn_opt ->
     ParentLid = Lid,
@@ -805,6 +821,8 @@ handle_instruction_op({Lid, {Spawn, _Info}, Msgs})
             #sched{msg = Spawn, lid = ParentLid,
                    misc = Info0, type = prev} ->
                 Info0
+        after
+            ?TIME_LIMIT -> error(time_limit, [DebugArg])
         end,
     ChildLid =
         case Info of
@@ -813,14 +831,16 @@ handle_instruction_op({Lid, {Spawn, _Info}, Msgs})
         end,
     ChildNextInstr = wait_next(ChildLid, init),
     {{Lid, {Spawn, Info}, Msgs}, ChildNextInstr};
-handle_instruction_op({Lid, {ets, {Updatable, _Info}}, Msgs})
+handle_instruction_op({Lid, {ets, {Updatable, _Info}}, Msgs} = DebugArg)
   when Updatable =:= new; Updatable =:= insert_new; Updatable =:= insert ->
     receive
         %% This is the replaced message
         #sched{msg = ets, lid = Lid, misc = {Updatable, Info}, type = prev} ->
             {{Lid, {ets, {Updatable, Info}}, Msgs}, {}}
+    after
+        ?TIME_LIMIT -> error(time_limit, [DebugArg])
     end;
-handle_instruction_op({Lid, {'receive', Tag}, Msgs}) ->
+handle_instruction_op({Lid, {'receive', Tag}, Msgs} = DebugArg) ->
     NewTag =
         case Tag of
             {T, _, _} -> T;
@@ -830,19 +850,25 @@ handle_instruction_op({Lid, {'receive', Tag}, Msgs}) ->
         #sched{msg = 'receive', lid = Lid,
                misc = {From, CV, Msg}, type = prev} ->
             {{Lid, {'receive', {NewTag, From, Msg}}, Msgs}, CV}
+    after
+        ?TIME_LIMIT -> error(time_limit, [DebugArg])
     end;
-handle_instruction_op({Lid, {'after', {Fun, _OldLinks}}, Msgs}) ->
+handle_instruction_op({Lid, {'after', {Fun, _OldLinks}}, Msgs} = DebugArg) ->
     receive
         #sched{msg = 'after', lid = Lid,
                misc = Links, type = prev} ->
             {{Lid, {'after', {Fun, Links}}, Msgs}, {}}
+    after
+        ?TIME_LIMIT -> error(time_limit, [DebugArg])
     end;
-handle_instruction_op({Lid, {Updatable, _Info}, Msgs})
+handle_instruction_op({Lid, {Updatable, _Info}, Msgs} = DebugArg)
   when Updatable =:= exit; Updatable =:= send; Updatable =:= whereis;
        Updatable =:= monitor; Updatable =:= process_flag ->
     receive
         #sched{msg = Updatable, lid = Lid, misc = Info, type = prev} ->
             {{Lid, {Updatable, Info}, Msgs}, {}}
+    after
+        ?TIME_LIMIT -> error(time_limit, [DebugArg])
     end;
 handle_instruction_op(Instr) ->
     {Instr, {}}.
@@ -1284,6 +1310,8 @@ replace_messages(Lid, VC) ->
                         true -> MsgAcc;
                         false -> [{PidsLid, MsgInfo}|MsgAcc]
                     end
+            after
+                ?TIME_LIMIT -> error(time_limit, [Pid, MsgAcc])
             end
         end,
     concuerror_lid:fold_pids(Fun, []).
