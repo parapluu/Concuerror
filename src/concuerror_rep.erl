@@ -48,6 +48,8 @@
 
 -export([rep_eunit/1]).
 
+-export([debug_print/1, debug_print/2, debug_apply/3]).
+
 -include("gen.hrl").
 
 %%%----------------------------------------------------------------------
@@ -785,3 +787,27 @@ rep_eunit(Module) ->
     rep_apply(eunit, start, []),
     rep_apply(eunit, test, [[{module, ReModule}], [no_tty]]),
     rep_apply(eunit, stop, []).
+
+
+%%%----------------------------------------------------------------------
+%%% For debugging purposes
+%%% This functions can be executed from inside
+%%% instrumented code and will behave as expected
+%%% by bypassing Concuerror's instrumenter and scheduler.
+%%%----------------------------------------------------------------------
+
+-spec debug_print(io:format()) -> ok.
+debug_print(Format) ->
+    debug_print(Format, []).
+
+-spec debug_print(io:format(), [term()]) -> ok.
+debug_print(Format, Data) ->
+    G = group_leader(),
+    InitPid = whereis(init),
+    group_leader(InitPid, self()),
+    io:format(Format, Data),
+    group_leader(G, self()).
+
+-spec debug_apply(module(), atom(), [term()]) -> term().
+debug_apply(Mod, Fun, Args) ->
+    apply(Mod, Fun, Args).
