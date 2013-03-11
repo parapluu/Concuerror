@@ -796,11 +796,11 @@ rep_eunit(Module) ->
 %%% by bypassing Concuerror's instrumenter and scheduler.
 %%%----------------------------------------------------------------------
 
--spec debug_print(io:format()) -> ok.
+-spec debug_print(io:format()) -> true.
 debug_print(Format) ->
     debug_print(Format, []).
 
--spec debug_print(io:format(), [term()]) -> ok.
+-spec debug_print(io:format(), [term()]) -> true.
 debug_print(Format, Data) ->
     G = group_leader(),
     InitPid = whereis(init),
