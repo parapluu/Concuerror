@@ -814,7 +814,6 @@ find_pid(Other) ->
 check_unknown_process() ->
     %% Check if an unknown (not registered)
     %% process is trying to run instrumented code.
-    debug_print("Here i am\n"),
     case ?LID_FROM_PID(self()) of
         not_found ->
             Trace = (catch error('Unregistered')),
