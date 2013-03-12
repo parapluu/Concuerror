@@ -48,16 +48,15 @@
 %% @spec internal(string()) -> no_return()
 %% @doc: Print an internal error message and halt.
 -spec internal(string()) -> no_return().
-
 internal(String) ->
-    io:format("(Internal) " ++ String),
-    halt(?RET_INTERNAL_ERROR).
+    internal(String, []).
 
 %% @spec internal(string(), [term()]) -> no_return()
 %% @doc: Like `internal/1', but prints a formatted message using arguments.
 -spec internal(string(), [term()]) -> no_return().
-
 internal(String, Args) ->
+    InitPid = whereis(init),
+    group_leader(InitPid, self()),
     io:format("(Internal) " ++ String, Args),
     halt(?RET_INTERNAL_ERROR).
 

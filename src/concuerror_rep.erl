@@ -106,6 +106,7 @@
 %% Handle Mod:Fun(Args) calls.
 -spec rep_var(module(), atom(), [term()]) -> term().
 rep_var(Mod, Fun, Args) ->
+    check_unknown_process(),
     LenArgs = length(Args),
     Key = {Mod, Fun, LenArgs},
     case lists:keyfind(Key, 1, ?INSTR_MOD_FUN) of
@@ -128,6 +129,7 @@ rep_apply(Mod, Fun, Args) ->
 %% Just yield before demonitoring.
 -spec rep_demonitor(reference()) -> 'true'.
 rep_demonitor(Ref) ->
+    check_unknown_process(),
     concuerror_sched:notify(demonitor, concuerror_lid:lookup_ref_lid(Ref)),
     demonitor(Ref).
 
@@ -137,6 +139,7 @@ rep_demonitor(Ref) ->
 %% Just yield before demonitoring.
 -spec rep_demonitor(reference(), ['flush' | 'info']) -> 'true'.
 rep_demonitor(Ref, Opts) ->
+    check_unknown_process(),
     concuerror_sched:notify(demonitor, concuerror_lid:lookup_ref_lid(Ref)),
     case lists:member(flush, Opts) of
         true ->
@@ -157,6 +160,7 @@ rep_demonitor(Ref, Opts) ->
 %% Just send halt message and yield.
 -spec rep_halt() -> no_return().
 rep_halt() ->
+    check_unknown_process(),
     concuerror_sched:notify(halt, empty).
 
 %% @spec: rep_halt() -> no_return()
@@ -165,12 +169,14 @@ rep_halt() ->
 %% Just send halt message and yield.
 -spec rep_halt(non_neg_integer() | string()) -> no_return().
 rep_halt(Status) ->
+    check_unknown_process(),
     concuerror_sched:notify(halt, Status).
 
 %% @spec: rep_is_process_alive(pid()) -> boolean()
 %% @doc: Replacement for `is_process_alive/1'.
 -spec rep_is_process_alive(pid()) -> boolean().
 rep_is_process_alive(Pid) ->
+    check_unknown_process(),
     case ?LID_FROM_PID(Pid) of
         not_found -> ok;
         PLid -> concuerror_sched:notify(is_process_alive, PLid)
@@ -183,6 +189,7 @@ rep_is_process_alive(Pid) ->
 %% Just yield before linking.
 -spec rep_link(pid() | port()) -> 'true'.
 rep_link(Pid) ->
+    check_unknown_process(),
     case ?LID_FROM_PID(Pid) of
         not_found -> ok;
         PLid -> concuerror_sched:notify(link, PLid)
@@ -197,6 +204,7 @@ rep_link(Pid) ->
 -spec rep_monitor('process', pid() | {atom(), node()} | atom()) ->
             reference().
 rep_monitor(Type, Item) ->
+    check_unknown_process(),
     case ?LID_FROM_PID(find_pid(Item)) of
         not_found -> monitor(Type, Item);
         Lid ->
@@ -232,6 +240,7 @@ rep_monitor(Type, Item) ->
                       ('save_calls', non_neg_integer()) -> non_neg_integer();
                       ('sensitive', boolean()) -> boolean().
 rep_process_flag(trap_exit = Flag, Value) ->
+    check_unknown_process(),
     {trap_exit, OldValue} = process_info(self(), trap_exit),
     case Value =:= OldValue of
         true -> ok;
@@ -243,6 +252,7 @@ rep_process_flag(trap_exit = Flag, Value) ->
     end,
     process_flag(Flag, Value);
 rep_process_flag(Flag, Value) ->
+    check_unknown_process(),
     process_flag(Flag, Value).
 
 -spec find_my_links() -> [concuerror_lid:lid()].
@@ -262,6 +272,7 @@ find_my_links() ->
 -spec rep_receive(fun((term()) -> 'block' | 'continue'),
                   integer() | 'infinity') -> 'ok'.
 rep_receive(Fun, HasTimeout) ->
+    check_unknown_process(),
     case ?LID_FROM_PID(self()) of
         not_found ->
             %% XXX: Uninstrumented process enters instrumented receive
@@ -332,6 +343,7 @@ rep_receive_block() ->
 %% Called first thing after an `after' clause has been entered.
 -spec rep_after_notify() -> 'ok'.
 rep_after_notify() ->
+    check_unknown_process(),
     concuerror_sched:notify('after', find_trappable_links(self()), prev),
     ok.
 
@@ -342,6 +354,7 @@ rep_after_notify() ->
 %% about the message received and the sender.
 -spec rep_receive_notify(pid(), dict(), term()) -> 'ok'.
 rep_receive_notify(From, CV, Msg) ->
+    check_unknown_process(),
     concuerror_sched:notify('receive', {From, CV, Msg}, prev),
     ok.
 
@@ -351,6 +364,7 @@ rep_receive_notify(From, CV, Msg) ->
 %% Similar to rep_receive/2, but used to handle 'EXIT' and 'DOWN' messages.
 -spec rep_receive_notify(term()) -> no_return().
 rep_receive_notify(_Msg) ->
+    check_unknown_process(),
     %% XXX: Received uninstrumented message
     ok.
 
@@ -360,6 +374,7 @@ rep_receive_notify(_Msg) ->
 %% Just yield after registering.
 -spec rep_register(atom(), pid() | port()) -> 'true'.
 rep_register(RegName, P) ->
+    check_unknown_process(),
     case ?LID_FROM_PID(P) of
         not_found -> ok;
         PLid ->
@@ -375,6 +390,7 @@ rep_register(RegName, P) ->
 %% and continue without yielding.
 -spec rep_send(dest(), term()) -> term().
 rep_send(Dest, Msg) ->
+    check_unknown_process(),
     send_center(Dest, Msg),
     Dest ! Msg.
 
@@ -386,6 +402,7 @@ rep_send(Dest, Msg) ->
 -spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
                       'ok' | 'nosuspend' | 'noconnect'.
 rep_send(Dest, Msg, Opt) ->
+    check_unknown_process(),
     send_center(Dest, Msg),
     erlang:send(Dest, Msg, Opt).
 
@@ -413,6 +430,7 @@ rep_spawn(Fun) ->
     spawn_center(spawn, Fun).
 
 spawn_center(Kind, Fun) ->
+    check_unknown_process(),
     Spawner =
         case Kind of
             spawn -> fun spawn/1;
@@ -567,6 +585,7 @@ rep_spawn_monitor(Module, Function, Args) ->
                      {'min_bin_vheap_size', integer()}]) ->
                            pid() | {pid(), reference()}.
 rep_spawn_opt(Fun, Opt) ->
+    check_unknown_process(),
     case ?LID_FROM_PID(self()) of
         not_found -> spawn_opt(Fun, Opt);
         _Lid ->
@@ -608,6 +627,7 @@ rep_spawn_opt(Module, Function, Args, Opt) ->
 %% Just yield before unlinking.
 -spec rep_unlink(pid() | port()) -> 'true'.
 rep_unlink(Pid) ->
+    check_unknown_process(),
     case ?LID_FROM_PID(Pid) of
         not_found -> ok;
         PLid -> concuerror_sched:notify(unlink, PLid)
@@ -620,6 +640,7 @@ rep_unlink(Pid) ->
 %% Just yield before unregistering.
 -spec rep_unregister(atom()) -> 'true'.
 rep_unregister(RegName) ->
+    check_unknown_process(),
     concuerror_sched:notify(unregister, RegName),
     unregister(RegName).
 
@@ -629,6 +650,7 @@ rep_unregister(RegName) ->
 %% Just yield before calling whereis/1.
 -spec rep_whereis(atom()) -> pid() | port() | 'undefined'.
 rep_whereis(RegName) ->
+    check_unknown_process(),
     concuerror_sched:notify(whereis, {RegName, unknown}),
     R = whereis(RegName),
     Value =
@@ -652,6 +674,7 @@ rep_whereis(RegName) ->
 
 -spec rep_ets_new(atom(), [ets_new_option()]) -> ets:tab().
 rep_ets_new(Name, Options) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets, {new, [unknown, Name, Options]}),
     try
         Tid = ets:new(Name, Options),
@@ -669,10 +692,12 @@ rep_ets_new(Name, Options) ->
 
 -spec rep_ets_insert(ets:tab(), tuple() | [tuple()]) -> true.
 rep_ets_insert(Tab, Obj) ->
+    check_unknown_process(),
     ets_insert_center(insert, Tab, Obj).
 
 -spec rep_ets_insert_new(ets:tab(), tuple()|[tuple()]) -> boolean().
 rep_ets_insert_new(Tab, Obj) ->
+    check_unknown_process(),
     ets_insert_center(insert_new, Tab, Obj).
 
 ets_insert_center(Type, Tab, Obj) ->
@@ -706,17 +731,20 @@ ets_insert_center(Type, Tab, Obj) ->
 
 -spec rep_ets_lookup(ets:tab(), term()) -> [tuple()].
 rep_ets_lookup(Tab, Key) ->
+    check_unknown_process(),
     Lid = ?LID_FROM_PID(Tab),
     concuerror_sched:notify(ets, {lookup, [Lid, Tab, Key]}),
     ets:lookup(Tab, Key).
 
 -spec rep_ets_delete(ets:tab()) -> true.
 rep_ets_delete(Tab) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab]}),
     ets:delete(Tab).
 
 -spec rep_ets_delete(ets:tab(), term()) -> true.
 rep_ets_delete(Tab, Key) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab, Key]}),
     ets:delete(Tab, Key).
 
@@ -724,18 +752,21 @@ rep_ets_delete(Tab, Key) ->
 -type match_pattern() :: atom() | tuple().
 -spec rep_ets_select_delete(ets:tab(), match_spec()) -> non_neg_integer().
 rep_ets_select_delete(Tab, MatchSpec) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets,
         {select_delete, [?LID_FROM_PID(Tab), Tab, MatchSpec]}),
     ets:select_delete(Tab, MatchSpec).
 
 -spec rep_ets_match_delete(ets:tab(), match_pattern()) -> true.
 rep_ets_match_delete(Tab, Pattern) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets,
         {match_delete, [?LID_FROM_PID(Tab), Tab, Pattern]}),
     ets:match_delete(Tab, Pattern).
 
 -spec rep_ets_match_object(ets:tab(), tuple()) -> [tuple()].
 rep_ets_match_object(Tab, Pattern) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets,
         {match_object, [?LID_FROM_PID(Tab), Tab, Pattern]}),
     ets:match_object(Tab, Pattern).
@@ -743,24 +774,28 @@ rep_ets_match_object(Tab, Pattern) ->
 -spec rep_ets_match_object(ets:tab(), tuple(), integer()) ->
     {[[term()]],term()} | '$end_of_table'.
 rep_ets_match_object(Tab, Pattern, Limit) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets,
         {match_object, [?LID_FROM_PID(Tab), Tab, Pattern, Limit]}),
     ets:match_object(Tab, Pattern, Limit).
 
 -spec rep_ets_foldl(fun((term(), term()) -> term()), term(), ets:tab()) -> term().
 rep_ets_foldl(Function, Acc, Tab) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets,
         {foldl, [?LID_FROM_PID(Tab), Function, Acc, Tab]}),
     ets:foldl(Function, Acc, Tab).
 
 -spec rep_ets_info(ets:tab()) -> [{atom(), term()}] | undefined.
 rep_ets_info(Tab) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets,
         {info, [?LID_FROM_PID(Tab), Tab]}),
     ets:info(Tab).
 
 -spec rep_ets_info(ets:tab(), atom()) -> term() | undefined.
 rep_ets_info(Tab, Item) ->
+    check_unknown_process(),
     concuerror_sched:notify(ets,
         {info, [?LID_FROM_PID(Tab), Tab, Item]}),
     ets:info(Tab, Item).
@@ -775,6 +810,18 @@ find_pid(Atom) when is_atom(Atom) ->
     whereis(Atom);
 find_pid(Other) ->
     Other.
+
+check_unknown_process() ->
+    %% Check if an unknown (not registered)
+    %% process is trying to run instrumented code.
+    debug_print("Here i am\n"),
+    case ?LID_FROM_PID(self()) of
+        not_found ->
+            Trace = (catch error('Unregistered')),
+            concuerror_log:internal("Unregistered process is trying "
+                "to run instrumented code\n~p\n", [Trace]);
+        _Else -> ok
+    end.
 
 
 %%%----------------------------------------------------------------------
