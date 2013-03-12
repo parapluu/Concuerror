@@ -64,16 +64,23 @@ delete_and_purge(_Options) ->
 
 %% ---------------------------
 %% Rename a module for the instrumentation.
-%% 1. Don't rename `ignored' modules
-%% 2. Don't rename `BIFS'.
-%% 3. If module is instrumented rename it.
-%% 4. If we are in `fail_uninstrumented' mode rename all modules.
+%% 1. Don't rename `concuerror_*' modules
+%% 2. Don't rename `ignored' modules
+%% 3. Don't rename `BIFS'.
+%% 4. If module is instrumented rename it.
+%% 5. If we are in `fail_uninstrumented' mode rename all modules.
 -spec check_module_name(module() | {module(),term()}, atom(), non_neg_integer())
                         -> module() | {module(), term()}.
 check_module_name({Module, Term}, Function, Arity) ->
     {check_module_name(Module, Function, Arity), Term};
 check_module_name(Module, Function, Arity) ->
-    Rename = (not ets:member(?NT_INSTR_IGNORED, Module))
+    Conc_Module =
+        case atom_to_list(Module) of
+            ("concuerror_" ++ _Rest) -> true;
+            _Other -> false
+        end,
+    Rename = (not Conc_Module)
+        andalso (not ets:member(?NT_INSTR_IGNORED, Module))
         andalso (not ets:member(?NT_INSTR_BIFS, {Module, Function, Arity}))
         andalso (ets:member(?NT_INSTR_MODS, Module)
             orelse ets:lookup_element(?NT_INSTR, ?FAIL_BB, 2)),
@@ -144,7 +151,7 @@ instrument_and_compile(Files, Options) ->
     PredefBifs = [{PBif} || PBif <- ?PREDEF_BIFS],
     ets:insert(?NT_INSTR_BIFS, PredefBifs),
     ?NT_INSTR_IGNORED = ets:new(?NT_INSTR_IGNORED, EtsNewOpts),
-    ets:insert(?NT_INSTR_IGNORED, [{erlang},{ets},{?REP_MOD}] ++ Ignores),
+    ets:insert(?NT_INSTR_IGNORED, [{erlang},{ets}] ++ Ignores),
     ?NT_INSTR = ets:new(?NT_INSTR, EtsNewOpts),
     ets:insert(?NT_INSTR, {?FAIL_BB, FailBB}),
     %% Create a temp dir to save renamed code
