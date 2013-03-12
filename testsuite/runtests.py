@@ -91,18 +91,20 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         rslt = ("%s/%s/results/%s-%s-%s%s.txt"
                 % (results, suite, name, funn, preb, file_ext))
         equalRes = equalResults(orig, rslt)
-        sema.release()
     elif status == 0 and has_crash:
         equalRes = False
     else:
         equalRes = has_crash
+    sema.release()
     # Print the results
     lock.acquire()
     total_tests.value += 1
     if equalRes:
         # We don't need to keep the results file
-        if not has_crash:
+        try:
             os.remove(rslt)
+        except:
+            pass
         print "%-10s %-20s %-50s  \033[01;32mok\033[00m" % \
               (suite, name, "("+funn+",  "+preb+",  "+dpor_output+")")
     else:
