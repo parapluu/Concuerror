@@ -626,6 +626,7 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                 NewNexts = dict:store(Lid, Next, Nexts),
     Expected = dict:fetch(Lid, Nexts),
     NewNexts = dict:store(Lid, Next, Nexts),
+    ClockVector = lookup_clock(Lid, ClockMap),
     MaybeNotPollable = ordsets:del_element(Lid, Pollable),
     {NewPollable, NewEnabled, NewBlocked} =
         update_lid_enabled(Lid, Next, MaybeNotPollable, Enabled, Blocked),
@@ -633,8 +634,6 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
         case Replaying of
             false ->
                 NewN = I+1,
-                ClockVector = lookup_clock(Lid, ClockMap),
-                ?debug("Happened before: ~p\n", [orddict:to_list(ClockVector)]),
                 BaseClockVector = orddict:store(Lid, NewN, ClockVector),
                 LidsClockVector =
                     recent_dependency_cv(Selected, BaseClockVector, Trace),
@@ -671,6 +670,16 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
     FinalTraceTop =
         case Replaying of
             false ->
+                ?debug("Happened before: ~p\n",
+                       [orddict:to_list(
+                          begin
+                              CMM = NewTraceTop#trace_state.clock_map,
+                              CCC = lookup_clock(Lid, CMM),
+                              case lookup_clock_value(Lid, ClockVector) of
+                                  0 -> orddict:erase(Lid, CCC);
+                                  QQ -> orddict:store(Lid, QQ, CCC)
+                              end
+                          end)]),
                 ?debug("Selected: ~P\n",
                        [PossiblyRewrittenSelected, ?DEBUG_DEPTH]),
                 NewSleepSet =
