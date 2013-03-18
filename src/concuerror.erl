@@ -446,7 +446,7 @@ help() ->
      "  --fail-uninstrumented   Fail if there are uninstrumented modules\n"
      "  --ignore    modules     Don't rename this modules\n"
      "  --show-output           Allow program under test to print to stdout\n"
-     "  --wait-messages         Wait for uninstrumented messages to arive\n"
+     "  --wait-messages         Wait for uninstrumented messages to arrive\n"
      "  --gui                   Run concuerror with graphics\n"
      "  --dpor                  Runs the experimental optimal DPOR version\n"
      "  --dpor_flanagan         Runs an experimental reference DPOR version\n"
