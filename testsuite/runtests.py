@@ -6,7 +6,7 @@ import sys
 import glob
 import subprocess
 from ctypes import c_int
-from multiprocessing import Process, Lock, Value, BoundedSemaphore
+from multiprocessing import Process, Lock, Value, BoundedSemaphore, cpu_count
 
 
 #---------------------------------------------------------------------
@@ -175,10 +175,13 @@ if len(sys.argv) > 1:
 else:
     tests = glob.glob(dirname + "/suites/*/src/*")
 
-# How many threads we want (default 4)
+# How many threads we want (default, number of CPUs in the system)
 threads = os.getenv("THREADS", "")
 if threads == "":
-    threads = "4"
+    try:
+        threads = str(cpu_count())
+    except:
+        threads = "4"
 
 # Print header
 print "Concuerror's Testsuite (%d threads)\n" % int(threads)
