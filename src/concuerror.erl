@@ -58,6 +58,7 @@
     | {'show_output'}
     | {'fail_uninstrumented'}
     | {'wait_messages'}
+    | {'ignore_timeout', pos_integer()}
     | {'ignore',  [module()]}
     | {'help'}.
 
@@ -361,6 +362,19 @@ parse([{Opt, Param} | Args], Options) ->
                 _Ohter -> wrongArgument('number', Opt)
             end;
 
+        T when T =:= "T"; T =:= "-ignore-timeout" ->
+            case Param of
+                [Timeout] ->
+                    case string:to_integer(Timeout) of
+                        {Timeout_Int, []} when Timeout_Int > 0 ->
+                            NewOptions = lists:keystore('ignore_timeout',
+                                1, Options, {'ignore_timeout', Timeout_Int}),
+                            parse(Args, NewOptions);
+                        _Other -> wrongArgument('type', Opt)
+                    end;
+                _Other -> wrongArgument('number', Opt)
+            end;
+
         "-help" ->
             help(),
             erlang:halt();
@@ -447,6 +461,8 @@ help() ->
      "  --ignore    modules     Don't rename this modules\n"
      "  --show-output           Allow program under test to print to stdout\n"
      "  --wait-messages         Wait for uninstrumented messages to arrive\n"
+     "  -T|--ignore-timeout bound\n"
+     "                          Treat big after Timeouts as infinity timeouts\n"
      "  --gui                   Run concuerror with graphics\n"
      "  --dpor                  Runs the experimental optimal DPOR version\n"
      "  --dpor_flanagan         Runs an experimental reference DPOR version\n"

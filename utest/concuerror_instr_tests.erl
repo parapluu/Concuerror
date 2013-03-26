@@ -29,10 +29,12 @@ syntax_test_() ->
     Setup =
         fun() ->
                 _ = concuerror_log:start(),
-                _ = concuerror_log:attach(concuerror_log, [])
+                _ = concuerror_log:attach(concuerror_log, []),
+                ?NT_OPTIONS = ets:new(?NT_OPTIONS, [named_table, public, set])
         end,
     Cleanup =
         fun(_Any) ->
+                ets:delete(?NT_OPTIONS),
                 concuerror_log:stop()
         end,
     Test01 = {"Block expression in after clause",

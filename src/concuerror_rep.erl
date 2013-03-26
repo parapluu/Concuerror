@@ -27,7 +27,7 @@
          rep_spawn_monitor/1, rep_spawn_monitor/3,
          rep_process_flag/2]).
 
--export([rep_receive/2, rep_receive_block/0,
+-export([rep_receive/3, rep_receive_block/0,
          rep_after_notify/0, rep_receive_notify/3,
          rep_receive_notify/1]).
 
@@ -263,25 +263,25 @@ find_my_links() ->
     AllLids = [?LID_FROM_PID(Pid) || Pid <- AllPids],
     [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].                  
 
-%% @spec rep_receive(fun((term()) -> 'block' | 'continue'),
-%%                   integer() | 'infinity') -> 'ok'.
+%% @spec rep_receive(
+%%          fun((term()) -> 'block' | 'continue'),
+%%          integer() | 'infinity',
+%%          integer() | 'infinity') -> 'ok'.
 %% @doc: Function called right before a receive statement.
 %%
 %% If a matching message is found in the process' message queue, continue
 %% to actual receive statement, else block and when unblocked do the same.
--spec rep_receive(fun((term()) -> 'block' | 'continue'),
-                  integer() | 'infinity') -> 'ok'.
-rep_receive(Fun, HasTimeout) ->
+-spec rep_receive(
+            fun((term()) -> 'block' | 'continue'),
+            integer() | 'infinity',
+            integer() | 'infinity') -> 'ok'.
+rep_receive(Fun, HasTimeout, IgnoreTimeout) ->
     check_unknown_process(),
-    case ?LID_FROM_PID(self()) of
-        not_found ->
-            %% XXX: Uninstrumented process enters instrumented receive
-            ok; 
-        _Lid ->
-            rep_receive_loop(poll, Fun, HasTimeout)
-    end.
+    rep_receive_loop(poll, Fun, HasTimeout, IgnoreTimeout).
 
-rep_receive_loop(Act, Fun, HasTimeout) ->
+-define(IGNORE_TIMEOUT(T, B), B =/= 'infinity' andalso T >= B).
+
+rep_receive_loop(Act, Fun, HasTimeout, Bound) ->
     case Act of
         Resume when Resume =:= ok;
                     Resume =:= continue -> ok;
@@ -291,7 +291,10 @@ rep_receive_loop(Act, Fun, HasTimeout) ->
                 block ->
                     NewAct =
                         case HasTimeout of
-                            infinity -> concuerror_sched:notify('receive', blocked);
+                            infinity ->
+                                concuerror_sched:notify('receive', blocked);
+                            Timeout when ?IGNORE_TIMEOUT(Timeout, Bound) ->
+                                concuerror_sched:notify('receive', blocked);
                             _ ->
                                 NewFun =
                                     fun(Msg) ->
@@ -303,11 +306,14 @@ rep_receive_loop(Act, Fun, HasTimeout) ->
                                 Links = find_trappable_links(self()),
                                 concuerror_sched:notify('after', {NewFun, Links})
                         end,
-                    rep_receive_loop(NewAct, Fun, HasTimeout);
+                    rep_receive_loop(NewAct, Fun, HasTimeout, Bound);
                 continue ->
                     Tag =
                         case HasTimeout of
-                            infinity -> unblocked;
+                            infinity ->
+                                unblocked;
+                            Timeout when ?IGNORE_TIMEOUT(Timeout, Bound) ->
+                                unblocked;
                             _ -> had_after
                         end,
                     continue = concuerror_sched:notify('receive', Tag),
@@ -334,7 +340,7 @@ rep_receive_match(Fun, [H|T]) ->
 -spec rep_receive_block() -> no_return().
 rep_receive_block() ->
     Fun = fun(_Message) -> block end,
-    rep_receive(Fun, infinity).
+    rep_receive(Fun, infinity, infinity).
 
 %% @spec rep_after_notify() -> 'ok'
 %% @doc: Auxiliary function used in the `receive..after' statement

@@ -561,9 +561,14 @@ instrument_receive(Tree) ->
                     true -> erl_syntax:atom(infinity);
                     false -> Timeout
                 end,
-            RepReceive =
-                erl_syntax:application(Module, Function,
-                                       [FunExpr, HasTimeoutExpr]),
+            IgnoreTimeout =
+                case ets:lookup(?NT_OPTIONS, 'ignore_timeout') of
+                    [{'ignore_timeout', ITValue}] ->
+                        erl_syntax:integer(ITValue);
+                    _ -> erl_syntax:atom(infinity)
+                end,
+            RepReceive = erl_syntax:application(
+                Module, Function, [FunExpr, HasTimeoutExpr, IgnoreTimeout]),
             %% Create new receive expression.
             NewReceive = erl_syntax:receive_expr(NewClauses),
             %% Result is begin rep_receive(...), NewReceive end.
