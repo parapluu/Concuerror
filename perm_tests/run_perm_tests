@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+MYNAME=$(basename $0)
+
+export DIR=$(dirname $0)
+
+perm() {
+    local items="$1"
+    local out="$2"
+    local i
+    [[ "$items" == "" ]] && echo "$out" && return
+    for (( i=0; i<${#items}; i++ )) ; do
+        perm "${items:0:i}${items:i+1}" "$out${items:i:1}"
+    done
+}
+
+runme() {
+    R=$($DIR/../concuerror --dpor -p inf -f $DIR/src/$TEST.erl -t $TEST run $1 | \
+        if [ "$MODE" = "STRICT" ]; then
+            grep Checked | cut -d' ' -f4
+        else
+            grep erroneous | cut -d' ' -f2
+        fi)
+    echo "." >> $TOTAL
+    if [ "$R" != "$RESULT" ]; then
+        echo "  $TEST $1: FAIL! (Expecting $RESULT got $R)"
+    echo "." >> $FAIL
+        exit 1
+    fi
+    exit 0
+}
+
+usage() {
+    cat <<EOF
+Name:
+    $MYNAME - run exhaustive scheduling tests for Concuerror
+
+Synopsis:
+    $MYNAME [-s] [FILE]
+
+Options:
+    -h    Show this message
+    -s    Does strict testing (Total number of interleavings instead of failed)
+EOF
+}
+
+while getopts "hs" option; do
+    case "$option" in
+        h)  usage; exit 0;;
+        s)  export MODE="STRICT";;
+        ?)  echo echo "Invalid option: -$OPTARG" >&2; exit 1;;
+    esac
+done
+
+shift $((OPTIND-1))
+
+if [ -z "$1" ]; then
+    usage
+    exit 0
+fi
+
+for i in "$@"; do
+    export TOTAL=$(mktemp)
+    export FAIL=$(mktemp)
+    export TEST=$(basename $i .erl)
+    erlc -o /tmp $DIR/src/$TEST.erl
+    export RESULT=$(erl -pa /tmp -noshell -s $TEST result -s erlang halt)
+    PROCS=$(erl -pa /tmp -noshell -s $TEST procs -s erlang halt)
+    rm /tmp/$TEST.beam
+
+    export -f runme
+
+    (perm $(seq -s '' $PROCS) | \
+        xargs -n 1 -P 10 -i bash -c 'runme "$@"' _ {} \;) && \
+        echo "$TEST: OK ($(wc -l < $TOTAL))" || \
+        echo "$TEST: FAILED! ($(wc -l < $FAIL)/$(wc -l < $TOTAL))"
+    rm $TOTAL
+    rm $FAIL
+done
