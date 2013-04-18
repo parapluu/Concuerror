@@ -7,6 +7,7 @@ Expected          : result2
 Value             : result1
   Process P1 spawns process P1.1
   Process P1.1 sends message `foo` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `foo` from process P1.1
   Process P1 exits ("Assertion violation")
 

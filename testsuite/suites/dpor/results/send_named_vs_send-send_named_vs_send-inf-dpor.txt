@@ -13,9 +13,10 @@ Details           : {{nocatch,error},
   Process P1.1 exits (normal)
   Process P1.2 unregisters process `name`
   Process P1.2 registers process P1.2 as `name`
+  Process P1.2 spawns process P1.2.1
+  Process P1.2 blocks
   Process P1.1.1 sends message `message_1` to process named 'name'
   Process P1.1.1 exits (normal)
-  Process P1.2 spawns process P1.2.1
   Process P1.2 receives message `message_1` from process P1.1.1
   Process P1.2 exits ("Exception")
 

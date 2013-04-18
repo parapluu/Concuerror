@@ -8,15 +8,15 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 blocks
-  Process P1.2: ets_insert {table,[{#Ref<0.0.0.119>,p2}]}
+  Process P1.2: ets_insert {table,[{#Ref<0.0.0.124>,p2}]}
   Process P1.2 sends message `continue` to process P1.1
   Process P1.2 exits (normal)
   Process P1.1 receives message `continue` from process P1.2
-  Process P1.1: ets_insert {table,[{#Ref<0.0.0.119>,p1}]}
+  Process P1.1: ets_insert {table,[{#Ref<0.0.0.124>,p1}]}
   Process P1.1 sends message `continue` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `continue` from process P1.1
-  Process P1: ets_lookup {table,#Ref<0.0.0.119>}
+  Process P1: ets_lookup {table,#Ref<0.0.0.124>}
   Process P1 blocks
   Process P1.3 sends message `continue` to process P1.1 (dead)
   Process P1.3 exits (normal)
@@ -30,45 +30,21 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 blocks
-  Process P1.2: ets_insert {table,[{#Ref<0.0.0.120>,p2}]}
+  Process P1.2: ets_insert {table,[{#Ref<0.0.0.283>,p2}]}
   Process P1.3 sends message `continue` to process P1.1
-  Process P1.2 sends message `continue` to process P1.1
-  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
   Process P1.1 receives message `continue` from process P1.3
-  Process P1.1: ets_insert {table,[{#Ref<0.0.0.120>,p1}]}
+  Process P1.1: ets_insert {table,[{#Ref<0.0.0.283>,p1}]}
   Process P1.1 sends message `continue` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `continue` from process P1.1
-  Process P1: ets_lookup {table,#Ref<0.0.0.120>}
+  Process P1: ets_lookup {table,#Ref<0.0.0.283>}
   Process P1 blocks
-  Process P1.3 exits (normal)
+  Process P1.2 sends message `continue` to process P1.1 (dead)
+  Process P1.2 exits (normal)
 
 
 3
-Error type        : Exception
-Details           : {{badmatch,[{#Ref<0.0.0.121>,p2}]},
-                     [{ets_ref_keys,ets_ref_keys,0,
-                                    [{file,"ets_ref_keys.erl"},{line,30}]}]}
-  Process P1: ets_new {table,[named_table,public]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3 sends message `continue` to process P1.1
-  Process P1.3 exits (normal)
-  Process P1.1 receives message `continue` from process P1.3
-  Process P1.1: ets_insert {table,[{#Ref<0.0.0.121>,p1}]}
-  Process P1.2: ets_insert {table,[{#Ref<0.0.0.121>,p2}]}
-  Process P1.2 sends message `continue` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 sends message `continue` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `continue` from process P1.1
-  Process P1: ets_lookup {table,#Ref<0.0.0.121>}
-  Process P1 exits ("Exception")
-
-
-4
 Error type        : Deadlock
 Blocked processes : P1
   Process P1: ets_new {table,[named_table,public]}
@@ -79,14 +55,38 @@ Blocked processes : P1
   Process P1.3 sends message `continue` to process P1.1
   Process P1.3 exits (normal)
   Process P1.1 receives message `continue` from process P1.3
-  Process P1.1: ets_insert {table,[{#Ref<0.0.0.122>,p1}]}
+  Process P1.1: ets_insert {table,[{#Ref<0.0.0.408>,p1}]}
   Process P1.1 sends message `continue` to process P1
   Process P1.1 exits (normal)
   Process P1 receives message `continue` from process P1.1
-  Process P1: ets_lookup {table,#Ref<0.0.0.122>}
+  Process P1: ets_lookup {table,#Ref<0.0.0.408>}
   Process P1 blocks
-  Process P1.2: ets_insert {table,[{#Ref<0.0.0.122>,p2}]}
+  Process P1.2: ets_insert {table,[{#Ref<0.0.0.408>,p2}]}
   Process P1.2 sends message `continue` to process P1.1 (dead)
   Process P1.2 exits (normal)
+
+
+4
+Error type        : Exception
+Details           : {{badmatch,[{#Ref<0.0.0.523>,p2}]},
+                     [{ets_ref_keys,ets_ref_keys,0,
+                                    [{file,"ets_ref_keys.erl"},{line,30}]}]}
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `continue` to process P1.1
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `continue` from process P1.3
+  Process P1.1: ets_insert {table,[{#Ref<0.0.0.523>,p1}]}
+  Process P1.1 sends message `continue` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `continue` from process P1.1
+  Process P1.2: ets_insert {table,[{#Ref<0.0.0.523>,p2}]}
+  Process P1.2 sends message `continue` to process P1.1 (dead)
+  Process P1.2 exits (normal)
+  Process P1: ets_lookup {table,#Ref<0.0.0.523>}
+  Process P1 exits ("Exception")
 
 

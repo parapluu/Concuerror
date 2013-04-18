@@ -11,9 +11,10 @@ Details           : {{badmatch,{'EXIT',<0.53.0>,normal}},
   Process P1 blocks
   Process P1.2 links to process P1
   Process P1.2 exits (normal)
+  Process P1 receives message `{'EXIT',<0.53.0>,normal}` from process P1.2
+  Process P1 blocks
   Process P1.1 sends message `message` to process P1
   Process P1.1 exits (normal)
-  Process P1 receives message `{'EXIT',<0.53.0>,normal}` from process P1.2
   Process P1 receives message `message` from process P1.1
   Process P1 exits ("Exception")
 

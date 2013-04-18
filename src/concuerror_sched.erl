@@ -181,6 +181,7 @@ interleave_aux(Target, PreBound, Parent, Dpor, Options) ->
 -type s_i()        :: non_neg_integer().
 -type instr()      :: term().
 -type transition() :: {concuerror_lid:lid(), instr(), list()}.
+-type lid_trace()  :: [{concuerror_lid:lid(), transition(), lid_trace()}].
 -type clock_map()  :: dict(). %% dict(concuerror_lid:lid(), clock_vector()).
 %% -type clock_vector() :: orddict(). %% dict(concuerror_lid:lid(), s_i()).
 
@@ -191,11 +192,11 @@ interleave_aux(Target, PreBound, Parent, Dpor, Options) ->
           enabled   = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
           blocked   = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
           pollable  = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
-          backtrack = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
+          backtrack = []                :: lid_trace(),
           done      = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
           sleep_set = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
+          awaked    = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
           nexts     = dict:new()        :: dict(), % dict(lid(), instr()),
-          error_nxt = []                :: [concuerror_lid:lid()],
           clock_map = empty_clock_map() :: clock_map(),
           preemptions = 0               :: non_neg_integer()
          }).
@@ -246,8 +247,12 @@ start_target(Target) ->
     TraceTop =
         #trace_state{nexts = dict:store(FirstLid, Next, dict:new()),
                      enabled = Enabled, blocked = Blocked,
-                     backtrack = Enabled, pollable = Pollable},
+                     backtrack = new_backtrack([{P, Next} || P <- Enabled]),
+                     pollable = Pollable},
     {[TraceTop], GroupLeader}.
+
+new_backtrack(LidList) ->
+    [{Lid, Tr, []} || {Lid, Tr} <- LidList].
 
 start_target_op(Target) ->
     concuerror_lid:start(),
@@ -269,18 +274,27 @@ explore(MightNeedReplayState) ->
             {ok, {Lid, Cmd, _} = Selected, State} ->
                 case Cmd of
                     {error, _ErrorInfo} ->
-                        NewState = report_error(Selected, State),
+                        RaceCheckState = race_check(State),
+                        NewState = report_error(Selected, RaceCheckState),
                         explore(NewState);
                     _Else ->
                         ?debug("Plan: ~p\n",[Selected]),
                         Next = wait_next(Lid, Cmd),
                         UpdState = update_trace(Selected, Next, State),
-                        AllAddState = add_all_backtracks(UpdState),
-                        NewState = add_some_next_to_backtrack(AllAddState),
+                        NewState = add_some_next_to_backtrack(UpdState),
                         explore(NewState)
                 end;
             none ->
-                NewState = report_possible_deadlock(MightNeedReplayState),
+                State =
+                    case MightNeedReplayState#dpor_state.must_replay of
+                        true ->
+                            %% Already backtracking
+                            MightNeedReplayState;
+                        false ->
+                            RaceCheckState = race_check(MightNeedReplayState),
+                            report_possible_deadlock(RaceCheckState)
+                    end,
+                NewState = drop_last_frame(State),
                 case finished(NewState) of
                     false -> explore(NewState);
                     true -> dpor_return(NewState)
@@ -293,12 +307,10 @@ select_from_backtrack(#dpor_state{must_replay = MustReplay,
 				  trace = Trace} = MightNeedReplayState) ->
     %% FIXME: Pick first and don't really subtract.
     %% FIXME: This is actually the trace bottom...
-    [TraceTop|_] = Trace,
-    Backtrack = TraceTop#trace_state.backtrack,
-    Done = TraceTop#trace_state.done,
+    [#trace_state{backtrack = Backtrack, done = Done} = _TraceTop|_] = Trace,
     ?debug("------------\nExplore ~p\n------------\n",
-             [TraceTop#trace_state.i + 1]),
-    case ordsets:subtract(Backtrack, Done) of
+           [_TraceTop#trace_state.i + 1]),
+    case [B || {B, _, _} <- Backtrack] -- Done of
         [] ->
             ?debug("Backtrack set explored\n",[]),
             none;
@@ -438,101 +450,89 @@ get_next(Lid) ->
         ?TIME_LIMIT -> error(time_limit, [Lid])
     end.
 
-add_all_backtracks(#dpor_state{preemption_bound = Bound, trace = Trace,
+race_check(#dpor_state{preemption_bound = Bound, trace = Trace,
 			       dpor_flavor = Flavor} = State) ->
     case Flavor of
         none ->
             %% add_some_next will take care of all the backtracks.
             State;
         _ ->
-            [#trace_state{last = Transition}|_] = Trace,
-            case concuerror_deps:may_have_dependencies(Transition) of
-                true ->
-                    NewTrace = add_all_backtracks_trace(Trace, Bound, Flavor),
-                    State#dpor_state{trace = NewTrace};
-                false -> State
-            end
+            NewTrace = race_check(Trace, Bound, Flavor),
+            State#dpor_state{trace = NewTrace}
     end.
 
-add_all_backtracks_trace(Trace, PreBound, Flavor) ->
-    [#trace_state{i = I, last = {Lid, _, _} = Transition} = Top|
+race_check(Trace, PreBound, Flavor) ->
+    race_check(Trace, [], PreBound, Flavor).
+
+race_check([_] = Trace, _Rest, _PreBound, _Flavor) -> Trace;
+race_check(Trace, Rest, PreBound, Flavor) ->
+    [#trace_state{i = _I, last = {Lid, _, _} = Transition} = Top|
      [#trace_state{clock_map = ClockMap}|_] = PTrace] = Trace,
-    ClockVector = orddict:store(Lid, I, lookup_clock(Lid, ClockMap)),
-    add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
-                             Flavor, PTrace, [Top]).
+    NewPTrace = race_check(PTrace, [Top|Rest], PreBound, Flavor),
+    ?debug("Race check: ~p ~p\n", [_I, Transition]),
+    case
+        concuerror_deps:may_have_dependencies(Transition)
+    of
+        true ->
+            ClockVector = lookup_clock(Lid, ClockMap),
+            add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
+                                     Flavor, NewPTrace, [Top], Rest);
+        false -> [Top|NewPTrace]
+    end.
 
 add_all_backtracks_trace(_Transition, _Lid, _ClockVector, _PreBound,
-                         _Flavor, [_] = Init, Acc) ->
+                         _Flavor, [_] = Init, Acc, _Rest) ->
     lists:reverse(Acc, Init);
 add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                          [#trace_state{preemptions = Preempt} = StateI|Trace],
-                         Acc)
+                         Acc, Rest)
   when Preempt + 1 > PreBound, PreBound =/= ?INFINITY ->
     add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
-                             Trace, [StateI|Acc]);
+                             Trace, [StateI|Acc], Rest);
 add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
-                         [StateI|Trace], Acc) ->
+                         [StateI,PreSI|Rest], Acc, AccRest) ->
     #trace_state{i = I,
-                 last = {ProcSI, _, _} = SI,
-                 clock_map = ClockMap} = StateI,
+                 last = {ProcSI, _, _} = SI} = StateI,
     Clock = lookup_clock_value(ProcSI, ClockVector),
     Action =
         case I > Clock andalso concuerror_deps:dependent(Transition, SI) of
-            false -> {continue, Lid, ClockVector};
+            false -> {continue, PreSI};
             true ->
                 ?debug("~4w: ~P Clock ~p\n", [I, SI, ?DEBUG_DEPTH, Clock]),
-                [#trace_state{enabled = Enabled,
-                              backtrack = Backtrack,
-                              sleep_set = SleepSet,
-                              done = Done} =
-                     PreSI|Rest] = Trace,
-                Candidates =
-                    ordsets:subtract(Enabled, ordsets:union(SleepSet, Done)),
-                {Predecessor, Initial} =
-                    find_preds_and_initials(Lid, ProcSI, Candidates,
-                                            I, ClockVector, Acc),
+                #trace_state{%enabled = Enabled,
+                             backtrack = Backtrack,
+                             done = Done,
+                             sleep_set = SleepSet} = PreSI,
+                Sleepers = ordsets:union(SleepSet, Done),
+                PathResult =
+                    find_path([StateI|Acc], AccRest, ProcSI, I, Sleepers, Backtrack),
                 case Flavor of
                     full ->
-                        ?debug("  Backtrack: ~p\n", [Backtrack]),
-                        ?debug("  Predecess: ~p\n", [Predecessor]),
-                        ?debug("  SleepSet : ~p\n", [SleepSet]),
-                        ?debug("  Initial  : ~p\n", [Initial]),
-                        case Predecessor of
-                            [] ->
-                                ?debug("    All sleeping...\n"),
-                                NewClockVector =
-                                    lookup_clock(ProcSI, ClockMap),
-                                MaxClockVector =
-                                    max_cv(NewClockVector, ClockVector),
-                                {continue, ProcSI, MaxClockVector};
-                            [P] ->
-                                Intersection =
-                                    ordsets:intersection(Backtrack, Initial),
-                                NewBacktrack =
-                                    case Intersection =/= [] of
-                                        true ->
-                                            ?debug("    Init in backtrack\n"),
-                                            Backtrack;
-                                        false ->
-                                            ?debug("    Add: ~p\n", [P]),
-                                            ordsets:add_element(P ,Backtrack)
-                                    end,
+                        case PathResult of
+                            inversion_explored ->
+                                ?debug("    Inversion is explored...\n"),
+                                {continue, PreSI};
+                            equivalent_scheduled ->
+                                ?debug("    Equivalent is scheduled...\n"),
+                                {continue, PreSI};
+                            NewBacktrack ->
                                 ?debug("    NewBacktrack: ~p\n",[NewBacktrack]),
-                                {done,
-                                 [PreSI#trace_state{backtrack = NewBacktrack}
-                                  |Rest]}
+                                {continue,
+                                 PreSI#trace_state{backtrack = NewBacktrack}}
                         end;
                     flanagan ->
-                        decide_flanagan(Predecessor, Backtrack,
-                                        Candidates, PreSI, Rest)
+                        throw(temporarily_unavailable)
+                        %% Cands = ordsets:subtract(Enabled, Sleepers),
+                        %% decide_flanagan(Path, Backtrack, Cands, PreSI, Rest)
                 end
         end,
     case Action of
-        {continue, NewLid, UpdClockVector} ->
-            add_all_backtracks_trace(Transition, NewLid, UpdClockVector,
-                                     PreBound, Flavor, Trace, [StateI|Acc]);
-        {done, FinalTrace} ->
-            lists:reverse(Acc, [StateI|FinalTrace])
+        {continue, NewPreSI} ->
+            add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
+                                     Flavor, [NewPreSI|Rest], [StateI|Acc],
+                                     AccRest);
+        done ->
+            lists:reverse([StateI|Acc], [PreSI|Rest])
     end.
 
 lookup_clock(P, ClockMap) ->
@@ -547,70 +547,113 @@ lookup_clock_value(P, CV) ->
         error -> 0
     end.
 
-find_preds_and_initials(Lid, ProcSI, Candidates, I, ClockVector, RevTrace) ->
-    {Racing, NonRacing} = find_initials(Candidates, ProcSI, I, RevTrace),
-    Initial =
-        case not ordsets:is_element(Lid, Candidates)
-            orelse ordsets:is_element(Lid, Racing) of
-            true -> NonRacing;
-            false -> ordsets:add_element(Lid, NonRacing)
+find_path([#trace_state{nexts = Nexts}|Acc],
+          Rest, ProcSI, I, Sleepers, Backtrack) ->
+    SleepSet = ordsets:del_element(ProcSI, Sleepers),
+    Annotated = [{P, dict:fetch(P, Nexts)} || P <- SleepSet],
+    NotDeps = not_deps(Acc, Rest, ProcSI, I),
+    ?debug("      NotDeps:~p\n",[NotDeps]),
+    try
+        case find_weak_initial(NotDeps, Annotated) of
+            {true, _, _} -> throw(inversion_explored);
+            false ->
+                Pred = fun({P,_,_}) -> P =/= ProcSI end,
+                {Done, [{ProcSI,_,_} = Current|Future]} =
+                    lists:splitwith(Pred, Backtrack),
+                ?debug("      Future:~p\n",[Future]),
+                NewFuture = insert_best_match(Future, NotDeps),
+                Done ++ [Current|NewFuture]
+        end
+    catch
+        throw:Reason -> Reason
+    end.
+
+find_weak_initial(    _,    []) -> false;
+find_weak_initial(Trace, [C|R]) ->
+    case find_weak_initial(Trace, [C], []) of
+        false ->
+            find_weak_initial(Trace, R);
+        True -> True
+    end.
+
+find_weak_initial(_, [], _) -> false;
+find_weak_initial([], [{Lid, _}|_], Acc) ->
+    {true, Lid, lists:reverse(Acc)};
+find_weak_initial([{Lid, _, _} = Tr|Rest], Candidates, Acc) ->
+    case lists:keyfind(Lid, 1, Candidates) of
+        {Lid, _} -> {true, Lid, lists:reverse(Acc, Rest)};
+        false ->
+            Pred = fun({_, Tr2}) -> not concuerror_deps:dependent(Tr, Tr2) end,
+            NewCandidates = lists:filter(Pred, Candidates),
+            find_weak_initial(Rest, NewCandidates, [Tr|Acc])
+    end.
+
+insert_best_match([], Trace) ->
+    Fold = fun({P, _,_} = Tr, PAcc) -> [{P, Tr, PAcc}] end,
+    lists:foldl(Fold, [], lists:reverse(Trace));
+insert_best_match(Backtrack, Trace) ->
+    ?debug("      Trace:~p\n", [Trace]),
+    Ps = [{P,Tr} || {P,Tr,_} <- Backtrack],
+    case find_weak_initial(Trace, Ps) of
+        {true, Lid, NewTrace} ->
+            ?debug("      WeakIni:~p\n", [Lid]),
+            {Lid, Tr, Further} = lists:keyfind(Lid, 1, Backtrack),
+            ?debug("      Further:~p\n",[Further]),
+            case Further =:= [] of
+                true -> throw(equivalent_scheduled);
+                false ->
+                    NewFuther = insert_best_match(Further, NewTrace),
+                    lists:keyreplace(Lid, 1, Backtrack, {Lid, Tr, NewFuther})
+            end;
+        false ->
+            Backtrack ++ insert_best_match([], Trace)
+    end.
+
+not_deps(Acc, Rest, ProcSI, I) ->
+    not_deps(Acc, Rest, ProcSI, I, []).
+
+not_deps([], no_rest, _, _, Path) ->
+    lists:reverse(Path);
+not_deps([#trace_state{last = Last}], Rest, ProcSI, I, Path)
+  when Rest =/= no_rest ->
+    not_deps(Rest, no_rest, ProcSI, I, [Last|Path]);
+not_deps([#trace_state{last = {Lid, _, _} = Last, clock_map = ClockMap}|Acc],
+         Rest, ProcSI, I, Path) ->
+    Lid2Clock = lookup_clock(Lid, ClockMap),
+    NewPath =
+        case lookup_clock_value(ProcSI, Lid2Clock) >= I of
+            true  -> Path;
+            false -> [Last|Path]
         end,
+    not_deps(Acc, Rest, ProcSI, I, NewPath).
 
-    {predecessor(Initial, I, ClockVector), Initial}.
-
-find_initials(Candidates, ProcSI, I, RevTrace) ->
-    RealCandidates = ordsets:del_element(ProcSI, Candidates),
-    find_initials(RealCandidates, I, RevTrace, [ProcSI], []).
-
-find_initials(Candidates, _I,        [_], Racing, NonRacing) ->
-    {Racing,ordsets:union(Candidates, NonRacing)};
-find_initials(        [], _I,     _Trace, Racing, NonRacing) ->
-    {Racing, NonRacing};
-find_initials(Candidates,  I, [Top|Rest], Racing, NonRacing) ->
-    #trace_state{last = {P,_,_}, clock_map = CM} = Top,
-    ClockVector = lookup_clock(P, CM),
-    case ordsets:is_element(P, Candidates) of
-        false ->
-            find_initials(Candidates, I, Rest, Racing, NonRacing);
-        true ->
-            Fun2 = fun(K, V, A) -> A andalso (K =:= P orelse V < I) end,
-            {NewRacing, NewNonRacing} =
-                case orddict:fold(Fun2, true, ClockVector) of
-                    false ->
-                        {ordsets:add_element(P, Racing), NonRacing};
-                    true ->
-                        {Racing, ordsets:add_element(P, NonRacing)}
-                end,
-            NewCandidates = ordsets:del_element(P, Candidates),
-            find_initials(NewCandidates, I, Rest, NewRacing, NewNonRacing)
-    end.
-
-predecessor(Initial, I, ClockVector) ->
-    DropWhile = fun(Lid) -> lookup_clock_value(Lid, ClockVector) < I end,
-    case lists:dropwhile(DropWhile, Initial) of
-        [] -> [];
-        [H|_] -> [H]
-    end.
-
-decide_flanagan(Predecessor, Backtrack, Candidates, PreSI, Rest) ->
-    case ordsets:intersection(Backtrack, Predecessor) =/= [] of
-        true ->
-            ?debug("One pred already in backtrack.\n"),
-            {done, [PreSI|Rest]};
-        false ->
-            NewBacktrack =
-                case Predecessor =:= [] of
-                    false ->
-                        ?debug(" Add as 'choose-one': ~p\n", [Predecessor]),
-                        ordsets:union(Backtrack, Predecessor);
-                    true ->
-                        ?debug(" Add as 'choose every': ~p\n", [Candidates]),
-                        ordsets:union(Backtrack, Candidates)
-                end,
-            NewPreSI =
-                PreSI#trace_state{backtrack = NewBacktrack},
-            {done, [NewPreSI|Rest]}
-    end.
+%% decide_flanagan(Path, Backtrack, Candidates, PreSI, Rest) ->
+%%     Predecessor =
+%%         case Path of
+%%             [] -> [];
+%%             [P|_] -> [P]
+%%         end,
+%%     BSet = ordsets:from_list([B || {B,_} <- Backtrack]),
+%%     NewPreSI =
+%%         case ordsets:intersection(BSet, Predecessor) =/= [] of
+%%             true ->
+%%                 ?debug("One pred already in backtrack.\n"),
+%%                 PreSI;
+%%             false ->
+%%                 NewBacktrack =
+%%                     case Predecessor =:= [] of
+%%                         false ->
+%%                             ?debug(" Add as 'choose-one': ~p\n",
+%%                                    [Predecessor]),
+%%                             Backtrack ++ [{Predecessor,[]}];
+%%                         true ->
+%%                             ?debug(" Add as 'choose every': ~p\n",
+%%                                    [Candidates]),
+%%                             Backtrack ++ [{C,[]} || C <- Candidates]
+%%                     end,
+%%                 PreSI#trace_state{backtrack = NewBacktrack}
+%%         end,
+%%     {done, [NewPreSI|Rest]}.
 
 %% - add new entry with new entry
 %% - wait any possible additional messages
@@ -623,7 +666,7 @@ update_trace(Selected, Next, State) ->
 update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
              Flavor, Replaying) ->
     #trace_state{i = I, enabled = Enabled, blocked = Blocked,
-                 pollable = Pollable, done = Done, error_nxt = OldErrorNxt,
+                 pollable = Pollable, done = Done, backtrack = Backtrack,
                  nexts = Nexts, clock_map = ClockMap, sleep_set = SleepSet,
                  preemptions = Preemptions, last = {LLid,_,_}} = PrevTraceTop,
     Expected = dict:fetch(Lid, Nexts),
@@ -664,8 +707,7 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
     UpdTraceTop =
         #trace_state{last = UpdSelected,
                      sleep_set = UpdSleepSet,
-                     nexts = UpdNexts,
-                     error_nxt = UpdErrorNxt} =
+                     nexts = UpdNexts} =
         update_instr_info(Lid, Selected, InstrNewTraceTop),
     PrevTrace =
         case UpdSelected =:= Expected of
@@ -687,41 +729,31 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                               end
                           end)]),
                 ?debug("Selected: ~P\n", [UpdSelected, ?DEBUG_DEPTH]),
-                NewSleepSet =
+                {NewSleepSet, NewAwaked} =
                     case Flavor =:= 'none' of
-                        true -> [];
+                        true -> {[], []};
                         false ->
                             filter_awaked(UpdSleepSet, UpdNexts, UpdSelected)
                     end,
-                Awakened =
-                    ordsets:subtract(CommonNewTraceTop#trace_state.sleep_set,
-                                     NewSleepSet),
-                NewErrorNext =
-                    case {Selected, Next, UpdErrorNxt} of
-                        {{_, {halt, _}, _},  _, _} -> [];
-                        {                _, {_, {error, _}, _}, _} -> [Lid];
-                        {                _, _, [_]} -> UpdErrorNxt;
-                        _Else ->
-                            case Flavor =:= 'none' of
-                                true -> [];
-                                false ->
-                                    RestError =
-                                        ordsets:del_element(Lid, OldErrorNxt),
-                                    ordsets:union(Awakened, RestError)
-                            end
+                NewBacktrack =
+                    case {Next, Selected} of
+                        {_, {_, { halt, _}, _}} -> [];
+                        {{_, {error, _}, _}, _} -> new_backtrack([{Lid, Next}]);
+                        _Else -> element(3, lists:keyfind(Lid, 1, Backtrack))
                     end,
-                NewLastBlocked = ordsets:is_element(Lid, NewBlocked),    
+                NewLastBlocked = ordsets:is_element(Lid, NewBlocked),
+                ?debug("Awaked: ~p\n", [NewAwaked]),
                 UpdTraceTop#trace_state{
                   last_blocked = NewLastBlocked,
-                  error_nxt = NewErrorNext,
-                  sleep_set = NewSleepSet};
+                  backtrack = NewBacktrack,
+                  sleep_set = NewSleepSet,
+                  awaked = NewAwaked};
             {true, _ReplayTop} ->
                 UpdTraceTop
         end,
     [FinalTraceTop|PrevTrace].
 
-recent_dependency_cv({_Lid, {ets, _Info}, _} = Transition,
-                     ClockVector, Trace) ->
+recent_dependency_cv(Transition, ClockVector, Trace) ->
     Fun =
         fun(#trace_state{
             last = {Lid, _, _} = Transition2,
@@ -733,9 +765,7 @@ recent_dependency_cv({_Lid, {ets, _Info}, _} = Transition,
                     false -> CVAcc
                 end
         end,
-    lists:foldl(Fun, ClockVector, Trace);
-recent_dependency_cv(_Transition, ClockVector, _Trace) ->
-    ClockVector.
+    lists:foldl(Fun, ClockVector, Trace).
 
 update_lid_enabled(Lid, {_, Next, _}, Pollable, Enabled, Blocked) ->
     {NewEnabled, NewBlocked} =
@@ -775,7 +805,8 @@ filter_awaked(SleepSet, Nexts, Selected) ->
                 ?debug(" vs ~p: ~p\n",[Instr, Dep]),
                 not Dep
         end,
-    [S || S <- SleepSet, Filter(S)].
+    {A, NA} = lists:partition(Filter, SleepSet),
+    {ordsets:from_list(A), ordsets:from_list(NA)}.
 
 rewrite_while_awaked(Transition, Original, Trace) ->
     rewrite_while_awaked(Transition, Original, Trace, []).
@@ -949,9 +980,8 @@ unexpected_exits(#trace_state{nexts = Nexts} = TraceTop) ->
             Lid = lid_from_pid(Pid),
             Entry = {Lid, {error, [exit, Reason, []]}, []},
             NewNexts = dict:store(Lid, Entry, Nexts),
-            {true, TraceTop#trace_state{nexts = NewNexts, error_nxt = [Lid]
-                                        %% ,
-                                        %% enabled = [], blocked = []
+            {true, TraceTop#trace_state{nexts = NewNexts,
+                                        backtrack = [{Lid, []}]
                                        }}
     after
         0 -> none
@@ -965,6 +995,7 @@ poll_all(Lid, TraceTop) ->
             #trace_state{pollable = Pollable,
                          blocked = Blocked,
                          enabled = Enabled,
+                         %% TODO: Remove next line
                          sleep_set = SleepSet,
                          nexts = Nexts} = TraceTop,
             NewPollable = ordsets:del_element(Lid, Pollable),
@@ -986,29 +1017,34 @@ add_some_next_to_backtrack(State) ->
     #dpor_state{trace = [TraceTop|Rest], dpor_flavor = Flavor,
                 preemption_bound = PreBound} = State,
     #trace_state{enabled = Enabled, sleep_set = SleepSet,
-                 error_nxt = ErrorNext, last = {Lid, _, _},
-                 preemptions = Preemptions} = TraceTop,
+                 backtrack = OldBacktrack, last = {Lid, _, _},
+                 preemptions = Preemptions, nexts = Nexts} = TraceTop,
     ?debug("Pick next: Enabled: ~p Sleeping: ~p\n", [Enabled, SleepSet]),
     Backtrack =
-        case ordsets:subtract(ErrorNext, SleepSet) of
-            [] ->
-                case Flavor of
-                    'none' ->
-                        case ordsets:is_element(Lid, Enabled) of
-                            true when Preemptions =:= PreBound -> [Lid];
-                            _Else -> Enabled
-                        end;
-                    _Other ->
-                        case ordsets:subtract(Enabled, SleepSet) of
-                            [] -> [];
-                            [H|_] = Candidates ->
-                                case ordsets:is_element(Lid, Candidates) of
-                                    true -> [Lid];
-                                    false -> [H]
-                                end
-                        end
-                end;
-            [H|_] -> [H]
+        case OldBacktrack =:= [] of
+            true ->
+                Set =
+                    case Flavor of
+                        'none' ->
+                            case ordsets:is_element(Lid, Enabled) of
+                                true when Preemptions =:= PreBound -> [Lid];
+                                _Else -> Enabled
+                            end;
+                        _Other ->
+                            case ordsets:subtract(Enabled, SleepSet) of
+                                [] -> [];
+                                [H|_] = Candidates ->
+                                    case ordsets:is_element(Lid, Candidates) of
+                                        true -> [Lid];
+                                        false -> [H]
+                                    end
+                            end
+                    end,
+                Annotated = [{P, dict:fetch(P, Nexts)} || P <- Set],
+                new_backtrack(Annotated);
+            false ->
+                [A || {K, _, _} = A <- OldBacktrack,
+                      not ordsets:is_element(K, SleepSet)]
         end,
     ?debug("Picked: ~p\n",[Backtrack]),
     NewTraceTop = TraceTop#trace_state{backtrack = Backtrack},
@@ -1151,7 +1187,7 @@ convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}, _Msgs})->
 
 report_possible_deadlock(#dpor_state{trace = []} = State) -> State;
 report_possible_deadlock(State) ->
-    #dpor_state{trace = [TraceTop|RestTrace] = Trace, tickets = Tickets,
+    #dpor_state{trace = [TraceTop|_] = Trace, tickets = Tickets,
                 sleep_blocked_count = SBlocked} = State,
     {NewTickets, NewSBlocked} =
         case TraceTop#trace_state.enabled of
@@ -1179,9 +1215,12 @@ report_possible_deadlock(State) ->
                         {Tickets, SBlocked+1}
                 end
         end,
-    ?debug("Stack frame dropped\n"),
-    State#dpor_state{must_replay = true, trace = RestTrace,
-                     tickets = NewTickets, sleep_blocked_count = NewSBlocked}.
+    State#dpor_state{must_replay = true, tickets = NewTickets,
+                     sleep_blocked_count = NewSBlocked}.
+
+drop_last_frame(#dpor_state{trace = []} = State) -> State;
+drop_last_frame(#dpor_state{trace = [_|Trace]} = State) ->
+    State#dpor_state{trace = Trace}.
 
 finished(#dpor_state{trace = Trace}) ->
     Trace =:= [].

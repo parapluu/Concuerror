@@ -17,8 +17,8 @@ Blocked processes : P1
   Process P1: ets_new {table,[public,named_table]}
   Process P1 spawns process P1.1
   Process P1.1: ets_insert {table,[{key,value}]}
+  Process P1.1 exits (normal)
   Process P1: ets_delete table
   Process P1 blocks
-  Process P1.1 exits (normal)
 
 

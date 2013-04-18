@@ -67,9 +67,9 @@ Blocked processes : P1
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
 
 
 5
@@ -121,9 +121,9 @@ Blocked processes : P1
   Process P1.1: ets_insert {table,[{x,2}]}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
 
 
 8
@@ -157,9 +157,9 @@ Blocked processes : P1
   Process P1.2: ets_lookup {table,x}
   Process P1.1: ets_insert {table,[{x,2}]}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
 
 
 10
@@ -174,10 +174,10 @@ Blocked processes : P1
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,2}]}
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
 
 
 11
@@ -229,9 +229,9 @@ Blocked processes : P1
   Process P1.1: ets_insert {table,[{x,2}]}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
 
 
 14
@@ -265,9 +265,9 @@ Blocked processes : P1
   Process P1.2: ets_lookup {table,x}
   Process P1.1: ets_insert {table,[{x,2}]}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
 
 
 16
@@ -282,10 +282,10 @@ Blocked processes : P1
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,2}]}
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
 
 
 17
@@ -319,9 +319,9 @@ Blocked processes : P1
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.1: ets_insert {table,[{x,2}]}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
 
 
 19
@@ -336,10 +336,10 @@ Blocked processes : P1
   Process P1.2: ets_lookup {table,x}
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,2}]}
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
 
 
 20
@@ -353,8 +353,10 @@ Blocked processes : P1
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.1: ets_insert {table,[{x,2}]}
   Process P1.1: ets_insert {table,[{x,3}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
+
+

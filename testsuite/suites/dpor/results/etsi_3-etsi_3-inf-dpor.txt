@@ -1,5 +1,4 @@
-Checked 4 interleaving(s). 3 errors found.
-  Encountered 1 sleep-set blocked trace(s).
+Checked 3 interleaving(s). 3 errors found.
 
 1
 Error type        : Deadlock
@@ -16,9 +15,9 @@ Blocked processes : P1
   Process P1.1 exits (normal)
   Process P1.2: ets_lookup {table,z}
   Process P1.3: ets_insert {table,[{x,1}]}
+  Process P1.3 exits (normal)
   Process P1.2: ets_lookup {table,x}
   Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 2
@@ -56,10 +55,10 @@ Blocked processes : P1
   Process P1.2: ets_lookup {table,z}
   Process P1.2: ets_lookup {table,x}
   Process P1.2: ets_lookup {table,y}
+  Process P1.3: ets_insert {table,[{x,1}]}
+  Process P1.3 exits (normal)
   Process P1.1: ets_insert {table,[{y,1}]}
   Process P1.1 exits (normal)
   Process P1.2 exits (normal)
-  Process P1.3: ets_insert {table,[{x,1}]}
-  Process P1.3 exits (normal)
 
 

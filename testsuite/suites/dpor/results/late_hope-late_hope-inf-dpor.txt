@@ -7,8 +7,10 @@ Details           : {{nocatch,saved},
                                  [{file,"late_hope.erl"},{line,14}]}]}
   Process P1 spawns process P1.1
   Process P1 spawns process P1.2
-  Process P1.2 sends message `ignore` to process P1.1
+  Process P1.1 exits (normal)
+  Process P1.2 sends message `ignore` to process P1.1 (dead)
   Process P1.2 sends message `hope` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `hope` from process P1.2
   Process P1 exits ("Exception")
 

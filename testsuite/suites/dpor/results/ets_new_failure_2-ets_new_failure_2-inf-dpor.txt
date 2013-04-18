@@ -28,6 +28,10 @@ Details           : {badarg,
   Process P1 spawns process P1.2
   Process P1 blocks
   Process P1.2: ets_new {table,[named_table,public]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 blocks
+  Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
   Process P1.1: ets_new {table,[named_table,public]}
   Process P1.1 exits ("Exception")
 

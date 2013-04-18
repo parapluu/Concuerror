@@ -78,9 +78,11 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -108,7 +110,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 3
@@ -187,11 +188,13 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -219,7 +222,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 5
@@ -300,9 +302,11 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -330,7 +334,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 7
@@ -351,8 +354,8 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
+  Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
@@ -407,13 +410,15 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -441,7 +446,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 9
@@ -522,9 +526,11 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -552,7 +558,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 11
@@ -631,11 +636,13 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -663,7 +670,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 13
@@ -682,8 +688,8 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
@@ -738,15 +744,17 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -774,7 +782,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 15
@@ -793,10 +800,10 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
@@ -849,15 +856,17 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -885,7 +894,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 17
@@ -966,9 +974,11 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -996,7 +1006,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 19
@@ -1075,11 +1084,13 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -1107,7 +1118,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 21
@@ -1188,9 +1198,11 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -1218,7 +1230,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 23
@@ -1239,8 +1250,8 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
+  Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
@@ -1295,13 +1306,15 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -1329,7 +1342,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 25
@@ -1346,8 +1358,8 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
@@ -1402,17 +1414,19 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -1440,7 +1454,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 27
@@ -1457,8 +1470,8 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.4
@@ -1513,17 +1526,19 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -1551,7 +1566,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 29
@@ -1568,10 +1582,10 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
@@ -1624,17 +1638,19 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -1662,7 +1678,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 31
@@ -1679,12 +1694,12 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
@@ -1735,17 +1750,19 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -1773,7 +1790,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 33
@@ -1854,9 +1870,11 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -1884,7 +1902,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 35
@@ -1963,11 +1980,13 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -1995,7 +2014,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 37
@@ -2076,9 +2094,11 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -2106,7 +2126,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 39
@@ -2127,8 +2146,8 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
+  Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
@@ -2183,13 +2202,15 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -2217,7 +2238,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 41
@@ -2298,9 +2318,11 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -2328,7 +2350,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 43
@@ -2407,11 +2428,13 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -2439,7 +2462,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 45
@@ -2458,8 +2480,8 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
@@ -2514,15 +2536,17 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -2550,7 +2574,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 47
@@ -2569,10 +2592,10 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
@@ -2625,15 +2648,17 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -2661,7 +2686,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 49
@@ -2676,8 +2700,8 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
   Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
@@ -2732,8 +2756,8 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
   Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
@@ -2742,9 +2766,11 @@ Blocked processes : P1
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -2772,7 +2798,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 51
@@ -2787,8 +2812,8 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
   Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
@@ -2843,19 +2868,21 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
   Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -2883,7 +2910,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 53
@@ -2898,8 +2924,8 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
   Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.3
@@ -2954,8 +2980,8 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
   Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.3
@@ -2964,9 +2990,11 @@ Blocked processes : P1
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -2994,7 +3022,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 55
@@ -3009,14 +3036,14 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
   Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
+  Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
@@ -3065,19 +3092,21 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
+  Process P1.6 sends message `0` to process P1.1
   Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -3105,7 +3134,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 57
@@ -3120,10 +3148,10 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
@@ -3176,19 +3204,21 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -3216,7 +3246,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 59
@@ -3231,10 +3260,10 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.4
@@ -3287,19 +3316,21 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
   Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -3327,7 +3358,6 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 61
@@ -3342,12 +3372,12 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
@@ -3398,19 +3428,21 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
   Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `1` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -3438,7 +3470,6 @@ Blocked processes : P1
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 
 63
@@ -3453,14 +3484,14 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
   Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
@@ -3509,19 +3540,21 @@ Blocked processes : P1
   Process P1 spawns process P1.7
   Process P1 blocks
   Process P1.7 sends message `1` to process P1.1
-  Process P1.6 sends message `0` to process P1.1
   Process P1.7 sends message `1` to process P1.2
-  Process P1.6 sends message `0` to process P1.2
   Process P1.7 sends message `1` to process P1.3
-  Process P1.6 sends message `0` to process P1.3
   Process P1.7 sends message `1` to process P1.4
-  Process P1.6 sends message `0` to process P1.4
   Process P1.7 sends message `1` to process P1.5
-  Process P1.6 sends message `0` to process P1.5
   Process P1.7 sends message `sender` to process P1
+  Process P1.7 exits (normal)
+  Process P1 receives message `sender` from process P1.7
+  Process P1 blocks
+  Process P1.6 sends message `0` to process P1.1
+  Process P1.6 sends message `0` to process P1.2
+  Process P1.6 sends message `0` to process P1.3
+  Process P1.6 sends message `0` to process P1.4
+  Process P1.6 sends message `0` to process P1.5
   Process P1.6 sends message `sender` to process P1
   Process P1.6 exits (normal)
-  Process P1 receives message `sender` from process P1.7
   Process P1 receives message `sender` from process P1.6
   Process P1 sends message `go` to process P1.1
   Process P1 sends message `go` to process P1.2
@@ -3549,6 +3582,5 @@ Blocked processes : P1
   Process P1.5 receives message `1` from process P1.7
   Process P1.5 receives message `0` from process P1.6
   Process P1.5 exits (normal)
-  Process P1.7 exits (normal)
 
 

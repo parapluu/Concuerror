@@ -28,6 +28,8 @@ Details           : {{nocatch,{a,c}},
   Process P1 spawns process P1.2
   Process P1 receives no matching messages
   Process P1.2 sends message `a` to process P1.1
+  Process P1.2 sends message `f` to process P1
+  Process P1.2 exits (normal)
   Process P1 sends message `c` to process P1.1
   Process P1 exits (normal)
   Process P1.1 receives message `a` from process P1.2
@@ -44,10 +46,11 @@ Details           : {{nocatch,{a,b}},
   Process P1 spawns process P1.2
   Process P1.2 sends message `a` to process P1.1
   Process P1.2 sends message `f` to process P1
+  Process P1.1 receives message `a` from process P1.2
+  Process P1.1 blocks
   Process P1 receives message `f` from process P1.2
   Process P1 sends message `b` to process P1.1
   Process P1 exits (normal)
-  Process P1.1 receives message `a` from process P1.2
   Process P1.1 receives message `b` from process P1
   Process P1.1 exits ("Exception")
 

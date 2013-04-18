@@ -40,12 +40,12 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{<0.55.0>,17}]}
   Process P1.3: ets_insert {table,[{<0.56.0>,21}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,2}]}
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
   Process P1.4: ets_insert {table,[{<0.57.0>,25}]}
   Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
+  Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 3
@@ -65,10 +65,10 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{<0.62.0>,21}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{<0.63.0>,25}]}
-  Process P1.4: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,2}]}
-  Process P1.2 exits (normal)
   Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
 
 
@@ -89,11 +89,11 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{<0.68.0>,21}]}
   Process P1.4: ets_insert {table,[{<0.69.0>,25}]}
   Process P1.4: ets_lookup {table,x}
+  Process P1.4 exits (normal)
   Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.2 exits (normal)
   Process P1.3: ets_lookup {table,x}
   Process P1.3 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.4 exits (normal)
 
 
 5
@@ -109,15 +109,15 @@ Blocked processes : P1
   Process P1.1: ets_insert {table,[{<0.72.0>,13}]}
   Process P1.2: ets_insert {table,[{<0.73.0>,17}]}
   Process P1.2: ets_insert {table,[{x,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
   Process P1.3: ets_insert {table,[{<0.74.0>,21}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3 exits (normal)
   Process P1.4: ets_insert {table,[{<0.75.0>,25}]}
   Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 exits (normal)
 
 
 6
@@ -134,14 +134,14 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{<0.79.0>,17}]}
   Process P1.2: ets_insert {table,[{x,2}]}
   Process P1.3: ets_insert {table,[{<0.80.0>,21}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
   Process P1.4: ets_insert {table,[{<0.81.0>,25}]}
   Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3: ets_lookup {table,x}
+  Process P1.3 exits (normal)
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 exits (normal)
 
 
 7
@@ -158,13 +158,13 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{<0.85.0>,17}]}
   Process P1.2: ets_insert {table,[{x,2}]}
   Process P1.3: ets_insert {table,[{<0.86.0>,21}]}
-  Process P1.3: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{<0.87.0>,25}]}
-  Process P1.4: ets_lookup {table,x}
   Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 exits (normal)
   Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3: ets_lookup {table,x}
   Process P1.3 exits (normal)
+  Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
 
 
@@ -183,12 +183,12 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{x,2}]}
   Process P1.3: ets_insert {table,[{<0.92.0>,21}]}
   Process P1.4: ets_insert {table,[{<0.93.0>,25}]}
-  Process P1.4: ets_lookup {table,x}
-  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2 exits (normal)
   Process P1.3: ets_lookup {table,x}
   Process P1.3 exits (normal)
+  Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
+  Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
 
 
@@ -206,14 +206,14 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{<0.97.0>,17}]}
   Process P1.3: ets_insert {table,[{<0.98.0>,21}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{x,2}]}
-  Process P1.2 exits (normal)
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
   Process P1.4: ets_insert {table,[{<0.99.0>,25}]}
   Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
 
 
 10
@@ -230,14 +230,14 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{<0.103.0>,17}]}
   Process P1.3: ets_insert {table,[{<0.104.0>,21}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.4: ets_insert {table,[{<0.105.0>,25}]}
   Process P1.4: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,2}]}
-  Process P1.2 exits (normal)
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
   Process P1.4 exits (normal)
+  Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.3 exits (normal)
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
 
 
 11
@@ -254,12 +254,12 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{<0.109.0>,17}]}
   Process P1.3: ets_insert {table,[{<0.110.0>,21}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
   Process P1.4: ets_insert {table,[{<0.111.0>,25}]}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.2 exits (normal)
   Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
 
@@ -278,14 +278,14 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{<0.115.0>,17}]}
   Process P1.3: ets_insert {table,[{<0.116.0>,21}]}
   Process P1.3: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,2}]}
   Process P1.4: ets_insert {table,[{<0.117.0>,25}]}
-  Process P1.4: ets_lookup {table,x}
   Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
   Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
+  Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.2 exits (normal)
 
 
 13
@@ -303,12 +303,12 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{<0.122.0>,21}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{<0.123.0>,25}]}
-  Process P1.4: ets_lookup {table,x}
-  Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.2: ets_insert {table,[{x,2}]}
-  Process P1.2 exits (normal)
-  Process P1.1 exits (normal)
   Process P1.3 exits (normal)
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.4: ets_lookup {table,x}
   Process P1.4 exits (normal)
 
 
@@ -327,13 +327,13 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{<0.128.0>,21}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.4: ets_insert {table,[{<0.129.0>,25}]}
-  Process P1.4: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4 exits (normal)
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
-  Process P1.4 exits (normal)
 
 
 15
@@ -351,13 +351,13 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{<0.134.0>,21}]}
   Process P1.4: ets_insert {table,[{<0.135.0>,25}]}
   Process P1.4: ets_lookup {table,x}
+  Process P1.4 exits (normal)
   Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 exits (normal)
   Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.2 exits (normal)
   Process P1.3: ets_lookup {table,x}
   Process P1.3 exits (normal)
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.4 exits (normal)
 
 
 16
@@ -375,13 +375,13 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{<0.140.0>,21}]}
   Process P1.4: ets_insert {table,[{<0.141.0>,25}]}
   Process P1.4: ets_lookup {table,x}
+  Process P1.4 exits (normal)
   Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 exits (normal)
   Process P1.3: ets_lookup {table,x}
+  Process P1.3 exits (normal)
   Process P1.2: ets_insert {table,[{x,2}]}
   Process P1.2 exits (normal)
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
-  Process P1.4 exits (normal)
 
 
 17
@@ -399,13 +399,13 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{<0.146.0>,21}]}
   Process P1.4: ets_insert {table,[{<0.147.0>,25}]}
   Process P1.4: ets_lookup {table,x}
+  Process P1.4 exits (normal)
   Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.2 exits (normal)
   Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1 exits (normal)
   Process P1.3: ets_lookup {table,x}
   Process P1.3 exits (normal)
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.4 exits (normal)
 
 
 18
@@ -423,12 +423,12 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{<0.152.0>,21}]}
   Process P1.4: ets_insert {table,[{<0.153.0>,25}]}
   Process P1.4: ets_lookup {table,x}
+  Process P1.4 exits (normal)
   Process P1.2: ets_insert {table,[{x,2}]}
+  Process P1.2 exits (normal)
   Process P1.3: ets_lookup {table,x}
+  Process P1.3 exits (normal)
   Process P1.1: ets_insert {table,[{x,1}]}
   Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
-  Process P1.4 exits (normal)
 
 

@@ -14,11 +14,10 @@ Details           : {{case_clause,{eulav,souffle}},
   Process P1.1: ets_insert {simple_ets,[{key,new_value}]}
   Process P1.2: ets_insert {simple_ets,[{key,eulav}]}
   Process P1.2: ets_insert {simple_ets,[{clef,elffuos}]}
-  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
-  Process P1.1 blocks
   Process P1.2 receives message `ok` from process P1
   Process P1.2 sends message `ok` to process P1.1
   Process P1.2 exits (normal)
+  Process P1.1: ets_insert {simple_ets,[{clef,souffle}]}
   Process P1.1 receives message `ok` from process P1.2
   Process P1.1 sends message `ok` to process P1
   Process P1.1 exits (normal)
