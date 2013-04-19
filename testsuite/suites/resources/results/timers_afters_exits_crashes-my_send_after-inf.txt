@@ -1,0 +1,1802 @@
+Checked 120 interleaving(s). 120 errors found.
+
+1
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+2
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+3
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+4
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+
+
+5
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+6
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+7
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+8
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+9
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+10
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+11
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+12
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+13
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+14
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+15
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+16
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+17
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+18
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+19
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+
+
+20
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+21
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+22
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+
+
+23
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+24
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+25
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+26
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+27
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+28
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+29
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+30
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+31
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1 (dead)
+  Process P1.2 exits (normal)
+
+
+32
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+33
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+34
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+
+
+35
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+36
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+37
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1 (dead)
+  Process P1.2 exits (normal)
+
+
+38
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1 (dead)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+39
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1 (dead)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+40
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1 (dead)
+  Process P1.2 exits (normal)
+
+
+41
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.3 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+42
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.3 exits (normal)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+43
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+44
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+45
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+46
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+47
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+48
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+49
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+
+
+50
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+51
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+52
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+
+
+53
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+54
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+55
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+56
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+57
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+58
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+59
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+60
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.3
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+61
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+62
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+63
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+64
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+
+
+65
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+66
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+67
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+68
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+69
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+70
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+71
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+72
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+73
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+74
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+
+
+75
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+76
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+77
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+78
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+79
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+80
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+81
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+82
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+83
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+84
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+85
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+86
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+87
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+88
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+89
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+
+
+90
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+91
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+92
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+
+
+93
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+94
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+95
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+96
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+97
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+98
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+99
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+100
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+
+101
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+102
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+103
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+104
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+105
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+106
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+107
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+108
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.2 exits (normal)
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+109
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+110
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+111
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+112
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+
+
+113
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+114
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.2 exits (normal)
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+115
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+
+
+116
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+
+
+117
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.3 exits (normal)
+
+
+118
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.2 exits (normal)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+
+
+119
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1.2 exits (normal)
+
+
+120
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1 spawns process P1.3
+  Process P1 blocks
+  Process P1.3 sends message `ok` to process P1.1 (send_after emulated as send)
+  Process P1.3 exits (normal)
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+
+

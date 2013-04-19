@@ -9,41 +9,33 @@
 %%%----------------------------------------------------------------------
 %%% Authors     : Ilias Tsitsimpis <iliastsi@hotmail.com>
 %%% Description : Test the `exit/2' instrumentation
-%%%                 (This test should currenty fail)
 %%%----------------------------------------------------------------------
 
 -module(exit).
 -export([scenarios/0]).
--export([test1/0, test2/0]).
+-export([test1/0, test2/0, test3/0]).
 
 scenarios() ->
-    [{test1, inf}, {test2, inf}].
+    [{N,P,R} || {N,P} <- [{test1, inf}, {test2, inf}, {test3, inf}],
+                R <- [full, dpor]].
 
-%% Right now we do not handle `exit/2' at all.
-
-%% Here lies is a deadlock
 test1() ->
-    throw(exit_2_is_not_supported),
-    Pid = spawn_link(fun() ->
-                process_flag(trap_exit, true),
-                receive _ -> ok end
-          end),
+    Pid = spawn(fun() ->
+                        process_flag(trap_exit, true),
+                        receive _ -> ok end
+                end),
     exit(Pid, normal).
 
-%% Here lies is an exception
 test2() ->
-    throw(exit_2_is_not_supported),
-    Pid = spawn_link(fun() ->
-                process_flag(trap_exit, true),
-                receive _ -> ok end
-          end),
+    Pid = spawn(fun() ->
+                        process_flag(trap_exit, true),
+                        receive _ -> ok end
+                end),
     exit(Pid, foo).
 
-%% This leads to a killed process that
-%% concuerror this is blocked
 test3() ->
-    Pid = spawn_link(fun() ->
-                process_flag(trap_exit, true),
-                receive _ -> ok end
-          end),
+    Pid = spawn(fun() ->
+                        process_flag(trap_exit, true),
+                        receive _ -> ok end
+                end),
     exit(Pid, kill).

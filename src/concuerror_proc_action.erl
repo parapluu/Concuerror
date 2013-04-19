@@ -37,6 +37,8 @@
                        {'demonitor', concuerror_lid:lid(),
                                     concuerror_lid:maybe_lid()} |
                        {'exit', concuerror_lid:lid(), term()} |
+                       {'exit_2', concuerror_lid:lid(),
+                                  concuerror_lid:lid(), term()} |
                        {'fun_exit', concuerror_lid:lid(),
                                     concuerror_lid:maybe_lid(), term()} |
                        {'halt', concuerror_lid:lid()} |
@@ -56,6 +58,10 @@
                        {'register', concuerror_lid:lid(),
                                     atom(), concuerror_lid:lid()} |
                        {'send', concuerror_lid:lid(),
+                                    concuerror_lid:maybe_lid(), term()} |
+                       {'send_after', concuerror_lid:lid(),
+                                    concuerror_lid:maybe_lid(), term()} |
+                       {'start_timer', concuerror_lid:lid(),
                                     concuerror_lid:maybe_lid(), term()} |
                        {'spawn', concuerror_lid:maybe_lid(),
                                     concuerror_lid:lid()} |
@@ -92,6 +98,11 @@ to_string({demonitor, Proc1, Proc2}) ->
 to_string({exit, Proc, Reason}) ->
     io_lib:format("Process ~s exits (~P)",
                   [concuerror_lid:to_string(Proc),
+                   Reason, ?PRINT_DEPTH_EXIT]);
+to_string({exit_2, From, To, Reason}) ->
+    io_lib:format("Process ~s sends an exit signal to ~p (~P)",
+                  [concuerror_lid:to_string(From),
+                   concuerror_lid:to_string(To),
                    Reason, ?PRINT_DEPTH_EXIT]);
 to_string({fun_exit, Proc, not_found, Reason}) ->
     io_lib:format("Process ~s sends exit signal (~W) to nonexisting process",
@@ -147,6 +158,14 @@ to_string({send, Sender, not_found, Msg}) ->
                   [concuerror_lid:to_string(Sender), Msg, ?PRINT_DEPTH]);
 to_string({send, Sender, Receiver, Msg}) ->
     io_lib:format("Process ~s sends message `~W` to process ~s",
+                  [concuerror_lid:to_string(Sender), Msg, ?PRINT_DEPTH,
+                   concuerror_lid:to_string(Receiver)]);
+to_string({send_after, Sender, Receiver, Msg}) ->
+    io_lib:format("Process ~s sends message `~W` to process ~s (send_after emulated as send)",
+                  [concuerror_lid:to_string(Sender), Msg, ?PRINT_DEPTH,
+                   concuerror_lid:to_string(Receiver)]);
+to_string({start_timer, Sender, Receiver, Msg}) ->
+    io_lib:format("Process ~s sets a timer, with message `~W` to process ~s (expires immediately)",
                   [concuerror_lid:to_string(Sender), Msg, ?PRINT_DEPTH,
                    concuerror_lid:to_string(Receiver)]);
 to_string({spawn, not_found, Child}) ->
