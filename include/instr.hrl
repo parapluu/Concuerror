@@ -168,5 +168,5 @@
      {binary,   decode_unsigned, 1},
      {binary,   decode_unsigned, 2},
      % Helpers for unicode filenames
-     {file, native_name_encodeing, 0}
+     {file, native_name_encoding, 0}
     ]).
