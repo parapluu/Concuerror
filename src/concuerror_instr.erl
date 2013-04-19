@@ -75,9 +75,11 @@ check_module_name({Module, Term}, Function, Arity) ->
     {check_module_name(Module, Function, Arity), Term};
 check_module_name(Module, Function, Arity) ->
     Conc_Module =
-        case atom_to_list(Module) of
+        try atom_to_list(Module) of
             ("concuerror_" ++ _Rest) -> true;
             _Other -> false
+        catch   %% In case atom_to_list fail, we don't want to rename the module
+            error:badarg -> true
         end,
     Rename = (not Conc_Module)
         andalso (not ets:member(?NT_INSTR_IGNORED, Module))
