@@ -18,9 +18,7 @@
 -export([analyze/3]).
 
 %% Internal exports
--export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, lid_from_pid/1]).
-
--export([notify/3, wait_poll_or_continue/0]).
+-export([notify/2, notify/3, wait/0]).
 
 -export_type([analysis_target/0, analysis_ret/0, bound/0, transition/0]).
 
@@ -53,11 +51,6 @@
                 lid          :: concuerror_lid:lid(),
                 misc = empty :: term(),
                 type = next  :: sched_msg_type()}).
-
-%% Special internal message format (fields same as above).
--record(special, {msg :: atom(),
-                  lid :: concuerror_lid:lid() | 'not_found',
-                  misc = empty :: term()}).
 
 %%%----------------------------------------------------------------------
 %%% Types
@@ -1190,12 +1183,6 @@ wait_for_exit([P|Rest]) ->
 %%% Instrumentation interface
 %%%----------------------------------------------------------------------
 
-%% Notify the scheduler of a blocked process.
--spec block() -> 'ok'.
-
-block() ->
-    notify(block, []).
-
 %% Prompt process Pid to continue running.
 continue(LidOrPid) ->
     send_message(LidOrPid, continue).
@@ -1216,26 +1203,23 @@ send_message(Lid, Message) ->
 %% If the calling user process has an associated LID, then send
 %% a notification and yield. Otherwise, for an unknown process
 %% running instrumented code completely ignore this call.
--spec notify(notification(), any()) -> 'ok' | 'continue' | 'poll'.
+-spec notify(notification(), any()) -> 'ok' | 'poll' | 'ignore'.
 
 notify(Msg, Misc) ->
     notify(Msg, Misc, next).
 
 -spec notify(notification(), any(), sched_msg_type()) ->
-                    'ok' | 'continue' | 'poll'.
+                    'ok' | 'poll' | 'ignore'.
 
 notify(Msg, Misc, Type) ->
     case lid_from_pid(self()) of
         not_found -> ok;
         Lid ->
-            ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc, type = Type},
+            Rec = #sched{msg = Msg, lid = Lid, misc = Misc, type = Type},
+            ?RP_SCHED_SEND ! Rec,
             case Type of
-                next  ->
-                    case Msg of
-                        'receive' -> wait_poll_or_continue();
-                        _Other -> wait()
-                    end;
-                _Else -> ok
+                next  -> wait();
+                _Else -> ignore
             end
     end.
 
@@ -1244,44 +1228,20 @@ notify(Msg, Misc, Type) ->
 lid_from_pid(Pid) ->
     concuerror_lid:from_pid(Pid).
 
--spec wakeup() -> 'ok'.
-
-wakeup() ->
-    %% TODO: Depending on how 'receive' is instrumented, a check for
-    %% whether the caller is a known process might be needed here.
-    ?RP_SCHED_SEND ! #special{msg = wakeup},
-    wait().
-
--spec no_wakeup() -> 'ok'.
-
-no_wakeup() ->
-    %% TODO: Depending on how 'receive' is instrumented, a check for
-    %% whether the caller is a known process might be needed here.
-    ?RP_SCHED_SEND ! #special{msg = no_wakeup},
-    wait().
-
-%% Wait until the scheduler prompts to continue.
--spec wait() -> 'ok'.
-
-wait() ->
-    wait_poll_or_continue(ok).
-
--spec wait_poll_or_continue() -> 'poll' | 'continue'.
-
-wait_poll_or_continue() ->
-    wait_poll_or_continue(continue).
-
 -define(VECTOR_MSG(LID, VC),
         #sched{msg = vector, lid = LID, misc = VC, type = async}).
 
-wait_poll_or_continue(Msg) ->
+%% Wait until the scheduler prompts to continue.
+-spec wait() -> 'ok' | 'poll'.
+
+wait() ->
     receive
-        #sched{msg = continue} -> Msg;
+        #sched{msg = continue} -> ok;
         #sched{msg = poll} -> poll;
         ?VECTOR_MSG(Lid, VC) ->
             Msgs = instrument_my_messages(Lid, VC),
-            notify(vector, Msgs, async),
-            wait_poll_or_continue(Msg)
+            ignore = notify(vector, Msgs, async),
+            wait()
     end.
 
 replace_messages(Lid, VC) ->

@@ -283,8 +283,7 @@ rep_receive(Fun, HasTimeout, IgnoreTimeout) ->
 
 rep_receive_loop(Act, Fun, HasTimeout, Bound) ->
     case Act of
-        Resume when Resume =:= ok;
-                    Resume =:= continue -> ok;
+        ok -> ok;
         poll ->
             {messages, Mailbox} = process_info(self(), messages),
             case rep_receive_match(Fun, Mailbox) of
@@ -316,8 +315,7 @@ rep_receive_loop(Act, Fun, HasTimeout, Bound) ->
                                 unblocked;
                             _ -> had_after
                         end,
-                    continue = concuerror_sched:notify('receive', Tag),
-                    ok
+                    ok = concuerror_sched:notify('receive', Tag)
             end
     end.
 
