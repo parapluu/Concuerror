@@ -654,13 +654,13 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                 ReplayTop#trace_state{
                   last = Selected, nexts = NewNexts, pollable = NewPollable}
         end,
-    InstrNewTraceTop = update_instr_info(Lid, Selected, CommonNewTraceTop),
+    InstrNewTraceTop = check_external_changes(CommonNewTraceTop),
     UpdTraceTop =
         #trace_state{last = UpdSelected,
                      sleep_set = UpdSleepSet,
                      nexts = UpdNexts,
                      error_nxt = UpdErrorNxt} =
-        check_external_changes(InstrNewTraceTop),
+        update_instr_info(Lid, Selected, InstrNewTraceTop),
     PrevTrace =
         case UpdSelected =:= Expected of
             true -> Trace;
