@@ -261,7 +261,7 @@ find_my_links() ->
     PPid = self(),
     {links, AllPids} = process_info(PPid, links),
     AllLids = [?LID_FROM_PID(Pid) || Pid <- AllPids],
-    [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].                  
+    [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].
 
 %% @spec rep_receive(
 %%          fun((term()) -> 'block' | 'continue'),
@@ -413,18 +413,11 @@ rep_send(Dest, Msg, Opt) ->
     erlang:send(Dest, Msg, Opt).
 
 send_center(Dest, Msg) ->
-    case ?LID_FROM_PID(self()) of
-        not_found ->
-            %% Unknown process sends using instrumented code. Allow it.
-            %% It will be reported at the receive point.
-            ok;
-        _SelfLid ->
-            PlanLid = ?LID_FROM_PID(find_pid(Dest)),
-            concuerror_sched:notify(send, {Dest, PlanLid, Msg}),
-            SendLid = ?LID_FROM_PID(find_pid(Dest)),
-            concuerror_sched:notify(send, {Dest, SendLid, Msg}, prev),
-            ok
-    end.
+    PlanLid = ?LID_FROM_PID(find_pid(Dest)),
+    concuerror_sched:notify(send, {Dest, PlanLid, Msg}),
+    SendLid = ?LID_FROM_PID(find_pid(Dest)),
+    concuerror_sched:notify(send, {Dest, SendLid, Msg}, prev),
+    ok.
 
 %% @spec rep_spawn(function()) -> pid()
 %% @doc: Replacement for `spawn/1'.
@@ -443,16 +436,12 @@ spawn_center(Kind, Fun) ->
             spawn_link -> fun spawn_link/1;
             spawn_monitor -> fun spawn_monitor/1
         end,
-    case ?LID_FROM_PID(self()) of
-        not_found -> Spawner(Fun);
-        _Lid ->
-            concuerror_sched:notify(Kind, unknown),
-            Result = Spawner(fun() -> spawn_fun_wrapper(Fun) end),
-            concuerror_sched:notify(Kind, Result, prev),
-            %% Wait before using the PID to be sure that an LID is assigned
-            concuerror_sched:wait(),
-            Result
-    end.
+    concuerror_sched:notify(Kind, unknown),
+    Result = Spawner(fun() -> spawn_fun_wrapper(Fun) end),
+    concuerror_sched:notify(Kind, Result, prev),
+    %% Wait before using the PID to be sure that an LID is assigned
+    concuerror_sched:wait(),
+    Result.
 
 -spec spawn_fun_wrapper(function()) -> term().
 spawn_fun_wrapper(Fun) ->
@@ -473,7 +462,7 @@ spawn_fun_wrapper(Fun) ->
                 throw -> throw(Type);
                 exit  -> exit(Type)
             end
-    end.                    
+    end.
 
 find_my_info() ->
     MyEts = find_my_ets_tables(),
@@ -592,16 +581,12 @@ rep_spawn_monitor(Module, Function, Args) ->
                            pid() | {pid(), reference()}.
 rep_spawn_opt(Fun, Opt) ->
     check_unknown_process(),
-    case ?LID_FROM_PID(self()) of
-        not_found -> spawn_opt(Fun, Opt);
-        _Lid ->
-            concuerror_sched:notify(spawn_opt, unknown),
-            Result = spawn_opt(fun() -> spawn_fun_wrapper(Fun) end, Opt),
-            concuerror_sched:notify(spawn_opt, Result, prev),
-            %% Wait before using the PID to be sure that an LID is assigned
-            concuerror_sched:wait(),
-            Result
-    end.
+    concuerror_sched:notify(spawn_opt, unknown),
+    Result = spawn_opt(fun() -> spawn_fun_wrapper(Fun) end, Opt),
+    concuerror_sched:notify(spawn_opt, Result, prev),
+    %% Wait before using the PID to be sure that an LID is assigned
+    concuerror_sched:wait(),
+    Result.
 
 %% @spec rep_spawn_opt(atom(), atom(), [term()],
 %%       ['link' | 'monitor' |
