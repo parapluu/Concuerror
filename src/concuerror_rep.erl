@@ -19,6 +19,8 @@
 
 -export([rep_var/3, rep_apply/3, rep_send/2, rep_send/3]).
 
+-export([rep_port_command/2, rep_port_command/3, rep_port_control/3]).
+
 -export([rep_spawn/1, rep_spawn/3,
          rep_spawn_link/1, rep_spawn_link/3,
          rep_spawn_opt/2, rep_spawn_opt/4]).
@@ -651,6 +653,37 @@ rep_whereis(RegName) ->
         end,
     concuerror_sched:notify(whereis, {RegName, Value}, prev),
     R.
+
+%% @spec rep_port_command(port(), term()) -> term()
+%% @doc: Replacement for `port_command/2'.
+%%
+%% Just yield before calling port_command/2.
+-spec rep_port_command(port, term()) -> term().
+rep_port_command(Port, Data) ->
+    check_unknown_process(),
+    concuerror_sched:notify(port_command, Port),
+    port_command(Port, Data).
+
+%% @spec rep_port_command(port(), term(), [force | nosuspend]) -> term()
+%% @doc: Replacement for `port_command/3'.
+%%
+%% Just yield before calling port_command/3.
+-spec rep_port_command(port, term(), [force | nosuspend]) -> term().
+rep_port_command(Port, Data, OptionList) ->
+    check_unknown_process(),
+    concuerror_sched:notify(port_command, Port),
+    port_command(Port, Data, OptionList).
+
+%% @spec rep_port_control(port(), integer(), term()) -> term()
+%% @doc: Replacement for `port_control/3'.
+%%
+%% Just yield before calling port_control/3.
+-spec rep_port_control(port, integer(), term()) -> term().
+rep_port_control(Port, Operation, Data) ->
+    check_unknown_process(),
+    concuerror_sched:notify(port_control, Port),
+    port_control(Port, Operation, Data).
+
 
 %%%----------------------------------------------------------------------
 %%% ETS replacements

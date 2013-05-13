@@ -68,6 +68,8 @@
                        {'unlink', concuerror_lid:lid(),
                                     concuerror_lid:maybe_lid()} |
                        {'unregister', concuerror_lid:lid(), atom()} |
+                       {'port_command', concuerror_lid:lid(), port()} |
+                       {'port_control', concuerror_lid:lid(), port()} |
                        {'whereis', concuerror_lid:lid(), atom(),
                                     concuerror_lid:maybe_lid()}.
 
@@ -187,6 +189,12 @@ to_string({unlink, Proc1, Proc2}) ->
 to_string({unregister, Proc, RegName}) ->
     io_lib:format("Process ~s unregisters process `~p`",
                   [concuerror_lid:to_string(Proc), RegName]);
+to_string({port_command, Proc, Port}) ->
+    io_lib:format("Process ~s sends data to port ~w",
+                  [concuerror_lid:to_string(Proc), Port]);
+to_string({port_control, Proc, Port}) ->
+    io_lib:format("Process ~s performs control operation on port ~w",
+                  [concuerror_lid:to_string(Proc), Port]);
 to_string({whereis, Proc, RegName, not_found}) ->
     io_lib:format("Process ~s requests the pid of unregistered "
                   "process `~p` (undefined)",

@@ -89,6 +89,7 @@
                         'process_flag' | 'receive' | 'receive_no_instr' |
                         'register' | 'send' | 'spawn' | 'spawn_link' |
                         'spawn_monitor' | 'spawn_opt' | 'unlink' |
+                        'port_command' | 'port_control' |
                         'unregister' | 'whereis'.
 
 %%%----------------------------------------------------------------------
@@ -1067,6 +1068,9 @@ convert_error_trace({Lid, {Instr, Extra}, _Msgs}, Procs) ->
                 {process_flag, Lid, trap_exit, Value};
             exit ->
                 {exit, Lid, normal};
+            PortOp when PortOp =:= port_command;
+                        PortOp =:= port_control ->
+                {PortOp, Lid, Extra};
             Monitor when Monitor =:= monitor;
                          Monitor =:= spawn_monitor ->
                 {TLid, _RefLid} = Extra,

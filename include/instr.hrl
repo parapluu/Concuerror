@@ -39,6 +39,9 @@
          {spawn_opt, 4},
          {unlink, 1},
          {unregister, 1},
+         {port_command, 2},
+         {port_command, 3},
+         {port_control, 3},
          {apply, 3},
          {whereis, 1}]).
 
