@@ -636,11 +636,18 @@ rep_spawn_opt(Module, Function, Args, Opt) ->
 %%
 %% TODO: Currently it sends the message immediately and returns a random ref.
 -spec rep_start_timer(non_neg_integer(), pid() | atom(), term()) -> reference().
-rep_start_timer(_Time, Dest, Msg) ->
+rep_start_timer(Time, Dest, Msg) ->
     check_unknown_process(),
-    concuerror_sched:notify(start_timer, {?LID_FROM_PID(Dest), Msg}),
     Ref = make_ref(),
-    Dest ! {timeout, Ref, Msg},
+    case ets:lookup(?NT_OPTIONS, 'ignore_timeout') of
+        [{'ignore_timeout', ITValue}] when ITValue =< Time ->
+            %% Ignore this start_timer operation
+            ok;
+        _ ->
+            concuerror_sched:notify(start_timer, {?LID_FROM_PID(Dest), Msg}),
+            Dest ! {timeout, Ref, Msg},
+            ok
+    end,
     Ref.
 
 %% @spec: rep_send_after(non_neg_integer(), pid() | atom(), term()) ->
@@ -649,10 +656,17 @@ rep_start_timer(_Time, Dest, Msg) ->
 %%
 %% TODO: Currently it sends the message immediately and returns a random ref.
 -spec rep_send_after(non_neg_integer(), pid() | atom(), term()) -> reference().
-rep_send_after(_Time, Dest, Msg) ->
+rep_send_after(Time, Dest, Msg) ->
     check_unknown_process(),
-    concuerror_sched:notify(send_after, {?LID_FROM_PID(Dest), Msg}),
-    Dest ! Msg,
+    case ets:lookup(?NT_OPTIONS, 'ignore_timeout') of
+        [{'ignore_timeout', ITValue}] when ITValue =< Time ->
+            %% Ignore this send_after operation
+            ok;
+        _ ->
+            concuerror_sched:notify(send_after, {?LID_FROM_PID(Dest), Msg}),
+            Dest ! Msg,
+            ok
+    end,
     make_ref().
 
 %% @spec: rep_exit(pid() | port(), term()) -> 'true'.
