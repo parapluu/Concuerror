@@ -48,6 +48,10 @@
 
 -export([rep_halt/0, rep_halt/1]).
 
+-export([rep_start_timer/3, rep_send_after/3]).
+
+-export([rep_exit/2]).
+
 -export([rep_eunit/1]).
 
 -export([debug_print/1, debug_print/2, debug_apply/3]).
@@ -65,9 +69,11 @@
 -type dest() :: pid() | port() | atom() | {atom(), node()}.
 
 %% Callback function mapping.
+%% TODO: Automatically generate this?
 -define(INSTR_MOD_FUN,
         [{{erlang, demonitor, 1}, fun rep_demonitor/1},
          {{erlang, demonitor, 2}, fun rep_demonitor/2},
+         {{erlang, exit, 2}, fun rep_exit/2},
          {{erlang, halt, 0}, fun rep_halt/0},
          {{erlang, halt, 1}, fun rep_halt/1},
          {{erlang, is_process_alive, 1}, fun rep_is_process_alive/1},
@@ -75,6 +81,9 @@
          {{erlang, monitor, 2}, fun rep_monitor/2},
          {{erlang, process_flag, 2}, fun rep_process_flag/2},
          {{erlang, register, 2}, fun rep_register/2},
+         {{erlang, send, 2}, fun rep_send/2},
+         {{erlang, send, 3}, fun rep_send/3},
+         {{erlang, send_after, 3}, fun rep_send_after/3},
          {{erlang, spawn, 1}, fun rep_spawn/1},
          {{erlang, spawn, 3}, fun rep_spawn/3},
          {{erlang, spawn_link, 1}, fun rep_spawn_link/1},
@@ -83,6 +92,7 @@
          {{erlang, spawn_monitor, 3}, fun rep_spawn_monitor/3},
          {{erlang, spawn_opt, 2}, fun rep_spawn_opt/2},
          {{erlang, spawn_opt, 4}, fun rep_spawn_opt/4},
+         {{erlang, start_timer, 3}, fun rep_start_timer/3},
          {{erlang, unlink, 1}, fun rep_unlink/1},
          {{erlang, unregister, 1}, fun rep_unregister/1},
          {{erlang, whereis, 1}, fun rep_whereis/1},
@@ -285,8 +295,7 @@ rep_receive(Fun, HasTimeout, IgnoreTimeout) ->
 
 rep_receive_loop(Act, Fun, HasTimeout, Bound) ->
     case Act of
-        Resume when Resume =:= ok;
-                    Resume =:= continue -> ok;
+        ok -> ok;
         poll ->
             {messages, Mailbox} = process_info(self(), messages),
             case rep_receive_match(Fun, Mailbox) of
@@ -318,8 +327,7 @@ rep_receive_loop(Act, Fun, HasTimeout, Bound) ->
                                 unblocked;
                             _ -> had_after
                         end,
-                    continue = concuerror_sched:notify('receive', Tag),
-                    ok
+                    ok = concuerror_sched:notify('receive', Tag)
             end
     end.
 
@@ -458,13 +466,8 @@ spawn_fun_wrapper(Fun) ->
             MyRealInfo = find_my_info(),
             concuerror_sched:notify(exit, {normal, MyRealInfo}, prev);
         Class:Type ->
-            concuerror_sched:notify(error,[Class,Type,erlang:get_stacktrace()]),
-            case Class of
-                error -> error(Type);
-                throw -> throw(Type);
-                exit  -> exit(Type)
-            end
-    end.
+            concuerror_sched:notify(error,[Class,Type,erlang:get_stacktrace()])
+    end.                    
 
 find_my_info() ->
     MyEts = find_my_ets_tables(),
@@ -613,6 +616,53 @@ rep_spawn_opt(Module, Function, Args, Opt) ->
     NewModule = concuerror_instr:check_module_name(Module, Function, LenArgs),
     Fun = fun() -> apply(NewModule, Function, Args) end,
     rep_spawn_opt(Fun, Opt).
+
+%% @spec: rep_start_timer(non_neg_integer(), pid() | atom(), term()) ->
+%%                                                                  reference().
+%% @doc: Replacement for `start_timer/3'.
+%%
+%% TODO: Currently it sends the message immediately and returns a random ref.
+-spec rep_start_timer(non_neg_integer(), pid() | atom(), term()) -> reference().
+rep_start_timer(Time, Dest, Msg) ->
+    check_unknown_process(),
+    Ref = make_ref(),
+    case ets:lookup(?NT_OPTIONS, 'ignore_timeout') of
+        [{'ignore_timeout', ITValue}] when ITValue =< Time ->
+            %% Ignore this start_timer operation
+            ok;
+        _ ->
+            concuerror_sched:notify(start_timer, {?LID_FROM_PID(Dest), Msg}),
+            Dest ! {timeout, Ref, Msg},
+            ok
+    end,
+    Ref.
+
+%% @spec: rep_send_after(non_neg_integer(), pid() | atom(), term()) ->
+%%                                                                 reference().
+%% @doc: Replacement for `send_after/3'.
+%%
+%% TODO: Currently it sends the message immediately and returns a random ref.
+-spec rep_send_after(non_neg_integer(), pid() | atom(), term()) -> reference().
+rep_send_after(Time, Dest, Msg) ->
+    check_unknown_process(),
+    case ets:lookup(?NT_OPTIONS, 'ignore_timeout') of
+        [{'ignore_timeout', ITValue}] when ITValue =< Time ->
+            %% Ignore this send_after operation
+            ok;
+        _ ->
+            concuerror_sched:notify(send_after, {?LID_FROM_PID(Dest), Msg}),
+            Dest ! Msg,
+            ok
+    end,
+    make_ref().
+
+%% @spec: rep_exit(pid() | port(), term()) -> 'true'.
+%% @doc: Replacement for `exit/2'.
+-spec rep_exit(pid() | port(), term()) -> 'true'.
+rep_exit(Pid, Reason) ->
+    check_unknown_process(),
+    concuerror_sched:notify(exit_2, {?LID_FROM_PID(Pid), Reason}),
+    exit(Pid, Reason).
 
 %% @spec: rep_unlink(pid() | port()) -> 'true'
 %% @doc: Replacement for `unlink/1'.

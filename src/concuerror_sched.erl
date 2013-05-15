@@ -18,9 +18,7 @@
 -export([analyze/3]).
 
 %% Internal exports
--export([block/0, notify/2, wait/0, wakeup/0, no_wakeup/0, lid_from_pid/1]).
-
--export([notify/3, wait_poll_or_continue/0]).
+-export([notify/2, notify/3, wait/0]).
 
 -export_type([analysis_target/0, analysis_ret/0, bound/0, transition/0]).
 
@@ -54,11 +52,6 @@
                 misc = empty :: term(),
                 type = next  :: sched_msg_type()}).
 
-%% Special internal message format (fields same as above).
--record(special, {msg :: atom(),
-                  lid :: concuerror_lid:lid() | 'not_found',
-                  misc = empty :: term()}).
-
 %%%----------------------------------------------------------------------
 %%% Types
 %%%----------------------------------------------------------------------
@@ -85,12 +78,11 @@
                         'ets_foldl' | 'ets_insert' | 'ets_insert_new' |
                         'ets_lookup' | 'ets_match_delete' | 'ets_match_object' |
                         'ets_select_delete' | 'fun_exit' | 'halt' |
-                        'is_process_alive' | 'link' | 'monitor' |
-                        'process_flag' | 'receive' | 'receive_no_instr' |
-                        'register' | 'send' | 'spawn' | 'spawn_link' |
-                        'spawn_monitor' | 'spawn_opt' | 'unlink' |
-                        'port_command' | 'port_control' |
-                        'unregister' | 'whereis'.
+                        'is_process_alive' | 'link' | 'monitor' | 'process_flag'
+                        | 'receive' | 'receive_no_instr' | 'register' | 'send' |
+                        'send_after' | 'spawn' | 'spawn_link' | 'spawn_monitor'
+                        | 'spawn_opt' | 'start_timer' | 'unlink' | 'unregister'
+                        | 'whereis' | 'port_command' | 'port_control'.
 
 %%%----------------------------------------------------------------------
 %%% User interface
@@ -290,6 +282,7 @@ explore(MightNeedReplayState) ->
         end
     end.
 
+select_from_backtrack(#dpor_state{trace = []}) -> none;
 select_from_backtrack(#dpor_state{must_replay = MustReplay,
 				  trace = Trace} = MightNeedReplayState) ->
     %% FIXME: Pick first and don't really subtract.
@@ -337,6 +330,7 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
         false -> ok
     end,
     proc_cleanup(processes() -- ProcBefore),
+    concuerror_util:flush_mailbox(),
     {FirstLid, NewGroupLeader} = start_target_op(Target),
     _ = wait_next(FirstLid, init),
     NewTrace = replay_trace_aux(Trace),
@@ -387,10 +381,12 @@ wait_next(Lid, Plan) ->
                             type = prev} = Msg ->
                          case Info of
                              {Pid, Ref} ->
+                                 monitor(process, Pid),
                                  ChildLid = concuerror_lid:new(Pid, Lid),
                                  MonRef = concuerror_lid:ref_new(ChildLid, Ref),
                                  Msg#sched{misc = {ChildLid, MonRef}};
                              Pid ->
+                                 monitor(process, Pid),
                                  Msg#sched{misc = concuerror_lid:new(Pid, Lid)}
                          end
                  after
@@ -624,7 +620,6 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                  pollable = Pollable, done = Done, error_nxt = OldErrorNxt,
                  nexts = Nexts, clock_map = ClockMap, sleep_set = SleepSet,
                  preemptions = Preemptions, last = {LLid,_,_}} = PrevTraceTop,
-                NewNexts = dict:store(Lid, Next, Nexts),
     Expected = dict:fetch(Lid, Nexts),
     NewNexts = dict:store(Lid, Next, Nexts),
     ClockVector = lookup_clock(Lid, ClockMap),
@@ -659,14 +654,18 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                 ReplayTop#trace_state{
                   last = Selected, nexts = NewNexts, pollable = NewPollable}
         end,
-    InstrNewTraceTop = update_instr_info(Lid, Selected, CommonNewTraceTop),
-    NewTraceTop = check_pollable(InstrNewTraceTop),
-    PossiblyRewrittenSelected = NewTraceTop#trace_state.last,
+    InstrNewTraceTop = check_external_changes(CommonNewTraceTop),
+    UpdTraceTop =
+        #trace_state{last = UpdSelected,
+                     sleep_set = UpdSleepSet,
+                     nexts = UpdNexts,
+                     error_nxt = UpdErrorNxt} =
+        update_instr_info(Lid, Selected, InstrNewTraceTop),
     PrevTrace =
-        case PossiblyRewrittenSelected =:= Expected of
+        case UpdSelected =:= Expected of
             true -> Trace;
             false ->
-                rewrite_while_awaked(PossiblyRewrittenSelected, Expected, Trace)
+                rewrite_while_awaked(UpdSelected, Expected, Trace)
         end,
     FinalTraceTop =
         case Replaying of
@@ -674,30 +673,28 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                 ?debug("Happened before: ~p\n",
                        [orddict:to_list(
                           begin
-                              CMM = NewTraceTop#trace_state.clock_map,
+                              CMM = UpdTraceTop#trace_state.clock_map,
                               CCC = lookup_clock(Lid, CMM),
                               case lookup_clock_value(Lid, ClockVector) of
                                   0 -> orddict:erase(Lid, CCC);
                                   QQ -> orddict:store(Lid, QQ, CCC)
                               end
                           end)]),
-                ?debug("Selected: ~P\n",
-                       [PossiblyRewrittenSelected, ?DEBUG_DEPTH]),
+                ?debug("Selected: ~P\n", [UpdSelected, ?DEBUG_DEPTH]),
                 NewSleepSet =
                     case Flavor =:= 'none' of
                         true -> [];
                         false ->
-                            filter_awaked(NewTraceTop#trace_state.sleep_set,
-                                          NewTraceTop#trace_state.nexts,
-                                          PossiblyRewrittenSelected)
+                            filter_awaked(UpdSleepSet, UpdNexts, UpdSelected)
                     end,
                 Awakened =
                     ordsets:subtract(CommonNewTraceTop#trace_state.sleep_set,
                                      NewSleepSet),
                 NewErrorNext =
-                    case {Next, Selected} of
-                        {_, {_, { halt, _}, _}} -> [];
-                        {{_, {error, _}, _}, _} -> [Lid];
+                    case {Selected, Next, UpdErrorNxt} of
+                        {{_, {halt, _}, _},  _, _} -> [];
+                        {                _, {_, {error, _}, _}, _} -> [Lid];
+                        {                _, _, [_]} -> UpdErrorNxt;
                         _Else ->
                             case Flavor =:= 'none' of
                                 true -> [];
@@ -708,12 +705,12 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                             end
                     end,
                 NewLastBlocked = ordsets:is_element(Lid, NewBlocked),    
-                NewTraceTop#trace_state{
+                UpdTraceTop#trace_state{
                   last_blocked = NewLastBlocked,
                   error_nxt = NewErrorNext,
                   sleep_set = NewSleepSet};
             {true, _ReplayTop} ->
-                NewTraceTop
+                UpdTraceTop
         end,
     [FinalTraceTop|PrevTrace].
 
@@ -929,10 +926,30 @@ update_named_sends(Name, PLid, Nexts) ->
         end,
     dict:map(Map, Nexts).
 
-check_pollable(TraceTop) ->
-    #trace_state{pollable = Pollable} = TraceTop,
-    PollableList = ordsets:to_list(Pollable),
-    lists:foldl(fun poll_all/2, TraceTop, PollableList).
+check_external_changes(TraceTop) ->
+    case unexpected_exits(TraceTop) of
+        {true, NewTraceTop} -> NewTraceTop;
+        none ->
+            #trace_state{pollable = Pollable} = TraceTop,
+            PollableList = ordsets:to_list(Pollable),
+            lists:foldl(fun poll_all/2, TraceTop, PollableList)
+    end.
+
+unexpected_exits(#trace_state{nexts = Nexts} = TraceTop) ->
+    receive
+        {'DOWN', _, process, _, normal} -> unexpected_exits(TraceTop);
+        {'DOWN', _, process, Pid, Reason} ->
+            ?debug("Unexpected exit: ~p ~p\n", [Pid, Reason]),
+            Lid = lid_from_pid(Pid),
+            Entry = {Lid, {error, [exit, Reason, []]}, []},
+            NewNexts = dict:store(Lid, Entry, Nexts),
+            {true, TraceTop#trace_state{nexts = NewNexts, error_nxt = [Lid]
+                                        %% ,
+                                        %% enabled = [], blocked = []
+                                       }}
+    after
+        0 -> none
+    end.
 
 poll_all(Lid, TraceTop) ->
     case poll(Lid) of
@@ -992,14 +1009,14 @@ add_some_next_to_backtrack(State) ->
     State#dpor_state{trace = [NewTraceTop|Rest]}.
 
 report_error(Transition, State) ->
-    #dpor_state{trace = Trace, tickets = Tickets} = State,
+    #dpor_state{trace = [_|T] = Trace, tickets = Tickets} = State,
     ?debug("ERROR!\n~P\n",[Transition, ?DEBUG_DEPTH]),
     Error = convert_error_info(Transition),
     LidTrace = convert_trace_to_error_trace(Trace, [Transition]),
     Ticket = create_ticket(Error, LidTrace),
     %% Report the error to the progress logger.
     concuerror_log:progress({'error', Ticket}),
-    State#dpor_state{must_replay = true, tickets = [Ticket|Tickets]}.
+    State#dpor_state{trace = T, must_replay = true, tickets = [Ticket|Tickets]}.
 
 convert_trace_to_error_trace([], Acc) -> Acc;
 convert_trace_to_error_trace([#trace_state{
@@ -1068,6 +1085,15 @@ convert_error_trace({Lid, {Instr, Extra}, _Msgs}, Procs) ->
                 {process_flag, Lid, trap_exit, Value};
             exit ->
                 {exit, Lid, normal};
+            exit_2 ->
+                {Lid2, Reason} = Extra,
+                {exit_2, Lid, Lid2, Reason};
+            send_after ->
+                {Lid2, Msg} = Extra,
+                {send_after, Lid, Lid2, Msg};
+            start_timer ->
+                {Lid2, Msg} = Extra,
+                {start_timer, Lid, Lid2, Msg};
             PortOp when PortOp =:= port_command;
                         PortOp =:= port_control ->
                 {PortOp, Lid, Extra};
@@ -1117,6 +1143,7 @@ convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}, _Msgs})->
         end,
     {Tag, Info}.
 
+report_possible_deadlock(#dpor_state{trace = []} = State) -> State;
 report_possible_deadlock(State) ->
     #dpor_state{trace = [TraceTop|RestTrace] = Trace, tickets = Tickets,
                 sleep_blocked_count = SBlocked} = State,
@@ -1194,12 +1221,6 @@ wait_for_exit([P|Rest]) ->
 %%% Instrumentation interface
 %%%----------------------------------------------------------------------
 
-%% Notify the scheduler of a blocked process.
--spec block() -> 'ok'.
-
-block() ->
-    notify(block, []).
-
 %% Prompt process Pid to continue running.
 continue(LidOrPid) ->
     send_message(LidOrPid, continue).
@@ -1220,26 +1241,23 @@ send_message(Lid, Message) ->
 %% If the calling user process has an associated LID, then send
 %% a notification and yield. Otherwise, for an unknown process
 %% running instrumented code completely ignore this call.
--spec notify(notification(), any()) -> 'ok' | 'continue' | 'poll'.
+-spec notify(notification(), any()) -> 'ok' | 'poll' | 'ignore'.
 
 notify(Msg, Misc) ->
     notify(Msg, Misc, next).
 
 -spec notify(notification(), any(), sched_msg_type()) ->
-                    'ok' | 'continue' | 'poll'.
+                    'ok' | 'poll' | 'ignore'.
 
 notify(Msg, Misc, Type) ->
     case lid_from_pid(self()) of
         not_found -> ok;
         Lid ->
-            ?RP_SCHED_SEND ! #sched{msg = Msg, lid = Lid, misc = Misc, type = Type},
+            Rec = #sched{msg = Msg, lid = Lid, misc = Misc, type = Type},
+            ?RP_SCHED_SEND ! Rec,
             case Type of
-                next  ->
-                    case Msg of
-                        'receive' -> wait_poll_or_continue();
-                        _Other -> wait()
-                    end;
-                _Else -> ok
+                next  -> wait();
+                _Else -> ignore
             end
     end.
 
@@ -1248,44 +1266,20 @@ notify(Msg, Misc, Type) ->
 lid_from_pid(Pid) ->
     concuerror_lid:from_pid(Pid).
 
--spec wakeup() -> 'ok'.
-
-wakeup() ->
-    %% TODO: Depending on how 'receive' is instrumented, a check for
-    %% whether the caller is a known process might be needed here.
-    ?RP_SCHED_SEND ! #special{msg = wakeup},
-    wait().
-
--spec no_wakeup() -> 'ok'.
-
-no_wakeup() ->
-    %% TODO: Depending on how 'receive' is instrumented, a check for
-    %% whether the caller is a known process might be needed here.
-    ?RP_SCHED_SEND ! #special{msg = no_wakeup},
-    wait().
-
-%% Wait until the scheduler prompts to continue.
--spec wait() -> 'ok'.
-
-wait() ->
-    wait_poll_or_continue(ok).
-
--spec wait_poll_or_continue() -> 'poll' | 'continue'.
-
-wait_poll_or_continue() ->
-    wait_poll_or_continue(continue).
-
 -define(VECTOR_MSG(LID, VC),
         #sched{msg = vector, lid = LID, misc = VC, type = async}).
 
-wait_poll_or_continue(Msg) ->
+%% Wait until the scheduler prompts to continue.
+-spec wait() -> 'ok' | 'poll'.
+
+wait() ->
     receive
-        #sched{msg = continue} -> Msg;
+        #sched{msg = continue} -> ok;
         #sched{msg = poll} -> poll;
         ?VECTOR_MSG(Lid, VC) ->
             Msgs = instrument_my_messages(Lid, VC),
-            notify(vector, Msgs, async),
-            wait_poll_or_continue(Msg)
+            ignore = notify(vector, Msgs, async),
+            wait()
     end.
 
 replace_messages(Lid, VC) ->

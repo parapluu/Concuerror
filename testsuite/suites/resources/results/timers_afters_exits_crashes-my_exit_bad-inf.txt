@@ -1,0 +1,11 @@
+Checked 1 interleaving(s). 1 errors found.
+
+1
+Error type        : Exception
+Details           : {whatever,[]}
+  Process P1 spawns process P1.1
+  Process P1 sends an exit signal to "P1.1" (whatever)
+  Process P1 blocks
+  Process P1.1: error [exit,whatever,[]]
+
+
