@@ -56,6 +56,8 @@
 
 -export([debug_print/1, debug_print/2, debug_apply/3]).
 
+-export_type([dest/0]).
+
 -include("gen.hrl").
 
 %%%----------------------------------------------------------------------
@@ -408,7 +410,9 @@ rep_register(RegName, P) ->
 rep_send(Dest, Msg) ->
     check_unknown_process(),
     send_center(Dest, Msg),
-    Dest ! Msg.
+    Result = Dest ! Msg,
+    concuerror_util:wait_messages(find_pid(Dest)),
+    Result.
 
 %% @spec rep_send(dest(), term(), ['nosuspend' | 'noconnect']) ->
 %%                      'ok' | 'nosuspend' | 'noconnect'
@@ -420,7 +424,9 @@ rep_send(Dest, Msg) ->
 rep_send(Dest, Msg, Opt) ->
     check_unknown_process(),
     send_center(Dest, Msg),
-    erlang:send(Dest, Msg, Opt).
+    Result = erlang:send(Dest, Msg, Opt),
+    concuerror_util:wait_messages(find_pid(Dest)),
+    Result.
 
 send_center(Dest, Msg) ->
     PlanLid = ?LID_FROM_PID(find_pid(Dest)),
@@ -662,7 +668,9 @@ rep_send_after(Time, Dest, Msg) ->
 rep_exit(Pid, Reason) ->
     check_unknown_process(),
     concuerror_sched:notify(exit_2, {?LID_FROM_PID(Pid), Reason}),
-    exit(Pid, Reason).
+    exit(Pid, Reason),
+    concuerror_util:wait_messages(find_pid(Pid)),
+    true.
 
 %% @spec: rep_unlink(pid() | port()) -> 'true'
 %% @doc: Replacement for `unlink/1'.
@@ -704,25 +712,29 @@ rep_whereis(RegName) ->
     concuerror_sched:notify(whereis, {RegName, Value}, prev),
     R.
 
-%% @spec rep_port_command(port(), term()) -> term()
+%% @spec rep_port_command(port(), term()) -> true
 %% @doc: Replacement for `port_command/2'.
 %%
 %% Just yield before calling port_command/2.
--spec rep_port_command(port, term()) -> term().
+-spec rep_port_command(port, term()) -> true.
 rep_port_command(Port, Data) ->
     check_unknown_process(),
     concuerror_sched:notify(port_command, Port),
-    port_command(Port, Data).
+    port_command(Port, Data),
+    concuerror_util:wait_messages(not_found),
+    true.
 
-%% @spec rep_port_command(port(), term(), [force | nosuspend]) -> term()
+%% @spec rep_port_command(port(), term(), [force | nosuspend]) -> boolean()
 %% @doc: Replacement for `port_command/3'.
 %%
 %% Just yield before calling port_command/3.
--spec rep_port_command(port, term(), [force | nosuspend]) -> term().
+-spec rep_port_command(port, term(), [force | nosuspend]) -> boolean().
 rep_port_command(Port, Data, OptionList) ->
     check_unknown_process(),
     concuerror_sched:notify(port_command, Port),
-    port_command(Port, Data, OptionList).
+    Result = port_command(Port, Data, OptionList),
+    concuerror_util:wait_messages(not_found),
+    Result.
 
 %% @spec rep_port_control(port(), integer(), term()) -> term()
 %% @doc: Replacement for `port_control/3'.
@@ -732,7 +744,9 @@ rep_port_command(Port, Data, OptionList) ->
 rep_port_control(Port, Operation, Data) ->
     check_unknown_process(),
     concuerror_sched:notify(port_control, Port),
-    port_control(Port, Operation, Data).
+    Result = port_control(Port, Operation, Data),
+    concuerror_util:wait_messages(not_found),
+    Result.
 
 
 %%%----------------------------------------------------------------------

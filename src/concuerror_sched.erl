@@ -1283,11 +1283,6 @@ wait() ->
     end.
 
 replace_messages(Lid, VC) ->
-    %% Let "black" processes send any remaining messages.
-    case ets:member(?NT_OPTIONS, 'wait_messages') of
-        true  -> wait_black_messages();
-        false -> ok
-    end,
     Fun =
         fun(Pid, MsgAcc) ->
             Pid ! ?VECTOR_MSG(Lid, VC),
@@ -1302,26 +1297,6 @@ replace_messages(Lid, VC) ->
             end
         end,
     concuerror_lid:fold_pids(Fun, []).
-
-wait_black_messages() ->
-    %% Check if there is any processes able to run (apart from current)
-    %% thus check that there is only one processes with status
-    %% different than waiting.
-    Priority = process_flag(priority, low),
-    receive after 2 -> ok end,
-    Check =
-        fun() ->
-                Running = [P ||
-                    P <- processes(),
-                    process_info(P, status) =/= {status, waiting}],
-                case Running of
-		    [_] -> true;
-		    _ -> false
-		end
-        end,
-    concuerror_util:wait_until(Check, 2),
-    process_flag(priority, Priority),
-    ok.
 
 -define(IS_INSTR_MSG(Msg),
         (is_tuple(Msg) andalso

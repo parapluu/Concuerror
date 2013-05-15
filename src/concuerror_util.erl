@@ -14,7 +14,7 @@
 
 -module(concuerror_util).
 -export([doc/1, test/0, flat_format/2, flush_mailbox/0, get_module_name/1,
-         is_erl_source/1, funs/1, funs/2, funLine/3, pmap/2, wait_until/2,
+         is_erl_source/1, funs/1, funs/2, funLine/3, pmap/2, wait_messages/1,
          timer_init/0, timer_start/1, timer/1, timer_stop/1, timer_destroy/0,
          init_state/0, progress_bar/2, to_elapsed_time/1, to_elapsed_time/2]).
 
@@ -283,10 +283,32 @@ pmap(Fun, List) ->
 
 
 %% -------------------------------------------------------------------
-%% Wait for something to happen
--spec wait_until(fun(() -> boolean()), non_neg_integer()) -> ok.
-wait_until(Fun, Time) ->
-    case Fun() of
-        true  -> ok;
-        false -> receive after Time -> wait_until(Fun, Time) end
+%% Wait for uninstrumented messages to be processed.
+-spec wait_messages(concuerror_rep:dest()) -> ok.
+wait_messages(Dest) ->
+    WaitFlag = ets:member(?NT_OPTIONS, 'wait_messages'),
+    NotInstr = concuerror_lid:from_pid(Dest) =:= 'not_found',
+    case (WaitFlag andalso NotInstr) of
+        true ->
+            Self = self(),
+            Pid = spawn(fun() -> trace(Self) end),
+            receive {Pid, ok} -> ok end;
+        false ->
+            ok
+    end.
+
+trace(Pid) ->
+    %% Wait until Pid receives a message
+    {message_queue_len, MsgQueueLen} = process_info(Pid, message_queue_len),
+    traceLoop(Pid, MsgQueueLen, 5),
+    Pid ! {self(), ok}.
+
+traceLoop(_Pid, _MsgQueueLen, 0) ->
+    ok;
+traceLoop(Pid, MsgQueueLen, I) ->
+    {message_queue_len, NewLen} = process_info(Pid, message_queue_len),
+    case NewLen > MsgQueueLen of
+        true -> ok;
+        false ->
+            receive after 2 -> traceLoop(Pid, MsgQueueLen, I-1) end
     end.
