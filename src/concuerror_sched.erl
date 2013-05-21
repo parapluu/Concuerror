@@ -707,7 +707,8 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
     UpdTraceTop =
         #trace_state{last = UpdSelected,
                      sleep_set = UpdSleepSet,
-                     nexts = UpdNexts} =
+                     nexts = UpdNexts,
+                     backtrack = TempBacktrack} =
         update_instr_info(Lid, Selected, InstrNewTraceTop),
     PrevTrace =
         case UpdSelected =:= Expected of
@@ -736,10 +737,16 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                             filter_awaked(UpdSleepSet, UpdNexts, UpdSelected)
                     end,
                 NewBacktrack =
-                    case {Next, Selected} of
-                        {_, {_, { halt, _}, _}} -> [];
-                        {{_, {error, _}, _}, _} -> new_backtrack([{Lid, Next}]);
-                        _Else -> element(3, lists:keyfind(Lid, 1, Backtrack))
+                    case TempBacktrack =:= [] of
+                        true ->
+                            case {Next, Selected} of
+                                {_, {_, { halt, _}, _}} -> [];
+                                {{_, {error, _}, _}, _} ->
+                                    new_backtrack([{Lid, Next}]);
+                                _Else ->
+                                    element(3, lists:keyfind(Lid, 1, Backtrack))
+                            end;
+                        false -> TempBacktrack
                     end,
                 NewLastBlocked = ordsets:is_element(Lid, NewBlocked),
                 ?debug("Awaked: ~p\n", [NewAwaked]),
@@ -981,7 +988,7 @@ unexpected_exits(#trace_state{nexts = Nexts} = TraceTop) ->
             Entry = {Lid, {error, [exit, Reason, []]}, []},
             NewNexts = dict:store(Lid, Entry, Nexts),
             {true, TraceTop#trace_state{nexts = NewNexts,
-                                        backtrack = [{Lid, []}]
+                                        backtrack = [{Lid, Entry, []}]
                                        }}
     after
         0 -> none
@@ -1043,6 +1050,7 @@ add_some_next_to_backtrack(State) ->
                 Annotated = [{P, dict:fetch(P, Nexts)} || P <- Set],
                 new_backtrack(Annotated);
             false ->
+                ?debug("Predefined: ~p\n", [OldBacktrack]),
                 [A || {K, _, _} = A <- OldBacktrack,
                       not ordsets:is_element(K, SleepSet)]
         end,
