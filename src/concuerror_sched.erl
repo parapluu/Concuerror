@@ -128,7 +128,7 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
                 catch unregister(net_sup),
                 %% Run all possible interleavings
                 {T1, _} = statistics(wall_clock),
-                Result = interleave(NewTarget, PreBound, Dpor, Options),
+                Result = do_analysis(NewTarget, PreBound, Dpor, Options),
                 {T2, _} = statistics(wall_clock),
                 {Mins, Secs} = concuerror_util:to_elapsed_time(T1, T2),
                 ?debug("Done in ~wm~.2fs\n", [Mins, Secs]),
@@ -162,9 +162,9 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
     Ret.
 
 %% Produce all possible process interleavings of (Mod, Fun, Args).
-interleave(Target, PreBound, Dpor, Options) ->
+do_analysis(Target, PreBound, Dpor, Options) ->
     Self = self(),
-    Fun = fun() -> interleave_aux(Target, PreBound, Self, Dpor, Options) end,
+    Fun = fun() -> scheduler_main(Target, PreBound, Self, Dpor, Options) end,
     process_flag(trap_exit, true),
     Backend = spawn_link(Fun),
     receive
@@ -174,12 +174,9 @@ interleave(Target, PreBound, Dpor, Options) ->
             concuerror_log:internal(Msg)
     end.
 
-interleave_aux(Target, PreBound, Parent, Dpor, Options) ->
-    ?debug("Dpor is not really ready yet...\n"),
-    register(?RP_SCHED, self()),
-    Result = interleave_dpor(Target, PreBound, Dpor, Options),
-    unregister(?RP_SCHED),
-    Parent ! {interleave_result, Result}.
+%% =============================================================================
+%% DATA STRUCTURES
+%% =============================================================================
 
 -type s_i()        :: non_neg_integer().
 -type instr()      :: term().
@@ -205,10 +202,6 @@ interleave_aux(Target, PreBound, Parent, Dpor, Options) ->
           race_checked = false          :: boolean()
          }).
 
-init_tr() -> {concuerror_lid:root_lid(), init, []}.
-
-empty_clock_map() -> dict:new().
-
 -type trace_state() :: #trace_state{}.
 
 -record(dpor_state, {
@@ -225,19 +218,28 @@ empty_clock_map() -> dict:new().
           group_leader            :: pid()
          }).
 
-interleave_dpor(Target, PreBound, Dpor, Options) ->
-    ?debug("Interleave dpor!\n"),
+%% =============================================================================
+%% LOGIC (high level description of the exploration algorithm)
+%% =============================================================================
+
+scheduler_main(Target, PreBound, Parent, Dpor, Options) ->
+    ?debug("Scheduler spawned"),
+    register(?RP_SCHED, self()),
     Procs = processes(),
     %% To be able to clean up we need to be trapping exits...
     process_flag(trap_exit, true),
     %% Get `show_output' flag from options
     ShowOutput = lists:keymember('show_output', 1, Options),
     {Trace, GroupLeader} = start_target(Target),
-    ?debug("Target started!\n"),
+    ?debug("Initial target spawned\n"),
     NewState = #dpor_state{trace = Trace, target = Target, proc_before = Procs,
         dpor_flavor = Dpor, preemption_bound = PreBound,
         show_output = ShowOutput, group_leader = GroupLeader},
-    explore(NewState).
+    Result = explore(NewState),
+    unregister(?RP_SCHED),
+    Parent ! {interleave_result, Result}.
+
+init_tr() -> {concuerror_lid:root_lid(), init, []}.
 
 start_target(Target) ->
     {FirstLid, GroupLeader} = start_target_op(Target),
@@ -258,47 +260,40 @@ start_target(Target) ->
 new_backtrack(LidList) ->
     [{Lid, Tr, []} || {Lid, Tr} <- LidList].
 
-start_target_op(Target) ->
-    concuerror_lid:start(),
-    %% Initialize a new group leader
-    GroupLeader = concuerror_io_server:new_group_leader(self()),
-    {Mod, Fun, Args} = Target,
-    NewFun = fun() -> ?REP_MOD:start_target(Mod, Fun, Args) end,
-    SpawnFun = fun() -> concuerror_rep:spawn_fun_wrapper(NewFun) end,
-    FirstPid = spawn(SpawnFun),
-    %% Set our io_server as the group leader
-    group_leader(GroupLeader, FirstPid),
-    {concuerror_lid:new(FirstPid, noparent), GroupLeader}.
+%% -----------------------------------------------------------------------------
+%% The main explore routine
+%% -----------------------------------------------------------------------------
 
-explore(MightNeedReplayState) ->
+explore(State) ->
     receive
-        stop_analysis -> dpor_return(MightNeedReplayState)
+        stop_analysis -> dpor_return(State)
     after 0 ->
-        case select_from_backtrack(MightNeedReplayState) of
-            {ok, {Lid, Cmd, _} = Selected, State} ->
+        case select_from_backtrack(State) of
+            {ok, {Lid, Cmd, _} = Selected, UpdState} ->
                 case Cmd of
                     {error, _ErrorInfo} ->
-                        RaceCheckState = race_check(State),
-                        NewState = report_error(Selected, RaceCheckState),
+                        RaceCheckState = race_check(UpdState),
+                        ErrorState = report_error(Selected, RaceCheckState),
+                        NewState = drop_last_frame(ErrorState),
                         explore(NewState);
                     _Else ->
                         ?debug("Plan: ~p\n",[Selected]),
                         Next = wait_next(Lid, Cmd),
-                        UpdState = update_trace(Selected, Next, State),
-                        NewState = add_some_next_to_backtrack(UpdState),
+                        NextState = update_trace(Selected, Next, UpdState),
+                        NewState = add_some_next_to_backtrack(NextState),
                         explore(NewState)
                 end;
             none ->
-                State =
-                    case MightNeedReplayState#dpor_state.must_replay of
+                UpdState =
+                    case State#dpor_state.must_replay of
                         true ->
                             %% Already backtracking
-                            MightNeedReplayState;
+                            State;
                         false ->
-                            RaceCheckState = race_check(MightNeedReplayState),
+                            RaceCheckState = race_check(State),
                             report_possible_deadlock(RaceCheckState)
                     end,
-                NewState = drop_last_frame(State),
+                NewState = drop_last_frame(UpdState),
                 case finished(NewState) of
                     false -> explore(NewState);
                     true -> dpor_return(NewState)
@@ -306,398 +301,42 @@ explore(MightNeedReplayState) ->
         end
     end.
 
+%% -----------------------------------------------------------------------------
+
 select_from_backtrack(#dpor_state{trace = []}) -> none;
 select_from_backtrack(#dpor_state{must_replay = MustReplay,
-				  trace = Trace} = MightNeedReplayState) ->
-    %% FIXME: Pick first and don't really subtract.
-    %% FIXME: This is actually the trace bottom...
+				  trace = Trace} = State) ->
     [#trace_state{backtrack = Backtrack, done = Done} = _TraceTop|_] = Trace,
     ?debug("------------\nExplore ~p\n------------\n",
            [_TraceTop#trace_state.i + 1]),
-    case [B || {B, _, _} <- Backtrack] -- Done of
-        [] ->
+    case pick_from_backtrack(Backtrack, Done) of
+        none ->
             ?debug("Backtrack set explored\n",[]),
             none;
-        [SelectedLid|_] ->
-            State =
+        {true, SelectedLid} ->
+            UpdState =
                 case MustReplay of
-                    true -> replay_trace(MightNeedReplayState);
-                    false -> MightNeedReplayState
+                    true -> replay_trace(State);
+                    false -> State
                 end,
-            [NewTraceTop|RestTrace] = State#dpor_state.trace,
-            Instruction = dict:fetch(SelectedLid, NewTraceTop#trace_state.nexts),
+            [NewTraceTop|RestTrace] = UpdState#dpor_state.trace,
+            Instruction =
+                dict:fetch(SelectedLid, NewTraceTop#trace_state.nexts),
             NewDone = ordsets:add_element(SelectedLid, Done),
             FinalTraceTop =
                 NewTraceTop#trace_state{done = NewDone},
-            FinalState = State#dpor_state{trace = [FinalTraceTop|RestTrace]},
+            FinalState = UpdState#dpor_state{trace = [FinalTraceTop|RestTrace]},
             {ok, Instruction, FinalState}
     end.
 
-replay_trace(#dpor_state{proc_before = ProcBefore,
-                         run_count = RunCnt,
-                         sleep_blocked_count = SBlocked,
-                         group_leader = GroupLeader,
-                         target = Target,
-			 trace = Trace,
-			 show_output = ShowOutput} = State) ->
-    NewRunCnt = RunCnt + 1,
-    ?debug("\nReplay (~p) is required...\n", [NewRunCnt]),
-    concuerror_lid:stop(),
-    %% Get buffered output from group leader
-    %% TODO: For now just ignore it. Maybe we can print it
-    %% only when we have an error (after the backtrace?)
-    Output = concuerror_io_server:group_leader_sync(GroupLeader),
-    case ShowOutput of
-        true  -> io:put_chars(Output);
-        false -> ok
-    end,
-    proc_cleanup(processes() -- ProcBefore),
-    concuerror_util:flush_mailbox(),
-    {FirstLid, NewGroupLeader} = start_target_op(Target),
-    _ = wait_next(FirstLid, init),
-    NewTrace = replay_trace_aux(Trace),
-    ?debug("Done replaying...\n\n"),
-    %% Report the start of a new interleaving
-    concuerror_log:progress({'new', NewRunCnt, SBlocked}),
-    State#dpor_state{run_count = NewRunCnt, must_replay = false,
-                     group_leader = NewGroupLeader, trace = NewTrace}.
-
-replay_trace_aux(Trace) ->
-    [Init|Rest] = lists:reverse(Trace),
-    replay_trace_aux(Rest, [Init]).
-
-replay_trace_aux([], Acc) -> Acc;
-replay_trace_aux([TraceState|Rest], Acc) ->
-    #trace_state{i = _I, last = {Lid, Cmd, _} = Last} = TraceState,
-    %% ?debug(" ~-4w: ~P.",[_I, Last, ?DEBUG_DEPTH]),
-    Next = wait_next(Lid, Cmd),
-    %% ?debug("."),
-    UpdAcc = update_trace(Last, Next, Acc, irrelevant, {true, TraceState}),
-    %% ?debug(".\n"),
-    replay_trace_aux(Rest, UpdAcc).
-
-wait_next(Lid, {exit, {normal, _Info}} = Arg2) ->
-    Pid = concuerror_lid:get_pid(Lid),
-    link(Pid),
-    continue(Lid),
-    receive
-        {'EXIT', Pid, normal} -> {Lid, exited, []}
-    after
-        ?TIME_LIMIT -> error(time_limit, [Lid, Arg2])
-    end;
-wait_next(Lid, Plan) ->
-    DebugArgs = [Lid, Plan],
-    continue(Lid),
-    Replace =
-        case Plan of
-            {Spawn, _Info}
-              when Spawn =:= spawn; Spawn =:= spawn_link;
-                   Spawn =:= spawn_monitor; Spawn =:= spawn_opt ->
-                {true,
-                 %% This interruption happens to make sure that a child has an
-                 %% LID before the parent wants to do any operation with its PID.
-                 receive
-                     #sched{msg = Spawn,
-                            lid = Lid,
-                            misc = Info,
-                            type = prev} = Msg ->
-                         case Info of
-                             {Pid, Ref} ->
-                                 monitor(process, Pid),
-                                 ChildLid = concuerror_lid:new(Pid, Lid),
-                                 MonRef = concuerror_lid:ref_new(ChildLid, Ref),
-                                 Msg#sched{misc = {ChildLid, MonRef}};
-                             Pid ->
-                                 monitor(process, Pid),
-                                 Msg#sched{misc = concuerror_lid:new(Pid, Lid)}
-                         end
-                 after
-                     ?TIME_LIMIT -> error(time_limit, DebugArgs)
-                 end};
-            {ets, {new, _Info}} ->
-                {true,
-                 receive
-                     #sched{msg = ets, lid = Lid, misc = {new, [Tid|Rest]},
-                            type = prev} = Msg ->
-                         NewMisc = {new, [concuerror_lid:ets_new(Tid)|Rest]},
-                         Msg#sched{misc = NewMisc}
-                 after
-                     ?TIME_LIMIT -> error(time_limit, DebugArgs)
-                 end};
-            {monitor, _Info} ->
-                {true,
-                 receive
-                     #sched{msg = monitor, lid = Lid, misc = {TLid, Ref},
-                            type = prev} = Msg ->
-                         NewMisc = {TLid, concuerror_lid:ref_new(TLid, Ref)},
-                         Msg#sched{misc = NewMisc}
-                 after
-                     ?TIME_LIMIT -> error(time_limit, DebugArgs)
-                 end};
-            _Other ->
-                false
-        end,
-    case Replace of
-        {true, NewMsg} ->
-            continue(Lid),
-            self() ! NewMsg,
-            get_next(Lid);
-        false ->
-            get_next(Lid)
+pick_from_backtrack([], _) -> none;
+pick_from_backtrack([{B, _, _}|Rest], Done) ->
+    case ordsets:is_element(B, Done) of
+        true  -> pick_from_backtrack(Rest, Done);
+        false -> {true, B}
     end.
 
-get_next(Lid) ->
-    receive
-        #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
-            {Lid, {Type, Misc}, []}
-    after
-        ?TIME_LIMIT -> error(time_limit, [Lid])
-    end.
-
-race_check(#dpor_state{preemption_bound = Bound, trace = Trace,
-			       dpor_flavor = Flavor} = State) ->
-    case Flavor of
-        none ->
-            %% add_some_next will take care of all the backtracks.
-            State;
-        _ ->
-            NewTrace = race_check(Trace, Bound, Flavor),
-            State#dpor_state{trace = NewTrace}
-    end.
-
-race_check(Trace, PreBound, Flavor) ->
-    race_check(Trace, [], PreBound, Flavor).
-
-race_check([_] = Trace, _Rest, _PreBound, _Flavor) -> Trace;
-race_check([#trace_state{race_checked = true}|_] = Trace,
-           _Rest, _PreBound, Flavor)
-  when Flavor =:= ?CLASSIC; Flavor =:= ?SOURCE ->
-    Trace;
-race_check(Trace, Rest, PreBound, Flavor) ->
-    [#trace_state{i = _I, last = {Lid, _, _} = Transition} = Top|
-     [#trace_state{clock_map = ClockMap}|_] = PTrace] = Trace,
-    NewPTrace = race_check(PTrace, [Top|Rest], PreBound, Flavor),
-    NewTop = Top#trace_state{race_checked = true},
-    ?debug("Race check: ~p ~p\n", [_I, Transition]),
-    case concuerror_deps:may_have_dependencies(Transition) of
-        true ->
-            ClockVector = lookup_clock(Lid, ClockMap),
-            add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
-                                     Flavor, NewPTrace, [NewTop], Rest);
-        false -> [NewTop|NewPTrace]
-    end.
-
-add_all_backtracks_trace(_Transition, _Lid, _ClockVector, _PreBound,
-                         _Flavor, [_] = Init, Acc, _Rest) ->
-    lists:reverse(Acc, Init);
-add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
-                         [#trace_state{preemptions = Preempt} = StateI|Trace],
-                         Acc, Rest)
-  when Preempt + 1 > PreBound, PreBound =/= ?INFINITY ->
-    add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
-                             Trace, [StateI|Acc], Rest);
-add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
-                         [StateI,PreSI|Rest], Acc, AccRest) ->
-    #trace_state{i = I, last = {ProcSI, _, _} = SI} = StateI,
-    Clock = lookup_clock_value(ProcSI, ClockVector),
-    Action =
-        case I > Clock andalso concuerror_deps:dependent(Transition, SI) of
-            false -> {continue, PreSI};
-            true ->
-                ?debug("~4w: ~P Clock ~p\n", [I, SI, ?DEBUG_DEPTH, Clock]),
-                #trace_state{enabled = Enabled,
-                             backtrack = Backtrack,
-                             done = Done,
-                             sleep_set = SleepSet} = PreSI,
-                Sleepers = ordsets:union(SleepSet, Done),
-                case Flavor of
-                    ?FULL ->
-                        Result =
-                            find_path([StateI|Acc], AccRest, ProcSI, I,
-                                      Sleepers, Backtrack),
-                        case Result of
-                            inversion_explored ->
-                                ?debug("    Inversion is explored...\n"),
-                                {continue, PreSI};
-                            equivalent_scheduled ->
-                                ?debug("    Equivalent is scheduled...\n"),
-                                {continue, PreSI};
-                            NewBacktrack ->
-                                ?debug("    NewBacktrack: ~p\n",[NewBacktrack]),
-                                {continue,
-                                 PreSI#trace_state{backtrack = NewBacktrack}}
-                        end;
-                    ?SOURCE ->
-                        Candidates = ordsets:subtract(Enabled, Sleepers),
-                        BacktrackSet =
-                            ordsets:from_list([P || {P, _, _} <- Backtrack]),
-                        case find_initials(BacktrackSet, Candidates, I, Acc) of
-                            do_nothing ->
-                                ?debug("    Equivalent is scheduled...\n"),
-                                {done, PreSI};
-                            impossible ->
-                                ?debug("    Inversion is explored...\n"),
-                                {continue, PreSI};
-                            {add, P} ->
-                                NewBacktrack = Backtrack ++ [{P, dummy, []}],
-                                ?debug("    NewBacktrack: ~p\n",[NewBacktrack]),
-                                {continue,
-                                 PreSI#trace_state{backtrack = NewBacktrack}}
-                        end;
-                    ?CLASSIC ->
-                        throw(temporarily_unavailable)
-                end
-        end,
-    case Action of
-        {continue, NewPreSI} ->
-            add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
-                                     Flavor, [NewPreSI|Rest], [StateI|Acc],
-                                     AccRest);
-        {done, NewPreSI} ->
-            lists:reverse([StateI|Acc], [NewPreSI|Rest])
-    end.
-
-lookup_clock(P, ClockMap) ->
-    case dict:find(P, ClockMap) of
-        {ok, Clock} -> Clock;
-        error -> orddict:new()
-    end.
-
-lookup_clock_value(P, CV) ->
-    case orddict:find(P, CV) of
-        {ok, Value} -> Value;
-        error -> 0
-    end.
-
-find_path([#trace_state{nexts = Nexts}|Acc],
-          Rest, ProcSI, I, Sleepers, Backtrack) ->
-    SleepSet = ordsets:del_element(ProcSI, Sleepers),
-    Annotated = [{P, dict:fetch(P, Nexts)} || P <- SleepSet],
-    NotDeps = not_deps(Acc, Rest, ProcSI, I),
-    ?debug("      NotDeps:~p\n",[NotDeps]),
-    try
-        case find_weak_initial(NotDeps, Annotated) of
-            {true, _, _} -> throw(inversion_explored);
-            false ->
-                Pred = fun({P,_,_}) -> P =/= ProcSI end,
-                {Done, [{ProcSI,_,_} = Current|Future]} =
-                    lists:splitwith(Pred, Backtrack),
-                ?debug("      Future:~p\n",[Future]),
-                NewFuture = insert_best_match(Future, NotDeps),
-                Done ++ [Current|NewFuture]
-        end
-    catch
-        throw:Reason -> Reason
-    end.
-
-find_weak_initial(    _,    []) -> false;
-find_weak_initial(Trace, [C|R]) ->
-    case find_weak_initial(Trace, [C], []) of
-        false ->
-            find_weak_initial(Trace, R);
-        True -> True
-    end.
-
-find_weak_initial(_, [], _) -> false;
-find_weak_initial([], [{Lid, _}|_], Acc) ->
-    {true, Lid, lists:reverse(Acc)};
-find_weak_initial([{Lid, _, _} = Tr|Rest], Candidates, Acc) ->
-    case lists:keyfind(Lid, 1, Candidates) of
-        {Lid, _} -> {true, Lid, lists:reverse(Acc, Rest)};
-        false ->
-            Pred = fun({_, Tr2}) -> not concuerror_deps:dependent(Tr, Tr2) end,
-            NewCandidates = lists:filter(Pred, Candidates),
-            find_weak_initial(Rest, NewCandidates, [Tr|Acc])
-    end.
-
-insert_best_match([], Trace) ->
-    Fold = fun({P, _,_} = Tr, PAcc) -> [{P, Tr, PAcc}] end,
-    lists:foldl(Fold, [], lists:reverse(Trace));
-insert_best_match(Backtrack, Trace) ->
-    ?debug("      Trace:~p\n", [Trace]),
-    Ps = [{P,Tr} || {P,Tr,_} <- Backtrack],
-    case find_weak_initial(Trace, Ps) of
-        {true, Lid, NewTrace} ->
-            ?debug("      WeakIni:~p\n", [Lid]),
-            {Lid, Tr, Further} = lists:keyfind(Lid, 1, Backtrack),
-            ?debug("      Further:~p\n",[Further]),
-            case Further =:= [] of
-                true -> throw(equivalent_scheduled);
-                false ->
-                    NewFuther = insert_best_match(Further, NewTrace),
-                    lists:keyreplace(Lid, 1, Backtrack, {Lid, Tr, NewFuther})
-            end;
-        false ->
-            Backtrack ++ insert_best_match([], Trace)
-    end.
-
-not_deps(Acc, Rest, ProcSI, I) ->
-    not_deps(Acc, Rest, ProcSI, I, []).
-
-not_deps([], no_rest, _, _, Path) ->
-    lists:reverse(Path);
-not_deps([#trace_state{last = Last}], Rest, ProcSI, I, Path)
-  when Rest =/= no_rest ->
-    not_deps(Rest, no_rest, ProcSI, I, [Last|Path]);
-not_deps([#trace_state{last = {Lid, _, _} = Last, clock_map = ClockMap}|Acc],
-         Rest, ProcSI, I, Path) ->
-    Lid2Clock = lookup_clock(Lid, ClockMap),
-    NewPath =
-        case lookup_clock_value(ProcSI, Lid2Clock) >= I of
-            true  -> Path;
-            false -> [Last|Path]
-        end,
-    not_deps(Acc, Rest, ProcSI, I, NewPath).
-
-find_initials(Backtrack, Candidates, I, Trace) ->
-    ?debug("    BT:~p\n    C :~p\n", [Backtrack, Candidates]),
-    find_initials(Trace, Backtrack, Candidates, I, none).
-
-find_initials(_Trace, _Backtrack, [], _I, MaybePred) ->
-    case MaybePred of
-        none -> impossible;
-        {true, Lid} -> {add, Lid}
-    end;
-find_initials([#trace_state{last = {Lid, _, _}}],
-              Backtrack, Candidates, _I, MaybePred) ->
-    case MaybePred of
-        none ->
-            case ordsets:is_element(Lid, Candidates) of
-                false -> impossible;
-                true ->
-                    case ordsets:is_element(Lid, Backtrack) of
-                        true -> do_nothing;
-                        false -> {add, Lid}
-                    end
-            end;
-        {true, Lid2} -> {add, Lid2}
-    end;
-find_initials([#trace_state{i = _J,
-                            last = {Lid, _, _}, clock_map = ClockMap}|Trace],
-              Backtrack, Candidates, I, MaybePred) ->
-    case ordsets:is_element(Lid, Candidates) of
-        false ->
-            find_initials(Trace, Backtrack, Candidates, I, MaybePred);
-        true ->
-            NewCands = ordsets:del_element(Lid, Candidates),
-            LidVector = lookup_clock(Lid, ClockMap),
-            ?debug("     ~p: ~p ~p\n", [_J, Lid, LidVector]),
-            Fold = fun({L, V}, Acc) -> Acc andalso (L =:= Lid orelse V < I) end,
-            case lists:foldl(Fold, true, LidVector) of
-                false ->
-                    find_initials(Trace, Backtrack, NewCands, I, MaybePred);
-                true ->
-                    case {ordsets:is_element(Lid, Backtrack), MaybePred} of
-                        {true,    _} -> do_nothing;
-                        {   _, none} ->
-                            find_initials(Trace, Backtrack, NewCands,
-                                          I, {true, Lid});
-                        _ ->
-                            find_initials(Trace, Backtrack, NewCands,
-                                          I, MaybePred)
-                    end
-            end
-    end.
+%% -----------------------------------------------------------------------------
 
 %% - add new entry with new entry
 %% - wait any possible additional messages
@@ -804,20 +443,6 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
         end,
     [FinalTraceTop|PrevTrace].
 
-recent_dependency_cv(Transition, ClockVector, Trace) ->
-    Fun =
-        fun(#trace_state{
-            last = {Lid, _, _} = Transition2,
-            clock_map = CM}, CVAcc) ->
-                case concuerror_deps:dependent(Transition, Transition2) of
-                    true ->
-                        CV = lookup_clock(Lid, CM),
-                        max_cv(CVAcc, CV);
-                    false -> CVAcc
-                end
-        end,
-    lists:foldl(Fun, ClockVector, Trace).
-
 update_lid_enabled(Lid, {_, Next, _}, Pollable, Enabled, Blocked) ->
     {NewEnabled, NewBlocked} =
         case is_enabled(Next) of
@@ -840,179 +465,24 @@ is_pollable({'receive', blocked}) -> true;
 is_pollable({'after', _Info}) -> true;
 is_pollable(_Else) -> false.
 
-update_instr_info(Lid, Selected, CommonNewTraceTop) ->
-    IntermediateTraceTop = handle_instruction(Selected, CommonNewTraceTop),
-    UpdatedClockVector =
-        lookup_clock(Lid, IntermediateTraceTop#trace_state.clock_map),
-    {Lid, RewrittenInstr, _Msgs} = IntermediateTraceTop#trace_state.last,
-    Messages = orddict:from_list(replace_messages(Lid, UpdatedClockVector)),
-    IntermediateTraceTop#trace_state{last = {Lid, RewrittenInstr, Messages}}.
-
-filter_awaked(SleepSet, Nexts, Selected) ->
-    Filter =
-        fun(Lid) ->
-                Instr = dict:fetch(Lid, Nexts),
-                Dep = concuerror_deps:dependent(Instr, Selected),
-                ?debug(" vs ~p: ~p\n",[Instr, Dep]),
-                not Dep
+recent_dependency_cv(Transition, ClockVector, Trace) ->
+    Fun =
+        fun(#trace_state{
+            last = {Lid, _, _} = Transition2,
+            clock_map = CM}, CVAcc) ->
+                case concuerror_deps:dependent(Transition, Transition2) of
+                    true ->
+                        CV = lookup_clock(Lid, CM),
+                        max_cv(CVAcc, CV);
+                    false -> CVAcc
+                end
         end,
-    {A, NA} = lists:partition(Filter, SleepSet),
-    {ordsets:from_list(A), ordsets:from_list(NA)}.
-
-rewrite_while_awaked(Transition, Original, Trace) ->
-    rewrite_while_awaked(Transition, Original, Trace, []).
-
-rewrite_while_awaked(_Transition, _Original, [], Acc) -> lists:reverse(Acc);
-rewrite_while_awaked({P, _, _} = Transition, Original,
-                     [TraceTop|Rest] = Trace, Acc) ->
-    #trace_state{sleep_set = SleepSet,
-                 nexts = Nexts} = TraceTop,
-    case
-        not ordsets:is_element(P, SleepSet) andalso
-        {ok, Original} =:= dict:find(P, Nexts)
-    of
-        true ->
-            NewNexts = dict:store(P, Transition, Nexts),
-            NewTraceTop = TraceTop#trace_state{nexts = NewNexts},
-            rewrite_while_awaked(Transition, Original, Rest, [NewTraceTop|Acc]);
-        false ->
-            lists:reverse(Acc, Trace)
-    end.
+    lists:foldl(Fun, ClockVector, Trace).
 
 %% Handle instruction is broken in two parts to reuse code in replay.
 handle_instruction(Transition, TraceTop) ->
     {NewTransition, Extra} = handle_instruction_op(Transition),
     handle_instruction_al(NewTransition, TraceTop, Extra).
-
-handle_instruction_op({Lid, {Spawn, _Info}, Msgs} = DebugArg)
-  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
-       Spawn =:= spawn_opt ->
-    ParentLid = Lid,
-    Info =
-        receive
-            %% This is the replaced message
-            #sched{msg = Spawn, lid = ParentLid,
-                   misc = Info0, type = prev} ->
-                Info0
-        after
-            ?TIME_LIMIT -> error(time_limit, [DebugArg])
-        end,
-    ChildLid =
-        case Info of
-            {Lid0, _MonLid} -> Lid0;
-            Lid0 -> Lid0
-        end,
-    ChildNextInstr = wait_next(ChildLid, init),
-    {{Lid, {Spawn, Info}, Msgs}, ChildNextInstr};
-handle_instruction_op({Lid, {ets, {Updatable, _Info}}, Msgs} = DebugArg)
-  when Updatable =:= new; Updatable =:= insert_new; Updatable =:= insert ->
-    receive
-        %% This is the replaced message
-        #sched{msg = ets, lid = Lid, misc = {Updatable, Info}, type = prev} ->
-            {{Lid, {ets, {Updatable, Info}}, Msgs}, {}}
-    after
-        ?TIME_LIMIT -> error(time_limit, [DebugArg])
-    end;
-handle_instruction_op({Lid, {'receive', Tag}, Msgs} = DebugArg) ->
-    NewTag =
-        case Tag of
-            {T, _, _} -> T;
-            T -> T
-        end,
-    receive
-        #sched{msg = 'receive', lid = Lid,
-               misc = {From, CV, Msg}, type = prev} ->
-            {{Lid, {'receive', {NewTag, From, Msg}}, Msgs}, CV}
-    after
-        ?TIME_LIMIT -> error(time_limit, [DebugArg])
-    end;
-handle_instruction_op({Lid, {'after', {Fun, _OldLinks}}, Msgs} = DebugArg) ->
-    receive
-        #sched{msg = 'after', lid = Lid,
-               misc = Links, type = prev} ->
-            {{Lid, {'after', {Fun, Links}}, Msgs}, {}}
-    after
-        ?TIME_LIMIT -> error(time_limit, [DebugArg])
-    end;
-handle_instruction_op({Lid, {Updatable, _Info}, Msgs} = DebugArg)
-  when Updatable =:= exit; Updatable =:= send; Updatable =:= whereis;
-       Updatable =:= monitor; Updatable =:= process_flag ->
-    receive
-        #sched{msg = Updatable, lid = Lid, misc = Info, type = prev} ->
-            {{Lid, {Updatable, Info}, Msgs}, {}}
-    after
-        ?TIME_LIMIT -> error(time_limit, [DebugArg])
-    end;
-handle_instruction_op(Instr) ->
-    {Instr, {}}.
-
-handle_instruction_al({Lid, {exit, _Info}, _Msgs} = Trans, TraceTop, {}) ->
-    #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
-    NewEnabled = ordsets:del_element(Lid, Enabled),
-    NewNexts = dict:erase(Lid, Nexts),
-    TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts, last = Trans};
-handle_instruction_al({Lid, {Spawn, Info}, _Msgs} = Trans,
-                      TraceTop, ChildNextInstr)
-  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
-       Spawn =:= spawn_opt ->
-    ChildLid =
-        case Info of
-            {Lid0, _MonLid} -> Lid0;
-            Lid0 -> Lid0
-        end,
-    #trace_state{enabled = Enabled, blocked = Blocked,
-                 nexts = Nexts, pollable = Pollable,
-                 clock_map = ClockMap} = TraceTop,
-    NewNexts = dict:store(ChildLid, ChildNextInstr, Nexts),
-    ClockVector = lookup_clock(Lid, ClockMap),
-    NewClockMap = dict:store(ChildLid, ClockVector, ClockMap),
-    MaybeEnabled = ordsets:add_element(ChildLid, Enabled),
-    {NewPollable, NewEnabled, NewBlocked} =
-        update_lid_enabled(ChildLid, ChildNextInstr, Pollable,
-                           MaybeEnabled, Blocked),
-    TraceTop#trace_state{last = Trans,
-                         clock_map = NewClockMap,
-                         enabled = NewEnabled,
-                         blocked = NewBlocked,
-                         pollable = NewPollable,
-                         nexts = NewNexts};
-handle_instruction_al({Lid, {'receive', _Info}, _Msgs} = Trans,
-                      TraceTop, CV) ->
-    #trace_state{clock_map = ClockMap} = TraceTop,
-    Vector = lookup_clock(Lid, ClockMap),
-    NewVector = max_cv(Vector, CV),
-    NewClockMap = dict:store(Lid, NewVector, ClockMap),
-    TraceTop#trace_state{last = Trans, clock_map = NewClockMap};
-handle_instruction_al({_Lid, {ets, {Updatable, _Info}}, _Msgs} = Trans,
-                      TraceTop, {})
-  when Updatable =:= new; Updatable =:= insert_new; Updatable =:= insert ->
-    TraceTop#trace_state{last = Trans};
-handle_instruction_al({_Lid, {Updatable, _Info}, _Msgs} = Trans, TraceTop, {})
-  when Updatable =:= send; Updatable =:= whereis; Updatable =:= monitor;
-       Updatable =:= process_flag; Updatable =:= 'after' ->
-    TraceTop#trace_state{last = Trans};
-handle_instruction_al({_Lid, {register, {Name, PLid}}, _Msgs},
-                      #trace_state{nexts = Nexts} = TraceTop, {}) ->
-    TraceTop#trace_state{nexts = update_named_sends(Name, PLid, Nexts)};
-handle_instruction_al({_Lid, {halt, _Status}, _Msgs}, TraceTop, {}) ->
-    TraceTop#trace_state{enabled = [], blocked = []};
-handle_instruction_al(_Transition, TraceTop, {}) ->
-    TraceTop.
-
-max_cv(D1, D2) ->
-    Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
-    orddict:merge(Merger, D1, D2).
-
-update_named_sends(Name, PLid, Nexts) ->
-    Map =
-        fun(Lid, Instr) ->
-                case Instr of
-                    {Lid, {send, {Name, _OldPLid, Msg}}, Msgs} ->
-                        {Lid, {send, {Name, PLid, Msg}}, Msgs};
-                    _Other -> Instr
-                end
-        end,
-    dict:map(Map, Nexts).
 
 check_external_changes(TraceTop) ->
     case unexpected_exits(TraceTop) of
@@ -1064,6 +534,313 @@ poll_all(Lid, TraceTop) ->
             TraceTop
     end.
 
+update_instr_info(Lid, Selected, CommonNewTraceTop) ->
+    IntermediateTraceTop = handle_instruction(Selected, CommonNewTraceTop),
+    UpdatedClockVector =
+        lookup_clock(Lid, IntermediateTraceTop#trace_state.clock_map),
+    {Lid, RewrittenInstr, _Msgs} = IntermediateTraceTop#trace_state.last,
+    Messages = orddict:from_list(replace_messages(Lid, UpdatedClockVector)),
+    IntermediateTraceTop#trace_state{last = {Lid, RewrittenInstr, Messages}}.
+
+filter_awaked(SleepSet, Nexts, Selected) ->
+    Filter =
+        fun(Lid) ->
+                Instr = dict:fetch(Lid, Nexts),
+                Dep = concuerror_deps:dependent(Instr, Selected),
+                ?debug(" vs ~p: ~p\n",[Instr, Dep]),
+                not Dep
+        end,
+    {A, NA} = lists:partition(Filter, SleepSet),
+    {ordsets:from_list(A), ordsets:from_list(NA)}.
+
+rewrite_while_awaked(Transition, Original, Trace) ->
+    rewrite_while_awaked(Transition, Original, Trace, []).
+
+rewrite_while_awaked(_Transition, _Original, [], Acc) -> lists:reverse(Acc);
+rewrite_while_awaked({P, _, _} = Transition, Original,
+                     [TraceTop|Rest] = Trace, Acc) ->
+    #trace_state{sleep_set = SleepSet,
+                 nexts = Nexts} = TraceTop,
+    case
+        not ordsets:is_element(P, SleepSet) andalso
+        {ok, Original} =:= dict:find(P, Nexts)
+    of
+        true ->
+            NewNexts = dict:store(P, Transition, Nexts),
+            NewTraceTop = TraceTop#trace_state{nexts = NewNexts},
+            rewrite_while_awaked(Transition, Original, Rest, [NewTraceTop|Acc]);
+        false ->
+            lists:reverse(Acc, Trace)
+    end.
+
+%% -----------------------------------------------------------------------------
+%% Dpor logic
+%% -----------------------------------------------------------------------------
+
+race_check(#dpor_state{preemption_bound = Bound, trace = Trace,
+			       dpor_flavor = Flavor} = State) ->
+    case Flavor of
+        none ->
+            %% add_some_next will take care of all the backtracks.
+            State;
+        _ ->
+            NewTrace = race_check(Trace, Bound, Flavor),
+            State#dpor_state{trace = NewTrace}
+    end.
+
+race_check(Trace, PreBound, Flavor) ->
+    race_check(Trace, [], PreBound, Flavor).
+
+race_check([_] = Trace, _Rest, _PreBound, _Flavor) -> Trace;
+race_check([#trace_state{race_checked = true}|_] = Trace,
+           _Rest, _PreBound, Flavor)
+  when Flavor =:= ?CLASSIC; Flavor =:= ?SOURCE ->
+    Trace;
+race_check(Trace, Rest, PreBound, Flavor) ->
+    [#trace_state{i = _I, last = {Lid, _, _} = Transition} = Top|
+     [#trace_state{clock_map = ClockMap}|_] = PTrace] = Trace,
+    NewPTrace = race_check(PTrace, [Top|Rest], PreBound, Flavor),
+    NewTop = Top#trace_state{race_checked = true},
+    ?debug("Race check: ~p ~p\n", [_I, Transition]),
+    case concuerror_deps:may_have_dependencies(Transition) of
+        true ->
+            ClockVector = lookup_clock(Lid, ClockMap),
+            add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
+                                     Flavor, NewPTrace, [NewTop], Rest);
+        false -> [NewTop|NewPTrace]
+    end.
+
+add_all_backtracks_trace(_Transition, _Lid, _ClockVector, _PreBound,
+                         _Flavor, [_] = Init, Acc, _Rest) ->
+    lists:reverse(Acc, Init);
+add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
+                         [#trace_state{preemptions = Preempt} = StateI|Trace],
+                         Acc, Rest)
+  when Preempt + 1 > PreBound, PreBound =/= ?INFINITY ->
+    add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
+                             Trace, [StateI|Acc], Rest);
+add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
+                         [StateI,PreSI|Rest], Acc, AccRest) ->
+    #trace_state{i = I, last = {ProcSI, _, _} = SI} = StateI,
+    Clock = lookup_clock_value(ProcSI, ClockVector),
+    Action =
+        case I > Clock andalso concuerror_deps:dependent(Transition, SI) of
+            false -> {continue, PreSI};
+            true ->
+                ?debug("~4w: ~P Clock ~p\n", [I, SI, ?DEBUG_DEPTH, Clock]),
+                #trace_state{enabled = Enabled,
+                             backtrack = Backtrack,
+                             done = Done,
+                             sleep_set = SleepSet} = PreSI,
+                Sleepers = ordsets:union(SleepSet, Done),
+                case Flavor of
+                    ?FULL ->
+                        Result =
+                            find_path([StateI|Acc], AccRest, ProcSI, I,
+                                      Sleepers, Backtrack),
+                        case Result of
+                            inversion_explored ->
+                                ?debug("    Inversion is explored...\n"),
+                                {continue, PreSI};
+                            equivalent_scheduled ->
+                                ?debug("    Equivalent is scheduled...\n"),
+                                {continue, PreSI};
+                            {replace, NewBacktrack} ->
+                                ?debug("    NewBacktrack: ~p\n",[NewBacktrack]),
+                                {continue,
+                                 PreSI#trace_state{backtrack = NewBacktrack}}
+                        end;
+                    ?SOURCE ->
+                        Candidates = ordsets:subtract(Enabled, Sleepers),
+                        BacktrackSet =
+                            ordsets:from_list([P || {P, _, _} <- Backtrack]),
+                        case find_initials(BacktrackSet, Candidates, I, Acc) of
+                            equivalent_scheduled ->
+                                ?debug("    Equivalent is scheduled...\n"),
+                                {done, PreSI};
+                            inversion_explored ->
+                                ?debug("    Inversion is explored...\n"),
+                                {continue, PreSI};
+                            {add, P} ->
+                                NewBacktrack = Backtrack ++ [{P, dummy, []}],
+                                ?debug("    NewBacktrack: ~p\n",[NewBacktrack]),
+                                {continue,
+                                 PreSI#trace_state{backtrack = NewBacktrack}}
+                        end;
+                    ?CLASSIC ->
+                        throw(temporarily_unavailable)
+                end
+        end,
+    case Action of
+        {continue, NewPreSI} ->
+            add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
+                                     Flavor, [NewPreSI|Rest], [StateI|Acc],
+                                     AccRest);
+        {done, NewPreSI} ->
+            lists:reverse([StateI|Acc], [NewPreSI|Rest])
+    end.
+
+%% -----------------
+%% For optimal DPOR:
+%% -----------------
+
+find_path([#trace_state{nexts = Nexts}|Acc],
+          Rest, ProcSI, I, Sleepers, Backtrack) ->
+    SleepSet = ordsets:del_element(ProcSI, Sleepers),
+    Annotated = [{P, dict:fetch(P, Nexts)} || P <- SleepSet],
+    NotDeps = not_deps(Acc, Rest, ProcSI, I),
+    ?debug("      NotDeps:~p\n",[NotDeps]),
+    try
+        case find_weak_initial(NotDeps, Annotated) of
+            {true, _, _} -> throw(inversion_explored);
+            false ->
+                Pred = fun({P,_,_}) -> P =/= ProcSI end,
+                {Done, [{ProcSI,_,_} = Current|Future]} =
+                    lists:splitwith(Pred, Backtrack),
+                ?debug("      Future:~p\n",[Future]),
+                NewFuture = insert_best_match(Future, NotDeps),
+                {replace, Done ++ [Current|NewFuture]}
+        end
+    catch
+        throw:Reason -> Reason
+    end.
+
+find_weak_initial(    _,    []) -> false;
+find_weak_initial(Trace, [C|R]) ->
+    case find_weak_initial(Trace, [C], []) of
+        false -> find_weak_initial(Trace, R);
+        True -> True
+    end.
+
+find_weak_initial(_, [], _) -> false;
+find_weak_initial([], [{Lid, _}|_], Acc) ->
+    {true, Lid, lists:reverse(Acc)};
+find_weak_initial([{Lid, _, _} = Tr|Rest], Candidates, Acc) ->
+    case lists:keyfind(Lid, 1, Candidates) of
+        {Lid, _} -> {true, Lid, lists:reverse(Acc, Rest)};
+        false ->
+            Pred = fun({_, Tr2}) -> not concuerror_deps:dependent(Tr, Tr2) end,
+            NewCandidates = lists:filter(Pred, Candidates),
+            find_weak_initial(Rest, NewCandidates, [Tr|Acc])
+    end.
+
+insert_best_match([], Trace) ->
+    Fold = fun({P, _,_} = Tr, PAcc) -> [{P, Tr, PAcc}] end,
+    lists:foldl(Fold, [], lists:reverse(Trace));
+insert_best_match(Backtrack, Trace) ->
+    ?debug("      Trace:~p\n", [Trace]),
+    Ps = [{P,Tr} || {P,Tr,_} <- Backtrack],
+    case find_weak_initial(Trace, Ps) of
+        {true, Lid, NewTrace} ->
+            ?debug("      WeakIni:~p\n", [Lid]),
+            {Lid, Tr, Further} = lists:keyfind(Lid, 1, Backtrack),
+            ?debug("      Further:~p\n",[Further]),
+            case Further =:= [] of
+                true -> throw(equivalent_scheduled);
+                false ->
+                    NewFuther = insert_best_match(Further, NewTrace),
+                    lists:keyreplace(Lid, 1, Backtrack, {Lid, Tr, NewFuther})
+            end;
+        false ->
+            Backtrack ++ insert_best_match([], Trace)
+    end.
+
+not_deps(Acc, Rest, ProcSI, I) ->
+    not_deps(Acc, Rest, ProcSI, I, []).
+
+not_deps([], no_rest, _, _, Path) ->
+    lists:reverse(Path);
+not_deps([#trace_state{last = Last}], Rest, ProcSI, I, Path)
+  when Rest =/= no_rest ->
+    not_deps(Rest, no_rest, ProcSI, I, [Last|Path]);
+not_deps([#trace_state{last = {Lid, _, _} = Last, clock_map = ClockMap}|Acc],
+         Rest, ProcSI, I, Path) ->
+    Lid2Clock = lookup_clock(Lid, ClockMap),
+    NewPath =
+        case lookup_clock_value(ProcSI, Lid2Clock) >= I of
+            true  -> Path;
+            false -> [Last|Path]
+        end,
+    not_deps(Acc, Rest, ProcSI, I, NewPath).
+
+%% --------------------------
+%% For source set based DPOR:
+%% --------------------------
+
+find_initials(Backtrack, Candidates, I, Trace) ->
+    ?debug("    BT:~p\n    C :~p\n", [Backtrack, Candidates]),
+    find_initials(Trace, Backtrack, Candidates, I, none).
+
+find_initials(_Trace, _Backtrack, [], _I, MaybePred) ->
+    case MaybePred of
+        none -> inversion_explored;
+        {true, Lid} -> {add, Lid}
+    end;
+find_initials([#trace_state{last = {Lid, _, _}}],
+              Backtrack, Candidates, _I, MaybePred) ->
+    case MaybePred of
+        none ->
+            case ordsets:is_element(Lid, Candidates) of
+                false -> inversion_explored;
+                true ->
+                    case ordsets:is_element(Lid, Backtrack) of
+                        true -> equivalent_scheduled;
+                        false -> {add, Lid}
+                    end
+            end;
+        {true, Lid2} -> {add, Lid2}
+    end;
+find_initials([#trace_state{i = _J,
+                            last = {Lid, _, _}, clock_map = ClockMap}|Trace],
+              Backtrack, Candidates, I, MaybePred) ->
+    case ordsets:is_element(Lid, Candidates) of
+        false ->
+            find_initials(Trace, Backtrack, Candidates, I, MaybePred);
+        true ->
+            NewCands = ordsets:del_element(Lid, Candidates),
+            LidVector = lookup_clock(Lid, ClockMap),
+            ?debug("     ~p: ~p ~p\n", [_J, Lid, LidVector]),
+            Fold = fun({L, V}, Acc) -> Acc andalso (L =:= Lid orelse V < I) end,
+            case lists:foldl(Fold, true, LidVector) of
+                false ->
+                    find_initials(Trace, Backtrack, NewCands, I, MaybePred);
+                true ->
+                    case {ordsets:is_element(Lid, Backtrack), MaybePred} of
+                        {true,    _} -> equivalent_scheduled;
+                        {   _, none} ->
+                            find_initials(Trace, Backtrack, NewCands,
+                                          I, {true, Lid});
+                        _ ->
+                            find_initials(Trace, Backtrack, NewCands,
+                                          I, MaybePred)
+                    end
+            end
+    end.
+
+%% --------------------------------------
+%% Manipulating the clock vectors / maps:
+%% --------------------------------------
+
+empty_clock_map() -> dict:new().
+
+lookup_clock(P, ClockMap) ->
+    case dict:find(P, ClockMap) of
+        {ok, Clock} -> Clock;
+        error -> orddict:new()
+    end.
+
+lookup_clock_value(P, CV) ->
+    case orddict:find(P, CV) of
+        {ok, Value} -> Value;
+        error -> 0
+    end.
+
+max_cv(D1, D2) ->
+    Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
+    orddict:merge(Merger, D1, D2).
+
+%% -----------------------------------------------------------------------------
+
 add_some_next_to_backtrack(State) ->
     #dpor_state{trace = [TraceTop|Rest], dpor_flavor = Flavor,
                 preemption_bound = PreBound} = State,
@@ -1102,15 +879,50 @@ add_some_next_to_backtrack(State) ->
     NewTraceTop = TraceTop#trace_state{backtrack = Backtrack},
     State#dpor_state{trace = [NewTraceTop|Rest]}.
 
+%% -----------------------------------------------------------------------------
+
 report_error(Transition, State) ->
-    #dpor_state{trace = [_|T] = Trace, tickets = Tickets} = State,
+    #dpor_state{trace = Trace, tickets = Tickets} = State,
     ?debug("ERROR!\n~P\n",[Transition, ?DEBUG_DEPTH]),
     Error = convert_error_info(Transition),
     LidTrace = convert_trace_to_error_trace(Trace, [Transition]),
     Ticket = create_ticket(Error, LidTrace),
     %% Report the error to the progress logger.
     concuerror_log:progress({'error', Ticket}),
-    State#dpor_state{trace = T, must_replay = true, tickets = [Ticket|Tickets]}.
+    State#dpor_state{must_replay = true, tickets = [Ticket|Tickets]}.
+
+report_possible_deadlock(#dpor_state{trace = []} = State) -> State;
+report_possible_deadlock(State) ->
+    #dpor_state{trace = [TraceTop|_] = Trace, tickets = Tickets,
+                sleep_blocked_count = SBlocked} = State,
+    {NewTickets, NewSBlocked} =
+        case TraceTop#trace_state.enabled of
+            [] ->
+                case TraceTop#trace_state.blocked of
+                    [] ->
+                        ?debug("NORMAL!\n"),
+                        {Tickets, SBlocked};
+                    Blocked ->
+                        ?debug("DEADLOCK!\n"),
+                        Error = {deadlock, Blocked},
+                        LidTrace = convert_trace_to_error_trace(Trace, []),
+                        Ticket = create_ticket(Error, LidTrace),
+                        %% Report error
+                        concuerror_log:progress({'error', Ticket}),
+                        {[Ticket|Tickets], SBlocked}
+                end;
+            _Else ->
+                case TraceTop#trace_state.sleep_set =/= []
+                    andalso TraceTop#trace_state.done =:= [] of
+                    false ->
+                        {Tickets, SBlocked};
+                    true ->
+                        ?debug("SLEEP SET BLOCK\n"),
+                        {Tickets, SBlocked+1}
+                end
+        end,
+    State#dpor_state{must_replay = true, tickets = NewTickets,
+                     sleep_blocked_count = NewSBlocked}.
 
 convert_trace_to_error_trace([], Acc) -> Acc;
 convert_trace_to_error_trace([#trace_state{
@@ -1237,38 +1049,7 @@ convert_error_info({_Lid, {error, [Kind, Type, Stacktrace]}, _Msgs})->
         end,
     {Tag, Info}.
 
-report_possible_deadlock(#dpor_state{trace = []} = State) -> State;
-report_possible_deadlock(State) ->
-    #dpor_state{trace = [TraceTop|_] = Trace, tickets = Tickets,
-                sleep_blocked_count = SBlocked} = State,
-    {NewTickets, NewSBlocked} =
-        case TraceTop#trace_state.enabled of
-            [] ->
-                case TraceTop#trace_state.blocked of
-                    [] ->
-                        ?debug("NORMAL!\n"),
-                        {Tickets, SBlocked};
-                    Blocked ->
-                        ?debug("DEADLOCK!\n"),
-                        Error = {deadlock, Blocked},
-                        LidTrace = convert_trace_to_error_trace(Trace, []),
-                        Ticket = create_ticket(Error, LidTrace),
-                        %% Report error
-                        concuerror_log:progress({'error', Ticket}),
-                        {[Ticket|Tickets], SBlocked}
-                end;
-            _Else ->
-                case TraceTop#trace_state.sleep_set =/= []
-                    andalso TraceTop#trace_state.done =:= [] of
-                    false ->
-                        {Tickets, SBlocked};
-                    true ->
-                        ?debug("SLEEP SET BLOCK\n"),
-                        {Tickets, SBlocked+1}
-                end
-        end,
-    State#dpor_state{must_replay = true, tickets = NewTickets,
-                     sleep_blocked_count = NewSBlocked}.
+%% -----------------------------------------------------------------------------
 
 drop_last_frame(#dpor_state{trace = []} = State) -> State;
 drop_last_frame(#dpor_state{trace = [_|Trace]} = State) ->
@@ -1295,6 +1076,277 @@ dpor_return(State) ->
         Tickets -> {error, RunCnt, SBlocked, Tickets}
     end.
 
+%% =============================================================================
+%% ENGINE (manipulation of the Erlang processes under the scheduler)
+%% =============================================================================
+
+start_target_op(Target) ->
+    concuerror_lid:start(),
+    %% Initialize a new group leader
+    GroupLeader = concuerror_io_server:new_group_leader(self()),
+    {Mod, Fun, Args} = Target,
+    NewFun = fun() -> ?REP_MOD:start_target(Mod, Fun, Args) end,
+    SpawnFun = fun() -> concuerror_rep:spawn_fun_wrapper(NewFun) end,
+    FirstPid = spawn(SpawnFun),
+    %% Set our io_server as the group leader
+    group_leader(GroupLeader, FirstPid),
+    {concuerror_lid:new(FirstPid, noparent), GroupLeader}.
+
+%% -----------------------------------------------------------------------------
+
+replay_trace(#dpor_state{proc_before = ProcBefore,
+                         run_count = RunCnt,
+                         sleep_blocked_count = SBlocked,
+                         group_leader = GroupLeader,
+                         target = Target,
+			 trace = Trace,
+			 show_output = ShowOutput} = State) ->
+    NewRunCnt = RunCnt + 1,
+    ?debug("\nReplay (~p) is required...\n", [NewRunCnt]),
+    concuerror_lid:stop(),
+    %% Get buffered output from group leader
+    %% TODO: For now just ignore it. Maybe we can print it
+    %% only when we have an error (after the backtrace?)
+    Output = concuerror_io_server:group_leader_sync(GroupLeader),
+    case ShowOutput of
+        true  -> io:put_chars(Output);
+        false -> ok
+    end,
+    proc_cleanup(processes() -- ProcBefore),
+    concuerror_util:flush_mailbox(),
+    {FirstLid, NewGroupLeader} = start_target_op(Target),
+    _ = wait_next(FirstLid, init),
+    NewTrace = replay_trace_aux(Trace),
+    ?debug("Done replaying...\n\n"),
+    %% Report the start of a new interleaving
+    concuerror_log:progress({'new', NewRunCnt, SBlocked}),
+    State#dpor_state{run_count = NewRunCnt, must_replay = false,
+                     group_leader = NewGroupLeader, trace = NewTrace}.
+
+replay_trace_aux(Trace) ->
+    [Init|Rest] = lists:reverse(Trace),
+    replay_trace_aux(Rest, [Init]).
+
+replay_trace_aux([], Acc) -> Acc;
+replay_trace_aux([TraceState|Rest], Acc) ->
+    #trace_state{i = _I, last = {Lid, Cmd, _} = Last} = TraceState,
+    %% ?debug(" ~-4w: ~P.",[_I, Last, ?DEBUG_DEPTH]),
+    Next = wait_next(Lid, Cmd),
+    %% ?debug("."),
+    UpdAcc = update_trace(Last, Next, Acc, irrelevant, {true, TraceState}),
+    %% ?debug(".\n"),
+    replay_trace_aux(Rest, UpdAcc).
+
+%% -----------------------------------------------------------------------------
+
+wait_next(Lid, {exit, {normal, _Info}} = Arg2) ->
+    Pid = concuerror_lid:get_pid(Lid),
+    link(Pid),
+    continue(Lid),
+    receive
+        {'EXIT', Pid, normal} -> {Lid, exited, []}
+    after
+        ?TIME_LIMIT -> error(time_limit, [Lid, Arg2])
+    end;
+wait_next(Lid, Plan) ->
+    DebugArgs = [Lid, Plan],
+    continue(Lid),
+    Replace =
+        case Plan of
+            {Spawn, _Info}
+              when Spawn =:= spawn; Spawn =:= spawn_link;
+                   Spawn =:= spawn_monitor; Spawn =:= spawn_opt ->
+                {true,
+                 %% This interruption happens to make sure that a child has an
+                 %% LID before the parent wants to do any operation with its PID.
+                 receive
+                     #sched{msg = Spawn,
+                            lid = Lid,
+                            misc = Info,
+                            type = prev} = Msg ->
+                         case Info of
+                             {Pid, Ref} ->
+                                 monitor(process, Pid),
+                                 ChildLid = concuerror_lid:new(Pid, Lid),
+                                 MonRef = concuerror_lid:ref_new(ChildLid, Ref),
+                                 Msg#sched{misc = {ChildLid, MonRef}};
+                             Pid ->
+                                 monitor(process, Pid),
+                                 Msg#sched{misc = concuerror_lid:new(Pid, Lid)}
+                         end
+                 after
+                     ?TIME_LIMIT -> error(time_limit, DebugArgs)
+                 end};
+            {ets, {new, _Info}} ->
+                {true,
+                 receive
+                     #sched{msg = ets, lid = Lid, misc = {new, [Tid|Rest]},
+                            type = prev} = Msg ->
+                         NewMisc = {new, [concuerror_lid:ets_new(Tid)|Rest]},
+                         Msg#sched{misc = NewMisc}
+                 after
+                     ?TIME_LIMIT -> error(time_limit, DebugArgs)
+                 end};
+            {monitor, _Info} ->
+                {true,
+                 receive
+                     #sched{msg = monitor, lid = Lid, misc = {TLid, Ref},
+                            type = prev} = Msg ->
+                         NewMisc = {TLid, concuerror_lid:ref_new(TLid, Ref)},
+                         Msg#sched{misc = NewMisc}
+                 after
+                     ?TIME_LIMIT -> error(time_limit, DebugArgs)
+                 end};
+            _Other ->
+                false
+        end,
+    case Replace of
+        {true, NewMsg} ->
+            continue(Lid),
+            self() ! NewMsg,
+            get_next(Lid);
+        false ->
+            get_next(Lid)
+    end.
+
+get_next(Lid) ->
+    receive
+        #sched{msg = Type, lid = Lid, misc = Misc, type = next} ->
+            {Lid, {Type, Misc}, []}
+    after
+        ?TIME_LIMIT -> error(time_limit, [Lid])
+    end.
+
+%% =============================================================================
+%% INSTRUCTIONS (logic and engine for Erlang instructions)
+%% =============================================================================
+
+handle_instruction_op({Lid, {Spawn, _Info}, Msgs} = DebugArg)
+  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
+       Spawn =:= spawn_opt ->
+    ParentLid = Lid,
+    Info =
+        receive
+            %% This is the replaced message
+            #sched{msg = Spawn, lid = ParentLid,
+                   misc = Info0, type = prev} ->
+                Info0
+        after
+            ?TIME_LIMIT -> error(time_limit, [DebugArg])
+        end,
+    ChildLid =
+        case Info of
+            {Lid0, _MonLid} -> Lid0;
+            Lid0 -> Lid0
+        end,
+    ChildNextInstr = wait_next(ChildLid, init),
+    {{Lid, {Spawn, Info}, Msgs}, ChildNextInstr};
+handle_instruction_op({Lid, {ets, {Updatable, _Info}}, Msgs} = DebugArg)
+  when Updatable =:= new; Updatable =:= insert_new; Updatable =:= insert ->
+    receive
+        %% This is the replaced message
+        #sched{msg = ets, lid = Lid, misc = {Updatable, Info}, type = prev} ->
+            {{Lid, {ets, {Updatable, Info}}, Msgs}, {}}
+    after
+        ?TIME_LIMIT -> error(time_limit, [DebugArg])
+    end;
+handle_instruction_op({Lid, {'receive', Tag}, Msgs} = DebugArg) ->
+    NewTag =
+        case Tag of
+            {T, _, _} -> T;
+            T -> T
+        end,
+    receive
+        #sched{msg = 'receive', lid = Lid,
+               misc = {From, CV, Msg}, type = prev} ->
+            {{Lid, {'receive', {NewTag, From, Msg}}, Msgs}, CV}
+    after
+        ?TIME_LIMIT -> error(time_limit, [DebugArg])
+    end;
+handle_instruction_op({Lid, {'after', {Fun, _OldLinks}}, Msgs} = DebugArg) ->
+    receive
+        #sched{msg = 'after', lid = Lid,
+               misc = Links, type = prev} ->
+            {{Lid, {'after', {Fun, Links}}, Msgs}, {}}
+    after
+        ?TIME_LIMIT -> error(time_limit, [DebugArg])
+    end;
+handle_instruction_op({Lid, {Updatable, _Info}, Msgs} = DebugArg)
+  when Updatable =:= exit; Updatable =:= send; Updatable =:= whereis;
+       Updatable =:= monitor; Updatable =:= process_flag ->
+    receive
+        #sched{msg = Updatable, lid = Lid, misc = Info, type = prev} ->
+            {{Lid, {Updatable, Info}, Msgs}, {}}
+    after
+        ?TIME_LIMIT -> error(time_limit, [DebugArg])
+    end;
+handle_instruction_op(Instr) ->
+    {Instr, {}}.
+
+handle_instruction_al({Lid, {exit, _Info}, _Msgs} = Trans, TraceTop, {}) ->
+    #trace_state{enabled = Enabled, nexts = Nexts} = TraceTop,
+    NewEnabled = ordsets:del_element(Lid, Enabled),
+    NewNexts = dict:erase(Lid, Nexts),
+    TraceTop#trace_state{enabled = NewEnabled, nexts = NewNexts, last = Trans};
+handle_instruction_al({Lid, {Spawn, Info}, _Msgs} = Trans,
+                      TraceTop, ChildNextInstr)
+  when Spawn =:= spawn; Spawn =:= spawn_link; Spawn =:= spawn_monitor;
+       Spawn =:= spawn_opt ->
+    ChildLid =
+        case Info of
+            {Lid0, _MonLid} -> Lid0;
+            Lid0 -> Lid0
+        end,
+    #trace_state{enabled = Enabled, blocked = Blocked,
+                 nexts = Nexts, pollable = Pollable,
+                 clock_map = ClockMap} = TraceTop,
+    NewNexts = dict:store(ChildLid, ChildNextInstr, Nexts),
+    ClockVector = lookup_clock(Lid, ClockMap),
+    NewClockMap = dict:store(ChildLid, ClockVector, ClockMap),
+    MaybeEnabled = ordsets:add_element(ChildLid, Enabled),
+    {NewPollable, NewEnabled, NewBlocked} =
+        update_lid_enabled(ChildLid, ChildNextInstr, Pollable,
+                           MaybeEnabled, Blocked),
+    TraceTop#trace_state{last = Trans,
+                         clock_map = NewClockMap,
+                         enabled = NewEnabled,
+                         blocked = NewBlocked,
+                         pollable = NewPollable,
+                         nexts = NewNexts};
+handle_instruction_al({Lid, {'receive', _Info}, _Msgs} = Trans,
+                      TraceTop, CV) ->
+    #trace_state{clock_map = ClockMap} = TraceTop,
+    Vector = lookup_clock(Lid, ClockMap),
+    NewVector = max_cv(Vector, CV),
+    NewClockMap = dict:store(Lid, NewVector, ClockMap),
+    TraceTop#trace_state{last = Trans, clock_map = NewClockMap};
+handle_instruction_al({_Lid, {ets, {Updatable, _Info}}, _Msgs} = Trans,
+                      TraceTop, {})
+  when Updatable =:= new; Updatable =:= insert_new; Updatable =:= insert ->
+    TraceTop#trace_state{last = Trans};
+handle_instruction_al({_Lid, {Updatable, _Info}, _Msgs} = Trans, TraceTop, {})
+  when Updatable =:= send; Updatable =:= whereis; Updatable =:= monitor;
+       Updatable =:= process_flag; Updatable =:= 'after' ->
+    TraceTop#trace_state{last = Trans};
+handle_instruction_al({_Lid, {register, {Name, PLid}}, _Msgs},
+                      #trace_state{nexts = Nexts} = TraceTop, {}) ->
+    TraceTop#trace_state{nexts = update_named_sends(Name, PLid, Nexts)};
+handle_instruction_al({_Lid, {halt, _Status}, _Msgs}, TraceTop, {}) ->
+    TraceTop#trace_state{enabled = [], blocked = []};
+handle_instruction_al(_Transition, TraceTop, {}) ->
+    TraceTop.
+
+update_named_sends(Name, PLid, Nexts) ->
+    Map =
+        fun(Lid, Instr) ->
+                case Instr of
+                    {Lid, {send, {Name, _OldPLid, Msg}}, Msgs} ->
+                        {Lid, {send, {Name, PLid, Msg}}, Msgs};
+                    _Other -> Instr
+                end
+        end,
+    dict:map(Map, Nexts).
+
 %%%----------------------------------------------------------------------
 %%% Helper functions
 %%%----------------------------------------------------------------------
@@ -1312,7 +1364,6 @@ proc_cleanup(ProcList) ->
 wait_for_exit([]) -> ok;
 wait_for_exit([P|Rest]) ->
     receive {'EXIT', P, _Reason} -> wait_for_exit(Rest) end.
-
 
 %%%----------------------------------------------------------------------
 %%% Instrumentation interface
@@ -1420,7 +1471,6 @@ instrument_my_messages(Lid, VC) ->
                 end
         end,
     dynamic_loop_acc(Fun, []).
-
 
 dynamic_loop_acc(Fun, Arg) ->
     case Fun(Arg) of
