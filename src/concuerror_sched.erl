@@ -223,6 +223,7 @@ do_analysis(Target, PreBound, Dpor, Options) ->
 %% =============================================================================
 
 scheduler_main(Target, PreBound, Parent, Dpor, Options) ->
+    %% fprof:trace(start),
     ?debug("Scheduler spawned"),
     register(?RP_SCHED, self()),
     Procs = processes(),
@@ -236,6 +237,7 @@ scheduler_main(Target, PreBound, Parent, Dpor, Options) ->
         dpor_flavor = Dpor, preemption_bound = PreBound,
         show_output = ShowOutput, group_leader = GroupLeader},
     Result = explore(NewState),
+    %% fprof:trace(stop),
     unregister(?RP_SCHED),
     Parent ! {interleave_result, Result}.
 
@@ -467,10 +469,13 @@ is_pollable(_Else) -> false.
 
 recent_dependency_cv(Transition, ClockVector, Trace) ->
     Fun =
-        fun(#trace_state{
-            last = {Lid, _, _} = Transition2,
-            clock_map = CM}, CVAcc) ->
-                case concuerror_deps:dependent(Transition, Transition2) of
+        fun(#trace_state{i = I,
+                         last = {Lid, _, _} = Transition2,
+                         clock_map = CM}, CVAcc) ->
+                case
+                    lookup_clock_value(Lid, CVAcc) < I andalso
+                    concuerror_deps:dependent(Transition, Transition2)
+                of
                     true ->
                         CV = lookup_clock(Lid, CM),
                         max_cv(CVAcc, CV);
