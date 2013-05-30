@@ -195,7 +195,6 @@ do_analysis(Target, PreBound, Dpor, Options) ->
           backtrack = []                :: lid_trace(),
           done      = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
           sleep_set = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
-          awaked    = ordsets:new()     :: ordsets:ordset(concuerror_lid:lid()),
           nexts     = dict:new()        :: dict(), % dict(lid(), instr()),
           clock_map = empty_clock_map() :: clock_map(),
           preemptions = 0               :: non_neg_integer(),
@@ -224,7 +223,7 @@ do_analysis(Target, PreBound, Dpor, Options) ->
 
 scheduler_main(Target, PreBound, Parent, Dpor, Options) ->
     %% fprof:trace(start),
-    ?debug("Scheduler spawned"),
+    ?debug("Scheduler spawned\n"),
     register(?RP_SCHED, self()),
     Procs = processes(),
     %% To be able to clean up we need to be trapping exits...
@@ -428,18 +427,26 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                                 {_, {_, { halt, _}, _}} -> [];
                                 {{_, {error, _}, _}, _} ->
                                     new_backtrack([{Lid, Next}]);
-                                _Else ->
-                                    element(3, lists:keyfind(Lid, 1, Backtrack))
+                                _ ->
+                                    NB =
+                                        element(3, lists:keyfind(Lid, 1,
+                                                                 Backtrack)),
+                                    case
+                                        Flavor =:= ?FULL orelse
+                                        Flavor =:= none
+                                    of
+                                        true -> NB;
+                                        false ->
+                                            prioritize_awaked(NB, NewAwaked)
+                                    end
                             end;
                         false -> TempBacktrack
                     end,
                 NewLastBlocked = ordsets:is_element(Lid, NewBlocked),
-                ?debug("Awaked: ~p\n", [NewAwaked]),
                 UpdTraceTop#trace_state{
                   last_blocked = NewLastBlocked,
                   backtrack = NewBacktrack,
-                  sleep_set = NewSleepSet,
-                  awaked = NewAwaked};
+                  sleep_set = NewSleepSet};
             {true, _ReplayTop} ->
                 UpdTraceTop
         end,
@@ -558,6 +565,10 @@ filter_awaked(SleepSet, Nexts, Selected) ->
     {A, NA} = lists:partition(Filter, SleepSet),
     {ordsets:from_list(A), ordsets:from_list(NA)}.
 
+prioritize_awaked(Backtrack, Awaked) ->
+    Fold = fun(P, Acc) -> [{P, dummy, Acc}] end,
+    lists:foldl(Fold, Backtrack, Awaked).
+
 rewrite_while_awaked(Transition, Original, Trace) ->
     rewrite_while_awaked(Transition, Original, Trace, []).
 
@@ -602,14 +613,14 @@ race_check([#trace_state{race_checked = true}|_] = Trace,
   when Flavor =:= ?CLASSIC; Flavor =:= ?SOURCE ->
     Trace;
 race_check(Trace, Rest, PreBound, Flavor) ->
-    [#trace_state{i = _I, last = {Lid, _, _} = Transition} = Top|
+    [#trace_state{i = I, last = {Lid, _, _} = Transition} = Top|
      [#trace_state{clock_map = ClockMap}|_] = PTrace] = Trace,
     NewPTrace = race_check(PTrace, [Top|Rest], PreBound, Flavor),
     NewTop = Top#trace_state{race_checked = true},
-    ?debug("Race check: ~p ~p\n", [_I, Transition]),
+    ?debug("Race check: ~p ~p\n", [I, Transition]),
     case concuerror_deps:may_have_dependencies(Transition) of
         true ->
-            ClockVector = lookup_clock(Lid, ClockMap),
+            ClockVector = orddict:store(Lid, I, lookup_clock(Lid, ClockMap)),
             add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
                                      Flavor, NewPTrace, [NewTop], Rest);
         false -> [NewTop|NewPTrace]
@@ -626,7 +637,8 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                              Trace, [StateI|Acc], Rest);
 add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                          [StateI,PreSI|Rest], Acc, AccRest) ->
-    #trace_state{i = I, last = {ProcSI, _, _} = SI} = StateI,
+    #trace_state{i = I, last = {ProcSI, _, _} = SI,
+                 clock_map = ClockMap} = StateI,
     Clock = lookup_clock_value(ProcSI, ClockVector),
     Action =
         case I > Clock andalso concuerror_deps:dependent(Transition, SI) of
@@ -657,23 +669,42 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                         end;
                     ?SOURCE ->
                         Candidates = ordsets:subtract(Enabled, Sleepers),
+                        {Predecessor, Initial} =
+                            find_preds_and_initials(Lid, ProcSI, Candidates,
+                                                    I, ClockVector, Acc),
                         BacktrackSet =
-                            ordsets:from_list([P || {P, _, _} <- Backtrack]),
-                        case find_initials(BacktrackSet, Candidates, I, Acc) of
-                            equivalent_scheduled ->
-                                ?debug("    Equivalent is scheduled...\n"),
-                                {done, PreSI};
-                            inversion_explored ->
-                                ?debug("    Inversion is explored...\n"),
-                                {continue, PreSI};
-                            {add, P} ->
-                                NewBacktrack = Backtrack ++ [{P, dummy, []}],
+                            ordsets:from_list([B || {B,_,_} <- Backtrack]),
+                        case Predecessor of
+                            [] ->
+                                ?debug("    All sleeping...\n"),
+                                NewClockVector =
+                                    lookup_clock(ProcSI, ClockMap),
+                                MaxClockVector =
+                                    max_cv(NewClockVector, ClockVector),
+                                {continue, ProcSI, MaxClockVector};
+                            [P] ->
+                                Intersection =
+                                    ordsets:intersection(BacktrackSet, Initial),
+                                NewBacktrack =
+                                    case Intersection =/= [] of
+                                        true ->
+                                            ?debug("    Init in backtrack\n"),
+                                            Backtrack;
+                                        false ->
+                                            ?debug("    Add: ~p\n", [P]),
+                                            Backtrack ++ [{P, dummy, []}]
+                                    end,
                                 ?debug("    NewBacktrack: ~p\n",[NewBacktrack]),
-                                {continue,
+                                {done,
                                  PreSI#trace_state{backtrack = NewBacktrack}}
                         end;
                     ?CLASSIC ->
-                        throw(temporarily_unavailable)
+                        Candidates = ordsets:subtract(Enabled, Sleepers),
+                        {Predecessor, _Initial} =
+                            find_preds_and_initials(Lid, ProcSI, Candidates,
+                                                    I, ClockVector, Acc),
+                        decide_classic(Predecessor, Backtrack, Candidates,
+                                       PreSI)
                 end
         end,
     case Action of
@@ -681,6 +712,11 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
             add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
                                      Flavor, [NewPreSI|Rest], [StateI|Acc],
                                      AccRest);
+        {continue, UpdProcSI, UpdClockVector} ->
+            add_all_backtracks_trace(Transition, UpdProcSI, UpdClockVector,
+                                     PreBound, Flavor, [PreSI|Rest],
+                                     [StateI|Acc], AccRest);
+
         {done, NewPreSI} ->
             lists:reverse([StateI|Acc], [NewPreSI|Rest])
     end.
@@ -768,58 +804,74 @@ not_deps([#trace_state{last = {Lid, _, _} = Last, clock_map = ClockMap}|Acc],
         end,
     not_deps(Acc, Rest, ProcSI, I, NewPath).
 
-%% --------------------------
-%% For source set based DPOR:
-%% --------------------------
+%% --------------------------------------
+%% For source set based and classic DPOR:
+%% --------------------------------------
 
-find_initials(Backtrack, Candidates, I, Trace) ->
-    ?debug("    BT:~p\n    C :~p\n", [Backtrack, Candidates]),
-    find_initials(Trace, Backtrack, Candidates, I, none).
+find_preds_and_initials(Lid, ProcSI, Candidates, I, ClockVector, RevTrace) ->
+    {Racing, NonRacing} = find_initials(Candidates, ProcSI, I, RevTrace),
+    Initial =
+        case not ordsets:is_element(Lid, Candidates)
+            orelse ordsets:is_element(Lid, Racing) of
+            true -> NonRacing;
+            false -> ordsets:add_element(Lid, NonRacing)
+        end,
 
-find_initials(_Trace, _Backtrack, [], _I, MaybePred) ->
-    case MaybePred of
-        none -> inversion_explored;
-        {true, Lid} -> {add, Lid}
-    end;
-find_initials([#trace_state{last = {Lid, _, _}}],
-              Backtrack, Candidates, _I, MaybePred) ->
-    case MaybePred of
-        none ->
-            case ordsets:is_element(Lid, Candidates) of
-                false -> inversion_explored;
-                true ->
-                    case ordsets:is_element(Lid, Backtrack) of
-                        true -> equivalent_scheduled;
-                        false -> {add, Lid}
-                    end
-            end;
-        {true, Lid2} -> {add, Lid2}
-    end;
-find_initials([#trace_state{i = _J,
-                            last = {Lid, _, _}, clock_map = ClockMap}|Trace],
-              Backtrack, Candidates, I, MaybePred) ->
-    case ordsets:is_element(Lid, Candidates) of
+    {predecessor(Initial, I, ClockVector), Initial}.
+
+find_initials(Candidates, ProcSI, I, RevTrace) ->
+    RealCandidates = ordsets:del_element(ProcSI, Candidates),
+    find_initials(RealCandidates, I, RevTrace, [ProcSI], []).
+
+find_initials(Candidates, _I,        [_], Racing, NonRacing) ->
+    {Racing,ordsets:union(Candidates, NonRacing)};
+find_initials(        [], _I,     _Trace, Racing, NonRacing) ->
+    {Racing, NonRacing};
+find_initials(Candidates,  I, [Top|Rest], Racing, NonRacing) ->
+    #trace_state{last = {P,_,_}, clock_map = CM} = Top,
+    ClockVector = lookup_clock(P, CM),
+    case ordsets:is_element(P, Candidates) of
         false ->
-            find_initials(Trace, Backtrack, Candidates, I, MaybePred);
+            find_initials(Candidates, I, Rest, Racing, NonRacing);
         true ->
-            NewCands = ordsets:del_element(Lid, Candidates),
-            LidVector = lookup_clock(Lid, ClockMap),
-            ?debug("     ~p: ~p ~p\n", [_J, Lid, LidVector]),
-            Fold = fun({L, V}, Acc) -> Acc andalso (L =:= Lid orelse V < I) end,
-            case lists:foldl(Fold, true, LidVector) of
-                false ->
-                    find_initials(Trace, Backtrack, NewCands, I, MaybePred);
-                true ->
-                    case {ordsets:is_element(Lid, Backtrack), MaybePred} of
-                        {true,    _} -> equivalent_scheduled;
-                        {   _, none} ->
-                            find_initials(Trace, Backtrack, NewCands,
-                                          I, {true, Lid});
-                        _ ->
-                            find_initials(Trace, Backtrack, NewCands,
-                                          I, MaybePred)
-                    end
-            end
+            Fun2 = fun(K, V, A) -> A andalso (K =:= P orelse V < I) end,
+            {NewRacing, NewNonRacing} =
+                case orddict:fold(Fun2, true, ClockVector) of
+                    false ->
+                        {ordsets:add_element(P, Racing), NonRacing};
+                    true ->
+                        {Racing, ordsets:add_element(P, NonRacing)}
+                end,
+            NewCandidates = ordsets:del_element(P, Candidates),
+            find_initials(NewCandidates, I, Rest, NewRacing, NewNonRacing)
+    end.
+
+predecessor(Initial, I, ClockVector) ->
+    DropWhile = fun(Lid) -> lookup_clock_value(Lid, ClockVector) < I end,
+    case lists:dropwhile(DropWhile, Initial) of
+        [] -> [];
+        [H|_] -> [H]
+    end.
+
+decide_classic(Predecessor, Backtrack, Candidates, PreSI) ->
+    BacktrackSet = ordsets:from_list([B || {B,_,_} <- Backtrack]),
+    case ordsets:intersection(BacktrackSet, Predecessor) =/= [] of
+        true ->
+            ?debug("One pred already in backtrack.\n"),
+            {done, PreSI};
+        false ->
+            Added =
+                case Predecessor of
+                    [OneP] ->
+                        ?debug(" Add as 'choose-one': ~p\n", [OneP]),
+                        [{OneP, dummy, []}];
+                    [] ->
+                        ?debug(" Add as 'choose every': ~p\n", [Candidates]),
+                        New = ordsets:subtract(Candidates, BacktrackSet),
+                        [{P, dummy, []} || P <- New]
+                end,
+            ?debug("    Added: ~p\n",[Added]),
+            {done, PreSI#trace_state{backtrack = Backtrack ++ Added}}
     end.
 
 %% --------------------------------------
