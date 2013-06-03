@@ -175,6 +175,7 @@ concuerror:
 	    erl -sname $(APP_STRING)Stop -noinput -cookie \$$Cookie \\\\\n\
 	        -pa $(EBIN) \\\\\n\
 	        -run concuerror stop \$$Name -run init stop\n\
+	    wait\n\
 	}\n\n\
 	erl +Bi -smp enable -noinput -sname \$$Name -cookie \$$Cookie \\\\\n\
 	    -pa $(EBIN) \\\\\n\
