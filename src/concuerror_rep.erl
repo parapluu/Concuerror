@@ -15,6 +15,7 @@
 -module(concuerror_rep).
 
 -export([spawn_fun_wrapper/1,
+         start_target/3,
          find_my_links/0]).
 
 -export([rep_var/3, rep_apply/3, rep_send/2, rep_send/3]).
@@ -112,6 +113,36 @@
          {{ets, info, 1}, fun rep_ets_info/1},
          {{ets, info, 2}, fun rep_ets_info/2},
          {{ets, foldl, 3}, fun rep_ets_foldl/3}]).
+
+
+%%%----------------------------------------------------------------------
+%%% Start analysis target module/function
+%%%----------------------------------------------------------------------
+-spec start_target(module(), term(), [term()]) -> ok.
+start_target(Mod, Fun, Args) ->
+    InstrAppController = ets:member(?NT_OPTIONS, 'app_controller'),
+    AppConModule =
+        concuerror_instr:check_module_name(application_controller, none, 0),
+    AppModule = concuerror_instr:check_module_name(application, none, 0),
+    case InstrAppController of
+        true ->
+            AppConModule:start({application, kernel, []}),
+            AppModule:start(kernel),
+            AppModule:start(stdlib),
+            ok;
+        false ->
+            ok
+    end,
+    apply(Mod, Fun, Args),
+    case InstrAppController of
+        true ->
+            _ = [AppModule:stop(App) ||
+                {App, _, _} <- AppModule:loaded_applications()],
+            ok;
+        false ->
+            ok
+    end.
+
 
 %%%----------------------------------------------------------------------
 %%% Callbacks

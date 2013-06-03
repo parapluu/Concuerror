@@ -254,7 +254,7 @@ start_target_op(Target) ->
     %% Initialize a new group leader
     GroupLeader = concuerror_io_server:new_group_leader(self()),
     {Mod, Fun, Args} = Target,
-    NewFun = fun() -> apply(Mod, Fun, Args) end,
+    NewFun = fun() -> ?REP_MOD:start_target(Mod, Fun, Args) end,
     SpawnFun = fun() -> concuerror_rep:spawn_fun_wrapper(NewFun) end,
     FirstPid = spawn(SpawnFun),
     %% Set our io_server as the group leader

@@ -60,6 +60,7 @@
     | {'wait_messages'}
     | {'ignore_timeout', pos_integer()}
     | {'ignore',  [module()]}
+    | {'app_controller'}
     | {'help'}.
 
 -type options() :: [option()].
@@ -331,7 +332,16 @@ parse([{Opt, Param} | Args], Options) ->
                     NewOptions = lists:keystore('fail_uninstrumented', 1,
                         Options, {'fail_uninstrumented'}),
                     parse(Args, NewOptions);
-                _Ohter -> wrongArgument('number', Opt)
+                _Other -> wrongArgument('number', Opt)
+            end;
+
+        "-app-controller" ->
+            case Param of
+                [] ->
+                    NewOptions = lists:keystore('app_controller', 1,
+                        Options, {'app_controller'}),
+                    parse(Args, NewOptions);
+                _Other -> wrongArgument('number', Opt)
             end;
 
         "-ignore" ->
@@ -461,6 +471,7 @@ help() ->
      "  --ignore    modules     Don't rename this modules\n"
      "  --show-output           Allow program under test to print to stdout\n"
      "  --wait-messages         Wait for uninstrumented messages to arrive\n"
+     "  --app-controller        Start an (instrumented) application controller\n"
      "  -T|--ignore-timeout bound\n"
      "                          Treat big after Timeouts as infinity timeouts\n"
      "  --gui                   Run concuerror with graphics\n"
