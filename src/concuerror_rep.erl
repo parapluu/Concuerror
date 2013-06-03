@@ -750,7 +750,7 @@ rep_whereis(RegName) ->
 -spec rep_port_command(port, term()) -> true.
 rep_port_command(Port, Data) ->
     check_unknown_process(),
-    concuerror_sched:notify(port_command, Port),
+    %concuerror_sched:notify(port_command, Port),
     port_command(Port, Data),
     concuerror_util:wait_messages(not_found),
     true.
@@ -762,7 +762,7 @@ rep_port_command(Port, Data) ->
 -spec rep_port_command(port, term(), [force | nosuspend]) -> boolean().
 rep_port_command(Port, Data, OptionList) ->
     check_unknown_process(),
-    concuerror_sched:notify(port_command, Port),
+    %concuerror_sched:notify(port_command, Port),
     Result = port_command(Port, Data, OptionList),
     concuerror_util:wait_messages(not_found),
     Result.
@@ -774,7 +774,7 @@ rep_port_command(Port, Data, OptionList) ->
 -spec rep_port_control(port, integer(), term()) -> term().
 rep_port_control(Port, Operation, Data) ->
     check_unknown_process(),
-    concuerror_sched:notify(port_control, Port),
+    %concuerror_sched:notify(port_control, Port),
     Result = port_control(Port, Operation, Data),
     concuerror_util:wait_messages(not_found),
     Result.
