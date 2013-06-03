@@ -497,7 +497,10 @@ spawn_fun_wrapper(Fun) ->
         Fun(),
         exit(normal)
     catch
-        exit:normal ->
+        exit:Normal when
+          (Normal=:=normal orelse
+           Normal=:=shutdown orelse
+           Normal=:={shutdown, peer_close}) ->
             MyInfo = find_my_info(),
             concuerror_sched:notify(exit, {normal, MyInfo}),
             MyRealInfo = find_my_info(),
