@@ -36,8 +36,9 @@
 
 -export([rep_ets_insert_new/2, rep_ets_lookup/2, rep_ets_select_delete/2,
          rep_ets_insert/2, rep_ets_delete/1, rep_ets_delete/2,
+         rep_ets_match/2, rep_ets_match/3,
          rep_ets_match_object/2, rep_ets_match_object/3,
-         rep_ets_info/1, rep_ets_info/2,
+         rep_ets_info/1, rep_ets_info/2, rep_ets_filter/3,
          rep_ets_match_delete/2, rep_ets_new/2, rep_ets_foldl/3]).
 
 -export([rep_register/2,
@@ -106,10 +107,13 @@
          {{ets, insert, 2}, fun rep_ets_insert/2},
          {{ets, delete, 1}, fun rep_ets_delete/1},
          {{ets, delete, 2}, fun rep_ets_delete/2},
+         {{ets, match, 2}, fun rep_ets_match/2},
+         {{ets, match, 3}, fun rep_ets_match/3},
          {{ets, match_object, 2}, fun rep_ets_match_object/2},
          {{ets, match_object, 3}, fun rep_ets_match_object/3},
          {{ets, match_delete, 2}, fun rep_ets_match_delete/2},
          {{ets, new, 2}, fun rep_ets_new/2},
+         {{ets, filter, 3}, fun rep_ets_filter/3},
          {{ets, info, 1}, fun rep_ets_info/1},
          {{ets, info, 2}, fun rep_ets_info/2},
          {{ets, foldl, 3}, fun rep_ets_foldl/3}]).
@@ -797,30 +801,33 @@ rep_port_control(Port, Operation, Data) ->
 -spec rep_ets_new(atom(), [ets_new_option()]) -> ets:tab().
 rep_ets_new(Name, Options) ->
     check_unknown_process(),
-    concuerror_sched:notify(ets, {new, [unknown, Name, Options]}),
+    NewName = rename_ets_table(Name),
+    concuerror_sched:notify(ets, {new, [unknown, NewName, Options]}),
     try
-        Tid = ets:new(Name, Options),
-        concuerror_sched:notify(ets, {new, [Tid, Name, Options]}, prev),
+        Tid = ets:new(NewName, Options),
+        concuerror_sched:notify(ets, {new, [Tid, NewName, Options]}, prev),
         concuerror_sched:wait(),
         Tid
     catch
         _:_ ->
             %% Report a fake tid...
-            concuerror_sched:notify(ets, {new, [-1, Name, Options]}, prev),
+            concuerror_sched:notify(ets, {new, [-1, NewName, Options]}, prev),
             concuerror_sched:wait(),
             %% And throw the error again...
-            ets:new(Name, Options)
+            ets:new(NewName, Options)
     end.
 
 -spec rep_ets_insert(ets:tab(), tuple() | [tuple()]) -> true.
 rep_ets_insert(Tab, Obj) ->
     check_unknown_process(),
-    ets_insert_center(insert, Tab, Obj).
+    NewTab = rename_ets_table(Tab),
+    ets_insert_center(insert, NewTab, Obj).
 
 -spec rep_ets_insert_new(ets:tab(), tuple()|[tuple()]) -> boolean().
 rep_ets_insert_new(Tab, Obj) ->
     check_unknown_process(),
-    ets_insert_center(insert_new, Tab, Obj).
+    NewTab = rename_ets_table(Tab),
+    ets_insert_center(insert_new, NewTab, Obj).
 
 ets_insert_center(Type, Tab, Obj) ->
     KeyPos = ets:info(Tab, keypos),
@@ -854,73 +861,106 @@ ets_insert_center(Type, Tab, Obj) ->
 -spec rep_ets_lookup(ets:tab(), term()) -> [tuple()].
 rep_ets_lookup(Tab, Key) ->
     check_unknown_process(),
-    Lid = ?LID_FROM_PID(Tab),
-    concuerror_sched:notify(ets, {lookup, [Lid, Tab, Key]}),
-    ets:lookup(Tab, Key).
+    NewTab = rename_ets_table(Tab),
+    Lid = ?LID_FROM_PID(NewTab),
+    concuerror_sched:notify(ets, {lookup, [Lid, NewTab, Key]}),
+    ets:lookup(NewTab, Key).
 
 -spec rep_ets_delete(ets:tab()) -> true.
 rep_ets_delete(Tab) ->
     check_unknown_process(),
-    concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab]}),
-    ets:delete(Tab).
+    NewTab = rename_ets_table(Tab),
+    concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(NewTab), NewTab]}),
+    ets:delete(NewTab).
 
 -spec rep_ets_delete(ets:tab(), term()) -> true.
 rep_ets_delete(Tab, Key) ->
     check_unknown_process(),
-    concuerror_sched:notify(ets, {delete, [?LID_FROM_PID(Tab), Tab, Key]}),
-    ets:delete(Tab, Key).
+    NewTab = rename_ets_table(Tab),
+    concuerror_sched:notify(ets,
+        {delete, [?LID_FROM_PID(NewTab), NewTab, Key]}),
+    ets:delete(NewTab, Key).
 
 -type match_spec()    :: [{match_pattern(), [term()], [term()]}].
 -type match_pattern() :: atom() | tuple().
 -spec rep_ets_select_delete(ets:tab(), match_spec()) -> non_neg_integer().
 rep_ets_select_delete(Tab, MatchSpec) ->
     check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
     concuerror_sched:notify(ets,
-        {select_delete, [?LID_FROM_PID(Tab), Tab, MatchSpec]}),
-    ets:select_delete(Tab, MatchSpec).
+        {select_delete, [?LID_FROM_PID(NewTab), NewTab, MatchSpec]}),
+    ets:select_delete(NewTab, MatchSpec).
 
 -spec rep_ets_match_delete(ets:tab(), match_pattern()) -> true.
 rep_ets_match_delete(Tab, Pattern) ->
     check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
     concuerror_sched:notify(ets,
-        {match_delete, [?LID_FROM_PID(Tab), Tab, Pattern]}),
-    ets:match_delete(Tab, Pattern).
+        {match_delete, [?LID_FROM_PID(NewTab), NewTab, Pattern]}),
+    ets:match_delete(NewTab, Pattern).
 
 -spec rep_ets_match_object(ets:tab(), tuple()) -> [tuple()].
 rep_ets_match_object(Tab, Pattern) ->
     check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
     concuerror_sched:notify(ets,
-        {match_object, [?LID_FROM_PID(Tab), Tab, Pattern]}),
-    ets:match_object(Tab, Pattern).
+        {match_object, [?LID_FROM_PID(NewTab), NewTab, Pattern]}),
+    ets:match_object(NewTab, Pattern).
 
 -spec rep_ets_match_object(ets:tab(), tuple(), integer()) ->
     {[[term()]],term()} | '$end_of_table'.
 rep_ets_match_object(Tab, Pattern, Limit) ->
     check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
     concuerror_sched:notify(ets,
-        {match_object, [?LID_FROM_PID(Tab), Tab, Pattern, Limit]}),
-    ets:match_object(Tab, Pattern, Limit).
+        {match_object, [?LID_FROM_PID(NewTab), NewTab, Pattern, Limit]}),
+    ets:match_object(NewTab, Pattern, Limit).
 
 -spec rep_ets_foldl(fun((term(), term()) -> term()), term(), ets:tab()) -> term().
 rep_ets_foldl(Function, Acc, Tab) ->
     check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
     concuerror_sched:notify(ets,
-        {foldl, [?LID_FROM_PID(Tab), Function, Acc, Tab]}),
-    ets:foldl(Function, Acc, Tab).
+        {foldl, [?LID_FROM_PID(NewTab), Function, Acc, NewTab]}),
+    ets:foldl(Function, Acc, NewTab).
 
 -spec rep_ets_info(ets:tab()) -> [{atom(), term()}] | undefined.
 rep_ets_info(Tab) ->
     check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
     concuerror_sched:notify(ets,
-        {info, [?LID_FROM_PID(Tab), Tab]}),
-    ets:info(Tab).
+        {info, [?LID_FROM_PID(NewTab), NewTab]}),
+    ets:info(NewTab).
 
 -spec rep_ets_info(ets:tab(), atom()) -> term() | undefined.
 rep_ets_info(Tab, Item) ->
     check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
     concuerror_sched:notify(ets,
-        {info, [?LID_FROM_PID(Tab), Tab, Item]}),
-    ets:info(Tab, Item).
+        {info, [?LID_FROM_PID(NewTab), NewTab, Item]}),
+    ets:info(NewTab, Item).
+
+-spec rep_ets_filter(ets:tab(), fun((term()) -> term()), term()) -> term().
+%% XXX: no preemption point for now.
+rep_ets_filter(Tab, Fun, Args) ->
+    check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
+    ets:filter(NewTab, Fun, Args).
+
+-spec rep_ets_match(ets:tab(), term()) -> term().
+%%XXX: no preemption point for now.
+rep_ets_match(Tab, Pattern) ->
+    check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
+    ets:match(NewTab, Pattern).
+
+-spec rep_ets_match(ets:tab(), term(), integer()) -> term().
+%%XXX: no preemption point for now.
+rep_ets_match(Tab, Pattern, Limit) ->
+    check_unknown_process(),
+    NewTab = rename_ets_table(Tab),
+    ets:match(NewTab, Pattern, Limit).
+
 
 %%%----------------------------------------------------------------------
 %%% Helper functions
@@ -944,6 +984,15 @@ check_unknown_process() ->
         _Else -> ok
     end.
 
+%% When instrumenting the application controller rename
+%% ac_tab ets table.
+rename_ets_table(ac_tab) ->
+    InstrAppController = ets:member(?NT_OPTIONS, 'app_controller'),
+    case InstrAppController of
+        true  -> concuerror_instr:check_module_name(ac_tab, none, 0);
+        false -> ac_tab
+    end;
+rename_ets_table(Tab) -> Tab.
 
 %%%----------------------------------------------------------------------
 %%% Run eunit tests using concuerror
