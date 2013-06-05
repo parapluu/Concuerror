@@ -307,10 +307,12 @@ explore(State) ->
 select_from_backtrack(#dpor_state{trace = []}) -> none;
 select_from_backtrack(#dpor_state{must_replay = MustReplay,
 				  trace = Trace} = State) ->
-    [#trace_state{backtrack = Backtrack, done = Done} = _TraceTop|_] = Trace,
+    [#trace_state{backtrack = Backtrack,
+                  done = Done,
+                  sleep_set = SleepSet} = _TraceTop|_] = Trace,
     ?debug("------------\nExplore ~p\n------------\n",
            [_TraceTop#trace_state.i + 1]),
-    case pick_from_backtrack(Backtrack, Done) of
+    case pick_from_backtrack(Backtrack, ordsets:union(SleepSet, Done)) of
         none ->
             ?debug("Backtrack set explored\n",[]),
             none;
