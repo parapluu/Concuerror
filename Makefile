@@ -23,7 +23,7 @@ VSN = "0.9"
 ### Orientation information
 ###----------------------------------------------------------------------
 
-TOP = 	  $(PWD)
+TOP = 	  $(CURDIR)
 
 EBIN = 	  $(TOP)/ebin
 
