@@ -227,17 +227,17 @@ instrument_and_compile_one(File, Includes, Defines, Verbosity) ->
                         error ->
                             concuerror_log:log(0, "\nFailed to compile "
                                 "instrumented file ~p.", [NewFile]),
-                            error
+                            {error, 0}
                     end;
                 {error, Error} ->
                     concuerror_log:log(0, "\nFailed to instrument "
                         "file ~p: ~p", [File, Error]),
-                    error
+                    {error, 0}
             end;
         {error, Errors, Warnings} ->
             log_error_list(Errors),
             log_warning_list(Warnings),
-            error
+            {error, 0}
     end.
 
 %% ---------------------------
