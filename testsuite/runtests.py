@@ -80,7 +80,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     # Run concuerror
     status = os.system(
         ("%s --target %s %s --files %s --output %s/%s/results/%s-%s-%s%s.txt "
-         "--preb %s --quiet %s > /dev/null 2>&1")
+         "--preb %s --quiet --wait-messages %s > /dev/null 2>&1")
         % (concuerror, modn, funn, ' '.join(files), results,
            suite, name, funn, preb, file_ext, preb, dpor_flag))
     # Compare the results
