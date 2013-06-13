@@ -665,7 +665,11 @@ analyze_aux(Module, Function, Args, Files) ->
            end,
     Include = {'include', ref_lookup(?PREF_INCLUDE)},
     Define = {'define', ref_lookup(?PREF_DEFINE)},
-    Opts = [Include, Define, Preb],
+    Dpor = case ets:lookup(?NT_OPTIONS, 'dpor') of
+                [] -> {'dpor', 'none'};
+                [Flavor] -> Flavor
+           end,
+    Opts = [Include, Define, Preb, Dpor],
     Result = concuerror_sched:analyze(Target, Files, Opts),
     ref_add(?ANALYSIS_RET, Result),
     analysis_cleanup().
@@ -1092,18 +1096,18 @@ remove() ->
 %% Kill the analysis process.
 stop() ->
     try
-        ?RP_SCHED ! stop_analysis,
-        wxMenuItem:enable(ref_lookup(?STOP_MENU_ITEM), [{enable, false}]),
-        StopButton = ref_lookup(?STOP),
-        Parent = wxWindow:getParent(StopButton),
-        StopGauge = wxGauge:new(Parent, ?wxID_ANY, 100,
-                                [{style, ?wxGA_HORIZONTAL}]),
-        ref_add(?STOP_GAUGE, StopGauge),
-        AnalStopSizer = ref_lookup(?ANAL_STOP_SIZER),
-        wxSizer:replace(AnalStopSizer, StopButton, StopGauge),
-        wxWindow:destroy(StopButton),
-        wxSizer:layout(AnalStopSizer),
-        start_pulsing(StopGauge)
+        ?RP_SCHED ! stop_analysis
+%%        wxMenuItem:enable(ref_lookup(?STOP_MENU_ITEM), [{enable, false}]),
+%%        StopButton = ref_lookup(?STOP),
+%%        Parent = wxWindow:getParent(StopButton),
+%%        StopGauge = wxGauge:new(Parent, ?wxID_ANY, 100,
+%%                                [{style, ?wxGA_HORIZONTAL}]),
+%%        ref_add(?STOP_GAUGE, StopGauge),
+%%        AnalStopSizer = ref_lookup(?ANAL_STOP_SIZER),
+%%        wxSizer:replace(AnalStopSizer, StopButton, StopGauge),
+%%        wxWindow:destroy(StopButton),
+%%        wxSizer:layout(AnalStopSizer),
+%%        start_pulsing(StopGauge)
     catch
         error:badarg -> continue
     end.

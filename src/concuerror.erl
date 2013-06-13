@@ -128,7 +128,10 @@ cliAux(Options) ->
     concuerror_util:timer_init(),
     %% Start the log manager.
     _ = concuerror_log:start(),
-    %% Parse options
+    %% Create table to save options
+    ?NT_OPTIONS = ets:new(?NT_OPTIONS, [named_table, public, set]),
+    ets:insert(?NT_OPTIONS, Options),
+    %% Handle options
     case lists:keyfind('gui', 1, Options) of
         {'gui'} -> gui(Options);
         false ->
@@ -161,6 +164,8 @@ cliAux(Options) ->
                     end
             end
     end,
+    %% Remove options table
+    ets:delete(?NT_OPTIONS),
     %% Stop event handler
     concuerror_log:stop(),
     %% Destroy timer table.
@@ -503,9 +508,6 @@ analyze(Options) ->
     Res.
 
 analyzeAux(Options) ->
-    %% Create table to save options
-    ?NT_OPTIONS = ets:new(?NT_OPTIONS, [named_table, public, set]),
-    ets:insert(?NT_OPTIONS, Options),
     %% Get target
     Result =
         case lists:keyfind(target, 1, Options) of
@@ -523,8 +525,6 @@ analyzeAux(Options) ->
                         concuerror_sched:analyze(Target, Files, Options)
                 end
         end,
-    %% Remove options table
-    ets:delete(?NT_OPTIONS),
     %% Return result
     Result.
 

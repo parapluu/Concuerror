@@ -121,8 +121,8 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
                 %% Unregister some key processes
                 %% inet_gethos_native will run without supervisor
                 %% (Icky fallback)
-                unregister(kernel_safe_sup),
-                unregister(net_sup),
+                catch unregister(kernel_safe_sup),
+                catch unregister(net_sup),
                 %% Run all possible interleavings
                 {T1, _} = statistics(wall_clock),
                 Result = interleave(NewTarget, PreBound, Dpor, Options),
