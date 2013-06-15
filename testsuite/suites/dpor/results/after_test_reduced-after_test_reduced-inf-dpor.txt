@@ -1,0 +1,102 @@
+Checked 6 interleaving(s). 6 errors found.
+
+1
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 receives no matching messages
+  Process P1 blocks
+  Process P1.1 sends message `ok2` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok2` from process P1.1
+  Process P1 blocks
+  Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok2` from process P1.2
+  Process P1 receives no matching messages
+  Process P1 blocks
+
+
+2
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 receives no matching messages
+  Process P1 blocks
+  Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok2` from process P1.2
+  Process P1 blocks
+  Process P1.1 sends message `ok2` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok2` from process P1.1
+  Process P1 receives no matching messages
+  Process P1 blocks
+
+
+3
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.1 sends message `ok2` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok2` from process P1.1
+  Process P1 receives no matching messages
+  Process P1 blocks
+  Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok2` from process P1.2
+  Process P1 receives no matching messages
+  Process P1 blocks
+
+
+4
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.1 sends message `ok2` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok2` from process P1.1
+  Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok2` from process P1.2
+  Process P1 receives no matching messages
+  Process P1 blocks
+
+
+5
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok2` from process P1.2
+  Process P1 receives no matching messages
+  Process P1 blocks
+  Process P1.1 sends message `ok2` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok2` from process P1.1
+  Process P1 receives no matching messages
+  Process P1 blocks
+
+
+6
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok2` from process P1.2
+  Process P1.1 sends message `ok2` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok2` from process P1.1
+  Process P1 receives no matching messages
+  Process P1 blocks
+
+

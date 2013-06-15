@@ -1,5 +1,4 @@
-Checked 48 interleaving(s). 36 errors found.
-  Encountered 12 sleep-set blocked trace(s).
+Checked 36 interleaving(s). 36 errors found.
 
 1
 Error type        : Deadlock
@@ -47,13 +46,14 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 blocks
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok2` from process P1.3
+  Process P1 blocks
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.3 exits (normal)
 
 
 3
@@ -72,10 +72,10 @@ Blocked processes : P1
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.2 exits (normal)
   Process P1.3 sends message `ok2` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
@@ -99,13 +99,13 @@ Blocked processes : P1
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 5
@@ -124,6 +124,7 @@ Blocked processes : P1
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
@@ -132,7 +133,6 @@ Blocked processes : P1
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.3 exits (normal)
 
 
 6
@@ -151,13 +151,13 @@ Blocked processes : P1
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.3 exits (normal)
 
 
 7
@@ -175,11 +175,11 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.2 exits (normal)
   Process P1.3 sends message `ok2` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
@@ -202,14 +202,14 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 9
@@ -227,13 +227,13 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 10
@@ -251,6 +251,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 receives no matching messages
@@ -260,7 +261,6 @@ Blocked processes : P1
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.3 exits (normal)
 
 
 11
@@ -278,6 +278,7 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1.2 sends message `ok2` to process P1
@@ -285,7 +286,6 @@ Blocked processes : P1
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.3 exits (normal)
 
 
 12
@@ -303,13 +303,13 @@ Blocked processes : P1
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.3 exits (normal)
 
 
 13
@@ -319,6 +319,7 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
@@ -326,7 +327,6 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
@@ -345,6 +345,7 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
@@ -352,15 +353,15 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok2` from process P1.3
+  Process P1 blocks
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.3 exits (normal)
 
 
 15
@@ -370,17 +371,17 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
   Process P1.3 sends message `ok2` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
@@ -395,20 +396,20 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 17
@@ -418,12 +419,14 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
@@ -432,8 +435,6 @@ Blocked processes : P1
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 
 18
@@ -443,20 +444,20 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 
 19
@@ -466,17 +467,17 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
   Process P1.3 sends message `ok2` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
@@ -491,20 +492,20 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 21
@@ -514,19 +515,19 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 22
@@ -536,11 +537,13 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 receives no matching messages
@@ -550,8 +553,6 @@ Blocked processes : P1
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 
 23
@@ -561,11 +562,13 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1.2 sends message `ok2` to process P1
@@ -573,8 +576,6 @@ Blocked processes : P1
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 
 24
@@ -584,19 +585,19 @@ Blocked processes : P1
   Process P1 spawns process P1.1
   Process P1 receives no matching messages
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 
 25
@@ -605,6 +606,7 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
@@ -612,7 +614,6 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
@@ -630,6 +631,7 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
@@ -637,15 +639,15 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
+  Process P1 receives message `ok2` from process P1.3
+  Process P1 blocks
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.3 exits (normal)
 
 
 27
@@ -654,17 +656,17 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
   Process P1.3 sends message `ok2` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
@@ -678,20 +680,20 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 29
@@ -700,12 +702,14 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
@@ -714,8 +718,6 @@ Blocked processes : P1
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 
 30
@@ -724,20 +726,20 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1 receives no matching messages
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 
 31
@@ -746,17 +748,17 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
   Process P1.3 sends message `ok2` to process P1
   Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
@@ -770,20 +772,20 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 33
@@ -792,19 +794,19 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.2 sends message `ok2` to process P1
+  Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-  Process P1.3 exits (normal)
 
 
 34
@@ -813,11 +815,13 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1 receives no matching messages
@@ -827,8 +831,6 @@ Blocked processes : P1
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 
 35
@@ -837,11 +839,13 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1 receives no matching messages
   Process P1.2 sends message `ok2` to process P1
@@ -849,8 +853,6 @@ Blocked processes : P1
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 
 36
@@ -859,18 +861,18 @@ Blocked processes : P1
   Process P1 receives no matching messages
   Process P1 spawns process P1.1
   Process P1.1 sends message `ok1` to process P1
+  Process P1.1 exits (normal)
   Process P1 receives message `ok1` from process P1.1
   Process P1 receives no matching messages
   Process P1 spawns process P1.2
   Process P1 spawns process P1.3
   Process P1.3 sends message `ok2` to process P1
+  Process P1.3 exits (normal)
   Process P1 receives message `ok2` from process P1.3
   Process P1.2 sends message `ok2` to process P1
   Process P1.2 exits (normal)
   Process P1 receives message `ok2` from process P1.2
   Process P1 receives no matching messages
   Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
 
 

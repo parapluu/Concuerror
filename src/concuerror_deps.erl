@@ -117,7 +117,8 @@ dependent({Lid1,          Instr1, PreMsgs1} = Trans1,
                         'after' -> element(1, Info);
                         'receive' ->
                             Target = element(3, Info),
-                            fun(X) -> X =:= Target end
+                            OLid = element(2, Info),
+                            fun(X) -> X =:= Target andalso OLid =:= Lid1 end
                     end,
                 lists:any(Fun, MsgsToLid2);
             error -> false
