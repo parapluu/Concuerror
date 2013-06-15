@@ -172,12 +172,12 @@ concuerror:
 	Cookie=\"$(APP_STRING)Cookie\"\n\n\
 	trap ctrl_c INT\n\
 	function ctrl_c() {\n\
-	    erl -sname $(APP_STRING)Stop -noinput -cookie \$$Cookie \\\\\n\
+	    erl +S1 -sname $(APP_STRING)Stop -noinput -cookie \$$Cookie \\\\\n\
 	        -pa $(EBIN) \\\\\n\
 	        -run concuerror stop \$$Name -run init stop\n\
 	    wait\n\
 	}\n\n\
-	erl +Bi -smp enable -noinput -sname \$$Name -cookie \$$Cookie \\\\\n\
+	erl +S1 +Bi -smp enable -noinput -sname \$$Name -cookie \$$Cookie \\\\\n\
 	    -pa $(EBIN) \\\\\n\
 	    -run concuerror cli -run init stop -- \"\$$@\" &\n\
 	wait \$$!\n" ! > $@
