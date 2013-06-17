@@ -1521,8 +1521,9 @@ instrument_my_messages(Lid, VC) ->
                         {cont, [Msg|Acc]}
                 after
                     0 ->
+                        {trap_exit, Trapping} = erlang:process_info(self(), trap_exit),
                         Links =
-                            case Acc =:= [] of
+                            case Acc =:= [] orelse not Trapping of
                                 true -> [];
                                 false -> concuerror_rep:find_my_links()
                             end,
