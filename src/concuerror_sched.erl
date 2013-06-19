@@ -405,6 +405,7 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
     FinalTraceTop =
         case Replaying of
             false ->
+                ?debug("Selected: ~P\n", [UpdSelected, ?DEBUG_DEPTH]),
                 ?debug("Happened before: ~p\n",
                        [orddict:to_list(
                           begin
@@ -415,7 +416,6 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                                   QQ -> orddict:store(Lid, QQ, CCC)
                               end
                           end)]),
-                ?debug("Selected: ~P\n", [UpdSelected, ?DEBUG_DEPTH]),
                 {NewSleepSet, NewAwaked} =
                     case Flavor =:= 'none' of
                         true -> {[], []};

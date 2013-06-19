@@ -56,8 +56,7 @@ dependent({Lid, _Instr1, _Msgs1},
 
 %% XXX: This should be fixed in sched:recent_dependency_cv and removed
 dependent({_Lid1, _Instr1, _Msgs1},
-          {_Lid2, Special, _Msgs2}, ?ONLY_INITIALLY, ?ONLY_INITIALLY)
-  when Special =:= 'block'; Special =:= 'init' ->
+          {_Lid2, 'init', _Msgs2}, ?ONLY_INITIALLY, ?ONLY_INITIALLY) ->
     false;
 
 %%==============================================================================
@@ -220,7 +219,7 @@ dependent(A, {Lid, {unregister, RegName}, Msgs}, CheckMsg, AllowSwap) ->
 
 %%==============================================================================
 
-%% Send using name before process has registered itself (or after ungeristering).
+%% Send using name before process has registered itself (or after unregistering).
 dependent({_Lid1, {register,      {RegName, _TLid}}, _Msgs1},
           {_Lid2, {    send, {RegName, _Lid, _Msg}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
