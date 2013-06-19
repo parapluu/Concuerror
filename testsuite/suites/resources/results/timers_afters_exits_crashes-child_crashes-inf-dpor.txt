@@ -6,7 +6,7 @@ Details           : {child,
                         [{timers_afters_exits_crashes,
                              '-child_crashes/0-fun-0-',0,
                              [{file,"timers_afters_exits_crashes.erl"},
-                              {line,44}]}]}
+                              {line,36}]}]}
   Process P1 spawns process P1.1
   Process P1 sends message `ok` to process P1.1
   Process P1 sends message `ok` to process P1.1

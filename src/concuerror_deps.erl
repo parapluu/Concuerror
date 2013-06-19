@@ -342,6 +342,12 @@ dependent({Lid1, {process_flag,        {trap_exit, _Value, Links1}}, _Msgs1},
           _CheckMsg, _AllowSwap) ->
     lists:member(Lid2, Links1) orelse lists:member(Lid1, Links2);
 
+%% Trap exits flag and explicit exit signals.
+dependent({ Lid1, {process_flag, {trap_exit, _Value, _Links1}}, _Msgs1},
+          {_Lid2, {      exit_2,              {TLid, _Reason}}, _Msgs2},
+          _CheckMsg, _AllowSwap) ->
+    Lid1 =:= TLid;
+
 %% No other races between setting a process flag and exiting.
 dependent({_Lid1, {process_flag, _Details1}, _Msgs1},
           {_Lid2, {        exit, _Details2}, _Msgs2},
@@ -378,7 +384,7 @@ dependent(TransitionA, TransitionB, _CheckMsg, ?DONT_ALLOW_SWAP) ->
     case independent(TransitionA, TransitionB) of
         true -> false;
         maybe ->
-            concuerror_log:log(3, "Not certainly independent:\n ~p\n ~p\n",
+            io:format("ALERT! Not certainly independent:\n ~p\n ~p\n",
                       [TransitionA, TransitionB]),
             true
     end.
@@ -398,14 +404,25 @@ independent({_Lid1, {Op1, _}, _Msgs1}, {_Lid2, {Op2, _}, _Msgs2}) ->
          {     whereis,      send},
          {        link,      send},
          {      unlink,      send},
-         {process_flag,      send}
+         {process_flag,      send},
+         {process_flag,   monitor},
+         {      unlink,   monitor},
+         {    register,   monitor},
+         {     whereis,    unlink},
+         {      unlink,  register},
+         {     whereis,   monitor},
+         {        link,   monitor}
         ],
+    %% XXX: This should probably be removed.
+    Solo = [send_after,exit_2],
     case
         %% Assuming that all the races of an instruction with another instance
         %% of itself have already been caught.
         Op1 =:= Op2
         orelse lists:member({Op1, Op2},Independent)
         orelse lists:member({Op2, Op1},Independent)
+        orelse lists:member(Op1, Solo)
+        orelse lists:member(Op2, Solo)
     of
         true -> true;
         false -> maybe

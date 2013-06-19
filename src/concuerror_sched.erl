@@ -977,11 +977,26 @@ report_possible_deadlock(State) ->
                         {Tickets, SBlocked};
                     true ->
                         ?debug("SLEEP SET BLOCK\n"),
+                        %% debug_trace(lists:reverse(Trace)),
                         {Tickets, SBlocked+1}
                 end
         end,
     State#dpor_state{must_replay = true, tickets = NewTickets,
                      sleep_blocked_count = NewSBlocked}.
+
+%% debug_trace([]) -> exit(sleep_set_block);
+%% debug_trace([Top|Rest]) ->
+%%     #trace_state{
+%%        i = I,
+%%        last = Last,
+%%        backtrack = Backtrack,
+%%        sleep_set = SleepSet,
+%%        done = Done,
+%%        nexts = Nexts} = Top,
+%%     BT = [K || {K, _, _} <- Backtrack],
+%%     io:format("~p: ~p\nBT:~p\nSL:~p\n~p\n---\n",
+%%               [I, Last, BT, ordsets:union(Done,SleepSet), dict:to_list(Nexts)]),
+%%     debug_trace(Rest).
 
 convert_trace_to_error_trace([], Acc) -> Acc;
 convert_trace_to_error_trace([#trace_state{
