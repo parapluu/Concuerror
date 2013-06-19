@@ -846,7 +846,8 @@ ets_insert_center(Type, Tab, Obj) ->
         end,
     try
         Ret = Fun(Tab, Obj),
-        Info = {Type, [Lid, Tab, Keys, KeyPos, ConvObj, Ret]},
+        %% XXX: Hardcoded true to avoid sleep set blocking.
+        Info = {Type, [Lid, Tab, Keys, KeyPos, ConvObj, true]}, %Ret]},
         concuerror_sched:notify(ets, Info, prev),
         Ret
     catch

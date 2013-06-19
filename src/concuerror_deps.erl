@@ -67,11 +67,15 @@ dependent({_Lid1, _Instr1, _Msgs1},
 
 %% Sending to the same process:
 dependent({ Lid1,  Instr1, PreMsgs1} = Trans1,
-          {_Lid2, _Instr2, PreMsgs2} = Trans2,
+          { Lid2,  Instr2, PreMsgs2} = Trans2,
           ?CHECK_MSG, AllowSwap) ->
-    ProcEvidence = [{P, L} || {P, {_M, L}} <- PreMsgs2],
-    Msgs2 = [{P, M} || {P, {M, _L}} <- PreMsgs2],
-    Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence),
+    %% ProcEvidence = [{P, L} || {P, {_M, L}} <- PreMsgs2],
+    %% Msgs2 = [{P, M} || {P, {M, _L}} <- PreMsgs2],
+    %% Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence),
+    ProcEvidence1 = [{P, L} || {P, {_M, L}} <- PreMsgs1],
+    ProcEvidence2 = [{P, L} || {P, {_M, L}} <- PreMsgs2],
+    Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence2),
+    Msgs2 = add_missing_messages(Lid2, Instr2, PreMsgs2, ProcEvidence1),
     case Msgs1 =:= [] orelse Msgs2 =:= [] of
         true -> dependent(Trans1, Trans2, ?DONT_CHECK_MSG, AllowSwap);
         false ->
