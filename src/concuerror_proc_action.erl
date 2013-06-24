@@ -192,10 +192,14 @@ to_string({spawn_monitor, Parent, Child}) ->
                   [concuerror_lid:to_string(Parent),
                    concuerror_lid:to_string(Child)]);
 to_string({spawn_opt, not_found, Child}) ->
-    io_lib:format("Unknown process spawns with opts to process ~s",
+    io_lib:format("Unknown process spawns process ~s with opts",
                   [concuerror_lid:to_string(Child)]);
+to_string({spawn_opt, Parent, {Child, _Ref}}) ->
+    io_lib:format("Process ~s spawns process ~s with opts (and monitors)",
+                  [concuerror_lid:to_string(Parent),
+                   concuerror_lid:to_string(Child)]);
 to_string({spawn_opt, Parent, Child}) ->
-    io_lib:format("Process ~s spawns with opts to process ~s",
+    io_lib:format("Process ~s spawns process ~s with opts",
                   [concuerror_lid:to_string(Parent),
                    concuerror_lid:to_string(Child)]);
 to_string({unlink, Proc, not_found}) ->

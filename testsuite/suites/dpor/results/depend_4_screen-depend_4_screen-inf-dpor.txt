@@ -1,63 +1,6 @@
-Checked 44 interleaving(s). 30 errors found.
-  Encountered 14 sleep-set blocked trace(s).
+Checked 30 interleaving(s). 30 errors found.
 
 1
-Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,1}]}]}},
-                     [{depend_4_screen,depend_4_screen,0,
-                          [{file,"depend_4_screen.erl"},{line,49}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 spawns process P1.6
-  Process P1 sends message `ok` to process P1.6
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_insert {table,[{p4,2}]}
-  Process P1.4 blocks
-  Process P1.5: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
-  Process P1.5 blocks
-  Process P1.6 receives message `ok` from process P1
-  Process P1.6 sends message `ok` to process P1.5
-  Process P1.6 exits (normal)
-  Process P1.5 receives message `ok` from process P1.6
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,x}
-  Process P1: ets_lookup {table,p4}
-  Process P1: ets_lookup {table,p5}
-  Process P1 exits ("Exception")
-
-
-2
 Error type        : Exception
 Details           : {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
@@ -115,9 +58,9 @@ Details           : {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},
   Process P1 exits ("Exception")
 
 
-3
+2
 Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,[{z,1}]}]}},
+Details           : {{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -136,12 +79,8 @@ Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,[{z,1}]}]}},
   Process P1.1 blocks
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.4: ets_insert {table,[{p4,"10"}]}
-  Process P1.4 blocks
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
   Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
@@ -150,6 +89,9 @@ Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,[{z,1}]}]}},
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{p4,2}]}
+  Process P1.4 blocks
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -172,9 +114,64 @@ Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,[{z,1}]}]}},
   Process P1 exits ("Exception")
 
 
+3
+Error type        : Exception
+Details           : {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,"0"}]}},
+                     [{depend_4_screen,depend_4_screen,0,
+                          [{file,"depend_4_screen.erl"},{line,49}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1: ets_insert {table,[{z,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 sends message `ok` to process P1.6
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.4: ets_lookup {table,x}
+  Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.6 receives message `ok` from process P1
+  Process P1.6 sends message `ok` to process P1.5
+  Process P1.6 exits (normal)
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{p5,"0"}]}
+  Process P1.5 receives message `ok` from process P1.6
+  Process P1.5 sends message `ok` to process P1.4
+  Process P1.5 exits (normal)
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4: ets_lookup {table,z}
+  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
+  Process P1.4 receives message `ok` from process P1.5
+  Process P1.4 sends message `ok` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `ok` from process P1.4
+  Process P1.3 sends message `ok` to process P1.2
+  Process P1.3 exits (normal)
+  Process P1.2 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,x}
+  Process P1: ets_lookup {table,p4}
+  Process P1: ets_lookup {table,p5}
+  Process P1 exits ("Exception")
+
+
 4
 Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,"0"}]}},
+Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -195,17 +192,17 @@ Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,"0"}]}},
   Process P1.2 blocks
   Process P1.4: ets_lookup {table,x}
   Process P1.4: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_insert {table,[{p4,"10"}]}
-  Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,"0"}]}
-  Process P1.5 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.4: ets_insert {table,[{p4,"10"}]}
+  Process P1.4 blocks
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_lookup {table,z}
+  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -230,7 +227,7 @@ Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,"0"}]}},
 
 5
 Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,"0"}]}},
+Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,"0"}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -250,22 +247,20 @@ Details           : {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,"0"}]}},
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 blocks
   Process P1.4: ets_lookup {table,x}
-  Process P1.5: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
   Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_lookup {table,z}
-  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
-  Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,"0"}]}
-  Process P1.5 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.4: ets_insert {table,[{p4,"10"}]}
+  Process P1.4 blocks
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{p5,"0"}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
   Process P1.4 receives message `ok` from process P1.5
   Process P1.4 sends message `ok` to process P1.3
   Process P1.4 exits (normal)
@@ -307,17 +302,16 @@ Details           : {{nocatch,{[{x,2}],[{p4,2}],[{p5,"0"}]}},
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 blocks
   Process P1.5: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.5: ets_insert {table,[{p5,"0"}]}
-  Process P1.5 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_insert {table,[{p4,2}]}
-  Process P1.4 blocks
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{p4,2}]}
+  Process P1.4 blocks
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.5: ets_insert {table,[{p5,"0"}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -342,7 +336,7 @@ Details           : {{nocatch,{[{x,2}],[{p4,2}],[{p5,"0"}]}},
 
 7
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},
+Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -359,20 +353,18 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},
   Process P1 blocks
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.4: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_lookup {table,z}
-  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
-  Process P1.4 blocks
+  Process P1.4: ets_lookup {table,x}
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
   Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
   Process P1.5 blocks
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.4: ets_insert {table,[{p4,0}]}
+  Process P1.4 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
@@ -400,7 +392,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},
 
 8
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,[{z,1}]}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -417,22 +409,21 @@ Details           : {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,[{z,1}]}]}},
   Process P1 blocks
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_insert {table,[{p4,"10"}]}
-  Process P1.4 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
+  Process P1.4: ets_lookup {table,x}
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
   Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
   Process P1.5 blocks
+  Process P1.4: ets_insert {table,[{p4,0}]}
+  Process P1.4 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -457,7 +448,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,[{z,1}]}]}},
 
 9
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,"0"}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -474,21 +465,23 @@ Details           : {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,"0"}]}},
   Process P1 blocks
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_lookup {table,z}
+  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
+  Process P1.5 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.6 receives message `ok` from process P1
+  Process P1.6 sends message `ok` to process P1.5
+  Process P1.6 exits (normal)
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 blocks
   Process P1.4: ets_lookup {table,x}
   Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_insert {table,[{p4,"10"}]}
+  Process P1.4: ets_lookup {table,z}
+  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
   Process P1.4 blocks
-  Process P1.5: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.5: ets_insert {table,[{p5,"0"}]}
-  Process P1.5 blocks
-  Process P1.6 receives message `ok` from process P1
-  Process P1.6 sends message `ok` to process P1.5
-  Process P1.6 exits (normal)
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -513,7 +506,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,"0"}]}},
 
 10
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,"0"}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -530,25 +523,23 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,"0"}]}},
   Process P1 blocks
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.5: ets_lookup {table,y}
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_lookup {table,z}
-  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
-  Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,"0"}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_lookup {table,z}
+  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
   Process P1.5 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.4: ets_lookup {table,x}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.4: ets_insert {table,[{p4,2}]}
   Process P1.4 receives message `ok` from process P1.5
   Process P1.4 sends message `ok` to process P1.3
   Process P1.4 exits (normal)
@@ -570,7 +561,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,"0"}]}},
 
 11
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,1}]}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -588,20 +579,20 @@ Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,1}]}]}},
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.4: ets_lookup {table,x}
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 blocks
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.6 receives message `ok` from process P1
+  Process P1.6 sends message `ok` to process P1.5
+  Process P1.6 exits (normal)
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.4: ets_insert {table,[{p4,2}]}
+  Process P1.4: ets_insert {table,[{p4,"10"}]}
   Process P1.4 blocks
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
   Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
-  Process P1.5 blocks
-  Process P1.6 receives message `ok` from process P1
-  Process P1.6 sends message `ok` to process P1.5
-  Process P1.6 exits (normal)
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -626,7 +617,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,1}]}]}},
 
 12
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,"0"}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,"0"}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -644,16 +635,18 @@ Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,"0"}]}},
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.4: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
   Process P1.5: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_insert {table,[{p4,2}]}
-  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{p5,"0"}]}
   Process P1.5 blocks
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4: ets_lookup {table,z}
+  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
+  Process P1.4 blocks
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
@@ -681,7 +674,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,"0"}]}},
 
 13
 Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,1}]}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,"0"}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -698,24 +691,23 @@ Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,1}]}]}},
   Process P1 blocks
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
-  Process P1.4: ets_lookup {table,x}
+  Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{p5,"0"}]}
+  Process P1.5 blocks
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 blocks
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_insert {table,[{p4,0}]}
-  Process P1.4 blocks
-  Process P1.5: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
-  Process P1.5 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_lookup {table,y}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.4: ets_insert {table,[{p4,"10"}]}
   Process P1.4 receives message `ok` from process P1.5
   Process P1.4 sends message `ok` to process P1.3
   Process P1.4 exits (normal)
@@ -737,7 +729,7 @@ Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,1}]}]}},
 
 14
 Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,"0"}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,"0"}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -754,23 +746,22 @@ Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,"0"}]}},
   Process P1 blocks
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.5: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_insert {table,[{p4,0}]}
-  Process P1.4 blocks
   Process P1.5: ets_insert {table,[{p5,"0"}]}
   Process P1.5 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.4: ets_lookup {table,x}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.4: ets_insert {table,[{p4,2}]}
   Process P1.4 receives message `ok` from process P1.5
   Process P1.4 sends message `ok` to process P1.3
   Process P1.4 exits (normal)
@@ -792,7 +783,7 @@ Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,"0"}]}},
 
 15
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,1}]}]}},
+Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,"0"}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -810,17 +801,16 @@ Details           : {{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,1}]}]}},
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
   Process P1.4: ets_lookup {table,x}
-  Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{p5,"0"}]}
+  Process P1.5 blocks
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
   Process P1.4: ets_insert {table,[{p4,0}]}
   Process P1.4 blocks
-  Process P1.5: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
-  Process P1.5 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
@@ -866,19 +856,19 @@ Details           : {{nocatch,{[{x,1}],[{p4,0}],[{p5,"0"}]}},
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
   Process P1.4: ets_lookup {table,x}
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
   Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{p5,"0"}]}
+  Process P1.5 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
   Process P1.4: ets_insert {table,[{p4,0}]}
   Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,"0"}]}
-  Process P1.5 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -903,7 +893,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,0}],[{p5,"0"}]}},
 
 17
 Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,0}]}]}},
+Details           : {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -922,19 +912,20 @@ Details           : {{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,0}]}]}},
   Process P1.2 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_insert {table,[{p4,2}]}
-  Process P1.4 blocks
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4: ets_lookup {table,z}
   Process P1.5: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
+  Process P1.4 blocks
+  Process P1.5: ets_lookup {table,z}
+  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -959,64 +950,6 @@ Details           : {{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,0}]}]}},
 
 18
 Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},
-                     [{depend_4_screen,depend_4_screen,0,
-                          [{file,"depend_4_screen.erl"},{line,49}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 spawns process P1.6
-  Process P1 sends message `ok` to process P1.6
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
-  Process P1.4 blocks
-  Process P1.5: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
-  Process P1.5 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.6 receives message `ok` from process P1
-  Process P1.6 sends message `ok` to process P1.5
-  Process P1.6 exits (normal)
-  Process P1.5 receives message `ok` from process P1.6
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,x}
-  Process P1: ets_lookup {table,p4}
-  Process P1: ets_lookup {table,p5}
-  Process P1 exits ("Exception")
-
-
-19
-Error type        : Exception
 Details           : {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
@@ -1040,20 +973,19 @@ Details           : {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},
   Process P1.4: ets_lookup {table,y}
   Process P1.4: ets_lookup {table,z}
   Process P1.5: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
-  Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
+  Process P1.4 blocks
+  Process P1.5: ets_lookup {table,z}
+  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
   Process P1.4 receives message `ok` from process P1.5
   Process P1.4 sends message `ok` to process P1.3
   Process P1.4 exits (normal)
@@ -1073,7 +1005,7 @@ Details           : {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},
   Process P1 exits ("Exception")
 
 
-20
+19
 Error type        : Exception
 Details           : {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
@@ -1097,18 +1029,71 @@ Details           : {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},
   Process P1.4: ets_lookup {table,x}
   Process P1.4: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_lookup {table,z}
-  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
-  Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.5: ets_lookup {table,z}
+  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
+  Process P1.5 receives message `ok` from process P1.6
+  Process P1.5 sends message `ok` to process P1.4
+  Process P1.5 exits (normal)
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.4: ets_lookup {table,z}
+  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
+  Process P1.4 receives message `ok` from process P1.5
+  Process P1.4 sends message `ok` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.3 receives message `ok` from process P1.4
+  Process P1.3 sends message `ok` to process P1.2
+  Process P1.3 exits (normal)
+  Process P1.2 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,x}
+  Process P1: ets_lookup {table,p4}
+  Process P1: ets_lookup {table,p5}
+  Process P1 exits ("Exception")
+
+
+20
+Error type        : Exception
+Details           : {{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,0}]}]}},
+                     [{depend_4_screen,depend_4_screen,0,
+                          [{file,"depend_4_screen.erl"},{line,49}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1: ets_insert {table,[{z,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 sends message `ok` to process P1.6
+  Process P1 blocks
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_lookup {table,z}
+  Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.6 receives message `ok` from process P1
+  Process P1.6 sends message `ok` to process P1.5
+  Process P1.6 exits (normal)
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_insert {table,[{p4,2}]}
+  Process P1.4 blocks
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1133,6 +1118,61 @@ Details           : {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},
 
 21
 Error type        : Exception
+Details           : {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,"0"}]}},
+                     [{depend_4_screen,depend_4_screen,0,
+                          [{file,"depend_4_screen.erl"},{line,49}]}]}
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1: ets_insert {table,[{y,0}]}
+  Process P1: ets_insert {table,[{z,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 spawns process P1.3
+  Process P1 spawns process P1.4
+  Process P1 spawns process P1.5
+  Process P1 spawns process P1.6
+  Process P1 sends message `ok` to process P1.6
+  Process P1 blocks
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.4: ets_lookup {table,x}
+  Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.6 receives message `ok` from process P1
+  Process P1.6 sends message `ok` to process P1.5
+  Process P1.6 exits (normal)
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{p5,"0"}]}
+  Process P1.5 receives message `ok` from process P1.6
+  Process P1.5 sends message `ok` to process P1.4
+  Process P1.5 exits (normal)
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4: ets_lookup {table,z}
+  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
+  Process P1.4 receives message `ok` from process P1.5
+  Process P1.4 sends message `ok` to process P1.3
+  Process P1.4 exits (normal)
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.3 receives message `ok` from process P1.4
+  Process P1.3 sends message `ok` to process P1.2
+  Process P1.3 exits (normal)
+  Process P1.2 receives message `ok` from process P1.3
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 exits (normal)
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1: ets_lookup {table,x}
+  Process P1: ets_lookup {table,p4}
+  Process P1: ets_lookup {table,p5}
+  Process P1 exits ("Exception")
+
+
+22
+Error type        : Exception
 Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,[{z,0}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
@@ -1152,80 +1192,22 @@ Details           : {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,[{z,0}]}]}},
   Process P1.2 blocks
   Process P1.4: ets_lookup {table,x}
   Process P1.4: ets_lookup {table,y}
+  Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.6 receives message `ok` from process P1
+  Process P1.6 sends message `ok` to process P1.5
+  Process P1.6 exits (normal)
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
   Process P1.4: ets_insert {table,[{p4,"10"}]}
   Process P1.4 blocks
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
   Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.6 receives message `ok` from process P1
-  Process P1.6 sends message `ok` to process P1.5
-  Process P1.6 exits (normal)
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,x}
-  Process P1: ets_lookup {table,p4}
-  Process P1: ets_lookup {table,p5}
-  Process P1 exits ("Exception")
-
-
-22
-Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,"0"}]}},
-                     [{depend_4_screen,depend_4_screen,0,
-                          [{file,"depend_4_screen.erl"},{line,49}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 spawns process P1.6
-  Process P1 sends message `ok` to process P1.6
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.5: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_lookup {table,z}
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
-  Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,"0"}]}
-  Process P1.5 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.6 receives message `ok` from process P1
-  Process P1.6 sends message `ok` to process P1.5
-  Process P1.6 exits (normal)
-  Process P1.5 receives message `ok` from process P1.6
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
   Process P1.4 receives message `ok` from process P1.5
   Process P1.4 sends message `ok` to process P1.3
   Process P1.4 exits (normal)
@@ -1247,7 +1229,7 @@ Details           : {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,"0"}]}},
 
 23
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},
+Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,0}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -1264,23 +1246,20 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},
   Process P1 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
   Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
-  Process P1.4 blocks
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
-  Process P1.5 blocks
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.4: ets_insert {table,[{p4,0}]}
+  Process P1.4 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1305,7 +1284,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},
 
 24
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,0}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -1322,23 +1301,20 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},
   Process P1 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
   Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_lookup {table,z}
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
+  Process P1.4: ets_insert {table,[{p4,0}]}
   Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1363,7 +1339,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},
 
 25
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -1380,23 +1356,22 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},
   Process P1 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
+  Process P1.5: ets_lookup {table,y}
   Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.6 receives message `ok` from process P1
+  Process P1.6 sends message `ok` to process P1.5
+  Process P1.6 exits (normal)
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 blocks
   Process P1.4: ets_lookup {table,x}
   Process P1.4: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
+  Process P1.4: ets_lookup {table,z}
+  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
+  Process P1.4 blocks
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 blocks
-  Process P1.4: ets_lookup {table,z}
-  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
-  Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
-  Process P1.6 receives message `ok` from process P1
-  Process P1.6 sends message `ok` to process P1.5
-  Process P1.6 exits (normal)
+  Process P1.5: ets_lookup {table,z}
+  Process P1.5: ets_insert {table,[{p5,[{z,1}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1421,7 +1396,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},
 
 26
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,0}]}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -1438,24 +1413,24 @@ Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,0}]}]}},
   Process P1 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.4: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.4: ets_insert {table,[{p4,2}]}
-  Process P1.4 blocks
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
+  Process P1.4: ets_lookup {table,z}
+  Process P1.4: ets_insert {table,[{p4,[{z,1}]}]}
   Process P1.4 receives message `ok` from process P1.5
   Process P1.4 sends message `ok` to process P1.3
   Process P1.4 exits (normal)
@@ -1477,7 +1452,7 @@ Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,0}]}]}},
 
 27
 Error type        : Exception
-Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,0}]}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -1494,21 +1469,22 @@ Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,0}]}]}},
   Process P1 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.4: ets_insert {table,[{p4,0}]}
-  Process P1.4 blocks
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.4: ets_lookup {table,x}
+  Process P1.4: ets_lookup {table,y}
+  Process P1.4: ets_lookup {table,z}
+  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
+  Process P1.4 blocks
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1533,7 +1509,7 @@ Details           : {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,0}]}]}},
 
 28
 Error type        : Exception
-Details           : {{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,0}]}]}},
+Details           : {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,0}]}]}},
                      [{depend_4_screen,depend_4_screen,0,
                           [{file,"depend_4_screen.erl"},{line,49}]}]}
   Process P1: ets_new {table,[public,named_table]}
@@ -1550,21 +1526,20 @@ Details           : {{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,0}]}]}},
   Process P1 blocks
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.6: ets_insert {table,[{x,2}]}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.4: ets_insert {table,[{p4,0}]}
-  Process P1.4 blocks
   Process P1.5: ets_lookup {table,y}
   Process P1.5: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
+  Process P1.6: ets_insert {table,[{x,2}]}
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.4: ets_lookup {table,x}
+  Process P1.2: ets_insert {table,[{x,1}]}
+  Process P1.2 blocks
+  Process P1.4: ets_insert {table,[{p4,2}]}
+  Process P1.4 blocks
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
@@ -1609,22 +1584,21 @@ Details           : {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,[{z,0}]}]}},
   Process P1.2 blocks
   Process P1.4: ets_lookup {table,x}
   Process P1.4: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
-  Process P1.5: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{p4,"10"}]}
-  Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
-  Process P1.5 blocks
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
+  Process P1.4: ets_insert {table,[{p4,"10"}]}
+  Process P1.4 blocks
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_lookup {table,z}
+  Process P1.5: ets_insert {table,[{p5,[{z,0}]}]}
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
   Process P1.4 receives message `ok` from process P1.5
   Process P1.4 sends message `ok` to process P1.3
   Process P1.4 exits (normal)
@@ -1661,27 +1635,26 @@ Details           : {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,"0"}]}},
   Process P1 spawns process P1.6
   Process P1 sends message `ok` to process P1.6
   Process P1 blocks
-  Process P1.5: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.3 blocks
   Process P1.6: ets_insert {table,[{x,2}]}
+  Process P1.5: ets_lookup {table,y}
+  Process P1.5: ets_insert {table,[{p5,"0"}]}
+  Process P1.5 blocks
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2 blocks
+  Process P1.3: ets_insert {table,[{y,1}]}
+  Process P1.3 blocks
   Process P1.4: ets_lookup {table,x}
   Process P1.4: ets_lookup {table,y}
   Process P1.4: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
-  Process P1.4 blocks
-  Process P1.5: ets_insert {table,[{p5,"0"}]}
-  Process P1.5 blocks
   Process P1.6 receives message `ok` from process P1
   Process P1.6 sends message `ok` to process P1.5
   Process P1.6 exits (normal)
   Process P1.5 receives message `ok` from process P1.6
   Process P1.5 sends message `ok` to process P1.4
   Process P1.5 exits (normal)
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 blocks
+  Process P1.4: ets_insert {table,[{p4,[{z,0}]}]}
   Process P1.4 receives message `ok` from process P1.5
   Process P1.4 sends message `ok` to process P1.3
   Process P1.4 exits (normal)

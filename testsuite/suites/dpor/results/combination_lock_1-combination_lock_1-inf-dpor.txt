@@ -1,5 +1,4 @@
-Checked 10 interleaving(s). 6 errors found.
-  Encountered 4 sleep-set blocked trace(s).
+Checked 6 interleaving(s). 6 errors found.
 
 1
 Error type        : Deadlock
@@ -52,15 +51,16 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.2: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{w,1}]}
+  Process P1.3: ets_insert {table,[{c,0}]}
   Process P1.2: ets_insert {table,[{b,0}]}
   Process P1.2 exits (normal)
-  Process P1.3: ets_insert {table,[{c,0}]}
-  Process P1.3: ets_lookup {table,v}
-  Process P1.3 exits (normal)
   Process P1.4: ets_lookup {table,w}
   Process P1.4: ets_insert {table,[{v,1}]}
   Process P1.4: ets_insert {table,[{d,0}]}
   Process P1.4 exits (normal)
+  Process P1.3: ets_lookup {table,v}
+  Process P1.3: ets_lookup {table,z}
+  Process P1.3 exits (normal)
 
 
 3
@@ -85,14 +85,13 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.2: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{w,1}]}
+  Process P1.3: ets_insert {table,[{c,0}]}
+  Process P1.3: ets_lookup {table,v}
+  Process P1.3 exits (normal)
   Process P1.2: ets_insert {table,[{b,0}]}
   Process P1.2 exits (normal)
-  Process P1.3: ets_insert {table,[{c,0}]}
   Process P1.4: ets_lookup {table,w}
   Process P1.4: ets_insert {table,[{v,1}]}
-  Process P1.3: ets_lookup {table,v}
-  Process P1.3: ets_lookup {table,z}
-  Process P1.3 exits (normal)
   Process P1.4: ets_insert {table,[{d,0}]}
   Process P1.4 exits (normal)
 
@@ -117,15 +116,15 @@ Blocked processes : P1
   Process P1.2: ets_insert {table,[{a,1}]}
   Process P1.3: ets_lookup {table,x}
   Process P1.3: ets_insert {table,[{y,1}]}
-  Process P1.2: ets_lookup {table,y}
   Process P1.4: ets_lookup {table,w}
+  Process P1.4 exits (normal)
+  Process P1.2: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{w,1}]}
   Process P1.2: ets_insert {table,[{b,0}]}
   Process P1.2 exits (normal)
   Process P1.3: ets_insert {table,[{c,0}]}
   Process P1.3: ets_lookup {table,v}
   Process P1.3 exits (normal)
-  Process P1.4 exits (normal)
 
 
 5
@@ -145,13 +144,13 @@ Blocked processes : P1
   Process P1.1: ets_insert {table,[{z,1}]}
   Process P1.1 exits (normal)
   Process P1.3: ets_lookup {table,x}
+  Process P1.4: ets_lookup {table,w}
+  Process P1.4 exits (normal)
   Process P1.2: ets_insert {table,[{x,1}]}
   Process P1.2: ets_insert {table,[{a,1}]}
   Process P1.2: ets_lookup {table,y}
   Process P1.2 exits (normal)
   Process P1.3 exits (normal)
-  Process P1.4: ets_lookup {table,w}
-  Process P1.4 exits (normal)
 
 
 6
@@ -174,17 +173,17 @@ Blocked processes : P1
   Process P1.3: ets_insert {table,[{y,1}]}
   Process P1.2: ets_lookup {table,y}
   Process P1.2: ets_insert {table,[{w,1}]}
+  Process P1.3: ets_insert {table,[{c,0}]}
   Process P1.2: ets_insert {table,[{b,0}]}
   Process P1.2 exits (normal)
-  Process P1.3: ets_insert {table,[{c,0}]}
   Process P1.4: ets_lookup {table,w}
   Process P1.4: ets_insert {table,[{v,1}]}
-  Process P1.3: ets_lookup {table,v}
-  Process P1.3: ets_lookup {table,z}
-  Process P1.1: ets_insert {table,[{z,1}]}
-  Process P1.1 exits (normal)
-  Process P1.3 exits (normal)
   Process P1.4: ets_insert {table,[{d,0}]}
   Process P1.4 exits (normal)
+  Process P1.3: ets_lookup {table,v}
+  Process P1.3: ets_lookup {table,z}
+  Process P1.3 exits (normal)
+  Process P1.1: ets_insert {table,[{z,1}]}
+  Process P1.1 exits (normal)
 
 

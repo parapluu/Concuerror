@@ -56,8 +56,7 @@ dependent({Lid, _Instr1, _Msgs1},
 
 %% XXX: This should be fixed in sched:recent_dependency_cv and removed
 dependent({_Lid1, _Instr1, _Msgs1},
-          {_Lid2, Special, _Msgs2}, ?ONLY_INITIALLY, ?ONLY_INITIALLY)
-  when Special =:= 'block'; Special =:= 'init' ->
+          {_Lid2, 'init', _Msgs2}, ?ONLY_INITIALLY, ?ONLY_INITIALLY) ->
     false;
 
 %%==============================================================================
@@ -68,11 +67,15 @@ dependent({_Lid1, _Instr1, _Msgs1},
 
 %% Sending to the same process:
 dependent({ Lid1,  Instr1, PreMsgs1} = Trans1,
-          {_Lid2, _Instr2, PreMsgs2} = Trans2,
+          { Lid2,  Instr2, PreMsgs2} = Trans2,
           ?CHECK_MSG, AllowSwap) ->
-    ProcEvidence = [{P, L} || {P, {_M, L}} <- PreMsgs2],
-    Msgs2 = [{P, M} || {P, {M, _L}} <- PreMsgs2],
-    Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence),
+    %% ProcEvidence = [{P, L} || {P, {_M, L}} <- PreMsgs2],
+    %% Msgs2 = [{P, M} || {P, {M, _L}} <- PreMsgs2],
+    %% Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence),
+    ProcEvidence1 = [{P, L} || {P, {_M, L}} <- PreMsgs1],
+    ProcEvidence2 = [{P, L} || {P, {_M, L}} <- PreMsgs2],
+    Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence2),
+    Msgs2 = add_missing_messages(Lid2, Instr2, PreMsgs2, ProcEvidence1),
     case Msgs1 =:= [] orelse Msgs2 =:= [] of
         true -> dependent(Trans1, Trans2, ?DONT_CHECK_MSG, AllowSwap);
         false ->
@@ -117,7 +120,8 @@ dependent({Lid1,          Instr1, PreMsgs1} = Trans1,
                         'after' -> element(1, Info);
                         'receive' ->
                             Target = element(3, Info),
-                            fun(X) -> X =:= Target end
+                            OLid = element(2, Info),
+                            fun(X) -> X =:= Target andalso OLid =:= Lid1 end
                     end,
                 lists:any(Fun, MsgsToLid2);
             error -> false
@@ -219,7 +223,7 @@ dependent(A, {Lid, {unregister, RegName}, Msgs}, CheckMsg, AllowSwap) ->
 
 %%==============================================================================
 
-%% Send using name before process has registered itself (or after ungeristering).
+%% Send using name before process has registered itself (or after unregistering).
 dependent({_Lid1, {register,      {RegName, _TLid}}, _Msgs1},
           {_Lid2, {    send, {RegName, _Lid, _Msg}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
@@ -338,6 +342,12 @@ dependent({Lid1, {process_flag,        {trap_exit, _Value, Links1}}, _Msgs1},
           _CheckMsg, _AllowSwap) ->
     lists:member(Lid2, Links1) orelse lists:member(Lid1, Links2);
 
+%% Trap exits flag and explicit exit signals.
+dependent({ Lid1, {process_flag, {trap_exit, _Value, _Links1}}, _Msgs1},
+          {_Lid2, {      exit_2,              {TLid, _Reason}}, _Msgs2},
+          _CheckMsg, _AllowSwap) ->
+    Lid1 =:= TLid;
+
 %% No other races between setting a process flag and exiting.
 dependent({_Lid1, {process_flag, _Details1}, _Msgs1},
           {_Lid2, {        exit, _Details2}, _Msgs2},
@@ -374,7 +384,7 @@ dependent(TransitionA, TransitionB, _CheckMsg, ?DONT_ALLOW_SWAP) ->
     case independent(TransitionA, TransitionB) of
         true -> false;
         maybe ->
-            concuerror_log:log(3, "Not certainly independent:\n ~p\n ~p\n",
+            io:format("ALERT! Not certainly independent:\n ~p\n ~p\n",
                       [TransitionA, TransitionB]),
             true
     end.
@@ -394,14 +404,25 @@ independent({_Lid1, {Op1, _}, _Msgs1}, {_Lid2, {Op2, _}, _Msgs2}) ->
          {     whereis,      send},
          {        link,      send},
          {      unlink,      send},
-         {process_flag,      send}
+         {process_flag,      send},
+         {process_flag,   monitor},
+         {      unlink,   monitor},
+         {    register,   monitor},
+         {     whereis,    unlink},
+         {      unlink,  register},
+         {     whereis,   monitor},
+         {        link,   monitor}
         ],
+    %% XXX: This should probably be removed.
+    Solo = [send_after,exit_2],
     case
         %% Assuming that all the races of an instruction with another instance
         %% of itself have already been caught.
         Op1 =:= Op2
         orelse lists:member({Op1, Op2},Independent)
         orelse lists:member({Op2, Op1},Independent)
+        orelse lists:member(Op1, Solo)
+        orelse lists:member(Op2, Solo)
     of
         true -> true;
         false -> maybe

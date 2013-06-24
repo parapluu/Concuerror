@@ -1,4 +1,4 @@
-Checked 3 interleaving(s). 2 errors found.
+Checked 4 interleaving(s). 2 errors found.
 
 1
 Error type        : Exception

@@ -483,13 +483,19 @@ spawn_center(Kind, Fun) ->
     check_unknown_process(),
     Spawner =
         case Kind of
+            {spawn_opt, Opt} -> fun(F) -> spawn_opt(F, Opt) end;
             spawn -> fun spawn/1;
             spawn_link -> fun spawn_link/1;
             spawn_monitor -> fun spawn_monitor/1
         end,
-    concuerror_sched:notify(Kind, unknown),
+    {Tag, Info} =
+        case Kind of
+            {spawn_opt, _} = S -> S;
+            _ -> {Kind, unknown}
+        end,
+    concuerror_sched:notify(Tag, Info),
     Result = Spawner(fun() -> spawn_fun_wrapper(Fun) end),
-    concuerror_sched:notify(Kind, Result, prev),
+    concuerror_sched:notify(Tag, Result, prev),
     %% Wait before using the PID to be sure that an LID is assigned
     concuerror_sched:wait(),
     Result.
@@ -629,13 +635,7 @@ rep_spawn_monitor(Module, Function, Args) ->
                      {'min_bin_vheap_size', integer()}]) ->
                            pid() | {pid(), reference()}.
 rep_spawn_opt(Fun, Opt) ->
-    check_unknown_process(),
-    concuerror_sched:notify(spawn_opt, unknown),
-    Result = spawn_opt(fun() -> spawn_fun_wrapper(Fun) end, Opt),
-    concuerror_sched:notify(spawn_opt, Result, prev),
-    %% Wait before using the PID to be sure that an LID is assigned
-    concuerror_sched:wait(),
-    Result.
+    spawn_center({spawn_opt, Opt}, Fun).
 
 %% @spec rep_spawn_opt(atom(), atom(), [term()],
 %%       ['link' | 'monitor' |
@@ -846,7 +846,8 @@ ets_insert_center(Type, Tab, Obj) ->
         end,
     try
         Ret = Fun(Tab, Obj),
-        Info = {Type, [Lid, Tab, Keys, KeyPos, ConvObj, Ret]},
+        %% XXX: Hardcoded true to avoid sleep set blocking.
+        Info = {Type, [Lid, Tab, Keys, KeyPos, ConvObj, true]}, %Ret]},
         concuerror_sched:notify(ets, Info, prev),
         Ret
     catch

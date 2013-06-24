@@ -48,7 +48,7 @@
     | {'output',  file:filename()}
     | {'include', [file:name()]}
     | {'define',  concuerror_instr:macros()}
-    | {'dpor', 'full' | 'flanagan'}
+    | {'dpor', 'full' | 'source' | 'classic'}
     | {'noprogress'}
     | {'quiet'}
     | {'preb',    concuerror_sched:bound()}
@@ -394,13 +394,26 @@ parse([{Opt, Param} | Args], Options) ->
             help(),
             erlang:halt();
 
-        "-dpor" ->
-            NewOptions = lists:keystore(dpor, 1, Options, {dpor, full}),
-            parse(Args, NewOptions);
-
-        "-dpor_flanagan" ->
-            NewOptions = lists:keystore(dpor, 1, Options, {dpor, flanagan}),
-            parse(Args, NewOptions);
+        DPOR when
+              DPOR =:= "-dpor";
+              DPOR =:= "-dpor_optimal";
+              DPOR =:= "-dpor_source";
+              DPOR =:= "-dpor_classic" ->
+            Flavor =
+                case DPOR of
+                    "-dpor"         -> full;
+                    "-dpor_optimal" -> full;
+                    "-dpor_source"  -> source;
+                    "-dpor_classic" -> classic
+                end,
+            case lists:keysearch(dpor, 1, Options) of
+                false ->
+                    NewOptions = [{dpor, Flavor}|Options],
+                    parse(Args, NewOptions);
+                _ ->
+                    Msg = "multiple DPOR algorithms specified",
+                    {'error', 'arguments', Msg}
+            end;
 
         EF when EF=:="root"; EF=:="progname"; EF=:="home"; EF=:="smp";
             EF=:="noshell"; EF=:="noinput"; EF=:="sname"; EF=:="pa";
@@ -480,9 +493,12 @@ help() ->
      "  -T|--ignore-timeout bound\n"
      "                          Treat big after Timeouts as infinity timeouts\n"
      "  --gui                   Run concuerror with a graphical interface\n"
-     "  --dpor                  Runs the experimental optimal DPOR version\n"
-     "  --dpor_flanagan         Runs an experimental reference DPOR version\n"
      "  --help                  Show this help message\n"
+     "\n"
+     " DPOR algorithms:\n"
+     "  --dpor|--dpor_optimal   Enables the optimal DPOR algorithm\n"
+     "  --dpor_classic          Enables the classic DPOR algorithm\n"
+     "  --dpor_source           Enables the DPOR algorithm based on source sets\n"
      "\n"
      "Examples:\n"
      "  concuerror -DVSN=\\\"1.0\\\" --target foo bar arg1 arg2 "

@@ -38,18 +38,19 @@ Blocked processes : P1
   Process P1 spawns process P1.5
   Process P1 blocks
   Process P1.5 sends message `{p,<0.57.0>}` to process P1.1
-  Process P1.4 sends message `{p,<0.56.0>}` to process P1.1
-  Process P1.4 exits (normal)
+  Process P1.5 exits (normal)
   Process P1.1 receives message `{p,<0.57.0>}` from process P1.5
   Process P1.1 sends message `ok` to process P1.3
+  Process P1.1 blocks
+  Process P1.3 receives message `ok` from process P1.1
+  Process P1.3 exits (normal)
+  Process P1.4 sends message `{p,<0.56.0>}` to process P1.1
+  Process P1.4 exits (normal)
   Process P1.1 receives message `{p,<0.56.0>}` from process P1.4
   Process P1.1 sends message `ok` to process P1.2
   Process P1.1 receives message `{ok,<0.54.0>}` from process P1
   Process P1.1 exits (normal)
   Process P1.2 receives message `ok` from process P1.1
   Process P1.2 exits (normal)
-  Process P1.3 receives message `ok` from process P1.1
-  Process P1.3 exits (normal)
-  Process P1.5 exits (normal)
 
 

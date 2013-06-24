@@ -30,13 +30,13 @@ Blocked processes : P1.1
   Process P1 links to process P1.2
   Process P1.2 sets flag `trap_exit` to `true`
   Process P1.2 receives no matching messages
-  Process P1 exits (normal)
   Process P1.2 exits (normal)
+  Process P1 exits (normal)
 
 
 3
 Error type        : Exception
-Details           : {{nocatch,{'EXIT',<0.51.0>,normal}},
+Details           : {{nocatch,{'EXIT',<0.55.0>,normal}},
                      [{after_vs_trap_exit,'-after_vs_trap_exit/0-fun-4-',0,
                           [{file,"after_vs_trap_exit.erl"},{line,22}]}]}
   Process P1 spawns and links to process P1.1
@@ -49,7 +49,7 @@ Details           : {{nocatch,{'EXIT',<0.51.0>,normal}},
   Process P1 links to process P1.2
   Process P1.2 sets flag `trap_exit` to `true`
   Process P1 exits (normal)
-  Process P1.2 receives message `{'EXIT',<0.51.0>,normal}` from process P1
+  Process P1.2 receives message `{'EXIT',<0.55.0>,normal}` from process P1
   Process P1.2 exits ("Exception")
 
 

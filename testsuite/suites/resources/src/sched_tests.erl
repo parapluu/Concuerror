@@ -470,6 +470,7 @@ test_spawn_opt_link_receive_exit() ->
 
 test_spawn_opt_monitor() ->
     {Pid, Ref} = spawn_opt(fun() -> ok end, [monitor]),
+    demonitor(Ref),
     receive
     {'DOWN', Ref, process, Pid, normal} -> ok
     end.

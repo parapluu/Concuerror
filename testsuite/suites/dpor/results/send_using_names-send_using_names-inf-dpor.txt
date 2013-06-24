@@ -10,9 +10,11 @@ Details           : {{badmatch,[msg1,msg2]},
   Process P1 spawns process P1.2
   Process P1 blocks
   Process P1.2 sends message `msg2` to process named 'name'
+  Process P1.2 exits (normal)
+  Process P1 receives message `msg2` from process P1.2
+  Process P1 blocks
   Process P1.1 sends message `msg1` to process P1
   Process P1.1 exits (normal)
-  Process P1 receives message `msg2` from process P1.2
   Process P1 receives message `msg1` from process P1.1
   Process P1 exits ("Exception")
 

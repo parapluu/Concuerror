@@ -1,0 +1,362 @@
+Checked 20 interleaving(s). 20 errors found.
+
+1
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+2
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+3
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+4
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
+5
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+6
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+7
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
+8
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+9
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
+10
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
+11
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+12
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+13
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
+14
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+15
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
+16
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
+17
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+
+
+18
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
+19
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
+20
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1: ets_new {table,[public,named_table]}
+  Process P1: ets_insert {table,[{x,0}]}
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1 blocks
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2: ets_lookup {table,x}
+  Process P1.2 exits (normal)
+  Process P1.1: ets_insert {table,[{x,1}]}
+  Process P1.1: ets_insert {table,[{x,2}]}
+  Process P1.1: ets_insert {table,[{x,3}]}
+  Process P1.1 exits (normal)
+
+
