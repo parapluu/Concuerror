@@ -1243,11 +1243,14 @@ wait_next(Lid, Plan) ->
                              {Pid, Ref} ->
                                  monitor(process, Pid),
                                  ChildLid = concuerror_lid:new(Pid, Lid),
+                                 continue(ChildLid),
                                  MonRef = concuerror_lid:ref_new(ChildLid, Ref),
                                  Msg#sched{misc = {ChildLid, MonRef}};
                              Pid ->
                                  monitor(process, Pid),
-                                 Msg#sched{misc = concuerror_lid:new(Pid, Lid)}
+                                 ChildLid = concuerror_lid:new(Pid, Lid),
+                                 continue(ChildLid),
+                                 Msg#sched{misc = ChildLid}
                          end
                  after
                      ?TIME_LIMIT -> error(time_limit, DebugArgs)
@@ -1314,7 +1317,7 @@ handle_instruction_op({Lid, {Spawn, _Info}, Msgs} = DebugArg)
             {Lid0, _MonLid} -> Lid0;
             Lid0 -> Lid0
         end,
-    ChildNextInstr = wait_next(ChildLid, init),
+    ChildNextInstr = get_next(ChildLid),
     {{Lid, {Spawn, Info}, Msgs}, ChildNextInstr};
 handle_instruction_op({Lid, {ets, {Updatable, _Info}}, Msgs} = DebugArg)
   when Updatable =:= new; Updatable =:= insert_new; Updatable =:= insert ->

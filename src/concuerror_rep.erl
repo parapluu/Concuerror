@@ -503,7 +503,7 @@ spawn_center(Kind, Fun) ->
 -spec spawn_fun_wrapper(function()) -> term().
 spawn_fun_wrapper(Fun) ->
     try
-        concuerror_sched:wait(),
+        ok = concuerror_sched:wait(),
         Fun(),
         exit(normal)
     catch
