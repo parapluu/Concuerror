@@ -22,6 +22,7 @@
 
 -export_type([analysis_target/0, analysis_ret/0, bound/0, transition/0]).
 
+%%-define(COND_DEBUG, true).
 %%-define(DEBUG, true).
 -define(CLASSIC, classic).
 -define(SOURCE, source).

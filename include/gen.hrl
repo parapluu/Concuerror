@@ -82,11 +82,29 @@ A systematic testing tool for concurrent Erlang programs.
 ").
 
 %% Debug macros.
+-ifdef(COND_DEBUG).
+-define(debug_start, put(debug, true)).
+-define(debug_stop, erase(debug)).
+-define(debug(S_, L_),
+        begin
+            case get(debug) of
+                true -> io:format(S_, L_);
+                _ -> ok
+            end
+        end).
+-else.
+-define(debug_start, ok).
+-define(debug_stop, ok).
+-endif.
+
+-ifndef(COND_DEBUG).
 -ifdef(DEBUG).
 -define(debug(S_, L_), io:format(S_, L_)).
--define(debug(S_), io:format(S_)).
--define(DEBUG_DEPTH, 12).
 -else.
 -define(debug(S_, L_), ok).
--define(debug(S_), ok).
--endif.
+-endif. %DEBUG
+-endif. %COND_DEBUG
+
+
+-define(debug(S_), ?debug(S_,[])).
+-define(DEBUG_DEPTH, 12).
