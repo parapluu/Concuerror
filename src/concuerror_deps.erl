@@ -411,6 +411,11 @@ independent({_Lid1, {Op1, _}, _Msgs1}, {_Lid2, {Op2, _}, _Msgs2}) ->
          {     whereis,    unlink},
          {      unlink,  register},
          {     whereis,   monitor},
+         {     whereis, demonitor},
+         {     whereis, is_process_alive},
+         {   demonitor, is_process_alive},
+         {     monitor, is_process_alive},
+         {        send, is_process_alive},
          {        link,   monitor}
         ],
     %% XXX: This should probably be removed.
