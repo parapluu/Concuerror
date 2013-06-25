@@ -607,8 +607,9 @@ transform_receive_case(Clauses) ->
     Fun =
         fun(Clause) ->
             [Pattern] = erl_syntax:clause_patterns(Clause),
+            Guard = erl_syntax:clause_guard(Clause),
             NewBody = erl_syntax:atom(continue),
-            erl_syntax:clause([Pattern], [], [NewBody])
+            erl_syntax:clause([Pattern], Guard, [NewBody])
         end,
     NewClauses = lists:map(Fun, Clauses),
     Pattern = new_underscore_variable(),
