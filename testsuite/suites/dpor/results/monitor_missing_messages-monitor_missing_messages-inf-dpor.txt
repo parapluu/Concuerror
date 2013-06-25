@@ -1,0 +1,13 @@
+Checked 2 interleaving(s). 1 errors found.
+
+1
+Error type        : Exception
+Details           : {{nocatch,boo},
+                     [{monitor_missing_messages,monitor_missing_messages,0,
+                          [{file,"monitor_missing_messages.erl"},{line,11}]}]}
+  Process P1 spawns and monitors process P1.1
+  Process P1.1 exits (normal)
+  Process P1 receives message `{'DOWN',#Ref<0.0.0.118>,process,...}` from process P1.1
+  Process P1 exits ("Exception")
+
+

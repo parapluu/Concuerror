@@ -1,0 +1,56 @@
+Checked 4 interleaving(s). 4 errors found.
+
+1
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns and monitors process P1.1
+  Process P1 spawns process P1.2
+  Process P1.1 exits (normal)
+  Process P1 checks if process P1.1 (dead) is alive
+  Process P1 receives message `{'DOWN',#Ref<0.0.0.122>,process,...}` from process P1.1
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+
+
+2
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns and monitors process P1.1
+  Process P1 spawns process P1.2
+  Process P1 checks if process P1.1 is alive
+  Process P1 blocks
+  Process P1.1 exits (normal)
+  Process P1 receives message `{'DOWN',#Ref<0.0.0.116>,process,...}` from process P1.1
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+
+
+3
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns and monitors process P1.1
+  Process P1 spawns process P1.2
+  Process P1 checks if process P1.1 is alive
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
+  Process P1.1 exits (normal)
+
+
+4
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns and monitors process P1.1
+  Process P1 spawns process P1.2
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1.1 exits (normal)
+  Process P1 checks if process P1.1 (dead) is alive
+  Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
+
+

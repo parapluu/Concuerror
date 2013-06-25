@@ -16,7 +16,8 @@
 
 -export([spawn_fun_wrapper/1,
          start_target/3,
-         find_my_links/0]).
+         find_my_links/0,
+         find_my_monitors/0]).
 
 -export([rep_var/3, rep_apply/3, rep_send/2, rep_send/3]).
 
@@ -307,9 +308,23 @@ rep_process_flag(Flag, Value) ->
 -spec find_my_links() -> [concuerror_lid:lid()].
 
 find_my_links() ->
+    find_my_links_or_monitors(links).
+
+find_my_monitored() ->
+    find_my_links_or_monitors(monitored_by).    
+
+find_my_links_or_monitors(Type) ->
     PPid = self(),
-    {links, AllPids} = process_info(PPid, links),
+    {Type, AllPids} = process_info(PPid, Type),
     AllLids = [?LID_FROM_PID(Pid) || Pid <- AllPids],
+    [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].
+
+-spec find_my_monitors() -> [concuerror_lid:lid()].
+
+find_my_monitors() ->
+    PPid = self(),
+    {monitors, AllPids} = process_info(PPid, monitors),
+    AllLids = [?LID_FROM_PID(Pid) || {process, Pid} <- AllPids],
     [KnownLid || KnownLid <- AllLids, KnownLid =/= not_found].
 
 %% @spec rep_receive(
@@ -351,8 +366,10 @@ rep_receive_loop(Act, Fun, HasTimeout, Bound) ->
                                             continue -> true
                                         end
                                     end,
-                                Links = find_trappable_links(self()),
-                                concuerror_sched:notify('after', {NewFun, Links})
+                                Links = find_my_trappable_links(),
+                                Monitors = find_my_monitors(),
+                                Info = {NewFun, Links, Monitors},
+                                concuerror_sched:notify('after', Info)
                         end,
                     rep_receive_loop(NewAct, Fun, HasTimeout, Bound);
                 continue ->
@@ -368,8 +385,8 @@ rep_receive_loop(Act, Fun, HasTimeout, Bound) ->
             end
     end.
 
-find_trappable_links(Pid) ->
-    try {trap_exit, true} = erlang:process_info(find_pid(Pid), trap_exit) of
+find_my_trappable_links() ->
+    try {trap_exit, true} = erlang:process_info(self(), trap_exit) of
         _ -> find_my_links()
     catch
         _:_ -> []
@@ -397,7 +414,8 @@ rep_receive_block() ->
 -spec rep_after_notify() -> 'ok'.
 rep_after_notify() ->
     check_unknown_process(),
-    concuerror_sched:notify('after', find_trappable_links(self()), prev),
+    Info = {find_my_trappable_links(), find_my_monitors()},
+    concuerror_sched:notify('after', Info, prev),
     ok.
 
 %% @spec rep_receive_notify(pid(), term()) -> 'ok'
@@ -523,7 +541,8 @@ find_my_info() ->
     MyEts = find_my_ets_tables(),
     MyName = find_my_registered_name(),
     MyLinks = find_my_links(),
-    {MyEts, MyName, MyLinks}.
+    MyMonitors = find_my_monitored(),
+    {MyEts, MyName, MyLinks, MyMonitors}.
 
 find_my_ets_tables() ->
     Self = self(),

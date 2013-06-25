@@ -72,8 +72,8 @@ dependent({ Lid1,  Instr1, PreMsgs1} = Trans1,
     %% ProcEvidence = [{P, L} || {P, {_M, L}} <- PreMsgs2],
     %% Msgs2 = [{P, M} || {P, {M, _L}} <- PreMsgs2],
     %% Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence),
-    ProcEvidence1 = [{P, L} || {P, {_M, L}} <- PreMsgs1],
-    ProcEvidence2 = [{P, L} || {P, {_M, L}} <- PreMsgs2],
+    ProcEvidence1 = [{P, L, M} || {P, {_M, L, M}} <- PreMsgs1],
+    ProcEvidence2 = [{P, L, M} || {P, {_M, L, M}} <- PreMsgs2],
     Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence2),
     Msgs2 = add_missing_messages(Lid2, Instr2, PreMsgs2, ProcEvidence1),
     case Msgs1 =:= [] orelse Msgs2 =:= [] of
@@ -108,7 +108,7 @@ dependent({Lid1,          Instr1, PreMsgs1} = Trans1,
        element(1, Info) =:= had_after) ->
     ProcEvidence =
         case Receive =:= 'after' of
-            true  -> [{Lid2, element(2, Info)}];
+            true  -> [{Lid2, element(2, Info), element(3, Info)}];
             false -> []
         end,
     Msgs1 = add_missing_messages(Lid1, Instr1, PreMsgs1, ProcEvidence),
@@ -161,7 +161,7 @@ dependent({_Lid1, {ets, Op1}, _Msgs1},
 
 %% Registering a table with the same name as an existing one.
 dependent({_Lid1, { ets, {   new,           [_Table, Name, Options]}}, _Msgs1},
-          {_Lid2, {exit, {normal, {{_Heirs, Tables}, _Name, _Links}}}, _Msgs2},
+          {_Lid2, {exit, {normal, {{_Heirs, Tables}, _Na, _Li, _Mo}}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     NamedTables = [N || {_Lid, {ok, N}} <- Tables],
     lists:member(named_table, Options) andalso
@@ -169,7 +169,7 @@ dependent({_Lid1, { ets, {   new,           [_Table, Name, Options]}}, _Msgs1},
 
 %% Table owners exits race with any ets operation on the same table.
 dependent({_Lid1, { ets, {   _Op,                     [Table|_Rest]}}, _Msgs1},
-          {_Lid2, {exit, {normal, {{_Heirs, Tables}, _Name, _Links}}}, _Msgs2},
+          {_Lid2, {exit, {normal, {{_Heirs, Tables}, _Na, _Li, _Mo}}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     lists:keymember(Table, 1, Tables);
 
@@ -191,8 +191,8 @@ dependent({_Lid1, { ets, _Details1}, _Msgs1},
 
 %% Heirs exit should also be monitored.
 %% XXX: Maybe should be removed
-dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _Name1, _Links1}}}, _Msgs1},
-          {Lid2, {exit, {normal, {{Heirs2, _Tbls2}, _Name2, _Links2}}}, _Msgs2},
+dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _N1, _L1, _M1}}}, _Msgs1},
+          {Lid2, {exit, {normal, {{Heirs2, _Tbls2}, _N2, _L2, _M2}}}, _Msgs2},
           _CheckMsg, ?SYMMETRIC) ->
     lists:member(Lid1, Heirs2) orelse lists:member(Lid2, Heirs1);
 
@@ -202,7 +202,7 @@ dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _Name1, _Links1}}}, _Msgs1},
 
 %% Sending using name to a process that may exit and unregister.
 dependent({_Lid1, {send,                     {TName, _TLid, _Msg}}, _Msgs1},
-          {_Lid2, {exit, {normal, {_Tables, {ok, TName}, _Links}}}, _Msgs2},
+          {_Lid2, {exit, {normal, {_Tables, {ok, TName}, _L, _M}}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     true;
 dependent({_Lid1, {send, _Details1}, _Msgs1},
@@ -253,7 +253,7 @@ dependent({_Lid1, {register, {_RegName, TLid}}, _Msgs1},
 
 %% Register for a name that might be in use.
 dependent({_Lid1, {register,                           {Name, _TLid}}, _Msgs1},
-          {_Lid2, {    exit, {normal, {_Tables, {ok, Name}, _Links}}}, _Msgs2},
+          {_Lid2, {    exit, {normal, {_Tables, {ok, Name}, _L, _M}}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     true;
 
@@ -295,7 +295,7 @@ dependent({_Lid1, {is_process_alive, _Details1}, _Msgs1},
 
 %% Process registered and exits.
 dependent({_Lid1, {whereis,                          {Name, _TLid1}}, _Msgs1},
-          {_Lid2, {   exit, {normal, {_Tables, {ok, Name}, _Links}}}, _Msgs2},
+          {_Lid2, {   exit, {normal, {_Tables, {ok, Name}, _L, _M}}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     true;
 
@@ -337,8 +337,8 @@ dependent({_Lid1, {monitor, _Details1}, _Msgs1},
 %%==============================================================================
 
 %% Trap exits flag and linked process exiting.
-dependent({Lid1, {process_flag,        {trap_exit, _Value, Links1}}, _Msgs1},
-          {Lid2, {        exit, {normal, {_Tables, _Name, Links2}}}, _Msgs2},
+dependent({Lid1, {process_flag,         {trap_exit, _Value, Links1}}, _Msgs1},
+          {Lid2, {        exit, {normal, {_Tables, _N, Links2, _M}}}, _Msgs2},
           _CheckMsg, _AllowSwap) ->
     lists:member(Lid2, Links1) orelse lists:member(Lid1, Links2);
 
@@ -434,24 +434,35 @@ independent({_Lid1, {Op1, _}, _Msgs1}, {_Lid2, {Op2, _}, _Msgs2}) ->
     end.
 
 add_missing_messages(Lid, Instr, PreMsgs, ProcEvidence) ->
-    Msgs = [{P, M} || {P, {M, _L}} <- PreMsgs],
+    Msgs = [{P, M} || {P, {M, _L, _M}} <- PreMsgs],
     case Instr of
         {send, {_RegName, Lid2, Msg}} ->
             add_missing_message(Lid2, Msg, Msgs);
         {exit, _} ->
-            Msg = {'EXIT', Lid, normal},
-            Adder = fun(P, M) -> add_missing_message(P, Msg, M) end,
+            LMsg = {'EXIT', Lid, normal},
+            %% XXX: Dummy could be problematic
+            MMsg = {'DOWN', dummy, process, Lid, normal},
+            LAdder = fun(P, M) -> add_missing_message(P, LMsg, M) end,
+            MAdder = fun(P, M) -> add_missing_message(P, MMsg, M) end,
             Fold =
-                fun({P, Links}, Acc) ->
-                        case lists:member(Lid, Links) of
-                            true -> Adder(P, Acc);
-                            false -> Acc
-                        end
+                fun({P, Links, Monitors}, Acc) ->
+                        Acc1 =
+                            case lists:member(Lid, Links) of
+                                true -> LAdder(P, Acc);
+                                false -> Acc
+                            end,
+                        Acc2 =
+                            case lists:member(Lid, Monitors) of
+                                true -> MAdder(P, Acc1);
+                                false -> Acc1
+                            end,
+                        Acc2
                 end,
             lists:foldl(Fold, Msgs, ProcEvidence);
         _ -> Msgs
     end.
 
+%% XXX: Not accurate for monitor DOWN messages due to dummy
 add_missing_message(Lid, Msg, Msgs) ->
     try true = lists:member(Msg, orddict:fetch(Lid, Msgs)) of
         _ -> Msgs

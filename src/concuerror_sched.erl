@@ -1341,11 +1341,11 @@ handle_instruction_op({Lid, {'receive', Tag}, Msgs} = DebugArg) ->
     after
         ?TIME_LIMIT -> error(time_limit, [DebugArg])
     end;
-handle_instruction_op({Lid, {'after', {Fun, _OldLinks}}, Msgs} = DebugArg) ->
+handle_instruction_op({Lid, {'after', {Fun, _, _}}, Msgs} = DebugArg) ->
     receive
         #sched{msg = 'after', lid = Lid,
-               misc = Links, type = prev} ->
-            {{Lid, {'after', {Fun, Links}}, Msgs}, {}}
+               misc = {Links, Monitors}, type = prev} ->
+            {{Lid, {'after', {Fun, Links, Monitors}}, Msgs}, {}}
     after
         ?TIME_LIMIT -> error(time_limit, [DebugArg])
     end;
@@ -1513,7 +1513,7 @@ replace_messages(Lid, VC) ->
         fun(Pid, MsgAcc) ->
             Pid ! ?VECTOR_MSG(Lid, VC),
             receive
-                ?VECTOR_MSG(PidsLid, {Msgs, _} = MsgInfo) ->
+                ?VECTOR_MSG(PidsLid, {Msgs, _, _} = MsgInfo) ->
                     case Msgs =:= [] of
                         true -> MsgAcc;
                         false -> [{PidsLid, MsgInfo}|MsgAcc]
@@ -1546,7 +1546,12 @@ instrument_my_messages(Lid, VC) ->
                                 true -> [];
                                 false -> concuerror_rep:find_my_links()
                             end,
-                        {done, {Acc, Links}}
+                        Monitors =
+                            case Acc =:= [] of
+                                true -> [];
+                                false -> concuerror_rep:find_my_monitors()
+                            end,
+                        {done, {Acc, Links, Monitors}}
                 end
         end,
     dynamic_loop_acc(Fun, []).
