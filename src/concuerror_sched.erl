@@ -645,7 +645,7 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
     Clock = lookup_clock_value(ProcSI, ClockVector),
     Action =
         case I > Clock andalso concuerror_deps:dependent(Transition, SI) of
-            false -> {continue, PreSI};
+            false -> {continue, PreSI, ClockVector};
             true ->
                 ?debug("~4w: ~P Clock ~p\n", [I, SI, ?DEBUG_DEPTH, Clock]),
                 #trace_state{enabled = Enabled,
@@ -658,17 +658,19 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                         Result =
                             find_path([StateI|Acc], AccRest, ProcSI, I,
                                       Sleepers, Backtrack),
+                        NewClockVector = orddict:store(ProcSI, I, ClockVector),
                         case Result of
                             inversion_explored ->
                                 ?debug("    Inversion is explored...\n"),
-                                {continue, PreSI};
+                                {continue, PreSI, NewClockVector};
                             equivalent_scheduled ->
                                 ?debug("    Equivalent is scheduled...\n"),
-                                {continue, PreSI};
+                                {continue, PreSI, NewClockVector};
                             {replace, NewBacktrack} ->
                                 ?debug("    NewBacktrack: ~p\n",[NewBacktrack]),
                                 {continue,
-                                 PreSI#trace_state{backtrack = NewBacktrack}}
+                                 PreSI#trace_state{backtrack = NewBacktrack},
+                                 NewClockVector}
                         end;
                     ?SOURCE ->
                         Candidates = ordsets:subtract(Enabled, Sleepers),
@@ -684,7 +686,7 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                                     lookup_clock(ProcSI, ClockMap),
                                 MaxClockVector =
                                     max_cv(NewClockVector, ClockVector),
-                                {continue, ProcSI, MaxClockVector};
+                                {continue_source, ProcSI, MaxClockVector};
                             [P] ->
                                 Intersection =
                                     ordsets:intersection(BacktrackSet, Initial),
@@ -711,11 +713,11 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                 end
         end,
     case Action of
-        {continue, NewPreSI} ->
-            add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
+        {continue, NewPreSI, UpdClockVector} ->
+            add_all_backtracks_trace(Transition, Lid, UpdClockVector, PreBound,
                                      Flavor, [NewPreSI|Rest], [StateI|Acc],
                                      AccRest);
-        {continue, UpdProcSI, UpdClockVector} ->
+        {continue_source, UpdProcSI, UpdClockVector} ->
             add_all_backtracks_trace(Transition, UpdProcSI, UpdClockVector,
                                      PreBound, Flavor, [PreSI|Rest],
                                      [StateI|Acc], AccRest);
