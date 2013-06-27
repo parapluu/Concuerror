@@ -981,13 +981,14 @@ report_possible_deadlock(State) ->
                     true ->
                         ?debug("SLEEP SET BLOCK\n"),
                         %% debug_trace(lists:reverse(Trace)),
+                        %% exit(sleep_set_block),
                         {Tickets, SBlocked+1}
                 end
         end,
     State#dpor_state{must_replay = true, tickets = NewTickets,
                      sleep_blocked_count = NewSBlocked}.
 
-%% debug_trace([]) -> exit(sleep_set_block);
+%% debug_trace([]) -> ok;
 %% debug_trace([Top|Rest]) ->
 %%     #trace_state{
 %%        i = I,
@@ -997,8 +998,13 @@ report_possible_deadlock(State) ->
 %%        done = Done,
 %%        nexts = Nexts} = Top,
 %%     BT = [K || {K, _, _} <- Backtrack],
-%%     io:format("~p: ~p\nBT:~p\nSL:~p\n~p\n---\n",
-%%               [I, Last, BT, ordsets:union(Done,SleepSet), dict:to_list(Nexts)]),
+%%     Keys = ordsets:union(Done, SleepSet),
+%%     Pred = fun(K,_) -> ordsets:is_element(K, Keys) end,
+%%     FilteredNexts = dict:filter(Pred, Nexts),
+%%     io:format("~p: ~p\nBacktrack:~p\nSleep Set:~p\n"
+%%               "FilteredNexts:~p\n~p\n---\n",
+%%               [I, Last, BT, ordsets:union(Done,SleepSet),
+%%                dict:to_list(FilteredNexts)]),
 %%     debug_trace(Rest).
 
 convert_trace_to_error_trace([], Acc) -> Acc;
@@ -1218,10 +1224,10 @@ replay_trace_aux([TraceState|Rest], Acc) ->
 
 wait_next(Lid, {exit, {normal, _Info}} = Arg2) ->
     Pid = concuerror_lid:get_pid(Lid),
-    link(Pid),
+    Ref = monitor(process, Pid),
     continue(Lid),
     receive
-        {'EXIT', Pid, normal} -> {Lid, exited, []}
+        {'DOWN', Ref, process, Pid, normal} -> {Lid, exited, []}
     after
         ?TIME_LIMIT -> error(time_limit, [Lid, Arg2])
     end;
