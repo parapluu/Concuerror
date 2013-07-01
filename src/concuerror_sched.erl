@@ -134,23 +134,22 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
                 {Mins, Secs} = concuerror_util:to_elapsed_time(T1, T2),
                 ?debug("Done in ~wm~.2fs\n", [Mins, Secs]),
                 %% Print analysis summary
-                RunCount = element(2, Result),
-                SBlocked = element(3, Result),
+                {Tickets, RunCount, SBlocked, Trans, STrans} = Result,
                 StrB =
                     case SBlocked of
                         0 -> " ";
                         _ -> io_lib:format(
-                                " (encountered ~w sleep-set blocked traces) ",
-                                [SBlocked])
+                                " (encountered ~w sleep-set blocked traces (~w transitions)) ",
+                                [SBlocked, STrans])
                     end,
                 concuerror_log:log(0, "\n\nAnalysis complete. Checked "
-                    "~w interleaving(s)~sin ~wm~.2fs:\n",
-                    [RunCount, StrB, Mins, Secs]),
-                case Result of
-                    {ok, _, _} ->
+                    "~w interleaving(s) (~w transitions)~sin ~wm~.2fs:\n",
+                    [RunCount, Trans, StrB, Mins, Secs]),
+                case Tickets =:= [] of
+                    true ->
                         concuerror_log:log(0, "No errors found.~n"),
                         {ok, {Target, RunCount, SBlocked}};
-                    {error, _, _, Tickets} ->
+                    false ->
                         TicketCount = length(Tickets),
                         concuerror_log:log(0,
                                 "Found ~p erroneous interleaving(s).~n",
@@ -208,6 +207,8 @@ do_analysis(Target, PreBound, Dpor, Options) ->
           target                  :: analysis_target(),
           run_count    = 1        :: pos_integer(),
           sleep_blocked_count = 0 :: non_neg_integer(),
+          total_trans = 0         :: non_neg_integer(),
+          sleep_trans = 0         :: non_neg_integer(),
           show_output  = false    :: boolean(),
           tickets      = []       :: [concuerror_ticket:ticket()],
           trace        = []       :: [trace_state()],
@@ -944,26 +945,33 @@ add_some_next_to_backtrack(State) ->
 %% -----------------------------------------------------------------------------
 
 report_error(Transition, State) ->
-    #dpor_state{trace = Trace, tickets = Tickets} = State,
+    #dpor_state{trace = [TraceTop|_] = Trace, tickets = Tickets,
+                total_trans = TotalTrans} = State,
+    #trace_state{i = Steps} = TraceTop,
+    NewTotalTrans = TotalTrans + Steps,
     ?debug("ERROR!\n~P\n",[Transition, ?DEBUG_DEPTH]),
     Error = convert_error_info(Transition),
     LidTrace = convert_trace_to_error_trace(Trace, [Transition]),
     Ticket = create_ticket(Error, LidTrace),
     %% Report the error to the progress logger.
     concuerror_log:progress({'error', Ticket}),
-    State#dpor_state{must_replay = true, tickets = [Ticket|Tickets]}.
+    State#dpor_state{must_replay = true, tickets = [Ticket|Tickets],
+                     total_trans = NewTotalTrans}.
 
 report_possible_deadlock(#dpor_state{trace = []} = State) -> State;
 report_possible_deadlock(State) ->
     #dpor_state{trace = [TraceTop|_] = Trace, tickets = Tickets,
-                sleep_blocked_count = SBlocked} = State,
-    {NewTickets, NewSBlocked} =
+                sleep_blocked_count = SBlocked,
+                total_trans = TotalTrans, sleep_trans = SleepTrans} = State,
+    #trace_state{i = Steps} = TraceTop,
+    NewTotalTrans = TotalTrans + Steps,
+    {NewTickets, NewSBlocked, NewSleepTrans} =
         case TraceTop#trace_state.enabled of
             [] ->
                 case TraceTop#trace_state.blocked of
                     [] ->
                         ?debug("NORMAL!\n"),
-                        {Tickets, SBlocked};
+                        {Tickets, SBlocked, SleepTrans};
                     Blocked ->
                         ?debug("DEADLOCK!\n"),
                         Error = {deadlock, Blocked},
@@ -971,22 +979,24 @@ report_possible_deadlock(State) ->
                         Ticket = create_ticket(Error, LidTrace),
                         %% Report error
                         concuerror_log:progress({'error', Ticket}),
-                        {[Ticket|Tickets], SBlocked}
+                        {[Ticket|Tickets], SBlocked, SleepTrans}
                 end;
             _Else ->
                 case TraceTop#trace_state.sleep_set =/= []
                     andalso TraceTop#trace_state.done =:= [] of
                     false ->
-                        {Tickets, SBlocked};
+                        {Tickets, SBlocked, SleepTrans};
                     true ->
                         ?debug("SLEEP SET BLOCK\n"),
                         %% debug_trace(lists:reverse(Trace)),
                         %% exit(sleep_set_block),
-                        {Tickets, SBlocked+1}
+                        {Tickets, SBlocked+1, SleepTrans+Steps}
                 end
         end,
     State#dpor_state{must_replay = true, tickets = NewTickets,
-                     sleep_blocked_count = NewSBlocked}.
+                     sleep_blocked_count = NewSBlocked,
+                     total_trans = NewTotalTrans,
+                     sleep_trans = NewSleepTrans}.
 
 %% debug_trace([]) -> ok;
 %% debug_trace([Top|Rest]) ->
@@ -1154,10 +1164,10 @@ dpor_return(State) ->
     %% Return the analysis result
     RunCnt = State#dpor_state.run_count,
     SBlocked = State#dpor_state.sleep_blocked_count,
-    case State#dpor_state.tickets of
-        [] -> {ok, RunCnt, SBlocked};
-        Tickets -> {error, RunCnt, SBlocked, Tickets}
-    end.
+    Transitions = State#dpor_state.total_trans,
+    STransitions = State#dpor_state.sleep_trans,
+    Tickets = State#dpor_state.tickets,
+    {Tickets, RunCnt, SBlocked, Transitions, STransitions}.
 
 %% =============================================================================
 %% ENGINE (manipulation of the Erlang processes under the scheduler)
