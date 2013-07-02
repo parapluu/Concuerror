@@ -213,6 +213,7 @@ do_analysis(Target, PreBound, Dpor, Options) ->
           tickets      = []       :: [concuerror_ticket:ticket()],
           trace        = []       :: [trace_state()],
           must_replay  = false    :: boolean(),
+          bound_flag   = false    :: boolean(),
           proc_before  = []       :: [pid()],
           dpor_flavor  = 'none'   :: 'full' | 'classic' | 'source' | 'none',
           preemption_bound = inf  :: non_neg_integer() | 'inf',
@@ -307,14 +308,15 @@ explore(State) ->
 %% -----------------------------------------------------------------------------
 
 select_from_backtrack(#dpor_state{trace = []}) -> none;
-select_from_backtrack(#dpor_state{must_replay = MustReplay,
-				  trace = Trace} = State) ->
+select_from_backtrack(#dpor_state{must_replay = MustReplay, trace = Trace,
+                                  bound_flag = BoundFlag} = State) ->
     [#trace_state{backtrack = Backtrack,
                   done = Done,
                   sleep_set = SleepSet} = _TraceTop|_] = Trace,
     ?debug("------------\nExplore ~p\n------------\n",
            [_TraceTop#trace_state.i + 1]),
-    case pick_from_backtrack(Backtrack, ordsets:union(SleepSet, Done)) of
+    Sleepers = ordsets:union(SleepSet, Done),
+    case pick_from_backtrack(BoundFlag, Backtrack, Sleepers) of
         none ->
             ?debug("Backtrack set explored\n",[]),
             none;
@@ -333,6 +335,10 @@ select_from_backtrack(#dpor_state{must_replay = MustReplay,
             FinalState = UpdState#dpor_state{trace = [FinalTraceTop|RestTrace]},
             {ok, Instruction, FinalState}
     end.
+
+pick_from_backtrack(true, _Backtrack, _Sleepers) -> none;
+pick_from_backtrack(_BoundFlag, Backtrack, Sleepers) ->
+    pick_from_backtrack(Backtrack, Sleepers).
 
 pick_from_backtrack([], _) -> none;
 pick_from_backtrack([{B, _, _}|Rest], Done) ->
@@ -598,14 +604,18 @@ rewrite_while_awaked({P, _, _} = Transition, Original,
 %% -----------------------------------------------------------------------------
 
 race_check(#dpor_state{preemption_bound = Bound, trace = Trace,
-			       dpor_flavor = Flavor} = State) ->
-    case Flavor of
-        none ->
+                       dpor_flavor = Flavor, bound_flag = BoundFlag} = State) ->
+    case Flavor =:= 'none' of
+        true ->
             %% add_some_next will take care of all the backtracks.
             State;
-        _ ->
-            NewTrace = race_check(Trace, Bound, Flavor),
-            State#dpor_state{trace = NewTrace}
+        false ->
+            case BoundFlag of
+                true -> State;
+                false ->
+                    NewTrace = race_check(Trace, Bound, Flavor),
+                    State#dpor_state{trace = NewTrace}
+            end
     end.
 
 race_check(Trace, PreBound, Flavor) ->
@@ -915,13 +925,13 @@ add_some_next_to_backtrack(State) ->
         case OldBacktrack =:= [] of
             true ->
                 Set =
-                    case Flavor of
-                        'none' ->
+                    case Flavor =:= 'none' of
+                        true ->
                             case ordsets:is_element(Lid, Enabled) of
                                 true when Preemptions =:= PreBound -> [Lid];
                                 _Else -> Enabled
                             end;
-                        _Other ->
+                        false ->
                             case ordsets:subtract(Enabled, SleepSet) of
                                 [] -> [];
                                 [H|_] = Candidates ->
@@ -938,9 +948,13 @@ add_some_next_to_backtrack(State) ->
                 [A || {K, _, _} = A <- OldBacktrack,
                       not ordsets:is_element(K, SleepSet)]
         end,
+    BoundFlag =
+        Flavor =:= 'full' andalso
+        PreBound =/= ?INFINITY andalso
+        Preemptions > PreBound,
     ?debug("Picked: ~p\n",[Backtrack]),
     NewTraceTop = TraceTop#trace_state{backtrack = Backtrack},
-    State#dpor_state{trace = [NewTraceTop|Rest]}.
+    State#dpor_state{trace = [NewTraceTop|Rest], bound_flag = BoundFlag}.
 
 %% -----------------------------------------------------------------------------
 
@@ -961,7 +975,7 @@ report_error(Transition, State) ->
 report_possible_deadlock(#dpor_state{trace = []} = State) -> State;
 report_possible_deadlock(State) ->
     #dpor_state{trace = [TraceTop|_] = Trace, tickets = Tickets,
-                sleep_blocked_count = SBlocked,
+                sleep_blocked_count = SBlocked, bound_flag = BoundFlag,
                 total_trans = TotalTrans, sleep_trans = SleepTrans} = State,
     #trace_state{i = Steps} = TraceTop,
     NewTotalTrans = TotalTrans + Steps,
@@ -982,8 +996,11 @@ report_possible_deadlock(State) ->
                         {[Ticket|Tickets], SBlocked, SleepTrans}
                 end;
             _Else ->
-                case TraceTop#trace_state.sleep_set =/= []
-                    andalso TraceTop#trace_state.done =:= [] of
+                case
+                    TraceTop#trace_state.sleep_set =/= [] andalso
+                    TraceTop#trace_state.done =:= [] andalso
+                    not BoundFlag
+                of
                     false ->
                         {Tickets, SBlocked, SleepTrans};
                     true ->
@@ -1214,6 +1231,7 @@ replay_trace(#dpor_state{proc_before = ProcBefore,
     %% Report the start of a new interleaving
     concuerror_log:progress({'new', NewRunCnt, SBlocked}),
     State#dpor_state{run_count = NewRunCnt, must_replay = false,
+                     bound_flag = false,
                      group_leader = NewGroupLeader, trace = NewTrace}.
 
 replay_trace_aux(Trace) ->
