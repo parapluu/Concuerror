@@ -142,9 +142,18 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
                                 " (encountered ~w sleep-set blocked traces (~w transitions)) ",
                                 [SBlocked, STrans])
                     end,
+                MemoryStr =
+                    try erlang:memory(maximum) of
+                        N ->
+                            MB = N / (1024*1024),
+                            io_lib:format(" (using ~.2fMB)",[MB])
+                    catch
+                        _:_ ->
+                            ""
+                    end,
                 concuerror_log:log(0, "\n\nAnalysis complete. Checked "
-                    "~w interleaving(s) (~w transitions)~sin ~wm~.2fs:\n",
-                    [RunCount, Trans, StrB, Mins, Secs]),
+                    "~w interleaving(s) (~w transitions)~sin ~wm~.2fs~s:\n",
+                    [RunCount, Trans, StrB, Mins, Secs, MemoryStr]),
                 case Tickets =:= [] of
                     true ->
                         concuerror_log:log(0, "No errors found.~n"),

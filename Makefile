@@ -183,6 +183,25 @@ concuerror:
 	wait \$$!\n" ! > $@
 	chmod +x $@
 
+concuerror_mem: all
+	printf "\
+	#%c/bin/bash\n\n\
+	Date=\$$(date +%%s%%N)\n\
+	Name=\"$(APP_STRING)\$$Date\"\n\
+	Cookie=\"$(APP_STRING)Cookie\"\n\n\
+	trap ctrl_c INT\n\
+	function ctrl_c() {\n\
+	    erl +S1 -sname $(APP_STRING)Stop -noinput -cookie \$$Cookie \\\\\n\
+	        -pa $(EBIN) \\\\\n\
+	        -run concuerror stop \$$Name -run init stop\n\
+	    wait\n\
+	}\n\n\
+	erl +S1 +Bi -instr -smp enable -noinput -sname \$$Name -cookie \$$Cookie \\\\\n\
+	    -pa $(EBIN) \\\\\n\
+	    -run concuerror cli -run init stop -- \"\$$@\" &\n\
+	wait \$$!\n" ! > $@
+	chmod +x $@
+
 $(EBIN)/%.beam: %.erl
 	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -DVSN="\"$(VSN)\"" -o $(EBIN) $<
 
