@@ -183,7 +183,7 @@ do_analysis(Target, PreBound, Dpor, Options) ->
 -type transition() :: {concuerror_lid:lid(), instr(), list()}.
 -type lid_trace()  :: [{concuerror_lid:lid(), transition(), lid_trace()}].
 -type clock_map()  :: dict(). %% dict(concuerror_lid:lid(), clock_vector()).
-%% -type clock_vector() :: orddict(). %% dict(concuerror_lid:lid(), s_i()).
+-type clock_vector() :: orddict:orddict(). %% dict(concuerror_lid:lid(), s_i()).
 
 -record(trace_state, {
           i         = 0                 :: s_i(),
@@ -198,7 +198,8 @@ do_analysis(Target, PreBound, Dpor, Options) ->
           nexts     = dict:new()        :: dict(), % dict(lid(), instr()),
           clock_map = empty_clock_map() :: clock_map(),
           preemptions = 0               :: non_neg_integer(),
-          race_checked = false          :: boolean()
+          race_checked = false          :: boolean(),
+          receives_vector = []          :: clock_vector()
          }).
 
 -type trace_state() :: #trace_state{}.
@@ -627,14 +628,27 @@ race_check([#trace_state{race_checked = true}|_] = Trace,
   when Flavor =:= ?CLASSIC; Flavor =:= ?SOURCE ->
     Trace;
 race_check(Trace, Rest, PreBound, Flavor) ->
-    [#trace_state{i = I, last = {Lid, _, _} = Transition} = Top|
+    [#trace_state{i = I, last = {Lid, {Tag, Info}, _} = Transition} = Top|
      [#trace_state{clock_map = ClockMap}|_] = PTrace] = Trace,
     NewPTrace = race_check(PTrace, [Top|Rest], PreBound, Flavor),
     NewTop = Top#trace_state{race_checked = true},
     ?debug("Race check: ~p ~p\n", [I, Transition]),
     case concuerror_deps:may_have_dependencies(Transition) of
         true ->
-            ClockVector = orddict:store(Lid, I, lookup_clock(Lid, ClockMap)),
+            BasicClock = orddict:store(Lid, I, lookup_clock(Lid, ClockMap)),
+            InescapableReceive =
+                case Tag =:= 'receive' of
+                    false -> false;
+                    true -> element(1, Info) =:= unblocked
+                end,
+            ClockVector =
+                case InescapableReceive of
+                    true ->
+                        MsgVector = Top#trace_state.receives_vector,
+                        max_cv(BasicClock, MsgVector);
+                    false ->
+                        BasicClock
+                end,
             add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound,
                                      Flavor, NewPTrace, [NewTop], Rest);
         false -> [NewTop|NewPTrace]
@@ -1245,6 +1259,8 @@ replay_trace_aux([TraceState|Rest], Acc) ->
     Next = wait_next(Lid, Cmd),
     %% ?debug("."),
     UpdAcc = update_trace(Last, Next, Acc, irrelevant, {true, TraceState}),
+    %% [#trace_state{last = _NewLast}|_] = UpdAcc,
+    %% ?debug("O:~p\nN:~p\n",[Last, _NewLast]),
     %% ?debug(".\n"),
     replay_trace_aux(Rest, UpdAcc).
 
@@ -1433,7 +1449,8 @@ handle_instruction_al({Lid, {'receive', _Info}, _Msgs} = Trans,
     Vector = lookup_clock(Lid, ClockMap),
     NewVector = max_cv(Vector, CV),
     NewClockMap = dict:store(Lid, NewVector, ClockMap),
-    TraceTop#trace_state{last = Trans, clock_map = NewClockMap};
+    TraceTop#trace_state{last = Trans, clock_map = NewClockMap,
+                         receives_vector = CV};
 handle_instruction_al({_Lid, {ets, {Updatable, _Info}}, _Msgs} = Trans,
                       TraceTop, {})
   when Updatable =:= new; Updatable =:= insert_new; Updatable =:= insert ->

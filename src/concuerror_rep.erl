@@ -58,6 +58,7 @@
 -export([rep_eunit/1]).
 
 -export([debug_print/1, debug_print/2, debug_apply/3]).
+-export([uninstrumented_send/2]).
 
 -export_type([dest/0]).
 
@@ -1048,3 +1049,8 @@ debug_print(Format, Data) ->
 -spec debug_apply(module(), atom(), [term()]) -> term().
 debug_apply(Mod, Fun, Args) ->
     apply(Mod, Fun, Args).
+
+-spec uninstrumented_send(pid(), term()) -> term().
+
+uninstrumented_send(Pid, Term) ->
+    Pid ! Term.
