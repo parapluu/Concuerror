@@ -307,7 +307,7 @@ test_2workers_small() ->
     solve(Target, State, Options).
 
 -spec test_2workers_benchmark() -> answer() | answer_S().
-test_2workers_benachmark() ->
+test_2workers_benchmark() ->
     Target = {3, 3, {1, 2}},
     State = [{0, {{1, 0}, x, 1}}
              , {1, {{0, 1}, y, 1}}

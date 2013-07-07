@@ -29,15 +29,13 @@ EBIN = 	  $(TOP)/ebin
 
 INCLUDE = $(TOP)/include
 
-DOC =     $(TOP)/doc
-
-OPTS =    $(TOP)/opts.mk
-
 ###----------------------------------------------------------------------
 ### Flags
 ###----------------------------------------------------------------------
 
-DEF_WARNS = +warn_exported_vars +warn_unused_import +warn_missing_spec +warn_untyped_record
+### XXX: Restore
+#DEF_WARNS = +warn_exported_vars +warn_unused_import +warn_missing_spec +warn_untyped_record
+DEF_WARNS =
 
 DEFAULT_ERL_COMPILE_FLAGS = +debug_info $(DEF_WARNS) -Werror
 
@@ -53,73 +51,29 @@ DIALYZER_FLAGS = -Wunmatched_returns
 ### Targets
 ###----------------------------------------------------------------------
 
-TARGETS = \
-	core_target \
-	main_target \
-	log_target \
-	utest_target \
-	scripts_target
-
-MAIN_MODULES = \
-	concuerror
-
-CORE_MODULES = \
-	concuerror_deps \
-	concuerror_gui \
-	concuerror_error \
-	concuerror_instr \
-	concuerror_lid \
-	concuerror_proc_action \
-	concuerror_rep \
-	concuerror_sched \
-	concuerror_state \
-	concuerror_ticket \
-	concuerror_util \
-	concuerror_io_server
-
-LOG_MODULES = \
-	concuerror_log
-
-UTEST_MODULES = \
-	concuerror_error_tests \
-	concuerror_instr_tests \
-	concuerror_lid_tests \
-	concuerror_state_tests \
-	concuerror_ticket_tests
-
 MODULES = \
-	$(MAIN_MODULES) \
-	$(CORE_MODULES) \
-	$(LOG_MODULES) \
-	$(UTEST_MODULES)
-
-ERL_DIRS = \
-	src \
-	utest
+	concuerror_callback \
+	concuerror_dependencies \
+	concuerror_inspect \
+	concuerror_instrumenter \
+	concuerror_loader \
+	concuerror_logger \
+	concuerror_options \
+	concuerror_printer \
+	concuerror_scheduler \
+	getopt
 
 vpath %.hrl include
-vpath %.erl $(ERL_DIRS)
+vpath %.erl src
 
-include $(wildcard $(OPTS))
+.PHONY: clean dialyze
 
-.PHONY: clean dialyze doc test
-
-all: 	$(TARGETS)
+all: concuerror $(MODULES:%=$(EBIN)/%.beam)
 
 clean:
 	rm -f concuerror
 	rm -f $(OPTS)
 	rm -f $(EBIN)/*.beam
-	rm -f $(DOC)/*.html $(DOC)/*.css $(DOC)/edoc-info $(DOC)/*.png
-
-ifneq ($(ERL_COMPILE_FLAGS), $(DEFAULT_ERL_COMPILE_FLAGS))
-release:
-	make clean
-	make
-else
-release:
-	make
-endif
 
 ifneq ($(ERL_COMPILE_FLAGS), $(NATIVE_ERL_COMPILE_FLAGS))
 native:
@@ -144,69 +98,9 @@ endif
 dialyze: all
 	dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam
 
-doc:	$(EBIN)/concuerror_util.beam
-	erl -noinput -pa $(EBIN) -s concuerror_util doc $(TOP) -s init stop
-
-core_target:    $(CORE_MODULES:%=$(EBIN)/%.beam)
-
-main_target:    $(MAIN_MODULES:%=$(EBIN)/%.beam)
-
-log_target:     $(LOG_MODULES:%=$(EBIN)/%.beam)
-
-utest_target:   $(UTEST_MODULES:%=$(EBIN)/%.beam)
-
-scripts_target: concuerror
-
-utest: all
-	erl -noinput -pa $(EBIN) \
-		-s concuerror_util test -s init stop
-
-test: all
-	@(cd testsuite && THREADS=$(THREADS) ./runtests.py)
-
 concuerror:
-	printf "\
-	#%c/bin/bash\n\n\
-	Date=\$$(date +%%s%%N)\n\
-	Name=\"$(APP_STRING)\$$Date\"\n\
-	Cookie=\"$(APP_STRING)Cookie\"\n\n\
-	trap ctrl_c INT\n\
-	function ctrl_c() {\n\
-	    erl +S1 -sname $(APP_STRING)Stop -noinput -cookie \$$Cookie \\\\\n\
-	        -pa $(EBIN) \\\\\n\
-	        -run concuerror stop \$$Name -run init stop\n\
-	    wait\n\
-	}\n\n\
-	erl +S1 +Bi -smp enable -noinput -sname \$$Name -cookie \$$Cookie \\\\\n\
-	    -pa $(EBIN) \\\\\n\
-	    -run concuerror cli -run init stop -- \"\$$@\" &\n\
-	wait \$$!\n" ! > $@
-	chmod +x $@
+	ln -s src/concuerror $@
 
-concuerror_mem: all
-	printf "\
-	#%c/bin/bash\n\n\
-	Date=\$$(date +%%s%%N)\n\
-	Name=\"$(APP_STRING)\$$Date\"\n\
-	Cookie=\"$(APP_STRING)Cookie\"\n\n\
-	trap ctrl_c INT\n\
-	function ctrl_c() {\n\
-	    erl +S1 -sname $(APP_STRING)Stop -noinput -cookie \$$Cookie \\\\\n\
-	        -pa $(EBIN) \\\\\n\
-	        -run concuerror stop \$$Name -run init stop\n\
-	    wait\n\
-	}\n\n\
-	erl +S1 +Bi -instr -smp enable -noinput -sname \$$Name -cookie \$$Cookie \\\\\n\
-	    -pa $(EBIN) \\\\\n\
-	    -run concuerror cli -run init stop -- \"\$$@\" &\n\
-	wait \$$!\n" ! > $@
-	chmod +x $@
-
-$(EBIN)/%.beam: %.erl
+### XXX: Replace with automatically dependencies
+$(EBIN)/%.beam: %.erl include/* Makefile
 	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -DVSN="\"$(VSN)\"" -o $(EBIN) $<
-
-###----------------------------------------------------------------------
-### Dependencies
-###----------------------------------------------------------------------
-
-# FIXME: Automatically generate these.

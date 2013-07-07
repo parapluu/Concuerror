@@ -79,10 +79,14 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     sema.acquire()
     # Run concuerror
     status = os.system(
-        ("%s --target %s %s --files %s --output %s/%s/results/%s-%s-%s%s.txt "
-         "--preb %s --quiet --wait-messages %s > /dev/null 2>&1")
-        % (concuerror, modn, funn, ' '.join(files), results,
-           suite, name, funn, preb, file_ext, preb, dpor_flag))
+        ("%s -f %s "
+         "--output %s/%s/results/%s-%s-%s%s.txt "
+         "%s %s "
+         "> /dev/null 2>&1"
+         )
+        % (concuerror, " -f ".join(files),
+           results, suite, name, funn, preb, file_ext,
+           modn, funn))
     # Compare the results
     has_crash = "crash" in flags
     orig = ("%s/suites/%s/results/%s-%s-%s%s.txt"
@@ -108,9 +112,6 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         print "%-10s %-20s %-50s  \033[01;32mok\033[00m" % \
               (suite, name, "("+funn+",  "+preb+",  "+dpor_output+")")
     else:
-        if status != 0:
-            f = open(rslt, 'w')
-            f.write("The test crashed.")
         total_failed.value += 1
         print "%-10s %-20s %-50s  \033[01;31mfailed\033[00m" % \
               (suite, name, "("+funn+",  "+preb+",  "+dpor_output+")")

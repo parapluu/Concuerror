@@ -1,0 +1,33 @@
+#!/usr/bin/env escript
+%% -*- erlang-indent-level: 2 -*-
+%%! +S1 +Bi -nostick -noshell -pa ebin
+
+main(Args) ->
+  {module, concuerror_inspect} = code:load_file(concuerror_inspect),
+  true = code:add_pathz(code:root_dir()++"/erts/preloaded/ebin"),
+  case concuerror_options:parse_cl(Args) of
+    {exit, Exit} -> cl_exit(Exit);
+    Options ->
+      Main =
+        spawn_link(fun() ->
+                       {exit, Exit} = concuerror_scheduler:run(Options),
+                       cl_exit(Exit)
+                   end),
+      loop(Main)
+  end.
+
+loop(Main) ->
+  case io:get_line("") of
+    [$q|_] ->
+      Main ! cl_exit;
+    eof ->
+      Main ! cl_exit;
+    _ ->
+      ok
+  end,
+  loop(Main).
+
+cl_exit(ok) ->
+  erlang:halt(0);
+cl_exit(_) ->
+  erlang:halt(1).
