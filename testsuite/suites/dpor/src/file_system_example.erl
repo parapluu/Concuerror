@@ -1,6 +1,7 @@
 -module(file_system_example).
 
 -export([file_system_example/0]).
+-export([main/1]).
 -export([test14/0, test16/0, test18/0, test24/0]).
 -export([scenarios/0]).
 

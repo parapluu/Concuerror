@@ -1,6 +1,7 @@
 -module(indexer_example).
 
 -export([indexer_example/0]).
+-export([main/1]).
 -export([indexer12/0, indexer15/0]).
 -export([scenarios/0]).
 

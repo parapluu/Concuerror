@@ -189,12 +189,14 @@ dependent({_Lid1, { ets, _Details1}, _Msgs1},
 
 %%==============================================================================
 
-%% Heirs exit should also be monitored.
-%% XXX: Maybe should be removed
-dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _N1, _L1, _M1}}}, _Msgs1},
-          {Lid2, {exit, {normal, {{Heirs2, _Tbls2}, _N2, _L2, _M2}}}, _Msgs2},
+%% Exits with heirs, links, monitors induce messages that create dependencies
+%% XXX: Should be removed when tracking reversals accurately.
+dependent({Lid1, {exit, {normal, {{Heirs1, _Tbls1}, _N1, L1, M1}}}, _Msgs1},
+          {Lid2, {exit, {normal, {{Heirs2, _Tbls2}, _N2, L2, M2}}}, _Msgs2},
           _CheckMsg, ?SYMMETRIC) ->
-    lists:member(Lid1, Heirs2) orelse lists:member(Lid2, Heirs1);
+    lists:member(Lid1, Heirs2) orelse lists:member(Lid2, Heirs1) orelse
+        lists:member(Lid1, L2) orelse lists:member(Lid2, L1) orelse
+        lists:member(Lid1, M2) orelse lists:member(Lid2, M1);
 
 %%==============================================================================
 
@@ -413,6 +415,8 @@ independent({_Lid1, {Op1, _}, _Msgs1}, {_Lid2, {Op2, _}, _Msgs2}) ->
          {     whereis,   monitor},
          {     whereis, demonitor},
          {      unlink, demonitor},
+         {    register, demonitor},
+         {process_flag,  register},
          {     whereis, is_process_alive},
          {   demonitor, is_process_alive},
          {     monitor, is_process_alive},
@@ -460,6 +464,9 @@ add_missing_messages(Lid, Instr, PreMsgs, ProcEvidence) ->
                         Acc2
                 end,
             lists:foldl(Fold, Msgs, ProcEvidence);
+        {exit_2, {To, Msg}} ->
+            %% XXX: Too strong.
+            add_missing_message(To, Msg, Msgs);        
         _ -> Msgs
     end.
 
