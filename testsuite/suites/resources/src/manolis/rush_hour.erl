@@ -4,6 +4,7 @@
 	 test_2workers/0, test_2workers_small/0, test_3workers/0, test/2]).
 -export([next_entries/2, winning/2, reverse_step/2,
 	 compress/2, get_decomp_key/2, decompress/3]).
+-export([test_2workers_benchmark/0]).
 
 %% TODO: validate input? (in intermediate form?)
 %% TODO: visible hash?
@@ -303,6 +304,20 @@ test_2workers_small() ->
              , {4, {{2, 2}, y, 1}}
             ],
     Options = [],
+    solve(Target, State, Options).
+
+-spec test_2workers_benchmark() -> answer() | answer_S().
+test_2workers_benachmark() ->
+    Target = {3, 3, {1, 2}},
+    State = [{0, {{1, 0}, x, 1}}
+             , {1, {{0, 1}, y, 1}}
+             , {2, {{2, 1}, y, 1}}
+             , {3, {{1, 2}, y, 1}}
+             , {4, {{2, 2}, y, 1}}
+             , {5, {{0, 0}, x, 1}}
+             , {6, {{0, 2}, x, 1}}
+            ],
+    Options = [{workers, 4}],
     solve(Target, State, Options).
 
 -spec test_3workers() -> answer() | answer_S().
