@@ -453,6 +453,7 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                                                                  Backtrack)),
                                     case
                                         Flavor =:= ?FULL orelse
+                                        Flavor =:= ?CLASSIC orelse
                                         Flavor =:= none
                                     of
                                         true -> NB;
@@ -742,18 +743,8 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                         {Predecessor, _Initial} =
                             find_preds_and_initials(Lid, ProcSI, Candidates,
                                                     I, ClockVector, Acc),
-                        case
-                            decide_classic(Predecessor, Backtrack, Candidates,
-                                           PreSI)
-                        of
-                            {done, _} = DoneResult -> DoneResult;
-                            continue ->
-                                NewClockVector =
-                                    lookup_clock(ProcSI, ClockMap),
-                                MaxClockVector =
-                                    max_cv(NewClockVector, ClockVector),
-                                {continue_source, ProcSI, MaxClockVector}
-                        end
+                        decide_classic(Predecessor, Backtrack, Candidates,
+                                       PreSI)
                 end
         end,
     case Action of
@@ -908,13 +899,18 @@ decide_classic(Predecessor, Backtrack, Candidates, PreSI) ->
             ?debug("One pred already in backtrack.\n"),
             {done, PreSI};
         false ->
-            case ordsets:intersection(Predecessor, Candidates) of
-                [OneP|_] ->
-                    ?debug(" Add as 'choose-one': ~p\n", [OneP]),
-                    Add = [{OneP, dummy, []}],
-                    {done, PreSI#trace_state{backtrack = Backtrack ++ Add}};
-                [] -> continue
-            end
+            Added =
+                case Predecessor of
+                    [OneP] ->
+                        ?debug(" Add as 'choose-one': ~p\n", [OneP]),
+                        [{OneP, dummy, []}];
+                    [] ->
+                        ?debug(" Add as 'choose every': ~p\n", [Candidates]),
+                        New = ordsets:subtract(Candidates, BacktrackSet),
+                        [{P, dummy, []} || P <- New]
+                end,
+            ?debug("    Added: ~p\n",[Added]),
+            {done, PreSI#trace_state{backtrack = Backtrack ++ Added}}
     end.
 
 %% --------------------------------------
