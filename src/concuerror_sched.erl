@@ -135,42 +135,34 @@ analyze({Mod,Fun,Args}=Target, Files, Options) ->
                 ?debug("Done in ~wm~.2fs\n", [Mins, Secs]),
                 %% Print analysis summary
                 {Tickets, RunCount, SBlocked, Trans, STrans} = Result,
-                %% StrB =
-                %%     case SBlocked of
-                %%         0 -> " ";
-                %%         _ -> io_lib:format(
-                %%                 " (encountered ~w sleep-set blocked traces (~w transitions)) ",
-                %%                 [SBlocked, STrans])
-                Time =
-                    case Mins =:= 0 of
-                        true -> io_lib:format("~.2fs",[Secs]);
-                        false -> io_lib:format("~wm~.2fs",[Mins, Secs])
+                StrB =
+                    case SBlocked of
+                        0 -> " ";
+                        _ -> io_lib:format(
+                                " (encountered ~w sleep-set blocked traces (~w transitions)) ",
+                                [SBlocked, STrans])
                     end,
                 MemoryStr =
                     try erlang:memory(maximum) of
                         N ->
                             MB = N / (1024*1024),
-                            %% io_lib:format(" (using ~.2fMB)",[MB])
-                            io_lib:format(" ~.2fMB",[MB])
+                            io_lib:format(" (using ~.2fMB)",[MB])
                     catch
                         _:_ ->
                             ""
                     end,
-                %% concuerror_log:log(0, "\n\nAnalysis complete. Checked "
-                %%     "~w interleaving(s) (~w transitions)~sin ~s~s:\n",
-                %%     [RunCount, Trans, StrB, Time, MemoryStr]),
-                concuerror_log:log(0, "OUT ~w & ~w & ~w & ~w & ~s & ~s \\\\",
-                                   [RunCount, Trans, SBlocked, STrans, Time, MemoryStr]),
-                
+                concuerror_log:log(0, "\n\nAnalysis complete. Checked "
+                    "~w interleaving(s) (~w transitions)~sin ~wm~.2fs~s:\n",
+                    [RunCount, Trans, StrB, Mins, Secs, MemoryStr]),
                 case Tickets =:= [] of
                     true ->
-                        %% concuerror_log:log(0, "No errors found.~n"),
+                        concuerror_log:log(0, "No errors found.~n"),
                         {ok, {Target, RunCount, SBlocked}};
                     false ->
-                        %% TicketCount = length(Tickets),
-                        %% concuerror_log:log(0,
-                        %%         "Found ~p erroneous interleaving(s).~n",
-                        %%         [TicketCount]),
+                        TicketCount = length(Tickets),
+                        concuerror_log:log(0,
+                                "Found ~p erroneous interleaving(s).~n",
+                                [TicketCount]),
                         {error, analysis, {Target, RunCount, SBlocked}, Tickets}
                 end;
             error -> {error, instr, {Target, 0, 0}}
