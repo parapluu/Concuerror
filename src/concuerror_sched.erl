@@ -434,7 +434,7 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                                   QQ -> orddict:store(Lid, QQ, CCC)
                               end
                           end)]),
-                {NewSleepSet, NewAwaked} =
+                {NewSleepSet, _NewAwaked} =
                     case Flavor =:= 'none' of
                         true -> {[], []};
                         false ->
@@ -448,18 +448,8 @@ update_trace({Lid, _, _} = Selected, Next, [PrevTraceTop|_] = Trace,
                                 {{_, {error, _}, _}, _} ->
                                     new_backtrack([{Lid, Next}]);
                                 _ ->
-                                    NB =
-                                        element(3, lists:keyfind(Lid, 1,
-                                                                 Backtrack)),
-                                    case
-                                        Flavor =:= ?FULL orelse
-                                        Flavor =:= ?CLASSIC orelse
-                                        Flavor =:= none
-                                    of
-                                        true -> NB;
-                                        false ->
-                                            prioritize_awaked(NB, NewAwaked)
-                                    end
+                                    element(3, lists:keyfind(Lid, 1,
+                                                             Backtrack))
                             end;
                         false -> TempBacktrack
                     end,
@@ -586,10 +576,6 @@ filter_awaked(SleepSet, Nexts, Selected) ->
     {A, NA} = lists:partition(Filter, SleepSet),
     {ordsets:from_list(A), ordsets:from_list(NA)}.
 
-prioritize_awaked(Backtrack, Awaked) ->
-    Fold = fun(P, Acc) -> [{P, dummy, Acc}] end,
-    lists:foldl(Fold, Backtrack, Awaked).
-
 rewrite_while_awaked(Transition, Original, Trace) ->
     rewrite_while_awaked(Transition, Original, Trace, []).
 
@@ -675,8 +661,7 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                              Trace, [StateI|Acc], Rest);
 add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                          [StateI,PreSI|Rest], Acc, AccRest) ->
-    #trace_state{i = I, last = {ProcSI, _, _} = SI,
-                 clock_map = ClockMap} = StateI,
+    #trace_state{i = I, last = {ProcSI, _, _} = SI} = StateI,
     Clock = lookup_clock_value(ProcSI, ClockVector),
     Action =
         case I > Clock andalso concuerror_deps:dependent(Transition, SI) of
@@ -708,6 +693,7 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                                  NewClockVector}
                         end;
                     ?SOURCE ->
+                        NewClockVector = orddict:store(ProcSI, I, ClockVector),
                         Candidates = ordsets:subtract(Enabled, Sleepers),
                         {Predecessor, Initial} =
                             find_preds_and_initials(Lid, ProcSI, Candidates,
@@ -717,11 +703,7 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                         case Predecessor of
                             [] ->
                                 ?debug("    All sleeping...\n"),
-                                NewClockVector =
-                                    lookup_clock(ProcSI, ClockMap),
-                                MaxClockVector =
-                                    max_cv(NewClockVector, ClockVector),
-                                {continue_source, ProcSI, MaxClockVector};
+                                {continue_source, ProcSI, NewClockVector};
                             [P] ->
                                 Intersection =
                                     ordsets:intersection(BacktrackSet, Initial),
@@ -735,8 +717,9 @@ add_all_backtracks_trace(Transition, Lid, ClockVector, PreBound, Flavor,
                                             Backtrack ++ [{P, dummy, []}]
                                     end,
                                 ?debug("    NewBacktrack: ~p\n",[NewBacktrack]),
-                                {done,
-                                 PreSI#trace_state{backtrack = NewBacktrack}}
+                                {continue,
+                                 PreSI#trace_state{backtrack = NewBacktrack},
+                                 NewClockVector}
                         end;
                     ?CLASSIC ->
                         Candidates = ordsets:subtract(Enabled, Sleepers),
