@@ -15,8 +15,8 @@
 
 -spec dependent(event_info(), event_info()) -> boolean().
 
-dependent(#builtin_event{mfa = MFA1}, #builtin_event{mfa = MFA2}) ->
-  dependent_built_in(MFA1, MFA2);
+dependent(#builtin_event{} = BI1, #builtin_event{} = BI2) ->
+  dependent_built_in(BI1, BI2);
 
 dependent(#builtin_event{mfa = MFA}, #exit_event{} = Exit) ->
   dependent_exit(Exit, MFA);
@@ -110,43 +110,55 @@ dependent_exit(_Exit, _MFA) ->
 
 %%------------------------------------------------------------------------------
 
-dependent_built_in({erlang,'!',_}, {erlang,'!',_}) ->
+dependent_built_in(#builtin_event{mfa = {erlang,'!',_}},
+                   #builtin_event{mfa = {erlang,'!',_}}) ->
   false;
 
-dependent_built_in({erlang,'!',_}, {erlang,process_flag,_}) ->
+dependent_built_in(#builtin_event{mfa = {erlang,'!',_}},
+                   #builtin_event{mfa = {erlang,process_flag,_}}) ->
   false;
-dependent_built_in({erlang,process_flag,_} = PFlag, {erlang,'!',_} = Send) ->
+dependent_built_in(#builtin_event{mfa = {erlang,process_flag,_}} = PFlag,
+                   #builtin_event{mfa = {erlang,'!',_}} = Send) ->
   dependent_built_in(Send, PFlag);
 
-dependent_built_in({erlang,link,_}, {erlang,process_flag,_}) ->
+dependent_built_in(#builtin_event{mfa = {erlang,link,_}},
+                   #builtin_event{mfa = {erlang,process_flag,_}}) ->
   false;
-dependent_built_in({erlang,process_flag,_} = PFlag, {erlang,link,_} = Link) ->
+dependent_built_in(#builtin_event{mfa = {erlang,process_flag,_}} = PFlag,
+                   #builtin_event{mfa = {erlang,link,_}} = Link) ->
   dependent_built_in(Link, PFlag);
 
-dependent_built_in({erlang,'!',_}, {erlang,spawn,_}) ->
+dependent_built_in(#builtin_event{mfa = {erlang,'!',_}},
+                   #builtin_event{mfa = {erlang,spawn,_}}) ->
   false;
-dependent_built_in({erlang,spawn,_} = Spawn, {erlang,'!',_} = Send) ->
+dependent_built_in(#builtin_event{mfa = {erlang,spawn,_}} = Spawn,
+                   #builtin_event{mfa = {erlang,'!',_}} = Send) ->
   dependent_built_in(Send, Spawn);
 
-dependent_built_in({ets,lookup,_}, {ets,lookup,_}) ->
+dependent_built_in(#builtin_event{mfa = {ets,lookup,_}},
+                   #builtin_event{mfa = {ets,lookup,_}}) ->
   false;
 
-dependent_built_in({ets,insert,[TableName,_Insert]},
-                   {ets,lookup,[TableName,_Lookup]}) ->
+dependent_built_in(#builtin_event{mfa = {ets,insert,[TableName,_Insert]}},
+                   #builtin_event{mfa = {ets,lookup,[TableName,_Lookup]}}) ->
   ?debug("INCOMPLETELY SPECIFIED ETS DEPENDENCY!\n", []),
   true;
-dependent_built_in({ets,insert,_}, {ets,lookup,_}) ->
+dependent_built_in(#builtin_event{mfa = {ets,insert,_}},
+                   #builtin_event{mfa = {ets,lookup,_}}) ->
   false;
-dependent_built_in({ets,lookup,_} = EtsLookup,
-                   {ets,insert,_} = EtsInsert) ->
+dependent_built_in(#builtin_event{mfa = {ets,lookup,_}} = EtsLookup,
+                   #builtin_event{mfa = {ets,insert,_}} = EtsInsert) ->
   dependent_built_in(EtsInsert, EtsLookup);
 
-dependent_built_in({erlang,_,_}, {ets,_,_}) ->
+dependent_built_in(#builtin_event{mfa = {erlang,_,_}},
+                   #builtin_event{mfa = {ets,_,_}}) ->
   false;
-dependent_built_in({ets,_,_} = Ets, {erlang,_,_} = Erlang) ->
+dependent_built_in(#builtin_event{mfa = {ets,_,_}} = Ets,
+                   #builtin_event{mfa = {erlang,_,_}} = Erlang) ->
   dependent_built_in(Erlang, Ets);
 
-dependent_built_in({M1,_,_} = _MFA1, {M2,_,_} = _MFA2) ->
+dependent_built_in(#builtin_event{mfa = {M1,_,_}} = _MFA1,
+                   #builtin_event{mfa = {M2,_,_}} = _MFA2) ->
   ?debug("UNSPECIFIED DEPENDENCY!\n~p\n~p\n", [_MFA1, _MFA2]),
   M1 =:= M2.
 
