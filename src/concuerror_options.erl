@@ -60,7 +60,7 @@ getopt_spec() ->
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered, unless no other process can progress."},
    {bound, $b, "bound", {integer, 2}, "Preemption bound (-1 for infinite)."},
-   {distributed, $d, "distributed", {boolean, false},
+   {distributed, $d, "distributed", {boolean, true},
     "Use distributed Erlang semantics: messages are not delivered immediately"
     " after being sent."},
    {file, $f, "file", string,
