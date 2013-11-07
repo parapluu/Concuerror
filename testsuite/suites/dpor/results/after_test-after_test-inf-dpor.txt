@@ -1,878 +1,1476 @@
-Checked 36 interleaving(s). 36 errors found.
-
-1
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-2
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-3
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-4
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-5
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-6
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-7
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-8
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-9
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-10
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-11
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-12
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-13
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-14
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-15
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-16
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-17
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-18
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-19
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-20
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-21
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-22
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-23
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-24
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-25
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-26
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-27
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-28
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-29
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-30
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-31
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-32
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-33
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-34
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-35
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1 receives no matching messages
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
-36
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok1` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok1` from process P1.1
-  Process P1 receives no matching messages
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1.3 sends message `ok2` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok2` from process P1.3
-  Process P1.2 sends message `ok2` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok2` from process P1.2
-  Process P1 receives no matching messages
-  Process P1 blocks
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{after_test,after_test,[]}},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,false},
+   {'light-dpor',false},
+   {timeout,20000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 12: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 13: <0.46.0>: exits normally
+ 14: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 15: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 16: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 17: <0.47.0>: exits normally
+ 18: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 19: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 20: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 21: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 22: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 12: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 13: <0.46.0>: exits normally
+ 14: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 15: <0.47.0>: exits normally
+ 16: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 17: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 18: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 20: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 21: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 22: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 12: <0.46.0>: exits normally
+ 13: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 14: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 15: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 16: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 17: <0.47.0>: exits normally
+ 18: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 19: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 20: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 21: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 22: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 12: <0.46.0>: exits normally
+ 13: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 14: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 15: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 16: <0.47.0>: exits normally
+ 17: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 18: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 12: <0.46.0>: exits normally
+ 13: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 14: <0.47.0>: exits normally
+ 15: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 16: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 17: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 12: <0.46.0>: exits normally
+ 13: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 14: <0.47.0>: exits normally
+ 15: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 16: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 18: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 19: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 20: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 21: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 22: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 7:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.46.0>: exits normally
+ 12: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 14: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 15: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 16: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 17: <0.47.0>: exits normally
+ 18: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 19: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 20: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 21: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 22: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 8:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.46.0>: exits normally
+ 12: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 14: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 15: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 16: <0.47.0>: exits normally
+ 17: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 18: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 9:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.46.0>: exits normally
+ 12: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 14: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 15: <0.47.0>: exits normally
+ 16: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 17: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 10:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.46.0>: exits normally
+ 12: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: <0.47.0>: exits normally
+ 14: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 15: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 16: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 11:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.46.0>: exits normally
+ 12: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: <0.47.0>: exits normally
+ 14: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 15: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 16: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 17: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 18: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 12:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  5: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  6: Message (ok1) from <0.46.0> reaches <0.43.0>
+  7: <0.43.0>: receives message (ok1)
+    in after_test.erl line 22
+  8: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  9: <0.43.0>: <0.47.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: <0.48.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 11: <0.46.0>: exits normally
+ 12: <0.47.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: <0.47.0>: exits normally
+ 14: <0.48.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 15: Message (ok2) from <0.48.0> reaches <0.43.0>
+ 16: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 17: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 18: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 19: Message (ok2) from <0.47.0> reaches <0.43.0>
+ 20: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 21: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 22: <0.48.0>: exits normally
+################################################################################
+Erroneous interleaving 13:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 11: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 12: <0.46.0>: exits normally
+ 13: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 14: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 15: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 16: <0.49.0>: exits normally
+ 17: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 18: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 14:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 11: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 12: <0.46.0>: exits normally
+ 13: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 14: <0.49.0>: exits normally
+ 15: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 16: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 17: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 15:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 11: <0.46.0>: exits normally
+ 12: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 14: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 15: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 16: <0.49.0>: exits normally
+ 17: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 18: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 16:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 11: <0.46.0>: exits normally
+ 12: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 14: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 15: <0.49.0>: exits normally
+ 16: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 17: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 17:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 11: <0.46.0>: exits normally
+ 12: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: <0.49.0>: exits normally
+ 14: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 15: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 16: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 18:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 11: <0.46.0>: exits normally
+ 12: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: <0.49.0>: exits normally
+ 14: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 15: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 16: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 17: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 18: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 19:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.46.0>: exits normally
+ 11: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 13: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 14: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 15: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 16: <0.49.0>: exits normally
+ 17: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 18: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 20:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.46.0>: exits normally
+ 11: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 13: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 14: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 15: <0.49.0>: exits normally
+ 16: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 17: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 21:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.46.0>: exits normally
+ 11: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 13: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 14: <0.49.0>: exits normally
+ 15: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 16: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 18: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 19: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 22:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.46.0>: exits normally
+ 11: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: <0.49.0>: exits normally
+ 13: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 14: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 15: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 16: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 18: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 19: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 23:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.46.0>: exits normally
+ 11: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: <0.49.0>: exits normally
+ 13: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 14: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 15: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 16: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 17: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 24:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+  4: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  5: Message (ok1) from <0.46.0> reaches <0.43.0>
+  6: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  7: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  8: <0.43.0>: <0.49.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: <0.50.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+ 10: <0.46.0>: exits normally
+ 11: <0.49.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: <0.49.0>: exits normally
+ 13: <0.50.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 14: Message (ok2) from <0.50.0> reaches <0.43.0>
+ 15: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 16: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 17: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 18: Message (ok2) from <0.49.0> reaches <0.43.0>
+ 19: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 20: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 21: <0.50.0>: exits normally
+################################################################################
+Erroneous interleaving 25:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 10: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 11: <0.46.0>: exits normally
+ 12: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 14: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 15: <0.51.0>: exits normally
+ 16: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 17: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 26:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 10: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 11: <0.46.0>: exits normally
+ 12: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 13: <0.51.0>: exits normally
+ 14: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 15: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 16: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 27:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 10: <0.46.0>: exits normally
+ 11: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 13: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 14: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 15: <0.51.0>: exits normally
+ 16: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 17: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 28:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 10: <0.46.0>: exits normally
+ 11: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 13: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 14: <0.51.0>: exits normally
+ 15: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 16: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 18: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 19: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 29:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 10: <0.46.0>: exits normally
+ 11: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: <0.51.0>: exits normally
+ 13: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 14: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 15: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 16: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 18: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 19: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 30:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 10: <0.46.0>: exits normally
+ 11: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 12: <0.51.0>: exits normally
+ 13: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 14: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 15: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 16: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 17: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 31:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.46.0>: exits normally
+ 10: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 11: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 12: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 13: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 14: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 15: <0.51.0>: exits normally
+ 16: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 17: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 32:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.46.0>: exits normally
+ 10: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 11: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 12: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 13: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 14: <0.51.0>: exits normally
+ 15: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 16: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 18: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 19: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 33:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.46.0>: exits normally
+ 10: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 11: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 12: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 13: <0.51.0>: exits normally
+ 14: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 15: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 16: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 17: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 18: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 34:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.46.0>: exits normally
+ 10: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 11: <0.51.0>: exits normally
+ 12: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 13: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 14: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 15: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 16: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 17: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 18: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 35:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.46.0>: exits normally
+ 10: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 11: <0.51.0>: exits normally
+ 12: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 13: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 14: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 15: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 16: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 17: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 18: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 19: <0.52.0>: exits normally
+################################################################################
+Erroneous interleaving 36:
+* Blocked at a 'receive' (when all other processes have exited):
+    <0.43.0> in after_test.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  2: <0.43.0>: <0.46.0> = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
+    in erlang.erl line 2188
+  3: <0.46.0>: ok1 = <0.43.0> ! ok1
+    in after_test.erl line 11
+  4: Message (ok1) from <0.46.0> reaches <0.43.0>
+  5: <0.43.0>: receives message (ok1)
+    in after_test.erl line 26
+  6: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+  7: <0.43.0>: <0.51.0> = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
+    in erlang.erl line 2188
+  8: <0.43.0>: <0.52.0> = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
+    in erlang.erl line 2188
+  9: <0.46.0>: exits normally
+ 10: <0.51.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 13
+ 11: <0.51.0>: exits normally
+ 12: <0.52.0>: ok2 = <0.43.0> ! ok2
+    in after_test.erl line 14
+ 13: Message (ok2) from <0.52.0> reaches <0.43.0>
+ 14: <0.43.0>: receives message (ok2)
+    in after_test.erl line 26
+ 15: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 16: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 26
+ 17: Message (ok2) from <0.51.0> reaches <0.43.0>
+ 18: <0.43.0>: receives message (ok2)
+    in after_test.erl line 22
+ 19: <0.43.0>: receive timeout expired after 0 ms
+    in after_test.erl line 33
+ 20: <0.52.0>: exits normally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 36 errors, 36/36 interleavings explored
