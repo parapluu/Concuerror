@@ -28,7 +28,11 @@ run(Options) ->
       {verbose, V} -> V
     end,
   Output = proplists:get_value(output, Options),
-  PrintableOptions = proplists:delete(output, Options),
+  SymbolicNames = proplists:get_value(symbolic, Options),
+  Processes = proplists:get_value(processes, Options),
+  ok = setup_symbolic_names(SymbolicNames, Processes),
+  PrintableOptions =
+    proplists:delete(processes, proplists:delete(output, Options)),
   separator(Output, $#),
   io:format(Output,
             "Concuerror started with options:~n"
@@ -230,3 +234,25 @@ separator(Output, Char) ->
 interleavings_message(Errors, TracesExplored, TracesTotal) ->
   io_lib:format("~p errors, ~p/~p interleavings explored~n",
                 [Errors, TracesExplored, TracesTotal]).
+
+%%------------------------------------------------------------------------------
+
+setup_symbolic_names(SymbolicNames, Processes) ->
+  case SymbolicNames of
+    false -> ok;
+    true ->
+      MyWrite = make_my_write(Processes),
+      meck:new(io_lib, [unstick, passthrough]),
+      meck:expect(io_lib, write, MyWrite),
+      meck:expect(io_lib, write, fun(A) -> MyWrite(A, -1) end),
+      ok
+  end.
+
+make_my_write(Processes) ->
+  Logger = self(),
+  fun(Term, Depth) ->
+      case self() =:= Logger andalso is_pid(Term) of
+        false -> meck:passthrough([Term, Depth]);
+        true -> ets:lookup_element(Processes, Term, ?process_symbolic)
+      end
+  end.

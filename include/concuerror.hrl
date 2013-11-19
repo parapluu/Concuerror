@@ -144,11 +144,11 @@
                       receive_event().
 
 -record(event, {
-          actor        :: pid() | {pid(), pid()}, %% Pair: message from/to
-          event_info   :: event_info(),
-          label        :: label(),
-          location     :: location(),
-          special = [] :: [term()] %% XXX: Specify
+          actor          :: pid() | {pid(), pid()}, %% Pair: message from/to
+          event_info     :: event_info(),
+          label          :: label(),
+          location       :: location(),
+          special = none :: term() %% XXX: Specify
          }).
 
 -type event() :: #event{}.
@@ -170,6 +170,16 @@
 -define(ets_owner, 2).
 -define(ets_protection, 3).
 -define(ets_heir, 4).
+-define(ets_owner_pattern(Owner), {'$1', Owner, '_', '$2'}).
+
+-type processes() :: ets:tid().
+-define(process_name_none, 0).
+-define(new_process(Pid, Symbolic), {Pid, running, ?process_name_none, Symbolic, 0}).
+-define(process_pat(Pid), {Pid, _, _, _, _}).
+-define(process_status, 2).
+-define(process_name, 3).
+-define(process_symbolic, 4).
+-define(process_children, 5).
 
 %%------------------------------------------------------------------------------
 

@@ -73,6 +73,8 @@ getopt_spec() ->
    {path, $p, "path", string, "Add directory to the code path."},
    {quiet, $q, "quiet", undefined,
     "Do not write anything to standard output. Equivalent to --verbose 0."},
+   {symbolic, $s, "symbolic", {boolean, false},
+    "Use symbolic names for process identifiers. Requires 'meck'"},
    {timeout, $t, "timeout", {integer, 20000},
     "How many ms to wait before assuming a process to be stuck in an infinite"
     " loop between two operations with side-effects. Setting it to -1 makes"
@@ -95,6 +97,7 @@ filter_options(Mode, {Key, _}) ->
       logger          -> [scheduler];
       output          -> [logger];
       quiet           -> [helper];
+      symbolic        -> [logger];
       target          -> [logger, scheduler];
       timeout         -> [logger, scheduler];
       verbose         -> [logger]
@@ -173,6 +176,21 @@ finalize([{Key, Value}|Rest], Acc) ->
             _Else ->
               opt_error("--timeout value must be -1 (infinite) or > "
                        ++ integer_to_list(?MINIMUM_TIMEOUT))
+          end;
+        symbolic ->
+          case Value of
+            false -> finalize(Rest, [{symbolic, false}|Acc]);
+            true ->
+              HaveMeck =
+                try meck:module_info() of
+                    _ -> true
+                catch
+                  _:_ -> false
+                end,
+              case HaveMeck of
+                true -> finalize(Rest, [{symbolic, true}|Acc]);
+                false -> opt_error("to use symbolic PIDs you need to have meck")
+              end
           end;
         _ ->
           finalize(Rest, [{Key, Value}|Acc])

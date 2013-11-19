@@ -1,57 +1,157 @@
-Checked 3 interleaving(s). 3 errors found.
-
-1
-Error type        : Exception
-Details           : {{nocatch,{c,a}},
-                     [{after_test_3,'-after_test_3/0-fun-3-',0,
-                                    [{file,"after_test_3.erl"},{line,16}]}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 receives no matching messages
-  Process P1 sends message `c` to process P1.1
-  Process P1 exits (normal)
-  Process P1.1 receives message `c` from process P1
-  Process P1.1 blocks
-  Process P1.2 sends message `a` to process P1.1
-  Process P1.2 sends message `f` to process P1 (dead)
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `a` from process P1.2
-  Process P1.1 exits ("Exception")
-
-
-2
-Error type        : Exception
-Details           : {{nocatch,{a,c}},
-                     [{after_test_3,'-after_test_3/0-fun-3-',0,
-                                    [{file,"after_test_3.erl"},{line,16}]}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 receives no matching messages
-  Process P1.2 sends message `a` to process P1.1
-  Process P1.2 sends message `f` to process P1
-  Process P1.2 exits (normal)
-  Process P1 sends message `c` to process P1.1
-  Process P1 exits (normal)
-  Process P1.1 receives message `a` from process P1.2
-  Process P1.1 receives message `c` from process P1
-  Process P1.1 exits ("Exception")
-
-
-3
-Error type        : Exception
-Details           : {{nocatch,{a,b}},
-                     [{after_test_3,'-after_test_3/0-fun-3-',0,
-                                    [{file,"after_test_3.erl"},{line,16}]}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1.2 sends message `a` to process P1.1
-  Process P1.2 sends message `f` to process P1
-  Process P1.1 receives message `a` from process P1.2
-  Process P1.1 blocks
-  Process P1 receives message `f` from process P1.2
-  Process P1 sends message `b` to process P1.1
-  Process P1 exits (normal)
-  Process P1.1 receives message `b` from process P1
-  Process P1.1 exits ("Exception")
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{after_test_3,after_test_3,[]}},
+   {symbolic,true},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{nocatch,{c,a}},
+       [{after_test_3,'-after_test_3/0-fun-0-',0,
+                      [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                       {line,16}]}]}
+    Stacktrace:
+      [{after_test_3,'-after_test_3/0-fun-0-',0,
+                     [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                      {line,16}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.104885959>,[]])
+    in erlang.erl line 2188
+  2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.104885959>,[]])
+    in erlang.erl line 2188
+  3: P: receive timeout expired after 0 ms
+    in after_test_3.erl line 25
+  4: P: c = P.1 ! c
+    in after_test_3.erl line 30
+  5: Message (c) from P reaches P.1
+  6: P: exits normally
+  7: P.1: receives message (c)
+    in after_test_3.erl line 12
+  8: P.2: a = P.1 ! a
+    in after_test_3.erl line 21
+  9: Message (a) from P.2 reaches P.1
+ 10: P.1: receives message (a)
+    in after_test_3.erl line 14
+ 11: P.1: exits abnormally
+ 12: P.2: f = P ! f
+    in after_test_3.erl line 22
+ 13: Message (f) from P.2 reaches P
+ 14: P.2: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{nocatch,{a,c}},
+       [{after_test_3,'-after_test_3/0-fun-0-',0,
+                      [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                       {line,16}]}]}
+    Stacktrace:
+      [{after_test_3,'-after_test_3/0-fun-0-',0,
+                     [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                      {line,16}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.104885959>,[]])
+    in erlang.erl line 2188
+  2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.104885959>,[]])
+    in erlang.erl line 2188
+  3: P: receive timeout expired after 0 ms
+    in after_test_3.erl line 25
+  4: P: c = P.1 ! c
+    in after_test_3.erl line 30
+  5: P: exits normally
+  6: P.2: a = P.1 ! a
+    in after_test_3.erl line 21
+  7: Message (a) from P.2 reaches P.1
+  8: Message (c) from P reaches P.1
+  9: P.1: receives message (a)
+    in after_test_3.erl line 12
+ 10: P.1: receives message (c)
+    in after_test_3.erl line 14
+ 11: P.1: exits abnormally
+ 12: P.2: f = P ! f
+    in after_test_3.erl line 22
+ 13: Message (f) from P.2 reaches P
+ 14: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* At step 13 process P.1 exited abnormally
+    Reason:
+      {{nocatch,{a,b}},
+       [{after_test_3,'-after_test_3/0-fun-0-',0,
+                      [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                       {line,16}]}]}
+    Stacktrace:
+      [{after_test_3,'-after_test_3/0-fun-0-',0,
+                     [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                      {line,16}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.104885959>,[]])
+    in erlang.erl line 2188
+  2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.104885959>,[]])
+    in erlang.erl line 2188
+  3: P.2: a = P.1 ! a
+    in after_test_3.erl line 21
+  4: Message (a) from P.2 reaches P.1
+  5: P.2: f = P ! f
+    in after_test_3.erl line 22
+  6: Message (f) from P.2 reaches P
+  7: P: receives message (f)
+    in after_test_3.erl line 25
+  8: P: b = P.1 ! b
+    in after_test_3.erl line 30
+  9: Message (b) from P reaches P.1
+ 10: P: exits normally
+ 11: P.1: receives message (a)
+    in after_test_3.erl line 12
+ 12: P.1: receives message (b)
+    in after_test_3.erl line 14
+ 13: P.1: exits abnormally
+ 14: P.2: exits normally
+################################################################################
+Erroneous interleaving 4:
+* At step 13 process P.1 exited abnormally
+    Reason:
+      {{nocatch,{b,a}},
+       [{after_test_3,'-after_test_3/0-fun-0-',0,
+                      [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                       {line,16}]}]}
+    Stacktrace:
+      [{after_test_3,'-after_test_3/0-fun-0-',0,
+                     [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                      {line,16}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.104885959>,[]])
+    in erlang.erl line 2188
+  2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.104885959>,[]])
+    in erlang.erl line 2188
+  3: P.2: a = P.1 ! a
+    in after_test_3.erl line 21
+  4: P.2: f = P ! f
+    in after_test_3.erl line 22
+  5: Message (f) from P.2 reaches P
+  6: P: receives message (f)
+    in after_test_3.erl line 25
+  7: P: b = P.1 ! b
+    in after_test_3.erl line 30
+  8: Message (b) from P reaches P.1
+  9: Message (a) from P.2 reaches P.1
+ 10: P: exits normally
+ 11: P.1: receives message (b)
+    in after_test_3.erl line 12
+ 12: P.1: receives message (a)
+    in after_test_3.erl line 14
+ 13: P.1: exits abnormally
+ 14: P.2: exits normally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 4 errors, 4/4 interleavings explored

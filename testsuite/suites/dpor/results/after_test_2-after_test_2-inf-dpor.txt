@@ -1,24 +1,45 @@
-Checked 2 interleaving(s). 2 errors found.
-
-1
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 receives no matching messages
-  Process P1 blocks
-  Process P1.1 sends message `one` to process P1
-  Process P1.1 exits (normal)
-
-
-2
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1.1 sends message `one` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `one` from process P1.1
-  Process P1 blocks
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{after_test_2,after_test_2,[]}},
+   {symbolic,true},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_2.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in after_test_2.erl line 21
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.88245162>,[]])
+    in erlang.erl line 2188
+  2: P: receive timeout expired after 0 ms
+    in after_test_2.erl line 11
+  3: P: receive timeout expired after 0 ms
+    in after_test_2.erl line 16
+  4: P.1: one = P ! one
+    in after_test_2.erl line 10
+  5: Message (one) from P.1 reaches P
+  6: P.1: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in after_test_2.erl line 21
+--------------------------------------------------------------------------------
+Interleaving info:
+  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.88245162>,[]])
+    in erlang.erl line 2188
+  2: P: receive timeout expired after 0 ms
+    in after_test_2.erl line 11
+  3: P.1: one = P ! one
+    in after_test_2.erl line 10
+  4: Message (one) from P.1 reaches P
+  5: P: receives message (one)
+    in after_test_2.erl line 16
+  6: P.1: exits normally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 2 errors, 2/2 interleavings explored

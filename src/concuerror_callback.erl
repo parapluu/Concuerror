@@ -27,13 +27,11 @@
 -define(spawn, ?flag(8)).
 -define(short_builtin, ?flag(9)).
 -define(wait, ?flag(10)).
--define(undelivered, ?flag(11)).
--define(send, ?flag(12)).
--define(exit, ?flag(13)).
--define(crash, ?flag(14)).
--define(trap, ?flag(15)).
+-define(send, ?flag(11)).
+-define(exit, ?flag(12)).
+-define(trap, ?flag(13)).
 
--define(ACTIVE_FLAGS, [?crash, ?undelivered]).
+-define(ACTIVE_FLAGS, [?exit]).
 
 %% -define(DEBUG, true).
 %% -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
@@ -50,14 +48,16 @@
 -spec spawn_first_process(options()) -> pid().
 
 spawn_first_process(Options) ->
+  {'after-timeout', AfterTimeout} = proplists:lookup('after-timeout', Options),
   {ets_tables, EtsTables} = proplists:lookup(ets_tables, Options),
   {logger, Logger} = proplists:lookup(logger, Options),
-  {'after-timeout', AfterTimeout} = proplists:lookup('after-timeout', Options),
+  {processes, Processes} = proplists:lookup(processes, Options),
   InitialInfo =
     #concuerror_info{
        'after-timeout' = AfterTimeout,
        ets_tables = EtsTables,
        logger = Logger,
+       processes = Processes,
        scheduler = self()
       },
   spawn_link(fun() -> process_top_loop(InitialInfo) end).
@@ -148,9 +148,29 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
   {{didit, Value}, NewInfo}.
 
 %% Special instruction running control (e.g. send to unknown -> wait for reply)
+run_built_in(erlang, exit, 2, [Pid, Reason],
+             #concuerror_info{
+                next_event = #event{event_info = EventInfo} = Event
+               } = Info) ->
+  case EventInfo of
+    %% Replaying...
+    #builtin_event{result = OldResult} -> {OldResult, Info};
+    %% New event...
+    undefined ->
+      Message =
+        #message{data = {'EXIT', self(), Reason}, message_id = make_ref()},
+      MessageEvent =
+        #message_event{
+           cause_label = Event#event.label,
+           message = Message,
+           recipient = Pid,
+           type = exit_signal},
+      NewEvent = Event#event{special = {message, MessageEvent}},
+      {true, Info#concuerror_info{next_event = NewEvent}}
+  end;
 run_built_in(erlang, link, 1, [Recipient], Info) ->
-  #concuerror_info{links = Old, scheduler = Scheduler} = Info,
-  case concuerror_scheduler:known_process(Scheduler, Recipient) of
+  #concuerror_info{links = Old, processes = Processes} = Info,
+  case ets:lookup(Processes, Recipient) =/= [] of
     false -> throw({error, external_process});
     true ->
       Recipient ! {link, self(), confirm},
@@ -184,7 +204,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}],
             true -> {P, make_ref()};
             false -> P
           end,
-        NewEvent = Event#event{special = [{new, P}]},
+        NewEvent = Event#event{special = {new, P, self()}},
         {NewResult, Info#concuerror_info{next_event = NewEvent}}
     end,
   case lists:member(monitor, SpawnOpts) of
@@ -231,7 +251,7 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
                cause_label = Event#event.label,
                message = #message{data = Message, message_id = make_ref()},
                recipient = Pid},
-          NewEvent = Event#event{special = [{messages, [MessageEvent]}]},
+          NewEvent = Event#event{special = {message, MessageEvent}},
           ?debug_flag(?send, {send, successful}),
           {Message, Info#concuerror_info{next_event = NewEvent}};
         false -> error(non_local_process)
@@ -290,7 +310,7 @@ run_built_in(ets, lookup, 2, [Tid, _] = Args, Info) ->
     true -> ok;
     false -> throw({error, badarg})
   end,
-  {erlang:apply(ets, insert, Args), Info};
+  {erlang:apply(ets, lookup, Args), Info};
 run_built_in(ets, delete, 1, [Tid], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
   Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
@@ -340,8 +360,8 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
       {Special, CreateMessage} =
         case MessageOrAfter of
           #message{data = Data, message_id = Id} ->
-            {[{message_received, Id, PatternFun}], {ok, Data}};
-          'after' -> {[], false}
+            {{message_received, Id, PatternFun}, {ok, Data}};
+          'after' -> {none, false}
         end,
       Notification =
         NextEvent#event{event_info = ReceiveEvent, special = Special},
@@ -434,7 +454,7 @@ process_top_loop(Info) ->
             false -> put(concuerror_info, Escaped)
           end,
           Stacktrace = lists:keydelete(?MODULE, 1, erlang:get_stacktrace()),
-          ?debug_flag(?crash, {crash, Class, Reason, Stacktrace}),
+          ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
           NewReason =
             case Class of
               throw -> {{nocatch, Reason}, Stacktrace};
@@ -452,9 +472,10 @@ process_loop(Info) ->
   ?debug_flag(?wait, {waiting, self()}),
   receive
     #event{event_info = EventInfo} = Event ->
-      case Info#concuerror_info.status =:= dead of
+      Status = Info#concuerror_info.status,
+      case Status =:= dead of
         true ->
-          notify(unavailable, Info);
+          notify(exited, Info);
         false ->
           NewInfo = Info#concuerror_info{next_event = Event},
           case EventInfo of
@@ -582,20 +603,16 @@ process_loop(Info) ->
 %%------------------------------------------------------------------------------
 
 exiting(Reason, Stacktrace, Info) ->
-  %% XXX: The ordering of the following events has to be determined:
-  %% XXX:  - new messages are not delivered
+  %% XXX: The ordering of the following events has to be verified (e.g. R16B03):
+  %% XXX:  - process marked as exiting, new messages are not delivered
+  %% XXX:  - cancel timers
+  %% XXX:  - transfer ets ownership and send message or delete table
+  %% XXX:  - unregister name
   %% XXX:  - send link signals
   %% XXX:  - send monitor messages
-  %% XXX:  - transfer ets ownership and send message
-  %% XXX:  - unregister name
-  ?debug_flag(?exit, {going_to_exit, Reason, Info#concuerror_info.next_event}),
-  case erlang:process_info(self(), registered_name) of
-    [] -> ok;
-    {registered_name, Name} -> unregister(Name)
-  end,
-  LocatedInfo = locate_next_event(exit, Info#concuerror_info{status = exiting}),
-  ExitInfo = #concuerror_info{next_event = Event} =
-    add_exiting_events(Reason, LocatedInfo),
+  ?debug_flag(?exit, {going_to_exit, Reason}),
+  LocatedInfo = #concuerror_info{next_event = Event} =
+    locate_next_event(exit, Info#concuerror_info{status = exiting}),
   Notification =
     Event#event{
       event_info =
@@ -604,82 +621,90 @@ exiting(Reason, Stacktrace, Info) ->
            stacktrace = Stacktrace
           }
      },
-  notify(Notification, ExitInfo),
-  ?debug_flag(?exit, complete_exit).
+  ExitInfo = locate_next_event(exit, notify(Notification, LocatedInfo)),
+  exiting_side_effects(ExitInfo#concuerror_info{exit_reason = Reason}).
 
-add_exiting_events(Reason,
-                   #concuerror_info{
-                      next_event = #event{event_info = EventInfo} = Event
-                     } = Info) ->
-  case EventInfo =/= undefined of
-    %% Replaying...
-    true -> Info;
-    false ->
-      MessagesInfo =
-        Info#concuerror_info{
-          next_event = Event#event{special = [{messages, []}]}
-         },
-      LinksInfo = add_links_events(Reason, MessagesInfo),
-      MonitorInfo =
-        #concuerror_info{
-           next_event = #event{special = InitSpecial}
-          } = add_monitor_events(Reason, LinksInfo),
-      FinalSpecial = [{exit, self()}|InitSpecial],
-      MonitorInfo#concuerror_info{
-        next_event = Event#event{special = FinalSpecial},
-        status = dead
-       }
+exiting_side_effects(Info) ->
+  FunFold = fun(Fun, Acc) -> Fun(Acc) end,
+  FunList =
+    [fun ets_ownership_exiting_events/1,
+     fun registration_exiting_events/1,
+     fun links_exiting_events/1,
+     fun monitors_exiting_events/1],
+  FinalInfo = #concuerror_info{next_event = Event} =
+    lists:foldl(FunFold, Info, FunList),
+  self() ! Event,
+  process_loop(FinalInfo#concuerror_info{status = dead}).
+
+ets_ownership_exiting_events(Info) ->
+  %% XXX:  - transfer ets ownership and send message or delete table
+  %% XXX: Mention that order of deallocation/transfer is not monitored.
+  #concuerror_info{ets_tables = EtsTables} = Info,
+  case ets:match(EtsTables, ?ets_owner_pattern(self())) of
+    [] -> Info;
+    Tables ->
+      #concuerror_info{processes = Processes} = Info,
+      Fold =
+        fun([Tid, Heir], InfoIn) ->
+            MFArgs =
+              case ets:lookup(Processes, element(2, Heir)) of
+                [{HeirPid, Status}]
+                  when Status =/= exiting;
+                       Status =/= dead ->
+                  [ets, give_away, [Tid, HeirPid, element(3, Heir)]];
+                _Other ->
+                  [ets, delete, [Tid]]
+              end,
+            {{didit, true}, NewInfo} =
+              instrumented(call, MFArgs, exit, InfoIn),
+            NewInfo
+        end,
+      lists:foldl(Fold, Info, Tables)
   end.
 
-add_links_events(Reason, #concuerror_info{links = Links} = Info) ->
+registration_exiting_events(Info) ->
+  #concuerror_info{processes = Processes} = Info,
+  Name = ets:lookup_element(Processes, self(), ?process_name),
+  case Name =:= ?process_name_none of
+    true -> Info;
+    false ->
+      MFArgs = [erlang, unregister, [Name]],
+      {{didit, true}, NewInfo} =
+        instrumented(call, MFArgs, exit, Info),
+      NewInfo
+  end.
+
+links_exiting_events(Info) ->
+  #concuerror_info{links = Links} = Info,
   case Links =:= [] of
     true -> Info;
     false ->
-      #concuerror_info{next_event = #event{label = Label, actor = Pid}} = Info,
-      Message = #message{data = {'EXIT', Pid, Reason}, message_id = make_ref()},
-      Signal =
-        #message_event{
-           cause_label = Label,
-           message = Message,
-           type = exit_signal},
+      #concuerror_info{exit_reason = Reason} = Info,
       Fold =
-        fun(P, Acc) ->
-            ?debug_flag(?exit, {link_event, P}),
-            add_message(Signal#message_event{recipient = P}, Acc)
+        fun(Link, InfoIn) ->
+            MFArgs = [erlang, exit, [Link, Reason]],
+            {{didit, true}, NewInfo} =
+              instrumented(call, MFArgs, exit, InfoIn),
+            NewInfo
         end,
       lists:foldl(Fold, Info, Links)
   end.
 
-add_monitor_events(Reason, #concuerror_info{monitors = Monitors} = Info) ->
+monitors_exiting_events(Info) ->
+  #concuerror_info{monitors = Monitors} = Info,
   case Monitors =:= [] of
     true -> Info;
     false ->
-      #concuerror_info{next_event = #event{label = Label, actor = Pid}} = Info,
+      #concuerror_info{exit_reason = Reason} = Info,
       Fold =
-        fun({Ref, P}, Acc) ->
-            ?debug_flag(?exit, {monitor_event, Ref, P}),
-            Message =
-              #message{
-                 data = {'DOWN', Ref, process, Pid, Reason},
-                 message_id = make_ref()
-                },
-            MessageEvent =
-              #message_event{
-                 cause_label = Label,
-                 message = Message,
-                 recipient = P},
-            add_message(MessageEvent, Acc)
+        fun({Ref, P}, InfoIn) ->
+            MFArgs = [erlang, send, [P, {'DOWN', Ref, process, self(), Reason}]],
+            {{didit, true}, NewInfo} =
+              instrumented(call, MFArgs, exit, InfoIn),
+            NewInfo
         end,
       lists:foldl(Fold, Info, Monitors)
   end.
-
-add_message(Message, #concuerror_info{
-                      next_event =
-                          #event{special = [{messages, Messages}]} = Event
-                       } = Info) ->
-  Info#concuerror_info{
-    next_event = Event#event{special = [{messages, [Message|Messages]}]}
-   }.
 
 %%------------------------------------------------------------------------------
 
@@ -688,12 +713,14 @@ init_concuerror_info(Info) ->
      'after-timeout' = AfterTimeout,
      ets_tables = EtsTables,
      logger = Logger,
+     processes = Processes,
      scheduler = Scheduler
     } = Info,
   #concuerror_info{
      'after-timeout' = AfterTimeout,
      ets_tables = EtsTables,
      logger = Logger,
+     processes = Processes,
      scheduler = Scheduler
     }.
 

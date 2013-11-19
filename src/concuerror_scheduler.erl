@@ -6,7 +6,7 @@
 -export([run/1]).
 
 %% Process interface
--export([ets_new/3, known_process/2]).
+-export([ets_new/3]).
 
 %%------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@
           logger                       :: pid(),
           message_info                 :: message_info(),
           options = []                 :: proplists:proplist(),
-          processes = ordsets:new()    :: ordsets:ordset(pid()),
+          processes                    :: processes(),
           timeout                      :: non_neg_integer(),
           trace = []                   :: [trace_state()]
          }).
@@ -59,15 +59,23 @@
 %% =============================================================================
 
 run(Options) ->
-  LoggerPred = fun(O) -> concuerror_options:filter_options('logger', O) end,
-  {LoggerOptions, _} = lists:partition(LoggerPred, Options),
-  Logger = spawn_link(fun() -> concuerror_logger:run(LoggerOptions) end),
   EtsTables = ets:new(ets_tables, [public]),
-  ProcessPred = fun(O) -> concuerror_options:filter_options('process', O) end,
-  {ProcessOptions0, _} = lists:partition(ProcessPred, Options),
-  ProcessOptions = [{ets_tables, EtsTables}, {logger, Logger}|ProcessOptions0],
+  Processes = ets:new(processes, [public]),
+  LoggerOptions =
+    [{processes, Processes} |
+     [O || O <- Options, concuerror_options:filter_options('logger', O)]
+    ],
+  Logger = spawn_link(fun() -> concuerror_logger:run(LoggerOptions) end),
+  ProcessOptions0 =
+    [O || O <- Options, concuerror_options:filter_options('process', O)],
+  ProcessOptions =
+    [{ets_tables, EtsTables},
+     {logger, Logger},
+     {processes, Processes}|
+     ProcessOptions0],
   ?debug(Logger, "Starting first process...~n",[]),
   FirstProcess = concuerror_callback:spawn_first_process(ProcessOptions),
+  true = ets:insert(Processes, ?new_process(FirstProcess, "P")),
   {target, Target} = proplists:lookup(target, Options),
   {timeout, Timeout} = proplists:lookup(timeout, Options),
   InitialTrace = #trace_state{active_processes = [FirstProcess]},
@@ -78,7 +86,7 @@ run(Options) ->
        logger = Logger,
        message_info = ets:new(message_info, [private]),
        options = Options,
-       processes = [FirstProcess],
+       processes = Processes,
        timeout = Timeout,
        trace = [InitialTrace]},
   %%meck:new(file, [unstick, passthrough]),
@@ -183,7 +191,7 @@ get_next_event(Event, [{Pair, Queue}|_], _ActiveProcesses, State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
   %% XXX: Sending to an uninstrumented process should be caught here
-  Special = [{message_delivered, MessageEvent}],
+  Special = {message_delivered, MessageEvent},
   UpdatedEvent =
     Event#event{
       actor = Pair,
@@ -194,6 +202,13 @@ get_next_event(Event, [{Pair, Queue}|_], _ActiveProcesses, State) ->
 get_next_event(Event, [], [P|ActiveProcesses], State) ->
   Result = get_next_event_backend(Event#event{actor = P}, State),
   case Result of
+    exited ->
+      #scheduler_state{trace = [Top|Rest]} = State,
+      #trace_state{active_processes = Active} = Top,
+      NewActive = ordsets:del_element(P, Active),
+      NewTop = Top#trace_state{active_processes = NewActive},
+      NewState = State#scheduler_state{trace = [NewTop|Rest]},
+      get_next_event(Event, [], ActiveProcesses, NewState);
     retry -> get_next_event(Event, [], ActiveProcesses, State);
     {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
   end;
@@ -201,6 +216,7 @@ get_next_event(_Event, [], [], State) ->
   %% Nothing to do, trace is completely explored
   #scheduler_state{
      current_warnings = Warnings,
+     logger = Logger,
      trace = [Last|Prev]
     } = State,
   #trace_state{
@@ -209,10 +225,13 @@ get_next_event(_Event, [], [], State) ->
     } = Last,
   NewWarnings =
     case Sleeping =/= [] of
-      true -> [{sleep_set_block, Sleeping}|Warnings];
+      true ->
+        ?debug(Logger, "Sleep set block:~n ~p~n", [Sleeping]),
+        [{sleep_set_block, Sleeping}|Warnings];
       false ->
         case ActiveProcesses =/= [] of
           true ->
+            ?debug(Logger, "Deadlock:~n ~p~n", [ActiveProcesses]),
             [{deadlock, collect_deadlock_info(ActiveProcesses)}|Warnings];
           false -> Warnings
         end
@@ -225,7 +244,7 @@ reset_event(#event{actor = Actor} = Event) ->
       {_, _} ->
         #event{event_info = EventInfo, special = Special} = Event,
         {EventInfo#message_event{patterns = none}, Special};
-      _ -> {undefined, []}
+      _ -> {undefined, none}
     end,
   #event{
      actor = Actor,
@@ -296,69 +315,52 @@ update_sleeping(#event{event_info = NewInfo}, Sleeping, State) ->
 update_preemptions(_Pid, _ActiveProcesses, _Prev, Preemptions) ->
   Preemptions.
 
-update_special([], State) ->
+update_special(none, State) ->
   State;
-update_special([Special|Rest],
-               #scheduler_state{
-                  message_info = MessageInfo,
-                  processes = Processes,
-                  trace = [Next|Trace]
-                 } = State) ->
-  NewState =
-    case Special of
-      {messages, Messages} ->
-        #trace_state{pending_messages = PendingMessages} = Next,
-        NewPendingMessages =
-          process_messages(Messages, PendingMessages, MessageInfo),
-        NewNext = Next#trace_state{pending_messages = NewPendingMessages},
-        State#scheduler_state{trace = [NewNext|Trace]};
-      {message_delivered, MessageEvent} ->
-        #trace_state{pending_messages = PendingMessages} = Next,
-        NewPendingMessages =
-          remove_pending_message(MessageEvent, PendingMessages),
-        NewNext = Next#trace_state{pending_messages = NewPendingMessages},
-        State#scheduler_state{trace = [NewNext|Trace]};
-      {message_received, Message, PatternFun} ->
-        Update = {?message_pattern, PatternFun},
-        true = ets:update_element(MessageInfo, Message, Update),
-        State;
-      {new, SpawnedPid} ->
-        #trace_state{active_processes = ActiveProcesses} = Next,
-        NewNext =
-          Next#trace_state{
-            active_processes = ordsets:add_element(SpawnedPid, ActiveProcesses)
-           },
-        State#scheduler_state{
-          processes = ordsets:add_element(SpawnedPid, Processes),
-          trace = [NewNext|Trace]
-         };
-      {exit, ExitedPid} ->
-        #trace_state{active_processes = ActiveProcesses} = Next,
-        NewNext =
-          Next#trace_state{
-            active_processes = ordsets:del_element(ExitedPid, ActiveProcesses)
-           },
-        State#scheduler_state{
-          trace = [NewNext|Trace]
-         }
-    end,
-  update_special(Rest, NewState).
+update_special(Special, State) ->
+  #scheduler_state{message_info = MessageInfo, trace = [Next|Trace]} = State,
+  case Special of
+    {message, Message} ->
+      #trace_state{pending_messages = PendingMessages} = Next,
+      NewPendingMessages =
+        process_message(Message, PendingMessages, MessageInfo),
+      NewNext = Next#trace_state{pending_messages = NewPendingMessages},
+      State#scheduler_state{trace = [NewNext|Trace]};
+    {message_delivered, MessageEvent} ->
+      #trace_state{pending_messages = PendingMessages} = Next,
+      NewPendingMessages =
+        remove_pending_message(MessageEvent, PendingMessages),
+      NewNext = Next#trace_state{pending_messages = NewPendingMessages},
+      State#scheduler_state{trace = [NewNext|Trace]};
+    {message_received, Message, PatternFun} ->
+      Update = {?message_pattern, PatternFun},
+      true = ets:update_element(MessageInfo, Message, Update),
+      State;
+    {new, SpawnedPid, Parent} ->
+      #scheduler_state{processes = Processes} = State,
+      ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
+      Child = ets:update_counter(Processes, Parent, {?process_children, 1}),
+      ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, Child]),
+      true = ets:insert(Processes, ?new_process(SpawnedPid, ChildSymbol)),
+      #trace_state{active_processes = ActiveProcesses} = Next,
+      NewNext =
+        Next#trace_state{
+          active_processes = ordsets:add_element(SpawnedPid, ActiveProcesses)
+         },
+      State#scheduler_state{trace = [NewNext|Trace]}
+  end.
 
-process_messages(Messages, PendingMessages, MessageInfo) ->
-  Fold =
-    fun(#message_event{
-           message = #message{message_id = Id},
-           recipient = Recipient,
-           sender = Sender
-          } = MessageEvent,
-        PendingAcc) ->
-        Key = {Sender, Recipient},
-        Update = fun(Queue) -> queue:in(MessageEvent, Queue) end,
-        Initial = queue:from_list([MessageEvent]),
-        ets:insert(MessageInfo, ?new_message_info(Id)),
-        orddict:update(Key, Update, Initial, PendingAcc)
-    end,
-  lists:foldl(Fold, PendingMessages, Messages).
+process_message(MessageEvent, PendingMessages, MessageInfo) ->
+  #message_event{
+     message = #message{message_id = Id},
+     recipient = Recipient,
+     sender = Sender
+    } = MessageEvent,
+  Key = {Sender, Recipient},
+  Update = fun(Queue) -> queue:in(MessageEvent, Queue) end,
+  Initial = queue:from_list([MessageEvent]),
+  ets:insert(MessageInfo, ?new_message_info(Id)),
+  orddict:update(Key, Update, Initial, PendingMessages).
 
 remove_pending_message(#message_event{recipient = Recipient, sender = Sender},
                        PendingMessages) ->
@@ -436,7 +438,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, ClockMap, State) ->
   BaseNewClockMap = dict:store(Actor, NewClock, ClockMap),
   NewClockMap =
     case Special of
-      [{new, SpawnedPid}] -> dict:store(SpawnedPid, NewClock, BaseNewClockMap);
+      {new, SpawnedPid, _} -> dict:store(SpawnedPid, NewClock, BaseNewClockMap);
       _ -> BaseNewClockMap
     end,
   case Actor of
@@ -444,7 +446,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, ClockMap, State) ->
       #message_event{message = #message{message_id = IdB}} = EventInfo,
       ets:update_element(MessageInfo, IdB, {?message_delivered, NewClock});
     _ ->
-      maybe_mark_sent_messages(Special, NewClock, MessageInfo)
+      maybe_mark_sent_message(Special, NewClock, MessageInfo)
   end,
   NewTraceState = BaseTraceState#trace_state{clock_map = NewClockMap},
   NewOldTrace = [NewTraceState|BaseNewOldTrace],
@@ -485,14 +487,15 @@ more_interleavings_for_event([TraceState|Rest], Trace, Event, Clock, State) ->
             %% XXX: Why is this line needed?
             NC = orddict:store(EarlyActor, EarlyIndex, Clock),
             AllSleeping = extract_actors(Sleeping, Done),
-            NotDep = not_dep(Trace, EarlyActor, EarlyIndex, AllSleeping),
-            case NotDep =:= skip of
-              true ->
-                {update_clock, NC};
+            {NotDep, WInitials} =
+              not_dep(Trace, EarlyActor, EarlyIndex, Logger),
+            case ordsets:intersection(AllSleeping, WInitials) =/= [] of
+              true -> {update_clock, NC};
               false ->
                 #trace_state{wakeup_tree = WakeupTree} = TraceState,
                 case insert_wakeup(WakeupTree, NotDep) of
                   skip ->
+                    ?trace_nl(Logger, "      Wakeup skip~n", []),
                     {update_clock, NC};
                   NewWakeupTree ->
                     concuerror_logger:plan(Logger),
@@ -519,16 +522,10 @@ more_interleavings_for_event([TraceState|Rest], Trace, Event, Clock, State) ->
     end,
   more_interleavings_for_event(Rest, NewTrace, Event, NewClock, State).
 
-maybe_mark_sent_messages([], _Clock, _MessageI) -> true;
-maybe_mark_sent_messages([{messages, Messages}|Rest], Clock, MessageInfo) ->
-  Foreach =
-    fun(#message_event{message = #message{message_id = Id}}) ->
-        ets:update_element(MessageInfo, Id, {?message_sent, Clock})
-    end,
-  lists:foreach(Foreach, Messages),
-  maybe_mark_sent_messages(Rest, Clock, MessageInfo);
-maybe_mark_sent_messages([_|Rest], Clock, MessageInfo) ->
-  maybe_mark_sent_messages(Rest, Clock, MessageInfo).
+maybe_mark_sent_message({message, Message}, Clock, MessageInfo) ->
+  #message_event{message = #message{message_id = Id}} = Message,
+  ets:update_element(MessageInfo, Id, {?message_sent, Clock});
+maybe_mark_sent_message(_, _Clock, _MessageI) -> true.
 
 extract_actors(EventsA, EventsB) ->
   extract_actors(EventsA, EventsB, ordsets:new()).
@@ -539,12 +536,12 @@ extract_actors([], [#event{actor = Actor}|Rest], Acc) ->
 extract_actors([#event{actor = Actor}|Rest], Events, Acc) ->
   extract_actors(Rest, Events, ordsets:add_element(Actor, Acc)).
 
-not_dep(Trace, Actor, Index, Sleeping) ->
-  not_dep(Trace, Actor, Index, Sleeping, orddict:new(), []).
+not_dep(Trace, Actor, Index, Logger) ->
+  not_dep(Trace, Actor, Index, Logger, orddict:new(), [], []).
 
-not_dep([], _Actor, _Index, _Sleeping, _WIClock, NotDep) ->
-  lists:reverse(NotDep);
-not_dep([TraceState|Rest], Actor, Index, Sleeping, WIClock, NotDep) ->
+not_dep([], _Actor, _Index, _Logger, _WIClock, NotDep, WInitials) ->
+  {lists:reverse(NotDep), WInitials};
+not_dep([TraceState|Rest], Actor, Index, Logger, WIClock, NotDep, WInitials) ->
   #trace_state{
      clock_map = ClockMap,
      done = [#event{actor = LaterActor} = Event|_],
@@ -552,10 +549,11 @@ not_dep([TraceState|Rest], Actor, Index, Sleeping, WIClock, NotDep) ->
     } = TraceState,
   LaterClock = lookup_clock(LaterActor, ClockMap),
   ActorLaterClock = lookup_clock_value(Actor, LaterClock),
-  Result =
+  {NewWIClock, NewNotDep, NewWInitials} =
     case Index > ActorLaterClock of
-      false -> {WIClock, NotDep};
+      false -> {WIClock, NotDep, WInitials};
       true ->
+        ?trace_nl(Logger, "      not_dep: ~p:~p ~n", [LaterIndex, LaterActor]),
         ND =
           case Rest =/= [] of
             true -> [Event|NotDep];
@@ -564,20 +562,14 @@ not_dep([TraceState|Rest], Actor, Index, Sleeping, WIClock, NotDep) ->
               [Event#event{label = undefined}|NotDep]
           end,
         case is_weak_initial(WIClock, LaterClock) of
-          false -> {WIClock, ND};
+          false -> {WIClock, ND, WInitials};
           true ->
-            case ordsets:is_element(LaterActor, Sleeping) of
-              true -> skip;
-              false ->
-                {orddict:store(LaterActor, LaterIndex, WIClock), ND}
-            end
+            {orddict:store(LaterActor, LaterIndex, WIClock),
+             ND,
+             ordsets:add_element(LaterActor, WInitials)}
         end
     end,
-  case Result of
-    skip -> skip;
-    {NewWIClock, NewNotDep} ->
-      not_dep(Rest, Actor, Index, Sleeping, NewWIClock, NewNotDep)
-  end.
+  not_dep(Rest, Actor, Index, Logger, NewWIClock, NewNotDep, NewWInitials).
 
 is_weak_initial(WIClock, Clock) ->
   Fold =
@@ -668,8 +660,8 @@ replay_prefix(Trace, State) ->
      first_process = {FirstProcess, Target},
      processes = Processes
     } = State,
-  Foreach = fun(P) -> P ! reset end,
-  lists:foreach(Foreach, Processes),
+  Fold = fun(?process_pat(P), _) -> P ! reset, ok end,
+  ok = ets:foldl(Fold, ok, Processes),
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
   ok = replay_prefix_aux(lists:reverse(Trace), State).
 
@@ -697,8 +689,8 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
 %% XXX: Stub
 cleanup(#scheduler_state{logger = Logger, processes = Processes} = State) ->
   %% Kill still running processes, deallocate tables, etc...
-  Foreach = fun(P) -> P ! reset, P ! stop end,
-  lists:foreach(Foreach, Processes),
+  Fold = fun(?process_pat(P), ok) -> P ! reset, P ! stop, ok end,
+  ok = ets:foldl(Fold, ok, Processes),
   ?trace(Logger, "Reached the end!~n",[]),
   State.
 
@@ -711,7 +703,7 @@ cleanup(#scheduler_state{logger = Logger, processes = Processes} = State) ->
 
 get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
   #scheduler_state{processes = Processes, timeout = _Timeout} = State,
-  case ordsets:is_element(Recipient, Processes) of
+  case ets:lookup(Processes, Recipient) =/= [] of
     true ->
       #event{event_info = EventInfo} = Event,
       #message_event{message = Message, type = Type} = EventInfo,
@@ -735,12 +727,13 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
   end;
 get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
   Pid ! Event,
-  get_next_event_backend_loop(State).
+  get_next_event_backend_loop(Event, State).
 
-get_next_event_backend_loop(#scheduler_state{timeout = Timeout} = State) ->
+get_next_event_backend_loop(Trigger, State) ->
+  #scheduler_state{timeout = Timeout} = State,
   receive
+    exited -> exited;
     {blocked, _} -> retry;
-    unavailable -> error(process_has_exited);
     #event{} = Event -> {ok, Event};
     {ets_new, Pid, Name, Options} ->
       #scheduler_state{ets_tables = EtsTables} = State,
@@ -767,25 +760,15 @@ get_next_event_backend_loop(#scheduler_state{timeout = Timeout} = State) ->
             {error, Reason}
         end,
       Pid ! {ets_new, Reply},
-      get_next_event_backend_loop(State);
-    {known_process, Pid, Query} ->
-      #scheduler_state{processes = Procs} = State,
-      Pid ! {known_process, ordsets:is_element(Query, Procs)},
-      get_next_event_backend_loop(State)
+      get_next_event_backend_loop(Trigger, State)
   after
-    Timeout -> error(timeout)
+    Timeout -> error({timeout, Trigger})
   end.
 
 ets_new(Scheduler, Name, Options) ->
   Scheduler ! {ets_new, self(), Name, Options},
   receive
     {ets_new, Reply} -> Reply
-  end.
-
-known_process(Scheduler, Pid) ->
-  Scheduler ! {known_process, self(), Pid},
-  receive
-    {known_process, Reply} -> Reply
   end.
 
 collect_deadlock_info(ActiveProcesses) ->

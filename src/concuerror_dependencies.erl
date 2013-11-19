@@ -29,7 +29,6 @@ dependent(#builtin_event{mfa = {erlang,process_flag,[trap_exit,New]}} = Builtin,
   R = New =/= Old andalso
     Type =:= exit_signal andalso
     Actor =:= Recipient,
-  ?debug("Testing: ~p~n",[R]),
   R;
 dependent(#message_event{} = Message,
           #builtin_event{mfa = {erlang,process_flag,[trap_exit,_]}} = PFlag) ->
@@ -98,11 +97,17 @@ dependent(_EventA, _EventB) ->
 
 %%------------------------------------------------------------------------------
 
-dependent_exit(_Exit, {erlang, '!', [R,_]}) ->
-  is_atom(R);
+dependent_exit(_Exit, {erlang, '!', _}) ->
+  false;
+dependent_exit(_Exit, {erlang, exit, _}) ->
+  false;
+dependent_exit(#exit_event{actor = Exiting}, {erlang, link, [Linked]}) ->
+  Exiting =:= Linked;
 dependent_exit(_Exit, {erlang, process_flag, _}) ->
   false;
 dependent_exit(_Exit, {erlang, spawn, _}) ->
+  false;
+dependent_exit(_Exit, {ets, _, _}) ->
   false;
 dependent_exit(_Exit, _MFA) ->
   ?debug("UNSPECIFIED EXIT DEPENDENCY!\n~p\n", [_MFA]),
@@ -121,6 +126,24 @@ dependent_built_in(#builtin_event{mfa = {erlang,process_flag,_}} = PFlag,
                    #builtin_event{mfa = {erlang,'!',_}} = Send) ->
   dependent_built_in(Send, PFlag);
 
+dependent_built_in(#builtin_event{mfa = {erlang,exit,_}},
+                   #builtin_event{mfa = {erlang,exit,_}}) ->
+  false;
+
+dependent_built_in(#builtin_event{mfa = {erlang,exit,_}},
+                   #builtin_event{mfa = {erlang,link,_}}) ->
+  false;
+dependent_built_in(#builtin_event{mfa = {erlang,link,_}} = Link,
+                   #builtin_event{mfa = {erlang,exit,_}} = Exit) ->
+  dependent_built_in(Exit, Link);
+
+dependent_built_in(#builtin_event{mfa = {erlang,exit,_}},
+                   #builtin_event{mfa = {erlang,process_flag,_}}) ->
+  false;
+dependent_built_in(#builtin_event{mfa = {erlang,process_flag,_}} = PFlag,
+                   #builtin_event{mfa = {erlang,exit,_}} = Exit) ->
+  dependent_built_in(Exit, PFlag);
+
 dependent_built_in(#builtin_event{mfa = {erlang,link,_}},
                    #builtin_event{mfa = {erlang,process_flag,_}}) ->
   false;
@@ -135,17 +158,33 @@ dependent_built_in(#builtin_event{mfa = {erlang,spawn,_}} = Spawn,
                    #builtin_event{mfa = {erlang,'!',_}} = Send) ->
   dependent_built_in(Send, Spawn);
 
+dependent_built_in(#builtin_event{mfa = {ets,insert,[Table1,Tuples1]}},
+                   #builtin_event{mfa = {ets,insert,[Table2,Tuples2]}}) ->
+  case Table1 =:= Table2 of
+    false -> false;
+    true ->
+      KeyPos = ets:info(Table1, keypos),
+      List1 = case is_list(Tuples1) of true -> Tuples1; false -> [Tuples1] end,
+      List2 = case is_list(Tuples2) of true -> Tuples2; false -> [Tuples2] end,
+      case length(List1) =< length(List2) of
+        true -> ets_insert_dep(KeyPos, List1, List2);
+        false -> ets_insert_dep(KeyPos, List2, List1)
+      end
+  end;
+
 dependent_built_in(#builtin_event{mfa = {ets,lookup,_}},
                    #builtin_event{mfa = {ets,lookup,_}}) ->
   false;
 
-dependent_built_in(#builtin_event{mfa = {ets,insert,[TableName,_Insert]}},
-                   #builtin_event{mfa = {ets,lookup,[TableName,_Lookup]}}) ->
-  ?debug("INCOMPLETELY SPECIFIED ETS DEPENDENCY!\n", []),
-  true;
-dependent_built_in(#builtin_event{mfa = {ets,insert,_}},
-                   #builtin_event{mfa = {ets,lookup,_}}) ->
-  false;
+dependent_built_in(#builtin_event{mfa = {ets,insert,[Table1,Tuples]}},
+                   #builtin_event{mfa = {ets,lookup,[Table2,Key]}}) ->
+  case Table1 =:= Table2 of
+    false -> false;
+    true ->
+      KeyPos = ets:info(Table1, keypos),
+      List = case is_list(Tuples) of true -> Tuples; false -> [Tuples] end,
+      lists:keyfind(Key, KeyPos, List) =/= false
+  end;
 dependent_built_in(#builtin_event{mfa = {ets,lookup,_}} = EtsLookup,
                    #builtin_event{mfa = {ets,insert,_}} = EtsInsert) ->
   dependent_built_in(EtsInsert, EtsLookup);
@@ -168,3 +207,21 @@ message_could_match(_Patterns, _Data, Trapping, Type) ->
   %% Patterns(Data)
   %%   andalso
   (Trapping orelse (Type =:= message)).
+
+ets_insert_dep(_KeyPos, [], _List) -> false;
+ets_insert_dep(KeyPos, [Tuple|Rest], List) ->
+  case try_one_tuple(Tuple, KeyPos, List) of
+    false -> ets_insert_dep(KeyPos, Rest, List);
+    true -> true
+  end.
+
+try_one_tuple(Tuple, KeyPos, List) ->
+  Key = element(KeyPos, Tuple),
+  case lists:keyfind(Key, KeyPos, List) of
+    false -> false;
+    Tuple2 ->
+      case Tuple =/= Tuple2 of
+        true -> true;
+        false -> try_one_tuple(Tuple, KeyPos, lists:delete(Tuple2, List))
+      end
+  end.

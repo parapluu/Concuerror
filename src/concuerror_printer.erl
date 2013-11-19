@@ -22,7 +22,9 @@ error_s({Type, Info}) ->
                          "      ~p~n", [Reason]),
       S3 = io_lib:format("    Stacktrace:~n"
                          "      ~p~n", [Stacktrace]),
-      [S1,S2,S3]
+      [S1,S2,S3];
+    sleep_set_block ->
+      io_lib:format("* Nobody woke-up: ~p~n", [Info])
   end.
 
 pretty(Output, I) ->
@@ -52,6 +54,11 @@ pretty_aux({I, #event{} = Event}, {F, Acc}) ->
   LocationString =
     case Location of
       [Line, {file, File}] -> io_lib:format("~n    ~s",[location(File, Line)]);
+      exit ->
+        case EventInfo of
+          #exit_event{} -> "";
+          _Other -> io_lib:format("~n    (while exiting)", [])
+        end;
       _ -> ""
     end,
   R = F("~s~s~s~s", [TraceString, ActorString, EventString, LocationString]),
