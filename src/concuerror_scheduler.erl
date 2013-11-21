@@ -384,7 +384,8 @@ plan_more_interleavings(State) ->
   ?trace(Logger, "Plan more interleavings:~n", []),
   {OldTrace, NewTrace} = split_trace(Trace),
   TimedNewTrace = assign_happens_before(NewTrace, OldTrace, State),
-  FinalTrace = plan_more_interleavings(TimedNewTrace, OldTrace, State),
+  FinalTrace =
+    plan_more_interleavings(lists:reverse(OldTrace, TimedNewTrace), [], State),
   State#scheduler_state{trace = FinalTrace}.
 
 split_trace(Trace) ->
@@ -439,7 +440,7 @@ assign_happens_before([TraceState|Rest], TimedNewTrace, OldTrace, State) ->
             ActorNewClock
         end
     end,
-  ?trace_nl(Logger, "~p: NewClock :~w~n", [Index, NewClock]),
+  ?trace_nl(Logger, "~p: ~w:~w~n", [Index, Actor, NewClock]),
   BaseNewClockMap = dict:store(Actor, NewClock, ClockMap),
   NewClockMap =
     case Special of
@@ -603,9 +604,7 @@ not_dep([TraceState|Rest], Actor, Index, Event, Logger, NotDep) ->
 insert_wakeup([Sleeping|Rest], Wakeup, NotDep) ->
   case check_initial(Sleeping, NotDep) =:= false of
     true  -> insert_wakeup(Rest, Wakeup, NotDep);
-    false ->
-      io:format("Still initial: ~p~n",[Sleeping#event.actor]),
-      skip
+    false -> skip
   end;
 insert_wakeup([], Wakeup, NotDep) ->
   insert_wakeup(Wakeup, NotDep).

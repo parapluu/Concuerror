@@ -51,15 +51,15 @@ Interleaving info:
   5: P.1: exits normally
   6: P.2: ok2 = P ! ok2
     in after_test_reduced.erl line 11
-  7: Message (ok2) from P.2 reaches P
-  8: Message (ok2) from P.1 reaches P
-  9: P: receives message (ok2)
-    in after_test_reduced.erl line 19
+  7: P.2: exits normally
+  8: Message (ok2) from P.2 reaches P
+  9: Message (ok2) from P.1 reaches P
  10: P: receives message (ok2)
     in after_test_reduced.erl line 19
- 11: P: receive timeout expired after 0 ms
+ 11: P: receives message (ok2)
+    in after_test_reduced.erl line 19
+ 12: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 30
- 12: P.2: exits normally
 ################################################################################
 Erroneous interleaving 3:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -72,20 +72,18 @@ Interleaving info:
     in erlang.erl line 2188
   3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
-  4: Message (ok2) from P.1 reaches P
-  5: P: receives message (ok2)
-    in after_test_reduced.erl line 23
-  6: P: receive timeout expired after 0 ms
-    in after_test_reduced.erl line 23
-  7: P.1: exits normally
-  8: P.2: ok2 = P ! ok2
+  4: P.1: exits normally
+  5: P.2: ok2 = P ! ok2
     in after_test_reduced.erl line 11
-  9: Message (ok2) from P.2 reaches P
+  6: P.2: exits normally
+  7: Message (ok2) from P.1 reaches P
+  8: Message (ok2) from P.2 reaches P
+  9: P: receives message (ok2)
+    in after_test_reduced.erl line 23
  10: P: receives message (ok2)
-    in after_test_reduced.erl line 19
+    in after_test_reduced.erl line 23
  11: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 30
- 12: P.2: exits normally
 ################################################################################
 Erroneous interleaving 4:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -98,18 +96,20 @@ Interleaving info:
     in erlang.erl line 2188
   3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
-  4: Message (ok2) from P.1 reaches P
-  5: P: receives message (ok2)
-    in after_test_reduced.erl line 23
-  6: P.1: exits normally
-  7: P.2: ok2 = P ! ok2
+  4: P.1: exits normally
+  5: P.2: ok2 = P ! ok2
     in after_test_reduced.erl line 11
-  8: Message (ok2) from P.2 reaches P
-  9: P: receives message (ok2)
+  6: P.2: exits normally
+  7: Message (ok2) from P.1 reaches P
+  8: P: receives message (ok2)
     in after_test_reduced.erl line 23
- 10: P: receive timeout expired after 0 ms
+  9: P: receive timeout expired after 0 ms
+    in after_test_reduced.erl line 23
+ 10: Message (ok2) from P.2 reaches P
+ 11: P: receives message (ok2)
+    in after_test_reduced.erl line 19
+ 12: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 30
- 11: P.2: exits normally
 ################################################################################
 Erroneous interleaving 5:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -125,15 +125,15 @@ Interleaving info:
   4: P.1: exits normally
   5: P.2: ok2 = P ! ok2
     in after_test_reduced.erl line 11
-  6: Message (ok2) from P.2 reaches P
-  7: Message (ok2) from P.1 reaches P
-  8: P: receives message (ok2)
-    in after_test_reduced.erl line 23
+  6: P.2: exits normally
+  7: Message (ok2) from P.2 reaches P
+  8: Message (ok2) from P.1 reaches P
   9: P: receives message (ok2)
     in after_test_reduced.erl line 23
- 10: P: receive timeout expired after 0 ms
+ 10: P: receives message (ok2)
+    in after_test_reduced.erl line 23
+ 11: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 30
- 11: P.2: exits normally
 ################################################################################
 Erroneous interleaving 6:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -149,17 +149,17 @@ Interleaving info:
   4: P.1: exits normally
   5: P.2: ok2 = P ! ok2
     in after_test_reduced.erl line 11
-  6: Message (ok2) from P.2 reaches P
-  7: P: receives message (ok2)
+  6: P.2: exits normally
+  7: Message (ok2) from P.2 reaches P
+  8: P: receives message (ok2)
     in after_test_reduced.erl line 23
-  8: P: receive timeout expired after 0 ms
+  9: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 23
-  9: Message (ok2) from P.1 reaches P
- 10: P: receives message (ok2)
+ 10: Message (ok2) from P.1 reaches P
+ 11: P: receives message (ok2)
     in after_test_reduced.erl line 19
- 11: P: receive timeout expired after 0 ms
+ 12: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 30
- 12: P.2: exits normally
 ################################################################################
 Done! (Exit status: ok)
   Summary: 6 errors, 6/6 interleavings explored

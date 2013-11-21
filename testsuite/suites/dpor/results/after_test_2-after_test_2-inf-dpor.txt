@@ -36,10 +36,10 @@ Interleaving info:
     in after_test_2.erl line 11
   3: P.1: one = P ! one
     in after_test_2.erl line 10
-  4: Message (one) from P.1 reaches P
-  5: P: receives message (one)
+  4: P.1: exits normally
+  5: Message (one) from P.1 reaches P
+  6: P: receives message (one)
     in after_test_2.erl line 16
-  6: P.1: exits normally
 ################################################################################
 Done! (Exit status: ok)
   Summary: 2 errors, 2/2 interleavings explored

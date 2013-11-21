@@ -158,17 +158,25 @@ dependent_built_in(#builtin_event{mfa = {erlang,spawn,_}} = Spawn,
                    #builtin_event{mfa = {erlang,'!',_}} = Send) ->
   dependent_built_in(Send, Spawn);
 
-dependent_built_in(#builtin_event{mfa = {ets,insert,[Table1,Tuples1]}},
-                   #builtin_event{mfa = {ets,insert,[Table2,Tuples2]}}) ->
-  case Table1 =:= Table2 of
+dependent_built_in(#builtin_event{mfa = {ets,Insert1,[Table1,Tuples1]},
+                                  result = Result1},
+                   #builtin_event{mfa = {ets,Insert2,[Table2,Tuples2]},
+                                  result = Result2})
+  when (Insert1 =:= insert orelse Insert1 =:= insert_new) andalso
+       (Insert2 =:= insert orelse Insert2 =:= insert_new)->
+  case Table1 =:= Table2 andalso (Result1 orelse Result2) of
     false -> false;
     true ->
       KeyPos = ets:info(Table1, keypos),
       List1 = case is_list(Tuples1) of true -> Tuples1; false -> [Tuples1] end,
       List2 = case is_list(Tuples2) of true -> Tuples2; false -> [Tuples2] end,
+      %% At least one has succeeded. If both succeeded, none is a dangerous
+      %% insert_new so ignore insertions of the same tuple. If one has failed it
+      %% is an insert_new, and if they insert the same tuple they are dependent.
+      OneFailed = Result1 andalso Result2,
       case length(List1) =< length(List2) of
-        true -> ets_insert_dep(KeyPos, List1, List2);
-        false -> ets_insert_dep(KeyPos, List2, List1)
+        true -> ets_insert_dep(OneFailed, KeyPos, List1, List2);
+        false -> ets_insert_dep(OneFailed, KeyPos, List2, List1)
       end
   end;
 
@@ -176,9 +184,11 @@ dependent_built_in(#builtin_event{mfa = {ets,lookup,_}},
                    #builtin_event{mfa = {ets,lookup,_}}) ->
   false;
 
-dependent_built_in(#builtin_event{mfa = {ets,insert,[Table1,Tuples]}},
-                   #builtin_event{mfa = {ets,lookup,[Table2,Key]}}) ->
-  case Table1 =:= Table2 of
+dependent_built_in(#builtin_event{mfa = {ets,Insert,[Table1,Tuples]},
+                                  result = Result},
+                   #builtin_event{mfa = {ets,lookup,[Table2,Key]}})
+  when Insert =:= insert; Insert =:= insert_new ->
+  case Table1 =:= Table2 andalso Result of
     false -> false;
     true ->
       KeyPos = ets:info(Table1, keypos),
@@ -186,7 +196,8 @@ dependent_built_in(#builtin_event{mfa = {ets,insert,[Table1,Tuples]}},
       lists:keyfind(Key, KeyPos, List) =/= false
   end;
 dependent_built_in(#builtin_event{mfa = {ets,lookup,_}} = EtsLookup,
-                   #builtin_event{mfa = {ets,insert,_}} = EtsInsert) ->
+                   #builtin_event{mfa = {ets,Insert,_}} = EtsInsert)
+  when Insert =:= insert; Insert =:= insert_new ->
   dependent_built_in(EtsInsert, EtsLookup);
 
 dependent_built_in(#builtin_event{mfa = {erlang,_,_}},
@@ -208,20 +219,27 @@ message_could_match(_Patterns, _Data, Trapping, Type) ->
   %%   andalso
   (Trapping orelse (Type =:= message)).
 
-ets_insert_dep(_KeyPos, [], _List) -> false;
-ets_insert_dep(KeyPos, [Tuple|Rest], List) ->
-  case try_one_tuple(Tuple, KeyPos, List) of
-    false -> ets_insert_dep(KeyPos, Rest, List);
+ets_insert_dep(_IgnoreSame, _KeyPos, [], _List) -> false;
+ets_insert_dep(IgnoreSame, KeyPos, [Tuple|Rest], List) ->
+  case try_one_tuple(IgnoreSame, Tuple, KeyPos, List) of
+    false -> ets_insert_dep(IgnoreSame, KeyPos, Rest, List);
     true -> true
   end.
 
-try_one_tuple(Tuple, KeyPos, List) ->
+try_one_tuple(IgnoreSame, Tuple, KeyPos, List) ->
   Key = element(KeyPos, Tuple),
   case lists:keyfind(Key, KeyPos, List) of
     false -> false;
     Tuple2 ->
       case Tuple =/= Tuple2 of
         true -> true;
-        false -> try_one_tuple(Tuple, KeyPos, lists:delete(Tuple2, List))
+        false ->
+          case IgnoreSame of
+            true ->
+              NewList = lists:delete(Tuple2, List),
+              try_one_tuple(IgnoreSame, Tuple, KeyPos, NewList);
+            false -> true
+          end
       end
   end.
+
