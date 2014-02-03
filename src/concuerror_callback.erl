@@ -30,11 +30,13 @@
 -define(send, ?flag(11)).
 -define(exit, ?flag(12)).
 -define(trap, ?flag(13)).
+-define(undefined, ?flag(14)).
 
--define(ACTIVE_FLAGS, [?exit]).
+
+-define(ACTIVE_FLAGS, [?undefined]).
 
 %% -define(DEBUG, true).
-%% -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
+-define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 
 %%------------------------------------------------------------------------------
 
@@ -168,6 +170,7 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       NewEvent = Event#event{special = {message, MessageEvent}},
       {true, Info#concuerror_info{next_event = NewEvent}}
   end;
+
 run_built_in(erlang, link, 1, [Recipient], Info) ->
   #concuerror_info{links = Old, processes = Processes} = Info,
   case ets:lookup(Processes, Recipient) =/= [] of
@@ -327,15 +330,12 @@ run_built_in(ets, delete, 1, [Tid], Info) ->
 run_built_in(Module, Name, Arity, Args, Info)
   when
     {Module, Name, Arity} =:= {erlang, exit, 1};
-    {Module, Name, Arity} =:= {erlang, register, 2};
     {Module, Name, Arity} =:= {erlang, throw, 1};
-    {Module, Name, Arity} =:= {erlang, unregister, 1};
     false
     ->
   {erlang:apply(Module, Name, Args), Info};
 run_built_in(Module, Name, _Arity, Args, Info) ->
-   #concuerror_info{logger = Logger} = Info,
-  ?debug(Logger, "default built-in: ~p:~p/~p~n", [Module, Name, _Arity]),
+  ?debug_flag(?undefined, {builtin, Module, Name, _Arity}),
   {erlang:apply(Module, Name, Args), Info}.
 
 %%------------------------------------------------------------------------------
@@ -344,6 +344,7 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   %% No distinction between replaying/new as we have to clear the message from
   %% the queue anyway...
   {Match, ReceiveInfo} = has_matching_or_after(PatternFun, Timeout, Info),
+  #concuerror_info{processes = Processes} = Info,
   case Match of
     {true, MessageOrAfter} ->
       #concuerror_info{
@@ -372,9 +373,12 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
           self() ! D;
         false -> ok
       end,
-      {doit, NewInfo};
+      true = ets:update_element(Processes, self(), {?process_status, running}),
+      {doit, NewInfo#concuerror_info{status = running}};
     false ->
-      NewInfo = notify({blocked, Location}, ReceiveInfo),
+      true = ets:update_element(Processes, self(), {?process_status, waiting}),
+      WaitingInfo = ReceiveInfo#concuerror_info{status = waiting},
+      NewInfo = notify({blocked, Location}, WaitingInfo),
       handle_receive(PatternFun, Timeout, Location, NewInfo)
   end.
 
@@ -431,11 +435,12 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
   Scheduler ! Notification,
   process_loop(Info).
 
-process_top_loop(Info) ->
+process_top_loop(#concuerror_info{processes = Processes} = Info) ->
   ?debug_flag(?wait, {top_waiting, self()}),
   receive
     {start, Module, Name, Args} ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
+      true = ets:update_element(Processes, self(), {?process_status, running}),
       Running = Info#concuerror_info{status = running},
       %% Wait for 1st event (= 'run') signal, accepting messages,
       %% links and monitors in the meantime.
@@ -473,7 +478,7 @@ process_loop(Info) ->
   receive
     #event{event_info = EventInfo} = Event ->
       Status = Info#concuerror_info.status,
-      case Status =:= dead of
+      case Status =:= exited of
         true ->
           notify(exited, Info);
         false ->
@@ -602,7 +607,7 @@ process_loop(Info) ->
 
 %%------------------------------------------------------------------------------
 
-exiting(Reason, Stacktrace, Info) ->
+exiting(Reason, Stacktrace, #concuerror_info{processes = Processes} = Info) ->
   %% XXX: The ordering of the following events has to be verified (e.g. R16B03):
   %% XXX:  - process marked as exiting, new messages are not delivered
   %% XXX:  - cancel timers
@@ -611,6 +616,7 @@ exiting(Reason, Stacktrace, Info) ->
   %% XXX:  - send link signals
   %% XXX:  - send monitor messages
   ?debug_flag(?exit, {going_to_exit, Reason}),
+  true = ets:update_element(Processes, self(), {?process_status, exiting}),
   LocatedInfo = #concuerror_info{next_event = Event} =
     locate_next_event(exit, Info#concuerror_info{status = exiting}),
   Notification =
@@ -631,10 +637,11 @@ exiting_side_effects(Info) ->
      fun registration_exiting_events/1,
      fun links_exiting_events/1,
      fun monitors_exiting_events/1],
-  FinalInfo = #concuerror_info{next_event = Event} =
+  FinalInfo = #concuerror_info{next_event = Event, processes = Processes} =
     lists:foldl(FunFold, Info, FunList),
   self() ! Event,
-  process_loop(FinalInfo#concuerror_info{status = dead}).
+  true = ets:update_element(Processes, self(), {?process_status, exited}),
+  process_loop(FinalInfo#concuerror_info{status = exited}).
 
 ets_ownership_exiting_events(Info) ->
   %% XXX:  - transfer ets ownership and send message or delete table
@@ -650,7 +657,7 @@ ets_ownership_exiting_events(Info) ->
               case ets:lookup(Processes, element(2, Heir)) of
                 [{HeirPid, Status}]
                   when Status =/= exiting;
-                       Status =/= dead ->
+                       Status =/= exited ->
                   [ets, give_away, [Tid, HeirPid, element(3, Heir)]];
                 _Other ->
                   [ets, delete, [Tid]]

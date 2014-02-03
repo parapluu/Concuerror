@@ -1,7 +1,19 @@
-Checked 1 interleaving(s). 1 errors found.
-
-1
-Error type        : Deadlock
-Blocked processes : P1
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{dead_receive,dead_receive,[]}},
+   {symbolic,true},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/dead_receive.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in dead_receive.erl line 10
+--------------------------------------------------------------------------------
+Interleaving info:
+################################################################################
+Done! (Exit status: ok)
+  Summary: 1 errors, 1/1 interleavings explored
