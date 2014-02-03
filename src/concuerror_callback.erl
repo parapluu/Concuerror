@@ -9,7 +9,7 @@
 -export([spawn_first_process/1, start_first_process/2, stop/1]).
 
 %% Interface for resetting:
--export([process_top_loop/1]).
+-export([process_top_loop/2]).
 
 %%------------------------------------------------------------------------------
 
@@ -62,7 +62,7 @@ spawn_first_process(Options) ->
        processes = Processes,
        scheduler = self()
       },
-  spawn_link(fun() -> process_top_loop(InitialInfo) end).
+  spawn_link(fun() -> process_top_loop(InitialInfo, "P") end).
 
 -spec start_first_process(pid(), {atom(), atom(), [term()]}) -> ok.
 
@@ -190,8 +190,8 @@ run_built_in(erlang, spawn, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, []}], Info);
 run_built_in(erlang, spawn_link, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, [link]}], Info);
-run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}],
-             #concuerror_info{next_event = Event} = Info) ->
+run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
+  #concuerror_info{next_event = Event, processes = Processes} = Info,
   #event{event_info = EventInfo} = Event,
   {Result, NewInfo} =
     case EventInfo of
@@ -200,14 +200,18 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}],
       %% New event...
       undefined ->
         PassedInfo = init_concuerror_info(Info),
-        ?debug_flag(?spawn, {self(), spawning_new, PassedInfo}),
-        P = spawn_link(fun() -> process_top_loop(PassedInfo) end),
+        Parent = self(),
+        ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
+        ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
+        Child = ets:update_counter(Processes, Parent, {?process_children, 1}),
+        ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, Child]),
+        P = spawn_link(fun() -> process_top_loop(PassedInfo, ChildSymbol) end),
         NewResult =
           case lists:member(monitor, SpawnOpts) of
             true -> {P, make_ref()};
             false -> P
           end,
-        NewEvent = Event#event{special = {new, P, self()}},
+        NewEvent = Event#event{special = {new, P}},
         {NewResult, Info#concuerror_info{next_event = NewEvent}}
     end,
   case lists:member(monitor, SpawnOpts) of
@@ -344,7 +348,6 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   %% No distinction between replaying/new as we have to clear the message from
   %% the queue anyway...
   {Match, ReceiveInfo} = has_matching_or_after(PatternFun, Timeout, Info),
-  #concuerror_info{processes = Processes} = Info,
   case Match of
     {true, MessageOrAfter} ->
       #concuerror_info{
@@ -373,11 +376,9 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
           self() ! D;
         false -> ok
       end,
-      true = ets:update_element(Processes, self(), {?process_status, running}),
-      {doit, NewInfo#concuerror_info{status = running}};
+      {doit, set_status(NewInfo, running)};
     false ->
-      true = ets:update_element(Processes, self(), {?process_status, waiting}),
-      WaitingInfo = ReceiveInfo#concuerror_info{status = waiting},
+      WaitingInfo = set_status(ReceiveInfo, waiting),
       NewInfo = notify({blocked, Location}, WaitingInfo),
       handle_receive(PatternFun, Timeout, Location, NewInfo)
   end.
@@ -435,13 +436,13 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
   Scheduler ! Notification,
   process_loop(Info).
 
-process_top_loop(#concuerror_info{processes = Processes} = Info) ->
+process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
+  true = ets:insert(Processes, ?new_process(self(), Symbolic)),
   ?debug_flag(?wait, {top_waiting, self()}),
   receive
     {start, Module, Name, Args} ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
-      true = ets:update_element(Processes, self(), {?process_status, running}),
-      Running = Info#concuerror_info{status = running},
+      Running = set_status(Info, running),
       %% Wait for 1st event (= 'run') signal, accepting messages,
       %% links and monitors in the meantime.
       StartInfo = process_loop(Running),
@@ -495,7 +496,7 @@ process_loop(Info) ->
     {exit_signal, #message{data = {'EXIT', _From, Reason}} = Message} ->
       Scheduler = Info#concuerror_info.scheduler,
       Trapping = Info#concuerror_info.trap_exit,
-      case Info#concuerror_info.status =:= running of
+      case is_active(Info) of
         true ->
           %% XXX: Verify that this is the correct behaviour
           %% NewInfo =
@@ -532,7 +533,7 @@ process_loop(Info) ->
     {link, Pid, Confirm} ->
       ?debug_flag(?wait, {waiting, got_link}),
       NewInfo =
-        case Info#concuerror_info.status =:= running of
+        case is_active(Info) of
           true ->
             case Confirm =:= confirm of
               true -> Pid ! success;
@@ -549,7 +550,8 @@ process_loop(Info) ->
       ?debug_flag(?wait, {waiting, got_message}),
       Scheduler = Info#concuerror_info.scheduler,
       Trapping = Info#concuerror_info.trap_exit,
-      case Info#concuerror_info.status =:= running of
+      Scheduler ! {trapping, Trapping},
+      case is_active(Info) of
         true ->
           ?debug_flag(?receive_, {message_enqueued, Message}),
           Old = Info#concuerror_info.messages_new,
@@ -557,16 +559,15 @@ process_loop(Info) ->
             Info#concuerror_info{
               messages_new = queue:in(Message, Old)
              },
-          Scheduler ! {trapping, Trapping},
           process_loop(NewInfo);
         false ->
-          Scheduler ! {trapping, Trapping},
+          ?debug_flag(?receive_, {message_ignored, Info#concuerror_info.status}),
           process_loop(Info)
       end;
     {monitor, {_Ref, Pid} = Monitor, Confirm} ->
       ?debug_flag(?wait, {waiting, got_monitor}),
       NewInfo =
-        case Info#concuerror_info.status =:= running of
+        case is_active(Info) of
           true ->
             case Confirm =:= confirm of
               true -> Pid ! success;
@@ -581,13 +582,15 @@ process_loop(Info) ->
       process_loop(NewInfo);
     reset ->
       ?debug_flag(?wait, {waiting, reset}),
-      NewInfo = init_concuerror_info(Info),
+      NewInfo = #concuerror_info{processes = Processes} =
+        init_concuerror_info(Info),
       case erlang:process_info(self(), registered_name) of
         [] -> ok;
         {registered_name, Name} -> unregister(Name)
       end,
       erase(),
-      erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo]);
+      Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
+      erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo, Symbol]);
     deadlock_poll ->
       Info
     %% {system, #event{actor = {_, Recipient}, event_info = EventInfo} = Event} ->
@@ -607,7 +610,7 @@ process_loop(Info) ->
 
 %%------------------------------------------------------------------------------
 
-exiting(Reason, Stacktrace, #concuerror_info{processes = Processes} = Info) ->
+exiting(Reason, Stacktrace, Info) ->
   %% XXX: The ordering of the following events has to be verified (e.g. R16B03):
   %% XXX:  - process marked as exiting, new messages are not delivered
   %% XXX:  - cancel timers
@@ -616,9 +619,8 @@ exiting(Reason, Stacktrace, #concuerror_info{processes = Processes} = Info) ->
   %% XXX:  - send link signals
   %% XXX:  - send monitor messages
   ?debug_flag(?exit, {going_to_exit, Reason}),
-  true = ets:update_element(Processes, self(), {?process_status, exiting}),
   LocatedInfo = #concuerror_info{next_event = Event} =
-    locate_next_event(exit, Info#concuerror_info{status = exiting}),
+    locate_next_event(exit, set_status(Info, exiting)),
   Notification =
     Event#event{
       event_info =
@@ -637,11 +639,10 @@ exiting_side_effects(Info) ->
      fun registration_exiting_events/1,
      fun links_exiting_events/1,
      fun monitors_exiting_events/1],
-  FinalInfo = #concuerror_info{next_event = Event, processes = Processes} =
+  FinalInfo = #concuerror_info{next_event = Event} =
     lists:foldl(FunFold, Info, FunList),
   self() ! Event,
-  true = ets:update_element(Processes, self(), {?process_status, exited}),
-  process_loop(FinalInfo#concuerror_info{status = exited}).
+  process_loop(set_status(FinalInfo, exited)).
 
 ets_ownership_exiting_events(Info) ->
   %% XXX:  - transfer ets ownership and send message or delete table
@@ -741,3 +742,10 @@ init_concuerror_info(Info) ->
 
 locate_next_event(Location, #concuerror_info{next_event = Event} = Info) ->
   Info#concuerror_info{next_event = Event#event{location = Location}}.
+
+set_status(#concuerror_info{processes = Processes} = Info, Status) ->
+  true = ets:update_element(Processes, self(), {?process_status, Status}),
+  Info#concuerror_info{status = Status}.
+
+is_active(#concuerror_info{status = Status}) ->
+  (Status =:= running) orelse (Status =:= waiting).

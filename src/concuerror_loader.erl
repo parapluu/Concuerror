@@ -56,7 +56,7 @@ do_load(Module) ->
           _ -> {error, preloaded}
         end;
       Filename ->
-        case file:read_file_info(Filename, [type]) of
+        case file:read_file_info(Filename) of
           {ok, _} -> {ok, Filename};
           {error, Reason} -> {error, {file, Reason}}
         end

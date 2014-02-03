@@ -75,7 +75,6 @@ run(Options) ->
      ProcessOptions0],
   ?debug(Logger, "Starting first process...~n",[]),
   FirstProcess = concuerror_callback:spawn_first_process(ProcessOptions),
-  true = ets:insert(Processes, ?new_process(FirstProcess, "P")),
   {target, Target} = proplists:lookup(target, Options),
   {timeout, Timeout} = proplists:lookup(timeout, Options),
   InitialTrace = #trace_state{active_processes = [FirstProcess]},
@@ -162,23 +161,20 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
       get_next_event(Event, AvailablePendingMessages, AvailableActiveProcesses,
                      State);
     [{#event{label = Label} = Event, _}|_] ->
-      {Status, UpdatedEvent} =
+      {ok, UpdatedEvent} =
         case Label =/= undefined of
           true -> NewEvent = get_next_event_backend(Event, State),
-                  try NewEvent = {ok, Event}
+                  try {ok, Event} = NewEvent
                   catch
                     _:_ ->
-                      error({{new, NewEvent}, {old, {ok, Event}}})
+                      error({{new, element(2, NewEvent)}, {old, Event}})
                   end;
           false ->
             %% Last event = Previously racing event = Result may differ.
             ResetEvent = reset_event(Event),
             get_next_event_backend(ResetEvent, State)
         end,
-      case Status of
-        ok -> update_state(UpdatedEvent, State);
-        retry -> error(planned_backtrack_blocked)
-      end
+      update_state(UpdatedEvent, State)
   end.
 
 filter_sleeping([], PendingMessages, ActiveProcesses) ->
@@ -341,12 +337,7 @@ update_special(Special, State) ->
       Update = {?message_pattern, PatternFun},
       true = ets:update_element(MessageInfo, Message, Update),
       State;
-    {new, SpawnedPid, Parent} ->
-      #scheduler_state{processes = Processes} = State,
-      ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
-      Child = ets:update_counter(Processes, Parent, {?process_children, 1}),
-      ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, Child]),
-      true = ets:insert(Processes, ?new_process(SpawnedPid, ChildSymbol)),
+    {new, SpawnedPid} ->
       #trace_state{active_processes = ActiveProcesses} = Next,
       NewNext =
         Next#trace_state{
@@ -444,7 +435,7 @@ assign_happens_before([TraceState|Rest], TimedNewTrace, OldTrace, State) ->
   BaseNewClockMap = dict:store(Actor, NewClock, ClockMap),
   NewClockMap =
     case Special of
-      {new, SpawnedPid, _} -> dict:store(SpawnedPid, NewClock, BaseNewClockMap);
+      {new, SpawnedPid} -> dict:store(SpawnedPid, NewClock, BaseNewClockMap);
       _ -> BaseNewClockMap
     end,
   case Actor of

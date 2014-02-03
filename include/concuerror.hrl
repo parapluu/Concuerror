@@ -88,7 +88,7 @@
 -type mfargs() :: {atom(), atom(), [term()]}.
 -type receive_pattern_fun() :: fun((term()) -> boolean()).
 
--type location() :: {non_neg_integer(), string()}.
+-type location() :: 'exit' | [non_neg_integer() | {file, string()}].
 
 -type index() :: non_neg_integer().
 
@@ -125,7 +125,7 @@
           patterns           :: receive_pattern_fun(),
           recipient = self() :: pid(),
           timeout            :: timeout(),
-          trapping           :: boolean
+          trapping           :: boolean()
          }).
 
 -type receive_event() :: #receive_event{}.

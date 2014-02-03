@@ -32,8 +32,3 @@ crash_if_mail() ->
     after
         0 -> ok
     end.
-    
-                    
-                    
-                    
-            

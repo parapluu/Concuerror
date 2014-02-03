@@ -246,6 +246,8 @@ compile_and_load([File|Rest], TmpDir, Acc) ->
       opt_error("~s is not a .erl or .beam file", [File])
   end.
 
+-spec opt_error(string()) -> no_return().
+
 opt_error(Format) ->
   opt_error(Format, []).
 
