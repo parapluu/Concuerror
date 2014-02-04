@@ -107,6 +107,8 @@ dependent_exit(_Exit, {erlang, process_flag, _}) ->
   false;
 dependent_exit(_Exit, {erlang, spawn, _}) ->
   false;
+dependent_exit(#exit_event{actor = Exiting}, {ets, give_away, [_, Pid, _]}) ->
+  Exiting =:= Pid;
 dependent_exit(_Exit, {ets, _, _}) ->
   false;
 dependent_exit(_Exit, _MFA) ->
@@ -158,6 +160,13 @@ dependent_built_in(#builtin_event{mfa = {erlang,spawn,_}} = Spawn,
                    #builtin_event{mfa = {erlang,'!',_}} = Send) ->
   dependent_built_in(Send, Spawn);
 
+dependent_built_in(#builtin_event{mfa = {ets,delete,[Table1]}},
+                   #builtin_event{mfa = {ets,_Any,[Table2|_]}}) ->
+  Table1 =:= Table2;
+dependent_built_in(#builtin_event{mfa = {ets,_Any,_}} = EtsAny,
+                   #builtin_event{mfa = {ets,delete,[_]}} = EtsDelete) ->
+  dependent_built_in(EtsDelete, EtsAny);
+
 dependent_built_in(#builtin_event{mfa = {ets,Insert1,[Table1,Tuples1]},
                                   result = Result1},
                    #builtin_event{mfa = {ets,Insert2,[Table2,Tuples2]},
@@ -199,6 +208,13 @@ dependent_built_in(#builtin_event{mfa = {ets,lookup,_}} = EtsLookup,
                    #builtin_event{mfa = {ets,Insert,_}} = EtsInsert)
   when Insert =:= insert; Insert =:= insert_new ->
   dependent_built_in(EtsInsert, EtsLookup);
+
+dependent_built_in(#builtin_event{mfa = {ets,new,_}, result = Table1},
+                   #builtin_event{mfa = {ets,_Any,[Table2|_]}}) ->
+  Table1 =:= Table2;
+dependent_built_in(#builtin_event{mfa = {ets,_Any,_}} = EtsAny,
+                   #builtin_event{mfa = {ets,new,_}} = EtsNew) ->
+  dependent_built_in(EtsNew, EtsAny);
 
 dependent_built_in(#builtin_event{mfa = {erlang,_,_}},
                    #builtin_event{mfa = {ets,_,_}}) ->
