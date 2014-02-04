@@ -31,7 +31,7 @@
 -define(exit, ?flag(12)).
 -define(trap, ?flag(13)).
 -define(undefined, ?flag(14)).
-
+-define(heir, ?flag(15)).
 
 -define(ACTIVE_FLAGS, [?undefined]).
 
@@ -337,6 +337,45 @@ run_built_in(ets, delete, 1, [Tid], Info) ->
   ets:update_element(EtsTables, Tid, Update),
   ets:delete_all_objects(Tid),
   {true, Info};
+run_built_in(ets, give_away, 3, [Tid, Pid, GiftData],
+             #concuerror_info{
+                next_event = #event{event_info = EventInfo} = Event,
+                processes = Processes
+               } = Info) ->
+  #concuerror_info{ets_tables = EtsTables} = Info,
+  Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
+  Self = self(),
+  case
+    is_pid(Pid) andalso Owner =:= Self andalso Pid =/= Self
+  of
+    true -> ok;
+    false -> throw({error, badarg})
+  end,
+  case ets:lookup(Processes, Pid) of
+    [?process_pat_stat(Pid, Status)]
+      when Status =/= exiting andalso Status =/= exited -> ok;
+    _ -> throw({error, badarg})
+  end,
+  NewInfo =
+    case EventInfo of
+      %% Replaying. Keep original Message reference.
+      #builtin_event{} -> Info;
+      %% New event...
+      undefined ->
+        MessageEvent =
+          #message_event{
+             cause_label = Event#event.label,
+             message =
+               #message{
+                  data = {'ETS-TRANSFER', Tid, Self, GiftData},
+                  message_id = make_ref()},
+             recipient = Pid},
+        NewEvent = Event#event{special = {message, MessageEvent}},
+        Info#concuerror_info{next_event = NewEvent}
+    end,
+  Update = [{?ets_owner, Pid}],
+  true = ets:update_element(EtsTables, Tid, Update),
+  {true, NewInfo};
 run_built_in(Module, Name, Arity, Args, Info)
   when
     {Module, Name, Arity} =:= {erlang, exit, 1};
@@ -654,24 +693,28 @@ ets_ownership_exiting_events(Info) ->
   %% XXX:  - transfer ets ownership and send message or delete table
   %% XXX: Mention that order of deallocation/transfer is not monitored.
   #concuerror_info{ets_tables = EtsTables} = Info,
-  case ets:match(EtsTables, ?ets_owner_pattern(self())) of
+  case ets:match(EtsTables, ?ets_owner_to_tid_heir_pattern(self())) of
     [] -> Info;
     Tables ->
-      #concuerror_info{processes = Processes} = Info,
       Fold =
-        fun([Tid, Heir], InfoIn) ->
+        fun([Tid, HeirSpec], InfoIn) ->
             MFArgs =
-              case ets:lookup(Processes, element(2, Heir)) of
-                [{HeirPid, Status}]
-                  when Status =/= exiting;
-                       Status =/= exited ->
-                  [ets, give_away, [Tid, HeirPid, element(3, Heir)]];
-                _Other ->
-                  [ets, delete, [Tid]]
+              case HeirSpec of
+                {heir, none} ->
+                  ?debug_flag(?heir, no_heir),
+                  [ets, delete, [Tid]];
+                {heir, Pid, Data} ->
+                  ?debug_flag(?heir, {using_heir, Tid, HeirSpec}),
+                  [ets, give_away, [Tid, Pid, Data]]
               end,
-            {{didit, true}, NewInfo} =
-              instrumented(call, MFArgs, exit, InfoIn),
-            NewInfo
+            case instrumented(call, MFArgs, exit, InfoIn) of
+              {{didit, true}, NewInfo} -> NewInfo;
+              _ ->
+                ?debug_flag(?heir, {problematic_heir, Tid, HeirSpec}),
+                {{didit, true}, NewInfo} =
+                  instrumented(call, [ets, delete, [Tid]], exit, InfoIn),
+                NewInfo
+            end
         end,
       lists:foldl(Fold, Info, Tables)
   end.
