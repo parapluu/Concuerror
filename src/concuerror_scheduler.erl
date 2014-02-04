@@ -146,7 +146,7 @@ log_trace(State) ->
   concuerror_logger:complete(Logger, Log),
   State#scheduler_state{current_warnings = []}.
 
-get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
+get_next_event(#scheduler_state{logger = Logger, trace = [Last|_]} = State) ->
   #trace_state{
      active_processes = ActiveProcesses,
      pending_messages = PendingMessages,
@@ -161,20 +161,26 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
       get_next_event(Event, AvailablePendingMessages, AvailableActiveProcesses,
                      State);
     [{#event{label = Label} = Event, _}|_] ->
-      {ok, UpdatedEvent} =
-        case Label =/= undefined of
-          true -> NewEvent = get_next_event_backend(Event, State),
-                  try {ok, Event} = NewEvent
-                  catch
-                    _:_ ->
-                      error({{new, element(2, NewEvent)}, {old, Event}})
-                  end;
-          false ->
-            %% Last event = Previously racing event = Result may differ.
-            ResetEvent = reset_event(Event),
-            get_next_event_backend(ResetEvent, State)
+      try
+        {ok, UpdatedEvent} =
+          case Label =/= undefined of
+            true -> NewEvent = get_next_event_backend(Event, State),
+                    try {ok, Event} = NewEvent
+                    catch
+                      _:_ ->
+                        error({{new, element(2, NewEvent)}, {old, Event}})
+                    end;
+            false ->
+              %% Last event = Previously racing event = Result may differ.
+              ResetEvent = reset_event(Event),
+              get_next_event_backend(ResetEvent, State)
         end,
-      update_state(UpdatedEvent, State)
+        update_state(UpdatedEvent, State)
+      catch
+        error:What ->
+          ?debug(Logger, "Expected:~n~p~n", [Event]),
+          error(What)
+      end
   end.
 
 filter_sleeping([], PendingMessages, ActiveProcesses) ->
