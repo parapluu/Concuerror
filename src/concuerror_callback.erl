@@ -103,28 +103,19 @@ instrumented('receive', [PatternFun, Timeout], Location, Info) ->
   handle_receive(PatternFun, Timeout, Location, Info).
 
 instrumented_aux(Tag, Module, Name, Arity, Args, Location, Info) ->
-  try
-    case
-      erlang:is_builtin(Module, Name, Arity) andalso
-      not lists:member({Module, Name, Arity}, ?RACE_FREE_BIFS)
-    of
-      true  ->
-        built_in(Module, Name, Arity, Args, Location, Info);
-      false ->
-        _Log = {Tag, Module, Name, Arity, Location},
-        ?debug_flag(?non_builtin, _Log),
-        ?debug_flag(?args, {args, Args}),
-        NewInfo = Info,%append_stack(Log, Info),
-        ok = concuerror_loader:load_if_needed(Module),
-        {doit, NewInfo}
-    end
-  catch
-    throw:{error, Reason} ->
-      {{error, Reason}, Info};
-    Type:Reason ->
-      #concuerror_info{logger = Logger} = Info,
-      ?trace(Logger, "XCEPT ~p:~p/~p: ~p(~p)~n", [Module, Name, Arity, Type, Reason]),
-      {doit, Info}
+  case
+    erlang:is_builtin(Module, Name, Arity) andalso
+    not lists:member({Module, Name, Arity}, ?RACE_FREE_BIFS)
+  of
+    true  ->
+      built_in(Module, Name, Arity, Args, Location, Info);
+    false ->
+      _Log = {Tag, Module, Name, Arity, Location},
+      ?debug_flag(?non_builtin, _Log),
+      ?debug_flag(?args, {args, Args}),
+      NewInfo = Info,%append_stack(Log, Info),
+      ok = concuerror_loader:load_if_needed(Module),
+      {doit, NewInfo}
   end.
 
 get_fun_info(Fun, Tag) ->
@@ -139,15 +130,30 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
   %% {Stack, ResetInfo} = reset_stack(Info),
   %% ?debug_flag(?stack, {stack, Stack}),
   LocatedInfo = locate_next_event(Location, Info),%ResetInfo),
-  {Value, #concuerror_info{next_event = Event} = UpdatedInfo} =
-    run_built_in(Module, Name, Arity, Args, LocatedInfo),
-  ?debug_flag(?builtin, {'built-in', Module, Name, Arity, Value, Location}),
-  ?debug_flag(?args, {args, Args}),
-  ?debug_flag(?result, {args, Value}),
-  EventInfo = #builtin_event{mfa = {Module, Name, Args}, result = Value},
-  Notification = Event#event{event_info = EventInfo},
-  NewInfo = notify(Notification, UpdatedInfo),
-  {{didit, Value}, NewInfo}.
+  try
+    {Value, #concuerror_info{next_event = Event} = UpdatedInfo} =
+      run_built_in(Module, Name, Arity, Args, LocatedInfo),
+    ?debug_flag(?builtin, {'built-in', Module, Name, Arity, Value, Location}),
+    ?debug_flag(?args, {args, Args}),
+    ?debug_flag(?result, {args, Value}),
+    EventInfo = #builtin_event{mfa = {Module, Name, Args}, result = Value},
+    Notification = Event#event{event_info = EventInfo},
+    NewInfo = notify(Notification, UpdatedInfo),
+    {{didit, Value}, NewInfo}
+  catch
+    throw:{error, Reason} ->
+      #concuerror_info{next_event = FEvent} = LocatedInfo,
+      FEventInfo = #builtin_event{mfa = {Module, Name, Args}, crashed = true},
+      FNotification = FEvent#event{event_info = FEventInfo},
+      FNewInfo = notify(FNotification, LocatedInfo),
+      FinalInfo =
+        FNewInfo#concuerror_info{stacktop = {Module, Name, Args, Location}},
+      {{error, Reason}, FinalInfo};
+    Type:Reason ->
+      #concuerror_info{logger = Logger} = Info,
+      ?trace(Logger, "XCEPT ~p:~p/~p: ~p(~p)~n", [Module, Name, Arity, Type, Reason]),
+      {doit, Info}
+  end.
 
 %% Special instruction running control (e.g. send to unknown -> wait for reply)
 run_built_in(erlang, exit, 2, [Pid, Reason],

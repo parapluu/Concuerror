@@ -101,6 +101,7 @@
 
 -record(builtin_event, {
           actor = self() :: pid(),
+          crashed = false :: boolean(),
           mfa            :: mfargs(),
           result         :: term()
          }).
@@ -170,12 +171,13 @@
 -define(ets_owner, 2).
 -define(ets_protection, 3).
 -define(ets_heir, 4).
--define(ets_owner_pattern(Owner), {'$1', Owner, '_', '$2'}).
+-define(ets_owner_to_tid_heir_pattern(Owner), {'$1', Owner, '_', '$2'}).
 
 -type processes() :: ets:tid().
 -define(process_name_none, 0).
 -define(new_process(Pid, Symbolic), {Pid, running, ?process_name_none, Symbolic, 0}).
 -define(process_pat(Pid), {Pid, _, _, _, _}).
+-define(process_pat_stat(Pid, Status), {Pid, Status, _, _, _}).
 -define(process_status, 2).
 -define(process_name, 3).
 -define(process_symbolic, 4).
