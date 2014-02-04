@@ -459,8 +459,8 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
             true  -> erase(concuerror_info);
             false -> put(concuerror_info, Escaped)
           end,
-          Stacktrace = lists:keydelete(?MODULE, 1, erlang:get_stacktrace()),
-          ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
+          Stacktrace = fix_stacktrace(EndInfo),
+          ?debug_flag(?exit, {exit, self(), Class, Reason, Stacktrace}),
           NewReason =
             case Class of
               throw -> {{nocatch, Reason}, Stacktrace};
@@ -749,3 +749,12 @@ set_status(#concuerror_info{processes = Processes} = Info, Status) ->
 
 is_active(#concuerror_info{status = Status}) ->
   (Status =:= running) orelse (Status =:= waiting).
+
+fix_stacktrace(#concuerror_info{stacktop = Top}) ->
+  RemoveSelf = lists:keydelete(?MODULE, 1, erlang:get_stacktrace()),
+  case lists:keyfind(concuerror_inspect, 1, RemoveSelf) of
+    false -> RemoveSelf;
+    _ ->
+      RemoveInspect = lists:keydelete(concuerror_inspect, 1, RemoveSelf),
+      [Top|RemoveInspect]
+  end.

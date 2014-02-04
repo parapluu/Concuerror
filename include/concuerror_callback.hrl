@@ -12,6 +12,7 @@
           processes                  :: processes(),
           scheduler                  :: pid(),
           stack = []                 :: [term()],
+          stacktop = 'none'          :: 'none' | tuple(),
           status = exited            :: 'exited'| 'exiting' | 'running' | 'waiting',
           trap_exit = false          :: boolean()
          }).
