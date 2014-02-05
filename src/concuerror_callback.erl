@@ -50,10 +50,8 @@
 -spec spawn_first_process(options()) -> pid().
 
 spawn_first_process(Options) ->
-  {'after-timeout', AfterTimeout} = proplists:lookup('after-timeout', Options),
-  {ets_tables, EtsTables} = proplists:lookup(ets_tables, Options),
-  {logger, Logger} = proplists:lookup(logger, Options),
-  {processes, Processes} = proplists:lookup(processes, Options),
+  [AfterTimeout, EtsTables, Logger, Processes] =
+    get_properties(['after-timeout', ets_tables, logger, processes], Options),
   InitialInfo =
     #concuerror_info{
        'after-timeout' = AfterTimeout,
@@ -63,6 +61,14 @@ spawn_first_process(Options) ->
        scheduler = self()
       },
   spawn_link(fun() -> process_top_loop(InitialInfo, "P") end).
+
+get_properties(Props, PropList) ->
+  get_properties(Props, PropList, []).
+
+get_properties([], _, Acc) -> lists:reverse(Acc);
+get_properties([Prop|Props], PropList, Acc) ->
+  PropVal = proplists:get_value(Prop, PropList),
+  get_properties(Props, PropList, [PropVal|Acc]).
 
 -spec start_first_process(pid(), {atom(), atom(), [term()]}) -> ok.
 
@@ -129,8 +135,9 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
   ?debug_flag(?short_builtin, {'built-in', Module, Name, Arity, Location}),
   %% {Stack, ResetInfo} = reset_stack(Info),
   %% ?debug_flag(?stack, {stack, Stack}),
-  LocatedInfo = locate_next_event(Location, Info),%ResetInfo),
+  LocatedInfo = add_location_info(Location, Info),%ResetInfo),
   try
+    %% XXX: TODO If replaying, inspect if original crashed and replay crash
     {Value, #concuerror_info{next_event = Event} = UpdatedInfo} =
       run_built_in(Module, Name, Arity, Args, LocatedInfo),
     ?debug_flag(?builtin, {'built-in', Module, Name, Arity, Value, Location}),
@@ -177,16 +184,17 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       {true, Info#concuerror_info{next_event = NewEvent}}
   end;
 
-run_built_in(erlang, link, 1, [Recipient], Info) ->
+run_built_in(erlang, link, 1, [Pid], Info) ->
   #concuerror_info{links = Old, processes = Processes} = Info,
-  case ets:lookup(Processes, Recipient) =/= [] of
-    false -> throw({error, external_process});
+  case ets:lookup(Processes, Pid) =/= [] of
+    false ->
+      ?debug_flag(?undefined, {link_to_external, Pid}),
+      throw({error, badarg});
     true ->
-      Recipient ! {link, self(), confirm},
+      Pid ! {link, self(), confirm},
       receive
         success ->
-          NewInfo =
-            Info#concuerror_info{links = ordsets:add_element(Recipient, Old)},
+          NewInfo = Info#concuerror_info{links = ordsets:add_element(Pid, Old)},
           {true, NewInfo};
         failed ->
           throw({error, badarg})
@@ -209,8 +217,8 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
         Parent = self(),
         ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
         ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
-        Child = ets:update_counter(Processes, Parent, {?process_children, 1}),
-        ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, Child]),
+        ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
+        ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, ChildId]),
         P = spawn_link(fun() -> process_top_loop(PassedInfo, ChildSymbol) end),
         NewResult =
           case lists:member(monitor, SpawnOpts) of
@@ -399,7 +407,7 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
          next_event = NextEvent,
          trap_exit = Trapping
         } = UpdatedInfo =
-        locate_next_event(Location, ReceiveInfo),
+        add_location_info(Location, ReceiveInfo),
       ReceiveEvent =
         #receive_event{
            message = MessageOrAfter,
@@ -665,7 +673,7 @@ exiting(Reason, Stacktrace, Info) ->
   %% XXX:  - send monitor messages
   ?debug_flag(?exit, {going_to_exit, Reason}),
   LocatedInfo = #concuerror_info{next_event = Event} =
-    locate_next_event(exit, set_status(Info, exiting)),
+    add_location_info(exit, set_status(Info, exiting)),
   Notification =
     Event#event{
       event_info =
@@ -674,7 +682,7 @@ exiting(Reason, Stacktrace, Info) ->
            stacktrace = Stacktrace
           }
      },
-  ExitInfo = locate_next_event(exit, notify(Notification, LocatedInfo)),
+  ExitInfo = add_location_info(exit, notify(Notification, LocatedInfo)),
   exiting_side_effects(ExitInfo#concuerror_info{exit_reason = Reason}).
 
 exiting_side_effects(Info) ->
@@ -789,7 +797,7 @@ init_concuerror_info(Info) ->
 
 %%------------------------------------------------------------------------------
 
-locate_next_event(Location, #concuerror_info{next_event = Event} = Info) ->
+add_location_info(Location, #concuerror_info{next_event = Event} = Info) ->
   Info#concuerror_info{next_event = Event#event{location = Location}}.
 
 set_status(#concuerror_info{processes = Processes} = Info, Status) ->
