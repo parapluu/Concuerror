@@ -35,13 +35,14 @@ parse_cl_aux(CommandLineArgs) ->
                       _:_ -> throw(RawArg)
                     end
                 end,
-              try
-                Args = [Parser(A) || A <- MaybeArgs],
-                FullOptions = [{target, {Module, Function, Args}}|Options],
-                finalize(FullOptions)
-              catch
-                throw:Arg -> opt_error("Arg ~s is not an Erlang term", [Arg])
-              end;
+              Args =
+                try
+                  [Parser(A) || A <- MaybeArgs]
+                catch
+                  throw:Arg -> opt_error("Arg ~s is not an Erlang term", [Arg])
+                end,
+              FullOptions = [{target, {Module, Function, Args}}|Options],
+              finalize(FullOptions);
             _ -> opt_error("Module and/or Function were not specified")
           end
       end;
