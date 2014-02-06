@@ -1,8 +1,11 @@
 #!/usr/bin/env escript
 %% -*- erlang-indent-level: 2 -*-
-%%! +S1 +Bi -nostick -noshell -pa ebin
+%%! +S1 +Bi -nostick -noshell
 
 main(Args) ->
+  ScriptDir = filename:dirname(escript:script_name()),
+  EbinDir = filename:join([ScriptDir,"ebin"]),
+  true = code:add_pathz(EbinDir),
   {module, concuerror_inspect} = code:load_file(concuerror_inspect),
   true = code:add_pathz(code:root_dir()++"/erts/preloaded/ebin"),
   case concuerror_options:parse_cl(Args) of
