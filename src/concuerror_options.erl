@@ -98,6 +98,7 @@ filter_options(Mode, {Key, _}) ->
       logger          -> [scheduler];
       output          -> [logger];
       quiet           -> [helper];
+      quit            -> [];
       symbolic        -> [logger];
       target          -> [logger, scheduler];
       timeout         -> [logger, scheduler];

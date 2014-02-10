@@ -3,19 +3,14 @@
 %%! +S1 +Bi -nostick -noshell
 
 main(Args) ->
+  {module, concuerror_inspect} = code:load_file(concuerror_inspect),
   ScriptDir = filename:dirname(escript:script_name()),
   EbinDir = filename:join([ScriptDir,"ebin"]),
   true = code:add_pathz(EbinDir),
-  {module, concuerror_inspect} = code:load_file(concuerror_inspect),
-  true = code:add_pathz(code:root_dir()++"/erts/preloaded/ebin"),
   case concuerror_options:parse_cl(Args) of
     {exit, Exit} -> cl_exit(Exit);
     Options ->
-      Main =
-        spawn_link(fun() ->
-                       {exit, Exit} = concuerror_scheduler:run(Options),
-                       cl_exit(Exit)
-                   end),
+      Main = concuerror_scheduler:run([{quit, true}|Options]),
       loop(Main)
   end.
 

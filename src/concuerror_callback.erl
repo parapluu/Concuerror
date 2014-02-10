@@ -143,6 +143,10 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
     NewInfo = notify(Notification, UpdatedInfo),
     {{didit, Value}, NewInfo}
   catch
+    error:Reason ->
+      #concuerror_info{scheduler = Scheduler} = Info,
+      exit(Scheduler, {Reason, Module, Name, Arity, Location}),
+      receive after infinity -> ok end;
     throw:{error, Reason} ->
       #concuerror_info{next_event = FEvent} = LocatedInfo,
       FEventInfo = #builtin_event{mfa = {Module, Name, Args}, crashed = true},
@@ -150,11 +154,7 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
       FNewInfo = notify(FNotification, LocatedInfo),
       FinalInfo =
         FNewInfo#concuerror_info{stacktop = {Module, Name, Args, Location}},
-      {{error, Reason}, FinalInfo};
-    Type:Reason ->
-      #concuerror_info{logger = Logger} = Info,
-      ?trace(Logger, "XCEPT ~p:~p/~p: ~p(~p)~n", [Module, Name, Arity, Type, Reason]),
-      {doit, Info}
+      {{error, Reason}, FinalInfo}
   end.
 
 %% Special instruction running control (e.g. send to unknown -> wait for reply)

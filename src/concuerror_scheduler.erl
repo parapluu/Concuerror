@@ -59,6 +59,26 @@
 %% =============================================================================
 
 run(Options) ->
+  {Pid, Ref} = spawn_monitor(fun() -> backend_run(Options) end),
+  Quit = proplists:get_value(quit, Options, false),
+  receive
+    {'DOWN', Ref, process, Pid, Reason} ->
+      QuitStatus =
+        case Reason =:= normal of
+          true -> 0;
+          false ->
+            io:format(standard_error, "Concuerror crashed!~nReason:~n~p~n",
+                      [Reason]),
+            1
+        end,
+      case Quit of
+        true  -> erlang:halt(QuitStatus);
+        false -> ok
+      end
+  end.
+
+backend_run(Options) ->
+  true = code:add_pathz(code:root_dir()++"/erts/preloaded/ebin"),
   EtsTables = ets:new(ets_tables, [public]),
   Processes = ets:new(processes, [public]),
   LoggerOptions =
@@ -98,15 +118,14 @@ run(Options) ->
     catch
       Type:Reason ->
         ?log(Logger, ?lerror,
-             "concuerror crashed (~p)~n"
+             "Concuerror scheduler crashed (~p)~n"
              "Reason: ~p~n"
              "Trace: ~p~n",
              [Type, Reason, erlang:get_stacktrace()]),
         {error, InitialState}
     end,
   cleanup(FinalState),
-  concuerror_logger:stop(Logger, Status),
-  {exit, Status}.
+  concuerror_logger:stop(Logger, Status).
 
 %%------------------------------------------------------------------------------
 
