@@ -176,8 +176,10 @@
 -type processes() :: ets:tid().
 -define(process_name_none, 0).
 -define(new_process(Pid, Symbolic), {Pid, running, ?process_name_none, Symbolic, 0}).
+-define(new_named_process(Pid, Name), {Pid, running, Name, Name, 0}).
 -define(process_pat(Pid), {Pid, _, _, _, _}).
--define(process_pat_stat(Pid, Status), {Pid, Status, _, _, _}).
+-define(process_pat_stat(Pid, Status), {Pid, Status,    _, _, _}).
+-define(process_name_pattern(Name), {'$1', '_', Name, '_', '_'}).
 -define(process_status, 2).
 -define(process_name, 3).
 -define(process_symbolic, 4).
@@ -194,6 +196,7 @@
                  {binary_to_term, 1},
                  {bump_reductions, 1}, %% XXX: This may change
                  {dt_spread_tag, 1},
+                 {dt_restore_tag,1},
                  {error, 1},
                  {exit, 1},
                  {float_to_list, 1},

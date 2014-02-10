@@ -195,6 +195,19 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
           throw({error, badarg})
       end
   end;
+run_built_in(erlang, register, 2, [Name, Pid],
+             #concuerror_info{processes = Processes} = Info) ->
+  try
+    true = is_atom(Name),
+    true = is_pid(Pid) orelse is_port(Pid),
+    [] = ets:match(Processes, ?process_name_pattern(Name)),
+    ?process_name_none = ets:lookup_element(Processes, Pid, ?process_name),
+    false = undefined =:= Name,
+    true = ets:update_element(Processes, Pid, {?process_name, Name}),
+    {true, Info}
+  catch
+    _:_ -> throw({error, badarg})
+  end;
 run_built_in(erlang, spawn, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, []}], Info);
 run_built_in(erlang, spawn_link, 3, [M, F, Args], Info) ->
@@ -254,12 +267,12 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
     undefined ->
       ?debug_flag(?send, {send, Recipient, Message}),
       Pid =
-        case Recipient of
-          P when is_pid(P) -> P;
-          A when is_atom(A) -> whereis(A);
-          _ -> undefined
+        case is_pid(Recipient) of
+          true -> Recipient;
+          false ->
+            {P, Info} = run_built_in(erlang, whereis, 1, [Recipient], Info),
+            P
         end,
-      %% XXX: Make sure that the pid is local or abort.
       case is_pid(Pid) of
         true ->
           MessageEvent =
@@ -270,13 +283,33 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
           NewEvent = Event#event{special = {message, MessageEvent}},
           ?debug_flag(?send, {send, successful}),
           {Message, Info#concuerror_info{next_event = NewEvent}};
-        false -> error(non_local_process)
+        false -> throw({error,badarg})
       end
   end;
 run_built_in(erlang, process_flag, 2, [trap_exit, Value],
              #concuerror_info{trap_exit = OldValue} = Info) ->
   ?debug_flag(?trap, {trap_exit_set, Value}),
   {OldValue, Info#concuerror_info{trap_exit = Value}};
+run_built_in(erlang, unregister, 1, [Name],
+             #concuerror_info{processes = Processes} = Info) ->
+  try
+    [[Pid]] = ets:match(Processes, ?process_name_pattern(Name)),
+    true =
+      ets:update_element(Processes, Pid, {?process_name, ?process_name_none}),
+    {true, Info}
+  catch
+    _:_ -> throw({error, badarg})
+  end;
+run_built_in(erlang, whereis, 1, [Name],
+             #concuerror_info{processes = Processes} = Info) ->
+  case ets:match(Processes, ?process_name_pattern(Name)) of
+    [] ->
+      case whereis(Name) =:= undefined of
+        true -> {undefined, Info};
+        false -> error({system_process_not_wrapped, Name})
+      end;
+    [[Pid]] -> {Pid, Info}
+  end;
 run_built_in(ets, new, 2, [Name, Options], Info) ->
   #concuerror_info{
      ets_tables = EtsTables,
@@ -645,10 +678,6 @@ process_loop(Info) ->
       ?debug_flag(?wait, {waiting, reset}),
       NewInfo = #concuerror_info{processes = Processes} =
         init_concuerror_info(Info),
-      case erlang:process_info(self(), registered_name) of
-        [] -> ok;
-        {registered_name, Name} -> unregister(Name)
-      end,
       erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
       erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo, Symbol]);
