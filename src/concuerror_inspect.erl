@@ -21,7 +21,7 @@
 instrumented(Tag, Args, Location) ->
   Ret =
     case get(concuerror_info) of
-      #concuerror_info{escaped = Escaped} = Info ->
+      #concuerror_info{escaped_pdict = Escaped} = Info ->
         case Escaped =:= nonexisting of
           true  -> erase(concuerror_info);
           false -> put(concuerror_info, Escaped)
@@ -34,7 +34,8 @@ instrumented(Tag, Args, Location) ->
             undefined -> nonexisting;
             NewProcessInfo -> NewProcessInfo
           end,
-        put(concuerror_info, NewInfo#concuerror_info{escaped = NewEscaped}),
+        FinalInfo = NewInfo#concuerror_info{escaped_pdict = NewEscaped},
+        put(concuerror_info, FinalInfo),
         Result;
     undefined ->
         doit

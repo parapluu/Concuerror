@@ -507,7 +507,8 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
         exit(normal)
       catch
         Class:Reason ->
-          #concuerror_info{escaped = Escaped} = EndInfo = get(concuerror_info),
+          #concuerror_info{escaped_pdict = Escaped} = EndInfo =
+            get(concuerror_info),
           case Escaped =:= nonexisting of
             true  -> erase(concuerror_info);
             false -> put(concuerror_info, Escaped)
