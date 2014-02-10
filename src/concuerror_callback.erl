@@ -379,16 +379,31 @@ run_built_in(ets, give_away, 3, [Tid, Pid, GiftData],
   Update = [{?ets_owner, Pid}],
   true = ets:update_element(EtsTables, Tid, Update),
   {true, NewInfo};
-run_built_in(Module, Name, Arity, Args, Info)
-  when
-    {Module, Name, Arity} =:= {erlang, exit, 1};
-    {Module, Name, Arity} =:= {erlang, throw, 1};
-    false
-    ->
-  {erlang:apply(Module, Name, Args), Info};
-run_built_in(Module, Name, _Arity, Args, Info) ->
-  ?debug_flag(?undefined, {builtin, Module, Name, _Arity}),
-  {erlang:apply(Module, Name, Args), Info}.
+
+%% For other built-ins check whether replaying has the same result:
+run_built_in(Module, Name, Arity, Args, Info) ->
+  #concuerror_info{next_event = #event{event_info = EventInfo}} = Info,
+  NewResult = erlang:apply(Module, Name, Args),
+  case EventInfo of
+    %% Replaying...
+    #builtin_event{result = OldResult} ->
+      case OldResult =:= NewResult of
+        true  -> {OldResult, Info};
+        false ->
+          #concuerror_info{logger = Logger} = Info,
+          ?log(Logger, ?lwarn,
+               "While re-running the program, a call to ~p:~p/~p with"
+               " arguments:~n  ~p~nreturned a different result:~n"
+               "Earlier result: ~p~n"
+               "  Later result: ~p~n"
+               "Concuerror cannot explore behaviours that depend on~n"
+               "data that may differ on separate runs of the program.",
+              [Module, Name, Arity, Args, OldResult, NewResult]),
+          error(inconsistent_builtin_behaviour)
+      end;
+    undefined ->
+      {NewResult, Info}
+  end.
 
 %%------------------------------------------------------------------------------
 
