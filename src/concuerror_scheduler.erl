@@ -81,6 +81,7 @@ backend_run(Options) ->
   true = code:add_pathz(code:root_dir()++"/erts/preloaded/ebin"),
   EtsTables = ets:new(ets_tables, [public]),
   Processes = ets:new(processes, [public]),
+  wrap_all(self(), Processes),
   LoggerOptions =
     [{processes, Processes} |
      [O || O <- Options, concuerror_options:filter_options('logger', O)]
@@ -216,7 +217,6 @@ filter_sleeping([#event{actor = Pid}|Sleeping],
 get_next_event(Event, [{Pair, Queue}|_], _ActiveProcesses, State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
-  %% XXX: Sending to an uninstrumented process should be caught here
   Special = {message_delivered, MessageEvent},
   UpdatedEvent =
     Event#event{
@@ -368,7 +368,9 @@ update_special(Special, State) ->
         Next#trace_state{
           active_processes = ordsets:add_element(SpawnedPid, ActiveProcesses)
          },
-      State#scheduler_state{trace = [NewNext|Trace]}
+      State#scheduler_state{trace = [NewNext|Trace]};
+    List when is_list(List) ->
+      lists:foldl(fun update_special/2, State, Special)
   end.
 
 process_message(MessageEvent, PendingMessages, MessageInfo) ->
@@ -511,7 +513,13 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
 maybe_mark_sent_message({message, Message}, Clock, MessageInfo) ->
   #message_event{message = #message{message_id = Id}} = Message,
   ets:update_element(MessageInfo, Id, {?message_sent, Clock});
-maybe_mark_sent_message(_, _Clock, _MessageI) -> true.
+maybe_mark_sent_message(Special, Clock, MessageInfo) ->
+  case is_list(Special) of
+    false -> true;
+    true ->
+      Message = proplists:lookup(message, Special),
+      maybe_mark_sent_message(Message, Clock, MessageInfo)
+  end.
 
 plan_more_interleavings([], OldTrace, _SchedulerState) ->
   OldTrace;
@@ -747,30 +755,41 @@ cleanup(#scheduler_state{logger = Logger, processes = Processes} = State) ->
 %% Between scheduler and an instrumented process
 %%------------------------------------------------------------------------------
 
-get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
-  #scheduler_state{processes = Processes, timeout = _Timeout} = State,
-  case ets:lookup(Processes, Recipient) =/= [] of
-    true ->
-      #event{event_info = EventInfo} = Event,
-      #message_event{message = Message, type = Type} = EventInfo,
-      %% Message delivery always succeeds
-      Recipient ! {Type, Message},
-      UpdatedEvent =
-        receive
-          {trapping, Trapping} ->
-            NewEventInfo = EventInfo#message_event{trapping = Trapping},
-            Event#event{event_info = NewEventInfo}
-        end,
-      {ok, UpdatedEvent}
-    %% false ->
-    %%   %% Sending to system process. Sender must wait for immediate reply!
-    %%   Sender ! {system, Event},
-    %%   receive
-    %%     {system_reply, UpdatedEvent} -> UpdatedEvent
-    %%   after
-    %%     Timeout -> error(timeout)
-    %%   end
-  end;
+get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, _State) ->
+  #event{event_info = EventInfo} = Event,
+  #message_event{message = Message, type = Type} = EventInfo,
+  %% Message delivery always succeeds
+  Recipient ! {Type, Message},
+  UpdatedEvent =
+    receive
+      {trapping, Trapping} ->
+        NewEventInfo = EventInfo#message_event{trapping = Trapping},
+        Event#event{event_info = NewEventInfo};
+      {system_reply, From, Reply} ->
+        #event{special = Special} = Event,
+        case is_list(Special) of
+          true ->
+            #message_event{message = #message{data = OldReply}} =
+              proplists:get_value(message, Special),
+            case OldReply =:= Reply of
+              true -> Event;
+              false ->
+                error({system_reply_differs, OldReply, Reply})
+            end;
+          false ->
+            MessageEvent =
+              #message_event{
+                 cause_label = Event#event.label,
+                 message = #message{data = Reply, message_id = make_ref()},
+                 sender = Recipient,
+                 recipient = From},
+            Event#event{special = [{message, MessageEvent},Special]}
+        end
+    after
+      2000 ->
+        error(too_late)
+    end,
+  {ok, UpdatedEvent};
 get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
   Pid ! Event,
   get_next_event_backend_loop(Event, State).
@@ -846,3 +865,21 @@ lookup_clock_value(P, CV) ->
 max_cv(D1, D2) ->
   Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
   orddict:merge(Merger, D1, D2).
+
+wrap_all(Scheduler, Processes) ->
+  Map =
+    fun(Name) ->
+        Pid = spawn_link(fun() -> loop(whereis(Name), Scheduler) end),
+        ?new_named_process(Pid, Name)
+    end,
+  ets:insert(Processes, [Map(Name) || Name <- registered()]).
+
+loop(Wrapped, Scheduler) ->
+  receive
+    {message, #message{data = {Label, {From, Ref}, Request}}} ->
+      erlang:send(Wrapped, {Label, {self(), Ref}, Request}),
+      receive
+        {Ref, Reply} -> Scheduler ! {system_reply, From, {Ref, Reply}}
+      end
+  end,
+  loop(Wrapped, Scheduler).
