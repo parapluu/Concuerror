@@ -6,7 +6,7 @@
 -export([instrumented/4]).
 
 %% Interface to scheduler:
--export([spawn_first_process/1, start_first_process/2, stop/1]).
+-export([spawn_first_process/1, start_first_process/2]).
 
 %% Interface for resetting:
 -export([process_top_loop/2]).
@@ -75,11 +75,6 @@ get_properties([Prop|Props], PropList, Acc) ->
 start_first_process(Pid, {Module, Name, Args}) ->
   Pid ! {start, Module, Name, Args},
   ok.
-
--spec stop(pid()) -> stop.
-
-stop(Pid) ->
-  Pid ! stop.
 
 %%------------------------------------------------------------------------------
 
@@ -522,10 +517,7 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
               exit  -> Reason
             end,
           exiting(NewReason, Stacktrace, EndInfo)
-      end;
-    stop ->
-      ?debug_flag(?wait, {waiting, stop}),
-      ok
+      end
   end.
 
 process_loop(Info) ->
