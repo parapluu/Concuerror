@@ -125,6 +125,9 @@ get_fun_info(Fun, Tag) ->
 
 %%------------------------------------------------------------------------------
 
+%% Process dictionary has been restored here. No need to report such ops.
+built_in(erlang, get, _Arity, Args, _Location, Info) ->
+  {{didit, erlang:apply(erlang,get,Args)}, Info};
 %% XXX: Check if its redundant (e.g. link to already linked)
 built_in(Module, Name, Arity, Args, Location, Info) ->
   ?debug_flag(?short_builtin, {'built-in', Module, Name, Arity, Location}),
@@ -550,21 +553,21 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
         exit(normal)
       catch
         Class:Reason ->
-          #concuerror_info{escaped_pdict = Escaped} = EndInfo =
-            get(concuerror_info),
-          case Escaped =:= nonexisting of
-            true  -> erase(concuerror_info);
-            false -> put(concuerror_info, Escaped)
-          end,
-          Stacktrace = fix_stacktrace(EndInfo),
-          ?debug_flag(?exit, {exit, self(), Class, Reason, Stacktrace}),
-          NewReason =
-            case Class of
-              throw -> {{nocatch, Reason}, Stacktrace};
-              error -> {Reason, Stacktrace};
-              exit  -> Reason
-            end,
-          exiting(NewReason, Stacktrace, EndInfo)
+          case get(concuerror_info) of
+            #concuerror_info{escaped_pdict = Escaped} = EndInfo ->
+              erase(),
+              [put(K,V) || {K,V} <- Escaped],
+              Stacktrace = fix_stacktrace(EndInfo),
+              ?debug_flag(?exit, {exit, self(), Class, Reason, Stacktrace}),
+              NewReason =
+                case Class of
+                  throw -> {{nocatch, Reason}, Stacktrace};
+                  error -> {Reason, Stacktrace};
+                  exit  -> Reason
+                end,
+              exiting(NewReason, Stacktrace, EndInfo);
+            _ -> exit({process_crashed, Class, Reason})
+          end
       end
   end.
 

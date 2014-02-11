@@ -22,18 +22,12 @@ instrumented(Tag, Args, Location) ->
   Ret =
     case get(concuerror_info) of
       #concuerror_info{escaped_pdict = Escaped} = Info ->
-        case Escaped =:= nonexisting of
-          true  -> erase(concuerror_info);
-          false -> put(concuerror_info, Escaped)
-        end,
+        erase(),
+        [put(K,V) || {K,V} <- Escaped],
         {Result, #concuerror_info{} = NewInfo} =
           concuerror_callback:instrumented(Tag, Args, Location, Info),
-        NewEscaped =
-          case get(concuerror_info) of
-            %% XXX: Someone might go and store undefined in concuerror_info...
-            undefined -> nonexisting;
-            NewProcessInfo -> NewProcessInfo
-          end,
+        NewEscaped = get(),
+        erase(),
         FinalInfo = NewInfo#concuerror_info{escaped_pdict = NewEscaped},
         put(concuerror_info, FinalInfo),
         Result;
