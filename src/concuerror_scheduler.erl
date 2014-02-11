@@ -81,7 +81,8 @@ backend_run(Options) ->
   true = code:add_pathz(code:root_dir()++"/erts/preloaded/ebin"),
   EtsTables = ets:new(ets_tables, [public]),
   Processes = ets:new(processes, [public]),
-  wrap_all(self(), Processes),
+  system_processes_wrappers(Processes),
+  system_ets_entries(EtsTables),
   LoggerOptions =
     [{processes, Processes} |
      [O || O <- Options, concuerror_options:filter_options('logger', O)]
@@ -765,7 +766,7 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, _State) ->
       {trapping, Trapping} ->
         NewEventInfo = EventInfo#message_event{trapping = Trapping},
         Event#event{event_info = NewEventInfo};
-      {system_reply, From, Reply} ->
+      {system_reply, From, Id, Reply} ->
         #event{special = Special} = Event,
         case is_list(Special) of
           true ->
@@ -783,7 +784,10 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, _State) ->
                  message = #message{data = Reply, message_id = make_ref()},
                  sender = Recipient,
                  recipient = From},
-            Event#event{special = [{message, MessageEvent},Special]}
+            Specials =
+              [{message_received, Id, fun(_) -> true end},
+               {message, MessageEvent}],
+            Event#event{special = [Special|Specials]}
         end
     after
       2000 ->
@@ -866,20 +870,34 @@ max_cv(D1, D2) ->
   Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
   orddict:merge(Merger, D1, D2).
 
-wrap_all(Scheduler, Processes) ->
+system_processes_wrappers(Processes) ->
+  Scheduler = self(),
   Map =
     fun(Name) ->
-        Pid = spawn_link(fun() -> loop(whereis(Name), Scheduler) end),
+        Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Scheduler) end,
+        Pid = spawn_link(Fun),
         ?new_named_process(Pid, Name)
     end,
   ets:insert(Processes, [Map(Name) || Name <- registered()]).
 
-loop(Wrapped, Scheduler) ->
+system_wrapper_loop(Name, Wrapped, Scheduler) ->
   receive
-    {message, #message{data = {Label, {From, Ref}, Request}}} ->
-      erlang:send(Wrapped, {Label, {self(), Ref}, Request}),
-      receive
-        {Ref, Reply} -> Scheduler ! {system_reply, From, {Ref, Reply}}
+    {message,
+     #message{data = Data, message_id = Id}} ->
+      case Name of
+        init ->
+          {From, Request} = Data,
+          erlang:send(Wrapped, {self(), Request}),
+          receive
+            Msg -> Scheduler ! {system_reply, From, Id, Msg}
+          end;
+        error_logger ->
+          erlang:send(Wrapped, Data),
+          Scheduler ! {trapping, false}
       end
   end,
-  loop(Wrapped, Scheduler).
+  system_wrapper_loop(Name, Wrapped, Scheduler).
+
+system_ets_entries(EtsTables) ->
+  Map = fun(Tid) -> ?new_system_ets_table(Tid, ets:info(Tid, protection)) end,
+  ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).

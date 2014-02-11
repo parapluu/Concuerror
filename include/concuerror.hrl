@@ -168,6 +168,7 @@
 
 -type ets_tables() :: ets:tid().
 -define(new_ets_table(Tid, Protection), {Tid, unknown, Protection, unknown}).
+-define(new_system_ets_table(Tid, Protect), {Tid, self(), Protect, unknown}).
 -define(ets_owner, 2).
 -define(ets_protection, 3).
 -define(ets_heir, 4).
@@ -178,6 +179,7 @@
 -define(new_process(Pid, Symbolic), {Pid, running, ?process_name_none, Symbolic, 0}).
 -define(new_named_process(Pid, Name), {Pid, running, Name, Name, 0}).
 -define(process_pat(Pid), {Pid, _, _, _, _}).
+-define(process_name_pat(Pid, Name), {Pid, _, Name, _, _}).
 -define(process_pat_stat(Pid, Status), {Pid, Status,    _, _, _}).
 -define(process_name_pattern(Name), {'$1', '_', Name, '_', '_'}).
 -define(process_status, 2).
