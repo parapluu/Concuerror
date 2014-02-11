@@ -469,9 +469,9 @@ assign_happens_before([TraceState|Rest], TimedNewTrace, OldTrace, State) ->
     {_, _} ->
       #message_event{message = #message{message_id = IdB}} = EventInfo,
       ets:update_element(MessageInfo, IdB, {?message_delivered, NewClock});
-    _ ->
-      maybe_mark_sent_message(Special, NewClock, MessageInfo)
+    _ -> ok
   end,
+  maybe_mark_sent_message(Special, NewClock, MessageInfo),
   NewTraceState = BaseTraceState#trace_state{clock_map = NewClockMap},
   NewOldTrace = [NewTraceState|OldTrace],
   NewTimedNewTrace = [NewTraceState|TimedNewTrace],
