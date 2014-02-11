@@ -198,6 +198,50 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
           throw({error, badarg})
       end
   end;
+run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
+  TheirInfo =
+    case Pid =:= self() of
+      true -> Info;
+      false ->
+        case process_info(Pid, dictionary) of
+          [] -> error(inspecting_the_process_dictionary_of_a_system_process);
+          {dictionary, [{concuerror_info, Dict}]} -> Dict
+        end
+    end,
+  Res =
+    case Item of
+      dictionary ->
+        #concuerror_info{escaped_pdict = Escaped} = TheirInfo,
+        Escaped;
+      links ->
+        #concuerror_info{links = Links} = TheirInfo,
+        Links;
+      messages ->
+        #concuerror_info{messages_new = Queue} = TheirInfo,
+        [M || #message{data = M} <- queue:to_list(Queue)];
+      registered_name ->
+        #concuerror_info{processes = Processes} = TheirInfo,
+        [?process_name_pat(Pid, Name)] = ets:lookup(Processes, Pid),
+        case Name =:= ?process_name_none of
+          true -> [];
+          false -> {Item, Name}
+        end;
+      status ->
+        #concuerror_info{status = Status} = TheirInfo,
+        Status;
+      trap_exit ->
+        #concuerror_info{trap_exit = TrapExit} = TheirInfo,
+        TrapExit;
+      ExpectsANumber when
+          ExpectsANumber =:= heap_size;
+          ExpectsANumber =:= reductions;
+          ExpectsANumber =:= stack_size;
+          false ->
+        42;
+      _ ->
+        error({process_info_sucks, Item})
+    end,
+  {Res, Info};
 run_built_in(erlang, register, 2, [Name, Pid],
              #concuerror_info{processes = Processes} = Info) ->
   try
