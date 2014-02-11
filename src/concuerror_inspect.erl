@@ -41,9 +41,10 @@ instrumented(Tag, Args, Location) ->
           erlang:apply(Fun, ApplyArgs);
         {call, [Module, Name, CallArgs]} ->
           erlang:apply(Module, Name, CallArgs);
-        {'receive', _} ->
-          ok
+        {'receive', [_, Timeout]} ->
+          Timeout
       end;
+    skip_timeout -> 0;
     {didit, Res} -> Res;
     {error, Reason} -> error(Reason)
   end.

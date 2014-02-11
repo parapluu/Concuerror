@@ -23,14 +23,15 @@ instrument(CoreCode) ->
   ?debug_flag(?input, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, CoreCode))]),
   Name = cerl:concrete(cerl:module_name(CoreCode)),
-  {R, Name} = cerl_trees:mapfold(fun mapfold/2, Name, CoreCode),
+  {R, {Name, _}} = cerl_trees:mapfold(fun mapfold/2, {Name, 1}, CoreCode),
   ?debug_flag(?output, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, R))]),
   R.
 
-mapfold(Tree, ModName) ->
+mapfold(Tree, {ModName, Var}) ->
+  Type = cerl:type(Tree),
   NewTree =
-    case cerl:type(Tree) of
+    case Type of
       apply ->
         Op = cerl:apply_op(Tree),
         case cerl:type(Op) =:= atom of
@@ -49,17 +50,24 @@ mapfold(Tree, ModName) ->
             inspect(call, [Module, Name, cerl:make_list(Args)], Tree)
         end;
       'receive' ->
+        Clauses = cerl:receive_clauses(Tree),
         Timeout = cerl:receive_timeout(Tree),
+        Action = cerl:receive_action(Tree),
         Fun = receive_matching_fun(Tree),
         Call = inspect('receive', [Fun, Timeout], Tree),
-        %% Replace original timeout with 0
-        Clauses = cerl:receive_clauses(Tree),
-        Action = cerl:receive_action(Tree),
-        RecTree = cerl:update_c_receive(Tree, Clauses, cerl:c_int(0), Action),
-        cerl:update_tree(Tree, seq, [[Call], [RecTree]]);
-      _Other -> Tree
+        %% Replace original timeout with a fresh variable to make it skippable
+        %% on demand.
+        TimeoutVar = cerl:c_var(Var),
+        RecTree = cerl:update_c_receive(Tree, Clauses, TimeoutVar, Action),
+        cerl:update_tree(Tree, 'let', [[TimeoutVar], [Call], [RecTree]]);
+      _ -> Tree
     end,
-  {NewTree, ModName}.
+  NewVar =
+    case Type of
+      'receive' -> Var + 1;
+      _ -> Var
+    end,
+  {NewTree, {ModName, NewVar}}.
 
 inspect(Tag, Args, Tree) ->
   CTag = cerl:c_atom(Tag),

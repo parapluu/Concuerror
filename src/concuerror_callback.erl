@@ -475,7 +475,7 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
           self() ! D;
         false -> ok
       end,
-      {doit, set_status(NewInfo, running)};
+      {skip_timeout, set_status(NewInfo, running)};
     false ->
       WaitingInfo = set_status(ReceiveInfo, waiting),
       NewInfo = notify({blocked, Location}, WaitingInfo),
