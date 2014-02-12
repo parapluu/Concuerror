@@ -146,11 +146,11 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
     NewInfo = notify(Notification, UpdatedInfo),
     {{didit, Value}, NewInfo}
   catch
-    error:Reason ->
+    throw:Reason ->
       #concuerror_info{scheduler = Scheduler} = Info,
-      exit(Scheduler, {Reason, Module, Name, Arity, Location}),
+      exit(Scheduler, {Reason, Module, Name, Arity, Args, Location}),
       receive after infinity -> ok end;
-    throw:{error, Reason} ->
+    error:Reason ->
       #concuerror_info{next_event = FEvent} = LocatedInfo,
       FEventInfo = #builtin_event{mfa = {Module, Name, Args}, crashed = true},
       FNotification = FEvent#event{event_info = FEventInfo},
@@ -187,7 +187,7 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
   case ets:lookup(Processes, Pid) =/= [] of
     false ->
       ?debug_flag(?undefined, {link_to_external, Pid}),
-      throw({error, badarg});
+      error(badarg);
     true ->
       Pid ! {link, self(), confirm},
       receive
@@ -195,16 +195,57 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
           NewInfo = Info#concuerror_info{links = ordsets:add_element(Pid, Old)},
           {true, NewInfo};
         failed ->
-          throw({error, badarg})
+          error(badarg)
       end
   end;
+run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
+  #concuerror_info{next_event = Event, processes = Processes} = Info,
+  #event{event_info = EventInfo} = Event,
+  case Type =:= process andalso is_pid(Pid) of
+    true -> ok;
+    false -> error(badarg)
+  end,
+  case ets:lookup(Processes, Pid) =/= [] of
+    false -> throw(monitoring_non_concuerror_process);
+    true -> ok
+  end,
+  Ref =
+    case EventInfo of
+      %% Replaying...
+      #builtin_event{result = OldResult} -> OldResult;
+      %% New event...
+      undefined -> make_ref()
+    end,
+  Pid ! {monitor, {Ref, self()}, confirm},
+  NewInfo =
+    receive
+      success -> Info;
+      failed ->
+        case EventInfo of
+          %% Replaying...
+          #builtin_event{} -> Info;
+          %% New event...
+          undefined ->
+            Message =
+              #message{data = {'DOWN', Ref, process, Pid, noproc},
+                       message_id = make_ref()},
+            MessageEvent =
+              #message_event{
+              cause_label = Event#event.label,
+              message = Message,
+              recipient = self()},
+            NewEvent = Event#event{special = {message, MessageEvent}},
+            Info#concuerror_info{next_event = NewEvent}
+        end
+    end,
+  {Ref, NewInfo};
 run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
   TheirInfo =
     case Pid =:= self() of
       true -> Info;
       false ->
         case process_info(Pid, dictionary) of
-          [] -> error(inspecting_the_process_dictionary_of_a_system_process);
+          [] -> throw(inspecting_the_process_dictionary_of_a_system_process);
           {dictionary, [{concuerror_info, Dict}]} -> Dict
         end
     end,
@@ -221,7 +262,7 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
         [M || #message{data = M} <- queue:to_list(Queue)];
       registered_name ->
         #concuerror_info{processes = Processes} = TheirInfo,
-        [?process_name_pat(Pid, Name)] = ets:lookup(Processes, Pid),
+        [?process_pat_pid_name(Pid, Name)] = ets:lookup(Processes, Pid),
         case Name =:= ?process_name_none of
           true -> [];
           false -> {Item, Name}
@@ -239,7 +280,7 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
           false ->
         42;
       _ ->
-        error({process_info_sucks, Item})
+        throw({process_info_sucks, Item})
     end,
   {Res, Info};
 run_built_in(erlang, register, 2, [Name, Pid],
@@ -247,13 +288,13 @@ run_built_in(erlang, register, 2, [Name, Pid],
   try
     true = is_atom(Name),
     true = is_pid(Pid) orelse is_port(Pid),
-    [] = ets:match(Processes, ?process_name_pattern(Name)),
+    [] = ets:match(Processes, ?process_match_name_to_pid(Name)),
     ?process_name_none = ets:lookup_element(Processes, Pid, ?process_name),
     false = undefined =:= Name,
     true = ets:update_element(Processes, Pid, {?process_name, Name}),
     {true, Info}
   catch
-    _:_ -> throw({error, badarg})
+    _:_ -> error(badarg)
   end;
 run_built_in(erlang, spawn, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, []}], Info);
@@ -330,7 +371,7 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
           NewEvent = Event#event{special = {message, MessageEvent}},
           ?debug_flag(?send, {send, successful}),
           {Message, Info#concuerror_info{next_event = NewEvent}};
-        false -> throw({error,badarg})
+        false -> error(badarg)
       end
   end;
 run_built_in(erlang, process_flag, 2, [trap_exit, Value],
@@ -340,20 +381,20 @@ run_built_in(erlang, process_flag, 2, [trap_exit, Value],
 run_built_in(erlang, unregister, 1, [Name],
              #concuerror_info{processes = Processes} = Info) ->
   try
-    [[Pid]] = ets:match(Processes, ?process_name_pattern(Name)),
+    [[Pid]] = ets:match(Processes, ?process_match_name_to_pid(Name)),
     true =
       ets:update_element(Processes, Pid, {?process_name, ?process_name_none}),
     {true, Info}
   catch
-    _:_ -> throw({error, badarg})
+    _:_ -> error(badarg)
   end;
 run_built_in(erlang, whereis, 1, [Name],
              #concuerror_info{processes = Processes} = Info) ->
-  case ets:match(Processes, ?process_name_pattern(Name)) of
+  case ets:match(Processes, ?process_match_name_to_pid(Name)) of
     [] ->
       case whereis(Name) =:= undefined of
         true -> {undefined, Info};
-        false -> error({system_process_not_wrapped, Name})
+        false -> throw({system_process_not_wrapped, Name})
       end;
     [[Pid]] -> {Pid, Info}
   end;
@@ -392,7 +433,7 @@ run_built_in(ets, insert, 2, [Tid, _] = Args, Info) ->
      orelse ets:lookup_element(EtsTables, Tid, ?ets_protection) =:= public)
   of
     true -> ok;
-    false -> throw({error, badarg})
+    false -> error(badarg)
   end,
   {erlang:apply(ets, insert, Args), Info};
 run_built_in(ets, lookup, 2, [Tid, _] = Args, Info) ->
@@ -404,9 +445,13 @@ run_built_in(ets, lookup, 2, [Tid, _] = Args, Info) ->
      orelse ets:lookup_element(EtsTables, Tid, ?ets_protection) =/= private)
   of
     true -> ok;
-    false -> throw({error, badarg})
+    false -> error(badarg)
   end,
-  {erlang:apply(ets, lookup, Args), Info};
+  {try
+     erlang:apply(ets, lookup, Args)
+   catch
+     error:badarg -> error(badarg)
+   end, Info};
 run_built_in(ets, delete, 1, [Tid], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
   Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
@@ -414,7 +459,7 @@ run_built_in(ets, delete, 1, [Tid], Info) ->
     Owner =:= self()
   of
     true -> ok;
-    false -> throw({error, badarg})
+    false -> error(badarg)
   end,
   Update = [{?ets_owner, none}],
   ets:update_element(EtsTables, Tid, Update),
@@ -432,12 +477,12 @@ run_built_in(ets, give_away, 3, [Tid, Pid, GiftData],
     is_pid(Pid) andalso Owner =:= Self andalso Pid =/= Self
   of
     true -> ok;
-    false -> throw({error, badarg})
+    false -> error(badarg)
   end,
   case ets:lookup(Processes, Pid) of
-    [?process_pat_stat(Pid, Status)]
+    [?process_pat_pid_status(Pid, Status)]
       when Status =/= exiting andalso Status =/= exited -> ok;
-    _ -> throw({error, badarg})
+    _ -> error(badarg)
   end,
   NewInfo =
     case EventInfo of
@@ -462,24 +507,42 @@ run_built_in(ets, give_away, 3, [Tid, Pid, GiftData],
 
 %% For other built-ins check whether replaying has the same result:
 run_built_in(Module, Name, Arity, Args, Info) ->
-  #concuerror_info{next_event = #event{event_info = EventInfo}} = Info,
+  #concuerror_info{next_event =
+                     #event{event_info = EventInfo,
+                            location = Location}
+                  } = Info,
   NewResult = erlang:apply(Module, Name, Args),
   case EventInfo of
     %% Replaying...
-    #builtin_event{result = OldResult} ->
+    #builtin_event{mfa = {M,F,OArgs}, result = OldResult} ->
       case OldResult =:= NewResult of
         true  -> {OldResult, Info};
         false ->
           #concuerror_info{logger = Logger} = Info,
-          ?log(Logger, ?lwarn,
-               "While re-running the program, a call to ~p:~p/~p with"
-               " arguments:~n  ~p~nreturned a different result:~n"
-               "Earlier result: ~p~n"
-               "  Later result: ~p~n"
-               "Concuerror cannot explore behaviours that depend on~n"
-               "data that may differ on separate runs of the program.",
-              [Module, Name, Arity, Args, OldResult, NewResult]),
-          error(inconsistent_builtin_behaviour)
+          case M =:= Module andalso F =:= Name andalso Args =:= OArgs of
+            true ->
+              ?log(Logger, ?lerror,
+                   "~nWhile re-running the program, a call to ~p:~p/~p with"
+                   " arguments:~n  ~p~nreturned a different result:~n"
+                   "Earlier result: ~p~n"
+                   "  Later result: ~p~n"
+                   "Concuerror cannot explore behaviours that depend on~n"
+                   "data that may differ on separate runs of the program.~n"
+                   "Location: ~p~n~n",
+                   [Module, Name, Arity, Args, OldResult, NewResult, Location]),
+              throw(inconsistent_builtin_behaviour);
+            false ->
+              ?log(Logger, ?lerror,
+                   "~nWhile re-running the program, a call to ~p:~p/~p with"
+                   " arguments:~n  ~p~nwas found instead of the original call~n"
+                   "to ~p:~p/~p with args:~n  ~p~n"
+                   "Concuerror cannot explore behaviours that depend on~n"
+                   "data that may differ on separate runs of the program.~n"
+                   "Location: ~p~n~n",
+                   [Module, Name, Arity, Args, M, F,
+                    length(OArgs), OArgs, Location]),
+              throw(inconsistent_builtin_behaviour)
+          end
       end;
     undefined ->
       {NewResult, Info}
@@ -648,7 +711,8 @@ process_loop(Info) ->
             true ->
               ?debug_flag(?wait, {waiting, kill_signal}),
               Scheduler ! {trapping, Trapping},
-              exiting(killed, [], Info);
+              NewInfo = process_loop(Info),
+              exiting(killed, [], NewInfo);
             false ->
               case Trapping of
                 true ->
@@ -663,7 +727,8 @@ process_loop(Info) ->
                       process_loop(Info);
                     false ->
                       ?debug_flag(?wait, {waiting, exiting_signal}),
-                      exiting(Reason, [], Info)
+                      NewInfo = process_loop(Info),
+                      exiting(Reason, [], NewInfo)
                   end
               end
           end;
@@ -785,7 +850,7 @@ ets_ownership_exiting_events(Info) ->
   %% XXX:  - transfer ets ownership and send message or delete table
   %% XXX: Mention that order of deallocation/transfer is not monitored.
   #concuerror_info{ets_tables = EtsTables} = Info,
-  case ets:match(EtsTables, ?ets_owner_to_tid_heir_pattern(self())) of
+  case ets:match(EtsTables, ?ets_match_owner_to_tid_heir(self())) of
     [] -> Info;
     Tables ->
       Fold =
@@ -847,8 +912,9 @@ monitors_exiting_events(Info) ->
       #concuerror_info{exit_reason = Reason} = Info,
       Fold =
         fun({Ref, P}, InfoIn) ->
-            MFArgs = [erlang, send, [P, {'DOWN', Ref, process, self(), Reason}]],
-            {{didit, true}, NewInfo} =
+            Msg = {'DOWN', Ref, process, self(), Reason},
+            MFArgs = [erlang, send, [P, Msg]],
+            {{didit, Msg}, NewInfo} =
               instrumented(call, MFArgs, exit, InfoIn),
             NewInfo
         end,

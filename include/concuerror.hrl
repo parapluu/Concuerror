@@ -109,13 +109,13 @@
 -type builtin_event() :: #builtin_event{}.
 
 -record(message_event, {
-          cause_label     :: label(),
-          message         :: message(),
-          patterns = none :: 'none' | receive_pattern_fun(),
-          recipient       :: pid(),
-          sender = self() :: pid(),
-          trapping        :: boolean(),
-          type = message  :: 'message' | 'exit_signal'
+          cause_label      :: label(),
+          message          :: message(),
+          patterns = none  :: 'none' | receive_pattern_fun(),
+          recipient        :: pid(),
+          sender = self()  :: pid(),
+          trapping = false :: boolean(),
+          type = message   :: 'message' | 'exit_signal'
          }).
 
 -type message_event() :: #message_event{}.
@@ -172,20 +172,24 @@
 -define(ets_owner, 2).
 -define(ets_protection, 3).
 -define(ets_heir, 4).
--define(ets_owner_to_tid_heir_pattern(Owner), {'$1', Owner, '_', '$2'}).
+-define(ets_match_owner_to_tid_heir(Owner), {'$1', Owner, '_', '$2'}).
 
 -type processes() :: ets:tid().
 -define(process_name_none, 0).
--define(new_process(Pid, Symbolic), {Pid, running, ?process_name_none, Symbolic, 0}).
--define(new_named_process(Pid, Name), {Pid, running, Name, Name, 0}).
--define(process_pat(Pid), {Pid, _, _, _, _}).
--define(process_name_pat(Pid, Name), {Pid, _, Name, _, _}).
--define(process_pat_stat(Pid, Status), {Pid, Status,    _, _, _}).
--define(process_name_pattern(Name), {'$1', '_', Name, '_', '_'}).
+-define(new_process(Pid, Symbolic),
+        {Pid, running, ?process_name_none, Symbolic, 0, regular}).
+-define(new_system_process(Pid, Name),
+        {Pid, running, Name, Name, 0, system}).
+-define(process_pat_pid(Pid),                {Pid,      _,    _, _, _,    _}).
+-define(process_pat_pid_name(Pid, Name),     {Pid,      _, Name, _, _,    _}).
+-define(process_pat_pid_status(Pid, Status), {Pid, Status,    _, _, _,    _}).
+-define(process_pat_pid_kind(Pid, Kind),     {Pid,      _,    _, _, _, Kind}).
 -define(process_status, 2).
 -define(process_name, 3).
 -define(process_symbolic, 4).
 -define(process_children, 5).
+-define(process_kind, 6).
+-define(process_match_name_to_pid(Name),  {'$1',   '_', Name, '_', '_', '_'}).
 
 %%------------------------------------------------------------------------------
 
@@ -224,6 +228,7 @@
                {N, A} <-
                    [
                     {keyfind, 3},
+                    {keymember, 3},
                     {keysearch, 3},
                     {member, 2},
                     {reverse, 2}

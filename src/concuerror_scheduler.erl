@@ -112,6 +112,7 @@ backend_run(Options) ->
        trace = [InitialTrace]},
   %%meck:new(file, [unstick, passthrough]),
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
+  assert_no_messages(),
   {Status, FinalState} =
     try
       ?debug(Logger, "Starting exploration...~n",[]),
@@ -174,6 +175,7 @@ get_next_event(#scheduler_state{logger = Logger, trace = [Last|_]} = State) ->
      sleeping         = Sleeping,
      wakeup_tree      = WakeupTree
     } = Last,
+  assert_no_messages(),
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
@@ -715,9 +717,17 @@ replay_prefix(Trace, State) ->
      first_process = {FirstProcess, Target},
      processes = Processes
     } = State,
-  Fold = fun(?process_pat(P), _) -> P ! reset, ok end,
+  Fold =
+    fun(?process_pat_pid_kind(P, Kind), _) ->
+        case Kind =:= regular of
+          true -> P ! reset;
+          false -> ok
+        end,
+        ok
+    end,
   ok = ets:foldl(Fold, ok, Processes),
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
+  assert_no_messages(),
   ok = replay_prefix_aux(lists:reverse(Trace), State).
 
 replay_prefix_aux([_], _State) ->
@@ -744,7 +754,7 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
 %% XXX: Stub
 cleanup(#scheduler_state{logger = Logger, processes = Processes} = State) ->
   %% Kill still running processes, deallocate tables, etc...
-  Fold = fun(?process_pat(P), true) -> unlink(P), exit(P, kill) end,
+  Fold = fun(?process_pat_pid(P), true) -> unlink(P), exit(P, kill) end,
   true = ets:foldl(Fold, true, Processes),
   ?trace(Logger, "Reached the end!~n",[]),
   State.
@@ -876,7 +886,7 @@ system_processes_wrappers(Processes) ->
     fun(Name) ->
         Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Scheduler) end,
         Pid = spawn_link(Fun),
-        ?new_named_process(Pid, Name)
+        ?new_system_process(Pid, Name)
     end,
   ets:insert(Processes, [Map(Name) || Name <- registered()]).
 
@@ -901,3 +911,10 @@ system_wrapper_loop(Name, Wrapped, Scheduler) ->
 system_ets_entries(EtsTables) ->
   Map = fun(Tid) -> ?new_system_ets_table(Tid, ets:info(Tid, protection)) end,
   ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
+
+assert_no_messages() ->
+  receive
+    Msg -> error({pending_message, Msg})
+  after
+    0 -> ok
+  end.

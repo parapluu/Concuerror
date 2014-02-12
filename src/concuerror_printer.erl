@@ -42,7 +42,7 @@ pretty_aux({I, #event{} = Event}, {F, Acc}) ->
     } = Event,
   TraceString =
     case I =/= 0 of
-      true -> io_lib:format("~3w: ", [I]);
+      true -> io_lib:format("~4w: ", [I]);
       false -> ""
     end,
   ActorString =
