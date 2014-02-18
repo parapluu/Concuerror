@@ -8,6 +8,7 @@
           messages_new = queue:new() :: queue(),
           messages_old = queue:new() :: queue(),
           monitors = []              :: ordsets:ordset({reference(), pid()}),
+          monitoring = []            :: orddict:orddict({reference(), pid()}),
           next_event = none          :: 'none' | event(),
           processes                  :: processes(),
           scheduler                  :: pid(),

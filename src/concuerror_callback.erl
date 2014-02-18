@@ -184,30 +184,28 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
 
 run_built_in(erlang, link, 1, [Pid], Info) ->
   #concuerror_info{links = Old, processes = Processes} = Info,
-  case ets:lookup(Processes, Pid) =/= [] of
-    false ->
+  case ets:lookup(Processes, Pid) of
+    [] ->
       ?debug_flag(?undefined, {link_to_external, Pid}),
       error(badarg);
-    true ->
-      Pid ! {link, self(), confirm},
-      receive
-        success ->
+    [?process_pat_pid_status(Pid, Status)] ->
+      case is_active(Status) of
+        true ->
+          Pid ! {link, self()},
           NewInfo = Info#concuerror_info{links = ordsets:add_element(Pid, Old)},
           {true, NewInfo};
-        failed ->
+        false ->
           error(badarg)
       end
   end;
 run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
-  #concuerror_info{next_event = Event, processes = Processes} = Info,
-  #event{event_info = EventInfo} = Event,
+  #concuerror_info{
+     monitoring = Monitoring,
+     next_event = #event{event_info = EventInfo} = Event,
+     processes = Processes} = Info,
   case Type =:= process andalso is_pid(Pid) of
     true -> ok;
     false -> error(badarg)
-  end,
-  case ets:lookup(Processes, Pid) =/= [] of
-    false -> throw(monitoring_non_concuerror_process);
-    true -> ok
   end,
   Ref =
     case EventInfo of
@@ -216,26 +214,36 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
       %% New event...
       undefined -> make_ref()
     end,
-  Pid ! {monitor, {Ref, self()}, confirm},
   NewInfo =
-    receive
-      success -> Info;
-      failed ->
+    case ets:lookup(Processes, Pid) of
+      [] -> throw(monitoring_non_concuerror_process);
+      [?process_pat_pid_status(Pid, Status)] ->
+        IsActive = is_active(Status),
+        case IsActive of
+          true -> Pid ! {monitor, {Ref, self()}};
+          false -> ok
+        end,
         case EventInfo of
           %% Replaying...
           #builtin_event{} -> Info;
           %% New event...
           undefined ->
-            Message =
-              #message{data = {'DOWN', Ref, process, Pid, noproc},
-                       message_id = make_ref()},
-            MessageEvent =
-              #message_event{
-              cause_label = Event#event.label,
-              message = Message,
-              recipient = self()},
-            NewEvent = Event#event{special = {message, MessageEvent}},
-            Info#concuerror_info{next_event = NewEvent}
+            case IsActive of
+              false ->
+                Message =
+                  #message{data = {'DOWN', Ref, process, Pid, noproc},
+                           message_id = make_ref()},
+                MessageEvent =
+                  #message_event{
+                  cause_label = Event#event.label,
+                  message = Message,
+                  recipient = self()},
+                NewEvent = Event#event{special = {message, MessageEvent}},
+                Info#concuerror_info{next_event = NewEvent};
+              true ->
+                NewMonitoring = orddict:store(Ref, Pid, Monitoring),
+                Info#concuerror_info{monitoring = NewMonitoring}
+            end
         end
     end,
   {Ref, NewInfo};
@@ -328,15 +336,15 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
     true ->
       {Pid, Ref} = Result,
       Pid ! {start, Module, Name, Args},
-      Pid ! {monitor, {Ref, self()}, no_confirm};
+      Pid ! {monitor, {Ref, self()}};
     false ->
       Pid = Result,
       Pid ! {start, Module, Name, Args}
   end,
   case lists:member(link, SpawnOpts) of
     true ->
-      Pid ! {link, self(), no_confirm},
-      self() ! {link, Pid, no_confirm};
+      Pid ! {link, self()},
+      self() ! {link, Pid};
     false ->
       ok
   end,
@@ -736,21 +744,11 @@ process_loop(Info) ->
           Scheduler ! {trapping, Trapping},
           process_loop(Info)
       end;
-    {link, Pid, Confirm} ->
+    {link, Pid} ->
       ?debug_flag(?wait, {waiting, got_link}),
-      NewInfo =
-        case is_active(Info) of
-          true ->
-            case Confirm =:= confirm of
-              true -> Pid ! success;
-              false -> ok
-            end,
-            Old = Info#concuerror_info.links,
-            Info#concuerror_info{links = ordsets:add_element(Pid, Old)};
-          false ->
-            Pid ! failed,
-            Info
-        end,
+      true = is_active(Info),
+      Old = Info#concuerror_info.links,
+      NewInfo = Info#concuerror_info{links = ordsets:add_element(Pid, Old)},
       process_loop(NewInfo);
     {message, Message} ->
       ?debug_flag(?wait, {waiting, got_message}),
@@ -770,21 +768,12 @@ process_loop(Info) ->
           ?debug_flag(?receive_, {message_ignored, Info#concuerror_info.status}),
           process_loop(Info)
       end;
-    {monitor, {_Ref, Pid} = Monitor, Confirm} ->
+    {monitor, Monitor} ->
       ?debug_flag(?wait, {waiting, got_monitor}),
+      true = is_active(Info),
+      Old = Info#concuerror_info.monitors,
       NewInfo =
-        case is_active(Info) of
-          true ->
-            case Confirm =:= confirm of
-              true -> Pid ! success;
-              false -> ok
-            end,
-            Old = Info#concuerror_info.monitors,
-            Info#concuerror_info{monitors = ordsets:add_element(Monitor, Old)};
-          false ->
-            Pid ! failed,
-            Info
-        end,
+        Info#concuerror_info{monitors = ordsets:add_element(Monitor, Old)},
       process_loop(NewInfo);
     reset ->
       ?debug_flag(?wait, {waiting, reset}),
@@ -955,6 +944,8 @@ set_status(#concuerror_info{processes = Processes} = Info, Status) ->
   Info#concuerror_info{status = Status}.
 
 is_active(#concuerror_info{status = Status}) ->
+  is_active(Status);
+is_active(Status) when is_atom(Status) ->
   (Status =:= running) orelse (Status =:= waiting).
 
 fix_stacktrace(#concuerror_info{stacktop = Top}) ->
