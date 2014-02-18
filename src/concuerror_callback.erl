@@ -757,22 +757,7 @@ process_loop(Info) ->
         init_concuerror_info(Info),
       erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
-      erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo, Symbol]);
-    deadlock_poll ->
-      Info
-    %% {system, #event{actor = {_, Recipient}, event_info = EventInfo} = Event} ->
-    %%   #message_event{message = Message, type = Type} = EventInfo,
-    %%   #message{data = Data} = Message,
-    %%   Recipient ! Data,
-    %%   receive
-    %%     ReplyData ->
-    %%       ReplyMessage = #message{data = ReplyData, message_id = make_ref()},
-    %%         MessageEvent =
-    %%           #message_event{
-    %%              cause_label = Label,
-    %%              message = Message,
-    %%              recipient = P},
-    %%         add_message(MessageEvent, Acc)
+      erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo, Symbol])
   end.
 
 %%------------------------------------------------------------------------------
