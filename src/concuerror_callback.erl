@@ -571,9 +571,11 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
       handle_receive(PatternFun, Timeout, Location, NewInfo)
   end.
 
-has_matching_or_after(PatternFun, Timeout,
-                      #concuerror_info{messages_new = NewMessages,
-                                       messages_old = OldMessages} = Info) ->
+has_matching_or_after(PatternFun, Timeout, Info) ->
+  #concuerror_info{
+                    'after-timeout' = AfterTimeout,
+                    messages_new = NewMessages,
+                    messages_old = OldMessages} = Info,
   ?debug_flag(?receive_, {matching_or_after, [NewMessages, OldMessages]}),
   {Result, NewOldMessages} =
     fold_with_patterns(PatternFun, NewMessages, OldMessages),
@@ -586,15 +588,15 @@ has_matching_or_after(PatternFun, Timeout,
         }
       };
     true ->
-      case Timeout =/= infinity of
-        true ->
+      case Timeout =:= infinity orelse Timeout > AfterTimeout of
+        false ->
           {{true, 'after'},
            Info#concuerror_info{
              messages_new = NewOldMessages,
              messages_old = queue:new()
             }
           };
-        false ->
+        true ->
           {false,
            Info#concuerror_info{
              messages_new = queue:new(),
