@@ -434,41 +434,15 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   {Tid, Info};
 run_built_in(ets, insert, 2, [Tid, _] = Args, Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
-  Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
-  case
-    is_pid(Owner) andalso
-    (Owner =:= self()
-     orelse ets:lookup_element(EtsTables, Tid, ?ets_protection) =:= public)
-  of
-    true -> ok;
-    false -> error(badarg)
-  end,
+  ok = check_ets_access_rights(Tid, self(), insert, EtsTables),
   {erlang:apply(ets, insert, Args), Info};
 run_built_in(ets, lookup, 2, [Tid, _] = Args, Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
-  Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
-  case
-    is_pid(Owner) andalso
-    (Owner =:= self()
-     orelse ets:lookup_element(EtsTables, Tid, ?ets_protection) =/= private)
-  of
-    true -> ok;
-    false -> error(badarg)
-  end,
-  {try
-     erlang:apply(ets, lookup, Args)
-   catch
-     error:badarg -> error(badarg)
-   end, Info};
+  ok = check_ets_access_rights(Tid, self(), lookup, EtsTables),
+  {erlang:apply(ets, lookup, Args), Info};
 run_built_in(ets, delete, 1, [Tid], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
-  Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
-  case
-    Owner =:= self()
-  of
-    true -> ok;
-    false -> error(badarg)
-  end,
+  ok = check_ets_access_rights(Tid, self(), delete, EtsTables),
   Update = [{?ets_owner, none}],
   ets:update_element(EtsTables, Tid, Update),
   ets:delete_all_objects(Tid),
@@ -908,6 +882,33 @@ monitors_exiting_events(Info) ->
             NewInfo
         end,
       lists:foldl(Fold, Info, Monitors)
+  end.
+
+%%------------------------------------------------------------------------------
+
+check_ets_access_rights(Tid, Pid, Op, EtsTables) ->
+  Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
+  case
+    is_pid(Owner)
+    andalso
+    (Owner =:= Pid
+     orelse
+     case ets_ops_access_rights_map(Op) of
+       write -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =:= public;
+       read -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =/= private;
+       delete -> false;
+       _ -> throw(specify_ets_rights)
+     end)
+  of
+    true -> ok;
+    false -> error(badarg)
+  end.
+
+ets_ops_access_rights_map(Op) ->
+  case Op of
+    insert -> write;
+    lookup -> read;
+    delete -> delete
   end.
 
 %%------------------------------------------------------------------------------
