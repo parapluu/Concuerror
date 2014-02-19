@@ -741,12 +741,12 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
     Event = NewEvent
   catch
     A:B ->
-      ?debug(Logger,
-             "replay mismatch (~p):~n"
-             "~p~n"
-             "  original: ~p~n"
-             "  new     : ~p~n",
-             [A, B, Event, NewEvent]),
+      ?log(Logger, ?lerror,
+           "replay mismatch (~p):~n"
+           "~p~n"
+           "  original: ~p~n"
+           "  new     : ~p~n",
+           [A, B, Event, NewEvent]),
       error(replay_crashed)
   end,
   replay_prefix_aux(Rest, State).

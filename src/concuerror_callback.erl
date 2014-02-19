@@ -611,8 +611,11 @@ fold_with_patterns(PatternFun, NewMessages, OldMessages) ->
   case Value of
     {value, #message{data = Data} = Message} ->
       case PatternFun(Data) of
-        true  -> {{true, Message}, queue:join(OldMessages, NewNewMessages)};
+        true  ->
+          ?debug_flag(?receive_, matches),
+          {{true, Message}, queue:join(OldMessages, NewNewMessages)};
         false ->
+          ?debug_flag(?receive_, doesnt_match),
           NewOldMessages = queue:in(Message, OldMessages),
           fold_with_patterns(PatternFun, NewNewMessages, NewOldMessages)
       end;
@@ -628,7 +631,7 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
 
 process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
   true = ets:insert(Processes, ?new_process(self(), Symbolic)),
-  ?debug_flag(?wait, {top_waiting, self()}),
+  ?debug_flag(?wait, top_waiting),
   receive
     {start, Module, Name, Args} ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
@@ -649,7 +652,7 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
               erase(),
               [put(K,V) || {K,V} <- Escaped],
               Stacktrace = fix_stacktrace(EndInfo),
-              ?debug_flag(?exit, {exit, self(), Class, Reason, Stacktrace}),
+              ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
               NewReason =
                 case Class of
                   throw -> {{nocatch, Reason}, Stacktrace};
@@ -663,7 +666,7 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
   end.
 
 process_loop(Info) ->
-  ?debug_flag(?wait, {waiting, self()}),
+  ?debug_flag(?wait, waiting),
   receive
     #event{event_info = EventInfo} = Event ->
       Status = Info#concuerror_info.status,

@@ -4,8 +4,11 @@
 -ifdef(SENSITIVE_DEBUG).
 -define(display(A), erlang:display({A, ?MODULE, ?LINE})).
 -else.
--define(display(A), io:format(standard_error, "~p\n", [A])).
--define(display(A, B), io:format(standard_error, A, B)).
+-define(display(A, B),
+        io:format(standard_error,
+                  "# ~p ~p l~p: "++A++"~n",
+                  [self(), ?MODULE, ?LINE|B])).
+-define(display(A), ?display("~w",[A])).
 -endif.
 %%------------------------------------------------------------------------------
 -ifdef(DEBUG_FLAGS).
