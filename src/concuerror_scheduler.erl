@@ -112,7 +112,6 @@ backend_run(Options) ->
        trace = [InitialTrace]},
   %%meck:new(file, [unstick, passthrough]),
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
-  assert_no_messages(),
   {Status, FinalState} =
     try
       ?debug(Logger, "Starting exploration...~n",[]),
@@ -175,7 +174,6 @@ get_next_event(#scheduler_state{logger = Logger, trace = [Last|_]} = State) ->
      sleeping         = Sleeping,
      wakeup_tree      = WakeupTree
     } = Last,
-  assert_no_messages(),
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
@@ -727,7 +725,6 @@ replay_prefix(Trace, State) ->
     end,
   ok = ets:foldl(Fold, ok, Processes),
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
-  assert_no_messages(),
   ok = replay_prefix_aux(lists:reverse(Trace), State).
 
 replay_prefix_aux([_], _State) ->
@@ -770,6 +767,7 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, _State) ->
   #event{event_info = EventInfo} = Event,
   #message_event{message = Message, type = Type} = EventInfo,
   %% Message delivery always succeeds
+  assert_no_messages(),
   Recipient ! {Type, Message},
   UpdatedEvent =
     receive
@@ -805,6 +803,7 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, _State) ->
     end,
   {ok, UpdatedEvent};
 get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
+  assert_no_messages(),
   Pid ! Event,
   get_next_event_backend_loop(Event, State).
 
