@@ -545,16 +545,16 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   case Match of
     {true, MessageOrAfter} ->
       #concuerror_info{
-         next_event = NextEvent,
-         trap_exit = Trapping
-        } = UpdatedInfo =
+      next_event = NextEvent,
+      trap_exit = Trapping
+     } = UpdatedInfo =
         add_location_info(Location, ReceiveInfo),
       ReceiveEvent =
         #receive_event{
-           message = MessageOrAfter,
-           patterns = PatternFun,
-           timeout = Timeout,
-           trapping = Trapping},
+        message = MessageOrAfter,
+        patterns = PatternFun,
+        timeout = Timeout,
+        trapping = Trapping},
       {Special, CreateMessage} =
         case MessageOrAfter of
           #message{data = Data, message_id = Id} ->
