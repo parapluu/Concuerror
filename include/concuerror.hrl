@@ -84,6 +84,39 @@
 -define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------
 
+-type message_info() :: ets:tid().
+-define(new_message_info(Id), {Id, undefined, undefined, undefined}).
+-define(message_pattern, 2).
+-define(message_sent, 3).
+-define(message_delivered, 4).
+
+-type ets_tables() :: ets:tid().
+-define(new_ets_table(Tid, Protection), {Tid, unknown, Protection, unknown}).
+-define(new_system_ets_table(Tid, Protect), {Tid, self(), Protect, unknown}).
+-define(ets_owner, 2).
+-define(ets_protection, 3).
+-define(ets_heir, 4).
+-define(ets_match_owner_to_tid_heir(Owner), {'$1', Owner, '_', '$2'}).
+
+-type processes() :: ets:tid().
+-define(process_name_none, 0).
+-define(new_process(Pid, Symbolic),
+        {Pid, running, ?process_name_none, Symbolic, 0, regular}).
+-define(new_system_process(Pid, Name),
+        {Pid, running, Name, Name, 0, system}).
+-define(process_pat_pid(Pid),                {Pid,      _,    _, _, _,    _}).
+-define(process_pat_pid_name(Pid, Name),     {Pid,      _, Name, _, _,    _}).
+-define(process_pat_pid_status(Pid, Status), {Pid, Status,    _, _, _,    _}).
+-define(process_pat_pid_kind(Pid, Kind),     {Pid,      _,    _, _, _, Kind}).
+-define(process_status, 2).
+-define(process_name, 3).
+-define(process_symbolic, 4).
+-define(process_children, 5).
+-define(process_kind, 6).
+-define(process_match_name_to_pid(Name),  {'$1',   '_', Name, '_', '_', '_'}).
+
+%%------------------------------------------------------------------------------
+
 -type options() :: proplists:proplist().
 
 -type label() :: reference().
@@ -128,16 +161,17 @@
           message            :: message() | 'after',
           patterns           :: receive_pattern_fun(),
           recipient = self() :: pid(),
-          timeout            :: timeout(),
-          trapping           :: boolean()
+          timeout = infinity :: timeout(),
+          trapping = false   :: boolean()
          }).
 
 -type receive_event() :: #receive_event{}.
 
 -record(exit_event, {
-          actor = self() :: pid(),
-          reason         :: term(),
-          stacktrace     :: [term()]
+          actor = self()            :: pid(),
+          name = ?process_name_none :: ?process_name_none | atom(),
+          reason = normal           :: term(),
+          stacktrace = []           :: [term()]
          }).
 
 -type exit_event() :: #exit_event{}.
@@ -162,37 +196,6 @@
 -type concuerror_warning_info() :: {'crash', pid(), index()} |
                                    {'deadlock', [pid()]} |
                                    {'sleep_set_block', [pid()]}.
-
--type message_info() :: ets:tid().
--define(new_message_info(Id), {Id, undefined, undefined, undefined}).
--define(message_pattern, 2).
--define(message_sent, 3).
--define(message_delivered, 4).
-
--type ets_tables() :: ets:tid().
--define(new_ets_table(Tid, Protection), {Tid, unknown, Protection, unknown}).
--define(new_system_ets_table(Tid, Protect), {Tid, self(), Protect, unknown}).
--define(ets_owner, 2).
--define(ets_protection, 3).
--define(ets_heir, 4).
--define(ets_match_owner_to_tid_heir(Owner), {'$1', Owner, '_', '$2'}).
-
--type processes() :: ets:tid().
--define(process_name_none, 0).
--define(new_process(Pid, Symbolic),
-        {Pid, running, ?process_name_none, Symbolic, 0, regular}).
--define(new_system_process(Pid, Name),
-        {Pid, running, Name, Name, 0, system}).
--define(process_pat_pid(Pid),                {Pid,      _,    _, _, _,    _}).
--define(process_pat_pid_name(Pid, Name),     {Pid,      _, Name, _, _,    _}).
--define(process_pat_pid_status(Pid, Status), {Pid, Status,    _, _, _,    _}).
--define(process_pat_pid_kind(Pid, Kind),     {Pid,      _,    _, _, _, Kind}).
--define(process_status, 2).
--define(process_name, 3).
--define(process_symbolic, 4).
--define(process_children, 5).
--define(process_kind, 6).
--define(process_match_name_to_pid(Name),  {'$1',   '_', Name, '_', '_', '_'}).
 
 %%------------------------------------------------------------------------------
 

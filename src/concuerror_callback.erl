@@ -770,22 +770,30 @@ process_loop(Info) ->
 
 exiting(Reason, Stacktrace, Info) ->
   %% XXX: The ordering of the following events has to be verified (e.g. R16B03):
-  %% XXX:  - process marked as exiting, new messages are not delivered
+  %% XXX:  - process marked as exiting, new messages are not delivered, name is
+  %%         unregistered
   %% XXX:  - cancel timers
   %% XXX:  - transfer ets ownership and send message or delete table
-  %% XXX:  - unregister name
   %% XXX:  - send link signals
   %% XXX:  - send monitor messages
   ?debug_flag(?exit, {going_to_exit, Reason}),
   LocatedInfo = #concuerror_info{next_event = Event} =
     add_location_info(exit, set_status(Info, exiting)),
+  {MaybeName, Info} =
+    run_built_in(erlang, process_info, 2, [self(), registered_name], Info),
+  Name =
+    case MaybeName of
+      [] -> ?process_name_none;
+      {registered_name, N} -> N
+    end,
   Notification =
     Event#event{
       event_info =
         #exit_event{
-           reason = Reason,
-           stacktrace = Stacktrace
-          }
+        name = Name,
+        reason = Reason,
+        stacktrace = Stacktrace
+       }
      },
   ExitInfo = add_location_info(exit, notify(Notification, LocatedInfo)),
   exiting_side_effects(ExitInfo#concuerror_info{exit_reason = Reason}).
@@ -794,7 +802,6 @@ exiting_side_effects(Info) ->
   FunFold = fun(Fun, Acc) -> Fun(Acc) end,
   FunList =
     [fun ets_ownership_exiting_events/1,
-     fun registration_exiting_events/1,
      fun links_exiting_events/1,
      fun monitors_exiting_events/1],
   FinalInfo = #concuerror_info{next_event = Event} =
@@ -830,18 +837,6 @@ ets_ownership_exiting_events(Info) ->
             end
         end,
       lists:foldl(Fold, Info, Tables)
-  end.
-
-registration_exiting_events(Info) ->
-  #concuerror_info{processes = Processes} = Info,
-  Name = ets:lookup_element(Processes, self(), ?process_name),
-  case Name =:= ?process_name_none of
-    true -> Info;
-    false ->
-      MFArgs = [erlang, unregister, [Name]],
-      {{didit, true}, NewInfo} =
-        instrumented(call, MFArgs, exit, Info),
-      NewInfo
   end.
 
 links_exiting_events(Info) ->
@@ -934,7 +929,13 @@ add_location_info(Location, #concuerror_info{next_event = Event} = Info) ->
   Info#concuerror_info{next_event = Event#event{location = Location}}.
 
 set_status(#concuerror_info{processes = Processes} = Info, Status) ->
-  true = ets:update_element(Processes, self(), {?process_status, Status}),
+  MaybeDropName =
+    case Status =:= exiting of
+      true -> [{?process_name, ?process_name_none}];
+      false -> []
+    end,
+  Updates = [{?process_status, Status}|MaybeDropName],
+  true = ets:update_element(Processes, self(), Updates),
   Info#concuerror_info{status = Status}.
 
 is_active(#concuerror_info{status = Status}) ->

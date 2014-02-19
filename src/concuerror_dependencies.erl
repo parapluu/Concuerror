@@ -107,6 +107,8 @@ dependent_exit(_Exit, {erlang, process_flag, _}) ->
   false;
 dependent_exit(_Exit, {erlang, spawn, _}) ->
   false;
+dependent_exit(#exit_event{name = Name}, {erlang, whereis, [WhereIs]}) ->
+  WhereIs =:= Name;
 dependent_exit(#exit_event{actor = Exiting}, {ets, give_away, [_, Pid, _]}) ->
   Exiting =:= Pid;
 dependent_exit(_Exit, {ets, _, _}) ->
