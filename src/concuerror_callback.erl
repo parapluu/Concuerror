@@ -101,7 +101,13 @@ instrumented(apply, [Fun, Args], Location, Info) ->
       {doit, Info}
   end;
 instrumented('receive', [PatternFun, Timeout], Location, Info) ->
-  handle_receive(PatternFun, Timeout, Location, Info).
+  #concuerror_info{'after-timeout' = AfterTimeout} = Info,
+  RealTimeout =
+    case Timeout =:= infinity orelse Timeout > AfterTimeout of
+      false -> Timeout;
+      true -> infinity
+    end,
+  handle_receive(PatternFun, RealTimeout, Location, Info).
 
 instrumented_aux(Tag, Module, Name, Arity, Args, Location, Info) ->
   case
@@ -572,11 +578,8 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   end.
 
 has_matching_or_after(PatternFun, Timeout, Info) ->
-  #concuerror_info{
-                    'after-timeout' = AfterTimeout,
-                    messages_new = NewMessages,
-                    messages_old = OldMessages} = Info,
-  ?debug_flag(?receive_, {matching_or_after, [NewMessages, OldMessages]}),
+  #concuerror_info{messages_new = NewMessages,
+                   messages_old = OldMessages} = Info,
   {Result, NewOldMessages} =
     fold_with_patterns(PatternFun, NewMessages, OldMessages),
   case Result =:= false of
@@ -588,7 +591,7 @@ has_matching_or_after(PatternFun, Timeout, Info) ->
         }
       };
     true ->
-      case Timeout =:= infinity orelse Timeout > AfterTimeout of
+      case Timeout =:= infinity of
         false ->
           {{true, 'after'},
            Info#concuerror_info{
