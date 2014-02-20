@@ -7,6 +7,12 @@
 %%------------------------------------------------------------------------------
 
 -define(DEBUG, true).
+% -define(UNDEFINED_ERROR, true).
+-ifdef(UNDEFINED_ERROR).
+-define(undefined_error, error(undefined_dependency)).
+-else.
+-define(undefined_error, ok).
+-endif.
 -include("concuerror.hrl").
 
 %%------------------------------------------------------------------------------
@@ -93,6 +99,7 @@ dependent(_EventA, #receive_event{}) ->
 %% XXX: Event may be undefined in a wakeup tree.
 dependent(_EventA, _EventB) ->
   ?debug("UNSPECIFIED DEPENDENCY!\n~p\n~p\n", [_EventA, _EventB]),
+  ?undefined_error,
   true.
 
 %%------------------------------------------------------------------------------
@@ -115,6 +122,7 @@ dependent_exit(_Exit, {ets, _, _}) ->
   false;
 dependent_exit(_Exit, _MFA) ->
   ?debug("UNSPECIFIED EXIT DEPENDENCY!\n~p\n", [_MFA]),
+  ?undefined_error,
   true.
 
 %%------------------------------------------------------------------------------
@@ -228,6 +236,7 @@ dependent_built_in(#builtin_event{mfa = {ets,_,_}} = Ets,
 dependent_built_in(#builtin_event{mfa = {M1,_,_}} = _MFA1,
                    #builtin_event{mfa = {M2,_,_}} = _MFA2) ->
   ?debug("UNSPECIFIED DEPENDENCY!\n~p\n~p\n", [_MFA1, _MFA2]),
+  ?undefined_error,
   M1 =:= M2.
 
 %%------------------------------------------------------------------------------
