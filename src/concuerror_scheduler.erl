@@ -5,9 +5,6 @@
 %% User interface
 -export([run/1]).
 
-%% Process interface
--export([ets_new/3]).
-
 %%------------------------------------------------------------------------------
 
 %%-define(DEBUG, true).
@@ -44,7 +41,6 @@
 
 -record(scheduler_state, {
           current_warnings = []        :: [concuerror_warning_info()],
-          ets_tables                   :: ets_tables(),
           first_process                :: {pid(), mfargs()},
           logger                       :: pid(),
           message_info                 :: message_info(),
@@ -79,10 +75,8 @@ run(Options) ->
 
 backend_run(Options) ->
   true = code:add_pathz(code:root_dir()++"/erts/preloaded/ebin"),
-  EtsTables = ets:new(ets_tables, [public]),
   Processes = ets:new(processes, [public]),
   system_processes_wrappers(Processes),
-  system_ets_entries(EtsTables),
   LoggerOptions =
     [{processes, Processes} |
      [O || O <- Options, concuerror_options:filter_options('logger', O)]
@@ -91,8 +85,7 @@ backend_run(Options) ->
   ProcessOptions0 =
     [O || O <- Options, concuerror_options:filter_options('process', O)],
   ProcessOptions =
-    [{ets_tables, EtsTables},
-     {logger, Logger},
+    [{logger, Logger},
      {processes, Processes}|
      ProcessOptions0],
   ?debug(Logger, "Starting first process...~n",[]),
@@ -102,7 +95,6 @@ backend_run(Options) ->
   InitialTrace = #trace_state{active_processes = [FirstProcess]},
   InitialState =
     #scheduler_state{
-       ets_tables = EtsTables,
        first_process = {FirstProcess, Target},
        logger = Logger,
        message_info = ets:new(message_info, [private]),
@@ -813,40 +805,10 @@ get_next_event_backend_loop(Trigger, State) ->
     exited -> exited;
     {blocked, _} -> retry;
     #event{} = Event -> {ok, Event};
-    {ets_new, Pid, Name, Options} ->
-      #scheduler_state{ets_tables = EtsTables} = State,
-      %% Looks like the last option is the one actually used.
-      ProtectFold =
-        fun(Option, Selected) ->
-            case Option of
-              O when O =:= 'private';
-                     O =:= 'protected';
-                     O =:= 'public' -> O;
-              _ -> Selected
-            end
-        end,
-      Protection = lists:foldl(ProtectFold, protected, Options),
-      Reply =
-        try
-          Tid = ets:new(Name, Options ++ [public]),
-          ets:insert(EtsTables, ?new_ets_table(Tid, Protection)),
-          {ok, Tid}
-        catch
-          error:Reason ->
-            #scheduler_state{logger = Logger} = State,
-            ?trace(Logger, "ets:new crash scheduler: ~p~n", [Reason]),
-            {error, Reason}
-        end,
-      Pid ! {ets_new, Reply},
+    {'ETS-TRANSFER', _, _, given_to_scheduler} ->
       get_next_event_backend_loop(Trigger, State)
   after
     Timeout -> error({timeout, Trigger})
-  end.
-
-ets_new(Scheduler, Name, Options) ->
-  Scheduler ! {ets_new, self(), Name, Options},
-  receive
-    {ets_new, Reply} -> Reply
   end.
 
 collect_deadlock_info(ActiveProcesses) ->
@@ -906,10 +868,6 @@ system_wrapper_loop(Name, Wrapped, Scheduler) ->
       end
   end,
   system_wrapper_loop(Name, Wrapped, Scheduler).
-
-system_ets_entries(EtsTables) ->
-  Map = fun(Tid) -> ?new_system_ets_table(Tid, ets:info(Tid, protection)) end,
-  ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
 
 assert_no_messages() ->
   receive

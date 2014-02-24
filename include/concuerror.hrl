@@ -115,6 +115,8 @@
 -define(process_kind, 6).
 -define(process_match_name_to_pid(Name),  {'$1',   '_', Name, '_', '_', '_'}).
 
+-type links() :: ets:tid().
+-type monitors() :: ets:tid().
 %%------------------------------------------------------------------------------
 
 -type options() :: proplists:proplist().
@@ -169,6 +171,8 @@
 
 -record(exit_event, {
           actor = self()            :: pid(),
+          links = []                :: [pid()],
+          monitors = []             :: [{reference(), pid()}],
           name = ?process_name_none :: ?process_name_none | atom(),
           reason = normal           :: term(),
           stacktrace = []           :: [term()]

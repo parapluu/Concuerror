@@ -50,13 +50,19 @@
 -spec spawn_first_process(options()) -> pid().
 
 spawn_first_process(Options) ->
-  [AfterTimeout, EtsTables, Logger, Processes] =
-    get_properties(['after-timeout', ets_tables, logger, processes], Options),
+  [AfterTimeout, Logger, Processes] =
+    get_properties(['after-timeout', logger, processes], Options),
+  [Monitors, Links] =
+    [ets:new(Name, [bag, public]) || Name <- [monitors, links]],
+  EtsTables = ets:new(ets_tables, [public]),
+  system_ets_entries(EtsTables),
   InitialInfo =
     #concuerror_info{
        'after-timeout' = AfterTimeout,
        ets_tables = EtsTables,
+       links = Links,
        logger = Logger,
+       monitors = Monitors,
        processes = Processes,
        scheduler = self()
       },
@@ -189,7 +195,7 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
   end;
 
 run_built_in(erlang, link, 1, [Pid], Info) ->
-  #concuerror_info{links = Old, processes = Processes} = Info,
+  #concuerror_info{links = Links, processes = Processes} = Info,
   case ets:lookup(Processes, Pid) of
     [] ->
       ?debug_flag(?undefined, {link_to_external, Pid}),
@@ -197,16 +203,16 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
     [?process_pat_pid_status(Pid, Status)] ->
       case is_active(Status) of
         true ->
-          Pid ! {link, self()},
-          NewInfo = Info#concuerror_info{links = ordsets:add_element(Pid, Old)},
-          {true, NewInfo};
+          Self = self(),
+          true = ets:insert(Links, [{Self, Pid}, {Pid, Self}]),
+          {true, Info};
         false ->
           error(badarg)
       end
   end;
 run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
   #concuerror_info{
-     monitoring = Monitoring,
+     monitors = Monitors,
      next_event = #event{event_info = EventInfo} = Event,
      processes = Processes} = Info,
   case Type =:= process andalso is_pid(Pid) of
@@ -226,7 +232,7 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
       [?process_pat_pid_status(Pid, Status)] ->
         IsActive = is_active(Status),
         case IsActive of
-          true -> Pid ! {monitor, {Ref, self()}};
+          true -> true = ets:insert(Monitors, {Pid, {Ref, self()}});
           false -> ok
         end,
         case EventInfo of
@@ -246,9 +252,7 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
                   recipient = self()},
                 NewEvent = Event#event{special = {message, MessageEvent}},
                 Info#concuerror_info{next_event = NewEvent};
-              true ->
-                NewMonitoring = orddict:store(Ref, Pid, Monitoring),
-                Info#concuerror_info{monitoring = NewMonitoring}
+              true -> Info
             end
         end
     end,
@@ -270,7 +274,9 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
         Escaped;
       links ->
         #concuerror_info{links = Links} = TheirInfo,
-        Links;
+        try ets:lookup_element(Links, Pid, 2)
+        catch error:badarg -> []
+        end;
       messages ->
         #concuerror_info{messages_new = Queue} = TheirInfo,
         [M || #message{data = M} <- queue:to_list(Queue)];
@@ -317,6 +323,7 @@ run_built_in(erlang, spawn_link, 3, [M, F, Args], Info) ->
 run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
   #concuerror_info{next_event = Event, processes = Processes} = Info,
   #event{event_info = EventInfo} = Event,
+  Parent = self(),
   {Result, NewInfo} =
     case EventInfo of
       %% Replaying...
@@ -324,7 +331,6 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
       %% New event...
       undefined ->
         PassedInfo = init_concuerror_info(Info),
-        Parent = self(),
         ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
         ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
         ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
@@ -341,19 +347,18 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
   case lists:member(monitor, SpawnOpts) of
     true ->
       {Pid, Ref} = Result,
-      Pid ! {start, Module, Name, Args},
-      Pid ! {monitor, {Ref, self()}};
+      #concuerror_info{monitors = Monitors} = Info,
+      true = ets:insert(Monitors, {Pid, {Ref, Parent}});
     false ->
-      Pid = Result,
-      Pid ! {start, Module, Name, Args}
+      Pid = Result
   end,
   case lists:member(link, SpawnOpts) of
     true ->
-      Pid ! {link, self()},
-      self() ! {link, Pid};
-    false ->
-      ok
+      #concuerror_info{monitors = Links} = Info,
+      true = ets:insert(Links, [{Parent, Pid}, {Pid, Parent}]);
+    false -> ok
   end,
+  Pid ! {start, Module, Name, Args},
   {Result, NewInfo};
 run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   when Send =:= '!'; Send =:= 'send' ->
@@ -418,16 +423,28 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
      next_event = #event{event_info = EventInfo},
      scheduler = Scheduler
     } = Info,
+  %% XXX: Allow dead named tables
   Tid =
     case EventInfo of
       %% Replaying...
       #builtin_event{result = OldResult} -> OldResult;
       %% New event...
       undefined ->
-        case concuerror_scheduler:ets_new(Scheduler, Name, Options) of
-          {error, Reason} -> throw({error, Reason});
-          {ok, Reply} -> Reply
-        end
+        %% Looks like the last option is the one actually used.
+        ProtectFold =
+          fun(Option, Selected) ->
+              case Option of
+                O when O =:= 'private';
+                       O =:= 'protected';
+                       O =:= 'public' -> O;
+                _ -> Selected
+              end
+          end,
+        Protection = lists:foldl(ProtectFold, protected, Options),
+        T = ets:new(Name, Options ++ [public]),
+        true = ets:insert(EtsTables, ?new_ets_table(T, Protection)),
+        true = ets:give_away(T, Scheduler, given_to_scheduler),
+        T
     end,
   Heir =
     case proplists:lookup(heir, Options) of
@@ -632,15 +649,20 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
   Scheduler ! Notification,
   process_loop(Info).
 
-process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
+process_top_loop(Info, Symbolic) ->
+  #concuerror_info{
+     links = Links,
+     monitors = Monitors,
+     processes = Processes} = Info,
   true = ets:insert(Processes, ?new_process(self(), Symbolic)),
+  true = ets:delete(Links, self()),
+  true = ets:delete(Monitors, self()),
   ?debug_flag(?wait, top_waiting),
   receive
     {start, Module, Name, Args} ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
       Running = set_status(Info, running),
-      %% Wait for 1st event (= 'run') signal, accepting messages,
-      %% links and monitors in the meantime.
+      %% Wait for 1st event (= 'run') signal, accepting messages
       StartInfo = process_loop(Running),
       %% It is ok for this load to fail
       concuerror_loader:load_if_needed(Module),
@@ -726,12 +748,6 @@ process_loop(Info) ->
           Scheduler ! {trapping, Trapping},
           process_loop(Info)
       end;
-    {link, Pid} ->
-      ?debug_flag(?wait, {waiting, got_link}),
-      true = is_active(Info),
-      Old = Info#concuerror_info.links,
-      NewInfo = Info#concuerror_info{links = ordsets:add_element(Pid, Old)},
-      process_loop(NewInfo);
     {message, Message} ->
       ?debug_flag(?wait, {waiting, got_message}),
       Scheduler = Info#concuerror_info.scheduler,
@@ -750,13 +766,6 @@ process_loop(Info) ->
           ?debug_flag(?receive_, {message_ignored, Info#concuerror_info.status}),
           process_loop(Info)
       end;
-    {monitor, Monitor} ->
-      ?debug_flag(?wait, {waiting, got_monitor}),
-      true = is_active(Info),
-      Old = Info#concuerror_info.monitors,
-      NewInfo =
-        Info#concuerror_info{monitors = ordsets:add_element(Monitor, Old)},
-      process_loop(NewInfo);
     reset ->
       ?debug_flag(?wait, {waiting, reset}),
       NewInfo = #concuerror_info{processes = Processes} =
@@ -777,10 +786,17 @@ exiting(Reason, Stacktrace, Info) ->
   %% XXX:  - send link signals
   %% XXX:  - send monitor messages
   ?debug_flag(?exit, {going_to_exit, Reason}),
+  Self = self(),
   LocatedInfo = #concuerror_info{next_event = Event} =
     add_location_info(exit, set_status(Info, exiting)),
-  {MaybeName, Info} =
-    run_built_in(erlang, process_info, 2, [self(), registered_name], Info),
+  [{MaybeName, Info}, {Links, Info}] =
+    [run_built_in(erlang, process_info, 2, [Self, Type], Info) ||
+      Type <- [registered_name, links]],
+  #concuerror_info{monitors = MonitorsTable} = Info,
+  Monitors =
+    try ets:lookup_element(MonitorsTable, Self, 2)
+    catch error:badarg -> []
+    end,
   Name =
     case MaybeName of
       [] -> ?process_name_none;
@@ -790,23 +806,22 @@ exiting(Reason, Stacktrace, Info) ->
     Event#event{
       event_info =
         #exit_event{
-        name = Name,
-        reason = Reason,
-        stacktrace = Stacktrace
-       }
+           links = Links,
+           monitors = Monitors,
+           name = Name,
+           reason = Reason,
+           stacktrace = Stacktrace
+          }
      },
   ExitInfo = add_location_info(exit, notify(Notification, LocatedInfo)),
-  exiting_side_effects(ExitInfo#concuerror_info{exit_reason = Reason}).
-
-exiting_side_effects(Info) ->
   FunFold = fun(Fun, Acc) -> Fun(Acc) end,
   FunList =
     [fun ets_ownership_exiting_events/1,
-     fun links_exiting_events/1,
-     fun monitors_exiting_events/1],
-  FinalInfo = #concuerror_info{next_event = Event} =
-    lists:foldl(FunFold, Info, FunList),
-  self() ! Event,
+     links_exiting_events(Links),
+     monitors_exiting_events(Monitors)],
+  FinalInfo = #concuerror_info{next_event = FinalEvent} =
+    lists:foldl(FunFold, ExitInfo#concuerror_info{exit_reason = Reason}, FunList),
+  self() ! FinalEvent,
   process_loop(set_status(FinalInfo, exited)).
 
 ets_ownership_exiting_events(Info) ->
@@ -839,37 +854,39 @@ ets_ownership_exiting_events(Info) ->
       lists:foldl(Fold, Info, Tables)
   end.
 
-links_exiting_events(Info) ->
-  #concuerror_info{links = Links} = Info,
-  case Links =:= [] of
-    true -> Info;
-    false ->
-      #concuerror_info{exit_reason = Reason} = Info,
-      Fold =
-        fun(Link, InfoIn) ->
-            MFArgs = [erlang, exit, [Link, Reason]],
-            {{didit, true}, NewInfo} =
-              instrumented(call, MFArgs, exit, InfoIn),
-            NewInfo
-        end,
-      lists:foldl(Fold, Info, Links)
+links_exiting_events(Links) ->
+  fun(Info) ->
+      case Links =:= [] of
+        true -> Info;
+        false ->
+          #concuerror_info{exit_reason = Reason} = Info,
+          Fold =
+            fun(Link, InfoIn) ->
+                MFArgs = [erlang, exit, [Link, Reason]],
+                {{didit, true}, NewInfo} =
+                  instrumented(call, MFArgs, exit, InfoIn),
+                NewInfo
+            end,
+          lists:foldl(Fold, Info, Links)
+      end
   end.
 
-monitors_exiting_events(Info) ->
-  #concuerror_info{monitors = Monitors} = Info,
-  case Monitors =:= [] of
-    true -> Info;
-    false ->
-      #concuerror_info{exit_reason = Reason} = Info,
-      Fold =
-        fun({Ref, P}, InfoIn) ->
-            Msg = {'DOWN', Ref, process, self(), Reason},
-            MFArgs = [erlang, send, [P, Msg]],
-            {{didit, Msg}, NewInfo} =
-              instrumented(call, MFArgs, exit, InfoIn),
-            NewInfo
-        end,
-      lists:foldl(Fold, Info, Monitors)
+monitors_exiting_events(Monitors) ->
+  fun(Info) ->
+      case Monitors =:= [] of
+        true -> Info;
+        false ->
+          #concuerror_info{exit_reason = Reason} = Info,
+          Fold =
+            fun({Ref, P}, InfoIn) ->
+                Msg = {'DOWN', Ref, process, self(), Reason},
+                MFArgs = [erlang, send, [P, Msg]],
+                {{didit, Msg}, NewInfo} =
+                  instrumented(call, MFArgs, exit, InfoIn),
+                NewInfo
+            end,
+          lists:foldl(Fold, Info, Monitors)
+      end
   end.
 
 %%------------------------------------------------------------------------------
@@ -901,18 +918,26 @@ ets_ops_access_rights_map(Op) ->
 
 %%------------------------------------------------------------------------------
 
+system_ets_entries(EtsTables) ->
+  Map = fun(Tid) -> ?new_system_ets_table(Tid, ets:info(Tid, protection)) end,
+  ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
+
 init_concuerror_info(Info) ->
   #concuerror_info{
      'after-timeout' = AfterTimeout,
      ets_tables = EtsTables,
+     links = Links,
      logger = Logger,
+     monitors = Monitors,
      processes = Processes,
      scheduler = Scheduler
     } = Info,
   #concuerror_info{
      'after-timeout' = AfterTimeout,
      ets_tables = EtsTables,
+     links = Links,
      logger = Logger,
+     monitors = Monitors,
      processes = Processes,
      scheduler = Scheduler
     }.
