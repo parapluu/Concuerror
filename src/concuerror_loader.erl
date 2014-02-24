@@ -58,11 +58,11 @@ do_load(Module) ->
       Filename ->
         case file:read_file_info(Filename) of
           {ok, _} -> {ok, Filename};
-          {error, Reason} -> {error, {file, Reason}}
+          {error, _} -> error
         end
     end,
   case BeamRet of
-    {error, Error} -> {load_error, {Module, Error}};
+    error -> ok;
     {ok, Beam} ->
       {ok, {Module, [{abstract_code, ChunkInfo}]}} =
         beam_lib:chunks(Beam, [abstract_code]),
