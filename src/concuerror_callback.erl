@@ -772,7 +772,9 @@ process_loop(Info) ->
         init_concuerror_info(Info),
       erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
-      erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo, Symbol])
+      erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo, Symbol]);
+    deadlock_poll ->
+      Info
   end.
 
 %%------------------------------------------------------------------------------
