@@ -158,7 +158,7 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
       receive after infinity -> ok end;
     error:Reason ->
       #concuerror_info{next_event = FEvent} = LocatedInfo,
-      FEventInfo = #builtin_event{mfa = {Module, Name, Args}, crashed = true},
+      FEventInfo = #builtin_event{mfa = {Module, Name, Args}, status = crashed},
       FNotification = FEvent#event{event_info = FEventInfo},
       FNewInfo = notify(FNotification, LocatedInfo),
       FinalInfo =

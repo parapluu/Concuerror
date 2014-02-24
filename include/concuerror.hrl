@@ -136,10 +136,10 @@
 -type message() :: #message{}.
 
 -record(builtin_event, {
-          actor = self()  :: pid(),
-          crashed = false :: boolean(),
-          mfa             :: mfargs(),
-          result          :: term()
+          actor = self() :: pid(),
+          mfa            :: mfargs(),
+          result         :: term(),
+          status = ok    :: 'ok' | 'crashed' | 'unknown'
          }).
 
 -type builtin_event() :: #builtin_event{}.
