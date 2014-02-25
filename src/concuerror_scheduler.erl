@@ -14,7 +14,7 @@
 %%------------------------------------------------------------------------------
 
 %% -type clock_vector() :: orddict:orddict(). %% orddict(pid(), index()).
--type clock_map()    :: dict(). %% dict(pid(), clock_vector()).
+-type clock_map()    :: dict:dict(). %% dict(pid(), clock_vector()).
 
 %%------------------------------------------------------------------------------
 
