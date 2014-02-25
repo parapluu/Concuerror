@@ -386,7 +386,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
   end,
   case lists:member(link, SpawnOpts) of
     true ->
-      #concuerror_info{monitors = Links} = Info,
+      #concuerror_info{links = Links} = Info,
       true = ets:insert(Links, [{Parent, Pid}, {Pid, Parent}]);
     false -> ok
   end,
