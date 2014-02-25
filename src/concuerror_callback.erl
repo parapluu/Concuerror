@@ -332,7 +332,7 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
           false ->
         42;
       _ ->
-        throw({process_info_sucks, Item})
+        throw({unsupported_process_info, Item})
     end,
   {Res, Info};
 run_built_in(erlang, register, 2, [Name, Pid],
