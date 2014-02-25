@@ -239,7 +239,7 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
           true = ets:insert(Links, [{Self, Pid}, {Pid, Self}]),
           {true, Info};
         false ->
-          error(badarg)
+          error(noproc)
       end
   end;
 run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
