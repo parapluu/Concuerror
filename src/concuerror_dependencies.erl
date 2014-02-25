@@ -40,6 +40,17 @@ dependent(#message_event{} = Message,
           #builtin_event{mfa = {erlang,process_flag,[trap_exit,_]}} = PFlag) ->
   dependent(PFlag, Message);
 
+dependent(#exit_event{actor = Exiting, reason = Reason},
+          #message_event{message = #message{data = Data},
+                         recipient = Recipient, type = Type}) ->
+  Type =:= exit_signal
+    andalso
+    Exiting =:= Recipient
+    andalso
+    Reason =/= Data;
+dependent(#message_event{} = Message, #exit_event{} = Exit) ->
+  dependent(Exit, Message);
+
 dependent(#exit_event{}, #exit_event{}) ->
   false;
 
@@ -114,6 +125,11 @@ dependent_exit(_Exit, {erlang, process_flag, _}) ->
   false;
 dependent_exit(_Exit, {erlang, spawn, _}) ->
   false;
+dependent_exit(#exit_event{monitors = Monitors}, {erlang, demonitor, [Ref, _]}) ->
+  lists:keyfind(Ref, 1, Monitors);
+dependent_exit(#exit_event{actor = Exiting, name = Name},
+               {erlang, monitor, [process, PidOrName]}) ->
+  Exiting =:= PidOrName orelse Name =:= PidOrName;
 dependent_exit(#exit_event{name = Name}, {erlang, whereis, [WhereIs]}) ->
   WhereIs =:= Name;
 dependent_exit(#exit_event{actor = Exiting}, {ets, give_away, [_, Pid, _]}) ->
@@ -138,23 +154,10 @@ dependent_built_in(#builtin_event{mfa = {erlang,process_flag,_}} = PFlag,
                    #builtin_event{mfa = {erlang,'!',_}} = Send) ->
   dependent_built_in(Send, PFlag);
 
-dependent_built_in(#builtin_event{mfa = {erlang,exit,_}},
-                   #builtin_event{mfa = {erlang,exit,_}}) ->
+dependent_built_in(#builtin_event{mfa = {erlang,exit,_}}, #builtin_event{}) ->
   false;
-
-dependent_built_in(#builtin_event{mfa = {erlang,exit,_}},
-                   #builtin_event{mfa = {erlang,link,_}}) ->
-  false;
-dependent_built_in(#builtin_event{mfa = {erlang,link,_}} = Link,
-                   #builtin_event{mfa = {erlang,exit,_}} = Exit) ->
-  dependent_built_in(Exit, Link);
-
-dependent_built_in(#builtin_event{mfa = {erlang,exit,_}},
-                   #builtin_event{mfa = {erlang,process_flag,_}}) ->
-  false;
-dependent_built_in(#builtin_event{mfa = {erlang,process_flag,_}} = PFlag,
-                   #builtin_event{mfa = {erlang,exit,_}} = Exit) ->
-  dependent_built_in(Exit, PFlag);
+dependent_built_in(Any, #builtin_event{mfa = {erlang,exit,_}} = Exit) ->
+  dependent_built_in(Exit, Any);
 
 dependent_built_in(#builtin_event{mfa = {erlang,link,_}},
                    #builtin_event{mfa = {erlang,process_flag,_}}) ->
@@ -169,6 +172,17 @@ dependent_built_in(#builtin_event{mfa = {erlang,'!',_}},
 dependent_built_in(#builtin_event{mfa = {erlang,spawn,_}} = Spawn,
                    #builtin_event{mfa = {erlang,'!',_}} = Send) ->
   dependent_built_in(Send, Spawn);
+
+dependent_built_in(#builtin_event{mfa = {erlang,whereis,[WName]}},
+                   #builtin_event{mfa = {erlang,UnRegisterOp,[RName|_]}})
+  when UnRegisterOp =:= register;
+       UnRegisterOp =:= unregister ->
+  WName =:= RName;
+dependent_built_in(#builtin_event{mfa = {erlang,whereis,_}} = W,
+                   #builtin_event{mfa = {erlang,UnRegisterOp,_}} = R)
+  when UnRegisterOp =:= register;
+       UnRegisterOp =:= unregister ->
+  dependent_built_in(W, R);
 
 dependent_built_in(#builtin_event{mfa = {ets,delete,[Table1]}},
                    #builtin_event{mfa = {ets,_Any,[Table2|_]}}) ->
