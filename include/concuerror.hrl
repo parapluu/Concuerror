@@ -230,6 +230,7 @@
                  {md5, 1},
                  {phash, 2},
                  {raise, 3},
+                 {ref_to_list,1},
                  {setelement, 3},
                  {term_to_binary, 1},
                  {throw, 1},
