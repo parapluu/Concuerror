@@ -242,6 +242,17 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
           error(noproc)
       end
   end;
+
+run_built_in(erlang, make_ref, 0, [], Info) ->
+  #concuerror_info{next_event = #event{event_info = EventInfo}} = Info,
+  Ref =
+    case EventInfo of
+      %% Replaying...
+      #builtin_event{result = OldResult} -> OldResult;
+      %% New event...
+      undefined -> make_ref()
+    end,
+  {Ref, Info};
 run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
   #concuerror_info{
      monitors = Monitors,

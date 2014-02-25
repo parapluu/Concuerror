@@ -166,6 +166,12 @@ dependent_built_in(#builtin_event{mfa = {erlang,process_flag,_}} = PFlag,
                    #builtin_event{mfa = {erlang,link,_}} = Link) ->
   dependent_built_in(Link, PFlag);
 
+dependent_built_in(#builtin_event{mfa = {erlang,make_ref,_}}, #builtin_event{}) ->
+  false;
+dependent_built_in(#builtin_event{} = Any,
+                   #builtin_event{mfa = {erlang,make_ref,_}} = MakeRef) ->
+  dependent_built_in(MakeRef, Any);
+
 dependent_built_in(#builtin_event{mfa = {erlang,'!',_}},
                    #builtin_event{mfa = {erlang,spawn,_}}) ->
   false;
