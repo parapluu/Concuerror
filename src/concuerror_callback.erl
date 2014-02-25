@@ -173,6 +173,38 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
   end.
 
 %% Special instruction running control (e.g. send to unknown -> wait for reply)
+run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
+  case is_reference(Ref) of
+    true -> ok;
+    false -> error(badarg)
+  end,
+  #concuerror_info{monitors = Monitors} = Info,
+  {Result, NewInfo} =
+    case ets:match(Monitors, {'$1', {Ref, '$2'}}) of
+      [] ->
+        PatternFun =
+          fun(M) ->
+              case M of
+                {'DOWN', Ref, process, _, _} -> true;
+                _ -> false
+              end
+          end,
+        case lists:member(flush, Options) of
+          true ->
+            {Match, FlushInfo} =
+              has_matching_or_after(PatternFun, infinity, Info),
+            {Match =/= false, FlushInfo};
+          false ->
+            {false, Info}
+        end;
+      [[Target, Source]] ->
+        true = ets:delete_object(Monitors, {Target, {Ref, Source}}),
+        {not lists:member(flush, Options), Info}
+    end,
+  case lists:member(info, Options) of
+    true -> {Result, NewInfo};
+    false -> {true, NewInfo}
+  end;
 run_built_in(erlang, exit, 2, [Pid, Reason],
              #concuerror_info{
                 next_event = #event{event_info = EventInfo} = Event
@@ -649,14 +681,8 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
   Scheduler ! Notification,
   process_loop(Info).
 
-process_top_loop(Info, Symbolic) ->
-  #concuerror_info{
-     links = Links,
-     monitors = Monitors,
-     processes = Processes} = Info,
+process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
   true = ets:insert(Processes, ?new_process(self(), Symbolic)),
-  true = ets:delete(Links, self()),
-  true = ets:delete(Monitors, self()),
   ?debug_flag(?wait, top_waiting),
   receive
     {start, Module, Name, Args} ->
@@ -789,16 +815,18 @@ exiting(Reason, Stacktrace, Info) ->
   %% XXX:  - send monitor messages
   ?debug_flag(?exit, {going_to_exit, Reason}),
   Self = self(),
+  {MaybeName, Info} =
+    run_built_in(erlang, process_info, 2, [Self, registered_name], Info),
   LocatedInfo = #concuerror_info{next_event = Event} =
     add_location_info(exit, set_status(Info, exiting)),
-  [{MaybeName, Info}, {Links, Info}] =
-    [run_built_in(erlang, process_info, 2, [Self, Type], Info) ||
-      Type <- [registered_name, links]],
-  #concuerror_info{monitors = MonitorsTable} = Info,
-  Monitors =
-    try ets:lookup_element(MonitorsTable, Self, 2)
-    catch error:badarg -> []
+  #concuerror_info{links = LinksTable, monitors = MonitorsTable} = Info,
+  FetchFun =
+    fun(Table) ->
+        [begin ets:delete_object(Table, E), D end ||
+          {_, D} = E <- ets:lookup(Table, Self)]
     end,
+  Links = FetchFun(LinksTable),
+  Monitors = FetchFun(MonitorsTable),
   Name =
     case MaybeName of
       [] -> ?process_name_none;
