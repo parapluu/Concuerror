@@ -132,6 +132,17 @@ dependent_exit(#exit_event{actor = Exiting, name = Name},
   Exiting =:= PidOrName orelse Name =:= PidOrName;
 dependent_exit(#exit_event{name = Name}, {erlang, whereis, [WhereIs]}) ->
   WhereIs =:= Name;
+dependent_exit(#exit_event{actor = Exiting, name = Name},
+               {erlang,UnRegisterOp,[RName|Rest]})
+  when UnRegisterOp =:= register;
+       UnRegisterOp =:= unregister ->
+  RName =:= Name orelse
+    case UnRegisterOp =:= register of
+      false -> false;
+      true ->
+        [Pid] = Rest,
+        Exiting =:= Pid
+    end;
 dependent_exit(#exit_event{actor = Exiting}, {ets, give_away, [_, Pid, _]}) ->
   Exiting =:= Pid;
 dependent_exit(_Exit, {ets, _, _}) ->
@@ -179,16 +190,18 @@ dependent_built_in(#builtin_event{mfa = {erlang,spawn,_}} = Spawn,
                    #builtin_event{mfa = {erlang,'!',_}} = Send) ->
   dependent_built_in(Send, Spawn);
 
-dependent_built_in(#builtin_event{mfa = {erlang,whereis,[WName]}},
+dependent_built_in(#builtin_event{mfa = {erlang,SendOrWhereis,[SName|_]}},
                    #builtin_event{mfa = {erlang,UnRegisterOp,[RName|_]}})
-  when UnRegisterOp =:= register;
-       UnRegisterOp =:= unregister ->
-  WName =:= RName;
-dependent_built_in(#builtin_event{mfa = {erlang,whereis,_}} = W,
-                   #builtin_event{mfa = {erlang,UnRegisterOp,_}} = R)
-  when UnRegisterOp =:= register;
-       UnRegisterOp =:= unregister ->
-  dependent_built_in(W, R);
+  when (UnRegisterOp =:= register orelse UnRegisterOp =:= unregister),
+       (SendOrWhereis =:= '!' orelse SendOrWhereis =:= send orelse
+        SendOrWhereis =:= whereis) ->
+  SName =:= RName;
+dependent_built_in(#builtin_event{mfa = {erlang,UnRegisterOp,_}} = R,
+                   #builtin_event{mfa = {erlang,SendOrWhereis,_}} = S)
+  when (UnRegisterOp =:= register orelse UnRegisterOp =:= unregister),
+       (SendOrWhereis =:= '!' orelse SendOrWhereis =:= send orelse
+        SendOrWhereis =:= whereis) ->
+  dependent_built_in(S, R);
 
 dependent_built_in(#builtin_event{mfa = {ets,delete,[Table1]}},
                    #builtin_event{mfa = {ets,_Any,[Table2|_]}}) ->
