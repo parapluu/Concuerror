@@ -180,7 +180,7 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
   end,
   #concuerror_info{monitors = Monitors} = Info,
   {Result, NewInfo} =
-    case ets:match(Monitors, {'$1', {Ref, '$2'}}) of
+    case ets:match(Monitors, {'$1', {Ref, '$2'}, active}) of
       [] ->
         PatternFun =
           fun(M) ->
@@ -198,7 +198,8 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
             {false, Info}
         end;
       [[Target, Source]] ->
-        true = ets:delete_object(Monitors, {Target, {Ref, Source}}),
+        true = ets:delete_object(Monitors, {Target, {Ref, Source}, active}),
+        true = ets:insert(Monitors, {Target, {Ref, Source}, inactive}),
         {not lists:member(flush, Options), Info}
     end,
   case lists:member(info, Options) of
@@ -236,7 +237,7 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
       case is_active(Status) of
         true ->
           Self = self(),
-          true = ets:insert(Links, [{Self, Pid}, {Pid, Self}]),
+          true = ets:insert(Links, [{Self, Pid, active}, {Pid, Self, active}]),
           {true, Info};
         false ->
           error(noproc)
@@ -275,7 +276,7 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
       [?process_pat_pid_status(Pid, Status)] ->
         IsActive = is_active(Status),
         case IsActive of
-          true -> true = ets:insert(Monitors, {Pid, {Ref, self()}});
+          true -> true = ets:insert(Monitors, {Pid, {Ref, self()}, active});
           false -> ok
         end,
         case EventInfo of
@@ -391,14 +392,14 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
     true ->
       {Pid, Ref} = Result,
       #concuerror_info{monitors = Monitors} = Info,
-      true = ets:insert(Monitors, {Pid, {Ref, Parent}});
+      true = ets:insert(Monitors, {Pid, {Ref, Parent}, active});
     false ->
       Pid = Result
   end,
   case lists:member(link, SpawnOpts) of
     true ->
       #concuerror_info{links = Links} = Info,
-      true = ets:insert(Links, [{Parent, Pid}, {Pid, Parent}]);
+      true = ets:insert(Links, [{Parent, Pid, active}, {Pid, Parent, active}]);
     false -> ok
   end,
   Pid ! {start, Module, Name, Args},
@@ -833,8 +834,8 @@ exiting(Reason, Stacktrace, Info) ->
   #concuerror_info{links = LinksTable, monitors = MonitorsTable} = Info,
   FetchFun =
     fun(Table) ->
-        [begin ets:delete_object(Table, E), D end ||
-          {_, D} = E <- ets:lookup(Table, Self)]
+        [begin ets:delete_object(Table, E), {D, S} end ||
+          {_, D, S} = E <- ets:lookup(Table, Self)]
     end,
   Links = FetchFun(LinksTable),
   Monitors = FetchFun(MonitorsTable),
@@ -847,8 +848,8 @@ exiting(Reason, Stacktrace, Info) ->
     Event#event{
       event_info =
         #exit_event{
-           links = Links,
-           monitors = Monitors,
+           links = [L || {L, _} <- Links],
+           monitors = [M || {M, _} <- Monitors],
            name = Name,
            reason = Reason,
            stacktrace = Stacktrace
@@ -858,8 +859,8 @@ exiting(Reason, Stacktrace, Info) ->
   FunFold = fun(Fun, Acc) -> Fun(Acc) end,
   FunList =
     [fun ets_ownership_exiting_events/1,
-     links_exiting_events(Links),
-     monitors_exiting_events(Monitors)],
+     link_monitor_handlers(fun handle_link/3, Links),
+     link_monitor_handlers(fun handle_monitor/3, Monitors)],
   FinalInfo = #concuerror_info{next_event = FinalEvent} =
     lists:foldl(FunFold, ExitInfo#concuerror_info{exit_reason = Reason}, FunList),
   self() ! FinalEvent,
@@ -895,39 +896,30 @@ ets_ownership_exiting_events(Info) ->
       lists:foldl(Fold, Info, Tables)
   end.
 
-links_exiting_events(Links) ->
-  fun(Info) ->
-      case Links =:= [] of
-        true -> Info;
-        false ->
-          #concuerror_info{exit_reason = Reason} = Info,
-          Fold =
-            fun(Link, InfoIn) ->
-                MFArgs = [erlang, exit, [Link, Reason]],
-                {{didit, true}, NewInfo} =
-                  instrumented(call, MFArgs, exit, InfoIn),
-                NewInfo
-            end,
-          lists:foldl(Fold, Info, Links)
-      end
-  end.
+handle_link(Link, Reason, InfoIn) ->
+  MFArgs = [erlang, exit, [Link, Reason]],
+  {{didit, true}, NewInfo} =
+    instrumented(call, MFArgs, exit, InfoIn),
+  NewInfo.
 
-monitors_exiting_events(Monitors) ->
+handle_monitor({Ref, P}, Reason, InfoIn) ->
+  Msg = {'DOWN', Ref, process, self(), Reason},
+  MFArgs = [erlang, send, [P, Msg]],
+  {{didit, Msg}, NewInfo} =
+    instrumented(call, MFArgs, exit, InfoIn),
+  NewInfo.
+
+link_monitor_handlers(Handler, LinksOrMonitors) ->
   fun(Info) ->
-      case Monitors =:= [] of
-        true -> Info;
-        false ->
-          #concuerror_info{exit_reason = Reason} = Info,
-          Fold =
-            fun({Ref, P}, InfoIn) ->
-                Msg = {'DOWN', Ref, process, self(), Reason},
-                MFArgs = [erlang, send, [P, Msg]],
-                {{didit, Msg}, NewInfo} =
-                  instrumented(call, MFArgs, exit, InfoIn),
-                NewInfo
-            end,
-          lists:foldl(Fold, Info, Monitors)
-      end
+      #concuerror_info{exit_reason = Reason} = Info,
+      HandleActive =
+        fun({LinkOrMonitor, S}, InfoIn) ->
+            case S =:= active of
+              true -> Handler(LinkOrMonitor, Reason, InfoIn);
+              false -> InfoIn
+            end
+        end,
+      lists:foldl(HandleActive, Info, LinksOrMonitors)
   end.
 
 %%------------------------------------------------------------------------------
