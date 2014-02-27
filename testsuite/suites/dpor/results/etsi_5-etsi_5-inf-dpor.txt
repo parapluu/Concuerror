@@ -1,588 +1,1122 @@
-Checked 12 interleaving(s). 12 errors found.
-
-1
-Error type        : Exception
-Details           : {{nocatch,[{z,0},{xy,{1,1}},{z5,0}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_insert {table,[{xy,{1,1}}]}
-  Process P1.4 blocks
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,0}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-2
-Error type        : Exception
-Details           : {{nocatch,[{z,1},{xy,{1,1}},{z5,1}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_insert {table,[{z,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_insert {table,[{xy,{1,1}}]}
-  Process P1.4 blocks
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,1}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-3
-Error type        : Exception
-Details           : {{nocatch,[{z,1},{xy,{0,1}},{z5,1}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_insert {table,[{xy,{0,1}}]}
-  Process P1.4 blocks
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,1}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-4
-Error type        : Exception
-Details           : {{nocatch,[{z,1},{xy,{1,1}},{z5,0}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,0}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_insert {table,[{z,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_insert {table,[{xy,{1,1}}]}
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-5
-Error type        : Exception
-Details           : {{nocatch,[{z,1},{xy,{0,1}},{z5,0}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,0}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.3: ets_insert {table,[{z,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_insert {table,[{xy,{0,1}}]}
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-6
-Error type        : Exception
-Details           : {{nocatch,[{z,0},{xy,{0,1}},{z5,0}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,0}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_insert {table,[{xy,{0,1}}]}
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-7
-Error type        : Exception
-Details           : {{nocatch,[{z,0},{xy,{1,0}},{z5,0}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,0}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{xy,{1,0}}]}
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-8
-Error type        : Exception
-Details           : {{nocatch,[{z,1},{xy,{1,0}},{z5,1}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_insert {table,[{z,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,1}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{xy,{1,0}}]}
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-9
-Error type        : Exception
-Details           : {{nocatch,[{z,1},{xy,{0,0}},{z5,1}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,1}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{xy,{0,0}}]}
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-10
-Error type        : Exception
-Details           : {{nocatch,[{z,1},{xy,{1,0}},{z5,0}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,0}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_insert {table,[{z,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.4: ets_insert {table,[{xy,{1,0}}]}
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-11
-Error type        : Exception
-Details           : {{nocatch,[{z,1},{xy,{0,0}},{z5,0}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,0}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.3: ets_insert {table,[{z,1}]}
-  Process P1.3 blocks
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{xy,{0,0}}]}
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
-12
-Error type        : Exception
-Details           : {{nocatch,[{z,0},{xy,{0,0}},{z5,0}]},
-                     [{etsi_5,etsi_5,0,[{file,"etsi_5.erl"},{line,61}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1: ets_insert {table,[{z,0}]}
-  Process P1: ets_insert {table,[{z5,0}]}
-  Process P1: ets_insert {table,[{xy,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.5: ets_lookup {table,z}
-  Process P1.5: ets_insert {table,[{z5,0}]}
-  Process P1.5 sends message `ok` to process P1.4
-  Process P1.5 exits (normal)
-  Process P1.4: ets_lookup {table,x}
-  Process P1.4: ets_lookup {table,y}
-  Process P1.2: ets_insert {table,[{x,1}]}
-  Process P1.2 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3 blocks
-  Process P1.1: ets_insert {table,[{y,1}]}
-  Process P1.1 blocks
-  Process P1.4: ets_insert {table,[{xy,{0,0}}]}
-  Process P1.4 receives message `ok` from process P1.5
-  Process P1.4 sends message `ok` to process P1.3
-  Process P1.4 exits (normal)
-  Process P1.3 receives message `ok` from process P1.4
-  Process P1.3 sends message `ok` to process P1.2
-  Process P1.3 exits (normal)
-  Process P1.2 receives message `ok` from process P1.3
-  Process P1.2 sends message `ok` to process P1.1
-  Process P1.2 exits (normal)
-  Process P1.1 receives message `ok` from process P1.2
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,z}
-  Process P1: ets_lookup {table,xy}
-  Process P1: ets_lookup {table,z5}
-  Process P1 exits ("Exception")
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{etsi_5,etsi_5,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* At step 38 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,0},{xy,{1,1}},{z5,0}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  13: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  14: P.3: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  15: P.4: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  16: P.4: [{y,1}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  17: P.4: true = ets:insert(table, {xy,{1,1}})
+    in etsi_5.erl line 45
+  18: P.5: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  19: P.5: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 52
+  20: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  21: Message (ok) from P.5 reaches P.4
+  22: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  23: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  24: Message (ok) from P.4 reaches P.3
+  25: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  26: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  27: Message (ok) from P.3 reaches P.2
+  28: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  29: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  30: Message (ok) from P.2 reaches P.1
+  31: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  32: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  33: Message (ok) from P.1 reaches P
+  34: P: receives message (ok)
+    in etsi_5.erl line 55
+  35: P: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  36: P: [{xy,{1,1}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  37: P: [{z5,0}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  38: P: exits abnormally
+  39: P: true = ets:delete(table)
+    (while exiting)
+  40: P.1: exits normally
+  41: P.2: exits normally
+  42: P.3: exits normally
+  43: P.4: exits normally
+  44: P.5: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 40 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,1},{xy,{1,1}},{z5,0}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  13: P.5: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  14: P.5: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 52
+  15: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  16: Message (ok) from P.5 reaches P.4
+  17: P.5: exits normally
+  18: P.3: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  19: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  20: P.3: true = ets:insert(table, {z,1})
+    in etsi_5.erl line 35
+  21: P.4: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  22: P.4: [{y,1}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  23: P.4: true = ets:insert(table, {xy,{1,1}})
+    in etsi_5.erl line 45
+  24: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  25: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  26: Message (ok) from P.4 reaches P.3
+  27: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  28: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  29: Message (ok) from P.3 reaches P.2
+  30: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  31: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  32: Message (ok) from P.2 reaches P.1
+  33: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  34: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  35: Message (ok) from P.1 reaches P
+  36: P: receives message (ok)
+    in etsi_5.erl line 55
+  37: P: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  38: P: [{xy,{1,1}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  39: P: [{z5,0}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  40: P: exits abnormally
+  41: P: true = ets:delete(table)
+    (while exiting)
+  42: P.1: exits normally
+  43: P.2: exits normally
+  44: P.3: exits normally
+  45: P.4: exits normally
+################################################################################
+Erroneous interleaving 3:
+* At step 40 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,1},{xy,{0,1}},{z5,0}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  13: P.5: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  14: P.5: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 52
+  15: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  16: Message (ok) from P.5 reaches P.4
+  17: P.5: exits normally
+  18: P.3: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  19: P.3: true = ets:insert(table, {z,1})
+    in etsi_5.erl line 35
+  20: P.4: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  21: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  22: P.4: [{y,1}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  23: P.4: true = ets:insert(table, {xy,{0,1}})
+    in etsi_5.erl line 45
+  24: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  25: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  26: Message (ok) from P.4 reaches P.3
+  27: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  28: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  29: Message (ok) from P.3 reaches P.2
+  30: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  31: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  32: Message (ok) from P.2 reaches P.1
+  33: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  34: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  35: Message (ok) from P.1 reaches P
+  36: P: receives message (ok)
+    in etsi_5.erl line 55
+  37: P: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  38: P: [{xy,{0,1}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  39: P: [{z5,0}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  40: P: exits abnormally
+  41: P: true = ets:delete(table)
+    (while exiting)
+  42: P.1: exits normally
+  43: P.2: exits normally
+  44: P.3: exits normally
+  45: P.4: exits normally
+################################################################################
+Erroneous interleaving 4:
+* At step 40 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,0},{xy,{0,1}},{z5,0}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  13: P.5: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  14: P.5: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 52
+  15: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  16: Message (ok) from P.5 reaches P.4
+  17: P.5: exits normally
+  18: P.4: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  19: P.4: [{y,1}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  20: P.4: true = ets:insert(table, {xy,{0,1}})
+    in etsi_5.erl line 45
+  21: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  22: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  23: Message (ok) from P.4 reaches P.3
+  24: P.4: exits normally
+  25: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  26: P.3: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  27: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  28: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  29: Message (ok) from P.3 reaches P.2
+  30: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  31: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  32: Message (ok) from P.2 reaches P.1
+  33: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  34: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  35: Message (ok) from P.1 reaches P
+  36: P: receives message (ok)
+    in etsi_5.erl line 55
+  37: P: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  38: P: [{xy,{0,1}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  39: P: [{z5,0}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  40: P: exits abnormally
+  41: P: true = ets:delete(table)
+    (while exiting)
+  42: P.1: exits normally
+  43: P.2: exits normally
+  44: P.3: exits normally
+################################################################################
+Erroneous interleaving 5:
+* At step 39 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,1},{xy,{1,1}},{z5,1}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  13: P.3: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  14: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  15: P.4: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  16: P.4: [{y,1}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  17: P.4: true = ets:insert(table, {xy,{1,1}})
+    in etsi_5.erl line 45
+  18: P.3: true = ets:insert(table, {z,1})
+    in etsi_5.erl line 35
+  19: P.5: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  20: P.5: true = ets:insert(table, {z5,1})
+    in etsi_5.erl line 52
+  21: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  22: Message (ok) from P.5 reaches P.4
+  23: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  24: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  25: Message (ok) from P.4 reaches P.3
+  26: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  27: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  28: Message (ok) from P.3 reaches P.2
+  29: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  30: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  31: Message (ok) from P.2 reaches P.1
+  32: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  33: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  34: Message (ok) from P.1 reaches P
+  35: P: receives message (ok)
+    in etsi_5.erl line 55
+  36: P: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  37: P: [{xy,{1,1}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  38: P: [{z5,1}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  39: P: exits abnormally
+  40: P: true = ets:delete(table)
+    (while exiting)
+  41: P.1: exits normally
+  42: P.2: exits normally
+  43: P.3: exits normally
+  44: P.4: exits normally
+  45: P.5: exits normally
+################################################################################
+Erroneous interleaving 6:
+* At step 39 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,1},{xy,{0,1}},{z5,1}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  13: P.3: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  14: P.4: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  15: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  16: P.4: [{y,1}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  17: P.4: true = ets:insert(table, {xy,{0,1}})
+    in etsi_5.erl line 45
+  18: P.3: true = ets:insert(table, {z,1})
+    in etsi_5.erl line 35
+  19: P.5: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  20: P.5: true = ets:insert(table, {z5,1})
+    in etsi_5.erl line 52
+  21: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  22: Message (ok) from P.5 reaches P.4
+  23: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  24: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  25: Message (ok) from P.4 reaches P.3
+  26: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  27: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  28: Message (ok) from P.3 reaches P.2
+  29: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  30: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  31: Message (ok) from P.2 reaches P.1
+  32: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  33: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  34: Message (ok) from P.1 reaches P
+  35: P: receives message (ok)
+    in etsi_5.erl line 55
+  36: P: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  37: P: [{xy,{0,1}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  38: P: [{z5,1}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  39: P: exits abnormally
+  40: P: true = ets:delete(table)
+    (while exiting)
+  41: P.1: exits normally
+  42: P.2: exits normally
+  43: P.3: exits normally
+  44: P.4: exits normally
+  45: P.5: exits normally
+################################################################################
+Erroneous interleaving 7:
+* At step 39 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,0},{xy,{1,0}},{z5,0}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  13: P.3: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  14: P.4: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  15: P.5: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  16: P.5: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 52
+  17: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  18: Message (ok) from P.5 reaches P.4
+  19: P.5: exits normally
+  20: P.4: [{y,0}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  21: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  22: P.4: true = ets:insert(table, {xy,{1,0}})
+    in etsi_5.erl line 45
+  23: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  24: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  25: Message (ok) from P.4 reaches P.3
+  26: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  27: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  28: Message (ok) from P.3 reaches P.2
+  29: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  30: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  31: Message (ok) from P.2 reaches P.1
+  32: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  33: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  34: Message (ok) from P.1 reaches P
+  35: P: receives message (ok)
+    in etsi_5.erl line 55
+  36: P: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  37: P: [{xy,{1,0}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  38: P: [{z5,0}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  39: P: exits abnormally
+  40: P: true = ets:delete(table)
+    (while exiting)
+  41: P.1: exits normally
+  42: P.2: exits normally
+  43: P.3: exits normally
+  44: P.4: exits normally
+################################################################################
+Erroneous interleaving 8:
+* At step 40 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,1},{xy,{1,0}},{z5,0}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.5: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  13: P.5: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 52
+  14: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  15: Message (ok) from P.5 reaches P.4
+  16: P.5: exits normally
+  17: P.3: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  18: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  19: P.3: true = ets:insert(table, {z,1})
+    in etsi_5.erl line 35
+  20: P.4: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  21: P.4: [{y,0}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  22: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  23: P.4: true = ets:insert(table, {xy,{1,0}})
+    in etsi_5.erl line 45
+  24: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  25: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  26: Message (ok) from P.4 reaches P.3
+  27: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  28: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  29: Message (ok) from P.3 reaches P.2
+  30: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  31: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  32: Message (ok) from P.2 reaches P.1
+  33: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  34: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  35: Message (ok) from P.1 reaches P
+  36: P: receives message (ok)
+    in etsi_5.erl line 55
+  37: P: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  38: P: [{xy,{1,0}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  39: P: [{z5,0}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  40: P: exits abnormally
+  41: P: true = ets:delete(table)
+    (while exiting)
+  42: P.1: exits normally
+  43: P.2: exits normally
+  44: P.3: exits normally
+  45: P.4: exits normally
+################################################################################
+Erroneous interleaving 9:
+* At step 40 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,1},{xy,{0,0}},{z5,0}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.5: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  13: P.5: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 52
+  14: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  15: Message (ok) from P.5 reaches P.4
+  16: P.5: exits normally
+  17: P.3: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  18: P.3: true = ets:insert(table, {z,1})
+    in etsi_5.erl line 35
+  19: P.4: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  20: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  21: P.4: [{y,0}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  22: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  23: P.4: true = ets:insert(table, {xy,{0,0}})
+    in etsi_5.erl line 45
+  24: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  25: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  26: Message (ok) from P.4 reaches P.3
+  27: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  28: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  29: Message (ok) from P.3 reaches P.2
+  30: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  31: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  32: Message (ok) from P.2 reaches P.1
+  33: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  34: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  35: Message (ok) from P.1 reaches P
+  36: P: receives message (ok)
+    in etsi_5.erl line 55
+  37: P: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  38: P: [{xy,{0,0}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  39: P: [{z5,0}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  40: P: exits abnormally
+  41: P: true = ets:delete(table)
+    (while exiting)
+  42: P.1: exits normally
+  43: P.2: exits normally
+  44: P.3: exits normally
+  45: P.4: exits normally
+################################################################################
+Erroneous interleaving 10:
+* At step 39 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,0},{xy,{0,0}},{z5,0}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.5: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  13: P.5: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 52
+  14: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  15: Message (ok) from P.5 reaches P.4
+  16: P.5: exits normally
+  17: P.4: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  18: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  19: P.3: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  20: P.4: [{y,0}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  21: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  22: P.4: true = ets:insert(table, {xy,{0,0}})
+    in etsi_5.erl line 45
+  23: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  24: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  25: Message (ok) from P.4 reaches P.3
+  26: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  27: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  28: Message (ok) from P.3 reaches P.2
+  29: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  30: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  31: Message (ok) from P.2 reaches P.1
+  32: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  33: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  34: Message (ok) from P.1 reaches P
+  35: P: receives message (ok)
+    in etsi_5.erl line 55
+  36: P: [{z,0}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  37: P: [{xy,{0,0}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  38: P: [{z5,0}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  39: P: exits abnormally
+  40: P: true = ets:delete(table)
+    (while exiting)
+  41: P.1: exits normally
+  42: P.2: exits normally
+  43: P.3: exits normally
+  44: P.4: exits normally
+################################################################################
+Erroneous interleaving 11:
+* At step 40 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,1},{xy,{1,0}},{z5,1}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.3: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  13: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  14: P.4: [{x,1}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  15: P.3: true = ets:insert(table, {z,1})
+    in etsi_5.erl line 35
+  16: P.5: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  17: P.5: true = ets:insert(table, {z5,1})
+    in etsi_5.erl line 52
+  18: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  19: Message (ok) from P.5 reaches P.4
+  20: P.5: exits normally
+  21: P.4: [{y,0}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  22: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  23: P.4: true = ets:insert(table, {xy,{1,0}})
+    in etsi_5.erl line 45
+  24: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  25: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  26: Message (ok) from P.4 reaches P.3
+  27: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  28: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  29: Message (ok) from P.3 reaches P.2
+  30: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  31: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  32: Message (ok) from P.2 reaches P.1
+  33: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  34: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  35: Message (ok) from P.1 reaches P
+  36: P: receives message (ok)
+    in etsi_5.erl line 55
+  37: P: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  38: P: [{xy,{1,0}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  39: P: [{z5,1}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  40: P: exits abnormally
+  41: P: true = ets:delete(table)
+    (while exiting)
+  42: P.1: exits normally
+  43: P.2: exits normally
+  44: P.3: exits normally
+  45: P.4: exits normally
+################################################################################
+Erroneous interleaving 12:
+* At step 40 process P exited abnormally
+    Reason:
+      {{nocatch,[{z,1},{xy,{0,0}},{z5,1}]},
+       [{etsi_5,etsi_5,0,
+                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                 {line,61}]}]}
+    Stacktrace:
+      [{etsi_5,etsi_5,0,
+               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_5.erl"},
+                {line,61}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in etsi_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in etsi_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in etsi_5.erl line 12
+   4: P: true = ets:insert(table, {z,0})
+    in etsi_5.erl line 13
+   5: P: true = ets:insert(table, {z5,0})
+    in etsi_5.erl line 14
+   6: P: true = ets:insert(table, {xy,0})
+    in etsi_5.erl line 15
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_5.0.8293376>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_5.1.8293376>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_5.2.8293376>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_5.3.8293376>,[]])
+    in erlang.erl line 2329
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_5.4.8293376>,[]])
+    in erlang.erl line 2329
+  12: P.3: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 32
+  13: P.4: [{x,0}] = ets:lookup(table, x)
+    in etsi_5.erl line 43
+  14: P.2: true = ets:insert(table, {x,1})
+    in etsi_5.erl line 25
+  15: P.3: true = ets:insert(table, {z,1})
+    in etsi_5.erl line 35
+  16: P.5: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 51
+  17: P.5: true = ets:insert(table, {z5,1})
+    in etsi_5.erl line 52
+  18: P.5: ok = P.4 ! ok
+    in etsi_5.erl line 53
+  19: Message (ok) from P.5 reaches P.4
+  20: P.5: exits normally
+  21: P.4: [{y,0}] = ets:lookup(table, y)
+    in etsi_5.erl line 44
+  22: P.1: true = ets:insert(table, {y,1})
+    in etsi_5.erl line 18
+  23: P.4: true = ets:insert(table, {xy,{0,0}})
+    in etsi_5.erl line 45
+  24: P.4: receives message (ok)
+    in etsi_5.erl line 46
+  25: P.4: ok = P.3 ! ok
+    in etsi_5.erl line 47
+  26: Message (ok) from P.4 reaches P.3
+  27: P.3: receives message (ok)
+    in etsi_5.erl line 37
+  28: P.3: ok = P.2 ! ok
+    in etsi_5.erl line 38
+  29: Message (ok) from P.3 reaches P.2
+  30: P.2: receives message (ok)
+    in etsi_5.erl line 26
+  31: P.2: ok = P.1 ! ok
+    in etsi_5.erl line 27
+  32: Message (ok) from P.2 reaches P.1
+  33: P.1: receives message (ok)
+    in etsi_5.erl line 19
+  34: P.1: ok = P ! ok
+    in etsi_5.erl line 20
+  35: Message (ok) from P.1 reaches P
+  36: P: receives message (ok)
+    in etsi_5.erl line 55
+  37: P: [{z,1}] = ets:lookup(table, z)
+    in etsi_5.erl line 58
+  38: P: [{xy,{0,0}}] = ets:lookup(table, xy)
+    in etsi_5.erl line 59
+  39: P: [{z5,1}] = ets:lookup(table, z5)
+    in etsi_5.erl line 60
+  40: P: exits abnormally
+  41: P: true = ets:delete(table)
+    (while exiting)
+  42: P.1: exits normally
+  43: P.2: exits normally
+  44: P.3: exits normally
+  45: P.4: exits normally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 12 errors, 12/12 interleavings explored

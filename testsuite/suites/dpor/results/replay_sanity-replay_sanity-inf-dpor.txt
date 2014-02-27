@@ -1,56 +1,106 @@
-Checked 2 interleaving(s). 2 errors found.
-
-1
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 sends message `{ok,<0.47.0>}` to process P1.1
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.4 sends message `{p,<0.49.0>}` to process P1.1
-  Process P1.4 exits (normal)
-  Process P1.1 receives message `{p,<0.49.0>}` from process P1.4
-  Process P1.1 sends message `ok` to process P1.2
-  Process P1.1 blocks
-  Process P1.2 receives message `ok` from process P1.1
-  Process P1.2 exits (normal)
-  Process P1.5 sends message `{p,<0.50.0>}` to process P1.1
-  Process P1.5 exits (normal)
-  Process P1.1 receives message `{p,<0.50.0>}` from process P1.5
-  Process P1.1 sends message `ok` to process P1.3
-  Process P1.1 receives message `{ok,<0.47.0>}` from process P1
-  Process P1.1 exits (normal)
-  Process P1.3 receives message `ok` from process P1.1
-  Process P1.3 exits (normal)
-
-
-2
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 sends message `{ok,<0.54.0>}` to process P1.1
-  Process P1 spawns process P1.4
-  Process P1 spawns process P1.5
-  Process P1 blocks
-  Process P1.5 sends message `{p,<0.57.0>}` to process P1.1
-  Process P1.5 exits (normal)
-  Process P1.1 receives message `{p,<0.57.0>}` from process P1.5
-  Process P1.1 sends message `ok` to process P1.3
-  Process P1.1 blocks
-  Process P1.3 receives message `ok` from process P1.1
-  Process P1.3 exits (normal)
-  Process P1.4 sends message `{p,<0.56.0>}` to process P1.1
-  Process P1.4 exits (normal)
-  Process P1.1 receives message `{p,<0.56.0>}` from process P1.4
-  Process P1.1 sends message `ok` to process P1.2
-  Process P1.1 receives message `{ok,<0.54.0>}` from process P1
-  Process P1.1 exits (normal)
-  Process P1.2 receives message `ok` from process P1.1
-  Process P1.2 exits (normal)
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{replay_sanity,replay_sanity,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/replay_sanity.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in replay_sanity.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.0.124904244>,[]])
+    in erlang.erl line 2188
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.1.124904244>,[]])
+    in erlang.erl line 2188
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.2.124904244>,[]])
+    in erlang.erl line 2188
+   4: P: {ok,<0.64.0>} = P.1 ! {ok,<0.64.0>}
+    in replay_sanity.erl line 16
+   5: Message ({ok,<0.64.0>}) from P reaches P.1
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.124904244>,[]])
+    in erlang.erl line 2188
+   7: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.124904244>,[]])
+    in erlang.erl line 2188
+   8: P.4: {p,<0.68.0>} = P.1 ! {p,<0.68.0>}
+    in replay_sanity.erl line 17
+   9: Message ({p,<0.68.0>}) from P.4 reaches P.1
+  10: P.1: receives message ({p,P.2})
+    in replay_sanity.erl line 10
+  11: P.1: ok = P.2 ! ok
+    in replay_sanity.erl line 10
+  12: Message (ok) from P.1 reaches P.2
+  13: P.2: receives message (ok)
+    in replay_sanity.erl line 14
+  14: P.2: exits normally
+  15: P.4: exits normally
+  16: P.5: {p,<0.69.0>} = P.1 ! {p,<0.69.0>}
+    in replay_sanity.erl line 18
+  17: Message ({p,<0.69.0>}) from P.5 reaches P.1
+  18: P.1: receives message ({p,P.3})
+    in replay_sanity.erl line 11
+  19: P.1: ok = P.3 ! ok
+    in replay_sanity.erl line 11
+  20: Message (ok) from P.1 reaches P.3
+  21: P.1: receives message ({ok,P})
+    in replay_sanity.erl line 12
+  22: P.1: exits normally
+  23: P.3: receives message (ok)
+    in replay_sanity.erl line 15
+  24: P.3: exits normally
+  25: P.5: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in replay_sanity.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.0.124904244>,[]])
+    in erlang.erl line 2188
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.1.124904244>,[]])
+    in erlang.erl line 2188
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.2.124904244>,[]])
+    in erlang.erl line 2188
+   4: P: {ok,<0.64.0>} = P.1 ! {ok,<0.64.0>}
+    in replay_sanity.erl line 16
+   5: Message ({ok,<0.64.0>}) from P reaches P.1
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.124904244>,[]])
+    in erlang.erl line 2188
+   7: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.124904244>,[]])
+    in erlang.erl line 2188
+   8: P.4: {p,<0.68.0>} = P.1 ! {p,<0.68.0>}
+    in replay_sanity.erl line 17
+   9: P.4: exits normally
+  10: P.5: {p,<0.69.0>} = P.1 ! {p,<0.69.0>}
+    in replay_sanity.erl line 18
+  11: P.5: exits normally
+  12: Message ({p,<0.69.0>}) from P.5 reaches P.1
+  13: Message ({p,<0.68.0>}) from P.4 reaches P.1
+  14: P.1: receives message ({p,P.3})
+    in replay_sanity.erl line 10
+  15: P.1: ok = P.3 ! ok
+    in replay_sanity.erl line 10
+  16: Message (ok) from P.1 reaches P.3
+  17: P.1: receives message ({p,P.2})
+    in replay_sanity.erl line 11
+  18: P.1: ok = P.2 ! ok
+    in replay_sanity.erl line 11
+  19: Message (ok) from P.1 reaches P.2
+  20: P.1: receives message ({ok,P})
+    in replay_sanity.erl line 12
+  21: P.1: exits normally
+  22: P.2: receives message (ok)
+    in replay_sanity.erl line 14
+  23: P.2: exits normally
+  24: P.3: receives message (ok)
+    in replay_sanity.erl line 15
+  25: P.3: exits normally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 2 errors, 2/2 interleavings explored

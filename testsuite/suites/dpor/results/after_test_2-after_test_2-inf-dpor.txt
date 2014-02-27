@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{target,{after_test_2,after_test_2,[]}},
    {symbolic,true},
+   {verbose,0},
    {timeout,1000},
    {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_2.erl"]},
    {'after-timeout',infinite},
@@ -14,31 +15,31 @@ Erroneous interleaving 1:
     P in after_test_2.erl line 21
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.88245162>,[]])
-    in erlang.erl line 2188
-  2: P: receive timeout expired after 0 ms
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.15042273>,[]])
+    in erlang.erl line 2329
+   2: P: receive timeout expired after 0 ms
     in after_test_2.erl line 11
-  3: P: receive timeout expired after 0 ms
+   3: P: receive timeout expired after 0 ms
     in after_test_2.erl line 16
-  4: P.1: one = P ! one
+   4: P.1: one = P ! one
     in after_test_2.erl line 10
-  5: Message (one) from P.1 reaches P
-  6: P.1: exits normally
+   5: Message (one) from P.1 reaches P
+   6: P.1: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
     P in after_test_2.erl line 21
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.88245162>,[]])
-    in erlang.erl line 2188
-  2: P: receive timeout expired after 0 ms
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.15042273>,[]])
+    in erlang.erl line 2329
+   2: P: receive timeout expired after 0 ms
     in after_test_2.erl line 11
-  3: P.1: one = P ! one
+   3: P.1: one = P ! one
     in after_test_2.erl line 10
-  4: P.1: exits normally
-  5: Message (one) from P.1 reaches P
-  6: P: receives message (one)
+   4: P.1: exits normally
+   5: Message (one) from P.1 reaches P
+   6: P: receives message (one)
     in after_test_2.erl line 16
 ################################################################################
 Done! (Exit status: ok)

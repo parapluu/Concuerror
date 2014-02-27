@@ -1,1 +1,16 @@
-Checked 8 interleaving(s). No errors found.
+################################################################################
+Concuerror started with options:
+  [{target,{main_and_backup,main_and_backup,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/main_and_backup.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+  No errors found!
+################################################################################
+Done! (Exit status: ok)
+  Summary: 0 errors, 8/8 interleavings explored

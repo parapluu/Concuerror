@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{target,{diff_dep_1,diff_dep_1,[]}},
    {symbolic,true},
+   {verbose,0},
    {timeout,1000},
    {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/diff_dep_1.erl"]},
    {'after-timeout',infinite},
@@ -14,375 +15,375 @@ Erroneous interleaving 1:
     P in diff_dep_1.erl line 33
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in diff_dep_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in diff_dep_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in diff_dep_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in diff_dep_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.44651889>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.44651889>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.44651889>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.44651889>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.44651889>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {x,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.89583338>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.89583338>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.89583338>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.89583338>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.89583338>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {x,1})
     in diff_dep_1.erl line 13
- 11: P.1: exits normally
- 12: P.2: true = ets:insert(table, {y,1})
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {y,1})
     in diff_dep_1.erl line 14
- 13: P.2: exits normally
- 14: P.3: true = ets:insert(table, {z,1})
+  13: P.2: exits normally
+  14: P.3: true = ets:insert(table, {z,1})
     in diff_dep_1.erl line 15
- 15: P.3: exits normally
- 16: P.4: [{z,1}] = ets:lookup(table, z)
+  15: P.3: exits normally
+  16: P.4: [{z,1}] = ets:lookup(table, z)
     in diff_dep_1.erl line 17
- 17: P.4: [{x,1}] = ets:lookup(table, x)
+  17: P.4: [{x,1}] = ets:lookup(table, x)
     in diff_dep_1.erl line 20
- 18: P.4: exits normally
- 19: P.5: [{y,1}] = ets:lookup(table, y)
+  18: P.4: exits normally
+  19: P.5: [{y,1}] = ets:lookup(table, y)
     in diff_dep_1.erl line 24
- 20: P.5: [{x,1}] = ets:lookup(table, x)
+  20: P.5: [{x,1}] = ets:lookup(table, x)
     in diff_dep_1.erl line 27
- 21: P.5: exits normally
+  21: P.5: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
     P in diff_dep_1.erl line 33
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in diff_dep_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in diff_dep_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in diff_dep_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in diff_dep_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.44651889>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.44651889>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.44651889>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.44651889>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.44651889>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {x,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.89583338>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.89583338>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.89583338>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.89583338>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.89583338>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {x,1})
     in diff_dep_1.erl line 13
- 11: P.1: exits normally
- 12: P.2: true = ets:insert(table, {y,1})
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {y,1})
     in diff_dep_1.erl line 14
- 13: P.2: exits normally
- 14: P.5: [{y,1}] = ets:lookup(table, y)
+  13: P.2: exits normally
+  14: P.5: [{y,1}] = ets:lookup(table, y)
     in diff_dep_1.erl line 24
- 15: P.5: [{x,1}] = ets:lookup(table, x)
+  15: P.5: [{x,1}] = ets:lookup(table, x)
     in diff_dep_1.erl line 27
- 16: P.5: exits normally
- 17: P.4: [{z,0}] = ets:lookup(table, z)
+  16: P.5: exits normally
+  17: P.4: [{z,0}] = ets:lookup(table, z)
     in diff_dep_1.erl line 17
- 18: P.3: true = ets:insert(table, {z,1})
+  18: P.3: true = ets:insert(table, {z,1})
     in diff_dep_1.erl line 15
- 19: P.3: exits normally
- 20: P.4: exits normally
+  19: P.3: exits normally
+  20: P.4: exits normally
 ################################################################################
 Erroneous interleaving 3:
 * Blocked at a 'receive' (when all other processes have exited):
     P in diff_dep_1.erl line 33
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in diff_dep_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in diff_dep_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in diff_dep_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in diff_dep_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.44651889>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.44651889>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.44651889>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.44651889>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.44651889>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {x,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.89583338>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.89583338>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.89583338>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.89583338>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.89583338>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {x,1})
     in diff_dep_1.erl line 13
- 11: P.1: exits normally
- 12: P.3: true = ets:insert(table, {z,1})
+  11: P.1: exits normally
+  12: P.3: true = ets:insert(table, {z,1})
     in diff_dep_1.erl line 15
- 13: P.3: exits normally
- 14: P.4: [{z,1}] = ets:lookup(table, z)
+  13: P.3: exits normally
+  14: P.4: [{z,1}] = ets:lookup(table, z)
     in diff_dep_1.erl line 17
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in diff_dep_1.erl line 20
- 16: P.4: exits normally
- 17: P.5: [{y,0}] = ets:lookup(table, y)
+  16: P.4: exits normally
+  17: P.5: [{y,0}] = ets:lookup(table, y)
     in diff_dep_1.erl line 24
- 18: P.2: true = ets:insert(table, {y,1})
+  18: P.2: true = ets:insert(table, {y,1})
     in diff_dep_1.erl line 14
- 19: P.2: exits normally
- 20: P.5: exits normally
+  19: P.2: exits normally
+  20: P.5: exits normally
 ################################################################################
 Erroneous interleaving 4:
 * Blocked at a 'receive' (when all other processes have exited):
     P in diff_dep_1.erl line 33
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in diff_dep_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in diff_dep_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in diff_dep_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in diff_dep_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.44651889>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.44651889>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.44651889>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.44651889>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.44651889>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {x,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.89583338>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.89583338>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.89583338>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.89583338>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.89583338>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {x,1})
     in diff_dep_1.erl line 13
- 11: P.1: exits normally
- 12: P.4: [{z,0}] = ets:lookup(table, z)
+  11: P.1: exits normally
+  12: P.4: [{z,0}] = ets:lookup(table, z)
     in diff_dep_1.erl line 17
- 13: P.3: true = ets:insert(table, {z,1})
+  13: P.3: true = ets:insert(table, {z,1})
     in diff_dep_1.erl line 15
- 14: P.3: exits normally
- 15: P.4: exits normally
- 16: P.5: [{y,0}] = ets:lookup(table, y)
+  14: P.3: exits normally
+  15: P.4: exits normally
+  16: P.5: [{y,0}] = ets:lookup(table, y)
     in diff_dep_1.erl line 24
- 17: P.2: true = ets:insert(table, {y,1})
+  17: P.2: true = ets:insert(table, {y,1})
     in diff_dep_1.erl line 14
- 18: P.2: exits normally
- 19: P.5: exits normally
+  18: P.2: exits normally
+  19: P.5: exits normally
 ################################################################################
 Erroneous interleaving 5:
 * Blocked at a 'receive' (when all other processes have exited):
     P in diff_dep_1.erl line 33
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in diff_dep_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in diff_dep_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in diff_dep_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in diff_dep_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.44651889>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.44651889>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.44651889>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.44651889>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.44651889>,[]])
-    in erlang.erl line 2188
- 10: P.2: true = ets:insert(table, {y,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.89583338>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.89583338>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.89583338>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.89583338>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.89583338>,[]])
+    in erlang.erl line 2329
+  10: P.2: true = ets:insert(table, {y,1})
     in diff_dep_1.erl line 14
- 11: P.2: exits normally
- 12: P.3: true = ets:insert(table, {z,1})
+  11: P.2: exits normally
+  12: P.3: true = ets:insert(table, {z,1})
     in diff_dep_1.erl line 15
- 13: P.3: exits normally
- 14: P.4: [{z,1}] = ets:lookup(table, z)
+  13: P.3: exits normally
+  14: P.4: [{z,1}] = ets:lookup(table, z)
     in diff_dep_1.erl line 17
- 15: P.5: [{y,1}] = ets:lookup(table, y)
+  15: P.5: [{y,1}] = ets:lookup(table, y)
     in diff_dep_1.erl line 24
- 16: P.4: [{x,0}] = ets:lookup(table, x)
+  16: P.4: [{x,0}] = ets:lookup(table, x)
     in diff_dep_1.erl line 20
- 17: P.1: true = ets:insert(table, {x,1})
+  17: P.1: true = ets:insert(table, {x,1})
     in diff_dep_1.erl line 13
- 18: P.1: exits normally
- 19: P.4: exits normally
- 20: P.5: [{x,1}] = ets:lookup(table, x)
+  18: P.1: exits normally
+  19: P.4: exits normally
+  20: P.5: [{x,1}] = ets:lookup(table, x)
     in diff_dep_1.erl line 27
- 21: P.5: exits normally
+  21: P.5: exits normally
 ################################################################################
 Erroneous interleaving 6:
 * Blocked at a 'receive' (when all other processes have exited):
     P in diff_dep_1.erl line 33
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in diff_dep_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in diff_dep_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in diff_dep_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in diff_dep_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.44651889>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.44651889>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.44651889>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.44651889>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.44651889>,[]])
-    in erlang.erl line 2188
- 10: P.2: true = ets:insert(table, {y,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.89583338>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.89583338>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.89583338>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.89583338>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.89583338>,[]])
+    in erlang.erl line 2329
+  10: P.2: true = ets:insert(table, {y,1})
     in diff_dep_1.erl line 14
- 11: P.2: exits normally
- 12: P.3: true = ets:insert(table, {z,1})
+  11: P.2: exits normally
+  12: P.3: true = ets:insert(table, {z,1})
     in diff_dep_1.erl line 15
- 13: P.3: exits normally
- 14: P.4: [{z,1}] = ets:lookup(table, z)
+  13: P.3: exits normally
+  14: P.4: [{z,1}] = ets:lookup(table, z)
     in diff_dep_1.erl line 17
- 15: P.5: [{y,1}] = ets:lookup(table, y)
+  15: P.5: [{y,1}] = ets:lookup(table, y)
     in diff_dep_1.erl line 24
- 16: P.4: [{x,0}] = ets:lookup(table, x)
+  16: P.4: [{x,0}] = ets:lookup(table, x)
     in diff_dep_1.erl line 20
- 17: P.4: exits normally
- 18: P.5: [{x,0}] = ets:lookup(table, x)
+  17: P.4: exits normally
+  18: P.5: [{x,0}] = ets:lookup(table, x)
     in diff_dep_1.erl line 27
- 19: P.1: true = ets:insert(table, {x,1})
+  19: P.1: true = ets:insert(table, {x,1})
     in diff_dep_1.erl line 13
- 20: P.1: exits normally
- 21: P.5: exits normally
+  20: P.1: exits normally
+  21: P.5: exits normally
 ################################################################################
 Erroneous interleaving 7:
 * Blocked at a 'receive' (when all other processes have exited):
     P in diff_dep_1.erl line 33
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in diff_dep_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in diff_dep_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in diff_dep_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in diff_dep_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.44651889>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.44651889>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.44651889>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.44651889>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.44651889>,[]])
-    in erlang.erl line 2188
- 10: P.2: true = ets:insert(table, {y,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.89583338>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.89583338>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.89583338>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.89583338>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.89583338>,[]])
+    in erlang.erl line 2329
+  10: P.2: true = ets:insert(table, {y,1})
     in diff_dep_1.erl line 14
- 11: P.2: exits normally
- 12: P.3: true = ets:insert(table, {z,1})
+  11: P.2: exits normally
+  12: P.3: true = ets:insert(table, {z,1})
     in diff_dep_1.erl line 15
- 13: P.3: exits normally
- 14: P.4: [{z,1}] = ets:lookup(table, z)
+  13: P.3: exits normally
+  14: P.4: [{z,1}] = ets:lookup(table, z)
     in diff_dep_1.erl line 17
- 15: P.5: [{y,1}] = ets:lookup(table, y)
+  15: P.5: [{y,1}] = ets:lookup(table, y)
     in diff_dep_1.erl line 24
- 16: P.5: [{x,0}] = ets:lookup(table, x)
+  16: P.5: [{x,0}] = ets:lookup(table, x)
     in diff_dep_1.erl line 27
- 17: P.5: exits normally
- 18: P.1: true = ets:insert(table, {x,1})
+  17: P.5: exits normally
+  18: P.1: true = ets:insert(table, {x,1})
     in diff_dep_1.erl line 13
- 19: P.1: exits normally
- 20: P.4: [{x,1}] = ets:lookup(table, x)
+  19: P.1: exits normally
+  20: P.4: [{x,1}] = ets:lookup(table, x)
     in diff_dep_1.erl line 20
- 21: P.4: exits normally
+  21: P.4: exits normally
 ################################################################################
 Erroneous interleaving 8:
 * Blocked at a 'receive' (when all other processes have exited):
     P in diff_dep_1.erl line 33
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in diff_dep_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in diff_dep_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in diff_dep_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in diff_dep_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.44651889>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.44651889>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.44651889>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.44651889>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.44651889>,[]])
-    in erlang.erl line 2188
- 10: P.2: true = ets:insert(table, {y,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.89583338>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.89583338>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.89583338>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.89583338>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.89583338>,[]])
+    in erlang.erl line 2329
+  10: P.2: true = ets:insert(table, {y,1})
     in diff_dep_1.erl line 14
- 11: P.2: exits normally
- 12: P.5: [{y,1}] = ets:lookup(table, y)
+  11: P.2: exits normally
+  12: P.5: [{y,1}] = ets:lookup(table, y)
     in diff_dep_1.erl line 24
- 13: P.4: [{z,0}] = ets:lookup(table, z)
+  13: P.4: [{z,0}] = ets:lookup(table, z)
     in diff_dep_1.erl line 17
- 14: P.3: true = ets:insert(table, {z,1})
+  14: P.3: true = ets:insert(table, {z,1})
     in diff_dep_1.erl line 15
- 15: P.3: exits normally
- 16: P.4: exits normally
- 17: P.5: [{x,0}] = ets:lookup(table, x)
+  15: P.3: exits normally
+  16: P.4: exits normally
+  17: P.5: [{x,0}] = ets:lookup(table, x)
     in diff_dep_1.erl line 27
- 18: P.1: true = ets:insert(table, {x,1})
+  18: P.1: true = ets:insert(table, {x,1})
     in diff_dep_1.erl line 13
- 19: P.1: exits normally
- 20: P.5: exits normally
+  19: P.1: exits normally
+  20: P.5: exits normally
 ################################################################################
 Erroneous interleaving 9:
 * Blocked at a 'receive' (when all other processes have exited):
     P in diff_dep_1.erl line 33
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in diff_dep_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in diff_dep_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in diff_dep_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in diff_dep_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.44651889>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.44651889>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.44651889>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.44651889>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.44651889>,[]])
-    in erlang.erl line 2188
- 10: P.3: true = ets:insert(table, {z,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.0.89583338>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.1.89583338>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.2.89583338>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.3.89583338>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<diff_dep_1.4.89583338>,[]])
+    in erlang.erl line 2329
+  10: P.3: true = ets:insert(table, {z,1})
     in diff_dep_1.erl line 15
- 11: P.3: exits normally
- 12: P.4: [{z,1}] = ets:lookup(table, z)
+  11: P.3: exits normally
+  12: P.4: [{z,1}] = ets:lookup(table, z)
     in diff_dep_1.erl line 17
- 13: P.5: [{y,0}] = ets:lookup(table, y)
+  13: P.5: [{y,0}] = ets:lookup(table, y)
     in diff_dep_1.erl line 24
- 14: P.2: true = ets:insert(table, {y,1})
+  14: P.2: true = ets:insert(table, {y,1})
     in diff_dep_1.erl line 14
- 15: P.2: exits normally
- 16: P.5: exits normally
- 17: P.4: [{x,0}] = ets:lookup(table, x)
+  15: P.2: exits normally
+  16: P.5: exits normally
+  17: P.4: [{x,0}] = ets:lookup(table, x)
     in diff_dep_1.erl line 20
- 18: P.1: true = ets:insert(table, {x,1})
+  18: P.1: true = ets:insert(table, {x,1})
     in diff_dep_1.erl line 13
- 19: P.1: exits normally
- 20: P.4: exits normally
+  19: P.1: exits normally
+  20: P.4: exits normally
 ################################################################################
 Done! (Exit status: ok)
   Summary: 9 errors, 9/9 interleavings explored

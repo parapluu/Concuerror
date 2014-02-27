@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{target,{after_test,after_test,[]}},
    {symbolic,true},
+   {verbose,0},
    {timeout,1000},
    {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test.erl"]},
    {'after-timeout',infinite},
@@ -14,87 +15,87 @@ Erroneous interleaving 1:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P: receive timeout expired after 0 ms
+  12: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 13: P.1: exits normally
- 14: P.2: ok2 = P ! ok2
+  13: P.1: exits normally
+  14: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 15: Message (ok2) from P.2 reaches P
- 16: P: receives message (ok2)
+  15: Message (ok2) from P.2 reaches P
+  16: P: receives message (ok2)
     in after_test.erl line 22
- 17: P.2: exits normally
- 18: P.3: ok2 = P ! ok2
+  17: P.2: exits normally
+  18: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 19: Message (ok2) from P.3 reaches P
- 20: P: receives message (ok2)
+  19: Message (ok2) from P.3 reaches P
+  20: P: receives message (ok2)
     in after_test.erl line 22
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
- 22: P.3: exits normally
+  22: P.3: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P: receive timeout expired after 0 ms
+  12: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 13: P.1: exits normally
- 14: P.2: ok2 = P ! ok2
+  13: P.1: exits normally
+  14: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 15: P.2: exits normally
- 16: P.3: ok2 = P ! ok2
+  15: P.2: exits normally
+  16: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 17: P.3: exits normally
- 18: Message (ok2) from P.3 reaches P
- 19: Message (ok2) from P.2 reaches P
- 20: P: receives message (ok2)
+  17: P.3: exits normally
+  18: Message (ok2) from P.3 reaches P
+  19: Message (ok2) from P.2 reaches P
+  20: P: receives message (ok2)
     in after_test.erl line 22
- 21: P: receives message (ok2)
+  21: P: receives message (ok2)
     in after_test.erl line 22
- 22: P: receive timeout expired after 0 ms
+  22: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 3:
@@ -102,41 +103,41 @@ Erroneous interleaving 3:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.1: exits normally
- 13: P.2: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 14: P.2: exits normally
- 15: P.3: ok2 = P ! ok2
+  14: P.2: exits normally
+  15: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 16: P.3: exits normally
- 17: Message (ok2) from P.2 reaches P
- 18: Message (ok2) from P.3 reaches P
- 19: P: receives message (ok2)
+  16: P.3: exits normally
+  17: Message (ok2) from P.2 reaches P
+  18: Message (ok2) from P.3 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 26
- 20: P: receives message (ok2)
+  20: P: receives message (ok2)
     in after_test.erl line 26
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 4:
@@ -144,43 +145,43 @@ Erroneous interleaving 4:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.1: exits normally
- 13: P.2: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 14: P.2: exits normally
- 15: P.3: ok2 = P ! ok2
+  14: P.2: exits normally
+  15: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 16: P.3: exits normally
- 17: Message (ok2) from P.2 reaches P
- 18: P: receives message (ok2)
+  16: P.3: exits normally
+  17: Message (ok2) from P.2 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 20: Message (ok2) from P.3 reaches P
- 21: P: receives message (ok2)
+  20: Message (ok2) from P.3 reaches P
+  21: P: receives message (ok2)
     in after_test.erl line 22
- 22: P: receive timeout expired after 0 ms
+  22: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 5:
@@ -188,41 +189,41 @@ Erroneous interleaving 5:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.1: exits normally
- 13: P.2: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 14: P.2: exits normally
- 15: P.3: ok2 = P ! ok2
+  14: P.2: exits normally
+  15: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 16: P.3: exits normally
- 17: Message (ok2) from P.3 reaches P
- 18: Message (ok2) from P.2 reaches P
- 19: P: receives message (ok2)
+  16: P.3: exits normally
+  17: Message (ok2) from P.3 reaches P
+  18: Message (ok2) from P.2 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 26
- 20: P: receives message (ok2)
+  20: P: receives message (ok2)
     in after_test.erl line 26
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 6:
@@ -230,43 +231,43 @@ Erroneous interleaving 6:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.1: exits normally
- 13: P.2: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 14: P.2: exits normally
- 15: P.3: ok2 = P ! ok2
+  14: P.2: exits normally
+  15: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 16: P.3: exits normally
- 17: Message (ok2) from P.3 reaches P
- 18: P: receives message (ok2)
+  16: P.3: exits normally
+  17: Message (ok2) from P.3 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 20: Message (ok2) from P.2 reaches P
- 21: P: receives message (ok2)
+  20: Message (ok2) from P.2 reaches P
+  21: P: receives message (ok2)
     in after_test.erl line 22
- 22: P: receive timeout expired after 0 ms
+  22: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 7:
@@ -274,39 +275,39 @@ Erroneous interleaving 7:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.1: exits normally
- 12: P.2: ok2 = P ! ok2
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.2: exits normally
- 14: P.3: ok2 = P ! ok2
+  13: P.2: exits normally
+  14: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.3: exits normally
- 16: Message (ok2) from P.2 reaches P
- 17: Message (ok2) from P.3 reaches P
- 18: P: receives message (ok2)
+  15: P.3: exits normally
+  16: Message (ok2) from P.2 reaches P
+  17: Message (ok2) from P.3 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receives message (ok2)
+  19: P: receives message (ok2)
     in after_test.erl line 26
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 8:
@@ -314,41 +315,41 @@ Erroneous interleaving 8:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.1: exits normally
- 12: P.2: ok2 = P ! ok2
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.2: exits normally
- 14: P.3: ok2 = P ! ok2
+  13: P.2: exits normally
+  14: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.3: exits normally
- 16: Message (ok2) from P.2 reaches P
- 17: P: receives message (ok2)
+  15: P.3: exits normally
+  16: Message (ok2) from P.2 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 19: Message (ok2) from P.3 reaches P
- 20: P: receives message (ok2)
+  19: Message (ok2) from P.3 reaches P
+  20: P: receives message (ok2)
     in after_test.erl line 26
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 9:
@@ -356,43 +357,43 @@ Erroneous interleaving 9:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.1: exits normally
- 12: P.2: ok2 = P ! ok2
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.2: exits normally
- 14: P.3: ok2 = P ! ok2
+  13: P.2: exits normally
+  14: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.3: exits normally
- 16: Message (ok2) from P.2 reaches P
- 17: P: receives message (ok2)
+  15: P.3: exits normally
+  16: Message (ok2) from P.2 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 20: Message (ok2) from P.3 reaches P
- 21: P: receives message (ok2)
+  20: Message (ok2) from P.3 reaches P
+  21: P: receives message (ok2)
     in after_test.erl line 22
- 22: P: receive timeout expired after 0 ms
+  22: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 10:
@@ -400,39 +401,39 @@ Erroneous interleaving 10:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.1: exits normally
- 12: P.2: ok2 = P ! ok2
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.2: exits normally
- 14: P.3: ok2 = P ! ok2
+  13: P.2: exits normally
+  14: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.3: exits normally
- 16: Message (ok2) from P.3 reaches P
- 17: Message (ok2) from P.2 reaches P
- 18: P: receives message (ok2)
+  15: P.3: exits normally
+  16: Message (ok2) from P.3 reaches P
+  17: Message (ok2) from P.2 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receives message (ok2)
+  19: P: receives message (ok2)
     in after_test.erl line 26
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 11:
@@ -440,41 +441,41 @@ Erroneous interleaving 11:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.1: exits normally
- 12: P.2: ok2 = P ! ok2
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.2: exits normally
- 14: P.3: ok2 = P ! ok2
+  13: P.2: exits normally
+  14: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.3: exits normally
- 16: Message (ok2) from P.3 reaches P
- 17: P: receives message (ok2)
+  15: P.3: exits normally
+  16: Message (ok2) from P.3 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 19: Message (ok2) from P.2 reaches P
- 20: P: receives message (ok2)
+  19: Message (ok2) from P.2 reaches P
+  20: P: receives message (ok2)
     in after_test.erl line 26
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 12:
@@ -482,43 +483,43 @@ Erroneous interleaving 12:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P: receive timeout expired after 0 ms
+   4: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  5: P.1: ok1 = P ! ok1
+   5: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 22
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.1: exits normally
- 12: P.2: ok2 = P ! ok2
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.2: exits normally
- 14: P.3: ok2 = P ! ok2
+  13: P.2: exits normally
+  14: P.3: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.3: exits normally
- 16: Message (ok2) from P.3 reaches P
- 17: P: receives message (ok2)
+  15: P.3: exits normally
+  16: Message (ok2) from P.3 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 20: Message (ok2) from P.2 reaches P
- 21: P: receives message (ok2)
+  20: Message (ok2) from P.2 reaches P
+  21: P: receives message (ok2)
     in after_test.erl line 22
- 22: P: receive timeout expired after 0 ms
+  22: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 13:
@@ -526,83 +527,83 @@ Erroneous interleaving 13:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P: receive timeout expired after 0 ms
+  12: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 13: P.4: ok2 = P ! ok2
+  13: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 14: Message (ok2) from P.4 reaches P
- 15: P: receives message (ok2)
+  14: Message (ok2) from P.1 reaches P
+  15: P: receives message (ok2)
     in after_test.erl line 22
- 16: P.4: exits normally
- 17: P.5: ok2 = P ! ok2
+  16: P.1: exits normally
+  17: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 18: Message (ok2) from P.5 reaches P
- 19: P: receives message (ok2)
+  18: Message (ok2) from P.2 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 22
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
- 21: P.5: exits normally
+  21: P.2: exits normally
 ################################################################################
 Erroneous interleaving 14:
 * Blocked at a 'receive' (when all other processes have exited):
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P: receive timeout expired after 0 ms
+  12: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 13: P.4: ok2 = P ! ok2
+  13: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 14: P.4: exits normally
- 15: P.5: ok2 = P ! ok2
+  14: P.1: exits normally
+  15: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 16: P.5: exits normally
- 17: Message (ok2) from P.5 reaches P
- 18: Message (ok2) from P.4 reaches P
- 19: P: receives message (ok2)
+  16: P.2: exits normally
+  17: Message (ok2) from P.2 reaches P
+  18: Message (ok2) from P.1 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 22
- 20: P: receives message (ok2)
+  20: P: receives message (ok2)
     in after_test.erl line 22
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 15:
@@ -610,39 +611,39 @@ Erroneous interleaving 15:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.4: ok2 = P ! ok2
+  12: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.4: exits normally
- 14: P.5: ok2 = P ! ok2
+  13: P.1: exits normally
+  14: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.5: exits normally
- 16: Message (ok2) from P.4 reaches P
- 17: Message (ok2) from P.5 reaches P
- 18: P: receives message (ok2)
+  15: P.2: exits normally
+  16: Message (ok2) from P.1 reaches P
+  17: Message (ok2) from P.2 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receives message (ok2)
+  19: P: receives message (ok2)
     in after_test.erl line 26
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 16:
@@ -650,41 +651,41 @@ Erroneous interleaving 16:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.4: ok2 = P ! ok2
+  12: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.4: exits normally
- 14: P.5: ok2 = P ! ok2
+  13: P.1: exits normally
+  14: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.5: exits normally
- 16: Message (ok2) from P.4 reaches P
- 17: P: receives message (ok2)
+  15: P.2: exits normally
+  16: Message (ok2) from P.1 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 19: Message (ok2) from P.5 reaches P
- 20: P: receives message (ok2)
+  19: Message (ok2) from P.2 reaches P
+  20: P: receives message (ok2)
     in after_test.erl line 22
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 17:
@@ -692,39 +693,39 @@ Erroneous interleaving 17:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.4: ok2 = P ! ok2
+  12: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.4: exits normally
- 14: P.5: ok2 = P ! ok2
+  13: P.1: exits normally
+  14: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.5: exits normally
- 16: Message (ok2) from P.5 reaches P
- 17: Message (ok2) from P.4 reaches P
- 18: P: receives message (ok2)
+  15: P.2: exits normally
+  16: Message (ok2) from P.2 reaches P
+  17: Message (ok2) from P.1 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receives message (ok2)
+  19: P: receives message (ok2)
     in after_test.erl line 26
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 18:
@@ -732,41 +733,41 @@ Erroneous interleaving 18:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P: receive timeout expired after 0 ms
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.4: ok2 = P ! ok2
+  12: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.4: exits normally
- 14: P.5: ok2 = P ! ok2
+  13: P.1: exits normally
+  14: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.5: exits normally
- 16: Message (ok2) from P.5 reaches P
- 17: P: receives message (ok2)
+  15: P.2: exits normally
+  16: Message (ok2) from P.2 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 19: Message (ok2) from P.4 reaches P
- 20: P: receives message (ok2)
+  19: Message (ok2) from P.1 reaches P
+  20: P: receives message (ok2)
     in after_test.erl line 22
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 19:
@@ -774,37 +775,37 @@ Erroneous interleaving 19:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.4: ok2 = P ! ok2
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.4: exits normally
- 13: P.5: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.5: exits normally
- 15: Message (ok2) from P.4 reaches P
- 16: Message (ok2) from P.5 reaches P
- 17: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.1 reaches P
+  16: Message (ok2) from P.2 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receives message (ok2)
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 20:
@@ -812,39 +813,39 @@ Erroneous interleaving 20:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.4: ok2 = P ! ok2
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.4: exits normally
- 13: P.5: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.5: exits normally
- 15: Message (ok2) from P.4 reaches P
- 16: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.1 reaches P
+  16: P: receives message (ok2)
     in after_test.erl line 26
- 17: P: receive timeout expired after 0 ms
+  17: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 18: Message (ok2) from P.5 reaches P
- 19: P: receives message (ok2)
+  18: Message (ok2) from P.2 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 26
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 21:
@@ -852,41 +853,41 @@ Erroneous interleaving 21:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.4: ok2 = P ! ok2
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.4: exits normally
- 13: P.5: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.5: exits normally
- 15: Message (ok2) from P.4 reaches P
- 16: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.1 reaches P
+  16: P: receives message (ok2)
     in after_test.erl line 26
- 17: P: receive timeout expired after 0 ms
+  17: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 19: Message (ok2) from P.5 reaches P
- 20: P: receives message (ok2)
+  19: Message (ok2) from P.2 reaches P
+  20: P: receives message (ok2)
     in after_test.erl line 22
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 22:
@@ -894,37 +895,37 @@ Erroneous interleaving 22:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.4: ok2 = P ! ok2
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.4: exits normally
- 13: P.5: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.5: exits normally
- 15: Message (ok2) from P.5 reaches P
- 16: Message (ok2) from P.4 reaches P
- 17: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.2 reaches P
+  16: Message (ok2) from P.1 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receives message (ok2)
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 23:
@@ -932,39 +933,39 @@ Erroneous interleaving 23:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.4: ok2 = P ! ok2
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.4: exits normally
- 13: P.5: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.5: exits normally
- 15: Message (ok2) from P.5 reaches P
- 16: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.2 reaches P
+  16: P: receives message (ok2)
     in after_test.erl line 26
- 17: P: receive timeout expired after 0 ms
+  17: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 18: Message (ok2) from P.4 reaches P
- 19: P: receives message (ok2)
+  18: Message (ok2) from P.1 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 26
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 24:
@@ -972,41 +973,41 @@ Erroneous interleaving 24:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test.erl line 26
-  4: P.1: ok1 = P ! ok1
+   4: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  5: P.1: exits normally
-  6: Message (ok1) from P.1 reaches P
-  7: P: receives message (ok1)
+   5: P.1: exits normally
+   6: Message (ok1) from P.1 reaches P
+   7: P: receives message (ok1)
     in after_test.erl line 26
-  8: P: receive timeout expired after 0 ms
+   8: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 11: P.4: ok2 = P ! ok2
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.4: exits normally
- 13: P.5: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.5: exits normally
- 15: Message (ok2) from P.5 reaches P
- 16: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.2 reaches P
+  16: P: receives message (ok2)
     in after_test.erl line 26
- 17: P: receive timeout expired after 0 ms
+  17: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 19: Message (ok2) from P.4 reaches P
- 20: P: receives message (ok2)
+  19: Message (ok2) from P.1 reaches P
+  20: P: receives message (ok2)
     in after_test.erl line 22
- 21: P: receive timeout expired after 0 ms
+  21: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 25:
@@ -1014,79 +1015,79 @@ Erroneous interleaving 25:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: receive timeout expired after 0 ms
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 11: P: receive timeout expired after 0 ms
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.6: ok2 = P ! ok2
+  12: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 13: Message (ok2) from P.6 reaches P
- 14: P: receives message (ok2)
+  13: Message (ok2) from P.1 reaches P
+  14: P: receives message (ok2)
     in after_test.erl line 22
- 15: P.6: exits normally
- 16: P.7: ok2 = P ! ok2
+  15: P.1: exits normally
+  16: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 17: Message (ok2) from P.7 reaches P
- 18: P: receives message (ok2)
+  17: Message (ok2) from P.2 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 22
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 33
- 20: P.7: exits normally
+  20: P.2: exits normally
 ################################################################################
 Erroneous interleaving 26:
 * Blocked at a 'receive' (when all other processes have exited):
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: receive timeout expired after 0 ms
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 11: P: receive timeout expired after 0 ms
+  11: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 12: P.6: ok2 = P ! ok2
+  12: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 13: P.6: exits normally
- 14: P.7: ok2 = P ! ok2
+  13: P.1: exits normally
+  14: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 15: P.7: exits normally
- 16: Message (ok2) from P.7 reaches P
- 17: Message (ok2) from P.6 reaches P
- 18: P: receives message (ok2)
+  15: P.2: exits normally
+  16: Message (ok2) from P.2 reaches P
+  17: Message (ok2) from P.1 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 22
- 19: P: receives message (ok2)
+  19: P: receives message (ok2)
     in after_test.erl line 22
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 27:
@@ -1094,37 +1095,37 @@ Erroneous interleaving 27:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: receive timeout expired after 0 ms
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 11: P.6: ok2 = P ! ok2
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.6: exits normally
- 13: P.7: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.7: exits normally
- 15: Message (ok2) from P.6 reaches P
- 16: Message (ok2) from P.7 reaches P
- 17: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.1 reaches P
+  16: Message (ok2) from P.2 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receives message (ok2)
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 28:
@@ -1132,39 +1133,39 @@ Erroneous interleaving 28:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: receive timeout expired after 0 ms
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 11: P.6: ok2 = P ! ok2
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.6: exits normally
- 13: P.7: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.7: exits normally
- 15: Message (ok2) from P.6 reaches P
- 16: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.1 reaches P
+  16: P: receives message (ok2)
     in after_test.erl line 26
- 17: P: receive timeout expired after 0 ms
+  17: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 18: Message (ok2) from P.7 reaches P
- 19: P: receives message (ok2)
+  18: Message (ok2) from P.2 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 22
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 29:
@@ -1172,37 +1173,37 @@ Erroneous interleaving 29:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: receive timeout expired after 0 ms
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 11: P.6: ok2 = P ! ok2
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.6: exits normally
- 13: P.7: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.7: exits normally
- 15: Message (ok2) from P.7 reaches P
- 16: Message (ok2) from P.6 reaches P
- 17: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.2 reaches P
+  16: Message (ok2) from P.1 reaches P
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receives message (ok2)
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 30:
@@ -1210,39 +1211,39 @@ Erroneous interleaving 30:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P: receive timeout expired after 0 ms
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 11: P.6: ok2 = P ! ok2
+  11: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 12: P.6: exits normally
- 13: P.7: ok2 = P ! ok2
+  12: P.1: exits normally
+  13: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 14: P.7: exits normally
- 15: Message (ok2) from P.7 reaches P
- 16: P: receives message (ok2)
+  14: P.2: exits normally
+  15: Message (ok2) from P.2 reaches P
+  16: P: receives message (ok2)
     in after_test.erl line 26
- 17: P: receive timeout expired after 0 ms
+  17: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 18: Message (ok2) from P.6 reaches P
- 19: P: receives message (ok2)
+  18: Message (ok2) from P.1 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 22
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 31:
@@ -1250,35 +1251,35 @@ Erroneous interleaving 31:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P.6: ok2 = P ! ok2
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 11: P.6: exits normally
- 12: P.7: ok2 = P ! ok2
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 13: P.7: exits normally
- 14: Message (ok2) from P.6 reaches P
- 15: Message (ok2) from P.7 reaches P
- 16: P: receives message (ok2)
+  13: P.2: exits normally
+  14: Message (ok2) from P.1 reaches P
+  15: Message (ok2) from P.2 reaches P
+  16: P: receives message (ok2)
     in after_test.erl line 26
- 17: P: receives message (ok2)
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 32:
@@ -1286,37 +1287,37 @@ Erroneous interleaving 32:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P.6: ok2 = P ! ok2
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 11: P.6: exits normally
- 12: P.7: ok2 = P ! ok2
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 13: P.7: exits normally
- 14: Message (ok2) from P.6 reaches P
- 15: P: receives message (ok2)
+  13: P.2: exits normally
+  14: Message (ok2) from P.1 reaches P
+  15: P: receives message (ok2)
     in after_test.erl line 26
- 16: P: receive timeout expired after 0 ms
+  16: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 17: Message (ok2) from P.7 reaches P
- 18: P: receives message (ok2)
+  17: Message (ok2) from P.2 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 33:
@@ -1324,39 +1325,39 @@ Erroneous interleaving 33:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P.6: ok2 = P ! ok2
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 11: P.6: exits normally
- 12: P.7: ok2 = P ! ok2
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 13: P.7: exits normally
- 14: Message (ok2) from P.6 reaches P
- 15: P: receives message (ok2)
+  13: P.2: exits normally
+  14: Message (ok2) from P.1 reaches P
+  15: P: receives message (ok2)
     in after_test.erl line 26
- 16: P: receive timeout expired after 0 ms
+  16: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 17: P: receive timeout expired after 0 ms
+  17: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 18: Message (ok2) from P.7 reaches P
- 19: P: receives message (ok2)
+  18: Message (ok2) from P.2 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 22
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 34:
@@ -1364,35 +1365,35 @@ Erroneous interleaving 34:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P.6: ok2 = P ! ok2
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 11: P.6: exits normally
- 12: P.7: ok2 = P ! ok2
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 13: P.7: exits normally
- 14: Message (ok2) from P.7 reaches P
- 15: Message (ok2) from P.6 reaches P
- 16: P: receives message (ok2)
+  13: P.2: exits normally
+  14: Message (ok2) from P.2 reaches P
+  15: Message (ok2) from P.1 reaches P
+  16: P: receives message (ok2)
     in after_test.erl line 26
- 17: P: receives message (ok2)
+  17: P: receives message (ok2)
     in after_test.erl line 26
- 18: P: receive timeout expired after 0 ms
+  18: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 35:
@@ -1400,37 +1401,37 @@ Erroneous interleaving 35:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P.6: ok2 = P ! ok2
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 11: P.6: exits normally
- 12: P.7: ok2 = P ! ok2
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 13: P.7: exits normally
- 14: Message (ok2) from P.7 reaches P
- 15: P: receives message (ok2)
+  13: P.2: exits normally
+  14: Message (ok2) from P.2 reaches P
+  15: P: receives message (ok2)
     in after_test.erl line 26
- 16: P: receive timeout expired after 0 ms
+  16: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 17: Message (ok2) from P.6 reaches P
- 18: P: receives message (ok2)
+  17: Message (ok2) from P.1 reaches P
+  18: P: receives message (ok2)
     in after_test.erl line 26
- 19: P: receive timeout expired after 0 ms
+  19: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Erroneous interleaving 36:
@@ -1438,39 +1439,39 @@ Erroneous interleaving 36:
     P in after_test.erl line 16
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: receive timeout expired after 0 ms
+   1: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.13497387>,[]])
-    in erlang.erl line 2188
-  3: P.1: ok1 = P ! ok1
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.1.89447250>,[]])
+    in erlang.erl line 2329
+   3: P.1: ok1 = P ! ok1
     in after_test.erl line 11
-  4: P.1: exits normally
-  5: Message (ok1) from P.1 reaches P
-  6: P: receives message (ok1)
+   4: P.1: exits normally
+   5: Message (ok1) from P.1 reaches P
+   6: P: receives message (ok1)
     in after_test.erl line 26
-  7: P: receive timeout expired after 0 ms
+   7: P: receive timeout expired after 0 ms
     in after_test.erl line 33
-  8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<after_test.3.13497387>,[]])
-    in erlang.erl line 2188
-  9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<after_test.4.13497387>,[]])
-    in erlang.erl line 2188
- 10: P.6: ok2 = P ! ok2
+   8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test.3.89447250>,[]])
+    in erlang.erl line 2329
+   9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test.4.89447250>,[]])
+    in erlang.erl line 2329
+  10: P.1: ok2 = P ! ok2
     in after_test.erl line 13
- 11: P.6: exits normally
- 12: P.7: ok2 = P ! ok2
+  11: P.1: exits normally
+  12: P.2: ok2 = P ! ok2
     in after_test.erl line 14
- 13: P.7: exits normally
- 14: Message (ok2) from P.7 reaches P
- 15: P: receives message (ok2)
+  13: P.2: exits normally
+  14: Message (ok2) from P.2 reaches P
+  15: P: receives message (ok2)
     in after_test.erl line 26
- 16: P: receive timeout expired after 0 ms
+  16: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 17: P: receive timeout expired after 0 ms
+  17: P: receive timeout expired after 0 ms
     in after_test.erl line 26
- 18: Message (ok2) from P.6 reaches P
- 19: P: receives message (ok2)
+  18: Message (ok2) from P.1 reaches P
+  19: P: receives message (ok2)
     in after_test.erl line 22
- 20: P: receive timeout expired after 0 ms
+  20: P: receive timeout expired after 0 ms
     in after_test.erl line 33
 ################################################################################
 Done! (Exit status: ok)

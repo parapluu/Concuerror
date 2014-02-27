@@ -1,13 +1,43 @@
-Checked 2 interleaving(s). 1 errors found.
-
-1
-Error type        : Exception
-Details           : {badarg,[]}
-  Process P1 spawns process P1.1
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1 receives message `ok` from process P1.1
-  Process P1 sends message `ok` to process named 'child'
-  Process P1 exits ("Exception")
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{registered_send_1,registered_send_1,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/registered_send_1.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P.1 in registered_send_1.erl line 13
+* At step 6 process P exited abnormally
+    Reason:
+      {badarg,[{erlang,'!',
+                       [child,ok],
+                       [18,
+                        {file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/registered_send_1.erl"}]}]}
+    Stacktrace:
+      [{erlang,'!',
+               [child,ok],
+               [18,
+                {file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/registered_send_1.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<registered_send_1.0.44366555>,[]])
+    in erlang.erl line 2188
+   2: P.1: ok = P ! ok
+    in registered_send_1.erl line 11
+   3: Message (ok) from P.1 reaches P
+   4: P: receives message (ok)
+    in registered_send_1.erl line 17
+   5: P: Exception raised by: child ! ok
+    in registered_send_1.erl line 18
+   6: P: exits abnormally
+   7: P.1: true = erlang:register(child, P.1)
+    in registered_send_1.erl line 12
+################################################################################
+Done! (Exit status: ok)
+  Summary: 1 errors, 2/2 interleavings explored

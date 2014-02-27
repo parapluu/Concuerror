@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{target,{after_test_3,after_test_3,[]}},
    {symbolic,true},
+   {verbose,0},
    {timeout,1000},
    {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"]},
    {'after-timeout',infinite},
@@ -22,28 +23,28 @@ Erroneous interleaving 1:
                       {line,16}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.104885959>,[]])
-    in erlang.erl line 2188
-  2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.104885959>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.11972690>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.11972690>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test_3.erl line 25
-  4: P: c = P.1 ! c
+   4: P: c = P.1 ! c
     in after_test_3.erl line 30
-  5: Message (c) from P reaches P.1
-  6: P: exits normally
-  7: P.1: receives message (c)
+   5: Message (c) from P reaches P.1
+   6: P: exits normally
+   7: P.1: receives message (c)
     in after_test_3.erl line 12
-  8: P.2: a = P.1 ! a
+   8: P.2: a = P.1 ! a
     in after_test_3.erl line 21
-  9: Message (a) from P.2 reaches P.1
- 10: P.1: receives message (a)
+   9: Message (a) from P.2 reaches P.1
+  10: P.1: receives message (a)
     in after_test_3.erl line 14
- 11: P.1: exits abnormally
- 12: P.2: f = P ! f
+  11: P.1: exits abnormally
+  12: P.2: f = P ! f
     in after_test_3.erl line 22
- 13: Message (f) from P.2 reaches P
- 14: P.2: exits normally
+  13: Message (f) from P.2 reaches P
+  14: P.2: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * At step 14 process P.1 exited abnormally
@@ -58,28 +59,28 @@ Erroneous interleaving 2:
                       {line,16}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.104885959>,[]])
-    in erlang.erl line 2188
-  2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.104885959>,[]])
-    in erlang.erl line 2188
-  3: P: receive timeout expired after 0 ms
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.11972690>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.11972690>,[]])
+    in erlang.erl line 2329
+   3: P: receive timeout expired after 0 ms
     in after_test_3.erl line 25
-  4: P: c = P.1 ! c
+   4: P: c = P.1 ! c
     in after_test_3.erl line 30
-  5: P: exits normally
-  6: P.2: a = P.1 ! a
+   5: P: exits normally
+   6: P.2: a = P.1 ! a
     in after_test_3.erl line 21
-  7: P.2: f = P ! f
+   7: P.2: f = P ! f
     in after_test_3.erl line 22
-  8: Message (f) from P.2 reaches P
-  9: P.2: exits normally
- 10: Message (a) from P.2 reaches P.1
- 11: Message (c) from P reaches P.1
- 12: P.1: receives message (a)
+   8: Message (f) from P.2 reaches P
+   9: P.2: exits normally
+  10: Message (a) from P.2 reaches P.1
+  11: Message (c) from P reaches P.1
+  12: P.1: receives message (a)
     in after_test_3.erl line 12
- 13: P.1: receives message (c)
+  13: P.1: receives message (c)
     in after_test_3.erl line 14
- 14: P.1: exits abnormally
+  14: P.1: exits abnormally
 ################################################################################
 Erroneous interleaving 3:
 * At step 14 process P.1 exited abnormally
@@ -94,28 +95,28 @@ Erroneous interleaving 3:
                       {line,16}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.104885959>,[]])
-    in erlang.erl line 2188
-  2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.104885959>,[]])
-    in erlang.erl line 2188
-  3: P.2: a = P.1 ! a
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.11972690>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.11972690>,[]])
+    in erlang.erl line 2329
+   3: P.2: a = P.1 ! a
     in after_test_3.erl line 21
-  4: P.2: f = P ! f
+   4: P.2: f = P ! f
     in after_test_3.erl line 22
-  5: P.2: exits normally
-  6: Message (f) from P.2 reaches P
-  7: Message (a) from P.2 reaches P.1
-  8: P: receives message (f)
+   5: P.2: exits normally
+   6: Message (f) from P.2 reaches P
+   7: Message (a) from P.2 reaches P.1
+   8: P: receives message (f)
     in after_test_3.erl line 25
-  9: P: b = P.1 ! b
+   9: P: b = P.1 ! b
     in after_test_3.erl line 30
- 10: Message (b) from P reaches P.1
- 11: P: exits normally
- 12: P.1: receives message (a)
+  10: Message (b) from P reaches P.1
+  11: P: exits normally
+  12: P.1: receives message (a)
     in after_test_3.erl line 12
- 13: P.1: receives message (b)
+  13: P.1: receives message (b)
     in after_test_3.erl line 14
- 14: P.1: exits abnormally
+  14: P.1: exits abnormally
 ################################################################################
 Erroneous interleaving 4:
 * At step 14 process P.1 exited abnormally
@@ -130,28 +131,28 @@ Erroneous interleaving 4:
                       {line,16}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.104885959>,[]])
-    in erlang.erl line 2188
-  2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.104885959>,[]])
-    in erlang.erl line 2188
-  3: P.2: a = P.1 ! a
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.11972690>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.11972690>,[]])
+    in erlang.erl line 2329
+   3: P.2: a = P.1 ! a
     in after_test_3.erl line 21
-  4: P.2: f = P ! f
+   4: P.2: f = P ! f
     in after_test_3.erl line 22
-  5: P.2: exits normally
-  6: Message (f) from P.2 reaches P
-  7: P: receives message (f)
+   5: P.2: exits normally
+   6: Message (f) from P.2 reaches P
+   7: P: receives message (f)
     in after_test_3.erl line 25
-  8: P: b = P.1 ! b
+   8: P: b = P.1 ! b
     in after_test_3.erl line 30
-  9: P: exits normally
- 10: Message (b) from P reaches P.1
- 11: Message (a) from P.2 reaches P.1
- 12: P.1: receives message (b)
+   9: P: exits normally
+  10: Message (b) from P reaches P.1
+  11: Message (a) from P.2 reaches P.1
+  12: P.1: receives message (b)
     in after_test_3.erl line 12
- 13: P.1: receives message (a)
+  13: P.1: receives message (a)
     in after_test_3.erl line 14
- 14: P.1: exits abnormally
+  14: P.1: exits abnormally
 ################################################################################
 Done! (Exit status: ok)
   Summary: 4 errors, 4/4 interleavings explored

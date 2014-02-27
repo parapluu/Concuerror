@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{target,{dead_receive,dead_receive,[]}},
    {symbolic,true},
+   {verbose,0},
    {timeout,1000},
    {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/dead_receive.erl"]},
    {'after-timeout',infinite},

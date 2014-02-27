@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{target,{difficult_readers,difficult_readers,[]}},
    {symbolic,true},
+   {verbose,0},
    {timeout,1000},
    {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/difficult_readers.erl"]},
    {'after-timeout',infinite},
@@ -14,684 +15,684 @@ Erroneous interleaving 1:
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.1: true = ets:insert(table, {x,1})
+   8: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
-  9: P.1: exits normally
- 10: P.2: true = ets:insert(table, {<0.126.0>,17})
+   9: P.1: exits normally
+  10: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
- 11: P.2: true = ets:insert(table, {x,2})
+  11: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 12: P.2: exits normally
- 13: P.3: true = ets:insert(table, {<0.127.0>,21})
+  12: P.2: exits normally
+  13: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 14: P.3: [{x,2}] = ets:lookup(table, x)
+  14: P.3: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 15: P.3: exits normally
- 16: P.4: true = ets:insert(table, {<0.128.0>,25})
+  15: P.3: exits normally
+  16: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 17: P.4: [{x,2}] = ets:lookup(table, x)
+  17: P.4: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 18: P.4: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.1: true = ets:insert(table, {x,1})
+   8: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
-  9: P.1: exits normally
- 10: P.2: true = ets:insert(table, {<0.126.0>,17})
+   9: P.1: exits normally
+  10: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
- 11: P.3: true = ets:insert(table, {<0.127.0>,21})
+  11: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 12: P.4: true = ets:insert(table, {<0.128.0>,25})
+  12: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 13: P.3: [{x,1}] = ets:lookup(table, x)
+  13: P.3: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 14: P.2: true = ets:insert(table, {x,2})
+  14: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 15: P.2: exits normally
- 16: P.3: exits normally
- 17: P.4: [{x,2}] = ets:lookup(table, x)
+  15: P.2: exits normally
+  16: P.3: exits normally
+  17: P.4: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 18: P.4: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 3:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.1: true = ets:insert(table, {x,1})
+   8: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
-  9: P.1: exits normally
- 10: P.2: true = ets:insert(table, {<0.126.0>,17})
+   9: P.1: exits normally
+  10: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
- 11: P.3: true = ets:insert(table, {<0.127.0>,21})
+  11: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 12: P.4: true = ets:insert(table, {<0.128.0>,25})
+  12: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 13: P.3: [{x,1}] = ets:lookup(table, x)
+  13: P.3: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 14: P.3: exits normally
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  14: P.3: exits normally
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 16: P.2: true = ets:insert(table, {x,2})
+  16: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 17: P.2: exits normally
- 18: P.4: exits normally
+  17: P.2: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 4:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.1: true = ets:insert(table, {x,1})
+   8: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
-  9: P.1: exits normally
- 10: P.2: true = ets:insert(table, {<0.126.0>,17})
+   9: P.1: exits normally
+  10: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
- 11: P.3: true = ets:insert(table, {<0.127.0>,21})
+  11: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 12: P.4: true = ets:insert(table, {<0.128.0>,25})
+  12: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 13: P.4: [{x,1}] = ets:lookup(table, x)
+  13: P.4: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 14: P.4: exits normally
- 15: P.2: true = ets:insert(table, {x,2})
+  14: P.4: exits normally
+  15: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 16: P.2: exits normally
- 17: P.3: [{x,2}] = ets:lookup(table, x)
+  16: P.2: exits normally
+  17: P.3: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 18: P.3: exits normally
+  18: P.3: exits normally
 ################################################################################
 Erroneous interleaving 5:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.2: true = ets:insert(table, {x,2})
+  11: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 12: P.1: true = ets:insert(table, {x,1})
+  12: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 13: P.1: exits normally
- 14: P.2: exits normally
- 15: P.3: [{x,1}] = ets:lookup(table, x)
+  13: P.1: exits normally
+  14: P.2: exits normally
+  15: P.3: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 16: P.3: exits normally
- 17: P.4: [{x,1}] = ets:lookup(table, x)
+  16: P.3: exits normally
+  17: P.4: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 18: P.4: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 6:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.2: true = ets:insert(table, {x,2})
+  11: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 12: P.2: exits normally
- 13: P.3: [{x,2}] = ets:lookup(table, x)
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 14: P.1: true = ets:insert(table, {x,1})
+  14: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 15: P.1: exits normally
- 16: P.3: exits normally
- 17: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.1: exits normally
+  16: P.3: exits normally
+  17: P.4: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 18: P.4: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 7:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.2: true = ets:insert(table, {x,2})
+  11: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 12: P.2: exits normally
- 13: P.3: [{x,2}] = ets:lookup(table, x)
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 14: P.3: exits normally
- 15: P.4: [{x,2}] = ets:lookup(table, x)
+  14: P.3: exits normally
+  15: P.4: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 16: P.1: true = ets:insert(table, {x,1})
+  16: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 17: P.1: exits normally
- 18: P.4: exits normally
+  17: P.1: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 8:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.2: true = ets:insert(table, {x,2})
+  11: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 12: P.2: exits normally
- 13: P.4: [{x,2}] = ets:lookup(table, x)
+  12: P.2: exits normally
+  13: P.4: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 14: P.4: exits normally
- 15: P.1: true = ets:insert(table, {x,1})
+  14: P.4: exits normally
+  15: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 16: P.1: exits normally
- 17: P.3: [{x,1}] = ets:lookup(table, x)
+  16: P.1: exits normally
+  17: P.3: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 18: P.3: exits normally
+  18: P.3: exits normally
 ################################################################################
 Erroneous interleaving 9:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.3: [{x,0}] = ets:lookup(table, x)
+  11: P.3: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 12: P.1: true = ets:insert(table, {x,1})
+  12: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 13: P.1: exits normally
- 14: P.2: true = ets:insert(table, {x,2})
+  13: P.1: exits normally
+  14: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 15: P.2: exits normally
- 16: P.3: exits normally
- 17: P.4: [{x,2}] = ets:lookup(table, x)
+  15: P.2: exits normally
+  16: P.3: exits normally
+  17: P.4: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 18: P.4: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 10:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.3: [{x,0}] = ets:lookup(table, x)
+  11: P.3: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 12: P.1: true = ets:insert(table, {x,1})
+  12: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 13: P.1: exits normally
- 14: P.3: exits normally
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  13: P.1: exits normally
+  14: P.3: exits normally
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 16: P.2: true = ets:insert(table, {x,2})
+  16: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 17: P.2: exits normally
- 18: P.4: exits normally
+  17: P.2: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 11:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.3: [{x,0}] = ets:lookup(table, x)
+  11: P.3: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 12: P.3: exits normally
- 13: P.2: true = ets:insert(table, {x,2})
+  12: P.3: exits normally
+  13: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 14: P.1: true = ets:insert(table, {x,1})
+  14: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 15: P.1: exits normally
- 16: P.2: exits normally
- 17: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.1: exits normally
+  16: P.2: exits normally
+  17: P.4: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 18: P.4: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 12:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.3: [{x,0}] = ets:lookup(table, x)
+  11: P.3: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 12: P.3: exits normally
- 13: P.2: true = ets:insert(table, {x,2})
+  12: P.3: exits normally
+  13: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 14: P.2: exits normally
- 15: P.4: [{x,2}] = ets:lookup(table, x)
+  14: P.2: exits normally
+  15: P.4: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 16: P.1: true = ets:insert(table, {x,1})
+  16: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 17: P.1: exits normally
- 18: P.4: exits normally
+  17: P.1: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 13:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.3: [{x,0}] = ets:lookup(table, x)
+  11: P.3: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 12: P.3: exits normally
- 13: P.4: [{x,0}] = ets:lookup(table, x)
+  12: P.3: exits normally
+  13: P.4: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 14: P.1: true = ets:insert(table, {x,1})
+  14: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 15: P.1: exits normally
- 16: P.2: true = ets:insert(table, {x,2})
+  15: P.1: exits normally
+  16: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 17: P.2: exits normally
- 18: P.4: exits normally
+  17: P.2: exits normally
+  18: P.4: exits normally
 ################################################################################
 Erroneous interleaving 14:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.3: [{x,0}] = ets:lookup(table, x)
+  11: P.3: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 12: P.3: exits normally
- 13: P.4: [{x,0}] = ets:lookup(table, x)
+  12: P.3: exits normally
+  13: P.4: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 14: P.4: exits normally
- 15: P.2: true = ets:insert(table, {x,2})
+  14: P.4: exits normally
+  15: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 16: P.1: true = ets:insert(table, {x,1})
+  16: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 17: P.1: exits normally
- 18: P.2: exits normally
+  17: P.1: exits normally
+  18: P.2: exits normally
 ################################################################################
 Erroneous interleaving 15:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.4: [{x,0}] = ets:lookup(table, x)
+  11: P.4: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 12: P.4: exits normally
- 13: P.1: true = ets:insert(table, {x,1})
+  12: P.4: exits normally
+  13: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 14: P.1: exits normally
- 15: P.2: true = ets:insert(table, {x,2})
+  14: P.1: exits normally
+  15: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 16: P.2: exits normally
- 17: P.3: [{x,2}] = ets:lookup(table, x)
+  16: P.2: exits normally
+  17: P.3: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 18: P.3: exits normally
+  18: P.3: exits normally
 ################################################################################
 Erroneous interleaving 16:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.4: [{x,0}] = ets:lookup(table, x)
+  11: P.4: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 12: P.4: exits normally
- 13: P.1: true = ets:insert(table, {x,1})
+  12: P.4: exits normally
+  13: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 14: P.1: exits normally
- 15: P.3: [{x,1}] = ets:lookup(table, x)
+  14: P.1: exits normally
+  15: P.3: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 16: P.2: true = ets:insert(table, {x,2})
+  16: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 17: P.2: exits normally
- 18: P.3: exits normally
+  17: P.2: exits normally
+  18: P.3: exits normally
 ################################################################################
 Erroneous interleaving 17:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.4: [{x,0}] = ets:lookup(table, x)
+  11: P.4: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 12: P.4: exits normally
- 13: P.2: true = ets:insert(table, {x,2})
+  12: P.4: exits normally
+  13: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 14: P.1: true = ets:insert(table, {x,1})
+  14: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 15: P.1: exits normally
- 16: P.2: exits normally
- 17: P.3: [{x,1}] = ets:lookup(table, x)
+  15: P.1: exits normally
+  16: P.2: exits normally
+  17: P.3: [{x,1}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 18: P.3: exits normally
+  18: P.3: exits normally
 ################################################################################
 Erroneous interleaving 18:
 * Blocked at a 'receive' (when all other processes have exited):
     P in difficult_readers.erl line 31
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in difficult_readers.erl line 10
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in difficult_readers.erl line 11
-  3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.93009608>,[]])
-    in erlang.erl line 2188
-  4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.93009608>,[]])
-    in erlang.erl line 2188
-  5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.93009608>,[]])
-    in erlang.erl line 2188
-  6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.93009608>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {<0.125.0>,13})
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.0.35814391>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.1.35814391>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.2.35814391>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<difficult_readers.3.35814391>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {<0.67.0>,13})
     in difficult_readers.erl line 13
-  8: P.2: true = ets:insert(table, {<0.126.0>,17})
+   8: P.2: true = ets:insert(table, {<0.68.0>,17})
     in difficult_readers.erl line 17
-  9: P.3: true = ets:insert(table, {<0.127.0>,21})
+   9: P.3: true = ets:insert(table, {<0.69.0>,21})
     in difficult_readers.erl line 21
- 10: P.4: true = ets:insert(table, {<0.128.0>,25})
+  10: P.4: true = ets:insert(table, {<0.70.0>,25})
     in difficult_readers.erl line 25
- 11: P.4: [{x,0}] = ets:lookup(table, x)
+  11: P.4: [{x,0}] = ets:lookup(table, x)
     in difficult_readers.erl line 26
- 12: P.4: exits normally
- 13: P.2: true = ets:insert(table, {x,2})
+  12: P.4: exits normally
+  13: P.2: true = ets:insert(table, {x,2})
     in difficult_readers.erl line 18
- 14: P.2: exits normally
- 15: P.3: [{x,2}] = ets:lookup(table, x)
+  14: P.2: exits normally
+  15: P.3: [{x,2}] = ets:lookup(table, x)
     in difficult_readers.erl line 22
- 16: P.1: true = ets:insert(table, {x,1})
+  16: P.1: true = ets:insert(table, {x,1})
     in difficult_readers.erl line 14
- 17: P.1: exits normally
- 18: P.3: exits normally
+  17: P.1: exits normally
+  18: P.3: exits normally
 ################################################################################
 Done! (Exit status: ok)
   Summary: 18 errors, 18/18 interleavings explored

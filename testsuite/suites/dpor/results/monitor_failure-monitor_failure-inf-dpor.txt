@@ -1,8 +1,32 @@
-Checked 1 interleaving(s). 1 errors found.
-
-1
-Error type        : Exception
-Details           : {badarg,[{erlang,monitor,[process,1],[]}]}
-  Process P1 exits ("Exception")
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{monitor_failure,monitor_failure,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/monitor_failure.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* At step 2 process P exited abnormally
+    Reason:
+      {badarg,[{erlang,monitor,
+                       [process,1],
+                       [9,
+                        {file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/monitor_failure.erl"}]}]}
+    Stacktrace:
+      [{erlang,monitor,
+               [process,1],
+               [9,
+                {file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/monitor_failure.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: Exception raised by: erlang:monitor(process, 1)
+    in monitor_failure.erl line 9
+   2: P: exits abnormally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 1 errors, 1/1 interleavings explored

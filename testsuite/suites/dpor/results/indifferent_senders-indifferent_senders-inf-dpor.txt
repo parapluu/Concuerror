@@ -1,1 +1,16 @@
-Checked 6 interleaving(s). No errors found.
+################################################################################
+Concuerror started with options:
+  [{target,{indifferent_senders,indifferent_senders,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/indifferent_senders.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+  No errors found!
+################################################################################
+Done! (Exit status: ok)
+  Summary: 0 errors, 1/1 interleavings explored

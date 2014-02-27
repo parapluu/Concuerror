@@ -1,1279 +1,2474 @@
-Checked 36 interleaving(s). 36 errors found.
-
-1
-Error type        : Exception
-Details           : {{nocatch,{1,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-2
-Error type        : Exception
-Details           : {{nocatch,{1,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-3
-Error type        : Exception
-Details           : {{nocatch,{1,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2 exits (normal)
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-4
-Error type        : Exception
-Details           : {{nocatch,{1,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-5
-Error type        : Exception
-Details           : {{nocatch,{1,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-6
-Error type        : Exception
-Details           : {{nocatch,{1,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-7
-Error type        : Exception
-Details           : {{nocatch,{1,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-8
-Error type        : Exception
-Details           : {{nocatch,{1,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-9
-Error type        : Exception
-Details           : {{nocatch,{1,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-10
-Error type        : Exception
-Details           : {{nocatch,{1,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-11
-Error type        : Exception
-Details           : {{nocatch,{1,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-12
-Error type        : Exception
-Details           : {{nocatch,{1,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-13
-Error type        : Exception
-Details           : {{nocatch,{0,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-14
-Error type        : Exception
-Details           : {{nocatch,{0,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-15
-Error type        : Exception
-Details           : {{nocatch,{0,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-16
-Error type        : Exception
-Details           : {{nocatch,{0,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-17
-Error type        : Exception
-Details           : {{nocatch,{0,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-18
-Error type        : Exception
-Details           : {{nocatch,{0,none}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{p3,none}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-19
-Error type        : Exception
-Details           : {{nocatch,{0,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-20
-Error type        : Exception
-Details           : {{nocatch,{0,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-21
-Error type        : Exception
-Details           : {{nocatch,{0,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-22
-Error type        : Exception
-Details           : {{nocatch,{0,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-23
-Error type        : Exception
-Details           : {{nocatch,{0,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-24
-Error type        : Exception
-Details           : {{nocatch,{0,2}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,2}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-25
-Error type        : Exception
-Details           : {{nocatch,{1,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-26
-Error type        : Exception
-Details           : {{nocatch,{1,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-27
-Error type        : Exception
-Details           : {{nocatch,{1,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-28
-Error type        : Exception
-Details           : {{nocatch,{1,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 exits (normal)
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-29
-Error type        : Exception
-Details           : {{nocatch,{0,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-30
-Error type        : Exception
-Details           : {{nocatch,{0,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-31
-Error type        : Exception
-Details           : {{nocatch,{0,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.2 exits (normal)
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-32
-Error type        : Exception
-Details           : {{nocatch,{0,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2 exits (normal)
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-33
-Error type        : Exception
-Details           : {{nocatch,{1,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-34
-Error type        : Exception
-Details           : {{nocatch,{1,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,1}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-35
-Error type        : Exception
-Details           : {{nocatch,{0,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1 blocks
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
-36
-Error type        : Exception
-Details           : {{nocatch,{0,0}},
-                     [{ets_dependencies_deeper,ets_dependencies_deeper,0,
-                          [{file,"ets_dependencies_deeper.erl"},{line,42}]}]}
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1: ets_insert {table,[{x,0}]}
-  Process P1: ets_insert {table,[{y,0}]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3: ets_lookup {table,y}
-  Process P1.3: ets_insert {table,[{p3,0}]}
-  Process P1.3 sends message `ok` to process P1
-  Process P1.3 exits (normal)
-  Process P1 receives message `ok` from process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2: ets_insert {table,[{p2,0}]}
-  Process P1.2 sends message `ok` to process P1
-  Process P1.2 exits (normal)
-  Process P1 receives message `ok` from process P1.2
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 exits (normal)
-  Process P1 receives message `ok` from process P1.1
-  Process P1: ets_lookup {table,p2}
-  Process P1: ets_lookup {table,p3}
-  Process P1 exits ("Exception")
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{ets_dependencies_deeper,ets_dependencies_deeper,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* At step 27 process P exited abnormally
+    Reason:
+      {{nocatch,{1,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+   8: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+   9: Message (ok) from P.1 reaches P
+  10: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  13: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  14: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  15: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  16: Message (ok) from P.2 reaches P
+  17: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  18: P.2: exits normally
+  19: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+  20: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  21: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  22: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  23: Message (ok) from P.3 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  25: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  26: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  27: P: exits abnormally
+  28: P: true = ets:delete(table)
+    (while exiting)
+  29: P.3: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{1,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+   8: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+   9: Message (ok) from P.1 reaches P
+  10: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  13: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  14: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  15: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  16: P.2: exits normally
+  17: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+  18: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  19: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  20: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  21: P.3: exits normally
+  22: Message (ok) from P.3 reaches P
+  23: Message (ok) from P.2 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 3:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{1,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+   8: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+   9: P.1: exits normally
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  12: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  13: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  14: P.2: exits normally
+  15: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+  16: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  17: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  18: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  19: P.3: exits normally
+  20: Message (ok) from P.2 reaches P
+  21: Message (ok) from P.1 reaches P
+  22: Message (ok) from P.3 reaches P
+  23: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 4:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{1,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+   8: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+   9: P.1: exits normally
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  12: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  13: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  14: P.2: exits normally
+  15: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+  16: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  17: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  18: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  19: P.3: exits normally
+  20: Message (ok) from P.2 reaches P
+  21: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  22: Message (ok) from P.3 reaches P
+  23: Message (ok) from P.1 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 5:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{1,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+   8: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+   9: P.1: exits normally
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  12: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  13: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  14: P.2: exits normally
+  15: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+  16: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  17: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  18: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  19: P.3: exits normally
+  20: Message (ok) from P.3 reaches P
+  21: Message (ok) from P.1 reaches P
+  22: Message (ok) from P.2 reaches P
+  23: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 6:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{1,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+   8: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+   9: P.1: exits normally
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  12: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  13: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  14: P.2: exits normally
+  15: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+  16: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  17: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  18: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  19: P.3: exits normally
+  20: Message (ok) from P.3 reaches P
+  21: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  22: Message (ok) from P.2 reaches P
+  23: Message (ok) from P.1 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 7:
+* At step 27 process P exited abnormally
+    Reason:
+      {{nocatch,{0,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: Message (ok) from P.1 reaches P
+  13: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  14: P.1: exits normally
+  15: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  16: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  17: Message (ok) from P.2 reaches P
+  18: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  19: P.2: exits normally
+  20: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  21: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  22: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  23: Message (ok) from P.3 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  25: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  26: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  27: P: exits abnormally
+  28: P: true = ets:delete(table)
+    (while exiting)
+  29: P.3: exits normally
+################################################################################
+Erroneous interleaving 8:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{0,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: Message (ok) from P.1 reaches P
+  13: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  14: P.1: exits normally
+  15: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  16: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  17: P.2: exits normally
+  18: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  19: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  20: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  21: P.3: exits normally
+  22: Message (ok) from P.3 reaches P
+  23: Message (ok) from P.2 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 9:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{0,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  14: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  15: P.2: exits normally
+  16: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  17: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  18: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  19: P.3: exits normally
+  20: Message (ok) from P.2 reaches P
+  21: Message (ok) from P.1 reaches P
+  22: Message (ok) from P.3 reaches P
+  23: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 10:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{0,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  14: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  15: P.2: exits normally
+  16: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  17: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  18: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  19: P.3: exits normally
+  20: Message (ok) from P.2 reaches P
+  21: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  22: Message (ok) from P.3 reaches P
+  23: Message (ok) from P.1 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 11:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{0,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  14: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  15: P.2: exits normally
+  16: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  17: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  18: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  19: P.3: exits normally
+  20: Message (ok) from P.3 reaches P
+  21: Message (ok) from P.1 reaches P
+  22: Message (ok) from P.2 reaches P
+  23: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 12:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{0,none}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  14: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  15: P.2: exits normally
+  16: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  17: P.3: true = ets:insert(table, {p3,none})
+    in ets_dependencies_deeper.erl line 31
+  18: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  19: P.3: exits normally
+  20: Message (ok) from P.3 reaches P
+  21: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  22: Message (ok) from P.2 reaches P
+  23: Message (ok) from P.1 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,none}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 13:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{0,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  11: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  12: P.2: exits normally
+  13: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  14: Message (ok) from P.2 reaches P
+  15: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  16: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  17: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  18: Message (ok) from P.1 reaches P
+  19: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  20: P.1: exits normally
+  21: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  22: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  23: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  24: Message (ok) from P.3 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+  30: P.3: exits normally
+################################################################################
+Erroneous interleaving 14:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  11: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  12: P.2: exits normally
+  13: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  14: Message (ok) from P.2 reaches P
+  15: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  16: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  17: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  18: P.1: exits normally
+  19: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  20: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  21: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  22: P.3: exits normally
+  23: Message (ok) from P.3 reaches P
+  24: Message (ok) from P.1 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 15:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  11: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  12: P.2: exits normally
+  13: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  16: P.1: exits normally
+  17: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  18: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  19: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  20: P.3: exits normally
+  21: Message (ok) from P.1 reaches P
+  22: Message (ok) from P.2 reaches P
+  23: Message (ok) from P.3 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 16:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  11: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  12: P.2: exits normally
+  13: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  16: P.1: exits normally
+  17: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  18: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  19: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  20: P.3: exits normally
+  21: Message (ok) from P.1 reaches P
+  22: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  23: Message (ok) from P.3 reaches P
+  24: Message (ok) from P.2 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 17:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  11: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  12: P.2: exits normally
+  13: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  16: P.1: exits normally
+  17: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  18: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  19: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  20: P.3: exits normally
+  21: Message (ok) from P.3 reaches P
+  22: Message (ok) from P.1 reaches P
+  23: Message (ok) from P.2 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 18:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  10: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  11: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  12: P.2: exits normally
+  13: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  16: P.1: exits normally
+  17: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  18: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  19: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  20: P.3: exits normally
+  21: Message (ok) from P.3 reaches P
+  22: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  23: Message (ok) from P.2 reaches P
+  24: Message (ok) from P.1 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 19:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{1,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  10: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  11: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: Message (ok) from P.3 reaches P
+  16: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  17: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  18: Message (ok) from P.1 reaches P
+  19: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  20: P.1: exits normally
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  22: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  23: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  24: Message (ok) from P.2 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+  30: P.2: exits normally
+################################################################################
+Erroneous interleaving 20:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  10: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  11: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: Message (ok) from P.3 reaches P
+  16: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  17: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  18: P.1: exits normally
+  19: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  20: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  21: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  22: P.2: exits normally
+  23: Message (ok) from P.2 reaches P
+  24: Message (ok) from P.1 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 21:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  10: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  11: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  16: P.1: exits normally
+  17: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  18: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  19: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  20: P.2: exits normally
+  21: Message (ok) from P.1 reaches P
+  22: Message (ok) from P.2 reaches P
+  23: Message (ok) from P.3 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 22:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  10: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  11: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  16: P.1: exits normally
+  17: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  18: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  19: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  20: P.2: exits normally
+  21: Message (ok) from P.1 reaches P
+  22: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  23: Message (ok) from P.3 reaches P
+  24: Message (ok) from P.2 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 23:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  10: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  11: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  16: P.1: exits normally
+  17: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  18: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  19: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  20: P.2: exits normally
+  21: Message (ok) from P.2 reaches P
+  22: Message (ok) from P.1 reaches P
+  23: Message (ok) from P.3 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 24:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,2}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+   8: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+  10: P.3: [{y,2}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  11: P.3: true = ets:insert(table, {p3,2})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  15: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  16: P.1: exits normally
+  17: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  18: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  19: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  20: P.2: exits normally
+  21: Message (ok) from P.2 reaches P
+  22: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  23: Message (ok) from P.3 reaches P
+  24: Message (ok) from P.1 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,2}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 25:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{1,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: Message (ok) from P.1 reaches P
+  13: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  14: P.1: exits normally
+  15: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  16: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  17: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  18: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  19: Message (ok) from P.2 reaches P
+  20: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  21: P.2: exits normally
+  22: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  23: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  24: Message (ok) from P.3 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+  30: P.3: exits normally
+################################################################################
+Erroneous interleaving 26:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: Message (ok) from P.1 reaches P
+  13: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  14: P.1: exits normally
+  15: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  16: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  17: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  18: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  19: P.2: exits normally
+  20: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  21: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  22: P.3: exits normally
+  23: Message (ok) from P.3 reaches P
+  24: Message (ok) from P.2 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 27:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  14: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  16: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  17: P.2: exits normally
+  18: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  19: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  20: P.3: exits normally
+  21: Message (ok) from P.2 reaches P
+  22: Message (ok) from P.1 reaches P
+  23: Message (ok) from P.3 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 28:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  14: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  16: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  17: P.2: exits normally
+  18: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  19: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  20: P.3: exits normally
+  21: Message (ok) from P.2 reaches P
+  22: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  23: Message (ok) from P.3 reaches P
+  24: Message (ok) from P.1 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 29:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  14: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  16: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  17: P.2: exits normally
+  18: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  19: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  20: P.3: exits normally
+  21: Message (ok) from P.3 reaches P
+  22: Message (ok) from P.1 reaches P
+  23: Message (ok) from P.2 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 30:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{1,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  11: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  14: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: P.2: true = ets:insert(table, {p2,1})
+    in ets_dependencies_deeper.erl line 20
+  16: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  17: P.2: exits normally
+  18: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  19: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  20: P.3: exits normally
+  21: Message (ok) from P.3 reaches P
+  22: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  23: Message (ok) from P.2 reaches P
+  24: Message (ok) from P.1 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,1}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 31:
+* At step 28 process P exited abnormally
+    Reason:
+      {{nocatch,{0,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: Message (ok) from P.3 reaches P
+  16: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  17: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  18: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  19: Message (ok) from P.1 reaches P
+  20: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  21: P.1: exits normally
+  22: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  23: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  24: Message (ok) from P.2 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  26: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  27: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  28: P: exits abnormally
+  29: P: true = ets:delete(table)
+    (while exiting)
+  30: P.2: exits normally
+################################################################################
+Erroneous interleaving 32:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: Message (ok) from P.3 reaches P
+  16: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  17: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  18: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  21: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  22: P.2: exits normally
+  23: Message (ok) from P.2 reaches P
+  24: Message (ok) from P.1 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 33:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  16: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  17: P.1: exits normally
+  18: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  19: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  20: P.2: exits normally
+  21: Message (ok) from P.1 reaches P
+  22: Message (ok) from P.2 reaches P
+  23: Message (ok) from P.3 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 34:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  16: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  17: P.1: exits normally
+  18: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  19: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  20: P.2: exits normally
+  21: Message (ok) from P.1 reaches P
+  22: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  23: Message (ok) from P.3 reaches P
+  24: Message (ok) from P.2 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 35:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  16: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  17: P.1: exits normally
+  18: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  19: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  20: P.2: exits normally
+  21: Message (ok) from P.2 reaches P
+  22: Message (ok) from P.1 reaches P
+  23: Message (ok) from P.3 reaches P
+  24: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 36:
+* At step 29 process P exited abnormally
+    Reason:
+      {{nocatch,{0,0}},
+       [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+             {line,42}]}]}
+    Stacktrace:
+      [{ets_dependencies_deeper,ets_dependencies_deeper,0,
+           [{file,
+                "/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_deeper.erl"},
+            {line,42}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies_deeper.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in ets_dependencies_deeper.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in ets_dependencies_deeper.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.111450999>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.111450999>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.111450999>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies_deeper.erl line 24
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 25
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in ets_dependencies_deeper.erl line 28
+  10: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies_deeper.erl line 18
+  11: P.3: true = ets:insert(table, {p3,0})
+    in ets_dependencies_deeper.erl line 31
+  12: P.3: ok = P ! ok
+    in ets_dependencies_deeper.erl line 32
+  13: P.3: exits normally
+  14: P.2: [{x,0}] = ets:lookup(table, x)
+    in ets_dependencies_deeper.erl line 19
+  15: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies_deeper.erl line 14
+  16: P.1: ok = P ! ok
+    in ets_dependencies_deeper.erl line 15
+  17: P.1: exits normally
+  18: P.2: true = ets:insert(table, {p2,0})
+    in ets_dependencies_deeper.erl line 20
+  19: P.2: ok = P ! ok
+    in ets_dependencies_deeper.erl line 21
+  20: P.2: exits normally
+  21: Message (ok) from P.2 reaches P
+  22: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 34
+  23: Message (ok) from P.3 reaches P
+  24: Message (ok) from P.1 reaches P
+  25: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 36
+  26: P: receives message (ok)
+    in ets_dependencies_deeper.erl line 38
+  27: P: [{p2,0}] = ets:lookup(table, p2)
+    in ets_dependencies_deeper.erl line 40
+  28: P: [{p3,0}] = ets:lookup(table, p3)
+    in ets_dependencies_deeper.erl line 41
+  29: P: exits abnormally
+  30: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Done! (Exit status: ok)
+  Summary: 36 errors, 36/36 interleavings explored

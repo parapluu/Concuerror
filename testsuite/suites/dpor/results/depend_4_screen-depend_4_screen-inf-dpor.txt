@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{target,{depend_4_screen,depend_4_screen,[]}},
    {symbolic,true},
+   {verbose,0},
    {timeout,1000},
    {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"]},
    {'after-timeout',infinite},
@@ -22,98 +23,98 @@ Erroneous interleaving 1:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.2: true = ets:insert(table, {x,1})
+  14: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 15: P.3: true = ets:insert(table, {y,1})
+  15: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 16: P.4: [{x,1}] = ets:lookup(table, x)
+  16: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 17: P.4: [{y,1}] = ets:lookup(table, y)
+  17: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 18: P.4: [{z,1}] = ets:lookup(table, z)
+  18: P.4: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 19: P.4: true = ets:insert(table, {p4,[{z,1}]})
+  19: P.4: true = ets:insert(table, {p4,[{z,1}]})
     in depend_4_screen.erl line 29
- 20: P.5: [{y,1}] = ets:lookup(table, y)
+  20: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 21: P.5: [{z,1}] = ets:lookup(table, z)
+  21: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 22: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  22: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 23: P.6: true = ets:insert(table, {x,2})
+  23: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 24: P.6: receives message (ok)
+  24: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 25: P.6: ok = P.5 ! ok
+  25: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 26: Message (ok) from P.6 reaches P.5
- 27: P.5: receives message (ok)
+  26: Message (ok) from P.6 reaches P.5
+  27: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 28: P.5: ok = P.4 ! ok
+  28: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 29: Message (ok) from P.5 reaches P.4
- 30: P.4: receives message (ok)
+  29: Message (ok) from P.5 reaches P.4
+  30: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.4: ok = P.3 ! ok
+  31: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.4 reaches P.3
- 33: P.3: receives message (ok)
+  32: Message (ok) from P.4 reaches P.3
+  33: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.3: ok = P.2 ! ok
+  34: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.3 reaches P.2
- 36: P.2: receives message (ok)
+  35: Message (ok) from P.3 reaches P.2
+  36: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.2: ok = P.1 ! ok
+  37: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.2 reaches P.1
- 39: P.1: receives message (ok)
+  38: Message (ok) from P.2 reaches P.1
+  39: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 40: P.1: ok = P ! ok
+  40: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 41: Message (ok) from P.1 reaches P
- 42: P: receives message (ok)
+  41: Message (ok) from P.1 reaches P
+  42: P: receives message (ok)
     in depend_4_screen.erl line 44
- 43: P: [{x,2}] = ets:lookup(table, x)
+  43: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 44: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
+  44: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 46: P: exits abnormally
- 47: P: true = ets:delete(table)
+  46: P: exits abnormally
+  47: P: true = ets:delete(table)
     (while exiting)
- 48: P.1: exits normally
- 49: P.2: exits normally
- 50: P.3: exits normally
- 51: P.4: exits normally
- 52: P.5: exits normally
- 53: P.6: exits normally
+  48: P.1: exits normally
+  49: P.2: exits normally
+  50: P.3: exits normally
+  51: P.4: exits normally
+  52: P.5: exits normally
+  53: P.6: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * At step 44 process P exited abnormally
@@ -128,94 +129,94 @@ Erroneous interleaving 2:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.2: true = ets:insert(table, {x,1})
+  14: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 15: P.3: true = ets:insert(table, {y,1})
+  15: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 16: P.5: [{y,1}] = ets:lookup(table, y)
+  16: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 17: P.5: [{z,1}] = ets:lookup(table, z)
+  17: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 18: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  18: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 19: P.6: true = ets:insert(table, {x,2})
+  19: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 20: P.4: [{x,2}] = ets:lookup(table, x)
+  20: P.4: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 21: P.4: true = ets:insert(table, {p4,2})
+  21: P.4: true = ets:insert(table, {p4,2})
     in depend_4_screen.erl line 29
- 22: P.6: receives message (ok)
+  22: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 23: P.6: ok = P.5 ! ok
+  23: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 24: Message (ok) from P.6 reaches P.5
- 25: P.5: receives message (ok)
+  24: Message (ok) from P.6 reaches P.5
+  25: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 26: P.5: ok = P.4 ! ok
+  26: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 27: Message (ok) from P.5 reaches P.4
- 28: P.4: receives message (ok)
+  27: Message (ok) from P.5 reaches P.4
+  28: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 29: P.4: ok = P.3 ! ok
+  29: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 30: Message (ok) from P.4 reaches P.3
- 31: P.3: receives message (ok)
+  30: Message (ok) from P.4 reaches P.3
+  31: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.3: ok = P.2 ! ok
+  32: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.3 reaches P.2
- 34: P.2: receives message (ok)
+  33: Message (ok) from P.3 reaches P.2
+  34: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.2: ok = P.1 ! ok
+  35: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.2 reaches P.1
- 37: P.1: receives message (ok)
+  36: Message (ok) from P.2 reaches P.1
+  37: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.1: ok = P ! ok
+  38: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.1 reaches P
- 40: P: receives message (ok)
+  39: Message (ok) from P.1 reaches P
+  40: P: receives message (ok)
     in depend_4_screen.erl line 44
- 41: P: [{x,2}] = ets:lookup(table, x)
+  41: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 42: P: [{p4,2}] = ets:lookup(table, p4)
+  42: P: [{p4,2}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 43: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  43: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 44: P: exits abnormally
- 45: P: true = ets:delete(table)
+  44: P: exits abnormally
+  45: P: true = ets:delete(table)
     (while exiting)
- 46: P.1: exits normally
- 47: P.2: exits normally
- 48: P.3: exits normally
- 49: P.4: exits normally
- 50: P.5: exits normally
- 51: P.6: exits normally
+  46: P.1: exits normally
+  47: P.2: exits normally
+  48: P.3: exits normally
+  49: P.4: exits normally
+  50: P.5: exits normally
+  51: P.6: exits normally
 ################################################################################
 Erroneous interleaving 3:
 * At step 46 process P exited abnormally
@@ -230,96 +231,96 @@ Erroneous interleaving 3:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.2: true = ets:insert(table, {x,1})
+  14: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 16: P.6: true = ets:insert(table, {x,2})
+  16: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 17: P.6: receives message (ok)
+  17: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 18: P.6: ok = P.5 ! ok
+  18: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 19: Message (ok) from P.6 reaches P.5
- 20: P.6: exits normally
- 21: P.4: [{y,0}] = ets:lookup(table, y)
+  19: Message (ok) from P.6 reaches P.5
+  20: P.6: exits normally
+  21: P.4: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 22: P.3: true = ets:insert(table, {y,1})
+  22: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 23: P.4: true = ets:insert(table, {p4,[49,48]})
+  23: P.4: true = ets:insert(table, {p4,[49,48]})
     in depend_4_screen.erl line 29
- 24: P.5: [{y,1}] = ets:lookup(table, y)
+  24: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 25: P.5: [{z,1}] = ets:lookup(table, z)
+  25: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 26: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  26: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 27: P.5: receives message (ok)
+  27: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 28: P.5: ok = P.4 ! ok
+  28: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 29: Message (ok) from P.5 reaches P.4
- 30: P.4: receives message (ok)
+  29: Message (ok) from P.5 reaches P.4
+  30: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.4: ok = P.3 ! ok
+  31: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.4 reaches P.3
- 33: P.3: receives message (ok)
+  32: Message (ok) from P.4 reaches P.3
+  33: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.3: ok = P.2 ! ok
+  34: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.3 reaches P.2
- 36: P.2: receives message (ok)
+  35: Message (ok) from P.3 reaches P.2
+  36: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.2: ok = P.1 ! ok
+  37: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.2 reaches P.1
- 39: P.1: receives message (ok)
+  38: Message (ok) from P.2 reaches P.1
+  39: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 40: P.1: ok = P ! ok
+  40: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 41: Message (ok) from P.1 reaches P
- 42: P: receives message (ok)
+  41: Message (ok) from P.1 reaches P
+  42: P: receives message (ok)
     in depend_4_screen.erl line 44
- 43: P: [{x,2}] = ets:lookup(table, x)
+  43: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
+  44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 46: P: exits abnormally
- 47: P: true = ets:delete(table)
+  46: P: exits abnormally
+  47: P: true = ets:delete(table)
     (while exiting)
- 48: P.1: exits normally
- 49: P.2: exits normally
- 50: P.3: exits normally
- 51: P.4: exits normally
- 52: P.5: exits normally
+  48: P.1: exits normally
+  49: P.2: exits normally
+  50: P.3: exits normally
+  51: P.4: exits normally
+  52: P.5: exits normally
 ################################################################################
 Erroneous interleaving 4:
 * At step 45 process P exited abnormally
@@ -334,94 +335,94 @@ Erroneous interleaving 4:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.2: true = ets:insert(table, {x,1})
+  14: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 16: P.6: true = ets:insert(table, {x,2})
+  16: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 17: P.6: receives message (ok)
+  17: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 18: P.6: ok = P.5 ! ok
+  18: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 19: Message (ok) from P.6 reaches P.5
- 20: P.6: exits normally
- 21: P.4: [{y,0}] = ets:lookup(table, y)
+  19: Message (ok) from P.6 reaches P.5
+  20: P.6: exits normally
+  21: P.4: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 22: P.4: true = ets:insert(table, {p4,[49,48]})
+  22: P.4: true = ets:insert(table, {p4,[49,48]})
     in depend_4_screen.erl line 29
- 23: P.5: [{y,0}] = ets:lookup(table, y)
+  23: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 24: P.3: true = ets:insert(table, {y,1})
+  24: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 25: P.5: true = ets:insert(table, {p5,[48]})
+  25: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 26: P.5: receives message (ok)
+  26: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 27: P.5: ok = P.4 ! ok
+  27: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 28: Message (ok) from P.5 reaches P.4
- 29: P.4: receives message (ok)
+  28: Message (ok) from P.5 reaches P.4
+  29: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 30: P.4: ok = P.3 ! ok
+  30: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 31: Message (ok) from P.4 reaches P.3
- 32: P.3: receives message (ok)
+  31: Message (ok) from P.4 reaches P.3
+  32: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 33: P.3: ok = P.2 ! ok
+  33: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 34: Message (ok) from P.3 reaches P.2
- 35: P.2: receives message (ok)
+  34: Message (ok) from P.3 reaches P.2
+  35: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 36: P.2: ok = P.1 ! ok
+  36: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 37: Message (ok) from P.2 reaches P.1
- 38: P.1: receives message (ok)
+  37: Message (ok) from P.2 reaches P.1
+  38: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 39: P.1: ok = P ! ok
+  39: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 40: Message (ok) from P.1 reaches P
- 41: P: receives message (ok)
+  40: Message (ok) from P.1 reaches P
+  41: P: receives message (ok)
     in depend_4_screen.erl line 44
- 42: P: [{x,2}] = ets:lookup(table, x)
+  42: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 43: P: [{p4,[49,48]}] = ets:lookup(table, p4)
+  43: P: [{p4,[49,48]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 44: P: [{p5,[48]}] = ets:lookup(table, p5)
+  44: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 45: P: exits abnormally
- 46: P: true = ets:delete(table)
+  45: P: exits abnormally
+  46: P: true = ets:delete(table)
     (while exiting)
- 47: P.1: exits normally
- 48: P.2: exits normally
- 49: P.3: exits normally
- 50: P.4: exits normally
- 51: P.5: exits normally
+  47: P.1: exits normally
+  48: P.2: exits normally
+  49: P.3: exits normally
+  50: P.4: exits normally
+  51: P.5: exits normally
 ################################################################################
 Erroneous interleaving 5:
 * At step 47 process P exited abnormally
@@ -436,96 +437,96 @@ Erroneous interleaving 5:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.2: true = ets:insert(table, {x,1})
+  14: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 16: P.6: true = ets:insert(table, {x,2})
+  16: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 17: P.6: receives message (ok)
+  17: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 18: P.6: ok = P.5 ! ok
+  18: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 19: Message (ok) from P.6 reaches P.5
- 20: P.6: exits normally
- 21: P.5: [{y,0}] = ets:lookup(table, y)
+  19: Message (ok) from P.6 reaches P.5
+  20: P.6: exits normally
+  21: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 22: P.5: true = ets:insert(table, {p5,[48]})
+  22: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 23: P.5: receives message (ok)
+  23: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 24: P.5: ok = P.4 ! ok
+  24: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 25: Message (ok) from P.5 reaches P.4
- 26: P.5: exits normally
- 27: P.3: true = ets:insert(table, {y,1})
+  25: Message (ok) from P.5 reaches P.4
+  26: P.5: exits normally
+  27: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 28: P.4: [{y,1}] = ets:lookup(table, y)
+  28: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 29: P.4: [{z,1}] = ets:lookup(table, z)
+  29: P.4: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 30: P.4: true = ets:insert(table, {p4,[{z,1}]})
+  30: P.4: true = ets:insert(table, {p4,[{z,1}]})
     in depend_4_screen.erl line 29
- 31: P.4: receives message (ok)
+  31: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.4: ok = P.3 ! ok
+  32: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.4 reaches P.3
- 34: P.3: receives message (ok)
+  33: Message (ok) from P.4 reaches P.3
+  34: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.3: ok = P.2 ! ok
+  35: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.3 reaches P.2
- 37: P.2: receives message (ok)
+  36: Message (ok) from P.3 reaches P.2
+  37: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.2: ok = P.1 ! ok
+  38: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.2 reaches P.1
- 40: P.1: receives message (ok)
+  39: Message (ok) from P.2 reaches P.1
+  40: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 41: P.1: ok = P ! ok
+  41: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 42: Message (ok) from P.1 reaches P
- 43: P: receives message (ok)
+  42: Message (ok) from P.1 reaches P
+  43: P: receives message (ok)
     in depend_4_screen.erl line 44
- 44: P: [{x,2}] = ets:lookup(table, x)
+  44: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 45: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
+  45: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 46: P: [{p5,[48]}] = ets:lookup(table, p5)
+  46: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 47: P: exits abnormally
- 48: P: true = ets:delete(table)
+  47: P: exits abnormally
+  48: P: true = ets:delete(table)
     (while exiting)
- 49: P.1: exits normally
- 50: P.2: exits normally
- 51: P.3: exits normally
- 52: P.4: exits normally
+  49: P.1: exits normally
+  50: P.2: exits normally
+  51: P.3: exits normally
+  52: P.4: exits normally
 ################################################################################
 Erroneous interleaving 6:
 * At step 44 process P exited abnormally
@@ -540,92 +541,92 @@ Erroneous interleaving 6:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.2: true = ets:insert(table, {x,1})
+  14: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 15: P.6: true = ets:insert(table, {x,2})
+  15: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 16: P.4: [{x,2}] = ets:lookup(table, x)
+  16: P.4: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 17: P.4: true = ets:insert(table, {p4,2})
+  17: P.4: true = ets:insert(table, {p4,2})
     in depend_4_screen.erl line 29
- 18: P.6: receives message (ok)
+  18: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 19: P.6: ok = P.5 ! ok
+  19: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 20: Message (ok) from P.6 reaches P.5
- 21: P.6: exits normally
- 22: P.5: [{y,0}] = ets:lookup(table, y)
+  20: Message (ok) from P.6 reaches P.5
+  21: P.6: exits normally
+  22: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 23: P.3: true = ets:insert(table, {y,1})
+  23: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 24: P.5: true = ets:insert(table, {p5,[48]})
+  24: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 25: P.5: receives message (ok)
+  25: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 26: P.5: ok = P.4 ! ok
+  26: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 27: Message (ok) from P.5 reaches P.4
- 28: P.4: receives message (ok)
+  27: Message (ok) from P.5 reaches P.4
+  28: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 29: P.4: ok = P.3 ! ok
+  29: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 30: Message (ok) from P.4 reaches P.3
- 31: P.3: receives message (ok)
+  30: Message (ok) from P.4 reaches P.3
+  31: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.3: ok = P.2 ! ok
+  32: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.3 reaches P.2
- 34: P.2: receives message (ok)
+  33: Message (ok) from P.3 reaches P.2
+  34: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.2: ok = P.1 ! ok
+  35: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.2 reaches P.1
- 37: P.1: receives message (ok)
+  36: Message (ok) from P.2 reaches P.1
+  37: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.1: ok = P ! ok
+  38: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.1 reaches P
- 40: P: receives message (ok)
+  39: Message (ok) from P.1 reaches P
+  40: P: receives message (ok)
     in depend_4_screen.erl line 44
- 41: P: [{x,2}] = ets:lookup(table, x)
+  41: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 42: P: [{p4,2}] = ets:lookup(table, p4)
+  42: P: [{p4,2}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 43: P: [{p5,[48]}] = ets:lookup(table, p5)
+  43: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 44: P: exits abnormally
- 45: P: true = ets:delete(table)
+  44: P: exits abnormally
+  45: P: true = ets:delete(table)
     (while exiting)
- 46: P.1: exits normally
- 47: P.2: exits normally
- 48: P.3: exits normally
- 49: P.4: exits normally
- 50: P.5: exits normally
+  46: P.1: exits normally
+  47: P.2: exits normally
+  48: P.3: exits normally
+  49: P.4: exits normally
+  50: P.5: exits normally
 ################################################################################
 Erroneous interleaving 7:
 * At step 44 process P exited abnormally
@@ -640,94 +641,94 @@ Erroneous interleaving 7:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.3: true = ets:insert(table, {y,1})
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 15: P.5: [{y,1}] = ets:lookup(table, y)
+  15: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 16: P.5: [{z,1}] = ets:lookup(table, z)
+  16: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 17: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  17: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 18: P.4: [{x,0}] = ets:lookup(table, x)
+  18: P.4: [{x,0}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 19: P.2: true = ets:insert(table, {x,1})
+  19: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 20: P.4: true = ets:insert(table, {p4,0})
+  20: P.4: true = ets:insert(table, {p4,0})
     in depend_4_screen.erl line 29
- 21: P.6: true = ets:insert(table, {x,2})
+  21: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 22: P.6: receives message (ok)
+  22: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 23: P.6: ok = P.5 ! ok
+  23: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 24: Message (ok) from P.6 reaches P.5
- 25: P.5: receives message (ok)
+  24: Message (ok) from P.6 reaches P.5
+  25: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 26: P.5: ok = P.4 ! ok
+  26: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 27: Message (ok) from P.5 reaches P.4
- 28: P.4: receives message (ok)
+  27: Message (ok) from P.5 reaches P.4
+  28: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 29: P.4: ok = P.3 ! ok
+  29: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 30: Message (ok) from P.4 reaches P.3
- 31: P.3: receives message (ok)
+  30: Message (ok) from P.4 reaches P.3
+  31: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.3: ok = P.2 ! ok
+  32: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.3 reaches P.2
- 34: P.2: receives message (ok)
+  33: Message (ok) from P.3 reaches P.2
+  34: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.2: ok = P.1 ! ok
+  35: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.2 reaches P.1
- 37: P.1: receives message (ok)
+  36: Message (ok) from P.2 reaches P.1
+  37: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.1: ok = P ! ok
+  38: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.1 reaches P
- 40: P: receives message (ok)
+  39: Message (ok) from P.1 reaches P
+  40: P: receives message (ok)
     in depend_4_screen.erl line 44
- 41: P: [{x,2}] = ets:lookup(table, x)
+  41: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 42: P: [{p4,0}] = ets:lookup(table, p4)
+  42: P: [{p4,0}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 43: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  43: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 44: P: exits abnormally
- 45: P: true = ets:delete(table)
+  44: P: exits abnormally
+  45: P: true = ets:delete(table)
     (while exiting)
- 46: P.1: exits normally
- 47: P.2: exits normally
- 48: P.3: exits normally
- 49: P.4: exits normally
- 50: P.5: exits normally
- 51: P.6: exits normally
+  46: P.1: exits normally
+  47: P.2: exits normally
+  48: P.3: exits normally
+  49: P.4: exits normally
+  50: P.5: exits normally
+  51: P.6: exits normally
 ################################################################################
 Erroneous interleaving 8:
 * At step 44 process P exited abnormally
@@ -742,94 +743,94 @@ Erroneous interleaving 8:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.3: true = ets:insert(table, {y,1})
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 15: P.5: [{y,1}] = ets:lookup(table, y)
+  15: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 16: P.5: [{z,1}] = ets:lookup(table, z)
+  16: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 17: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  17: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 18: P.4: [{x,0}] = ets:lookup(table, x)
+  18: P.4: [{x,0}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 19: P.4: true = ets:insert(table, {p4,0})
+  19: P.4: true = ets:insert(table, {p4,0})
     in depend_4_screen.erl line 29
- 20: P.6: true = ets:insert(table, {x,2})
+  20: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 21: P.2: true = ets:insert(table, {x,1})
+  21: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 22: P.6: receives message (ok)
+  22: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 23: P.6: ok = P.5 ! ok
+  23: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 24: Message (ok) from P.6 reaches P.5
- 25: P.5: receives message (ok)
+  24: Message (ok) from P.6 reaches P.5
+  25: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 26: P.5: ok = P.4 ! ok
+  26: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 27: Message (ok) from P.5 reaches P.4
- 28: P.4: receives message (ok)
+  27: Message (ok) from P.5 reaches P.4
+  28: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 29: P.4: ok = P.3 ! ok
+  29: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 30: Message (ok) from P.4 reaches P.3
- 31: P.3: receives message (ok)
+  30: Message (ok) from P.4 reaches P.3
+  31: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.3: ok = P.2 ! ok
+  32: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.3 reaches P.2
- 34: P.2: receives message (ok)
+  33: Message (ok) from P.3 reaches P.2
+  34: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.2: ok = P.1 ! ok
+  35: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.2 reaches P.1
- 37: P.1: receives message (ok)
+  36: Message (ok) from P.2 reaches P.1
+  37: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.1: ok = P ! ok
+  38: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.1 reaches P
- 40: P: receives message (ok)
+  39: Message (ok) from P.1 reaches P
+  40: P: receives message (ok)
     in depend_4_screen.erl line 44
- 41: P: [{x,1}] = ets:lookup(table, x)
+  41: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 42: P: [{p4,0}] = ets:lookup(table, p4)
+  42: P: [{p4,0}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 43: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  43: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 44: P: exits abnormally
- 45: P: true = ets:delete(table)
+  44: P: exits abnormally
+  45: P: true = ets:delete(table)
     (while exiting)
- 46: P.1: exits normally
- 47: P.2: exits normally
- 48: P.3: exits normally
- 49: P.4: exits normally
- 50: P.5: exits normally
- 51: P.6: exits normally
+  46: P.1: exits normally
+  47: P.2: exits normally
+  48: P.3: exits normally
+  49: P.4: exits normally
+  50: P.5: exits normally
+  51: P.6: exits normally
 ################################################################################
 Erroneous interleaving 9:
 * At step 46 process P exited abnormally
@@ -844,98 +845,98 @@ Erroneous interleaving 9:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.3: true = ets:insert(table, {y,1})
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 15: P.5: [{y,1}] = ets:lookup(table, y)
+  15: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 16: P.5: [{z,1}] = ets:lookup(table, z)
+  16: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 17: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  17: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 18: P.6: true = ets:insert(table, {x,2})
+  18: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 19: P.2: true = ets:insert(table, {x,1})
+  19: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 20: P.4: [{x,1}] = ets:lookup(table, x)
+  20: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 21: P.4: [{y,1}] = ets:lookup(table, y)
+  21: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 22: P.4: [{z,1}] = ets:lookup(table, z)
+  22: P.4: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 23: P.4: true = ets:insert(table, {p4,[{z,1}]})
+  23: P.4: true = ets:insert(table, {p4,[{z,1}]})
     in depend_4_screen.erl line 29
- 24: P.6: receives message (ok)
+  24: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 25: P.6: ok = P.5 ! ok
+  25: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 26: Message (ok) from P.6 reaches P.5
- 27: P.5: receives message (ok)
+  26: Message (ok) from P.6 reaches P.5
+  27: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 28: P.5: ok = P.4 ! ok
+  28: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 29: Message (ok) from P.5 reaches P.4
- 30: P.4: receives message (ok)
+  29: Message (ok) from P.5 reaches P.4
+  30: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.4: ok = P.3 ! ok
+  31: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.4 reaches P.3
- 33: P.3: receives message (ok)
+  32: Message (ok) from P.4 reaches P.3
+  33: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.3: ok = P.2 ! ok
+  34: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.3 reaches P.2
- 36: P.2: receives message (ok)
+  35: Message (ok) from P.3 reaches P.2
+  36: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.2: ok = P.1 ! ok
+  37: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.2 reaches P.1
- 39: P.1: receives message (ok)
+  38: Message (ok) from P.2 reaches P.1
+  39: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 40: P.1: ok = P ! ok
+  40: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 41: Message (ok) from P.1 reaches P
- 42: P: receives message (ok)
+  41: Message (ok) from P.1 reaches P
+  42: P: receives message (ok)
     in depend_4_screen.erl line 44
- 43: P: [{x,1}] = ets:lookup(table, x)
+  43: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 44: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
+  44: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 46: P: exits abnormally
- 47: P: true = ets:delete(table)
+  46: P: exits abnormally
+  47: P: true = ets:delete(table)
     (while exiting)
- 48: P.1: exits normally
- 49: P.2: exits normally
- 50: P.3: exits normally
- 51: P.4: exits normally
- 52: P.5: exits normally
- 53: P.6: exits normally
+  48: P.1: exits normally
+  49: P.2: exits normally
+  50: P.3: exits normally
+  51: P.4: exits normally
+  52: P.5: exits normally
+  53: P.6: exits normally
 ################################################################################
 Erroneous interleaving 10:
 * At step 46 process P exited abnormally
@@ -950,94 +951,94 @@ Erroneous interleaving 10:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.3: true = ets:insert(table, {y,1})
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 15: P.5: [{y,1}] = ets:lookup(table, y)
+  15: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 16: P.5: [{z,1}] = ets:lookup(table, z)
+  16: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 17: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  17: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 18: P.6: true = ets:insert(table, {x,2})
+  18: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.5: receives message (ok)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 23: P.5: ok = P.4 ! ok
+  23: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 24: Message (ok) from P.5 reaches P.4
- 25: P.5: exits normally
- 26: P.6: exits normally
- 27: P.4: [{x,2}] = ets:lookup(table, x)
+  24: Message (ok) from P.5 reaches P.4
+  25: P.5: exits normally
+  26: P.6: exits normally
+  27: P.4: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 28: P.2: true = ets:insert(table, {x,1})
+  28: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 29: P.4: true = ets:insert(table, {p4,2})
+  29: P.4: true = ets:insert(table, {p4,2})
     in depend_4_screen.erl line 29
- 30: P.4: receives message (ok)
+  30: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.4: ok = P.3 ! ok
+  31: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.4 reaches P.3
- 33: P.3: receives message (ok)
+  32: Message (ok) from P.4 reaches P.3
+  33: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.3: ok = P.2 ! ok
+  34: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.3 reaches P.2
- 36: P.2: receives message (ok)
+  35: Message (ok) from P.3 reaches P.2
+  36: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.2: ok = P.1 ! ok
+  37: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.2 reaches P.1
- 39: P.1: receives message (ok)
+  38: Message (ok) from P.2 reaches P.1
+  39: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 40: P.1: ok = P ! ok
+  40: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 41: Message (ok) from P.1 reaches P
- 42: P: receives message (ok)
+  41: Message (ok) from P.1 reaches P
+  42: P: receives message (ok)
     in depend_4_screen.erl line 44
- 43: P: [{x,1}] = ets:lookup(table, x)
+  43: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 44: P: [{p4,2}] = ets:lookup(table, p4)
+  44: P: [{p4,2}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 46: P: exits abnormally
- 47: P: true = ets:delete(table)
+  46: P: exits abnormally
+  47: P: true = ets:delete(table)
     (while exiting)
- 48: P.1: exits normally
- 49: P.2: exits normally
- 50: P.3: exits normally
- 51: P.4: exits normally
+  48: P.1: exits normally
+  49: P.2: exits normally
+  50: P.3: exits normally
+  51: P.4: exits normally
 ################################################################################
 Erroneous interleaving 11:
 * At step 43 process P exited abnormally
@@ -1052,92 +1053,92 @@ Erroneous interleaving 11:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.5: [{y,0}] = ets:lookup(table, y)
+  14: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.5: true = ets:insert(table, {p5,[48]})
+  15: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 16: P.4: [{x,0}] = ets:lookup(table, x)
+  16: P.4: [{x,0}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 17: P.2: true = ets:insert(table, {x,1})
+  17: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 18: P.3: true = ets:insert(table, {y,1})
+  18: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 19: P.4: true = ets:insert(table, {p4,0})
+  19: P.4: true = ets:insert(table, {p4,0})
     in depend_4_screen.erl line 29
- 20: P.6: true = ets:insert(table, {x,2})
+  20: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 21: P.6: receives message (ok)
+  21: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 22: P.6: ok = P.5 ! ok
+  22: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 23: Message (ok) from P.6 reaches P.5
- 24: P.5: receives message (ok)
+  23: Message (ok) from P.6 reaches P.5
+  24: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 25: P.5: ok = P.4 ! ok
+  25: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 26: Message (ok) from P.5 reaches P.4
- 27: P.4: receives message (ok)
+  26: Message (ok) from P.5 reaches P.4
+  27: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 28: P.4: ok = P.3 ! ok
+  28: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 29: Message (ok) from P.4 reaches P.3
- 30: P.3: receives message (ok)
+  29: Message (ok) from P.4 reaches P.3
+  30: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.3: ok = P.2 ! ok
+  31: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.3 reaches P.2
- 33: P.2: receives message (ok)
+  32: Message (ok) from P.3 reaches P.2
+  33: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.2: ok = P.1 ! ok
+  34: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.2 reaches P.1
- 36: P.1: receives message (ok)
+  35: Message (ok) from P.2 reaches P.1
+  36: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.1: ok = P ! ok
+  37: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.1 reaches P
- 39: P: receives message (ok)
+  38: Message (ok) from P.1 reaches P
+  39: P: receives message (ok)
     in depend_4_screen.erl line 44
- 40: P: [{x,2}] = ets:lookup(table, x)
+  40: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 41: P: [{p4,0}] = ets:lookup(table, p4)
+  41: P: [{p4,0}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 42: P: [{p5,[48]}] = ets:lookup(table, p5)
+  42: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 43: P: exits abnormally
- 44: P: true = ets:delete(table)
+  43: P: exits abnormally
+  44: P: true = ets:delete(table)
     (while exiting)
- 45: P.1: exits normally
- 46: P.2: exits normally
- 47: P.3: exits normally
- 48: P.4: exits normally
- 49: P.5: exits normally
- 50: P.6: exits normally
+  45: P.1: exits normally
+  46: P.2: exits normally
+  47: P.3: exits normally
+  48: P.4: exits normally
+  49: P.5: exits normally
+  50: P.6: exits normally
 ################################################################################
 Erroneous interleaving 12:
 * At step 43 process P exited abnormally
@@ -1152,92 +1153,92 @@ Erroneous interleaving 12:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.5: [{y,0}] = ets:lookup(table, y)
+  14: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.5: true = ets:insert(table, {p5,[48]})
+  15: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 16: P.4: [{x,0}] = ets:lookup(table, x)
+  16: P.4: [{x,0}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 17: P.3: true = ets:insert(table, {y,1})
+  17: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 18: P.4: true = ets:insert(table, {p4,0})
+  18: P.4: true = ets:insert(table, {p4,0})
     in depend_4_screen.erl line 29
- 19: P.6: true = ets:insert(table, {x,2})
+  19: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 20: P.2: true = ets:insert(table, {x,1})
+  20: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 21: P.6: receives message (ok)
+  21: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 22: P.6: ok = P.5 ! ok
+  22: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 23: Message (ok) from P.6 reaches P.5
- 24: P.5: receives message (ok)
+  23: Message (ok) from P.6 reaches P.5
+  24: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 25: P.5: ok = P.4 ! ok
+  25: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 26: Message (ok) from P.5 reaches P.4
- 27: P.4: receives message (ok)
+  26: Message (ok) from P.5 reaches P.4
+  27: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 28: P.4: ok = P.3 ! ok
+  28: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 29: Message (ok) from P.4 reaches P.3
- 30: P.3: receives message (ok)
+  29: Message (ok) from P.4 reaches P.3
+  30: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.3: ok = P.2 ! ok
+  31: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.3 reaches P.2
- 33: P.2: receives message (ok)
+  32: Message (ok) from P.3 reaches P.2
+  33: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.2: ok = P.1 ! ok
+  34: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.2 reaches P.1
- 36: P.1: receives message (ok)
+  35: Message (ok) from P.2 reaches P.1
+  36: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.1: ok = P ! ok
+  37: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.1 reaches P
- 39: P: receives message (ok)
+  38: Message (ok) from P.1 reaches P
+  39: P: receives message (ok)
     in depend_4_screen.erl line 44
- 40: P: [{x,1}] = ets:lookup(table, x)
+  40: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 41: P: [{p4,0}] = ets:lookup(table, p4)
+  41: P: [{p4,0}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 42: P: [{p5,[48]}] = ets:lookup(table, p5)
+  42: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 43: P: exits abnormally
- 44: P: true = ets:delete(table)
+  43: P: exits abnormally
+  44: P: true = ets:delete(table)
     (while exiting)
- 45: P.1: exits normally
- 46: P.2: exits normally
- 47: P.3: exits normally
- 48: P.4: exits normally
- 49: P.5: exits normally
- 50: P.6: exits normally
+  45: P.1: exits normally
+  46: P.2: exits normally
+  47: P.3: exits normally
+  48: P.4: exits normally
+  49: P.5: exits normally
+  50: P.6: exits normally
 ################################################################################
 Erroneous interleaving 13:
 * At step 45 process P exited abnormally
@@ -1252,96 +1253,96 @@ Erroneous interleaving 13:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.5: [{y,0}] = ets:lookup(table, y)
+  14: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.5: true = ets:insert(table, {p5,[48]})
+  15: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 16: P.6: true = ets:insert(table, {x,2})
+  16: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 17: P.2: true = ets:insert(table, {x,1})
+  17: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 18: P.3: true = ets:insert(table, {y,1})
+  18: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 19: P.4: [{x,1}] = ets:lookup(table, x)
+  19: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 20: P.4: [{y,1}] = ets:lookup(table, y)
+  20: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 21: P.4: [{z,1}] = ets:lookup(table, z)
+  21: P.4: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 22: P.4: true = ets:insert(table, {p4,[{z,1}]})
+  22: P.4: true = ets:insert(table, {p4,[{z,1}]})
     in depend_4_screen.erl line 29
- 23: P.6: receives message (ok)
+  23: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 24: P.6: ok = P.5 ! ok
+  24: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 25: Message (ok) from P.6 reaches P.5
- 26: P.5: receives message (ok)
+  25: Message (ok) from P.6 reaches P.5
+  26: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 27: P.5: ok = P.4 ! ok
+  27: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 28: Message (ok) from P.5 reaches P.4
- 29: P.4: receives message (ok)
+  28: Message (ok) from P.5 reaches P.4
+  29: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 30: P.4: ok = P.3 ! ok
+  30: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 31: Message (ok) from P.4 reaches P.3
- 32: P.3: receives message (ok)
+  31: Message (ok) from P.4 reaches P.3
+  32: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 33: P.3: ok = P.2 ! ok
+  33: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 34: Message (ok) from P.3 reaches P.2
- 35: P.2: receives message (ok)
+  34: Message (ok) from P.3 reaches P.2
+  35: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 36: P.2: ok = P.1 ! ok
+  36: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 37: Message (ok) from P.2 reaches P.1
- 38: P.1: receives message (ok)
+  37: Message (ok) from P.2 reaches P.1
+  38: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 39: P.1: ok = P ! ok
+  39: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 40: Message (ok) from P.1 reaches P
- 41: P: receives message (ok)
+  40: Message (ok) from P.1 reaches P
+  41: P: receives message (ok)
     in depend_4_screen.erl line 44
- 42: P: [{x,1}] = ets:lookup(table, x)
+  42: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 43: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
+  43: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 44: P: [{p5,[48]}] = ets:lookup(table, p5)
+  44: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 45: P: exits abnormally
- 46: P: true = ets:delete(table)
+  45: P: exits abnormally
+  46: P: true = ets:delete(table)
     (while exiting)
- 47: P.1: exits normally
- 48: P.2: exits normally
- 49: P.3: exits normally
- 50: P.4: exits normally
- 51: P.5: exits normally
- 52: P.6: exits normally
+  47: P.1: exits normally
+  48: P.2: exits normally
+  49: P.3: exits normally
+  50: P.4: exits normally
+  51: P.5: exits normally
+  52: P.6: exits normally
 ################################################################################
 Erroneous interleaving 14:
 * At step 46 process P exited abnormally
@@ -1356,94 +1357,94 @@ Erroneous interleaving 14:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.5: [{y,0}] = ets:lookup(table, y)
+  14: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.5: true = ets:insert(table, {p5,[48]})
+  15: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 16: P.6: true = ets:insert(table, {x,2})
+  16: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 17: P.2: true = ets:insert(table, {x,1})
+  17: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 18: P.4: [{x,1}] = ets:lookup(table, x)
+  18: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.5: receives message (ok)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 23: P.5: ok = P.4 ! ok
+  23: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 24: Message (ok) from P.5 reaches P.4
- 25: P.5: exits normally
- 26: P.6: exits normally
- 27: P.4: [{y,0}] = ets:lookup(table, y)
+  24: Message (ok) from P.5 reaches P.4
+  25: P.5: exits normally
+  26: P.6: exits normally
+  27: P.4: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 28: P.3: true = ets:insert(table, {y,1})
+  28: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 29: P.4: true = ets:insert(table, {p4,[49,48]})
+  29: P.4: true = ets:insert(table, {p4,[49,48]})
     in depend_4_screen.erl line 29
- 30: P.4: receives message (ok)
+  30: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.4: ok = P.3 ! ok
+  31: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.4 reaches P.3
- 33: P.3: receives message (ok)
+  32: Message (ok) from P.4 reaches P.3
+  33: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.3: ok = P.2 ! ok
+  34: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.3 reaches P.2
- 36: P.2: receives message (ok)
+  35: Message (ok) from P.3 reaches P.2
+  36: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.2: ok = P.1 ! ok
+  37: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.2 reaches P.1
- 39: P.1: receives message (ok)
+  38: Message (ok) from P.2 reaches P.1
+  39: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 40: P.1: ok = P ! ok
+  40: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 41: Message (ok) from P.1 reaches P
- 42: P: receives message (ok)
+  41: Message (ok) from P.1 reaches P
+  42: P: receives message (ok)
     in depend_4_screen.erl line 44
- 43: P: [{x,1}] = ets:lookup(table, x)
+  43: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
+  44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 45: P: [{p5,[48]}] = ets:lookup(table, p5)
+  45: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 46: P: exits abnormally
- 47: P: true = ets:delete(table)
+  46: P: exits abnormally
+  47: P: true = ets:delete(table)
     (while exiting)
- 48: P.1: exits normally
- 49: P.2: exits normally
- 50: P.3: exits normally
- 51: P.4: exits normally
+  48: P.1: exits normally
+  49: P.2: exits normally
+  50: P.3: exits normally
+  51: P.4: exits normally
 ################################################################################
 Erroneous interleaving 15:
 * At step 45 process P exited abnormally
@@ -1458,92 +1459,92 @@ Erroneous interleaving 15:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.5: [{y,0}] = ets:lookup(table, y)
+  14: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.5: true = ets:insert(table, {p5,[48]})
+  15: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 16: P.6: true = ets:insert(table, {x,2})
+  16: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 17: P.3: true = ets:insert(table, {y,1})
+  17: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 18: P.6: receives message (ok)
+  18: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 19: P.6: ok = P.5 ! ok
+  19: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 20: Message (ok) from P.6 reaches P.5
- 21: P.5: receives message (ok)
+  20: Message (ok) from P.6 reaches P.5
+  21: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 22: P.5: ok = P.4 ! ok
+  22: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 23: Message (ok) from P.5 reaches P.4
- 24: P.5: exits normally
- 25: P.6: exits normally
- 26: P.4: [{x,2}] = ets:lookup(table, x)
+  23: Message (ok) from P.5 reaches P.4
+  24: P.5: exits normally
+  25: P.6: exits normally
+  26: P.4: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 27: P.2: true = ets:insert(table, {x,1})
+  27: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 28: P.4: true = ets:insert(table, {p4,2})
+  28: P.4: true = ets:insert(table, {p4,2})
     in depend_4_screen.erl line 29
- 29: P.4: receives message (ok)
+  29: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 30: P.4: ok = P.3 ! ok
+  30: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 31: Message (ok) from P.4 reaches P.3
- 32: P.3: receives message (ok)
+  31: Message (ok) from P.4 reaches P.3
+  32: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 33: P.3: ok = P.2 ! ok
+  33: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 34: Message (ok) from P.3 reaches P.2
- 35: P.2: receives message (ok)
+  34: Message (ok) from P.3 reaches P.2
+  35: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 36: P.2: ok = P.1 ! ok
+  36: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 37: Message (ok) from P.2 reaches P.1
- 38: P.1: receives message (ok)
+  37: Message (ok) from P.2 reaches P.1
+  38: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 39: P.1: ok = P ! ok
+  39: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 40: Message (ok) from P.1 reaches P
- 41: P: receives message (ok)
+  40: Message (ok) from P.1 reaches P
+  41: P: receives message (ok)
     in depend_4_screen.erl line 44
- 42: P: [{x,1}] = ets:lookup(table, x)
+  42: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 43: P: [{p4,2}] = ets:lookup(table, p4)
+  43: P: [{p4,2}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 44: P: [{p5,[48]}] = ets:lookup(table, p5)
+  44: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 45: P: exits abnormally
- 46: P: true = ets:delete(table)
+  45: P: exits abnormally
+  46: P: true = ets:delete(table)
     (while exiting)
- 47: P.1: exits normally
- 48: P.2: exits normally
- 49: P.3: exits normally
- 50: P.4: exits normally
+  47: P.1: exits normally
+  48: P.2: exits normally
+  49: P.3: exits normally
+  50: P.4: exits normally
 ################################################################################
 Erroneous interleaving 16:
 * At step 46 process P exited abnormally
@@ -1558,96 +1559,96 @@ Erroneous interleaving 16:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.1: true = ets:insert(table, {z,1})
+  12: Message (ok) from P reaches P.6
+  13: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 14: P.6: true = ets:insert(table, {x,2})
+  14: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 15: P.2: true = ets:insert(table, {x,1})
+  15: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 16: P.4: [{x,1}] = ets:lookup(table, x)
+  16: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 17: P.6: receives message (ok)
+  17: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 18: P.6: ok = P.5 ! ok
+  18: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 19: Message (ok) from P.6 reaches P.5
- 20: P.6: exits normally
- 21: P.4: [{y,0}] = ets:lookup(table, y)
+  19: Message (ok) from P.6 reaches P.5
+  20: P.6: exits normally
+  21: P.4: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 22: P.4: true = ets:insert(table, {p4,[49,48]})
+  22: P.4: true = ets:insert(table, {p4,[49,48]})
     in depend_4_screen.erl line 29
- 23: P.3: true = ets:insert(table, {y,1})
+  23: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 24: P.5: [{y,1}] = ets:lookup(table, y)
+  24: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 25: P.5: [{z,1}] = ets:lookup(table, z)
+  25: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 26: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  26: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 27: P.5: receives message (ok)
+  27: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 28: P.5: ok = P.4 ! ok
+  28: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 29: Message (ok) from P.5 reaches P.4
- 30: P.4: receives message (ok)
+  29: Message (ok) from P.5 reaches P.4
+  30: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.4: ok = P.3 ! ok
+  31: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.4 reaches P.3
- 33: P.3: receives message (ok)
+  32: Message (ok) from P.4 reaches P.3
+  33: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.3: ok = P.2 ! ok
+  34: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.3 reaches P.2
- 36: P.2: receives message (ok)
+  35: Message (ok) from P.3 reaches P.2
+  36: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.2: ok = P.1 ! ok
+  37: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.2 reaches P.1
- 39: P.1: receives message (ok)
+  38: Message (ok) from P.2 reaches P.1
+  39: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 40: P.1: ok = P ! ok
+  40: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 41: Message (ok) from P.1 reaches P
- 42: P: receives message (ok)
+  41: Message (ok) from P.1 reaches P
+  42: P: receives message (ok)
     in depend_4_screen.erl line 44
- 43: P: [{x,1}] = ets:lookup(table, x)
+  43: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
+  44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 46: P: exits abnormally
- 47: P: true = ets:delete(table)
+  46: P: exits abnormally
+  47: P: true = ets:delete(table)
     (while exiting)
- 48: P.1: exits normally
- 49: P.2: exits normally
- 50: P.3: exits normally
- 51: P.4: exits normally
- 52: P.5: exits normally
+  48: P.1: exits normally
+  49: P.2: exits normally
+  50: P.3: exits normally
+  51: P.4: exits normally
+  52: P.5: exits normally
 ################################################################################
 Erroneous interleaving 17:
 * At step 47 process P exited abnormally
@@ -1662,98 +1663,98 @@ Erroneous interleaving 17:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.2: true = ets:insert(table, {x,1})
+  12: Message (ok) from P reaches P.6
+  13: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 14: P.3: true = ets:insert(table, {y,1})
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 16: P.4: [{y,1}] = ets:lookup(table, y)
+  16: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 17: P.5: [{y,1}] = ets:lookup(table, y)
+  17: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 18: P.6: true = ets:insert(table, {x,2})
+  18: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.6: exits normally
- 23: P.4: [{z,0}] = ets:lookup(table, z)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.6: exits normally
+  23: P.4: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 24: P.1: true = ets:insert(table, {z,1})
+  24: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 25: P.4: true = ets:insert(table, {p4,[{z,0}]})
+  25: P.4: true = ets:insert(table, {p4,[{z,0}]})
     in depend_4_screen.erl line 29
- 26: P.5: [{z,1}] = ets:lookup(table, z)
+  26: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 27: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  27: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 28: P.5: receives message (ok)
+  28: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 29: P.5: ok = P.4 ! ok
+  29: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 30: Message (ok) from P.5 reaches P.4
- 31: P.4: receives message (ok)
+  30: Message (ok) from P.5 reaches P.4
+  31: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.4: ok = P.3 ! ok
+  32: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.4 reaches P.3
- 34: P.3: receives message (ok)
+  33: Message (ok) from P.4 reaches P.3
+  34: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.3: ok = P.2 ! ok
+  35: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.3 reaches P.2
- 37: P.2: receives message (ok)
+  36: Message (ok) from P.3 reaches P.2
+  37: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.2: ok = P.1 ! ok
+  38: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.2 reaches P.1
- 40: P.1: receives message (ok)
+  39: Message (ok) from P.2 reaches P.1
+  40: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 41: P.1: ok = P ! ok
+  41: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 42: Message (ok) from P.1 reaches P
- 43: P: receives message (ok)
+  42: Message (ok) from P.1 reaches P
+  43: P: receives message (ok)
     in depend_4_screen.erl line 44
- 44: P: [{x,2}] = ets:lookup(table, x)
+  44: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
+  45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 46: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  46: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 47: P: exits abnormally
- 48: P: true = ets:delete(table)
+  47: P: exits abnormally
+  48: P: true = ets:delete(table)
     (while exiting)
- 49: P.1: exits normally
- 50: P.2: exits normally
- 51: P.3: exits normally
- 52: P.4: exits normally
- 53: P.5: exits normally
+  49: P.1: exits normally
+  50: P.2: exits normally
+  51: P.3: exits normally
+  52: P.4: exits normally
+  53: P.5: exits normally
 ################################################################################
 Erroneous interleaving 18:
 * At step 47 process P exited abnormally
@@ -1768,98 +1769,98 @@ Erroneous interleaving 18:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.2: true = ets:insert(table, {x,1})
+  12: Message (ok) from P reaches P.6
+  13: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 14: P.3: true = ets:insert(table, {y,1})
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 16: P.4: [{y,1}] = ets:lookup(table, y)
+  16: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 17: P.5: [{y,1}] = ets:lookup(table, y)
+  17: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 18: P.6: true = ets:insert(table, {x,2})
+  18: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.6: exits normally
- 23: P.4: [{z,0}] = ets:lookup(table, z)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.6: exits normally
+  23: P.4: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 24: P.4: true = ets:insert(table, {p4,[{z,0}]})
+  24: P.4: true = ets:insert(table, {p4,[{z,0}]})
     in depend_4_screen.erl line 29
- 25: P.5: [{z,0}] = ets:lookup(table, z)
+  25: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 26: P.1: true = ets:insert(table, {z,1})
+  26: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 27: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  27: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 28: P.5: receives message (ok)
+  28: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 29: P.5: ok = P.4 ! ok
+  29: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 30: Message (ok) from P.5 reaches P.4
- 31: P.4: receives message (ok)
+  30: Message (ok) from P.5 reaches P.4
+  31: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.4: ok = P.3 ! ok
+  32: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.4 reaches P.3
- 34: P.3: receives message (ok)
+  33: Message (ok) from P.4 reaches P.3
+  34: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.3: ok = P.2 ! ok
+  35: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.3 reaches P.2
- 37: P.2: receives message (ok)
+  36: Message (ok) from P.3 reaches P.2
+  37: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.2: ok = P.1 ! ok
+  38: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.2 reaches P.1
- 40: P.1: receives message (ok)
+  39: Message (ok) from P.2 reaches P.1
+  40: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 41: P.1: ok = P ! ok
+  41: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 42: Message (ok) from P.1 reaches P
- 43: P: receives message (ok)
+  42: Message (ok) from P.1 reaches P
+  43: P: receives message (ok)
     in depend_4_screen.erl line 44
- 44: P: [{x,2}] = ets:lookup(table, x)
+  44: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
+  45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 46: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  46: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 47: P: exits abnormally
- 48: P: true = ets:delete(table)
+  47: P: exits abnormally
+  48: P: true = ets:delete(table)
     (while exiting)
- 49: P.1: exits normally
- 50: P.2: exits normally
- 51: P.3: exits normally
- 52: P.4: exits normally
- 53: P.5: exits normally
+  49: P.1: exits normally
+  50: P.2: exits normally
+  51: P.3: exits normally
+  52: P.4: exits normally
+  53: P.5: exits normally
 ################################################################################
 Erroneous interleaving 19:
 * At step 48 process P exited abnormally
@@ -1874,98 +1875,98 @@ Erroneous interleaving 19:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.2: true = ets:insert(table, {x,1})
+  12: Message (ok) from P reaches P.6
+  13: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 14: P.3: true = ets:insert(table, {y,1})
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 16: P.4: [{y,1}] = ets:lookup(table, y)
+  16: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 17: P.5: [{y,1}] = ets:lookup(table, y)
+  17: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 18: P.6: true = ets:insert(table, {x,2})
+  18: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.6: exits normally
- 23: P.5: [{z,0}] = ets:lookup(table, z)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.6: exits normally
+  23: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 24: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  24: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 25: P.5: receives message (ok)
+  25: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 26: P.5: ok = P.4 ! ok
+  26: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 27: Message (ok) from P.5 reaches P.4
- 28: P.5: exits normally
- 29: P.1: true = ets:insert(table, {z,1})
+  27: Message (ok) from P.5 reaches P.4
+  28: P.5: exits normally
+  29: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 30: P.4: [{z,1}] = ets:lookup(table, z)
+  30: P.4: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 31: P.4: true = ets:insert(table, {p4,[{z,1}]})
+  31: P.4: true = ets:insert(table, {p4,[{z,1}]})
     in depend_4_screen.erl line 29
- 32: P.4: receives message (ok)
+  32: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 33: P.4: ok = P.3 ! ok
+  33: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 34: Message (ok) from P.4 reaches P.3
- 35: P.3: receives message (ok)
+  34: Message (ok) from P.4 reaches P.3
+  35: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 36: P.3: ok = P.2 ! ok
+  36: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 37: Message (ok) from P.3 reaches P.2
- 38: P.2: receives message (ok)
+  37: Message (ok) from P.3 reaches P.2
+  38: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 39: P.2: ok = P.1 ! ok
+  39: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 40: Message (ok) from P.2 reaches P.1
- 41: P.1: receives message (ok)
+  40: Message (ok) from P.2 reaches P.1
+  41: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 42: P.1: ok = P ! ok
+  42: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 43: Message (ok) from P.1 reaches P
- 44: P: receives message (ok)
+  43: Message (ok) from P.1 reaches P
+  44: P: receives message (ok)
     in depend_4_screen.erl line 44
- 45: P: [{x,2}] = ets:lookup(table, x)
+  45: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 46: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
+  46: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 47: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  47: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 48: P: exits abnormally
- 49: P: true = ets:delete(table)
+  48: P: exits abnormally
+  49: P: true = ets:delete(table)
     (while exiting)
- 50: P.1: exits normally
- 51: P.2: exits normally
- 52: P.3: exits normally
- 53: P.4: exits normally
+  50: P.1: exits normally
+  51: P.2: exits normally
+  52: P.3: exits normally
+  53: P.4: exits normally
 ################################################################################
 Erroneous interleaving 20:
 * At step 45 process P exited abnormally
@@ -1980,94 +1981,94 @@ Erroneous interleaving 20:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.2: true = ets:insert(table, {x,1})
+  12: Message (ok) from P reaches P.6
+  13: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 14: P.3: true = ets:insert(table, {y,1})
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 15: P.5: [{y,1}] = ets:lookup(table, y)
+  15: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 16: P.6: true = ets:insert(table, {x,2})
+  16: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 17: P.4: [{x,2}] = ets:lookup(table, x)
+  17: P.4: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 18: P.4: true = ets:insert(table, {p4,2})
+  18: P.4: true = ets:insert(table, {p4,2})
     in depend_4_screen.erl line 29
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.6: exits normally
- 23: P.5: [{z,0}] = ets:lookup(table, z)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.6: exits normally
+  23: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 24: P.1: true = ets:insert(table, {z,1})
+  24: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 25: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  25: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 26: P.5: receives message (ok)
+  26: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 27: P.5: ok = P.4 ! ok
+  27: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 28: Message (ok) from P.5 reaches P.4
- 29: P.4: receives message (ok)
+  28: Message (ok) from P.5 reaches P.4
+  29: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 30: P.4: ok = P.3 ! ok
+  30: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 31: Message (ok) from P.4 reaches P.3
- 32: P.3: receives message (ok)
+  31: Message (ok) from P.4 reaches P.3
+  32: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 33: P.3: ok = P.2 ! ok
+  33: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 34: Message (ok) from P.3 reaches P.2
- 35: P.2: receives message (ok)
+  34: Message (ok) from P.3 reaches P.2
+  35: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 36: P.2: ok = P.1 ! ok
+  36: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 37: Message (ok) from P.2 reaches P.1
- 38: P.1: receives message (ok)
+  37: Message (ok) from P.2 reaches P.1
+  38: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 39: P.1: ok = P ! ok
+  39: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 40: Message (ok) from P.1 reaches P
- 41: P: receives message (ok)
+  40: Message (ok) from P.1 reaches P
+  41: P: receives message (ok)
     in depend_4_screen.erl line 44
- 42: P: [{x,2}] = ets:lookup(table, x)
+  42: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 43: P: [{p4,2}] = ets:lookup(table, p4)
+  43: P: [{p4,2}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 45: P: exits abnormally
- 46: P: true = ets:delete(table)
+  45: P: exits abnormally
+  46: P: true = ets:delete(table)
     (while exiting)
- 47: P.1: exits normally
- 48: P.2: exits normally
- 49: P.3: exits normally
- 50: P.4: exits normally
- 51: P.5: exits normally
+  47: P.1: exits normally
+  48: P.2: exits normally
+  49: P.3: exits normally
+  50: P.4: exits normally
+  51: P.5: exits normally
 ################################################################################
 Erroneous interleaving 21:
 * At step 46 process P exited abnormally
@@ -2082,96 +2083,96 @@ Erroneous interleaving 21:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.2: true = ets:insert(table, {x,1})
+  12: Message (ok) from P reaches P.6
+  13: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 14: P.4: [{x,1}] = ets:lookup(table, x)
+  14: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 15: P.6: true = ets:insert(table, {x,2})
+  15: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 16: P.6: receives message (ok)
+  16: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 17: P.6: ok = P.5 ! ok
+  17: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 18: Message (ok) from P.6 reaches P.5
- 19: P.6: exits normally
- 20: P.4: [{y,0}] = ets:lookup(table, y)
+  18: Message (ok) from P.6 reaches P.5
+  19: P.6: exits normally
+  20: P.4: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 21: P.3: true = ets:insert(table, {y,1})
+  21: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 22: P.4: true = ets:insert(table, {p4,[49,48]})
+  22: P.4: true = ets:insert(table, {p4,[49,48]})
     in depend_4_screen.erl line 29
- 23: P.5: [{y,1}] = ets:lookup(table, y)
+  23: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 24: P.5: [{z,0}] = ets:lookup(table, z)
+  24: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 25: P.1: true = ets:insert(table, {z,1})
+  25: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 26: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  26: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 27: P.5: receives message (ok)
+  27: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 28: P.5: ok = P.4 ! ok
+  28: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 29: Message (ok) from P.5 reaches P.4
- 30: P.4: receives message (ok)
+  29: Message (ok) from P.5 reaches P.4
+  30: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.4: ok = P.3 ! ok
+  31: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.4 reaches P.3
- 33: P.3: receives message (ok)
+  32: Message (ok) from P.4 reaches P.3
+  33: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.3: ok = P.2 ! ok
+  34: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.3 reaches P.2
- 36: P.2: receives message (ok)
+  35: Message (ok) from P.3 reaches P.2
+  36: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.2: ok = P.1 ! ok
+  37: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.2 reaches P.1
- 39: P.1: receives message (ok)
+  38: Message (ok) from P.2 reaches P.1
+  39: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 40: P.1: ok = P ! ok
+  40: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 41: Message (ok) from P.1 reaches P
- 42: P: receives message (ok)
+  41: Message (ok) from P.1 reaches P
+  42: P: receives message (ok)
     in depend_4_screen.erl line 44
- 43: P: [{x,2}] = ets:lookup(table, x)
+  43: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
+  44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 45: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  45: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 46: P: exits abnormally
- 47: P: true = ets:delete(table)
+  46: P: exits abnormally
+  47: P: true = ets:delete(table)
     (while exiting)
- 48: P.1: exits normally
- 49: P.2: exits normally
- 50: P.3: exits normally
- 51: P.4: exits normally
- 52: P.5: exits normally
+  48: P.1: exits normally
+  49: P.2: exits normally
+  50: P.3: exits normally
+  51: P.4: exits normally
+  52: P.5: exits normally
 ################################################################################
 Erroneous interleaving 22:
 * At step 47 process P exited abnormally
@@ -2186,96 +2187,96 @@ Erroneous interleaving 22:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.2: true = ets:insert(table, {x,1})
+  12: Message (ok) from P reaches P.6
+  13: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 14: P.4: [{x,1}] = ets:lookup(table, x)
+  14: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 15: P.6: true = ets:insert(table, {x,2})
+  15: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 16: P.6: receives message (ok)
+  16: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 17: P.6: ok = P.5 ! ok
+  17: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 18: Message (ok) from P.6 reaches P.5
- 19: P.6: exits normally
- 20: P.5: [{y,0}] = ets:lookup(table, y)
+  18: Message (ok) from P.6 reaches P.5
+  19: P.6: exits normally
+  20: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 21: P.5: true = ets:insert(table, {p5,[48]})
+  21: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 22: P.5: receives message (ok)
+  22: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 23: P.5: ok = P.4 ! ok
+  23: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 24: Message (ok) from P.5 reaches P.4
- 25: P.5: exits normally
- 26: P.3: true = ets:insert(table, {y,1})
+  24: Message (ok) from P.5 reaches P.4
+  25: P.5: exits normally
+  26: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 27: P.4: [{y,1}] = ets:lookup(table, y)
+  27: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 28: P.4: [{z,0}] = ets:lookup(table, z)
+  28: P.4: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 29: P.1: true = ets:insert(table, {z,1})
+  29: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 30: P.4: true = ets:insert(table, {p4,[{z,0}]})
+  30: P.4: true = ets:insert(table, {p4,[{z,0}]})
     in depend_4_screen.erl line 29
- 31: P.4: receives message (ok)
+  31: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.4: ok = P.3 ! ok
+  32: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.4 reaches P.3
- 34: P.3: receives message (ok)
+  33: Message (ok) from P.4 reaches P.3
+  34: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.3: ok = P.2 ! ok
+  35: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.3 reaches P.2
- 37: P.2: receives message (ok)
+  36: Message (ok) from P.3 reaches P.2
+  37: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.2: ok = P.1 ! ok
+  38: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.2 reaches P.1
- 40: P.1: receives message (ok)
+  39: Message (ok) from P.2 reaches P.1
+  40: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 41: P.1: ok = P ! ok
+  41: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 42: Message (ok) from P.1 reaches P
- 43: P: receives message (ok)
+  42: Message (ok) from P.1 reaches P
+  43: P: receives message (ok)
     in depend_4_screen.erl line 44
- 44: P: [{x,2}] = ets:lookup(table, x)
+  44: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
+  45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 46: P: [{p5,[48]}] = ets:lookup(table, p5)
+  46: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 47: P: exits abnormally
- 48: P: true = ets:delete(table)
+  47: P: exits abnormally
+  48: P: true = ets:delete(table)
     (while exiting)
- 49: P.1: exits normally
- 50: P.2: exits normally
- 51: P.3: exits normally
- 52: P.4: exits normally
+  49: P.1: exits normally
+  50: P.2: exits normally
+  51: P.3: exits normally
+  52: P.4: exits normally
 ################################################################################
 Erroneous interleaving 23:
 * At step 45 process P exited abnormally
@@ -2290,94 +2291,94 @@ Erroneous interleaving 23:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.3: true = ets:insert(table, {y,1})
+  12: Message (ok) from P reaches P.6
+  13: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 14: P.5: [{y,1}] = ets:lookup(table, y)
+  14: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.4: [{x,0}] = ets:lookup(table, x)
+  15: P.4: [{x,0}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 16: P.2: true = ets:insert(table, {x,1})
+  16: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 17: P.4: true = ets:insert(table, {p4,0})
+  17: P.4: true = ets:insert(table, {p4,0})
     in depend_4_screen.erl line 29
- 18: P.6: true = ets:insert(table, {x,2})
+  18: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.6: exits normally
- 23: P.5: [{z,0}] = ets:lookup(table, z)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.6: exits normally
+  23: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 24: P.1: true = ets:insert(table, {z,1})
+  24: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 25: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  25: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 26: P.5: receives message (ok)
+  26: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 27: P.5: ok = P.4 ! ok
+  27: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 28: Message (ok) from P.5 reaches P.4
- 29: P.4: receives message (ok)
+  28: Message (ok) from P.5 reaches P.4
+  29: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 30: P.4: ok = P.3 ! ok
+  30: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 31: Message (ok) from P.4 reaches P.3
- 32: P.3: receives message (ok)
+  31: Message (ok) from P.4 reaches P.3
+  32: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 33: P.3: ok = P.2 ! ok
+  33: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 34: Message (ok) from P.3 reaches P.2
- 35: P.2: receives message (ok)
+  34: Message (ok) from P.3 reaches P.2
+  35: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 36: P.2: ok = P.1 ! ok
+  36: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 37: Message (ok) from P.2 reaches P.1
- 38: P.1: receives message (ok)
+  37: Message (ok) from P.2 reaches P.1
+  38: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 39: P.1: ok = P ! ok
+  39: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 40: Message (ok) from P.1 reaches P
- 41: P: receives message (ok)
+  40: Message (ok) from P.1 reaches P
+  41: P: receives message (ok)
     in depend_4_screen.erl line 44
- 42: P: [{x,2}] = ets:lookup(table, x)
+  42: P: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 43: P: [{p4,0}] = ets:lookup(table, p4)
+  43: P: [{p4,0}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 45: P: exits abnormally
- 46: P: true = ets:delete(table)
+  45: P: exits abnormally
+  46: P: true = ets:delete(table)
     (while exiting)
- 47: P.1: exits normally
- 48: P.2: exits normally
- 49: P.3: exits normally
- 50: P.4: exits normally
- 51: P.5: exits normally
+  47: P.1: exits normally
+  48: P.2: exits normally
+  49: P.3: exits normally
+  50: P.4: exits normally
+  51: P.5: exits normally
 ################################################################################
 Erroneous interleaving 24:
 * At step 45 process P exited abnormally
@@ -2392,94 +2393,94 @@ Erroneous interleaving 24:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.3: true = ets:insert(table, {y,1})
+  12: Message (ok) from P reaches P.6
+  13: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 14: P.5: [{y,1}] = ets:lookup(table, y)
+  14: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.4: [{x,0}] = ets:lookup(table, x)
+  15: P.4: [{x,0}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 16: P.4: true = ets:insert(table, {p4,0})
+  16: P.4: true = ets:insert(table, {p4,0})
     in depend_4_screen.erl line 29
- 17: P.6: true = ets:insert(table, {x,2})
+  17: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 18: P.2: true = ets:insert(table, {x,1})
+  18: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.6: exits normally
- 23: P.5: [{z,0}] = ets:lookup(table, z)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.6: exits normally
+  23: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 24: P.1: true = ets:insert(table, {z,1})
+  24: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 25: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  25: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 26: P.5: receives message (ok)
+  26: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 27: P.5: ok = P.4 ! ok
+  27: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 28: Message (ok) from P.5 reaches P.4
- 29: P.4: receives message (ok)
+  28: Message (ok) from P.5 reaches P.4
+  29: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 30: P.4: ok = P.3 ! ok
+  30: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 31: Message (ok) from P.4 reaches P.3
- 32: P.3: receives message (ok)
+  31: Message (ok) from P.4 reaches P.3
+  32: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 33: P.3: ok = P.2 ! ok
+  33: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 34: Message (ok) from P.3 reaches P.2
- 35: P.2: receives message (ok)
+  34: Message (ok) from P.3 reaches P.2
+  35: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 36: P.2: ok = P.1 ! ok
+  36: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 37: Message (ok) from P.2 reaches P.1
- 38: P.1: receives message (ok)
+  37: Message (ok) from P.2 reaches P.1
+  38: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 39: P.1: ok = P ! ok
+  39: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 40: Message (ok) from P.1 reaches P
- 41: P: receives message (ok)
+  40: Message (ok) from P.1 reaches P
+  41: P: receives message (ok)
     in depend_4_screen.erl line 44
- 42: P: [{x,1}] = ets:lookup(table, x)
+  42: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 43: P: [{p4,0}] = ets:lookup(table, p4)
+  43: P: [{p4,0}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 45: P: exits abnormally
- 46: P: true = ets:delete(table)
+  45: P: exits abnormally
+  46: P: true = ets:delete(table)
     (while exiting)
- 47: P.1: exits normally
- 48: P.2: exits normally
- 49: P.3: exits normally
- 50: P.4: exits normally
- 51: P.5: exits normally
+  47: P.1: exits normally
+  48: P.2: exits normally
+  49: P.3: exits normally
+  50: P.4: exits normally
+  51: P.5: exits normally
 ################################################################################
 Erroneous interleaving 25:
 * At step 47 process P exited abnormally
@@ -2494,98 +2495,98 @@ Erroneous interleaving 25:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.3: true = ets:insert(table, {y,1})
+  12: Message (ok) from P reaches P.6
+  13: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 14: P.5: [{y,1}] = ets:lookup(table, y)
+  14: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.6: true = ets:insert(table, {x,2})
+  15: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 16: P.2: true = ets:insert(table, {x,1})
+  16: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 17: P.4: [{x,1}] = ets:lookup(table, x)
+  17: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 18: P.4: [{y,1}] = ets:lookup(table, y)
+  18: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.6: exits normally
- 23: P.5: [{z,0}] = ets:lookup(table, z)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.6: exits normally
+  23: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 24: P.1: true = ets:insert(table, {z,1})
+  24: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 25: P.4: [{z,1}] = ets:lookup(table, z)
+  25: P.4: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 26: P.4: true = ets:insert(table, {p4,[{z,1}]})
+  26: P.4: true = ets:insert(table, {p4,[{z,1}]})
     in depend_4_screen.erl line 29
- 27: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  27: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 28: P.5: receives message (ok)
+  28: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 29: P.5: ok = P.4 ! ok
+  29: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 30: Message (ok) from P.5 reaches P.4
- 31: P.4: receives message (ok)
+  30: Message (ok) from P.5 reaches P.4
+  31: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.4: ok = P.3 ! ok
+  32: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.4 reaches P.3
- 34: P.3: receives message (ok)
+  33: Message (ok) from P.4 reaches P.3
+  34: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.3: ok = P.2 ! ok
+  35: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.3 reaches P.2
- 37: P.2: receives message (ok)
+  36: Message (ok) from P.3 reaches P.2
+  37: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.2: ok = P.1 ! ok
+  38: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.2 reaches P.1
- 40: P.1: receives message (ok)
+  39: Message (ok) from P.2 reaches P.1
+  40: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 41: P.1: ok = P ! ok
+  41: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 42: Message (ok) from P.1 reaches P
- 43: P: receives message (ok)
+  42: Message (ok) from P.1 reaches P
+  43: P: receives message (ok)
     in depend_4_screen.erl line 44
- 44: P: [{x,1}] = ets:lookup(table, x)
+  44: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 45: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
+  45: P: [{p4,[{z,1}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 46: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  46: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 47: P: exits abnormally
- 48: P: true = ets:delete(table)
+  47: P: exits abnormally
+  48: P: true = ets:delete(table)
     (while exiting)
- 49: P.1: exits normally
- 50: P.2: exits normally
- 51: P.3: exits normally
- 52: P.4: exits normally
- 53: P.5: exits normally
+  49: P.1: exits normally
+  50: P.2: exits normally
+  51: P.3: exits normally
+  52: P.4: exits normally
+  53: P.5: exits normally
 ################################################################################
 Erroneous interleaving 26:
 * At step 48 process P exited abnormally
@@ -2600,98 +2601,98 @@ Erroneous interleaving 26:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.3: true = ets:insert(table, {y,1})
+  12: Message (ok) from P reaches P.6
+  13: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 14: P.5: [{y,1}] = ets:lookup(table, y)
+  14: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.6: true = ets:insert(table, {x,2})
+  15: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 16: P.2: true = ets:insert(table, {x,1})
+  16: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 17: P.4: [{x,1}] = ets:lookup(table, x)
+  17: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 18: P.4: [{y,1}] = ets:lookup(table, y)
+  18: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.6: exits normally
- 23: P.5: [{z,0}] = ets:lookup(table, z)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.6: exits normally
+  23: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 24: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  24: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 25: P.5: receives message (ok)
+  25: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 26: P.5: ok = P.4 ! ok
+  26: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 27: Message (ok) from P.5 reaches P.4
- 28: P.5: exits normally
- 29: P.4: [{z,0}] = ets:lookup(table, z)
+  27: Message (ok) from P.5 reaches P.4
+  28: P.5: exits normally
+  29: P.4: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 30: P.1: true = ets:insert(table, {z,1})
+  30: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 31: P.4: true = ets:insert(table, {p4,[{z,0}]})
+  31: P.4: true = ets:insert(table, {p4,[{z,0}]})
     in depend_4_screen.erl line 29
- 32: P.4: receives message (ok)
+  32: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 33: P.4: ok = P.3 ! ok
+  33: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 34: Message (ok) from P.4 reaches P.3
- 35: P.3: receives message (ok)
+  34: Message (ok) from P.4 reaches P.3
+  35: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 36: P.3: ok = P.2 ! ok
+  36: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 37: Message (ok) from P.3 reaches P.2
- 38: P.2: receives message (ok)
+  37: Message (ok) from P.3 reaches P.2
+  38: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 39: P.2: ok = P.1 ! ok
+  39: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 40: Message (ok) from P.2 reaches P.1
- 41: P.1: receives message (ok)
+  40: Message (ok) from P.2 reaches P.1
+  41: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 42: P.1: ok = P ! ok
+  42: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 43: Message (ok) from P.1 reaches P
- 44: P: receives message (ok)
+  43: Message (ok) from P.1 reaches P
+  44: P: receives message (ok)
     in depend_4_screen.erl line 44
- 45: P: [{x,1}] = ets:lookup(table, x)
+  45: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 46: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
+  46: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 47: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  47: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 48: P: exits abnormally
- 49: P: true = ets:delete(table)
+  48: P: exits abnormally
+  49: P: true = ets:delete(table)
     (while exiting)
- 50: P.1: exits normally
- 51: P.2: exits normally
- 52: P.3: exits normally
- 53: P.4: exits normally
+  50: P.1: exits normally
+  51: P.2: exits normally
+  52: P.3: exits normally
+  53: P.4: exits normally
 ################################################################################
 Erroneous interleaving 27:
 * At step 47 process P exited abnormally
@@ -2706,98 +2707,98 @@ Erroneous interleaving 27:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.3: true = ets:insert(table, {y,1})
+  12: Message (ok) from P reaches P.6
+  13: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 14: P.5: [{y,1}] = ets:lookup(table, y)
+  14: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.6: true = ets:insert(table, {x,2})
+  15: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 16: P.2: true = ets:insert(table, {x,1})
+  16: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 17: P.4: [{x,1}] = ets:lookup(table, x)
+  17: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 18: P.4: [{y,1}] = ets:lookup(table, y)
+  18: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 19: P.6: receives message (ok)
+  19: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 20: P.6: ok = P.5 ! ok
+  20: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 21: Message (ok) from P.6 reaches P.5
- 22: P.6: exits normally
- 23: P.4: [{z,0}] = ets:lookup(table, z)
+  21: Message (ok) from P.6 reaches P.5
+  22: P.6: exits normally
+  23: P.4: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 24: P.4: true = ets:insert(table, {p4,[{z,0}]})
+  24: P.4: true = ets:insert(table, {p4,[{z,0}]})
     in depend_4_screen.erl line 29
- 25: P.1: true = ets:insert(table, {z,1})
+  25: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 26: P.5: [{z,1}] = ets:lookup(table, z)
+  26: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 27: P.5: true = ets:insert(table, {p5,[{z,1}]})
+  27: P.5: true = ets:insert(table, {p5,[{z,1}]})
     in depend_4_screen.erl line 39
- 28: P.5: receives message (ok)
+  28: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 29: P.5: ok = P.4 ! ok
+  29: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 30: Message (ok) from P.5 reaches P.4
- 31: P.4: receives message (ok)
+  30: Message (ok) from P.5 reaches P.4
+  31: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.4: ok = P.3 ! ok
+  32: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.4 reaches P.3
- 34: P.3: receives message (ok)
+  33: Message (ok) from P.4 reaches P.3
+  34: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.3: ok = P.2 ! ok
+  35: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.3 reaches P.2
- 37: P.2: receives message (ok)
+  36: Message (ok) from P.3 reaches P.2
+  37: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.2: ok = P.1 ! ok
+  38: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.2 reaches P.1
- 40: P.1: receives message (ok)
+  39: Message (ok) from P.2 reaches P.1
+  40: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 41: P.1: ok = P ! ok
+  41: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 42: Message (ok) from P.1 reaches P
- 43: P: receives message (ok)
+  42: Message (ok) from P.1 reaches P
+  43: P: receives message (ok)
     in depend_4_screen.erl line 44
- 44: P: [{x,1}] = ets:lookup(table, x)
+  44: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
+  45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 46: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
+  46: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 47: P: exits abnormally
- 48: P: true = ets:delete(table)
+  47: P: exits abnormally
+  48: P: true = ets:delete(table)
     (while exiting)
- 49: P.1: exits normally
- 50: P.2: exits normally
- 51: P.3: exits normally
- 52: P.4: exits normally
- 53: P.5: exits normally
+  49: P.1: exits normally
+  50: P.2: exits normally
+  51: P.3: exits normally
+  52: P.4: exits normally
+  53: P.5: exits normally
 ################################################################################
 Erroneous interleaving 28:
 * At step 45 process P exited abnormally
@@ -2812,94 +2813,94 @@ Erroneous interleaving 28:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.3: true = ets:insert(table, {y,1})
+  12: Message (ok) from P reaches P.6
+  13: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 14: P.5: [{y,1}] = ets:lookup(table, y)
+  14: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 15: P.6: true = ets:insert(table, {x,2})
+  15: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 16: P.6: receives message (ok)
+  16: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 17: P.6: ok = P.5 ! ok
+  17: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 18: Message (ok) from P.6 reaches P.5
- 19: P.6: exits normally
- 20: P.4: [{x,2}] = ets:lookup(table, x)
+  18: Message (ok) from P.6 reaches P.5
+  19: P.6: exits normally
+  20: P.4: [{x,2}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 21: P.2: true = ets:insert(table, {x,1})
+  21: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 22: P.4: true = ets:insert(table, {p4,2})
+  22: P.4: true = ets:insert(table, {p4,2})
     in depend_4_screen.erl line 29
- 23: P.5: [{z,0}] = ets:lookup(table, z)
+  23: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 24: P.1: true = ets:insert(table, {z,1})
+  24: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 25: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  25: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 26: P.5: receives message (ok)
+  26: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 27: P.5: ok = P.4 ! ok
+  27: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 28: Message (ok) from P.5 reaches P.4
- 29: P.4: receives message (ok)
+  28: Message (ok) from P.5 reaches P.4
+  29: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 30: P.4: ok = P.3 ! ok
+  30: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 31: Message (ok) from P.4 reaches P.3
- 32: P.3: receives message (ok)
+  31: Message (ok) from P.4 reaches P.3
+  32: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 33: P.3: ok = P.2 ! ok
+  33: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 34: Message (ok) from P.3 reaches P.2
- 35: P.2: receives message (ok)
+  34: Message (ok) from P.3 reaches P.2
+  35: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 36: P.2: ok = P.1 ! ok
+  36: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 37: Message (ok) from P.2 reaches P.1
- 38: P.1: receives message (ok)
+  37: Message (ok) from P.2 reaches P.1
+  38: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 39: P.1: ok = P ! ok
+  39: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 40: Message (ok) from P.1 reaches P
- 41: P: receives message (ok)
+  40: Message (ok) from P.1 reaches P
+  41: P: receives message (ok)
     in depend_4_screen.erl line 44
- 42: P: [{x,1}] = ets:lookup(table, x)
+  42: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 43: P: [{p4,2}] = ets:lookup(table, p4)
+  43: P: [{p4,2}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 45: P: exits abnormally
- 46: P: true = ets:delete(table)
+  45: P: exits abnormally
+  46: P: true = ets:delete(table)
     (while exiting)
- 47: P.1: exits normally
- 48: P.2: exits normally
- 49: P.3: exits normally
- 50: P.4: exits normally
- 51: P.5: exits normally
+  47: P.1: exits normally
+  48: P.2: exits normally
+  49: P.3: exits normally
+  50: P.4: exits normally
+  51: P.5: exits normally
 ################################################################################
 Erroneous interleaving 29:
 * At step 47 process P exited abnormally
@@ -2914,96 +2915,96 @@ Erroneous interleaving 29:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.5: [{y,0}] = ets:lookup(table, y)
+  12: Message (ok) from P reaches P.6
+  13: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 14: P.5: true = ets:insert(table, {p5,[48]})
+  14: P.5: true = ets:insert(table, {p5,[48]})
     in depend_4_screen.erl line 39
- 15: P.6: true = ets:insert(table, {x,2})
+  15: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 16: P.2: true = ets:insert(table, {x,1})
+  16: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 17: P.3: true = ets:insert(table, {y,1})
+  17: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 18: P.4: [{x,1}] = ets:lookup(table, x)
+  18: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 19: P.4: [{y,1}] = ets:lookup(table, y)
+  19: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 20: P.6: receives message (ok)
+  20: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 21: P.6: ok = P.5 ! ok
+  21: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 22: Message (ok) from P.6 reaches P.5
- 23: P.5: receives message (ok)
+  22: Message (ok) from P.6 reaches P.5
+  23: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 24: P.5: ok = P.4 ! ok
+  24: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 25: Message (ok) from P.5 reaches P.4
- 26: P.5: exits normally
- 27: P.6: exits normally
- 28: P.4: [{z,0}] = ets:lookup(table, z)
+  25: Message (ok) from P.5 reaches P.4
+  26: P.5: exits normally
+  27: P.6: exits normally
+  28: P.4: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 24
- 29: P.1: true = ets:insert(table, {z,1})
+  29: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 30: P.4: true = ets:insert(table, {p4,[{z,0}]})
+  30: P.4: true = ets:insert(table, {p4,[{z,0}]})
     in depend_4_screen.erl line 29
- 31: P.4: receives message (ok)
+  31: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 32: P.4: ok = P.3 ! ok
+  32: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 33: Message (ok) from P.4 reaches P.3
- 34: P.3: receives message (ok)
+  33: Message (ok) from P.4 reaches P.3
+  34: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 35: P.3: ok = P.2 ! ok
+  35: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 36: Message (ok) from P.3 reaches P.2
- 37: P.2: receives message (ok)
+  36: Message (ok) from P.3 reaches P.2
+  37: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 38: P.2: ok = P.1 ! ok
+  38: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 39: Message (ok) from P.2 reaches P.1
- 40: P.1: receives message (ok)
+  39: Message (ok) from P.2 reaches P.1
+  40: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 41: P.1: ok = P ! ok
+  41: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 42: Message (ok) from P.1 reaches P
- 43: P: receives message (ok)
+  42: Message (ok) from P.1 reaches P
+  43: P: receives message (ok)
     in depend_4_screen.erl line 44
- 44: P: [{x,1}] = ets:lookup(table, x)
+  44: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
+  45: P: [{p4,[{z,0}]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 46: P: [{p5,[48]}] = ets:lookup(table, p5)
+  46: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 47: P: exits abnormally
- 48: P: true = ets:delete(table)
+  47: P: exits abnormally
+  48: P: true = ets:delete(table)
     (while exiting)
- 49: P.1: exits normally
- 50: P.2: exits normally
- 51: P.3: exits normally
- 52: P.4: exits normally
+  49: P.1: exits normally
+  50: P.2: exits normally
+  51: P.3: exits normally
+  52: P.4: exits normally
 ################################################################################
 Erroneous interleaving 30:
 * At step 46 process P exited abnormally
@@ -3018,96 +3019,96 @@ Erroneous interleaving 30:
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_4_screen.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_4_screen.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_4_screen.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.19794970>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.19794970>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.19794970>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.19794970>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.19794970>,[]])
-    in erlang.erl line 2188
- 10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.19794970>,[]])
-    in erlang.erl line 2188
- 11: P: ok = P.6 ! ok
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+    in erlang.erl line 2329
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+    in erlang.erl line 2329
+  11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
- 12: Message (ok) from P reaches P.6
- 13: P.6: true = ets:insert(table, {x,2})
+  12: Message (ok) from P reaches P.6
+  13: P.6: true = ets:insert(table, {x,2})
     in depend_4_screen.erl line 42
- 14: P.2: true = ets:insert(table, {x,1})
+  14: P.2: true = ets:insert(table, {x,1})
     in depend_4_screen.erl line 15
- 15: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 18
- 16: P.6: receives message (ok)
+  16: P.6: receives message (ok)
     in depend_4_screen.erl line 53
- 17: P.6: ok = P.5 ! ok
+  17: P.6: ok = P.5 ! ok
     in depend_4_screen.erl line 54
- 18: Message (ok) from P.6 reaches P.5
- 19: P.6: exits normally
- 20: P.4: [{y,0}] = ets:lookup(table, y)
+  18: Message (ok) from P.6 reaches P.5
+  19: P.6: exits normally
+  20: P.4: [{y,0}] = ets:lookup(table, y)
     in depend_4_screen.erl line 22
- 21: P.4: true = ets:insert(table, {p4,[49,48]})
+  21: P.4: true = ets:insert(table, {p4,[49,48]})
     in depend_4_screen.erl line 29
- 22: P.3: true = ets:insert(table, {y,1})
+  22: P.3: true = ets:insert(table, {y,1})
     in depend_4_screen.erl line 16
- 23: P.5: [{y,1}] = ets:lookup(table, y)
+  23: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_4_screen.erl line 33
- 24: P.5: [{z,0}] = ets:lookup(table, z)
+  24: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_4_screen.erl line 36
- 25: P.1: true = ets:insert(table, {z,1})
+  25: P.1: true = ets:insert(table, {z,1})
     in depend_4_screen.erl line 14
- 26: P.5: true = ets:insert(table, {p5,[{z,0}]})
+  26: P.5: true = ets:insert(table, {p5,[{z,0}]})
     in depend_4_screen.erl line 39
- 27: P.5: receives message (ok)
+  27: P.5: receives message (ok)
     in depend_4_screen.erl line 53
- 28: P.5: ok = P.4 ! ok
+  28: P.5: ok = P.4 ! ok
     in depend_4_screen.erl line 54
- 29: Message (ok) from P.5 reaches P.4
- 30: P.4: receives message (ok)
+  29: Message (ok) from P.5 reaches P.4
+  30: P.4: receives message (ok)
     in depend_4_screen.erl line 53
- 31: P.4: ok = P.3 ! ok
+  31: P.4: ok = P.3 ! ok
     in depend_4_screen.erl line 54
- 32: Message (ok) from P.4 reaches P.3
- 33: P.3: receives message (ok)
+  32: Message (ok) from P.4 reaches P.3
+  33: P.3: receives message (ok)
     in depend_4_screen.erl line 53
- 34: P.3: ok = P.2 ! ok
+  34: P.3: ok = P.2 ! ok
     in depend_4_screen.erl line 54
- 35: Message (ok) from P.3 reaches P.2
- 36: P.2: receives message (ok)
+  35: Message (ok) from P.3 reaches P.2
+  36: P.2: receives message (ok)
     in depend_4_screen.erl line 53
- 37: P.2: ok = P.1 ! ok
+  37: P.2: ok = P.1 ! ok
     in depend_4_screen.erl line 54
- 38: Message (ok) from P.2 reaches P.1
- 39: P.1: receives message (ok)
+  38: Message (ok) from P.2 reaches P.1
+  39: P.1: receives message (ok)
     in depend_4_screen.erl line 53
- 40: P.1: ok = P ! ok
+  40: P.1: ok = P ! ok
     in depend_4_screen.erl line 54
- 41: Message (ok) from P.1 reaches P
- 42: P: receives message (ok)
+  41: Message (ok) from P.1 reaches P
+  42: P: receives message (ok)
     in depend_4_screen.erl line 44
- 43: P: [{x,1}] = ets:lookup(table, x)
+  43: P: [{x,1}] = ets:lookup(table, x)
     in depend_4_screen.erl line 46
- 44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
+  44: P: [{p4,[49,48]}] = ets:lookup(table, p4)
     in depend_4_screen.erl line 47
- 45: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
+  45: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
- 46: P: exits abnormally
- 47: P: true = ets:delete(table)
+  46: P: exits abnormally
+  47: P: true = ets:delete(table)
     (while exiting)
- 48: P.1: exits normally
- 49: P.2: exits normally
- 50: P.3: exits normally
- 51: P.4: exits normally
- 52: P.5: exits normally
+  48: P.1: exits normally
+  49: P.2: exits normally
+  50: P.3: exits normally
+  51: P.4: exits normally
+  52: P.5: exits normally
 ################################################################################
 Done! (Exit status: ok)
   Summary: 30 errors, 30/30 interleavings explored

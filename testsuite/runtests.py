@@ -117,44 +117,12 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     lock.release()
 
 
-def equalResults(f1, f2):
-    try:
-        fp1 = open(f1, 'r')
-    except IOError:
-        return False
-    try:
-        fp2 = open(f2, 'r')
-    except IOError:
-        fp1.close()
-        return False
-    while True:
-        l1 = fp1.readline()
-        l2 = fp2.readline()
-        if (l1 != l2) and (not ignoreLine(l1)):
-            fp1.close()
-            fp2.close()
-            return False
-        if not l1:
-            fp1.close()
-            fp2.close()
-            return True
-
-
-def ignoreLine(line):
-    global ignore_matches
-    for match in ignore_matches:
-        if re.search(match, line):
-            return True
-    return False
+def equalResults(orig, rslt):
+    return ((0 == subprocess.call("bash differ %s %s" % (orig, rslt), shell=True)) and
+            (0 != subprocess.call("bash sleep %s" % (rslt), shell=True)))
 
 #---------------------------------------------------------------------
 # Main program
-
-# Compile some regular expressions
-match_pids = re.compile("<\d+\.\d+\.\d+>")
-match_refs = re.compile("#Ref<[\d\.]+>")
-#match_file = re.compile("suites/.+/src/.*\.erl")
-ignore_matches = [match_pids, match_refs]
 
 # Get the directory of Concuerror's testsuite
 dirname = os.path.abspath(os.path.dirname(sys.argv[0]))

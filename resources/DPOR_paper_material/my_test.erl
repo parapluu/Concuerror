@@ -8,7 +8,7 @@ test(large) ->
     foobar_test().
 
 foo_test() ->
-    dialyzer:run([{files, ["/home/stavros/git/Concuerror/foo.erl"]}, {from, src_code}]).
+    dialyzer:run([{files, ["/home/stavros/git/Concuerror/resources/DPOR_paper_material/foo.erl"]}, {from, src_code}]).
 
 foobar_test() ->
     dialyzer:run([{files, ["/home/stavros/git/Concuerror/foobar.erl"]}, {from, src_code}]).

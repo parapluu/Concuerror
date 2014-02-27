@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+diff \
+     <(grep -q -B1 "  Summary" $1 || echo empty1) \
+     <(grep -q -B1 "  Summary" $2 || echo empty2) \
+    > /dev/null

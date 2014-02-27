@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{target,{depend_1,depend_1,[]}},
    {symbolic,true},
+   {verbose,0},
    {timeout,1000},
    {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_1.erl"]},
    {'after-timeout',infinite},
@@ -14,514 +15,514 @@ Erroneous interleaving 1:
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {z,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 11: P.1: exits normally
- 12: P.2: true = ets:insert(table, {x,1})
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 13: P.2: exits normally
- 14: P.3: true = ets:insert(table, {y,1})
+  13: P.2: exits normally
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 15: P.3: exits normally
- 16: P.4: [{x,1}] = ets:lookup(table, x)
+  15: P.3: exits normally
+  16: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 17: P.4: [{y,1}] = ets:lookup(table, y)
+  17: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 20
- 18: P.4: [{z,1}] = ets:lookup(table, z)
+  18: P.4: [{z,1}] = ets:lookup(table, z)
     in depend_1.erl line 22
- 19: P.4: exits normally
- 20: P.5: [{y,1}] = ets:lookup(table, y)
+  19: P.4: exits normally
+  20: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 21: P.5: [{z,1}] = ets:lookup(table, z)
+  21: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_1.erl line 31
- 22: P.5: exits normally
+  22: P.5: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {z,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 11: P.1: exits normally
- 12: P.2: true = ets:insert(table, {x,1})
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 13: P.2: exits normally
- 14: P.4: [{x,1}] = ets:lookup(table, x)
+  13: P.2: exits normally
+  14: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 15: P.4: [{y,0}] = ets:lookup(table, y)
+  15: P.4: [{y,0}] = ets:lookup(table, y)
     in depend_1.erl line 20
- 16: P.3: true = ets:insert(table, {y,1})
+  16: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 17: P.3: exits normally
- 18: P.4: exits normally
- 19: P.5: [{y,1}] = ets:lookup(table, y)
+  17: P.3: exits normally
+  18: P.4: exits normally
+  19: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 20: P.5: [{z,1}] = ets:lookup(table, z)
+  20: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_1.erl line 31
- 21: P.5: exits normally
+  21: P.5: exits normally
 ################################################################################
 Erroneous interleaving 3:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {z,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 11: P.1: exits normally
- 12: P.2: true = ets:insert(table, {x,1})
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 13: P.2: exits normally
- 14: P.4: [{x,1}] = ets:lookup(table, x)
+  13: P.2: exits normally
+  14: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 15: P.4: [{y,0}] = ets:lookup(table, y)
+  15: P.4: [{y,0}] = ets:lookup(table, y)
     in depend_1.erl line 20
- 16: P.4: exits normally
- 17: P.5: [{y,0}] = ets:lookup(table, y)
+  16: P.4: exits normally
+  17: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 18: P.3: true = ets:insert(table, {y,1})
+  18: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 19: P.3: exits normally
- 20: P.5: exits normally
+  19: P.3: exits normally
+  20: P.5: exits normally
 ################################################################################
 Erroneous interleaving 4:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {z,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 11: P.1: exits normally
- 12: P.2: true = ets:insert(table, {x,1})
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 13: P.2: exits normally
- 14: P.4: [{x,1}] = ets:lookup(table, x)
+  13: P.2: exits normally
+  14: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 15: P.5: [{y,0}] = ets:lookup(table, y)
+  15: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 16: P.5: exits normally
- 17: P.3: true = ets:insert(table, {y,1})
+  16: P.5: exits normally
+  17: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 18: P.3: exits normally
- 19: P.4: [{y,1}] = ets:lookup(table, y)
+  18: P.3: exits normally
+  19: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 20
- 20: P.4: [{z,1}] = ets:lookup(table, z)
+  20: P.4: [{z,1}] = ets:lookup(table, z)
     in depend_1.erl line 22
- 21: P.4: exits normally
+  21: P.4: exits normally
 ################################################################################
 Erroneous interleaving 5:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {z,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 11: P.1: exits normally
- 12: P.3: true = ets:insert(table, {y,1})
+  11: P.1: exits normally
+  12: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 13: P.3: exits normally
- 14: P.5: [{y,1}] = ets:lookup(table, y)
+  13: P.3: exits normally
+  14: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 15: P.5: [{z,1}] = ets:lookup(table, z)
+  15: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_1.erl line 31
- 16: P.5: exits normally
- 17: P.4: [{x,0}] = ets:lookup(table, x)
+  16: P.5: exits normally
+  17: P.4: [{x,0}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 18: P.2: true = ets:insert(table, {x,1})
+  18: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 19: P.2: exits normally
- 20: P.4: exits normally
+  19: P.2: exits normally
+  20: P.4: exits normally
 ################################################################################
 Erroneous interleaving 6:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.1: true = ets:insert(table, {z,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 11: P.1: exits normally
- 12: P.5: [{y,0}] = ets:lookup(table, y)
+  11: P.1: exits normally
+  12: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 13: P.5: exits normally
- 14: P.4: [{x,0}] = ets:lookup(table, x)
+  13: P.5: exits normally
+  14: P.4: [{x,0}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 15: P.2: true = ets:insert(table, {x,1})
+  15: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 16: P.2: exits normally
- 17: P.3: true = ets:insert(table, {y,1})
+  16: P.2: exits normally
+  17: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 18: P.3: exits normally
- 19: P.4: exits normally
+  18: P.3: exits normally
+  19: P.4: exits normally
 ################################################################################
 Erroneous interleaving 7:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.2: true = ets:insert(table, {x,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 11: P.2: exits normally
- 12: P.3: true = ets:insert(table, {y,1})
+  11: P.2: exits normally
+  12: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 13: P.3: exits normally
- 14: P.4: [{x,1}] = ets:lookup(table, x)
+  13: P.3: exits normally
+  14: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 15: P.4: [{y,1}] = ets:lookup(table, y)
+  15: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 20
- 16: P.5: [{y,1}] = ets:lookup(table, y)
+  16: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 17: P.4: [{z,0}] = ets:lookup(table, z)
+  17: P.4: [{z,0}] = ets:lookup(table, z)
     in depend_1.erl line 22
- 18: P.1: true = ets:insert(table, {z,1})
+  18: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 19: P.1: exits normally
- 20: P.4: exits normally
- 21: P.5: [{z,1}] = ets:lookup(table, z)
+  19: P.1: exits normally
+  20: P.4: exits normally
+  21: P.5: [{z,1}] = ets:lookup(table, z)
     in depend_1.erl line 31
- 22: P.5: exits normally
+  22: P.5: exits normally
 ################################################################################
 Erroneous interleaving 8:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.2: true = ets:insert(table, {x,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 11: P.2: exits normally
- 12: P.3: true = ets:insert(table, {y,1})
+  11: P.2: exits normally
+  12: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 13: P.3: exits normally
- 14: P.4: [{x,1}] = ets:lookup(table, x)
+  13: P.3: exits normally
+  14: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 15: P.4: [{y,1}] = ets:lookup(table, y)
+  15: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 20
- 16: P.5: [{y,1}] = ets:lookup(table, y)
+  16: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 17: P.4: [{z,0}] = ets:lookup(table, z)
+  17: P.4: [{z,0}] = ets:lookup(table, z)
     in depend_1.erl line 22
- 18: P.4: exits normally
- 19: P.5: [{z,0}] = ets:lookup(table, z)
+  18: P.4: exits normally
+  19: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_1.erl line 31
- 20: P.1: true = ets:insert(table, {z,1})
+  20: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 21: P.1: exits normally
- 22: P.5: exits normally
+  21: P.1: exits normally
+  22: P.5: exits normally
 ################################################################################
 Erroneous interleaving 9:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.2: true = ets:insert(table, {x,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 11: P.2: exits normally
- 12: P.3: true = ets:insert(table, {y,1})
+  11: P.2: exits normally
+  12: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 13: P.3: exits normally
- 14: P.4: [{x,1}] = ets:lookup(table, x)
+  13: P.3: exits normally
+  14: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 15: P.4: [{y,1}] = ets:lookup(table, y)
+  15: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 20
- 16: P.5: [{y,1}] = ets:lookup(table, y)
+  16: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 17: P.5: [{z,0}] = ets:lookup(table, z)
+  17: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_1.erl line 31
- 18: P.5: exits normally
- 19: P.1: true = ets:insert(table, {z,1})
+  18: P.5: exits normally
+  19: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 20: P.1: exits normally
- 21: P.4: [{z,1}] = ets:lookup(table, z)
+  20: P.1: exits normally
+  21: P.4: [{z,1}] = ets:lookup(table, z)
     in depend_1.erl line 22
- 22: P.4: exits normally
+  22: P.4: exits normally
 ################################################################################
 Erroneous interleaving 10:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.2: true = ets:insert(table, {x,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 11: P.2: exits normally
- 12: P.4: [{x,1}] = ets:lookup(table, x)
+  11: P.2: exits normally
+  12: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 13: P.4: [{y,0}] = ets:lookup(table, y)
+  13: P.4: [{y,0}] = ets:lookup(table, y)
     in depend_1.erl line 20
- 14: P.3: true = ets:insert(table, {y,1})
+  14: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 15: P.3: exits normally
- 16: P.4: exits normally
- 17: P.5: [{y,1}] = ets:lookup(table, y)
+  15: P.3: exits normally
+  16: P.4: exits normally
+  17: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 18: P.5: [{z,0}] = ets:lookup(table, z)
+  18: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_1.erl line 31
- 19: P.1: true = ets:insert(table, {z,1})
+  19: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 20: P.1: exits normally
- 21: P.5: exits normally
+  20: P.1: exits normally
+  21: P.5: exits normally
 ################################################################################
 Erroneous interleaving 11:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.2: true = ets:insert(table, {x,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 11: P.2: exits normally
- 12: P.4: [{x,1}] = ets:lookup(table, x)
+  11: P.2: exits normally
+  12: P.4: [{x,1}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 13: P.5: [{y,0}] = ets:lookup(table, y)
+  13: P.5: [{y,0}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 14: P.5: exits normally
- 15: P.3: true = ets:insert(table, {y,1})
+  14: P.5: exits normally
+  15: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 16: P.3: exits normally
- 17: P.4: [{y,1}] = ets:lookup(table, y)
+  16: P.3: exits normally
+  17: P.4: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 20
- 18: P.4: [{z,0}] = ets:lookup(table, z)
+  18: P.4: [{z,0}] = ets:lookup(table, z)
     in depend_1.erl line 22
- 19: P.1: true = ets:insert(table, {z,1})
+  19: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 20: P.1: exits normally
- 21: P.4: exits normally
+  20: P.1: exits normally
+  21: P.4: exits normally
 ################################################################################
 Erroneous interleaving 12:
 * Blocked at a 'receive' (when all other processes have exited):
     P in depend_1.erl line 38
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in depend_1.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in depend_1.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in depend_1.erl line 11
-  4: P: true = ets:insert(table, {z,0})
+   4: P: true = ets:insert(table, {z,0})
     in depend_1.erl line 12
-  5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.60889209>,[]])
-    in erlang.erl line 2188
-  6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.60889209>,[]])
-    in erlang.erl line 2188
-  7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.60889209>,[]])
-    in erlang.erl line 2188
-  8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.60889209>,[]])
-    in erlang.erl line 2188
-  9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.60889209>,[]])
-    in erlang.erl line 2188
- 10: P.3: true = ets:insert(table, {y,1})
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_1.0.98345646>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_1.1.98345646>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_1.2.98345646>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_1.3.98345646>,[]])
+    in erlang.erl line 2329
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_1.4.98345646>,[]])
+    in erlang.erl line 2329
+  10: P.3: true = ets:insert(table, {y,1})
     in depend_1.erl line 15
- 11: P.3: exits normally
- 12: P.5: [{y,1}] = ets:lookup(table, y)
+  11: P.3: exits normally
+  12: P.5: [{y,1}] = ets:lookup(table, y)
     in depend_1.erl line 29
- 13: P.4: [{x,0}] = ets:lookup(table, x)
+  13: P.4: [{x,0}] = ets:lookup(table, x)
     in depend_1.erl line 17
- 14: P.2: true = ets:insert(table, {x,1})
+  14: P.2: true = ets:insert(table, {x,1})
     in depend_1.erl line 14
- 15: P.2: exits normally
- 16: P.4: exits normally
- 17: P.5: [{z,0}] = ets:lookup(table, z)
+  15: P.2: exits normally
+  16: P.4: exits normally
+  17: P.5: [{z,0}] = ets:lookup(table, z)
     in depend_1.erl line 31
- 18: P.1: true = ets:insert(table, {z,1})
+  18: P.1: true = ets:insert(table, {z,1})
     in depend_1.erl line 13
- 19: P.1: exits normally
- 20: P.5: exits normally
+  19: P.1: exits normally
+  20: P.5: exits normally
 ################################################################################
 Done! (Exit status: ok)
   Summary: 12 errors, 12/12 interleavings explored

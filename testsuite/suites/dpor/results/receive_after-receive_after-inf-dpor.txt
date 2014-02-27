@@ -1,13 +1,42 @@
-Checked 2 interleaving(s). 1 errors found.
-
-1
-Error type        : Exception
-Details           : {{nocatch,boom},
-                     [{receive_after,'-receive_after/0-fun-2-',1,
-                                     [{file,"receive_after.erl"},{line,16}]}]}
-  Process P1 spawns process P1.1
-  Process P1.1 sends message `ok` to process P1
-  Process P1.1 receives no matching messages
-  Process P1.1 exits ("Exception")
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{receive_after,receive_after,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/receive_after.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* At step 9 process P.1 exited abnormally
+    Reason:
+      {{nocatch,boom},
+       [{receive_after,'-receive_after/0-fun-0-',1,
+                       [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/receive_after.erl"},
+                        {line,16}]}]}
+    Stacktrace:
+      [{receive_after,'-receive_after/0-fun-0-',1,
+                      [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/receive_after.erl"},
+                       {line,16}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_after.0.39096342>,[]])
+    in erlang.erl line 2188
+   2: P: ok = P.1 ! ok
+    in receive_after.erl line 19
+   3: P.1: ok = P ! ok
+    in receive_after.erl line 12
+   4: Message (ok) from P.1 reaches P
+   5: P: receives message (ok)
+    in receive_after.erl line 20
+   6: P: exits normally
+   7: P.1: receive timeout expired after 0 ms
+    in receive_after.erl line 13
+   8: Message (ok) from P reaches P.1
+   9: P.1: exits abnormally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 1 errors, 2/2 interleavings explored

@@ -1,13 +1,37 @@
-Checked 1 interleaving(s). 1 errors found.
-
-1
-Error type        : Exception
-Details           : {{nocatch,no_hope},
-                     [{hopeless_after,hopeless_after,0,
-                                      [{file,"hopeless_after.erl"},
-                                       {line,15}]}]}
-  Process P1 spawns process P1.1
-  Process P1 receives no matching messages
-  Process P1 exits ("Exception")
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{hopeless_after,hopeless_after,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/hopeless_after.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* At step 3 process P exited abnormally
+    Reason:
+      {{nocatch,no_hope},
+       [{hopeless_after,hopeless_after,0,
+                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/hopeless_after.erl"},
+                         {line,15}]}]}
+    Stacktrace:
+      [{hopeless_after,hopeless_after,0,
+                       [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/hopeless_after.erl"},
+                        {line,15}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hopeless_after.0.72710568>,[]])
+    in erlang.erl line 2329
+   2: P: receive timeout expired after 100 ms
+    in hopeless_after.erl line 11
+   3: P: exits abnormally
+   4: P.1: hopeless = P ! hopeless
+    in hopeless_after.erl line 10
+   5: Message (hopeless) from P.1 reaches P
+   6: P.1: exits normally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 1 errors, 1/1 interleavings explored

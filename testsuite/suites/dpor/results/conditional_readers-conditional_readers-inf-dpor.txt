@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{target,{conditional_readers,conditional_readers,[]}},
    {symbolic,true},
+   {verbose,0},
    {timeout,1000},
    {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/conditional_readers.erl"]},
    {'after-timeout',infinite},
@@ -14,264 +15,264 @@ Erroneous interleaving 1:
     P in conditional_readers.erl line 27
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in conditional_readers.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in conditional_readers.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in conditional_readers.erl line 11
-  4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.78239918>,[]])
-    in erlang.erl line 2188
-  5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {x,1})
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.131541056>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
     in conditional_readers.erl line 13
-  8: P.1: exits normally
-  9: P.2: [{y,0}] = ets:lookup(table, y)
+   8: P.1: exits normally
+   9: P.2: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 10: P.2: [{x,1}] = ets:lookup(table, x)
+  10: P.2: [{x,1}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
- 11: P.2: true = ets:insert(table, {y,1})
+  11: P.2: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 12: P.2: exits normally
- 13: P.3: [{y,1}] = ets:lookup(table, y)
+  12: P.2: exits normally
+  13: P.3: [{y,1}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 14: P.3: exits normally
+  14: P.3: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
     P in conditional_readers.erl line 27
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in conditional_readers.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in conditional_readers.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in conditional_readers.erl line 11
-  4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.78239918>,[]])
-    in erlang.erl line 2188
-  5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {x,1})
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.131541056>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
     in conditional_readers.erl line 13
-  8: P.1: exits normally
-  9: P.2: [{y,0}] = ets:lookup(table, y)
+   8: P.1: exits normally
+   9: P.2: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 10: P.2: [{x,1}] = ets:lookup(table, x)
+  10: P.2: [{x,1}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
- 11: P.3: [{y,0}] = ets:lookup(table, y)
+  11: P.3: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 12: P.2: true = ets:insert(table, {y,1})
+  12: P.2: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 13: P.2: exits normally
- 14: P.3: [{x,1}] = ets:lookup(table, x)
+  13: P.2: exits normally
+  14: P.3: [{x,1}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
- 15: P.3: true = ets:insert(table, {y,1})
+  15: P.3: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 16: P.3: exits normally
+  16: P.3: exits normally
 ################################################################################
 Erroneous interleaving 3:
 * Blocked at a 'receive' (when all other processes have exited):
     P in conditional_readers.erl line 27
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in conditional_readers.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in conditional_readers.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in conditional_readers.erl line 11
-  4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.78239918>,[]])
-    in erlang.erl line 2188
-  5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  7: P.1: true = ets:insert(table, {x,1})
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.131541056>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
     in conditional_readers.erl line 13
-  8: P.1: exits normally
-  9: P.3: [{y,0}] = ets:lookup(table, y)
+   8: P.1: exits normally
+   9: P.3: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 10: P.3: [{x,1}] = ets:lookup(table, x)
+  10: P.3: [{x,1}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
- 11: P.3: true = ets:insert(table, {y,1})
+  11: P.3: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 12: P.2: [{y,1}] = ets:lookup(table, y)
+  12: P.2: [{y,1}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 13: P.2: exits normally
- 14: P.3: exits normally
+  13: P.2: exits normally
+  14: P.3: exits normally
 ################################################################################
 Erroneous interleaving 4:
 * Blocked at a 'receive' (when all other processes have exited):
     P in conditional_readers.erl line 27
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in conditional_readers.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in conditional_readers.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in conditional_readers.erl line 11
-  4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.78239918>,[]])
-    in erlang.erl line 2188
-  5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  7: P.2: [{y,0}] = ets:lookup(table, y)
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.131541056>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   7: P.2: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
-  8: P.2: [{x,0}] = ets:lookup(table, x)
+   8: P.2: [{x,0}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
-  9: P.1: true = ets:insert(table, {x,1})
+   9: P.1: true = ets:insert(table, {x,1})
     in conditional_readers.erl line 13
- 10: P.1: exits normally
- 11: P.2: true = ets:insert(table, {y,1})
+  10: P.1: exits normally
+  11: P.2: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 12: P.2: exits normally
- 13: P.3: [{y,1}] = ets:lookup(table, y)
+  12: P.2: exits normally
+  13: P.3: [{y,1}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 14: P.3: exits normally
+  14: P.3: exits normally
 ################################################################################
 Erroneous interleaving 5:
 * Blocked at a 'receive' (when all other processes have exited):
     P in conditional_readers.erl line 27
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in conditional_readers.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in conditional_readers.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in conditional_readers.erl line 11
-  4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.78239918>,[]])
-    in erlang.erl line 2188
-  5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  7: P.2: [{y,0}] = ets:lookup(table, y)
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.131541056>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   7: P.2: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
-  8: P.2: [{x,0}] = ets:lookup(table, x)
+   8: P.2: [{x,0}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
-  9: P.1: true = ets:insert(table, {x,1})
+   9: P.1: true = ets:insert(table, {x,1})
     in conditional_readers.erl line 13
- 10: P.1: exits normally
- 11: P.3: [{y,0}] = ets:lookup(table, y)
+  10: P.1: exits normally
+  11: P.3: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 12: P.2: true = ets:insert(table, {y,1})
+  12: P.2: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 13: P.2: exits normally
- 14: P.3: [{x,1}] = ets:lookup(table, x)
+  13: P.2: exits normally
+  14: P.3: [{x,1}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
- 15: P.3: true = ets:insert(table, {y,1})
+  15: P.3: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 16: P.3: exits normally
+  16: P.3: exits normally
 ################################################################################
 Erroneous interleaving 6:
 * Blocked at a 'receive' (when all other processes have exited):
     P in conditional_readers.erl line 27
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in conditional_readers.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in conditional_readers.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in conditional_readers.erl line 11
-  4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.78239918>,[]])
-    in erlang.erl line 2188
-  5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  7: P.2: [{y,0}] = ets:lookup(table, y)
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.131541056>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   7: P.2: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
-  8: P.2: [{x,0}] = ets:lookup(table, x)
+   8: P.2: [{x,0}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
-  9: P.3: [{y,0}] = ets:lookup(table, y)
+   9: P.3: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 10: P.2: true = ets:insert(table, {y,1})
+  10: P.2: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 11: P.2: exits normally
- 12: P.3: [{x,0}] = ets:lookup(table, x)
+  11: P.2: exits normally
+  12: P.3: [{x,0}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
- 13: P.1: true = ets:insert(table, {x,1})
+  13: P.1: true = ets:insert(table, {x,1})
     in conditional_readers.erl line 13
- 14: P.1: exits normally
- 15: P.3: true = ets:insert(table, {y,1})
+  14: P.1: exits normally
+  15: P.3: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 16: P.3: exits normally
+  16: P.3: exits normally
 ################################################################################
 Erroneous interleaving 7:
 * Blocked at a 'receive' (when all other processes have exited):
     P in conditional_readers.erl line 27
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in conditional_readers.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in conditional_readers.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in conditional_readers.erl line 11
-  4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.78239918>,[]])
-    in erlang.erl line 2188
-  5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  7: P.2: [{y,0}] = ets:lookup(table, y)
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.131541056>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   7: P.2: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
-  8: P.3: [{y,0}] = ets:lookup(table, y)
+   8: P.3: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
-  9: P.3: [{x,0}] = ets:lookup(table, x)
+   9: P.3: [{x,0}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
- 10: P.3: true = ets:insert(table, {y,1})
+  10: P.3: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 11: P.3: exits normally
- 12: P.1: true = ets:insert(table, {x,1})
+  11: P.3: exits normally
+  12: P.1: true = ets:insert(table, {x,1})
     in conditional_readers.erl line 13
- 13: P.1: exits normally
- 14: P.2: [{x,1}] = ets:lookup(table, x)
+  13: P.1: exits normally
+  14: P.2: [{x,1}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
- 15: P.2: true = ets:insert(table, {y,1})
+  15: P.2: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 16: P.2: exits normally
+  16: P.2: exits normally
 ################################################################################
 Erroneous interleaving 8:
 * Blocked at a 'receive' (when all other processes have exited):
     P in conditional_readers.erl line 27
 --------------------------------------------------------------------------------
 Interleaving info:
-  1: P: table = ets:new(table, [public,named_table])
+   1: P: table = ets:new(table, [public,named_table])
     in conditional_readers.erl line 9
-  2: P: true = ets:insert(table, {x,0})
+   2: P: true = ets:insert(table, {x,0})
     in conditional_readers.erl line 10
-  3: P: true = ets:insert(table, {y,0})
+   3: P: true = ets:insert(table, {y,0})
     in conditional_readers.erl line 11
-  4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.78239918>,[]])
-    in erlang.erl line 2188
-  5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.78239918>,[]])
-    in erlang.erl line 2188
-  7: P.3: [{y,0}] = ets:lookup(table, y)
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.0.131541056>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers.1.131541056>,[]])
+    in erlang.erl line 2329
+   7: P.3: [{y,0}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
-  8: P.3: [{x,0}] = ets:lookup(table, x)
+   8: P.3: [{x,0}] = ets:lookup(table, x)
     in conditional_readers.erl line 20
-  9: P.3: true = ets:insert(table, {y,1})
+   9: P.3: true = ets:insert(table, {y,1})
     in conditional_readers.erl line 21
- 10: P.1: true = ets:insert(table, {x,1})
+  10: P.1: true = ets:insert(table, {x,1})
     in conditional_readers.erl line 13
- 11: P.1: exits normally
- 12: P.2: [{y,1}] = ets:lookup(table, y)
+  11: P.1: exits normally
+  12: P.2: [{y,1}] = ets:lookup(table, y)
     in conditional_readers.erl line 17
- 13: P.2: exits normally
- 14: P.3: exits normally
+  13: P.2: exits normally
+  14: P.3: exits normally
 ################################################################################
 Done! (Exit status: ok)
   Summary: 8 errors, 8/8 interleavings explored

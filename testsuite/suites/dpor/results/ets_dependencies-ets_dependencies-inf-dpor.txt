@@ -1,74 +1,122 @@
-Checked 4 interleaving(s). 4 errors found.
-
-1
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 exits (normal)
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2 exits (normal)
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3 exits (normal)
-
-
-2
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3 exits (normal)
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 exits (normal)
-  Process P1.2: ets_lookup {table,x}
-  Process P1.2 exits (normal)
-
-
-3
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.2 exits (normal)
-  Process P1.1 exits (normal)
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3 exits (normal)
-
-
-4
-Error type        : Deadlock
-Blocked processes : P1
-  Process P1: ets_new {table,[public,named_table]}
-  Process P1 spawns process P1.1
-  Process P1 spawns process P1.2
-  Process P1 spawns process P1.3
-  Process P1 blocks
-  Process P1.2: ets_insert {table,[{y,2}]}
-  Process P1.2: ets_lookup {table,x}
-  Process P1.3: ets_insert {table,[{z,3}]}
-  Process P1.3: ets_lookup {table,x}
-  Process P1.3 exits (normal)
-  Process P1.1: ets_insert {table,[{x,1}]}
-  Process P1.1 exits (normal)
-  Process P1.2 exits (normal)
-
-
+################################################################################
+Concuerror started with options:
+  [{target,{ets_dependencies,ets_dependencies,[]}},
+   {symbolic,true},
+   {verbose,0},
+   {timeout,1000},
+   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies.erl"]},
+   {'after-timeout',infinite},
+   {bound,2},
+   {distributed,true},
+   {'light-dpor',false}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_dependencies.erl line 21
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.99438611>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.99438611>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.99438611>,[]])
+    in erlang.erl line 2329
+   5: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies.erl line 11
+   6: P.1: exits normally
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies.erl line 14
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies.erl line 15
+   9: P.2: exits normally
+  10: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies.erl line 18
+  11: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies.erl line 19
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_dependencies.erl line 21
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.99438611>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.99438611>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.99438611>,[]])
+    in erlang.erl line 2329
+   5: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies.erl line 14
+   6: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies.erl line 18
+   7: P.2: [] = ets:lookup(table, x)
+    in ets_dependencies.erl line 15
+   8: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies.erl line 11
+   9: P.1: exits normally
+  10: P.2: exits normally
+  11: P.3: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies.erl line 19
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_dependencies.erl line 21
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.99438611>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.99438611>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.99438611>,[]])
+    in erlang.erl line 2329
+   5: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies.erl line 14
+   6: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies.erl line 18
+   7: P.2: [] = ets:lookup(table, x)
+    in ets_dependencies.erl line 15
+   8: P.2: exits normally
+   9: P.3: [] = ets:lookup(table, x)
+    in ets_dependencies.erl line 19
+  10: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies.erl line 11
+  11: P.1: exits normally
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_dependencies.erl line 21
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_dependencies.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.99438611>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.99438611>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.99438611>,[]])
+    in erlang.erl line 2329
+   5: P.2: true = ets:insert(table, {y,2})
+    in ets_dependencies.erl line 14
+   6: P.3: true = ets:insert(table, {z,3})
+    in ets_dependencies.erl line 18
+   7: P.3: [] = ets:lookup(table, x)
+    in ets_dependencies.erl line 19
+   8: P.3: exits normally
+   9: P.1: true = ets:insert(table, {x,1})
+    in ets_dependencies.erl line 11
+  10: P.1: exits normally
+  11: P.2: [{x,1}] = ets:lookup(table, x)
+    in ets_dependencies.erl line 15
+  12: P.2: exits normally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 4 errors, 4/4 interleavings explored
