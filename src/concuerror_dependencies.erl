@@ -284,10 +284,10 @@ dependent_built_in(#builtin_event{mfa = {M1,_,_}} = _MFA1,
 
 %%------------------------------------------------------------------------------
 
-message_could_match(_Patterns, _Data, Trapping, Type) ->
-  %% Patterns(Data)
-  %%   andalso
-  (Trapping orelse (Type =:= message)).
+message_could_match(Patterns, Data, Trapping, Type) ->
+  Patterns(Data)
+    andalso
+      (Trapping orelse (Type =:= message)).
 
 ets_insert_dep(_IgnoreSame, _KeyPos, [], _List) -> false;
 ets_insert_dep(IgnoreSame, KeyPos, [Tuple|Rest], List) ->
