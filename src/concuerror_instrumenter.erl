@@ -55,11 +55,19 @@ mapfold(Tree, {ModName, Var}) ->
         Action = cerl:receive_action(Tree),
         Fun = receive_matching_fun(Tree),
         Call = inspect('receive', [Fun, Timeout], Tree),
-        %% Replace original timeout with a fresh variable to make it skippable
-        %% on demand.
-        TimeoutVar = cerl:c_var(Var),
-        RecTree = cerl:update_c_receive(Tree, Clauses, TimeoutVar, Action),
-        cerl:update_tree(Tree, 'let', [[TimeoutVar], [Call], [RecTree]]);
+        case Timeout =:= cerl:c_atom(infinity) of
+          false ->
+            %% Replace original timeout with a fresh variable to make it
+            %% skippable on demand.
+            TimeoutVar = cerl:c_var(Var),
+            RecTree = cerl:update_c_receive(Tree, Clauses, TimeoutVar, Action),
+            cerl:update_tree(Tree, 'let', [[TimeoutVar], [Call], [RecTree]]);
+          true ->
+            %% Leave infinity timeouts unaffected, as the default code generated
+            %% by the compiler does not bind any additional variables in the
+            %% after clause.
+            cerl:update_tree(Tree, seq, [[Call], [Tree]])
+        end;
       _ -> Tree
     end,
   NewVar =
