@@ -122,6 +122,9 @@ dependent(_EventA, _EventB) ->
 
 dependent_exit(_Exit, {erlang, exit, _}) ->
   false;
+dependent_exit(#exit_event{actor = Exiting},
+               {erlang, is_process_alive, [Pid]}) ->
+  Exiting =:= Pid;
 dependent_exit(#exit_event{actor = Exiting}, {erlang, link, [Linked]}) ->
   Exiting =:= Linked;
 dependent_exit(_Exit, {erlang, process_flag, _}) ->

@@ -11,4 +11,3 @@ is_process_alive_1() ->
         true -> register(child, Pid);
         false -> ok
     end.
-                

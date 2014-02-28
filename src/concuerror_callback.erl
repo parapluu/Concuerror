@@ -227,6 +227,19 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       {true, Info#concuerror_info{next_event = NewEvent}}
   end;
 
+run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
+  case is_pid(Pid) of
+    false -> error(badarg);
+    true -> ok
+  end,
+  #concuerror_info{processes = Processes} = Info,
+  Return =
+    case ets:lookup(Processes, Pid) of
+      [] -> false;
+      [?process_pat_pid_status(Pid, Status)] -> is_active(Status)
+    end,
+  {Return, Info};
+
 run_built_in(erlang, link, 1, [Pid], Info) ->
   #concuerror_info{links = Links, processes = Processes} = Info,
   case ets:lookup(Processes, Pid) of
@@ -352,6 +365,7 @@ run_built_in(erlang, register, 2, [Name, Pid],
   try
     true = is_atom(Name),
     true = is_pid(Pid) orelse is_port(Pid),
+    {true, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
     [] = ets:match(Processes, ?process_match_name_to_pid(Name)),
     ?process_name_none = ets:lookup_element(Processes, Pid, ?process_name),
     false = undefined =:= Name,
