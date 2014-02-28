@@ -43,7 +43,7 @@ server(Workers, Work, Result, Parent) ->
             end
     end.
 
-spawner(0, Pid) -> ok;
+spawner(0, _Pid) -> ok;
 spawner(N, Pid) ->
     spawn(fun() -> worker(Pid) end),
     spawner(N-1, Pid).
