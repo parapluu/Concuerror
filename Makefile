@@ -74,6 +74,7 @@ clean:
 	rm -f concuerror
 	rm -f $(OPTS)
 	rm -f $(EBIN)/*.beam
+	rm -f $(EBIN)/meck
 
 ifneq ($(ERL_COMPILE_FLAGS), $(NATIVE_ERL_COMPILE_FLAGS))
 native:
@@ -112,5 +113,16 @@ $(EBIN)/%.beam: %.erl include/* Makefile
 
 SUITES = basic_tests,dpor_tests
 
-test: all
+test: all $(EBIN)/meck
 	@(cd tests; bash -c "./runtests.py suites/{$(SUITES)}/src/*")
+
+$(EBIN)/meck:
+	git submodule update
+	cd deps/meck \
+		&& cp rebar.config rebar.config.bak \
+		&& sed -i 's/warnings_as_errors, //' rebar.config \
+		&& make get-deps \
+		&& make compile \
+	        && mv rebar.config.bak rebar.config 
+	cp deps/meck/ebin/*.beam ebin
+	touch $@

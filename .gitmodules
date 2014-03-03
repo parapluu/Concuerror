@@ -1,0 +1,3 @@
+[submodule "deps/meck"]
+	path = deps/meck
+	url = https://github.com/eproxus/meck.git

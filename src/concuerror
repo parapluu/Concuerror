@@ -5,7 +5,7 @@
 main(Args) ->
   ScriptDir = filename:dirname(escript:script_name()),
   EbinDir = filename:join([ScriptDir,"ebin"]),
-  true = code:add_pathz(EbinDir),
+  true = code:add_patha(EbinDir),
   {module, concuerror_inspect} = code:load_file(concuerror_inspect),
   case concuerror_options:parse_cl(Args) of
     {exit, Exit} -> cl_exit(Exit);
