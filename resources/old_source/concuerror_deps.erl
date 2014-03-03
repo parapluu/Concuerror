@@ -466,7 +466,7 @@ add_missing_messages(Lid, Instr, PreMsgs, ProcEvidence) ->
             lists:foldl(Fold, Msgs, ProcEvidence);
         {exit_2, {To, Msg}} ->
             %% XXX: Too strong.
-            add_missing_message(To, Msg, Msgs);        
+            add_missing_message(To, Msg, Msgs);
         _ -> Msgs
     end.
 

@@ -312,7 +312,7 @@ find_my_links() ->
     find_my_links_or_monitors(links).
 
 find_my_monitored() ->
-    find_my_links_or_monitors(monitored_by).    
+    find_my_links_or_monitors(monitored_by).
 
 find_my_links_or_monitors(Type) ->
     PPid = self(),
@@ -536,7 +536,7 @@ spawn_fun_wrapper(Fun) ->
             concuerror_sched:notify(exit, {normal, MyRealInfo}, prev);
         Class:Type ->
             concuerror_sched:notify(error,[Class,Type,erlang:get_stacktrace()])
-    end.                    
+    end.
 
 find_my_info() ->
     MyEts = find_my_ets_tables(),
