@@ -21,30 +21,11 @@ parse_cl_aux(CommandLineArgs) ->
           cl_usage(),
           {exit, ok};
         false ->
-          case OtherArgs of
-            [ModuleS, FunctionS|MaybeArgs] ->
-              Module = list_to_atom(ModuleS),
-              Function = list_to_atom(FunctionS),
-              Parser =
-                fun(RawArg) ->
-                    try
-                      {ok, Tokens, _} = erl_scan:string(RawArg ++ "."),
-                      {ok, Term} = erl_parse:parse_term(Tokens),
-                      Term
-                    catch
-                      _:_ -> throw(RawArg)
-                    end
-                end,
-              Args =
-                try
-                  [Parser(A) || A <- MaybeArgs]
-                catch
-                  throw:Arg -> opt_error("Arg ~s is not an Erlang term", [Arg])
-                end,
-              FullOptions = [{target, {Module, Function, Args}}|Options],
-              finalize(FullOptions);
-            _ -> opt_error("Module and/or Function were not specified")
-          end
+          case OtherArgs =:= [] of
+            true -> ok;
+            false -> opt_warn("Ignoring: ~s", [string:join(OtherArgs, " ")])
+          end,
+          finalize(Options)
       end;
     {error, Error} ->
       case Error of
@@ -56,74 +37,69 @@ parse_cl_aux(CommandLineArgs) ->
   end.
 
 getopt_spec() ->
-  [
-   {'after-timeout', $a, "after", {integer, infinite},
+  %% We are storing additional info in the options spec. Filter these before
+  %% running getopt.
+  [{Name, Short, Long, Type, Help} ||
+    {Name, _Classes, Short, Long, Type, Help} <- options()].
+
+options() ->
+  [{module, [frontend], $m, "module", atom,
+    "The module containing the main test function."}
+  ,{test, [frontend], $t, "test", {atom, test},
+    "The name of the 0-arity function that starts the test."}
+  ,{output, [logger], $o, "output", {string, "results.txt"},
+    "Output file."}
+  ,{symbolic, [logger], $s, "symbolic", {boolean, false},
+    "Use symbolic names for process identifiers. Requires 'meck'"}
+  ,{patha, [frontend, logger], undefined, "pa", string,
+    "Add directory to the front of the code path."}
+  ,{pathz, [frontend, logger], undefined, "pz", string,
+    "Add directory to the end of the code path."}
+  ,{file, [frontend], $f, "file", string,
+    "Load a specific file (.beam or .erl). (A .erl file should not require"
+    " any command line compile options.)"}
+  ,{help, [frontend], $h, "help", undefined,
+    "Display this information."}
+  ,{quiet, [frontend], $q, "quiet", undefined,
+    "Do not write anything to standard output. Equivalent to --verbose 0."}
+  ,{verbose, [logger], $v, "verbose", integer,
+    io_lib:format("Verbosity level (0-~p) [default: ~p].",
+                  [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
+  ,{'after-timeout', [logger, process], $a, "after", {integer, infinite},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
-    " will never be triggered, unless no other process can progress."},
-   {bound, $b, "bound", {integer, 2}, "Preemption bound (-1 for infinite)."},
-   {distributed, $d, "distributed", {boolean, true},
+    " will never be triggered, unless no other process can progress."}
+  ,{bound, [logger, scheduler], $b, "bound", {integer, -1},
+    "Preemption bound (-1 for infinite)."}
+  ,{distributed, [logger, scheduler], $d, "distributed", {boolean, true},
     "Use distributed Erlang semantics: messages are not delivered immediately"
-    " after being sent."},
-   {file, $f, "file", string,
-    "Also load a specific file (.beam or .erl). A .erl file should not require"
-    " any command line compile options."},
-   {help, $h, "help", undefined, "Display this information."},
-   {'light-dpor', $l, "light-dpor", {boolean, false},
-    "Use lightweight (source) DPOR instead of optimal."},
-   {output, $o, "output", {string, "results.txt"}, "Output file."},
-   {path, $p, "path", string, "Add directory to the code path."},
-   {quiet, $q, "quiet", undefined,
-    "Do not write anything to standard output. Equivalent to --verbose 0."},
-   {symbolic, $s, "symbolic", {boolean, false},
-    "Use symbolic names for process identifiers. Requires 'meck'"},
-   {timeout, $t, "timeout", {integer, 20000},
+    " after being sent."}
+  ,{'light-dpor', [logger, scheduler], $l, "light-dpor", {boolean, false},
+    "Use lightweight (source) DPOR instead of optimal."}
+  ,{wait, [logger, scheduler], $w, "wait", {integer, 20000},
     "How many ms to wait before assuming a process to be stuck in an infinite"
     " loop between two operations with side-effects. Setting it to -1 makes"
     " Concuerror wait indefinitely. Otherwise must be > " ++
-      integer_to_list(?MINIMUM_TIMEOUT) ++ "."},
-   {verbose, $v, "verbose", integer,
-    io_lib:format("Verbosity level (0-~p) [default: ~p].",
-                  [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
+      integer_to_list(?MINIMUM_TIMEOUT) ++ "."}
+   %% These options won't make it to the getopt script
+  ,{target, [logger, scheduler]} %% Generated from module and test or given explicitlyq
+  ,{quit, []}                    %% Controlling whether a halt will happen
+  ,{files, [logger]}             %% List of included files (to be shown in the log)
   ].
 
 filter_options(Mode, {Key, _}) ->
-  Modes =
-    case Key of
-      'after-timeout' -> [logger, process];
-      bound           -> [logger, scheduler];
-      distributed     -> [logger, scheduler];
-      files           -> [logger];
-      help            -> [helper];
-      'light-dpor'    -> [logger, scheduler];
-      logger          -> [scheduler];
-      output          -> [logger];
-      quiet           -> [helper];
-      quit            -> [];
-      symbolic        -> [logger];
-      target          -> [logger, scheduler];
-      timeout         -> [logger, scheduler];
-      verbose         -> [logger]
-    end,
-  lists:member(Mode, Modes).
+  OptInfo = lists:keyfind(Key, 1, options()),
+  lists:member(Mode, element(2, OptInfo)).
 
 cl_usage() ->
-  ModuleS = "Module",
-  FunctionS = "Function",
-  ArgsS = "[Args]",
-  getopt:usage(
-    getopt_spec(),
-    "./concuerror",
-    string:join([ModuleS, FunctionS, ArgsS], " "),
-    [{ModuleS, "Module containing the initial function"},
-     {FunctionS, "The initial function to be called"},
-     {ArgsS, "Arguments to be passed to the initial function. If nonexistent, a"
-      " function with zero arity will be called."}]).
+  getopt:usage(getopt_spec(), "./concuerror").
 
 finalize(Options) ->
   Finalized = finalize(lists:reverse(proplists:unfold(Options)), []),
   case proplists:get_value(target, Finalized, undefined) of
     {M,F,B} when is_atom(M), is_atom(F), is_list(B) -> Finalized;
-    _ -> opt_error("missing target option")
+    _ ->
+      opt_error("The module containing the main test function has not been"
+                " specified.")
   end.
 
 finalize([], Acc) -> Acc;
@@ -141,15 +117,20 @@ finalize([{verbose, N}|Rest], Acc) ->
       finalize(NewRest, [{verbose, Verbosity}|Acc])
   end;
 finalize([{Key, Value}|Rest], Acc)
-  when Key =:= file; Key =:= path ->
+  when Key =:= file; Key =:= patha; Key =:=pathz ->
   case Key of
     file ->
       Files = [Value|proplists:get_all_values(file, Rest)],
       LoadedFiles = compile_and_load(Files),
       NewRest = proplists:delete(file, Rest),
       finalize(NewRest, [{files, LoadedFiles}|Acc]);
-    path ->
-      case code:add_patha(Value) of
+    Else ->
+      PathAdd =
+        case Else of
+          patha -> fun code:add_patha/1;
+          pathz -> fun code:add_pathz/1
+        end,
+      case PathAdd(Value) of
         true -> ok;
         {error, bad_directory} ->
           opt_error("could not add ~s to code path", [Value])
@@ -162,26 +143,33 @@ finalize([{Key, Value}|Rest], Acc) ->
       opt_error("multiple instances of --~s defined", [Key]);
     false ->
       case Key of
+        module ->
+          case proplists:get_value(test, Rest, 1) of
+            Name when is_atom(Name) ->
+              NewRest = proplists:delete(test, Rest),
+              finalize(NewRest, [{target, {Value, Name, []}}|Acc]);
+            _ -> opt_error("The name of the test function is missing")
+          end;
         output ->
           case file:open(Value, [write]) of
             {ok, IoDevice} ->
-              finalize(Rest, [{output, IoDevice}|Acc]);
+              finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
             {error, _} ->
               opt_error("could not open file ~s for writing", [Value])
           end;
-        timeout ->
+        wait ->
           case Value of
             -1 ->
-              finalize(Rest, [{timeout, infinite}|Acc]);
+              finalize(Rest, [{Key, infinite}|Acc]);
             N when is_integer(N), N > ?MINIMUM_TIMEOUT ->
-              finalize(Rest, [{timeout, N}|Acc]);
+              finalize(Rest, [{Key, N}|Acc]);
             _Else ->
-              opt_error("--timeout value must be -1 (infinite) or > "
-                       ++ integer_to_list(?MINIMUM_TIMEOUT))
+              opt_error("--~s value must be -1 (infinite) or > "
+                       ++ integer_to_list(?MINIMUM_TIMEOUT), [Key])
           end;
         symbolic ->
           case Value of
-            false -> finalize(Rest, [{symbolic, false}|Acc]);
+            false -> finalize(Rest, [{Key, false}|Acc]);
             true ->
               HaveMeck =
                 try meck:module_info() of
@@ -190,9 +178,14 @@ finalize([{Key, Value}|Rest], Acc) ->
                   _:_ -> false
                 end,
               case HaveMeck of
-                true -> finalize(Rest, [{symbolic, true}|Acc]);
+                true -> finalize(Rest, [{Key, true}|Acc]);
                 false -> opt_error("to use symbolic PIDs you need to have meck")
               end
+          end;
+        test ->
+          case Rest =:= [] of
+            true -> finalize(Rest, Acc);
+            false -> finalize(Rest ++ [{Key, Value}], Acc)
           end;
         _ ->
           finalize(Rest, [{Key, Value}|Acc])

@@ -12,6 +12,7 @@
           errors = 0          :: non_neg_integer(),
           modules = []        :: [atom()],
           output              :: file:io_device(),
+          output_name         :: string(),
           ticker = none       :: pid() | 'none',
           traces_explored = 0 :: non_neg_integer(),
           traces_ssb = 0      :: non_neg_integer(),
@@ -27,7 +28,7 @@ run(Options) ->
       none -> ?DEFAULT_VERBOSITY;
       {verbose, V} -> V
     end,
-  Output = proplists:get_value(output, Options),
+  {Output, OutputName} =  proplists:get_value(output, Options),
   SymbolicNames = proplists:get_value(symbolic, Options),
   Processes = proplists:get_value(processes, Options),
   ok = setup_symbolic_names(SymbolicNames, Processes),
@@ -37,9 +38,13 @@ run(Options) ->
   io:format(Output,
             "Concuerror started with options:~n"
             "  ~p~n",
-            [PrintableOptions]),
+            [lists:sort(PrintableOptions)]),
   separator(Output, $#),
-  State = #logger_state{output = Output, verbosity = Verbosity},
+  State =
+    #logger_state{
+       output = Output,
+       output_name = OutputName,
+       verbosity = Verbosity},
   loop_entry(State).
 
 plan(Logger) ->
@@ -65,13 +70,15 @@ stop(Logger, Status) ->
 
 %%------------------------------------------------------------------------------
 
-loop_entry(#logger_state{verbosity = Verbosity} = State) ->
+loop_entry(State) ->
+  #logger_state{output_name = OutputName, verbosity = Verbosity} = State,
   Ticker =
     case Verbosity < ?linfo of
       true -> none;
       false ->
         Timestamp = format_utc_timestamp(),
         inner_diagnostic("Concuerror started at ~s~n", [Timestamp]),
+        inner_diagnostic("Writing results in ~s~n", [OutputName]),
         inner_diagnostic("Verbosity is set to ~p~n", [Verbosity]),
         inner_diagnostic("(Enter q to quit)~n~n"),
         Self = self(),

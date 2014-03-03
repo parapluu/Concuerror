@@ -66,7 +66,7 @@ MODULES = \
 vpath %.hrl include
 vpath %.erl src
 
-.PHONY: clean dialyze
+.PHONY: clean dialyze test
 
 all: concuerror $(MODULES:%=$(EBIN)/%.beam)
 
@@ -104,3 +104,13 @@ concuerror:
 ### XXX: Replace with automatically dependencies
 $(EBIN)/%.beam: %.erl include/* Makefile
 	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -DVSN="\"$(VSN)\"" -o $(EBIN) $<
+
+
+###----------------------------------------------------------------------
+### Testing
+###----------------------------------------------------------------------
+
+SUITES = basic_tests,dpor_tests
+
+test: all
+	@(cd tests; bash -c "./runtests.py suites/{$(SUITES)}/src/*")

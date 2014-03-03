@@ -180,10 +180,11 @@
 
 -type exit_event() :: #exit_event{}.
 
--type event_info() :: builtin_event() |
-                      exit_event()    |
-                      message_event() |
-                      receive_event().
+-type event_info() ::
+        builtin_event() |
+        exit_event()    |
+        message_event() |
+        receive_event().
 
 -record(event, {
           actor          :: pid() | {pid(), pid()}, %% Pair: message from/to
@@ -197,9 +198,10 @@
 
 -type concuerror_warning() :: 'none' | {[concuerror_warning_info()], [event()]}.
 
--type concuerror_warning_info() :: {'crash', pid(), index()} |
-                                   {'deadlock', [pid()]} |
-                                   {'sleep_set_block', [pid()]}.
+-type concuerror_warning_info() ::
+        {'crash', pid(), index()} |
+        {'deadlock', [pid()]} |
+        {'sleep_set_block', [pid()]}.
 
 %%------------------------------------------------------------------------------
 

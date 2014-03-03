@@ -40,14 +40,14 @@
 %% -type preemption_bound() :: non_neg_integer() | 'inf'.
 
 -record(scheduler_state, {
-          current_warnings = []        :: [concuerror_warning_info()],
-          first_process                :: {pid(), mfargs()},
-          logger                       :: pid(),
-          message_info                 :: message_info(),
-          options = []                 :: proplists:proplist(),
-          processes                    :: processes(),
-          timeout                      :: non_neg_integer(),
-          trace = []                   :: [trace_state()]
+          current_warnings = [] :: [concuerror_warning_info()],
+          first_process         :: {pid(), mfargs()},
+          logger                :: pid(),
+          message_info          :: message_info(),
+          options          = [] :: proplists:proplist(),
+          processes             :: processes(),
+          trace            = []  :: [trace_state()],
+          wait                  :: non_neg_integer()
          }).
 
 %% =============================================================================
@@ -91,7 +91,7 @@ backend_run(Options) ->
   ?debug(Logger, "Starting first process...~n",[]),
   FirstProcess = concuerror_callback:spawn_first_process(ProcessOptions),
   {target, Target} = proplists:lookup(target, Options),
-  {timeout, Timeout} = proplists:lookup(timeout, Options),
+  {wait, Wait} = proplists:lookup(wait, Options),
   InitialTrace = #trace_state{active_processes = [FirstProcess]},
   InitialState =
     #scheduler_state{
@@ -100,8 +100,8 @@ backend_run(Options) ->
        message_info = ets:new(message_info, [private]),
        options = Options,
        processes = Processes,
-       timeout = Timeout,
-       trace = [InitialTrace]},
+       trace = [InitialTrace],
+       wait = Wait},
   %%meck:new(file, [unstick, passthrough]),
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
   {Status, FinalState} =
@@ -800,7 +800,7 @@ get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
   get_next_event_backend_loop(Event, State).
 
 get_next_event_backend_loop(Trigger, State) ->
-  #scheduler_state{timeout = Timeout} = State,
+  #scheduler_state{wait = Wait} = State,
   receive
     exited -> exited;
     {blocked, _} -> retry;
@@ -808,7 +808,7 @@ get_next_event_backend_loop(Trigger, State) ->
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
       get_next_event_backend_loop(Trigger, State)
   after
-    Timeout -> error({timeout, Trigger})
+    Wait -> error({process_did_not_respond, Trigger})
   end.
 
 collect_deadlock_info(ActiveProcesses) ->

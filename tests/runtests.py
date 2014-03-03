@@ -79,9 +79,9 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     sema.acquire()
     # Run concuerror
     status = os.system(
-        ("%s -sq -t 1000 -f %s "
+        ("%s -sq -w 5000 -f %s "
          "--output %s/%s/results/%s-%s-%s%s.txt "
-         "%s %s"
+         "-m %s -t %s"
          )
         % (concuerror, " -f ".join(files),
            results, suite, name, funn, preb, file_ext,

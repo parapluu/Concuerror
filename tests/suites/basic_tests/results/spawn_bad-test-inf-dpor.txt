@@ -1,0 +1,26 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawn_bad.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{spawn_bad,test,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 2 process P exited abnormally
+    Reason:
+      {badarg,[{erlang,error,[badarg,[2]],[2333,{file,"erlang.erl"}]}]}
+    Stacktrace:
+      [{erlang,error,[badarg,[2]],[2333,{file,"erlang.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: Exception raised by: erlang:error(badarg, [2])
+    in erlang.erl line 2333
+   2: P: exits abnormally
+################################################################################
+Done! (Exit status: ok)
+  Summary: 1 errors, 1/1 interleavings explored
