@@ -203,6 +203,14 @@ dependent_built_in(#builtin_event{mfa = {erlang, A, _}},
         B =:= process_flag orelse B =:= link) ->
   false;
 
+dependent_built_in(#builtin_event{mfa = {erlang,UnRegisterA,[AName|ARest]}},
+                   #builtin_event{mfa = {erlang,UnRegisterB,[BName|BRest]}})
+  when (UnRegisterA =:= register orelse UnRegisterA =:= unregister),
+       (UnRegisterB =:= register orelse UnRegisterB =:= unregister) ->
+  AName =:= BName
+    orelse
+      (ARest =/= [] andalso ARest =:= BRest);
+
 dependent_built_in(#builtin_event{mfa = {erlang,SendOrWhereis,[SName|_]}},
                    #builtin_event{mfa = {erlang,UnRegisterOp,[RName|_]}})
   when (UnRegisterOp =:= register orelse UnRegisterOp =:= unregister),
