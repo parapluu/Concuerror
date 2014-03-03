@@ -1,0 +1,8 @@
+Checked 1 interleaving(s). 1 errors found.
+
+1
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns and links to process P1.1
+  Process P1 blocks
+  Process P1.1 exits (normal)

@@ -1,0 +1,116 @@
+Checked 4 interleaving(s). 4 errors found.
+
+1
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1: ets_insert {table,[{pids,[<0.48.0>,<0.49.0>]}]}
+  Process P1 sends message `ok` to process P1.1
+  Process P1 sends message `ok` to process P1.2
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1
+  Process P1.1 sends message `ok` to process P1.2
+  Process P1.1 blocks
+  Process P1.2 receives message `ok` from process P1
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{<0.49.0>,2}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1: ets_insert {table,[{<0.48.0>,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+
+
+2
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1: ets_insert {table,[{pids,[<0.52.0>,<0.53.0>]}]}
+  Process P1 sends message `ok` to process P1.1
+  Process P1 sends message `ok` to process P1.2
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1
+  Process P1.1 sends message `ok` to process P1.2
+  Process P1.1 blocks
+  Process P1.2 receives message `ok` from process P1
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 receives message `ok` from process P1.1
+  Process P1.2: ets_insert {table,[{<0.53.0>,2}]}
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1: ets_insert {table,[{<0.52.0>,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
+
+
+3
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1: ets_insert {table,[{pids,[<0.56.0>,<0.57.0>]}]}
+  Process P1 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1
+  Process P1.1 sends message `ok` to process P1.2
+  Process P1.1 blocks
+  Process P1 sends message `ok` to process P1.2
+  Process P1 blocks
+  Process P1.2 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 receives message `ok` from process P1
+  Process P1.2: ets_insert {table,[{<0.57.0>,2}]}
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 blocks
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1: ets_insert {table,[{<0.56.0>,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+
+
+4
+Error type        : Deadlock
+Blocked processes : P1
+  Process P1 spawns process P1.1
+  Process P1 spawns process P1.2
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1: ets_insert {table,[{pids,[<0.60.0>,<0.61.0>]}]}
+  Process P1 sends message `ok` to process P1.1
+  Process P1.1 receives message `ok` from process P1
+  Process P1.1 sends message `ok` to process P1.2
+  Process P1.1 blocks
+  Process P1 sends message `ok` to process P1.2
+  Process P1 blocks
+  Process P1.2 receives message `ok` from process P1.1
+  Process P1.2 sends message `ok` to process P1.1
+  Process P1.2 receives message `ok` from process P1
+  Process P1.2: ets_insert {table,[{<0.61.0>,2}]}
+  Process P1.1 receives message `ok` from process P1.2
+  Process P1.1: ets_insert {table,[{<0.60.0>,1}]}
+  Process P1.1 sends message `ok` to process P1
+  Process P1.1 exits (normal)
+  Process P1 receives message `ok` from process P1.1
+  Process P1 blocks
+  Process P1.2 sends message `ok` to process P1
+  Process P1.2 exits (normal)
+  Process P1 receives message `ok` from process P1.2
+  Process P1 blocks

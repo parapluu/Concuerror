@@ -1,0 +1,12 @@
+Checked 4 interleaving(s). 1 errors found.
+
+1
+Error type        : Assertion violation
+Module:Line       : sched_tests.erl:430
+Expected          : result2
+Value             : result1
+  Process P1 spawns and monitors process P1.1
+  Process P1.1 exits (normal)
+  Process P1 demonitors process P1.1
+  Process P1 receives message `{'DOWN',#Ref<0.0.0.714>,process,...}` from process P1.1
+  Process P1 exits ("Assertion violation")

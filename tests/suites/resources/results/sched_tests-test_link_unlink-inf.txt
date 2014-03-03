@@ -1,0 +1,81 @@
+Checked 6 interleaving(s). 6 errors found.
+
+1
+Error type        : Deadlock
+Blocked processes : P1.1
+  Process P1 spawns process P1.1
+  Process P1 links to process P1.1
+  Process P1 unlinks from process P1.1
+  Process P1 blocks
+  Process P1.1 sets flag `trap_exit` to `true`
+  Process P1.1 sends message `foo` to process P1
+  Process P1.1 blocks
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits (normal)
+
+
+2
+Error type        : Deadlock
+Blocked processes : P1.1
+  Process P1 spawns process P1.1
+  Process P1 links to process P1.1
+  Process P1.1 sets flag `trap_exit` to `true`
+  Process P1 unlinks from process P1.1
+  Process P1 blocks
+  Process P1.1 sends message `foo` to process P1
+  Process P1.1 blocks
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits (normal)
+
+
+3
+Error type        : Deadlock
+Blocked processes : P1.1
+  Process P1 spawns process P1.1
+  Process P1 links to process P1.1
+  Process P1.1 sets flag `trap_exit` to `true`
+  Process P1.1 sends message `foo` to process P1
+  Process P1.1 blocks
+  Process P1 unlinks from process P1.1
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits (normal)
+
+
+4
+Error type        : Deadlock
+Blocked processes : P1.1
+  Process P1 spawns process P1.1
+  Process P1.1 sets flag `trap_exit` to `true`
+  Process P1 links to process P1.1
+  Process P1 unlinks from process P1.1
+  Process P1 blocks
+  Process P1.1 sends message `foo` to process P1
+  Process P1.1 blocks
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits (normal)
+
+
+5
+Error type        : Deadlock
+Blocked processes : P1.1
+  Process P1 spawns process P1.1
+  Process P1.1 sets flag `trap_exit` to `true`
+  Process P1 links to process P1.1
+  Process P1.1 sends message `foo` to process P1
+  Process P1.1 blocks
+  Process P1 unlinks from process P1.1
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits (normal)
+
+
+6
+Error type        : Deadlock
+Blocked processes : P1.1
+  Process P1 spawns process P1.1
+  Process P1.1 sets flag `trap_exit` to `true`
+  Process P1.1 sends message `foo` to process P1
+  Process P1.1 blocks
+  Process P1 links to process P1.1
+  Process P1 unlinks from process P1.1
+  Process P1 receives message `foo` from process P1.1
+  Process P1 exits (normal)

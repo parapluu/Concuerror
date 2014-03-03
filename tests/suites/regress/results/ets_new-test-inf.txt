@@ -1,0 +1,10 @@
+Checked 8 interleaving(s). 1 errors found.
+
+1
+Error type        : Exception
+Details           : {{badmatch,2},
+                     [{ets_new,child,0,[{file,"ets_new.erl"},{line,32}]}]}
+  Process P1 spawns process P1.1
+  Process P1: ets_new {table,[named_table,public]}
+  Process P1.1: ets_info {table}
+  Process P1.1 exits ("Exception")

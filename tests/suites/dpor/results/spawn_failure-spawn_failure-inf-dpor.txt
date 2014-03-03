@@ -1,0 +1,8 @@
+Checked 1 interleaving(s). 1 errors found.
+
+1
+Error type        : Exception
+Details           : {{badfun,2},[]}
+  Process P1 spawns process P1.1
+  Process P1 exits (normal)
+  Process P1.1 exits ("Exception")

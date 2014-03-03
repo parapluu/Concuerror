@@ -1,0 +1,9 @@
+Checked 3 interleaving(s). 1 errors found.
+
+1
+Error type        : Exception
+Details           : {badarg,[{erlang,register,[test,<0.52.0>],[]}]}
+  Process P1 spawns process P1.1
+  Process P1.1 exits (normal)
+  Process P1 registers process P1.1 (dead) as `test`
+  Process P1 exits ("Exception")

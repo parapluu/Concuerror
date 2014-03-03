@@ -1,0 +1,14 @@
+Checked 1 interleaving(s). 1 errors found.
+
+1
+Error type        : Assertion violation
+Module:Line       : sched_tests.erl:381
+Expected          : <0.50.0>
+Value             : undefined
+  Process P1 spawns process P1.1
+  Process P1 registers process P1 as `foo`
+  Process P1 sends message `foo` to process P1.1
+  Process P1 exits (normal)
+  Process P1.1 receives message `foo` from process P1
+  Process P1.1 requests the pid of unregistered process `foo` (undefined)
+  Process P1.1 exits ("Assertion violation")

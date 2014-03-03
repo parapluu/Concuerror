@@ -1,0 +1,13 @@
+Checked 4 interleaving(s). 1 errors found.
+
+1
+Error type        : Exception
+Details           : {{nocatch,untrapped},
+                     [{link_after,'-link_after/0-fun-2-',0,
+                                  [{file,"link_after.erl"},{line,12}]}]}
+  Process P1 spawns process P1.1
+  Process P1 links to process P1.1
+  Process P1.1 sets flag `trap_exit` to `true`
+  Process P1 exits (normal)
+  Process P1.1 receives message `{'EXIT',<0.50.0>,normal}` from process P1
+  Process P1.1 exits ("Exception")

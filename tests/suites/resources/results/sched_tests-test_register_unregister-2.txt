@@ -1,0 +1,11 @@
+Checked 3 interleaving(s). 1 errors found.
+
+1
+Error type        : Exception
+Details           : {badarg,[]}
+  Process P1 registers process P1 as `foo`
+  Process P1 spawns process P1.1
+  Process P1 unregisters process `foo`
+  Process P1 blocks
+  Process P1.1 sends message `bar` to process named 'foo'
+  Process P1.1 exits ("Exception")
