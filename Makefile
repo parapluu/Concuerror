@@ -104,7 +104,7 @@ concuerror:
 	ln -s src/concuerror $@
 
 $(EBIN)/getopt.beam:
-	git submodule update
+	git submodule update --init
 	cd deps/getopt && make
 	cp deps/getopt/ebin/getopt.beam $@
 
@@ -124,7 +124,7 @@ test: all $(EBIN)/meck.beam
 	@(cd tests; bash -c "./runtests.py suites/{$(SUITES)}/src/*")
 
 $(EBIN)/meck.beam:
-	git submodule update
+	git submodule update --init
 	cd deps/meck \
 		&& cp rebar.config rebar.config.bak \
 		&& sed -i 's/warnings_as_errors, //' rebar.config \
