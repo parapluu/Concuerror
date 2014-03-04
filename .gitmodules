@@ -1,3 +1,6 @@
 [submodule "deps/meck"]
 	path = deps/meck
 	url = https://github.com/eproxus/meck.git
+[submodule "deps/getopt"]
+	path = deps/getopt
+	url = https://github.com/jcomellas/getopt.git

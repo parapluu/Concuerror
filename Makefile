@@ -60,20 +60,24 @@ MODULES = \
 	concuerror_logger \
 	concuerror_options \
 	concuerror_printer \
-	concuerror_scheduler \
-	getopt
+	concuerror_scheduler
 
 vpath %.hrl include
 vpath %.erl src
 
-.PHONY: clean dialyze test
+.PHONY: compile clean dialyze test
 
-all: concuerror $(MODULES:%=$(EBIN)/%.beam)
+all: compile
+
+compile: concuerror $(MODULES:%=$(EBIN)/%.beam) $(EBIN)/getopt.beam
+
+include $(MODULES:%=$(EBIN)/%.Pbeam)
 
 clean:
 	rm -f concuerror
 	rm -f $(OPTS)
 	rm -f $(EBIN)/*.beam
+	rm -f $(EBIN)/*.Pbeam
 	rm -f $(EBIN)/meck
 
 ifneq ($(ERL_COMPILE_FLAGS), $(NATIVE_ERL_COMPILE_FLAGS))
@@ -102,8 +106,15 @@ dialyze: all
 concuerror:
 	ln -s src/concuerror $@
 
-### XXX: Replace with automatically dependencies
-$(EBIN)/%.beam: %.erl include/* Makefile
+$(EBIN)/getopt.beam:
+	git submodule update
+	cd deps/getopt && make
+	cp deps/getopt/ebin/getopt.beam $@
+
+$(EBIN)/%.Pbeam: %.erl
+	erlc -o $(EBIN) -I $(INCLUDE) -MD $<
+
+$(EBIN)/concuerror_%.beam: concuerror_%.erl Makefile
 	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -DVSN="\"$(VSN)\"" -o $(EBIN) $<
 
 
@@ -113,10 +124,10 @@ $(EBIN)/%.beam: %.erl include/* Makefile
 
 SUITES = basic_tests,dpor_tests
 
-test: all $(EBIN)/meck
+test: all $(EBIN)/meck.beam
 	@(cd tests; bash -c "./runtests.py suites/{$(SUITES)}/src/*")
 
-$(EBIN)/meck:
+$(EBIN)/meck.beam:
 	git submodule update
 	cd deps/meck \
 		&& cp rebar.config rebar.config.bak \
@@ -125,4 +136,3 @@ $(EBIN)/meck:
 		&& make compile \
 	        && mv rebar.config.bak rebar.config 
 	cp deps/meck/ebin/*.beam ebin
-	touch $@
