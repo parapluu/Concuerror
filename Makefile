@@ -16,7 +16,6 @@
 ### Application info
 ###----------------------------------------------------------------------
 
-APP_STRING = "Concuerror"
 VSN = "0.9"
 
 ###----------------------------------------------------------------------
@@ -62,7 +61,6 @@ MODULES = \
 	concuerror_printer \
 	concuerror_scheduler
 
-vpath %.hrl include
 vpath %.erl src
 
 .PHONY: compile clean dialyze test
@@ -78,7 +76,6 @@ clean:
 	rm -f $(OPTS)
 	rm -f $(EBIN)/*.beam
 	rm -f $(EBIN)/*.Pbeam
-	rm -f $(EBIN)/meck
 
 ifneq ($(ERL_COMPILE_FLAGS), $(NATIVE_ERL_COMPILE_FLAGS))
 native:
@@ -115,8 +112,7 @@ $(EBIN)/%.Pbeam: %.erl
 	erlc -o $(EBIN) -I $(INCLUDE) -MD $<
 
 $(EBIN)/concuerror_%.beam: concuerror_%.erl Makefile
-	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DEBIN="\"$(EBIN)\"" -DAPP_STRING="\"$(APP_STRING)\"" -DVSN="\"$(VSN)\"" -o $(EBIN) $<
-
+	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DVSN="\"$(VSN)\"" -o $(EBIN) $<
 
 ###----------------------------------------------------------------------
 ### Testing
@@ -134,5 +130,5 @@ $(EBIN)/meck.beam:
 		&& sed -i 's/warnings_as_errors, //' rebar.config \
 		&& make get-deps \
 		&& make compile \
-	        && mv rebar.config.bak rebar.config 
+		&& mv rebar.config.bak rebar.config
 	cp deps/meck/ebin/*.beam ebin

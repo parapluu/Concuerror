@@ -16,11 +16,15 @@ parse_cl(CommandLineArgs) ->
 parse_cl_aux(CommandLineArgs) ->
   case getopt:parse(getopt_spec(), CommandLineArgs) of
     {ok, {Options, OtherArgs}} ->
-      case proplists:get_bool(help, Options) of
-        true ->
+      case {proplists:get_bool(help, Options),
+            proplists:get_bool(version, Options)} of
+        {true,_} ->
           cl_usage(),
           {exit, ok};
-        false ->
+        {_,true} ->
+          cl_version(),
+          {exit, ok};
+        {false, false} ->
           case OtherArgs =:= [] of
             true -> ok;
             false -> opt_warn("Ignoring: ~s", [string:join(OtherArgs, " ")])
@@ -75,6 +79,8 @@ options() ->
     " after being sent."}
   ,{'light-dpor', [logger, scheduler], $l, "light-dpor", {boolean, false},
     "Use lightweight (source) DPOR instead of optimal."}
+  ,{version, [frontend], undefined, "version", undefined,
+    "Display version information about Concuerror."}
   ,{wait, [logger, scheduler], $w, "wait", {integer, 20000},
     "How many ms to wait before assuming a process to be stuck in an infinite"
     " loop between two operations with side-effects. Setting it to -1 makes"
@@ -92,6 +98,10 @@ filter_options(Mode, {Key, _}) ->
 
 cl_usage() ->
   getopt:usage(getopt_spec(), "./concuerror").
+
+cl_version() ->
+  io:format(standard_error, "Concuerror v~s~n",[?VSN]),
+  ok.
 
 finalize(Options) ->
   Finalized = finalize(lists:reverse(proplists:unfold(Options)), []),
