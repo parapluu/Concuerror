@@ -309,16 +309,19 @@ update_state(#event{actor = Actor, special = Special} = Event,
     Last#trace_state{done = NewLastDone, wakeup_tree = NewLastWakeupTree},
   InitNewState =
     State#scheduler_state{trace = [InitNextTrace, NewLastTrace|Prev]},
-  NewState =
-    case Event#event.event_info of
-      #exit_event{reason = Reason} = Exit when Reason =/= normal ->
-        Warnings = InitNewState#scheduler_state.current_warnings,
-        Stacktrace = Exit#exit_event.stacktrace,
-        NewWarnings = [{crash, {Index, Actor, Reason, Stacktrace}}|Warnings],
-        InitNewState#scheduler_state{current_warnings = NewWarnings};
-      _ -> InitNewState
-    end,
+  NewState = maybe_log_crash(Event, InitNewState, Index),
   {ok, update_special(Special, NewState)}.
+
+maybe_log_crash(Event, State, Index) ->
+  case Event#event.event_info of
+    #exit_event{reason = Reason} = Exit when Reason =/= normal ->
+      #event{actor = Actor} = Event,
+      Warnings = State#scheduler_state.current_warnings,
+      Stacktrace = Exit#exit_event.stacktrace,
+      NewWarnings = [{crash, {Index, Actor, Reason, Stacktrace}}|Warnings],
+      State#scheduler_state{current_warnings = NewWarnings};
+    _ -> State
+  end.
 
 update_sleeping(#event{event_info = NewInfo}, Sleeping, State) ->
   #scheduler_state{logger = Logger} = State,
@@ -673,10 +676,10 @@ has_more_to_explore(State) ->
     true -> {false, State#scheduler_state{trace = []}};
     false ->
       ?debug(Logger, "New interleaving, replaying...~n", []),
-      ok = replay_prefix(TracePrefix, State),
+      NewState = replay_prefix(TracePrefix, State),
       ?debug(Logger, "~s~n",["Replay done...!"]),
-      NewState = State#scheduler_state{trace = TracePrefix},
-      {true, NewState}
+      FinalState = NewState#scheduler_state{trace = TracePrefix},
+      {true, FinalState}
   end.
 
 find_prefix([], _State) -> [];
@@ -717,11 +720,11 @@ replay_prefix(Trace, State) ->
     end,
   ok = ets:foldl(Fold, ok, Processes),
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
-  ok = replay_prefix_aux(lists:reverse(Trace), State).
+  replay_prefix_aux(lists:reverse(Trace), State).
 
-replay_prefix_aux([_], _State) ->
+replay_prefix_aux([_], State) ->
   %% Last state has to be properly replayed.
-  ok;
+  State;
 replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   #scheduler_state{logger = Logger} = State,
   ?trace_nl(Logger, "~s~n", [concuerror_printer:pretty_s({I, Event})]),
@@ -738,7 +741,7 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
            [A, B, Event, NewEvent]),
       error(replay_crashed)
   end,
-  replay_prefix_aux(Rest, State).
+  replay_prefix_aux(Rest, maybe_log_crash(Event, State, I)).
 
 %% XXX: Stub
 cleanup(#scheduler_state{logger = Logger, processes = Processes} = State) ->
