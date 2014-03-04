@@ -103,7 +103,7 @@
 -define(new_process(Pid, Symbolic),
         {Pid, running, ?process_name_none, Symbolic, 0, regular}).
 -define(new_system_process(Pid, Name),
-        {Pid, running, Name, Name, 0, system}).
+        {Pid, running, Name, atom_to_list(Name), 0, system}).
 -define(process_pat_pid(Pid),                {Pid,      _,    _, _, _,    _}).
 -define(process_pat_pid_name(Pid, Name),     {Pid,      _, Name, _, _,    _}).
 -define(process_pat_pid_status(Pid, Status), {Pid, Status,    _, _, _,    _}).
@@ -139,6 +139,7 @@
 
 -record(builtin_event, {
           actor = self() :: pid(),
+          extra          :: term(),
           mfa            :: mfargs(),
           result         :: term(),
           status = ok    :: 'ok' | 'crashed' | 'unknown'

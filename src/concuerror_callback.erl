@@ -461,7 +461,12 @@ run_built_in(erlang, unregister, 1, [Name],
     [[Pid]] = ets:match(Processes, ?process_match_name_to_pid(Name)),
     true =
       ets:update_element(Processes, Pid, {?process_name, ?process_name_none}),
-    {true, Info}
+    #concuerror_info{next_event = #event{event_info = EventInfo} = Event} =
+      Info,
+    NewEventInfo = EventInfo#builtin_event{extra = Pid},
+    NewInfo =
+      Info#concuerror_info{next_event = Event#event{event_info = NewEventInfo}},
+    {true, NewInfo}
   catch
     _:_ -> error(badarg)
   end;

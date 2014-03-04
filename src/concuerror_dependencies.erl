@@ -164,8 +164,24 @@ dependent_exit(_Exit, _MFA) ->
 
 %%------------------------------------------------------------------------------
 
+dependent_process_info(#builtin_event{mfa = {_,_,[Pid, registered_name]}},
+                       Other) ->
+  case Other of
+    #builtin_event{extra = E, mfa = {Module, Name, Args}} ->
+      case Module =:= erlang of
+        true when Name =:= register ->
+          [_, RPid] = Args,
+          Pid =:= RPid;
+        true when Name =:= unregister ->
+          E =:= Pid;
+        _ -> false
+      end;
+    #exit_event{actor = EPid} ->
+      Pid =:= EPid;
+    _ -> false
+  end;
 dependent_process_info(_Pinfo, _B) ->
-  ?debug("UNSPECIFIED PINFO DEPENDENCY!\n~p\n", [_B]),
+  ?debug("UNSPECIFIED PINFO DEPENDENCY!\n~p\n", [{_Pinfo, _B}]),
   ?undefined_error,
   true.
 

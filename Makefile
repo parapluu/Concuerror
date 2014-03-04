@@ -118,7 +118,7 @@ $(EBIN)/concuerror_%.beam: concuerror_%.erl Makefile
 ### Testing
 ###----------------------------------------------------------------------
 
-SUITES = basic_tests,dpor_tests
+SUITES = basic_tests,dpor_tests,advanced_tests
 
 test: all $(EBIN)/meck.beam
 	@(cd tests; bash -c "./runtests.py suites/{$(SUITES)}/src/*")

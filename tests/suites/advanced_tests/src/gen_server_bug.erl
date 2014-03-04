@@ -1,11 +1,13 @@
 -module(gen_server_bug).
 -behaviour(gen_server).
 
--export([test_register/0, test_without_register/0]).
+-export([test_register/0, test_without_register/0, scenarios/0]).
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2,
          code_change/3]).
 
+scenarios() ->
+    [{test_register, inf, dpor}].
 
 test_register() ->
     ServerName = {local, 'gen_server_bug'},
