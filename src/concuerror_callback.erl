@@ -150,6 +150,10 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
     %% XXX: TODO If replaying, inspect if original crashed and replay crash
     {Value, #concuerror_info{next_event = Event} = UpdatedInfo} =
       run_built_in(Module, Name, Arity, Args, LocatedInfo),
+    case Event#event.event_info of
+      #builtin_event{status = {crashed, R}} -> error(R);
+      _ -> ok
+    end,
     ?debug_flag(?builtin, {'built-in', Module, Name, Arity, Value, Location}),
     ?debug_flag(?args, {args, Args}),
     ?debug_flag(?result, {args, Value}),
@@ -164,7 +168,8 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
       receive after infinity -> ok end;
     error:Reason ->
       #concuerror_info{next_event = FEvent} = LocatedInfo,
-      FEventInfo = #builtin_event{mfa = {Module, Name, Args}, status = crashed},
+      FEventInfo =
+        #builtin_event{mfa = {Module, Name, Args}, status = {crashed, Reason}},
       FNotification = FEvent#event{event_info = FEventInfo},
       FNewInfo = notify(FNotification, LocatedInfo),
       FinalInfo =

@@ -142,7 +142,7 @@
           extra          :: term(),
           mfa            :: mfargs(),
           result         :: term(),
-          status = ok    :: 'ok' | 'crashed' | 'unknown'
+          status = ok    :: 'ok' | {'crashed', term()} | 'unknown'
          }).
 
 -type builtin_event() :: #builtin_event{}.

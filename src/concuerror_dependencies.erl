@@ -120,17 +120,20 @@ dependent(_EventA, _EventB) ->
 
 %%------------------------------------------------------------------------------
 
-dependent_exit(_Exit, {erlang, exit, _}) ->
+dependent_exit(_Exit, {erlang, Indep, _})
+  when
+    Indep =:= exit
+    ; Indep =:= process_flag
+    ; Indep =:= put
+    ; Indep =:= spawn
+    ; Indep =:= spawn_opt
+    ->
   false;
 dependent_exit(#exit_event{actor = Exiting},
                {erlang, is_process_alive, [Pid]}) ->
   Exiting =:= Pid;
 dependent_exit(#exit_event{actor = Exiting}, {erlang, link, [Linked]}) ->
   Exiting =:= Linked;
-dependent_exit(_Exit, {erlang, process_flag, _}) ->
-  false;
-dependent_exit(_Exit, {erlang, spawn, _}) ->
-  false;
 dependent_exit(#exit_event{monitors = Monitors}, {erlang, demonitor, [Ref, _]}) ->
   false =/= lists:keyfind(Ref, 1, Monitors);
 dependent_exit(#exit_event{actor = Exiting, name = Name},

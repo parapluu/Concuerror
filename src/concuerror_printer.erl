@@ -68,11 +68,12 @@ pretty_aux(#event{} = Event, FAcc) ->
 pretty_aux(List, FAcc) when is_list(List) ->
   lists:foldl(fun pretty_aux/2, FAcc, List).
 
-pretty_info(#builtin_event{mfa = {erlang, '!', [To, Msg]}, status = crashed}) ->
-  io_lib:format("Exception raised by: ~w ! ~w", [To, Msg]);
-pretty_info(#builtin_event{mfa = {M, F, Args}, status = crashed}) ->
+pretty_info(#builtin_event{mfa = {erlang, '!', [To, Msg]},
+                           status = {crashed, Reason}}) ->
+  io_lib:format("Exception ~w raised by: ~w ! ~w", [Reason, To, Msg]);
+pretty_info(#builtin_event{mfa = {M, F, Args}, status = {crashed, Reason}}) ->
   ArgString = pretty_arg(Args),
-  io_lib:format("Exception raised by: ~p:~p(~s)",[M, F, ArgString]);
+  io_lib:format("Exception ~w raised by: ~p:~p(~s)",[Reason, M, F, ArgString]);
 pretty_info(#builtin_event{mfa = {erlang, '!', [To, Msg]}, result = Result}) ->
   io_lib:format("~w = ~w ! ~w", [Result, To, Msg]);
 pretty_info(#builtin_event{mfa = {M, F, Args}, result = Result}) ->
@@ -82,7 +83,7 @@ pretty_info(#exit_event{reason = Reason}) ->
   ReasonStr =
     case Reason =:= normal of
       true -> "normally";
-      false -> "abnormally"
+      false -> io_lib:format("abnormally (~w)", [Reason])
     end,
   io_lib:format("exits ~s",[ReasonStr]);
 pretty_info(#message_event{} = MessageEvent) ->
