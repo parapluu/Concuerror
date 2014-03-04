@@ -109,7 +109,7 @@ $(EBIN)/getopt.beam:
 	cp deps/getopt/ebin/getopt.beam $@
 
 $(EBIN)/%.Pbeam: %.erl
-	erlc -o $(EBIN) -I $(INCLUDE) -MD $<
+	erlc -o $(EBIN) -I $(INCLUDE) -MD -MT $@ $<
 
 $(EBIN)/concuerror_%.beam: concuerror_%.erl Makefile
 	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DVSN="\"$(VSN)\"" -o $(EBIN) $<
