@@ -5,16 +5,8 @@
 #
 #
 
-*~
-*.swp
-*.beam
-*.Pbeam
-*.dot
-*.png
-*.dump
-!/img/*.png
-*.mk
-concuerror
-!src/concuerror
+ebin/*.beam
+ebin/*.Pbeam
+/concuerror
 .concuerror_plt
-results.txt
+/results.txt

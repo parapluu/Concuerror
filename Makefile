@@ -18,17 +18,7 @@ all: compile
 ### Application info
 ###----------------------------------------------------------------------
 
-VSN = "0.9"
-
-###----------------------------------------------------------------------
-### Orientation information
-###----------------------------------------------------------------------
-
-TOP = 	  $(CURDIR)
-
-EBIN = 	  $(TOP)/ebin
-
-INCLUDE = $(TOP)/include
+VSN = 0.9
 
 ###----------------------------------------------------------------------
 ### Flags
@@ -62,15 +52,18 @@ vpath %.erl src
 
 .PHONY: compile clean dialyze test submodules
 
-compile: $(MODULES:%=$(EBIN)/%.beam) meck getopt concuerror
+compile: $(MODULES:%=ebin/%.beam) meck getopt concuerror
 
-include $(MODULES:%=$(EBIN)/%.Pbeam)
+include $(MODULES:%=ebin/%.Pbeam)
 
-$(EBIN)/%.Pbeam: %.erl
-	erlc -o $(EBIN) -I $(INCLUDE) -MT $(subst .Pbeam,.beam,$@) -MD $<
+ebin/%.Pbeam: %.erl | ebin
+	erlc -o ebin -I include -MD $<
 
-$(EBIN)/concuerror_%.beam: concuerror_%.erl Makefile
-	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DVSN="\"$(VSN)\"" -o $(EBIN) $<
+ebin/concuerror_%.beam: concuerror_%.erl Makefile | ebin
+	erlc $(ERL_COMPILE_FLAGS) -I include -DVSN="\"$(VSN)\"" -o ebin $<
+
+ebin:
+	mkdir ebin
 
 concuerror:
 	ln -s src/concuerror $@
@@ -91,11 +84,10 @@ submodules:
 
 clean:
 	rm -f concuerror
-	rm -f $(EBIN)/*.beam
-	rm -f $(EBIN)/*.Pbeam
+	rm -rf ebin
 
 dialyze: all .concuerror_plt
-	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) $(EBIN)/*.beam
+	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) ebin/*.beam
 
 .concuerror_plt: | meck getopt
 	dialyzer --build_plt --output_plt $@ --apps erts kernel stdlib compiler \
