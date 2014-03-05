@@ -1,0 +1,169 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/register_again_2.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{register_again_2,register_again_2,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 15 process P.3 exited abnormally
+    Reason:
+      {badarg,
+          [{erlang,unregister,
+               [bank],
+               [20,
+                {file,
+                    "/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/register_again_2.erl"}]},
+           {register_again_2,'-register_again_2/0-fun-2-',1,
+               [{file,
+                    "/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/register_again_2.erl"},
+                {line,20}]}]}
+    Stacktrace:
+      [{erlang,unregister,
+               [bank],
+               [20,
+                {file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/register_again_2.erl"}]},
+       {register_again_2,'-register_again_2/0-fun-2-',1,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/register_again_2.erl"},
+                          {line,20}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(bank, P)
+    in register_again_2.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<register_again_2.0.5874614>,[]])
+    in erlang.erl line 2188
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<register_again_2.1.5874614>,[]])
+    in erlang.erl line 2188
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<register_again_2.2.5874614>,[]])
+    in erlang.erl line 2188
+   5: P.1: money = bank ! money
+    in register_again_2.erl line 11
+   6: Message (money) from P.1 reaches P
+   7: P: receives message (money)
+    in register_again_2.erl line 28
+   8: P: bank_got_money = P.2 ! bank_got_money
+    in register_again_2.erl line 29
+   9: Message (bank_got_money) from P reaches P.2
+  10: P: exits normally
+  11: P.1: exits normally
+  12: P.2: receives message (bank_got_money)
+    in register_again_2.erl line 14
+  13: P.2: exits normally
+  14: P.3: Exception badarg raised by: erlang:unregister(bank)
+    in register_again_2.erl line 20
+  15: P.3: exits abnormally ({badarg,[{erlang,unregister,[bank],[20,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,114,101,103,105,115,116,101,114,95,97,103,97,105,110,95,50,46,101,114,108]}]},{register_again_2,'-register_again_2/0-fun-2-',1,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,114,101,103,105,115,116,101,114,95,97,103,97,105,110,95,50,46,101,114,108]},{line,20}]}]})
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in register_again_2.erl line 28
+    P.2 in register_again_2.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(bank, P)
+    in register_again_2.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<register_again_2.0.5874614>,[]])
+    in erlang.erl line 2188
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<register_again_2.1.5874614>,[]])
+    in erlang.erl line 2188
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<register_again_2.2.5874614>,[]])
+    in erlang.erl line 2188
+   5: P.3: true = erlang:unregister(bank)
+    in register_again_2.erl line 20
+   6: P.1: Exception badarg raised by: bank ! money
+    in register_again_2.erl line 11
+   7: P.1: exits normally
+   8: P.3: true = erlang:register(bank, P.3)
+    in register_again_2.erl line 21
+   9: P.3: receive timeout expired after 0 ms
+    in register_again_2.erl line 22
+  10: P.3: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in register_again_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(bank, P)
+    in register_again_2.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<register_again_2.0.5874614>,[]])
+    in erlang.erl line 2188
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<register_again_2.1.5874614>,[]])
+    in erlang.erl line 2188
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<register_again_2.2.5874614>,[]])
+    in erlang.erl line 2188
+   5: P.3: true = erlang:unregister(bank)
+    in register_again_2.erl line 20
+   6: P.3: true = erlang:register(bank, P.3)
+    in register_again_2.erl line 21
+   7: P.1: money = bank ! money
+    in register_again_2.erl line 11
+   8: Message (money) from P.1 reaches P.3
+   9: P.1: exits normally
+  10: P.3: receives message (money)
+    in register_again_2.erl line 22
+  11: P.3: robber_got_money = P.2 ! robber_got_money
+    in register_again_2.erl line 23
+  12: Message (robber_got_money) from P.3 reaches P.2
+  13: P.2: receives message (robber_got_money)
+    in register_again_2.erl line 14
+  14: P.2: exits normally
+  15: P.3: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in register_again_2.erl line 28
+    P.2 in register_again_2.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(bank, P)
+    in register_again_2.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<register_again_2.0.5874614>,[]])
+    in erlang.erl line 2188
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<register_again_2.1.5874614>,[]])
+    in erlang.erl line 2188
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<register_again_2.2.5874614>,[]])
+    in erlang.erl line 2188
+   5: P.3: true = erlang:unregister(bank)
+    in register_again_2.erl line 20
+   6: P.3: true = erlang:register(bank, P.3)
+    in register_again_2.erl line 21
+   7: P.1: money = bank ! money
+    in register_again_2.erl line 11
+   8: P.1: exits normally
+   9: P.3: receive timeout expired after 0 ms
+    in register_again_2.erl line 22
+  10: Message (money) from P.1 reaches P.3
+  11: P.3: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in register_again_2.erl line 28
+    P.2 in register_again_2.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(bank, P)
+    in register_again_2.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<register_again_2.0.5874614>,[]])
+    in erlang.erl line 2188
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<register_again_2.1.5874614>,[]])
+    in erlang.erl line 2188
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<register_again_2.2.5874614>,[]])
+    in erlang.erl line 2188
+   5: P.3: true = erlang:unregister(bank)
+    in register_again_2.erl line 20
+   6: P.3: true = erlang:register(bank, P.3)
+    in register_again_2.erl line 21
+   7: P.3: receive timeout expired after 0 ms
+    in register_again_2.erl line 22
+   8: P.3: exits normally
+   9: P.1: Exception badarg raised by: bank ! money
+    in register_again_2.erl line 11
+  10: P.1: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 5 errors, 6/6 interleavings explored

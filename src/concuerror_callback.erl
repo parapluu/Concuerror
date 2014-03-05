@@ -47,6 +47,7 @@
           escaped_pdict = []         :: term(),
           ets_tables                 :: ets_tables(),
           exit_reason = normal       :: term(),
+          extra                      :: term(),
           links                      :: links(),
           logger                     :: pid(),
           messages_new = queue:new() :: queue(),
@@ -175,11 +176,11 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
   ?debug_flag(?short_builtin, {'built-in', Module, Name, Arity, Location}),
   %% {Stack, ResetInfo} = reset_stack(Info),
   %% ?debug_flag(?stack, {stack, Stack}),
-  LocatedInfo = add_location_info(Location, Info),%ResetInfo),
+  LocatedInfo =
+    add_location_info(Location, Info#concuerror_info{extra = undefined}),%ResetInfo),
   try
-    %% XXX: TODO If replaying, inspect if original crashed and replay crash
-    {Value, #concuerror_info{next_event = Event} = UpdatedInfo} =
-      run_built_in(Module, Name, Arity, Args, LocatedInfo),
+    {Value, UpdatedInfo} = run_built_in(Module, Name, Arity, Args, LocatedInfo),
+    #concuerror_info{extra = Extra, next_event = Event} = UpdatedInfo,
     case Event#event.event_info of
       #builtin_event{status = {crashed, R}} -> error(R);
       _ -> ok
@@ -187,7 +188,8 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
     ?debug_flag(?builtin, {'built-in', Module, Name, Arity, Value, Location}),
     ?debug_flag(?args, {args, Args}),
     ?debug_flag(?result, {args, Value}),
-    EventInfo = #builtin_event{mfa = {Module, Name, Args}, result = Value},
+    EventInfo =
+      #builtin_event{extra = Extra, mfa = {Module, Name, Args}, result = Value},
     Notification = Event#event{event_info = EventInfo},
     NewInfo = notify(Notification, UpdatedInfo),
     {{didit, Value}, NewInfo}
@@ -496,11 +498,7 @@ run_built_in(erlang, unregister, 1, [Name],
     [[Pid]] = ets:match(Processes, ?process_match_name_to_pid(Name)),
     true =
       ets:update_element(Processes, Pid, {?process_name, ?process_name_none}),
-    #concuerror_info{next_event = #event{event_info = EventInfo} = Event} =
-      Info,
-    NewEventInfo = EventInfo#builtin_event{extra = Pid},
-    NewInfo =
-      Info#concuerror_info{next_event = Event#event{event_info = NewEventInfo}},
+    NewInfo = Info#concuerror_info{extra = Pid},
     {true, NewInfo}
   catch
     _:_ -> error(badarg)
