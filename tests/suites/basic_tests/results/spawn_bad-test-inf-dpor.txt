@@ -13,14 +13,14 @@ Concuerror started with options:
 Erroneous interleaving 1:
 * At step 2 process P exited abnormally
     Reason:
-      {badarg,[{erlang,error,[badarg,[2]],[2333,{file,"erlang.erl"}]}]}
+      {badarg,[{erlang,error,[badarg,[2]],[2192,{file,"erlang.erl"}]}]}
     Stacktrace:
-      [{erlang,error,[badarg,[2]],[2333,{file,"erlang.erl"}]}]
+      [{erlang,error,[badarg,[2]],[2192,{file,"erlang.erl"}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: Exception raised by: erlang:error(badarg, [2])
-    in erlang.erl line 2333
-   2: P: exits abnormally
+   1: P: Exception badarg raised by: erlang:error(badarg, [2])
+    in erlang.erl line 2192
+   2: P: exits abnormally ({badarg,[{erlang,error,[badarg,[2]],[2192,{file,[101,114,108,97,110,103,46,101,114,108]}]}]})
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 1 errors, 1/1 interleavings explored

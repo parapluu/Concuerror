@@ -10,29 +10,18 @@
 -export([instrumented/3]).
 
 -include("concuerror.hrl").
--include("concuerror_callback.hrl").
 
 %%------------------------------------------------------------------------------
 
--spec instrumented(Tag      :: instrumented_tags(),
+-spec instrumented(Tag      :: instrumented_tag(),
                    Args     :: [term()],
                    Location :: term()) -> Return :: term().
 
 instrumented(Tag, Args, Location) ->
   Ret =
-    case get(concuerror_info) of
-      #concuerror_info{escaped_pdict = Escaped} = Info ->
-        erase(),
-        [put(K,V) || {K,V} <- Escaped],
-        {Result, #concuerror_info{} = NewInfo} =
-          concuerror_callback:instrumented(Tag, Args, Location, Info),
-        NewEscaped = get(),
-        erase(),
-        FinalInfo = NewInfo#concuerror_info{escaped_pdict = NewEscaped},
-        put(concuerror_info, FinalInfo),
-        Result;
-    undefined ->
-        doit
+    case erase(concuerror_info) of
+      undefined -> doit;
+      Info -> concuerror_callback:instrumented_top(Tag, Args, Location, Info)
     end,
   case Ret of
     doit ->

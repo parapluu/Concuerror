@@ -30,17 +30,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -90,17 +90,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -150,17 +150,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -210,17 +210,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -270,17 +270,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -330,17 +330,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -390,17 +390,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -450,17 +450,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -510,17 +510,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -570,17 +570,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -630,17 +630,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -690,17 +690,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -750,17 +750,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -810,17 +810,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -870,17 +870,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -930,17 +930,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.1: [{5,0}] = ets:lookup(table, 5)
     in last_zero.erl line 19
   15: P.1: exits normally
@@ -990,17 +990,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1058,17 +1058,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1126,17 +1126,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1188,17 +1188,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1256,17 +1256,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1324,17 +1324,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1386,17 +1386,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1450,17 +1450,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1514,17 +1514,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1582,17 +1582,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1650,17 +1650,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1712,17 +1712,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1780,17 +1780,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1848,17 +1848,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1910,17 +1910,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -1974,17 +1974,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -2038,17 +2038,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -2104,17 +2104,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -2170,17 +2170,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -2236,17 +2236,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.2: true = ets:insert(table, {1,1})
@@ -2302,17 +2302,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2370,17 +2370,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2438,17 +2438,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2500,17 +2500,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2568,17 +2568,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2636,17 +2636,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2698,17 +2698,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2762,17 +2762,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2826,17 +2826,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2894,17 +2894,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -2962,17 +2962,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3024,17 +3024,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3092,17 +3092,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3160,17 +3160,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3222,17 +3222,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3286,17 +3286,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3350,17 +3350,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3416,17 +3416,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3482,17 +3482,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3548,17 +3548,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3614,17 +3614,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3682,17 +3682,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3750,17 +3750,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3818,17 +3818,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3886,17 +3886,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -3954,17 +3954,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -4022,17 +4022,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -4090,17 +4090,17 @@ Interleaving info:
    7: P: true = ets:insert(table, {5,0})
     in last_zero.erl line 12
    8: P: P.1 = erlang:spawn(erlang, apply, [#Fun<last_zero.2.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    9: P: P.2 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   10: P: P.3 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   11: P: P.4 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   12: P: P.5 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   13: P: P.6 = erlang:spawn(erlang, apply, [#Fun<last_zero.6.82627267>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
   14: P.2: [{0,0}] = ets:lookup(table, 0)
     in last_zero.erl line 26
   15: P.3: [{1,0}] = ets:lookup(table, 1)
@@ -4138,5 +4138,5 @@ Interleaving info:
     in last_zero.erl line 27
   34: P.2: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 64 errors, 64/64 interleavings explored

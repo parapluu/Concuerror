@@ -6,6 +6,8 @@
 
 -include("concuerror.hrl").
 
+-spec error_s(concuerror_warning_info()) -> string().
+
 error_s({Type, Info}) ->
   case Type of
     deadlock ->
@@ -27,8 +29,15 @@ error_s({Type, Info}) ->
       io_lib:format("* Nobody woke-up: ~p~n", [Info])
   end.
 
+-spec pretty(io:device(), event()) -> ok.
+
 pretty(Output, I) ->
-  pretty_aux(I, {fun(P, A) -> io:format(Output, P ++ "~n", A) end, []}).
+  _ = pretty_aux(I, {fun(P, A) -> io:format(Output, P ++ "~n", A) end, []}),
+  ok.
+
+-type indexed_event() :: {index(), event()}.
+
+-spec pretty_s(event() | indexed_event() | [indexed_event()]) -> [string()].
 
 pretty_s(I) ->
   {_, Acc} = pretty_aux(I, {fun io_lib:format/2, []}),

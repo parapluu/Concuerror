@@ -14,7 +14,7 @@
 %%------------------------------------------------------------------------------
 
 %% -type clock_vector() :: orddict:orddict(). %% orddict(pid(), index()).
--type clock_map()    :: dict:dict(). %% dict(pid(), clock_vector()).
+-type clock_map()    :: dict(). %% dict(pid(), clock_vector()).
 
 %%------------------------------------------------------------------------------
 
@@ -53,6 +53,8 @@
 %% =============================================================================
 %% LOGIC (high level description of the exploration algorithm)
 %% =============================================================================
+
+-spec run(options()) -> ok.
 
 run(Options) ->
   {Pid, Ref} = spawn_monitor(fun() -> backend_run(Options) end),
@@ -136,7 +138,7 @@ explore(State) ->
           {HasMore, NewState} = has_more_to_explore(LogState),
           case HasMore of
             true -> explore(NewState);
-            false -> {ok, NewState}
+            false -> {completed, NewState}
           end
       end
   end.
@@ -730,7 +732,7 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   ?trace_nl(Logger, "~s~n", [concuerror_printer:pretty_s({I, Event})]),
   {ok, NewEvent} = get_next_event_backend(Event, State),
   try
-    Event = NewEvent
+    true = Event =:= NewEvent
   catch
     A:B ->
       ?log(Logger, ?lerror,
@@ -744,12 +746,12 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   replay_prefix_aux(Rest, maybe_log_crash(Event, State, I)).
 
 %% XXX: Stub
-cleanup(#scheduler_state{logger = Logger, processes = Processes} = State) ->
+cleanup(#scheduler_state{logger = Logger, processes = Processes}) ->
   %% Kill still running processes, deallocate tables, etc...
   Fold = fun(?process_pat_pid(P), true) -> unlink(P), exit(P, kill) end,
   true = ets:foldl(Fold, true, Processes),
   ?trace(Logger, "Reached the end!~n",[]),
-  State.
+  ok.
 
 %% =============================================================================
 %% INTERNAL INTERFACES
@@ -863,11 +865,14 @@ system_wrapper_loop(Name, Wrapped, Scheduler) ->
           {From, Request} = Data,
           erlang:send(Wrapped, {self(), Request}),
           receive
-            Msg -> Scheduler ! {system_reply, From, Id, Msg}
+            Msg ->
+              Scheduler ! {system_reply, From, Id, Msg},
+              ok
           end;
         error_logger ->
           erlang:send(Wrapped, Data),
-          Scheduler ! {trapping, false}
+          Scheduler ! {trapping, false},
+          ok
       end
   end,
   system_wrapper_loop(Name, Wrapped, Scheduler).

@@ -79,6 +79,8 @@
 -define(trace_nl(Logger, Format, Data),
         ?log(Logger, ?ltrace, Format, Data)).
 
+-type log_level() :: ?lerror | ?lwarn | ?linfo | ?ldebug | ?ltrace.
+
 %% Scheduler's timeout
 -define(MINIMUM_TIMEOUT, 500).
 -define(TICKER_TIMEOUT, 500).
@@ -99,6 +101,8 @@
 -define(ets_match_owner_to_tid_heir(Owner), {'$1', Owner, '_', '$2'}).
 
 -type processes() :: ets:tid().
+-type symbolic_name() :: string().
+
 -define(process_name_none, 0).
 -define(new_process(Pid, Symbolic),
         {Pid, running, ?process_name_none, Symbolic, 0, regular}).
@@ -117,6 +121,9 @@
 
 -type links() :: ets:tid().
 -type monitors() :: ets:tid().
+
+-type scheduler() :: pid().
+-type logger()    :: pid().
 %%------------------------------------------------------------------------------
 
 -type options() :: proplists:proplist().
@@ -197,7 +204,10 @@
 
 -type event() :: #event{}.
 
--type concuerror_warning() :: 'none' | {[concuerror_warning_info()], [event()]}.
+-type instrumented_tag() :: 'apply' | 'call' | 'receive'.
+
+-type concuerror_warnings() ::
+        'none' | {[concuerror_warning_info()], [event()]}.
 
 -type concuerror_warning_info() ::
         {'crash', pid(), index()} |

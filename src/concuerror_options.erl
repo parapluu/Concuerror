@@ -6,6 +6,8 @@
 
 -include("concuerror.hrl").
 
+-spec parse_cl([string()]) -> options().
+
 parse_cl(CommandLineArgs) ->
   try
     parse_cl_aux(CommandLineArgs)
@@ -91,6 +93,8 @@ options() ->
   ,{quit, []}                    %% Controlling whether a halt will happen
   ,{files, [logger]}             %% List of included files (to be shown in the log)
   ].
+
+-spec filter_options(atom(), {atom(), term()}) -> boolean().
 
 filter_options(Mode, {Key, _}) ->
   OptInfo = lists:keyfind(Key, 1, options()),
@@ -228,7 +232,8 @@ compile_and_load([File|Rest], TmpDir, Acc) ->
           FullBeamFile = filename:join(TmpDir, BeamFile),
           LoadRes = code:load_abs(FullBeamFile),
           ok = concuerror_loader:load(Module),
-          ok = file:delete(FullBeamFile ++ code:objfile_extension()),
+          %% This may fail when concurrently running a test... Ignore.
+          _ = file:delete(FullBeamFile ++ code:objfile_extension()),
           case LoadRes of
             {module, Module} ->
               compile_and_load(Rest, TmpDir, [File|Acc]);

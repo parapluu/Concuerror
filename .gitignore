@@ -13,7 +13,8 @@
 *.png
 *.dump
 !/img/*.png
-clean.sh
 *.mk
 concuerror
 !src/concuerror
+.concuerror_plt
+results.txt

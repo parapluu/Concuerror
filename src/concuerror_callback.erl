@@ -3,7 +3,7 @@
 -module(concuerror_callback).
 
 %% Interface to concuerror_inspect:
--export([instrumented/4]).
+-export([instrumented_top/4]).
 
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/2]).
@@ -41,7 +41,25 @@
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
--include("concuerror_callback.hrl").
+
+-record(concuerror_info, {
+          'after-timeout'            :: infinite | integer(),
+          escaped_pdict = []         :: term(),
+          ets_tables                 :: ets_tables(),
+          exit_reason = normal       :: term(),
+          links                      :: links(),
+          logger                     :: pid(),
+          messages_new = queue:new() :: queue(),
+          messages_old = queue:new() :: queue(),
+          monitors                   :: monitors(),
+          next_event = none          :: 'none' | event(),
+          processes                  :: processes(),
+          scheduler                  :: pid(),
+          stack = []                 :: [term()],
+          stacktop = 'none'          :: 'none' | tuple(),
+          status = exited            :: 'exited'| 'exiting' | 'running' | 'waiting',
+          trap_exit = false          :: boolean()
+         }).
 
 -type concuerror_info() :: #concuerror_info{}.
 
@@ -84,11 +102,23 @@ start_first_process(Pid, {Module, Name, Args}) ->
 
 %%------------------------------------------------------------------------------
 
--spec instrumented(Tag      :: instrumented_tags(),
-                   Args     :: [term()],
-                   Location :: term(),
-                   Info     :: concuerror_info()) ->
-                      {Return :: term(), NewInfo :: concuerror_info()}.
+-spec instrumented_top(Tag      :: instrumented_tag(),
+                       Args     :: [term()],
+                       Location :: term(),
+                       Info     :: concuerror_info()) ->
+                          'doit' |
+                          {'didit', term()} |
+                          {'error', term()} |
+                          'skip_timeout'.
+
+instrumented_top(Tag, Args, Location, Info) ->
+  #concuerror_info{escaped_pdict = Escaped} = Info,
+  lists:foreach(fun({K,V}) -> put(K,V) end, Escaped),
+  {Result, #concuerror_info{} = NewInfo} = instrumented(Tag, Args, Location, Info),
+  NewEscaped = erase(),
+  FinalInfo = NewInfo#concuerror_info{escaped_pdict = NewEscaped},
+  put(concuerror_info, FinalInfo),
+  Result.
 
 instrumented(call, [Module, Name, Args], Location, Info) ->
   Arity = length(Args),
@@ -717,6 +747,8 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
   Scheduler ! Notification,
   process_loop(Info).
 
+-spec process_top_loop(concuerror_info(), string()) -> no_return().
+
 process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
   true = ets:insert(Processes, ?new_process(self(), Symbolic)),
   ?debug_flag(?wait, top_waiting),
@@ -727,17 +759,16 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
       %% Wait for 1st event (= 'run') signal, accepting messages
       StartInfo = process_loop(Running),
       %% It is ok for this load to fail
-      concuerror_loader:load_if_needed(Module),
+      _ = concuerror_loader:load_if_needed(Module),
       put(concuerror_info, StartInfo),
       try
         erlang:apply(Module, Name, Args),
         exit(normal)
       catch
         Class:Reason ->
-          case get(concuerror_info) of
+          case erase(concuerror_info) of
             #concuerror_info{escaped_pdict = Escaped} = EndInfo ->
-              erase(),
-              [put(K,V) || {K,V} <- Escaped],
+              lists:foreach(fun({K,V}) -> put(K,V) end, Escaped),
               Stacktrace = fix_stacktrace(EndInfo),
               ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
               NewReason =
@@ -832,7 +863,7 @@ process_loop(Info) ->
       ?debug_flag(?wait, {waiting, reset}),
       NewInfo = #concuerror_info{processes = Processes} =
         init_concuerror_info(Info),
-      erase(),
+      _ = erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
       erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo, Symbol]);
     deadlock_poll ->
@@ -958,8 +989,7 @@ check_ets_access_rights(Tid, Pid, Op, EtsTables) ->
      case ets_ops_access_rights_map(Op) of
        write -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =:= public;
        read -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =/= private;
-       delete -> false;
-       _ -> throw(specify_ets_rights)
+       delete -> false
      end)
   of
     true -> ok;

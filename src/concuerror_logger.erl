@@ -22,6 +22,8 @@
 
 %%------------------------------------------------------------------------------
 
+-spec run(options()) -> ok.
+
 run(Options) ->
   Verbosity =
     case proplists:lookup(verbose, Options) of
@@ -47,20 +49,32 @@ run(Options) ->
        verbosity = Verbosity},
   loop_entry(State).
 
+-spec plan(logger()) -> ok.
+
 plan(Logger) ->
-  Logger ! plan.
+  Logger ! plan,
+  ok.
+
+-spec complete(logger(), concuerror_warnings()) -> ok.
 
 complete(Logger, Warnings) ->
-  Logger ! {complete, Warnings}.
+  Logger ! {complete, Warnings},
+  ok.
+
+-spec log(logger(), log_level(), string()) -> ok.
 
 log(Logger, Level, Format) ->
   log(Logger, Level, Format, []).
+
+-spec log(logger(), log_level(), string(), [term()]) -> ok.
 
 log(Logger, Level, Format, Data) ->
   Logger ! {log, self(), Level, Format, Data},
   receive
     logged -> ok
   end.
+
+-spec stop(logger(), term()) -> ok.
 
 stop(Logger, Status) ->
   Logger ! {close, Status, self()},
@@ -118,10 +132,11 @@ loop(State) ->
       IntMsg = interleavings_message(Errors, TracesExplored, TracesTotal),
       io:format(Output, Format, [Status]),
       io:format(Output, "~s", [IntMsg]),
-      file:close(Output),
+      ok = file:close(Output),
       case Verbosity < ?linfo of
         true  -> ok;
         false ->
+          clear_progress(),
           inner_diagnostic(Format, [Status]),
           IntMsg = interleavings_message(Errors, TracesExplored, TracesTotal),
           inner_diagnostic("~s", [IntMsg])
@@ -193,17 +208,19 @@ diagnostic(State, Format, Data) ->
   case Verbosity =/= ?linfo of
     true  -> inner_diagnostic(Format, Data);
     false ->
-      %% Clear last progress message.
       #logger_state{
          errors = Errors,
          traces_explored = TracesExplored,
          traces_total = TracesTotal
         } = State,
-      inner_diagnostic("~c[1A~c[2K\r", [27, 27]),
+      clear_progress(),
       inner_diagnostic(Format, Data),
       IntMsg = interleavings_message(Errors, TracesExplored, TracesTotal),
       inner_diagnostic("~s", [IntMsg])
   end.
+
+clear_progress() ->
+  inner_diagnostic("~c[1A~c[2K\r", [27, 27]).
 
 inner_diagnostic(Format) ->
   inner_diagnostic(Format, []).

@@ -12,6 +12,8 @@
 ### Description : Main Makefile
 ###----------------------------------------------------------------------
 
+all: compile
+
 ###----------------------------------------------------------------------
 ### Application info
 ###----------------------------------------------------------------------
@@ -32,17 +34,12 @@ INCLUDE = $(TOP)/include
 ### Flags
 ###----------------------------------------------------------------------
 
-### XXX: Restore
-#DEF_WARNS = +warn_exported_vars +warn_unused_import +warn_missing_spec +warn_untyped_record
-DEF_WARNS =
-
-DEFAULT_ERL_COMPILE_FLAGS = +debug_info $(DEF_WARNS) -Werror
-
-ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS)
-
-NATIVE_ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS) +native
-
-DEBUG_ERL_COMPILE_FLAGS = $(DEFAULT_ERL_COMPILE_FLAGS) -DDEBUG
+ERL_COMPILE_FLAGS = \
+	+debug_info \
+	+warn_exported_vars \
+	+warn_unused_import \
+	+warn_missing_spec \
+	+warn_untyped_record
 
 DIALYZER_FLAGS = -Wunmatched_returns
 
@@ -63,50 +60,11 @@ MODULES = \
 
 vpath %.erl src
 
-.PHONY: compile clean dialyze test
+.PHONY: compile clean dialyze test submodules
 
-all: compile
-
-compile: concuerror $(MODULES:%=$(EBIN)/%.beam) $(EBIN)/getopt.beam
+compile: $(MODULES:%=$(EBIN)/%.beam) meck getopt concuerror
 
 include $(MODULES:%=$(EBIN)/%.Pbeam)
-
-clean:
-	rm -f concuerror
-	rm -f $(OPTS)
-	rm -f $(EBIN)/*.beam
-	rm -f $(EBIN)/*.Pbeam
-
-ifneq ($(ERL_COMPILE_FLAGS), $(NATIVE_ERL_COMPILE_FLAGS))
-native:
-	make clean
-	printf "ERL_COMPILE_FLAGS += +native" > $(OPTS)
-	make
-else
-native:
-	make
-endif
-
-ifneq ($(ERL_COMPILE_FLAGS), $(DEBUG_ERL_COMPILE_FLAGS))
-debug:
-	make clean
-	printf "ERL_COMPILE_FLAGS += -DDEBUG" > $(OPTS)
-	make
-else
-debug:
-	make
-endif
-
-dialyze: all
-	dialyzer $(DIALYZER_FLAGS) $(EBIN)/*.beam
-
-concuerror:
-	ln -s src/concuerror $@
-
-$(EBIN)/getopt.beam:
-	git submodule update --init
-	cd deps/getopt && make
-	cp deps/getopt/ebin/getopt.beam $@
 
 $(EBIN)/%.Pbeam: %.erl
 	erlc -o $(EBIN) -I $(INCLUDE) -MD -MT $@ $<
@@ -114,21 +72,40 @@ $(EBIN)/%.Pbeam: %.erl
 $(EBIN)/concuerror_%.beam: concuerror_%.erl Makefile
 	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DVSN="\"$(VSN)\"" -o $(EBIN) $<
 
-###----------------------------------------------------------------------
-### Testing
-###----------------------------------------------------------------------
+concuerror:
+	ln -s src/concuerror $@
 
-SUITES = basic_tests,dpor_tests,advanced_tests
+getopt: submodules
+	make -C deps/getopt
 
-test: all $(EBIN)/meck.beam
-	@(cd tests; bash -c "./runtests.py suites/{$(SUITES)}/src/*")
-
-$(EBIN)/meck.beam:
-	git submodule update --init
+meck: submodules
 	cd deps/meck \
 		&& cp rebar.config rebar.config.bak \
 		&& sed -i 's/warnings_as_errors, //' rebar.config \
 		&& make get-deps \
 		&& make compile \
 		&& mv rebar.config.bak rebar.config
-	cp deps/meck/ebin/*.beam ebin
+
+submodules:
+	git submodule update --init
+
+clean:
+	rm -f concuerror
+	rm -f $(EBIN)/*.beam
+	rm -f $(EBIN)/*.Pbeam
+
+dialyze: all .concuerror_plt
+	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) $(EBIN)/*.beam
+
+.concuerror_plt: | meck getopt
+	dialyzer --build_plt --output_plt $@ --apps erts kernel stdlib compiler \
+	deps/*/ebin/*.beam deps/*/deps/*/ebin/*.beam 
+
+###----------------------------------------------------------------------
+### Testing
+###----------------------------------------------------------------------
+
+SUITES = basic_tests,dpor_tests,advanced_tests
+
+test: all
+	@(cd tests; bash -c "./runtests.py suites/{$(SUITES)}/src/*")
