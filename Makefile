@@ -67,7 +67,7 @@ compile: $(MODULES:%=$(EBIN)/%.beam) meck getopt concuerror
 include $(MODULES:%=$(EBIN)/%.Pbeam)
 
 $(EBIN)/%.Pbeam: %.erl
-	erlc -o $(EBIN) -I $(INCLUDE) -MD -MT $@ $<
+	erlc -o $(EBIN) -I $(INCLUDE) -MT $(subst .Pbeam,.beam,$@) -MD $<
 
 $(EBIN)/concuerror_%.beam: concuerror_%.erl Makefile
 	erlc $(ERL_COMPILE_FLAGS) -I $(INCLUDE) -DVSN="\"$(VSN)\"" -o $(EBIN) $<
