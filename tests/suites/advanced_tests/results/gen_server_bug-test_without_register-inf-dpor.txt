@@ -28,148 +28,42 @@ Erroneous interleaving 1:
 Interleaving info:
    1: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+   3: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
    4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
+   5: P.1: {<0.74.0>,{get_argument,generic_debug}} = init ! {<0.74.0>,{get_argument,generic_debug}}
     in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
+   6: Message ({<0.74.0>,{get_argument,generic_debug}}) from P.1 reaches init
    7: Message ({init,error}) from init reaches P.1
    8: P.1: receives message ({init,error})
     in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
+   9: P.1: {ack,<0.74.0>,{ok,<0.74.0>}} = P ! {ack,<0.74.0>,{ok,<0.74.0>}}
     in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
+  10: Message ({ack,<0.74.0>,{ok,<0.74.0>}}) from P.1 reaches P
   11: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
+  12: P: #Ref<0.0.0.365> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
+  13: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}, [noconnect])
     in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
+  14: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}) from P reaches P.1
   15: P: receive timeout expired after 5000 ms
     in gen.erl line 211
-  16: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
+  16: P: true = erlang:demonitor(#Ref<0.0.0.365>, [flush])
     in gen.erl line 221
-  17: P: exits abnormally ({timeout,{gen_server,call,[<0.73.0>,stop]}})
-  18: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.73.0>,stop]}})
+  17: P: exits abnormally ({timeout,{gen_server,call,[<0.74.0>,stop]}})
+  18: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.74.0>,stop]}})
     (while exiting)
-  19: Exit signal ({timeout,{gen_server,call,[<0.73.0>,stop]}}) from P reaches P.1
-  20: P.1: exits abnormally ({timeout,{gen_server,call,[<0.73.0>,stop]}})
-  21: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.73.0>,stop]}})
+  19: Exit signal ({timeout,{gen_server,call,[<0.74.0>,stop]}}) from P reaches P.1
+  20: P.1: exits abnormally ({timeout,{gen_server,call,[<0.74.0>,stop]}})
+  21: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.74.0>,stop]}})
     (while exiting)
-  22: Exit signal ({timeout,{gen_server,call,[<0.73.0>,stop]}}) from P.1 reaches P
+  22: Exit signal ({timeout,{gen_server,call,[<0.74.0>,stop]}}) from P.1 reaches P
 ################################################################################
 Erroneous interleaving 2:
-* At step 17 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,23}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  16: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 221
-  17: P: exits abnormally ({timeout,{gen_server,call,[<0.73.0>,stop]}})
-  18: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.73.0>,stop]}})
-    (while exiting)
-  19: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  20: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  21: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  22: P.1: exits normally
-  23: Exit signal ({timeout,{gen_server,call,[<0.73.0>,stop]}}) from P reaches P.1
-  24: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  25: Exit signal (normal) from P.1 reaches P
-################################################################################
-Erroneous interleaving 3:
-* At step 23 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,23}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  16: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 221
-  17: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  18: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  19: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  20: P.1: exits normally
-  21: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  22: Exit signal (normal) from P.1 reaches P
-  23: P: exits abnormally ({timeout,{gen_server,call,[<0.73.0>,stop]}})
-  24: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.73.0>,stop]}})
-    (while exiting)
-  25: Exit signal ({timeout,{gen_server,call,[<0.73.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 4:
 * At step 21 process P exited abnormally
     Reason:
       {timeout,{gen_server,call,[P.1,stop]}}
@@ -182,112 +76,56 @@ Erroneous interleaving 4:
 Interleaving info:
    1: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+   3: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
    4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
+   5: P.1: {<0.74.0>,{get_argument,generic_debug}} = init ! {<0.74.0>,{get_argument,generic_debug}}
     in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
+   6: Message ({<0.74.0>,{get_argument,generic_debug}}) from P.1 reaches init
    7: Message ({init,error}) from init reaches P.1
    8: P.1: receives message ({init,error})
     in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
+   9: P.1: {ack,<0.74.0>,{ok,<0.74.0>}} = P ! {ack,<0.74.0>,{ok,<0.74.0>}}
     in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
+  10: Message ({ack,<0.74.0>,{ok,<0.74.0>}}) from P.1 reaches P
   11: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
+  12: P: #Ref<0.0.0.365> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
+  13: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}, [noconnect])
     in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
+  14: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}) from P reaches P.1
   15: P: receive timeout expired after 5000 ms
     in gen.erl line 211
-  16: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
+  16: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.365>},stop})
     in gen_server.erl line 358
-  17: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
+  17: P.1: {#Ref<0.0.0.365>,ok} = P ! {#Ref<0.0.0.365>,ok}
     in gen_server.erl line 217
-  18: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
+  18: Message ({#Ref<0.0.0.365>,ok}) from P.1 reaches P
   19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
+  20: P: true = erlang:demonitor(#Ref<0.0.0.365>, [flush])
     in gen.erl line 221
-  21: P: exits abnormally ({timeout,{gen_server,call,[<0.73.0>,stop]}})
-  22: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.73.0>,stop]}})
+  21: P: exits abnormally ({timeout,{gen_server,call,[<0.74.0>,stop]}})
+  22: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.74.0>,stop]}})
     (while exiting)
-  23: Exit signal ({timeout,{gen_server,call,[<0.73.0>,stop]}}) from P reaches P.1
+  23: Exit signal ({timeout,{gen_server,call,[<0.74.0>,stop]}}) from P reaches P.1
   24: P.1: true = erlang:exit(P, normal)
     (while exiting)
   25: Exit signal (normal) from P.1 reaches P
-  26: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
+  26: P.1: {'DOWN',#Ref<0.0.0.365>,process,<0.74.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.365>,process,<0.74.0>,normal})
     (while exiting)
-  27: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
+  27: Message ({'DOWN',#Ref<0.0.0.365>,process,<0.74.0>,normal}) from P.1 reaches P
 ################################################################################
-Erroneous interleaving 5:
-* At step 25 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,23}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  16: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  17: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  18: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 221
-  21: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  22: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  23: Exit signal (normal) from P.1 reaches P
-  24: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  25: P: exits abnormally ({timeout,{gen_server,call,[<0.73.0>,stop]}})
-  26: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.73.0>,stop]}})
-    (while exiting)
-  27: Exit signal ({timeout,{gen_server,call,[<0.73.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 6:
-* At step 44 process P.1 exited abnormally
+Erroneous interleaving 3:
+* At step 46 process P.1 exited abnormally
     Reason:
       {timeout,{gen_server,call,[P.1,stop]}}
     Stacktrace:
       []
-* At step 39 process P exited abnormally
+* At step 41 process P exited abnormally
     Reason:
       {timeout,{gen_server,call,[P.1,stop]}}
     Stacktrace:
@@ -299,175 +137,85 @@ Erroneous interleaving 6:
 Interleaving info:
    1: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+   3: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
    4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
+   5: P.1: {<0.74.0>,{get_argument,generic_debug}} = init ! {<0.74.0>,{get_argument,generic_debug}}
     in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
+   6: Message ({<0.74.0>,{get_argument,generic_debug}}) from P.1 reaches init
    7: Message ({init,error}) from init reaches P.1
    8: P.1: receives message ({init,error})
     in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
+   9: P.1: {ack,<0.74.0>,{ok,<0.74.0>}} = P ! {ack,<0.74.0>,{ok,<0.74.0>}}
     in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
+  10: Message ({ack,<0.74.0>,{ok,<0.74.0>}}) from P.1 reaches P
   11: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
+  12: P: #Ref<0.0.0.365> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
+  13: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}, [noconnect])
     in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
+  14: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}) from P reaches P.1
+  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.365>},stop})
     in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
+  16: P.1: {#Ref<0.0.0.365>,ok} = P ! {#Ref<0.0.0.365>,ok}
     in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
+  17: P.1: exits normally
+  18: P.1: true = erlang:exit(P, normal)
+    (while exiting)
+  19: P.1: {'DOWN',#Ref<0.0.0.365>,process,<0.74.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.365>,process,<0.74.0>,normal})
+    (while exiting)
+  20: Message ({#Ref<0.0.0.365>,ok}) from P.1 reaches P
+  21: Exit signal (normal) from P.1 reaches P
+  22: Message ({'DOWN',#Ref<0.0.0.365>,process,<0.74.0>,normal}) from P.1 reaches P
+  23: P: receives message ({#Ref<0.0.0.365>,ok})
     in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
+  24: P: true = erlang:demonitor(#Ref<0.0.0.365>, [flush])
     in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
+  25: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: exits normally
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: Exit signal (normal) from P.1 reaches P
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+  26: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+  27: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
-  26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
+  28: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-  27: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
+  29: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
     in init.erl line 145
-  28: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  29: Message ({init,error}) from init reaches P.1
-  30: P.1: receives message ({init,error})
+  30: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
+  31: Message ({init,error}) from init reaches P.1
+  32: P.1: receives message ({init,error})
     in init.erl line 146
-  31: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
+  33: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
     in proc_lib.erl line 377
-  32: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  33: P: receives message ({ack,P.1,{ok,P.1}})
+  34: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
+  35: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
+  36: P: #Ref<0.0.0.2676> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
+  37: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.2676>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.2676>},stop}, [noconnect])
     in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  37: P: receive timeout expired after 5000 ms
+  38: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.2676>},stop}) from P reaches P.1
+  39: P: receive timeout expired after 5000 ms
     in gen.erl line 211
-  38: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
+  40: P: true = erlang:demonitor(#Ref<0.0.0.2676>, [flush])
     in gen.erl line 221
-  39: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  40: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  41: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
+  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
     (while exiting)
-  41: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  43: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
+  44: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
     (while exiting)
-  43: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  44: P.1: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  45: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  45: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
+  46: P.1: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
+  47: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.79.0>,stop]}})
     (while exiting)
-  46: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P.1 reaches P
+  48: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P.1 reaches P
 ################################################################################
-Erroneous interleaving 7:
-* At step 39 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: exits normally
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: Exit signal (normal) from P.1 reaches P
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  27: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  28: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  29: Message ({init,error}) from init reaches P.1
-  30: P.1: receives message ({init,error})
-    in init.erl line 146
-  31: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  32: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  33: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  37: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  38: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  39: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  40: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  41: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  43: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  44: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  45: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  46: P.1: exits normally
-  47: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  48: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  49: Exit signal (normal) from P.1 reaches P
-################################################################################
-Erroneous interleaving 8:
+Erroneous interleaving 4:
 * At step 45 process P exited abnormally
     Reason:
       {timeout,{gen_server,call,[P.1,stop]}}
@@ -480,87 +228,186 @@ Erroneous interleaving 8:
 Interleaving info:
    1: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+   3: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
    4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
+   5: P.1: {<0.74.0>,{get_argument,generic_debug}} = init ! {<0.74.0>,{get_argument,generic_debug}}
     in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
+   6: Message ({<0.74.0>,{get_argument,generic_debug}}) from P.1 reaches init
    7: Message ({init,error}) from init reaches P.1
    8: P.1: receives message ({init,error})
     in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
+   9: P.1: {ack,<0.74.0>,{ok,<0.74.0>}} = P ! {ack,<0.74.0>,{ok,<0.74.0>}}
     in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
+  10: Message ({ack,<0.74.0>,{ok,<0.74.0>}}) from P.1 reaches P
   11: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
+  12: P: #Ref<0.0.0.365> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
+  13: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}, [noconnect])
     in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
+  14: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}) from P reaches P.1
+  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.365>},stop})
     in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
+  16: P.1: {#Ref<0.0.0.365>,ok} = P ! {#Ref<0.0.0.365>,ok}
     in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
+  17: P.1: exits normally
+  18: P.1: true = erlang:exit(P, normal)
+    (while exiting)
+  19: P.1: {'DOWN',#Ref<0.0.0.365>,process,<0.74.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.365>,process,<0.74.0>,normal})
+    (while exiting)
+  20: Message ({#Ref<0.0.0.365>,ok}) from P.1 reaches P
+  21: Exit signal (normal) from P.1 reaches P
+  22: Message ({'DOWN',#Ref<0.0.0.365>,process,<0.74.0>,normal}) from P.1 reaches P
+  23: P: receives message ({#Ref<0.0.0.365>,ok})
     in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
+  24: P: true = erlang:demonitor(#Ref<0.0.0.365>, [flush])
+    in gen.erl line 213
+  25: P: [] = erlang:process_info(P, registered_name)
+    in proc_lib.erl line 677
+  26: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+  27: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
+    in proc_lib.erl line 233
+  28: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
+    in proc_lib.erl line 234
+  29: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
+    in init.erl line 145
+  30: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
+  31: Message ({init,error}) from init reaches P.1
+  32: P.1: receives message ({init,error})
+    in init.erl line 146
+  33: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
+    in proc_lib.erl line 377
+  34: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
+  35: P: receives message ({ack,P.1,{ok,P.1}})
+    in proc_lib.erl line 333
+  36: P: #Ref<0.0.0.2676> = erlang:monitor(process, P.1)
+    in gen.erl line 198
+  37: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.2676>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.2676>},stop}, [noconnect])
+    in gen.erl line 209
+  38: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.2676>},stop}) from P reaches P.1
+  39: P: receive timeout expired after 5000 ms
+    in gen.erl line 211
+  40: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.2676>},stop})
+    in gen_server.erl line 358
+  41: P.1: {#Ref<0.0.0.2676>,ok} = P ! {#Ref<0.0.0.2676>,ok}
+    in gen_server.erl line 217
+  42: Message ({#Ref<0.0.0.2676>,ok}) from P.1 reaches P
+  43: P.1: exits normally
+  44: P: true = erlang:demonitor(#Ref<0.0.0.2676>, [flush])
+    in gen.erl line 221
+  45: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
+  46: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
+    (while exiting)
+  47: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
+  48: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
+    (while exiting)
+  49: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
+  50: P.1: true = erlang:exit(P, normal)
+    (while exiting)
+  51: Exit signal (normal) from P.1 reaches P
+  52: P.1: {'DOWN',#Ref<0.0.0.2676>,process,<0.79.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.2676>,process,<0.79.0>,normal})
+    (while exiting)
+  53: Message ({'DOWN',#Ref<0.0.0.2676>,process,<0.79.0>,normal}) from P.1 reaches P
+################################################################################
+Erroneous interleaving 5:
+* At step 44 process P.1 exited abnormally
+    Reason:
+      {timeout,{gen_server,call,[P.1,stop]}}
+    Stacktrace:
+      []
+* At step 39 process P exited abnormally
+    Reason:
+      {timeout,{gen_server,call,[P.1,stop]}}
+    Stacktrace:
+      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
+       {gen_server_bug,test_without_register,0,
+                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
+                        {line,25}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: [] = erlang:process_info(P, registered_name)
+    in proc_lib.erl line 677
+   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+   3: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
+    in proc_lib.erl line 233
+   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
+    in proc_lib.erl line 234
+   5: P.1: {<0.74.0>,{get_argument,generic_debug}} = init ! {<0.74.0>,{get_argument,generic_debug}}
+    in init.erl line 145
+   6: Message ({<0.74.0>,{get_argument,generic_debug}}) from P.1 reaches init
+   7: Message ({init,error}) from init reaches P.1
+   8: P.1: receives message ({init,error})
+    in init.erl line 146
+   9: P.1: {ack,<0.74.0>,{ok,<0.74.0>}} = P ! {ack,<0.74.0>,{ok,<0.74.0>}}
+    in proc_lib.erl line 377
+  10: Message ({ack,<0.74.0>,{ok,<0.74.0>}}) from P.1 reaches P
+  11: P: receives message ({ack,P.1,{ok,P.1}})
+    in proc_lib.erl line 333
+  12: P: #Ref<0.0.0.365> = erlang:monitor(process, P.1)
+    in gen.erl line 198
+  13: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}, [noconnect])
+    in gen.erl line 209
+  14: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}) from P reaches P.1
+  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.365>},stop})
+    in gen_server.erl line 358
+  16: P.1: {#Ref<0.0.0.365>,ok} = P ! {#Ref<0.0.0.365>,ok}
+    in gen_server.erl line 217
+  17: Message ({#Ref<0.0.0.365>,ok}) from P.1 reaches P
+  18: P: receives message ({#Ref<0.0.0.365>,ok})
+    in gen.erl line 211
+  19: P: true = erlang:demonitor(#Ref<0.0.0.365>, [flush])
     in gen.erl line 213
   20: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
+  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
   22: P.1: exits normally
   23: P.1: true = erlang:exit(P, normal)
     (while exiting)
   24: Exit signal (normal) from P.1 reaches P
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+  25: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
   26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-  27: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
+  27: P.1: {<0.80.0>,{get_argument,generic_debug}} = init ! {<0.80.0>,{get_argument,generic_debug}}
     in init.erl line 145
-  28: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
+  28: Message ({<0.80.0>,{get_argument,generic_debug}}) from P.1 reaches init
   29: Message ({init,error}) from init reaches P.1
   30: P.1: receives message ({init,error})
     in init.erl line 146
-  31: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
+  31: P.1: {ack,<0.80.0>,{ok,<0.80.0>}} = P ! {ack,<0.80.0>,{ok,<0.80.0>}}
     in proc_lib.erl line 377
-  32: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
+  32: Message ({ack,<0.80.0>,{ok,<0.80.0>}}) from P.1 reaches P
   33: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
+  34: P: #Ref<0.0.0.9215> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
+  35: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop}, [noconnect])
     in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
+  36: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop}) from P reaches P.1
   37: P: receive timeout expired after 5000 ms
     in gen.erl line 211
-  38: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
+  38: P: true = erlang:demonitor(#Ref<0.0.0.9215>, [flush])
     in gen.erl line 221
-  39: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  40: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  41: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  42: P.1: exits normally
-  43: P.1: true = erlang:exit(P, normal)
+  39: P: exits abnormally ({timeout,{gen_server,call,[<0.80.0>,stop]}})
+  40: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  44: Exit signal (normal) from P.1 reaches P
-  45: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  46: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  41: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P reaches P.1
+  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  47: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  48: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  43: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P reaches P.1
+  44: P.1: exits abnormally ({timeout,{gen_server,call,[<0.80.0>,stop]}})
+  45: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
+  46: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P.1 reaches P
 ################################################################################
-Erroneous interleaving 9:
+Erroneous interleaving 6:
 * At step 43 process P exited abnormally
     Reason:
       {timeout,{gen_server,call,[P.1,stop]}}
@@ -573,657 +420,90 @@ Erroneous interleaving 9:
 Interleaving info:
    1: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+   3: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
    4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
+   5: P.1: {<0.74.0>,{get_argument,generic_debug}} = init ! {<0.74.0>,{get_argument,generic_debug}}
     in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
+   6: Message ({<0.74.0>,{get_argument,generic_debug}}) from P.1 reaches init
    7: Message ({init,error}) from init reaches P.1
    8: P.1: receives message ({init,error})
     in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
+   9: P.1: {ack,<0.74.0>,{ok,<0.74.0>}} = P ! {ack,<0.74.0>,{ok,<0.74.0>}}
     in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
+  10: Message ({ack,<0.74.0>,{ok,<0.74.0>}}) from P.1 reaches P
   11: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
+  12: P: #Ref<0.0.0.365> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
+  13: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}, [noconnect])
     in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
+  14: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}) from P reaches P.1
+  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.365>},stop})
     in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
+  16: P.1: {#Ref<0.0.0.365>,ok} = P ! {#Ref<0.0.0.365>,ok}
     in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
+  17: Message ({#Ref<0.0.0.365>,ok}) from P.1 reaches P
+  18: P: receives message ({#Ref<0.0.0.365>,ok})
     in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
+  19: P: true = erlang:demonitor(#Ref<0.0.0.365>, [flush])
     in gen.erl line 213
   20: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
+  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
   22: P.1: exits normally
   23: P.1: true = erlang:exit(P, normal)
     (while exiting)
   24: Exit signal (normal) from P.1 reaches P
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+  25: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
   26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-  27: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
+  27: P.1: {<0.80.0>,{get_argument,generic_debug}} = init ! {<0.80.0>,{get_argument,generic_debug}}
     in init.erl line 145
-  28: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
+  28: Message ({<0.80.0>,{get_argument,generic_debug}}) from P.1 reaches init
   29: Message ({init,error}) from init reaches P.1
   30: P.1: receives message ({init,error})
     in init.erl line 146
-  31: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
+  31: P.1: {ack,<0.80.0>,{ok,<0.80.0>}} = P ! {ack,<0.80.0>,{ok,<0.80.0>}}
     in proc_lib.erl line 377
-  32: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
+  32: Message ({ack,<0.80.0>,{ok,<0.80.0>}}) from P.1 reaches P
   33: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
+  34: P: #Ref<0.0.0.9215> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
+  35: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop}, [noconnect])
     in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
+  36: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop}) from P reaches P.1
   37: P: receive timeout expired after 5000 ms
     in gen.erl line 211
-  38: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
+  38: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.9215>},stop})
     in gen_server.erl line 358
-  39: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
+  39: P.1: {#Ref<0.0.0.9215>,ok} = P ! {#Ref<0.0.0.9215>,ok}
     in gen_server.erl line 217
-  40: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
+  40: Message ({#Ref<0.0.0.9215>,ok}) from P.1 reaches P
   41: P.1: exits normally
-  42: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
+  42: P: true = erlang:demonitor(#Ref<0.0.0.9215>, [flush])
     in gen.erl line 221
-  43: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  44: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  43: P: exits abnormally ({timeout,{gen_server,call,[<0.80.0>,stop]}})
+  44: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  45: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  46: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  45: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P reaches P.1
+  46: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  47: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
+  47: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P reaches P.1
   48: P.1: true = erlang:exit(P, normal)
     (while exiting)
   49: Exit signal (normal) from P.1 reaches P
-  50: P.1: {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal})
+  50: P.1: {'DOWN',#Ref<0.0.0.9215>,process,<0.80.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.9215>,process,<0.80.0>,normal})
     (while exiting)
-  51: Message ({'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal}) from P.1 reaches P
+  51: Message ({'DOWN',#Ref<0.0.0.9215>,process,<0.80.0>,normal}) from P.1 reaches P
 ################################################################################
-Erroneous interleaving 10:
-* At step 47 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: exits normally
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: Exit signal (normal) from P.1 reaches P
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  27: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  28: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  29: Message ({init,error}) from init reaches P.1
-  30: P.1: receives message ({init,error})
-    in init.erl line 146
-  31: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  32: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  33: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  37: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  38: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  39: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  40: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  41: P.1: exits normally
-  42: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  43: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  44: P.1: {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal})
-    (while exiting)
-  45: Exit signal (normal) from P.1 reaches P
-  46: Message ({'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal}) from P.1 reaches P
-  47: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  48: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  50: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 11:
-* At step 44 process P.1 exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      []
-* At step 38 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: exits normally
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  25: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  26: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  27: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  28: Message ({init,error}) from init reaches P.1
-  29: P.1: receives message ({init,error})
-    in init.erl line 146
-  30: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  31: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  32: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  33: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  34: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  35: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  36: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  37: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  38: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  39: Exit signal (normal) from P.1 reaches P
-  40: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  41: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  43: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  44: P.1: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  45: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  46: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P.1 reaches P
-################################################################################
-Erroneous interleaving 12:
-* At step 38 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: exits normally
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  25: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  26: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  27: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  28: Message ({init,error}) from init reaches P.1
-  29: P.1: receives message ({init,error})
-    in init.erl line 146
-  30: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  31: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  32: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  33: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  34: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  35: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  36: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  37: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  38: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  39: Exit signal (normal) from P.1 reaches P
-  40: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  41: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  43: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  44: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  45: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  46: P.1: exits normally
-  47: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  48: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  49: Exit signal (normal) from P.1 reaches P
-################################################################################
-Erroneous interleaving 13:
-* At step 44 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: exits normally
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  25: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  26: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  27: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  28: Message ({init,error}) from init reaches P.1
-  29: P.1: receives message ({init,error})
-    in init.erl line 146
-  30: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  31: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  32: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  33: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  34: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  35: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  36: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  37: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  38: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  39: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  40: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  41: P.1: exits normally
-  42: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  43: Exit signal (normal) from P.1 reaches P
-  44: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  45: Exit signal (normal) from P.1 reaches P
-  46: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  47: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  48: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 14:
-* At step 44 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: exits normally
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  25: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  26: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  27: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  28: Message ({init,error}) from init reaches P.1
-  29: P.1: receives message ({init,error})
-    in init.erl line 146
-  30: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  31: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  32: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  33: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  34: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  35: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  36: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  37: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  38: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  39: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  40: P.1: exits normally
-  41: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  42: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  43: P.1: {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal})
-    (while exiting)
-  44: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  45: Exit signal (normal) from P.1 reaches P
-  46: Exit signal (normal) from P.1 reaches P
-  47: Message ({'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal}) from P.1 reaches P
-  48: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  50: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 15:
-* At step 46 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: exits normally
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  25: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  26: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  27: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  28: Message ({init,error}) from init reaches P.1
-  29: P.1: receives message ({init,error})
-    in init.erl line 146
-  30: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  31: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  32: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  33: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  34: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  35: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  36: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  37: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  38: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  39: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  40: P.1: exits normally
-  41: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  42: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  43: P.1: {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal})
-    (while exiting)
-  44: Exit signal (normal) from P.1 reaches P
-  45: Message ({'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal}) from P.1 reaches P
-  46: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  47: Exit signal (normal) from P.1 reaches P
-  48: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  50: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 16:
+Erroneous interleaving 7:
 * At step 44 process P.1 exited abnormally
     Reason:
       {timeout,{gen_server,call,[P.1,stop]}}
@@ -1246,88 +526,88 @@ Erroneous interleaving 16:
 Interleaving info:
    1: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+   3: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
    4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
+   5: P.1: {<0.74.0>,{get_argument,generic_debug}} = init ! {<0.74.0>,{get_argument,generic_debug}}
     in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
+   6: Message ({<0.74.0>,{get_argument,generic_debug}}) from P.1 reaches init
    7: Message ({init,error}) from init reaches P.1
    8: P.1: receives message ({init,error})
     in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
+   9: P.1: {ack,<0.74.0>,{ok,<0.74.0>}} = P ! {ack,<0.74.0>,{ok,<0.74.0>}}
     in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
+  10: Message ({ack,<0.74.0>,{ok,<0.74.0>}}) from P.1 reaches P
   11: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
+  12: P: #Ref<0.0.0.365> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
+  13: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}, [noconnect])
     in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
+  14: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}) from P reaches P.1
+  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.365>},stop})
     in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
+  16: P.1: {#Ref<0.0.0.365>,ok} = P ! {#Ref<0.0.0.365>,ok}
     in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
+  17: Message ({#Ref<0.0.0.365>,ok}) from P.1 reaches P
+  18: P: receives message ({#Ref<0.0.0.365>,ok})
     in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
+  19: P: true = erlang:demonitor(#Ref<0.0.0.365>, [flush])
     in gen.erl line 213
   20: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+  22: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
   23: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-  24: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
+  24: P.1: {<0.80.0>,{get_argument,generic_debug}} = init ! {<0.80.0>,{get_argument,generic_debug}}
     in init.erl line 145
-  25: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
+  25: Message ({<0.80.0>,{get_argument,generic_debug}}) from P.1 reaches init
   26: Message ({init,error}) from init reaches P.1
   27: P.1: receives message ({init,error})
     in init.erl line 146
-  28: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
+  28: P.1: {ack,<0.80.0>,{ok,<0.80.0>}} = P ! {ack,<0.80.0>,{ok,<0.80.0>}}
     in proc_lib.erl line 377
-  29: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
+  29: Message ({ack,<0.80.0>,{ok,<0.80.0>}}) from P.1 reaches P
   30: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  31: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
+  31: P: #Ref<0.0.0.9215> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  32: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
+  32: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop}, [noconnect])
     in gen.erl line 209
-  33: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
+  33: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop}) from P reaches P.1
   34: P: receive timeout expired after 5000 ms
     in gen.erl line 211
-  35: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
+  35: P: true = erlang:demonitor(#Ref<0.0.0.9215>, [flush])
     in gen.erl line 221
-  36: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  37: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  36: P: exits abnormally ({timeout,{gen_server,call,[<0.80.0>,stop]}})
+  37: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  38: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  38: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  39: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  40: P.1: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  41: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  39: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P reaches P.1
+  40: P.1: exits abnormally ({timeout,{gen_server,call,[<0.80.0>,stop]}})
+  41: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  42: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P.1 reaches P
-  43: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  44: P.1: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  45: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  42: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P.1 reaches P
+  43: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P reaches P.1
+  44: P.1: exits abnormally ({timeout,{gen_server,call,[<0.80.0>,stop]}})
+  45: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  46: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P.1 reaches P
+  46: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P.1 reaches P
 ################################################################################
-Erroneous interleaving 17:
-* At step 47 process P.1 exited abnormally
+Erroneous interleaving 8:
+* At step 49 process P.1 exited abnormally
     Reason:
       {timeout,{gen_server,call,[P.1,stop]}}
     Stacktrace:
       []
-* At step 36 process P exited abnormally
+* At step 40 process P exited abnormally
     Reason:
       {timeout,{gen_server,call,[P.1,stop]}}
     Stacktrace:
@@ -1339,1357 +619,88 @@ Erroneous interleaving 17:
 Interleaving info:
    1: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+   3: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
    4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
+   5: P.1: {<0.74.0>,{get_argument,generic_debug}} = init ! {<0.74.0>,{get_argument,generic_debug}}
     in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
+   6: Message ({<0.74.0>,{get_argument,generic_debug}}) from P.1 reaches init
    7: Message ({init,error}) from init reaches P.1
    8: P.1: receives message ({init,error})
     in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
+   9: P.1: {ack,<0.74.0>,{ok,<0.74.0>}} = P ! {ack,<0.74.0>,{ok,<0.74.0>}}
     in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
+  10: Message ({ack,<0.74.0>,{ok,<0.74.0>}}) from P.1 reaches P
   11: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
+  12: P: #Ref<0.0.0.365> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
+  13: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}, [noconnect])
     in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
+  14: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.365>},stop}) from P reaches P.1
+  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.365>},stop})
     in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
+  16: P.1: {#Ref<0.0.0.365>,ok} = P ! {#Ref<0.0.0.365>,ok}
     in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
+  17: Message ({#Ref<0.0.0.365>,ok}) from P.1 reaches P
+  18: P: receives message ({#Ref<0.0.0.365>,ok})
     in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
+  19: P: true = erlang:demonitor(#Ref<0.0.0.365>, [flush])
     in gen.erl line 213
   20: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
+  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.65.0>,[],gen,init_it,[gen_server,<0.65.0>,<0.65.0>,gen_server_bug,[],[]]],[link]})
+    in erlang.erl line 2507
+  22: P.1: undefined = erlang:put('$ancestors', [<0.65.0>])
     in proc_lib.erl line 233
   23: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
     in proc_lib.erl line 234
-  24: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
+  24: P.1: {<0.80.0>,{get_argument,generic_debug}} = init ! {<0.80.0>,{get_argument,generic_debug}}
     in init.erl line 145
-  25: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
+  25: Message ({<0.80.0>,{get_argument,generic_debug}}) from P.1 reaches init
   26: Message ({init,error}) from init reaches P.1
   27: P.1: receives message ({init,error})
     in init.erl line 146
-  28: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
+  28: P.1: {ack,<0.80.0>,{ok,<0.80.0>}} = P ! {ack,<0.80.0>,{ok,<0.80.0>}}
     in proc_lib.erl line 377
-  29: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
+  29: Message ({ack,<0.80.0>,{ok,<0.80.0>}}) from P.1 reaches P
   30: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 333
-  31: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
+  31: P: #Ref<0.0.0.9215> = erlang:monitor(process, P.1)
     in gen.erl line 198
-  32: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
+  32: P: {'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop} = erlang:send(P.1, {'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop}, [noconnect])
     in gen.erl line 209
-  33: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
+  33: Message ({'$gen_call',{<0.65.0>,#Ref<0.0.0.9215>},stop}) from P reaches P.1
   34: P: receive timeout expired after 5000 ms
     in gen.erl line 211
-  35: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  36: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  37: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  38: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  39: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
+  35: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.9215>},stop})
     in gen_server.erl line 358
-  40: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
+  36: P.1: {#Ref<0.0.0.9215>,ok} = P ! {#Ref<0.0.0.9215>,ok}
     in gen_server.erl line 217
-  41: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  42: P.1: exits normally
-  43: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
+  37: Message ({#Ref<0.0.0.9215>,ok}) from P.1 reaches P
+  38: P.1: exits normally
+  39: P: true = erlang:demonitor(#Ref<0.0.0.9215>, [flush])
+    in gen.erl line 221
+  40: P: exits abnormally ({timeout,{gen_server,call,[<0.80.0>,stop]}})
+  41: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.80.0>,stop]}})
+    (while exiting)
+  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.80.0>,stop]}})
+    (while exiting)
+  43: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P reaches P.1
   44: P.1: true = erlang:exit(P, normal)
     (while exiting)
   45: Exit signal (normal) from P.1 reaches P
-  46: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  47: P.1: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  48: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.78.0>,stop]}})
+  46: P.1: {'DOWN',#Ref<0.0.0.9215>,process,<0.80.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.9215>,process,<0.80.0>,normal})
     (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P.1 reaches P
-################################################################################
-Erroneous interleaving 18:
-* At step 47 process P.1 exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      []
-* At step 42 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  23: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  24: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  25: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  26: Message ({init,error}) from init reaches P.1
-  27: P.1: receives message ({init,error})
-    in init.erl line 146
-  28: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  29: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  30: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  31: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  32: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  33: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  34: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  35: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  36: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  37: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  38: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  39: P.1: exits normally
-  40: P.1: true = erlang:exit(P, normal)
+  47: Message ({'DOWN',#Ref<0.0.0.9215>,process,<0.80.0>,normal}) from P.1 reaches P
+  48: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P reaches P.1
+  49: P.1: exits abnormally ({timeout,{gen_server,call,[<0.80.0>,stop]}})
+  50: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.80.0>,stop]}})
     (while exiting)
-  41: Exit signal (normal) from P.1 reaches P
-  42: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  43: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  44: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  45: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  46: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  47: P.1: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  48: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P.1 reaches P
-################################################################################
-Erroneous interleaving 19:
-* At step 49 process P.1 exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      []
-* At step 42 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  23: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  24: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  25: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  26: Message ({init,error}) from init reaches P.1
-  27: P.1: receives message ({init,error})
-    in init.erl line 146
-  28: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  29: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  30: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  31: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  32: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  33: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  34: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  35: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  36: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  37: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  38: P.1: exits normally
-  39: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  40: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  41: P.1: {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal})
-    (while exiting)
-  42: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  43: Exit signal (normal) from P.1 reaches P
-  44: Message ({'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal}) from P.1 reaches P
-  45: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  46: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  47: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  48: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  49: P.1: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  50: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P.1 reaches P
-################################################################################
-Erroneous interleaving 20:
-* At step 49 process P.1 exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      []
-* At step 44 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  20: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  21: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  22: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  23: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  24: P.1: {<0.78.0>,{get_argument,generic_debug}} = init ! {<0.78.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  25: Message ({<0.78.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  26: Message ({init,error}) from init reaches P.1
-  27: P.1: receives message ({init,error})
-    in init.erl line 146
-  28: P.1: {ack,<0.78.0>,{ok,<0.78.0>}} = P ! {ack,<0.78.0>,{ok,<0.78.0>}}
-    in proc_lib.erl line 377
-  29: Message ({ack,<0.78.0>,{ok,<0.78.0>}}) from P.1 reaches P
-  30: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  31: P: #Ref<0.0.0.5758> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  32: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}, [noconnect])
-    in gen.erl line 209
-  33: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.5758>},stop}) from P reaches P.1
-  34: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  35: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.5758>},stop})
-    in gen_server.erl line 358
-  36: P.1: {#Ref<0.0.0.5758>,ok} = P ! {#Ref<0.0.0.5758>,ok}
-    in gen_server.erl line 217
-  37: Message ({#Ref<0.0.0.5758>,ok}) from P.1 reaches P
-  38: P.1: exits normally
-  39: P: true = erlang:demonitor(#Ref<0.0.0.5758>, [flush])
-    in gen.erl line 221
-  40: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  41: P.1: {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal})
-    (while exiting)
-  42: Exit signal (normal) from P.1 reaches P
-  43: Message ({'DOWN',#Ref<0.0.0.5758>,process,<0.78.0>,normal}) from P.1 reaches P
-  44: P: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  45: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  46: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  47: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  48: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P reaches P.1
-  49: P.1: exits abnormally ({timeout,{gen_server,call,[<0.78.0>,stop]}})
-  50: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.78.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.78.0>,stop]}}) from P.1 reaches P
-################################################################################
-Erroneous interleaving 21:
-* At step 46 process P.1 exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      []
-* At step 41 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: Exit signal (normal) from P.1 reaches P
-  25: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  26: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  27: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  28: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  29: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  30: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  31: Message ({init,error}) from init reaches P.1
-  32: P.1: receives message ({init,error})
-    in init.erl line 146
-  33: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  34: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  35: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  36: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  37: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  38: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  39: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  40: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  41: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  43: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  44: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  45: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  46: P.1: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  47: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  48: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P.1 reaches P
-################################################################################
-Erroneous interleaving 22:
-* At step 41 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: Exit signal (normal) from P.1 reaches P
-  25: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  26: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  27: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  28: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  29: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  30: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  31: Message ({init,error}) from init reaches P.1
-  32: P.1: receives message ({init,error})
-    in init.erl line 146
-  33: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  34: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  35: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  36: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  37: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  38: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  39: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  40: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  41: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  43: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  44: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  45: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.57801>},stop})
-    in gen_server.erl line 358
-  46: P.1: {#Ref<0.0.0.57801>,ok} = P ! {#Ref<0.0.0.57801>,ok}
-    in gen_server.erl line 217
-  47: Message ({#Ref<0.0.0.57801>,ok}) from P.1 reaches P
-  48: P.1: exits normally
-  49: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  50: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  51: Exit signal (normal) from P.1 reaches P
-################################################################################
-Erroneous interleaving 23:
-* At step 47 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: Exit signal (normal) from P.1 reaches P
-  25: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  26: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  27: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  28: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  29: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  30: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  31: Message ({init,error}) from init reaches P.1
-  32: P.1: receives message ({init,error})
-    in init.erl line 146
-  33: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  34: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  35: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  36: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  37: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  38: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  39: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  40: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  41: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.57801>},stop})
-    in gen_server.erl line 358
-  42: P.1: {#Ref<0.0.0.57801>,ok} = P ! {#Ref<0.0.0.57801>,ok}
-    in gen_server.erl line 217
-  43: Message ({#Ref<0.0.0.57801>,ok}) from P.1 reaches P
-  44: P.1: exits normally
-  45: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  46: Exit signal (normal) from P.1 reaches P
-  47: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  48: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  50: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 24:
-* At step 45 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: Exit signal (normal) from P.1 reaches P
-  25: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  26: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  27: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  28: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  29: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  30: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  31: Message ({init,error}) from init reaches P.1
-  32: P.1: receives message ({init,error})
-    in init.erl line 146
-  33: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  34: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  35: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  36: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  37: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  38: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  39: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  40: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.57801>},stop})
-    in gen_server.erl line 358
-  41: P.1: {#Ref<0.0.0.57801>,ok} = P ! {#Ref<0.0.0.57801>,ok}
-    in gen_server.erl line 217
-  42: Message ({#Ref<0.0.0.57801>,ok}) from P.1 reaches P
-  43: P.1: exits normally
-  44: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  45: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  46: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  47: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  48: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  50: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  51: Exit signal (normal) from P.1 reaches P
-  52: P.1: {'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal})
-    (while exiting)
-  53: Message ({'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal}) from P.1 reaches P
-################################################################################
-Erroneous interleaving 25:
-* At step 49 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: Exit signal (normal) from P.1 reaches P
-  25: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  26: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  27: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  28: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  29: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  30: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  31: Message ({init,error}) from init reaches P.1
-  32: P.1: receives message ({init,error})
-    in init.erl line 146
-  33: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  34: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  35: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  36: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  37: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  38: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  39: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  40: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.57801>},stop})
-    in gen_server.erl line 358
-  41: P.1: {#Ref<0.0.0.57801>,ok} = P ! {#Ref<0.0.0.57801>,ok}
-    in gen_server.erl line 217
-  42: Message ({#Ref<0.0.0.57801>,ok}) from P.1 reaches P
-  43: P.1: exits normally
-  44: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  45: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  46: P.1: {'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal})
-    (while exiting)
-  47: Exit signal (normal) from P.1 reaches P
-  48: Message ({'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal}) from P.1 reaches P
-  49: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  50: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  52: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  53: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 26:
-* At step 46 process P.1 exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      []
-* At step 39 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  27: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  28: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  29: Message ({init,error}) from init reaches P.1
-  30: P.1: receives message ({init,error})
-    in init.erl line 146
-  31: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  32: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  33: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  37: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  38: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  39: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  40: Exit signal (normal) from P.1 reaches P
-  41: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  43: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  44: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  45: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  46: P.1: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  47: P.1: true = erlang:exit(P, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  48: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P.1 reaches P
-################################################################################
-Erroneous interleaving 27:
-* At step 39 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  27: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  28: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  29: Message ({init,error}) from init reaches P.1
-  30: P.1: receives message ({init,error})
-    in init.erl line 146
-  31: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  32: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  33: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  37: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  38: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  39: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  40: Exit signal (normal) from P.1 reaches P
-  41: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  42: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  43: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  44: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  45: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.57801>},stop})
-    in gen_server.erl line 358
-  46: P.1: {#Ref<0.0.0.57801>,ok} = P ! {#Ref<0.0.0.57801>,ok}
-    in gen_server.erl line 217
-  47: Message ({#Ref<0.0.0.57801>,ok}) from P.1 reaches P
-  48: P.1: exits normally
-  49: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  50: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  51: Exit signal (normal) from P.1 reaches P
-################################################################################
-Erroneous interleaving 28:
-* At step 45 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  27: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  28: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  29: Message ({init,error}) from init reaches P.1
-  30: P.1: receives message ({init,error})
-    in init.erl line 146
-  31: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  32: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  33: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  37: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  38: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  39: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.57801>},stop})
-    in gen_server.erl line 358
-  40: P.1: {#Ref<0.0.0.57801>,ok} = P ! {#Ref<0.0.0.57801>,ok}
-    in gen_server.erl line 217
-  41: Message ({#Ref<0.0.0.57801>,ok}) from P.1 reaches P
-  42: P.1: exits normally
-  43: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  44: Exit signal (normal) from P.1 reaches P
-  45: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  46: Exit signal (normal) from P.1 reaches P
-  47: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  48: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  49: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  50: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 29:
-* At step 45 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  27: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  28: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  29: Message ({init,error}) from init reaches P.1
-  30: P.1: receives message ({init,error})
-    in init.erl line 146
-  31: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  32: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  33: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  37: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  38: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.57801>},stop})
-    in gen_server.erl line 358
-  39: P.1: {#Ref<0.0.0.57801>,ok} = P ! {#Ref<0.0.0.57801>,ok}
-    in gen_server.erl line 217
-  40: Message ({#Ref<0.0.0.57801>,ok}) from P.1 reaches P
-  41: P.1: exits normally
-  42: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  43: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  44: P.1: {'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal})
-    (while exiting)
-  45: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  46: Exit signal (normal) from P.1 reaches P
-  47: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  48: Exit signal (normal) from P.1 reaches P
-  49: Message ({'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal}) from P.1 reaches P
-  50: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  52: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  53: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-################################################################################
-Erroneous interleaving 30:
-* At step 47 process P exited abnormally
-    Reason:
-      {timeout,{gen_server,call,[P.1,stop]}}
-    Stacktrace:
-      [{gen_server,call,2,[{file,"gen_server.erl"},{line,180}]},
-       {gen_server_bug,test_without_register,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/gen_server_bug.erl"},
-                        {line,25}]}]
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-   2: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-   3: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-   4: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-   5: P.1: {<0.73.0>,{get_argument,generic_debug}} = init ! {<0.73.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-   6: Message ({<0.73.0>,{get_argument,generic_debug}}) from P.1 reaches init
-   7: Message ({init,error}) from init reaches P.1
-   8: P.1: receives message ({init,error})
-    in init.erl line 146
-   9: P.1: {ack,<0.73.0>,{ok,<0.73.0>}} = P ! {ack,<0.73.0>,{ok,<0.73.0>}}
-    in proc_lib.erl line 377
-  10: Message ({ack,<0.73.0>,{ok,<0.73.0>}}) from P.1 reaches P
-  11: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  12: P: #Ref<0.0.0.363> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  13: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}, [noconnect])
-    in gen.erl line 209
-  14: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.363>},stop}) from P reaches P.1
-  15: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.363>},stop})
-    in gen_server.erl line 358
-  16: P.1: {#Ref<0.0.0.363>,ok} = P ! {#Ref<0.0.0.363>,ok}
-    in gen_server.erl line 217
-  17: Message ({#Ref<0.0.0.363>,ok}) from P.1 reaches P
-  18: P: receives message ({#Ref<0.0.0.363>,ok})
-    in gen.erl line 211
-  19: P.1: exits normally
-  20: P: true = erlang:demonitor(#Ref<0.0.0.363>, [flush])
-    in gen.erl line 213
-  21: P: [] = erlang:process_info(P, registered_name)
-    in proc_lib.erl line 677
-  22: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[<0.64.0>,[],gen,init_it,[gen_server,<0.64.0>,<0.64.0>,gen_server_bug,[],[]]],[link]})
-    in erlang.erl line 2366
-  23: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  24: P.1: {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal})
-    (while exiting)
-  25: P.1: undefined = erlang:put('$ancestors', [<0.64.0>])
-    in proc_lib.erl line 233
-  26: P.1: undefined = erlang:put('$initial_call', {gen_server_bug,init,1})
-    in proc_lib.erl line 234
-  27: P.1: {<0.79.0>,{get_argument,generic_debug}} = init ! {<0.79.0>,{get_argument,generic_debug}}
-    in init.erl line 145
-  28: Message ({<0.79.0>,{get_argument,generic_debug}}) from P.1 reaches init
-  29: Message ({init,error}) from init reaches P.1
-  30: P.1: receives message ({init,error})
-    in init.erl line 146
-  31: P.1: {ack,<0.79.0>,{ok,<0.79.0>}} = P ! {ack,<0.79.0>,{ok,<0.79.0>}}
-    in proc_lib.erl line 377
-  32: Message ({ack,<0.79.0>,{ok,<0.79.0>}}) from P.1 reaches P
-  33: P: receives message ({ack,P.1,{ok,P.1}})
-    in proc_lib.erl line 333
-  34: P: #Ref<0.0.0.57801> = erlang:monitor(process, P.1)
-    in gen.erl line 198
-  35: P: {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop} = erlang:send(P.1, {'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}, [noconnect])
-    in gen.erl line 209
-  36: Message ({'$gen_call',{<0.64.0>,#Ref<0.0.0.57801>},stop}) from P reaches P.1
-  37: P: receive timeout expired after 5000 ms
-    in gen.erl line 211
-  38: P.1: receives message ({'$gen_call',{P,#Ref<0.0.0.57801>},stop})
-    in gen_server.erl line 358
-  39: P.1: {#Ref<0.0.0.57801>,ok} = P ! {#Ref<0.0.0.57801>,ok}
-    in gen_server.erl line 217
-  40: Message ({#Ref<0.0.0.57801>,ok}) from P.1 reaches P
-  41: P.1: exits normally
-  42: P: true = erlang:demonitor(#Ref<0.0.0.57801>, [flush])
-    in gen.erl line 221
-  43: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-  44: P.1: {'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal})
-    (while exiting)
-  45: Exit signal (normal) from P.1 reaches P
-  46: Message ({'DOWN',#Ref<0.0.0.57801>,process,<0.79.0>,normal}) from P.1 reaches P
-  47: P: exits abnormally ({timeout,{gen_server,call,[<0.79.0>,stop]}})
-  48: Exit signal (normal) from P.1 reaches P
-  49: Message ({'DOWN',#Ref<0.0.0.363>,process,<0.73.0>,normal}) from P.1 reaches P
-  50: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  51: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
-  52: P: true = erlang:exit(P.1, {timeout,{gen_server,call,[<0.79.0>,stop]}})
-    (while exiting)
-  53: Exit signal ({timeout,{gen_server,call,[<0.79.0>,stop]}}) from P reaches P.1
+  51: Exit signal ({timeout,{gen_server,call,[<0.80.0>,stop]}}) from P.1 reaches P
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 30 errors, 55/55 interleavings explored
+  Summary: 8 errors, 12/12 interleavings explored

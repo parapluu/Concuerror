@@ -884,7 +884,10 @@ exiting(Reason, Stacktrace, Info) ->
     run_built_in(erlang, process_info, 2, [Self, registered_name], Info),
   LocatedInfo = #concuerror_info{next_event = Event} =
     add_location_info(exit, set_status(Info, exiting)),
-  #concuerror_info{links = LinksTable, monitors = MonitorsTable} = Info,
+  #concuerror_info{
+     links = LinksTable,
+     monitors = MonitorsTable,
+     trap_exit = Trapping} = Info,
   FetchFun =
     fun(Table) ->
         [begin ets:delete_object(Table, E), {D, S} end ||
@@ -905,7 +908,8 @@ exiting(Reason, Stacktrace, Info) ->
            monitors = [M || {M, _} <- Monitors],
            name = Name,
            reason = Reason,
-           stacktrace = Stacktrace
+           stacktrace = Stacktrace,
+           trapping = Trapping
           }
      },
   ExitInfo = add_location_info(exit, notify(Notification, LocatedInfo)),

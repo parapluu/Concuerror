@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{combination_lock_1,combination_lock_1,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/combination_lock_1.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/combination_lock_1.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{combination_lock_1,combination_lock_1,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -27,13 +27,13 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.63388456>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.67490793>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.63388456>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.67490793>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.63388456>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.67490793>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.63388456>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.67490793>,[]])
     in erlang.erl line 2329
   11: P.1: true = ets:insert(table, {z,1})
     in combination_lock_1.erl line 15
@@ -75,13 +75,13 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.63388456>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.67490793>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.63388456>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.67490793>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.63388456>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.67490793>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.63388456>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.67490793>,[]])
     in erlang.erl line 2329
   11: P.1: true = ets:insert(table, {z,1})
     in combination_lock_1.erl line 15
@@ -127,13 +127,13 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.63388456>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.67490793>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.63388456>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.67490793>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.63388456>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.67490793>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.63388456>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.67490793>,[]])
     in erlang.erl line 2329
   11: P.1: true = ets:insert(table, {z,1})
     in combination_lock_1.erl line 15
@@ -183,13 +183,13 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.63388456>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.67490793>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.63388456>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.67490793>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.63388456>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.67490793>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.63388456>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.67490793>,[]])
     in erlang.erl line 2329
   11: P.1: true = ets:insert(table, {z,1})
     in combination_lock_1.erl line 15
@@ -241,13 +241,13 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.63388456>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.67490793>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.63388456>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.67490793>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.63388456>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.67490793>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.63388456>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.67490793>,[]])
     in erlang.erl line 2329
   11: P.1: true = ets:insert(table, {z,1})
     in combination_lock_1.erl line 15
@@ -283,13 +283,13 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.63388456>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.67490793>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.63388456>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.67490793>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.63388456>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.67490793>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.63388456>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.67490793>,[]])
     in erlang.erl line 2329
   11: P.2: true = ets:insert(table, {x,1})
     in combination_lock_1.erl line 17
@@ -324,5 +324,5 @@ Interleaving info:
   27: P.1: exits normally
   28: P.3: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 6 errors, 6/6 interleavings explored

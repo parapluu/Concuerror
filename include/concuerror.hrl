@@ -183,7 +183,8 @@
           monitors = []             :: [{reference(), pid()}],
           name = ?process_name_none :: ?process_name_none | atom(),
           reason = normal           :: term(),
-          stacktrace = []           :: [term()]
+          stacktrace = []           :: [term()],
+          trapping = false          :: boolean()
          }).
 
 -type exit_event() :: #exit_event{}.

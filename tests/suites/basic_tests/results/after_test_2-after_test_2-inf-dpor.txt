@@ -1,21 +1,21 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{after_test_2,after_test_2,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_2.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_2.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{after_test_2,after_test_2,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
     P in after_test_2.erl line 21
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.15042273>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.109760583>,[]])
     in erlang.erl line 2329
    2: P: receive timeout expired after 0 ms
     in after_test_2.erl line 11
@@ -31,7 +31,7 @@ Erroneous interleaving 2:
     P in after_test_2.erl line 21
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.15042273>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.109760583>,[]])
     in erlang.erl line 2329
    2: P: receive timeout expired after 0 ms
     in after_test_2.erl line 11
@@ -42,5 +42,5 @@ Interleaving info:
    6: P: receives message (one)
     in after_test_2.erl line 16
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 2 errors, 2/2 interleavings explored

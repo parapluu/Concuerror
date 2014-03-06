@@ -1,23 +1,23 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{after_test_reduced,after_test_reduced,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_reduced.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/after_test_reduced.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{after_test_reduced,after_test_reduced,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.99729196>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.99729196>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
     in erlang.erl line 2329
    3: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 23
@@ -41,9 +41,9 @@ Erroneous interleaving 2:
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.99729196>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.99729196>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
     in erlang.erl line 2329
    3: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 23
@@ -67,9 +67,9 @@ Erroneous interleaving 3:
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.99729196>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.99729196>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
     in erlang.erl line 2329
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
@@ -91,9 +91,9 @@ Erroneous interleaving 4:
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.99729196>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.99729196>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
     in erlang.erl line 2329
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
@@ -117,9 +117,9 @@ Erroneous interleaving 5:
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.99729196>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.99729196>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
     in erlang.erl line 2329
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
@@ -141,9 +141,9 @@ Erroneous interleaving 6:
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.99729196>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.99729196>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
     in erlang.erl line 2329
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
@@ -162,5 +162,5 @@ Interleaving info:
   12: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 30
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 6 errors, 6/6 interleavings explored

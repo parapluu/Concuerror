@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{conditional_readers_2,conditional_readers_2,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/conditional_readers_2.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/conditional_readers_2.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{conditional_readers_2,conditional_readers_2,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -21,11 +21,11 @@ Interleaving info:
     in conditional_readers_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in conditional_readers_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.87201204>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.95558660>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
    7: P.1: true = ets:insert(table, {x,1})
     in conditional_readers_2.erl line 13
@@ -52,11 +52,11 @@ Interleaving info:
     in conditional_readers_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in conditional_readers_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.87201204>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.95558660>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
    7: P.1: true = ets:insert(table, {x,1})
     in conditional_readers_2.erl line 13
@@ -87,11 +87,11 @@ Interleaving info:
     in conditional_readers_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in conditional_readers_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.87201204>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.95558660>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
    7: P.1: true = ets:insert(table, {x,1})
     in conditional_readers_2.erl line 13
@@ -118,11 +118,11 @@ Interleaving info:
     in conditional_readers_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in conditional_readers_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.87201204>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.95558660>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
    7: P.2: [{y,0}] = ets:lookup(table, y)
     in conditional_readers_2.erl line 17
@@ -151,11 +151,11 @@ Interleaving info:
     in conditional_readers_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in conditional_readers_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.87201204>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.95558660>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
    7: P.2: [{y,0}] = ets:lookup(table, y)
     in conditional_readers_2.erl line 17
@@ -182,11 +182,11 @@ Interleaving info:
     in conditional_readers_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in conditional_readers_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.87201204>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.0.95558660>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.87201204>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<conditional_readers_2.1.95558660>,[]])
     in erlang.erl line 2329
    7: P.2: [{y,0}] = ets:lookup(table, y)
     in conditional_readers_2.erl line 17
@@ -204,5 +204,5 @@ Interleaving info:
     in conditional_readers_2.erl line 22
   15: P.2: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 6 errors, 6/6 interleavings explored

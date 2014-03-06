@@ -1,31 +1,31 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{after_test_3,after_test_3,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_3.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{after_test_3,after_test_3,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * At step 11 process P.1 exited abnormally
     Reason:
       {{nocatch,{c,a}},
        [{after_test_3,'-after_test_3/0-fun-0-',0,
-                      [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_3.erl"},
                        {line,16}]}]}
     Stacktrace:
       [{after_test_3,'-after_test_3/0-fun-0-',0,
-                     [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_3.erl"},
                       {line,16}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.11972690>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.53213093>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.11972690>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.53213093>,[]])
     in erlang.erl line 2329
    3: P: receive timeout expired after 0 ms
     in after_test_3.erl line 25
@@ -40,7 +40,7 @@ Interleaving info:
    9: Message (a) from P.2 reaches P.1
   10: P.1: receives message (a)
     in after_test_3.erl line 14
-  11: P.1: exits abnormally
+  11: P.1: exits abnormally ({{nocatch,{c,a}},[{after_test_3,'-after_test_3/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,116,101,115,116,95,51,46,101,114,108]},{line,16}]}]})
   12: P.2: f = P ! f
     in after_test_3.erl line 22
   13: Message (f) from P.2 reaches P
@@ -51,17 +51,17 @@ Erroneous interleaving 2:
     Reason:
       {{nocatch,{a,c}},
        [{after_test_3,'-after_test_3/0-fun-0-',0,
-                      [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_3.erl"},
                        {line,16}]}]}
     Stacktrace:
       [{after_test_3,'-after_test_3/0-fun-0-',0,
-                     [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_3.erl"},
                       {line,16}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.11972690>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.53213093>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.11972690>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.53213093>,[]])
     in erlang.erl line 2329
    3: P: receive timeout expired after 0 ms
     in after_test_3.erl line 25
@@ -80,24 +80,24 @@ Interleaving info:
     in after_test_3.erl line 12
   13: P.1: receives message (c)
     in after_test_3.erl line 14
-  14: P.1: exits abnormally
+  14: P.1: exits abnormally ({{nocatch,{a,c}},[{after_test_3,'-after_test_3/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,116,101,115,116,95,51,46,101,114,108]},{line,16}]}]})
 ################################################################################
 Erroneous interleaving 3:
 * At step 14 process P.1 exited abnormally
     Reason:
       {{nocatch,{a,b}},
        [{after_test_3,'-after_test_3/0-fun-0-',0,
-                      [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_3.erl"},
                        {line,16}]}]}
     Stacktrace:
       [{after_test_3,'-after_test_3/0-fun-0-',0,
-                     [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_3.erl"},
                       {line,16}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.11972690>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.53213093>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.11972690>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.53213093>,[]])
     in erlang.erl line 2329
    3: P.2: a = P.1 ! a
     in after_test_3.erl line 21
@@ -116,24 +116,24 @@ Interleaving info:
     in after_test_3.erl line 12
   13: P.1: receives message (b)
     in after_test_3.erl line 14
-  14: P.1: exits abnormally
+  14: P.1: exits abnormally ({{nocatch,{a,b}},[{after_test_3,'-after_test_3/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,116,101,115,116,95,51,46,101,114,108]},{line,16}]}]})
 ################################################################################
 Erroneous interleaving 4:
 * At step 14 process P.1 exited abnormally
     Reason:
       {{nocatch,{b,a}},
        [{after_test_3,'-after_test_3/0-fun-0-',0,
-                      [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_3.erl"},
                        {line,16}]}]}
     Stacktrace:
       [{after_test_3,'-after_test_3/0-fun-0-',0,
-                     [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/after_test_3.erl"},
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/after_test_3.erl"},
                       {line,16}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.11972690>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.53213093>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.11972690>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.53213093>,[]])
     in erlang.erl line 2329
    3: P.2: a = P.1 ! a
     in after_test_3.erl line 21
@@ -152,7 +152,7 @@ Interleaving info:
     in after_test_3.erl line 12
   13: P.1: receives message (a)
     in after_test_3.erl line 14
-  14: P.1: exits abnormally
+  14: P.1: exits abnormally ({{nocatch,{b,a}},[{after_test_3,'-after_test_3/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,116,101,115,116,95,51,46,101,114,108]},{line,16}]}]})
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 4 errors, 4/4 interleavings explored

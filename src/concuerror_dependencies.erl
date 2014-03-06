@@ -35,24 +35,30 @@ dependent(#exit_event{} = Exit, #builtin_event{} = Builtin) ->
   dependent(Builtin, Exit);
 
 dependent(#builtin_event{mfa = {erlang,process_flag,[trap_exit,New]}} = Builtin,
-          #message_event{recipient = Recipient, type = Type}) ->
+          #message_event{message = #message{data = Data},
+                         recipient = Recipient, type = Type}) ->
   #builtin_event{actor = Actor, result = Old} = Builtin,
-  R = New =/= Old andalso
+  New =/= Old andalso
     Type =:= exit_signal andalso
-    Actor =:= Recipient,
-  R;
+    Data =/= kill andalso
+    Actor =:= Recipient;
 dependent(#message_event{} = Message,
           #builtin_event{mfa = {erlang,process_flag,[trap_exit,_]}} = PFlag) ->
   dependent(PFlag, Message);
 
-dependent(#exit_event{actor = Exiting, reason = Reason},
+dependent(#exit_event{actor = Exiting, reason = Reason, trapping = Trapping},
           #message_event{message = #message{data = Data},
                          recipient = Recipient, type = Type}) ->
   Type =:= exit_signal
     andalso
+    (not Trapping orelse Reason =:= kill)
+    andalso
     Exiting =:= Recipient
     andalso
-    Reason =/= Data;
+    case Data of
+      {'EXIT', _, NewReason} ->
+        NewReason =/= normal andalso Reason =/= NewReason
+    end;
 dependent(#message_event{} = Message, #exit_event{} = Exit) ->
   dependent(Exit, Message);
 
