@@ -182,10 +182,6 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
   try
     {Value, UpdatedInfo} = run_built_in(Module, Name, Arity, Args, LocatedInfo),
     #concuerror_info{extra = Extra, next_event = Event} = UpdatedInfo,
-    case Event#event.event_info of
-      #builtin_event{status = {crashed, R}} -> error(R);
-      _ -> ok
-    end,
     ?debug_flag(?builtin, {'built-in', Module, Name, Arity, Value, Location}),
     ?debug_flag(?args, {args, Args}),
     ?debug_flag(?result, {args, Value}),
@@ -245,12 +241,12 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
              #concuerror_info{
                 next_event = #event{event_info = EventInfo} = Event
                } = Info) ->
+  ?badarg_if_not(is_pid(Pid)),
   case EventInfo of
     %% Replaying...
     #builtin_event{result = OldResult} -> {OldResult, Info};
     %% New event...
     undefined ->
-      ?badarg_if_not(is_pid(Pid)),
       Message =
         #message{data = {'EXIT', self(), Reason}, message_id = make_ref()},
       MessageEvent =
@@ -268,26 +264,19 @@ run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
   #concuerror_info{processes = Processes} = Info,
   Return =
     case ets:lookup(Processes, Pid) of
-      [] -> false;
+      [] -> throw(unknown_process);
       [?process_pat_pid_status(Pid, Status)] -> is_active(Status)
     end,
   {Return, Info};
 
-run_built_in(erlang, link, 1, [Pid], Info) ->
-  #concuerror_info{links = Links, processes = Processes} = Info,
-  case ets:lookup(Processes, Pid) of
-    [] ->
-      ?debug_flag(?undefined, {link_to_external, Pid}),
-      error(badarg);
-    [?process_pat_pid_status(Pid, Status)] ->
-      case is_active(Status) of
-        true ->
-          Self = self(),
-          true = ets:insert(Links, [{Self, Pid, active}, {Pid, Self, active}]),
-          {true, Info};
-        false ->
-          error(noproc)
-      end
+run_built_in(erlang, link, 1, [Pid], #concuerror_info{links = Links} = Info) ->
+  case run_built_in(erlang, is_process_alive, 1, [Pid], Info) of
+    {true, Info}->
+      Self = self(),
+      true = ets:insert(Links, [{Self, Pid, active}, {Pid, Self, active}]),
+      {true, Info};
+    {false, _} ->
+      error(noproc)
   end;
 
 run_built_in(erlang, make_ref, 0, [], Info) ->
@@ -303,8 +292,7 @@ run_built_in(erlang, make_ref, 0, [], Info) ->
 run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
   #concuerror_info{
      monitors = Monitors,
-     next_event = #event{event_info = EventInfo} = Event,
-     processes = Processes} = Info,
+     next_event = #event{event_info = EventInfo} = Event} = Info,
   ?badarg_if_not(Type =:= process andalso is_pid(Pid)),
   Ref =
     case EventInfo of
@@ -313,34 +301,30 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
       %% New event...
       undefined -> make_ref()
     end,
+  {IsActive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
+  case IsActive of
+    true -> true = ets:insert(Monitors, {Pid, {Ref, self()}, active});
+    false -> ok
+  end,
   NewInfo =
-    case ets:lookup(Processes, Pid) of
-      [] -> throw(monitoring_non_concuerror_process);
-      [?process_pat_pid_status(Pid, Status)] ->
-        IsActive = is_active(Status),
+    case EventInfo of
+      %% Replaying...
+      #builtin_event{} -> Info;
+      %% New event...
+      undefined ->
         case IsActive of
-          true -> true = ets:insert(Monitors, {Pid, {Ref, self()}, active});
-          false -> ok
-        end,
-        case EventInfo of
-          %% Replaying...
-          #builtin_event{} -> Info;
-          %% New event...
-          undefined ->
-            case IsActive of
-              false ->
-                Message =
-                  #message{data = {'DOWN', Ref, process, Pid, noproc},
-                           message_id = make_ref()},
-                MessageEvent =
-                  #message_event{
-                  cause_label = Event#event.label,
-                  message = Message,
-                  recipient = self()},
-                NewEvent = Event#event{special = {message, MessageEvent}},
-                Info#concuerror_info{next_event = NewEvent};
-              true -> Info
-            end
+          false ->
+            Message =
+              #message{data = {'DOWN', Ref, process, Pid, noproc},
+                       message_id = make_ref()},
+            MessageEvent =
+              #message_event{
+                 cause_label = Event#event.label,
+                 message = Message,
+                 recipient = self()},
+            NewEvent = Event#event{special = {message, MessageEvent}},
+            Info#concuerror_info{next_event = NewEvent};
+          true -> Info
         end
     end,
   {Ref, NewInfo};
@@ -394,7 +378,6 @@ run_built_in(erlang, register, 2, [Name, Pid],
              #concuerror_info{processes = Processes} = Info) ->
   try
     true = is_atom(Name),
-    true = is_pid(Pid) orelse is_port(Pid),
     {true, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
     [] = ets:match(Processes, ?process_match_name_to_pid(Name)),
     ?process_name_none = ets:lookup_element(Processes, Pid, ?process_name),
@@ -455,31 +438,28 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
              #concuerror_info{
                 next_event = #event{event_info = EventInfo} = Event
                } = Info) ->
+  Pid =
+    case is_pid(Recipient) of
+      true -> Recipient;
+      false ->
+        {P, Info} = run_built_in(erlang, whereis, 1, [Recipient], Info),
+        P
+    end,
+  ?badarg_if_not(is_pid(Pid)),
   case EventInfo of
     %% Replaying...
     #builtin_event{result = OldResult} -> {OldResult, Info};
     %% New event...
     undefined ->
       ?debug_flag(?send, {send, Recipient, Message}),
-      Pid =
-        case is_pid(Recipient) of
-          true -> Recipient;
-          false ->
-            {P, Info} = run_built_in(erlang, whereis, 1, [Recipient], Info),
-            P
-        end,
-      case is_pid(Pid) of
-        true ->
-          MessageEvent =
-            #message_event{
-               cause_label = Event#event.label,
-               message = #message{data = Message, message_id = make_ref()},
-               recipient = Pid},
-          NewEvent = Event#event{special = {message, MessageEvent}},
-          ?debug_flag(?send, {send, successful}),
-          {Message, Info#concuerror_info{next_event = NewEvent}};
-        false -> error(badarg)
-      end
+      MessageEvent =
+        #message_event{
+           cause_label = Event#event.label,
+           message = #message{data = Message, message_id = make_ref()},
+           recipient = Pid},
+      NewEvent = Event#event{special = {message, MessageEvent}},
+      ?debug_flag(?send, {send, successful}),
+      {Message, Info#concuerror_info{next_event = NewEvent}}
   end;
 run_built_in(erlang, process_flag, 2, [trap_exit, Value],
              #concuerror_info{trap_exit = OldValue} = Info) ->
@@ -545,16 +525,14 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   ets:delete_all_objects(Tid),
   {Tid, Info};
 run_built_in(ets, insert, 2, [Tid, _] = Args, Info) ->
-  #concuerror_info{ets_tables = EtsTables} = Info,
-  check_ets_access_rights(Tid, self(), insert, EtsTables),
+  check_ets_access_rights(Tid, self(), insert, Info),
   {erlang:apply(ets, insert, Args), Info};
 run_built_in(ets, lookup, 2, [Tid, _] = Args, Info) ->
-  #concuerror_info{ets_tables = EtsTables} = Info,
-  check_ets_access_rights(Tid, self(), lookup, EtsTables),
+  check_ets_access_rights(Tid, self(), lookup, Info),
   {erlang:apply(ets, lookup, Args), Info};
 run_built_in(ets, delete, 1, [Tid], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
-  check_ets_access_rights(Tid, self(), delete, EtsTables),
+  check_ets_access_rights(Tid, self(), delete, Info),
   Update = [{?ets_owner, none}],
   ets:update_element(EtsTables, Tid, Update),
   ets:delete_all_objects(Tid),
@@ -969,7 +947,8 @@ link_monitor_handlers(Handler, LinksOrMonitors) ->
 
 %%------------------------------------------------------------------------------
 
-check_ets_access_rights(Tid, Pid, Op, EtsTables) ->
+check_ets_access_rights(Tid, Pid, Op, Info) ->
+  #concuerror_info{ets_tables = EtsTables} = Info,
   Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
   Test =
     is_pid(Owner)
