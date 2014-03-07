@@ -1,0 +1,102 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit_message_unpredicted.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{exit_message_unpredicted,exit_message_unpredicted,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in exit_message_unpredicted.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: {<0.68.0>,#Ref<0.0.0.182>} = erlang:spawn_opt({erlang,apply,[#Fun<exit_message_unpredicted.0.21088686>,[]],[monitor]})
+    in erlang.erl line 2373
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<exit_message_unpredicted.1.21088686>,[]])
+    in erlang.erl line 2329
+   3: P: true = erlang:is_process_alive(P.1)
+    in exit_message_unpredicted.erl line 12
+   4: P.1: exits normally
+   5: P.1: {'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal})
+    (while exiting)
+   6: Message ({'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal}) from P.1 reaches P
+   7: P: receives message ({'DOWN',#Ref<0.0.0.182>,process,P.1,normal})
+    in exit_message_unpredicted.erl line 13
+   8: P.2: ok = P ! ok
+    in exit_message_unpredicted.erl line 11
+   9: Message (ok) from P.2 reaches P
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in exit_message_unpredicted.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: {<0.68.0>,#Ref<0.0.0.182>} = erlang:spawn_opt({erlang,apply,[#Fun<exit_message_unpredicted.0.21088686>,[]],[monitor]})
+    in erlang.erl line 2373
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<exit_message_unpredicted.1.21088686>,[]])
+    in erlang.erl line 2329
+   3: P: true = erlang:is_process_alive(P.1)
+    in exit_message_unpredicted.erl line 12
+   4: P.1: exits normally
+   5: P.1: {'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal})
+    (while exiting)
+   6: P.2: ok = P ! ok
+    in exit_message_unpredicted.erl line 11
+   7: P.2: exits normally
+   8: Message (ok) from P.2 reaches P
+   9: Message ({'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal}) from P.1 reaches P
+  10: P: receives message (ok)
+    in exit_message_unpredicted.erl line 13
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in exit_message_unpredicted.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: {<0.68.0>,#Ref<0.0.0.182>} = erlang:spawn_opt({erlang,apply,[#Fun<exit_message_unpredicted.0.21088686>,[]],[monitor]})
+    in erlang.erl line 2373
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<exit_message_unpredicted.1.21088686>,[]])
+    in erlang.erl line 2329
+   3: P.2: ok = P ! ok
+    in exit_message_unpredicted.erl line 11
+   4: P.2: exits normally
+   5: P.1: exits normally
+   6: Message (ok) from P.2 reaches P
+   7: P: false = erlang:is_process_alive(P.1)
+    in exit_message_unpredicted.erl line 12
+   8: P: receives message (ok)
+    in exit_message_unpredicted.erl line 13
+   9: P.1: {'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal})
+    (while exiting)
+  10: Message ({'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal}) from P.1 reaches P
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in exit_message_unpredicted.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: {<0.68.0>,#Ref<0.0.0.182>} = erlang:spawn_opt({erlang,apply,[#Fun<exit_message_unpredicted.0.21088686>,[]],[monitor]})
+    in erlang.erl line 2373
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<exit_message_unpredicted.1.21088686>,[]])
+    in erlang.erl line 2329
+   3: P.2: ok = P ! ok
+    in exit_message_unpredicted.erl line 11
+   4: P.2: exits normally
+   5: P.1: exits normally
+   6: P: false = erlang:is_process_alive(P.1)
+    in exit_message_unpredicted.erl line 12
+   7: P.1: {'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal})
+    (while exiting)
+   8: Message ({'DOWN',#Ref<0.0.0.182>,process,<0.68.0>,normal}) from P.1 reaches P
+   9: Message (ok) from P.2 reaches P
+  10: P: receives message ({'DOWN',#Ref<0.0.0.182>,process,P.1,normal})
+    in exit_message_unpredicted.erl line 13
+################################################################################
+Done! (Exit status: completed)
+  Summary: 4 errors, 4/4 interleavings explored

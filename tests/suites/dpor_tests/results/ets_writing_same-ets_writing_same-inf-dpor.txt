@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{ets_writing_same,ets_writing_same,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_writing_same.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_writing_same.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{ets_writing_same,ets_writing_same,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -17,9 +17,9 @@ Erroneous interleaving 1:
 Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.115588010>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.115588010>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
     in erlang.erl line 2329
    4: P: true = ets:insert(table, {y,1})
     in ets_writing_same.erl line 23
@@ -41,9 +41,9 @@ Erroneous interleaving 2:
 Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.115588010>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.115588010>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
     in erlang.erl line 2329
    4: P: true = ets:insert(table, {y,1})
     in ets_writing_same.erl line 23
@@ -65,9 +65,9 @@ Erroneous interleaving 3:
 Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.115588010>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.115588010>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
     in erlang.erl line 2329
    4: P: true = ets:insert(table, {y,1})
     in ets_writing_same.erl line 23
@@ -89,9 +89,9 @@ Erroneous interleaving 4:
 Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.115588010>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.115588010>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
     in erlang.erl line 2329
    4: P: true = ets:insert(table, {y,1})
     in ets_writing_same.erl line 23
@@ -111,19 +111,19 @@ Erroneous interleaving 5:
     Reason:
       {{nocatch,yes},
        [{ets_writing_same,'-ets_writing_same/0-fun-1-',0,
-                          [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_writing_same.erl"},
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_writing_same.erl"},
                            {line,17}]}]}
     Stacktrace:
       [{ets_writing_same,'-ets_writing_same/0-fun-1-',0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_writing_same.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_writing_same.erl"},
                           {line,17}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.115588010>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.115588010>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
     in erlang.erl line 2329
    4: P.1: true = ets:insert(table, {x,42})
     in ets_writing_same.erl line 11
@@ -136,7 +136,7 @@ Interleaving info:
     in ets_writing_same.erl line 23
    9: P: true = ets:insert(table, {x,42})
     in ets_writing_same.erl line 24
-  10: P.2: exits abnormally
+  10: P.2: exits abnormally ({{nocatch,yes},[{ets_writing_same,'-ets_writing_same/0-fun-1-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,119,114,105,116,105,110,103,95,115,97,109,101,46,101,114,108]},{line,17}]}]})
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 5 errors, 5/5 interleavings explored

@@ -1,25 +1,25 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{ets_dependencies_2,ets_dependencies_2,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{ets_dependencies_2,ets_dependencies_2,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * At step 28 process P exited abnormally
     Reason:
       {{nocatch,{1,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -31,11 +31,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -72,7 +72,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   27: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  28: P: exits abnormally
+  28: P: exits abnormally ({{nocatch,{1,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   29: P: true = ets:delete(table)
     (while exiting)
   30: P.3: exits normally
@@ -82,11 +82,11 @@ Erroneous interleaving 2:
     Reason:
       {{nocatch,{1,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -98,11 +98,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -140,7 +140,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -149,11 +149,11 @@ Erroneous interleaving 3:
     Reason:
       {{nocatch,{0,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -165,11 +165,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -206,7 +206,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   27: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  28: P: exits abnormally
+  28: P: exits abnormally ({{nocatch,{0,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   29: P: true = ets:delete(table)
     (while exiting)
   30: P.3: exits normally
@@ -216,11 +216,11 @@ Erroneous interleaving 4:
     Reason:
       {{nocatch,{0,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -232,11 +232,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -274,7 +274,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -283,11 +283,11 @@ Erroneous interleaving 5:
     Reason:
       {{nocatch,{1,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -299,11 +299,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -341,7 +341,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -350,11 +350,11 @@ Erroneous interleaving 6:
     Reason:
       {{nocatch,{1,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -366,11 +366,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -408,7 +408,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -417,11 +417,11 @@ Erroneous interleaving 7:
     Reason:
       {{nocatch,{1,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -433,11 +433,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -475,7 +475,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -484,11 +484,11 @@ Erroneous interleaving 8:
     Reason:
       {{nocatch,{1,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -500,11 +500,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -542,7 +542,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -551,11 +551,11 @@ Erroneous interleaving 9:
     Reason:
       {{nocatch,{0,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -567,11 +567,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -609,7 +609,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -618,11 +618,11 @@ Erroneous interleaving 10:
     Reason:
       {{nocatch,{0,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -634,11 +634,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -676,7 +676,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -685,11 +685,11 @@ Erroneous interleaving 11:
     Reason:
       {{nocatch,{0,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -701,11 +701,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -743,7 +743,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -752,11 +752,11 @@ Erroneous interleaving 12:
     Reason:
       {{nocatch,{0,1,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -768,11 +768,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -810,7 +810,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -819,11 +819,11 @@ Erroneous interleaving 13:
     Reason:
       {{nocatch,{1,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -835,11 +835,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -876,7 +876,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   27: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  28: P: exits abnormally
+  28: P: exits abnormally ({{nocatch,{1,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   29: P: true = ets:delete(table)
     (while exiting)
   30: P.3: exits normally
@@ -886,11 +886,11 @@ Erroneous interleaving 14:
     Reason:
       {{nocatch,{1,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -902,11 +902,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -944,7 +944,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -953,11 +953,11 @@ Erroneous interleaving 15:
     Reason:
       {{nocatch,{1,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -969,11 +969,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1011,7 +1011,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1020,11 +1020,11 @@ Erroneous interleaving 16:
     Reason:
       {{nocatch,{1,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1036,11 +1036,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1078,7 +1078,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1087,11 +1087,11 @@ Erroneous interleaving 17:
     Reason:
       {{nocatch,{1,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1103,11 +1103,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1145,7 +1145,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1154,11 +1154,11 @@ Erroneous interleaving 18:
     Reason:
       {{nocatch,{1,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1170,11 +1170,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1212,7 +1212,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1221,11 +1221,11 @@ Erroneous interleaving 19:
     Reason:
       {{nocatch,{0,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1237,11 +1237,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1278,7 +1278,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   27: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  28: P: exits abnormally
+  28: P: exits abnormally ({{nocatch,{0,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   29: P: true = ets:delete(table)
     (while exiting)
   30: P.3: exits normally
@@ -1288,11 +1288,11 @@ Erroneous interleaving 20:
     Reason:
       {{nocatch,{0,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1304,11 +1304,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1346,7 +1346,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1355,11 +1355,11 @@ Erroneous interleaving 21:
     Reason:
       {{nocatch,{0,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1371,11 +1371,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1413,7 +1413,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1422,11 +1422,11 @@ Erroneous interleaving 22:
     Reason:
       {{nocatch,{0,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1438,11 +1438,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1480,7 +1480,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1489,11 +1489,11 @@ Erroneous interleaving 23:
     Reason:
       {{nocatch,{0,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1505,11 +1505,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1547,7 +1547,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1556,11 +1556,11 @@ Erroneous interleaving 24:
     Reason:
       {{nocatch,{0,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1572,11 +1572,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1614,7 +1614,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1623,11 +1623,11 @@ Erroneous interleaving 25:
     Reason:
       {{nocatch,{0,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1639,11 +1639,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1680,7 +1680,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   27: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  28: P: exits abnormally
+  28: P: exits abnormally ({{nocatch,{0,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   29: P: true = ets:delete(table)
     (while exiting)
   30: P.3: exits normally
@@ -1690,11 +1690,11 @@ Erroneous interleaving 26:
     Reason:
       {{nocatch,{0,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1706,11 +1706,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1748,7 +1748,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1757,11 +1757,11 @@ Erroneous interleaving 27:
     Reason:
       {{nocatch,{0,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1773,11 +1773,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1815,7 +1815,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1824,11 +1824,11 @@ Erroneous interleaving 28:
     Reason:
       {{nocatch,{0,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1840,11 +1840,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1882,7 +1882,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1891,11 +1891,11 @@ Erroneous interleaving 29:
     Reason:
       {{nocatch,{0,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1907,11 +1907,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -1949,7 +1949,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -1958,11 +1958,11 @@ Erroneous interleaving 30:
     Reason:
       {{nocatch,{0,1,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1974,11 +1974,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.1: [{x,0}] = ets:lookup(table, x)
     in ets_dependencies_2.erl line 15
@@ -2016,7 +2016,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{0,1,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2025,11 +2025,11 @@ Erroneous interleaving 31:
     Reason:
       {{nocatch,{1,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2041,11 +2041,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2082,7 +2082,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   27: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  28: P: exits abnormally
+  28: P: exits abnormally ({{nocatch,{1,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   29: P: true = ets:delete(table)
     (while exiting)
   30: P.3: exits normally
@@ -2092,11 +2092,11 @@ Erroneous interleaving 32:
     Reason:
       {{nocatch,{1,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2108,11 +2108,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2150,7 +2150,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2159,11 +2159,11 @@ Erroneous interleaving 33:
     Reason:
       {{nocatch,{1,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2175,11 +2175,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2217,7 +2217,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2226,11 +2226,11 @@ Erroneous interleaving 34:
     Reason:
       {{nocatch,{1,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2242,11 +2242,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2284,7 +2284,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2293,11 +2293,11 @@ Erroneous interleaving 35:
     Reason:
       {{nocatch,{1,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2309,11 +2309,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2351,7 +2351,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2360,11 +2360,11 @@ Erroneous interleaving 36:
     Reason:
       {{nocatch,{1,0,1}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2376,11 +2376,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2418,7 +2418,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,1}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,1}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2427,11 +2427,11 @@ Erroneous interleaving 37:
     Reason:
       {{nocatch,{1,0,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2443,11 +2443,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2484,7 +2484,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   27: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  28: P: exits abnormally
+  28: P: exits abnormally ({{nocatch,{1,0,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   29: P: true = ets:delete(table)
     (while exiting)
   30: P.2: exits normally
@@ -2494,11 +2494,11 @@ Erroneous interleaving 38:
     Reason:
       {{nocatch,{1,0,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2510,11 +2510,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2552,7 +2552,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2561,11 +2561,11 @@ Erroneous interleaving 39:
     Reason:
       {{nocatch,{1,0,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2577,11 +2577,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2619,7 +2619,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2628,11 +2628,11 @@ Erroneous interleaving 40:
     Reason:
       {{nocatch,{1,0,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2644,11 +2644,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2686,7 +2686,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2695,11 +2695,11 @@ Erroneous interleaving 41:
     Reason:
       {{nocatch,{1,0,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2711,11 +2711,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2753,7 +2753,7 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
@@ -2762,11 +2762,11 @@ Erroneous interleaving 42:
     Reason:
       {{nocatch,{1,0,0}},
        [{ets_dependencies_2,ets_dependencies_2,0,
-                            [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                              {line,47}]}]}
     Stacktrace:
       [{ets_dependencies_2,ets_dependencies_2,0,
-                           [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_2.erl"},
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_2.erl"},
                             {line,47}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2778,11 +2778,11 @@ Interleaving info:
     in ets_dependencies_2.erl line 12
    4: P: true = ets:insert(table, {z,0})
     in ets_dependencies_2.erl line 13
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.58121507>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.0.35106353>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.58121507>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.1.35106353>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.58121507>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_2.2.35106353>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 31
@@ -2820,9 +2820,9 @@ Interleaving info:
     in ets_dependencies_2.erl line 45
   28: P: [{z,0}] = ets:lookup(table, z)
     in ets_dependencies_2.erl line 46
-  29: P: exits abnormally
+  29: P: exits abnormally ({{nocatch,{1,0,0}},[{ets_dependencies_2,ets_dependencies_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,112,101,110,100,101,110,99,105,101,115,95,50,46,101,114,108]},{line,47}]}]})
   30: P: true = ets:delete(table)
     (while exiting)
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 42 errors, 42/42 interleavings explored

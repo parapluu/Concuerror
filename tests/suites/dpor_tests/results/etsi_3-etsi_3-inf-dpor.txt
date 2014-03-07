@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{etsi_3,etsi_3,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_3.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_3.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{etsi_3,etsi_3,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -23,11 +23,11 @@ Interleaving info:
     in etsi_3.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in etsi_3.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.80138018>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.12792974>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.80138018>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.12792974>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.80138018>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.12792974>,[]])
     in erlang.erl line 2329
    8: P.1: true = ets:insert(table, {y,1})
     in etsi_3.erl line 13
@@ -56,11 +56,11 @@ Interleaving info:
     in etsi_3.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in etsi_3.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.80138018>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.12792974>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.80138018>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.12792974>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.80138018>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.12792974>,[]])
     in erlang.erl line 2329
    8: P.1: true = ets:insert(table, {y,1})
     in etsi_3.erl line 13
@@ -87,11 +87,11 @@ Interleaving info:
     in etsi_3.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in etsi_3.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.80138018>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.12792974>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.80138018>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.12792974>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.80138018>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.12792974>,[]])
     in erlang.erl line 2329
    8: P.2: [{z,0}] = ets:lookup(table, z)
     in etsi_3.erl line 15
@@ -107,5 +107,5 @@ Interleaving info:
   14: P.1: exits normally
   15: P.2: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 3 errors, 3/3 interleavings explored

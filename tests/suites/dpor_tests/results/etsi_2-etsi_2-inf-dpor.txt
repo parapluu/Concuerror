@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{etsi_2,etsi_2,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_2.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_2.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{etsi_2,etsi_2,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -24,11 +24,11 @@ Interleaving info:
     in etsi_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in etsi_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.91905591>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.42315063>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.91905591>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.42315063>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.91905591>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.42315063>,[]])
     in erlang.erl line 2329
    7: P.1: true = ets:insert(table, {x,1})
     in etsi_2.erl line 13
@@ -55,11 +55,11 @@ Interleaving info:
     in etsi_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in etsi_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.91905591>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.42315063>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.91905591>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.42315063>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.91905591>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.42315063>,[]])
     in erlang.erl line 2329
    7: P.1: true = ets:insert(table, {x,1})
     in etsi_2.erl line 13
@@ -86,11 +86,11 @@ Interleaving info:
     in etsi_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in etsi_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.91905591>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.42315063>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.91905591>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.42315063>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.91905591>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.42315063>,[]])
     in erlang.erl line 2329
    7: P.2: true = ets:insert(table, {y,1})
     in etsi_2.erl line 17
@@ -117,11 +117,11 @@ Interleaving info:
     in etsi_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in etsi_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.91905591>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.42315063>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.91905591>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.42315063>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.91905591>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.42315063>,[]])
     in erlang.erl line 2329
    7: P.2: true = ets:insert(table, {y,1})
     in etsi_2.erl line 17
@@ -146,11 +146,11 @@ Interleaving info:
     in etsi_2.erl line 10
    3: P: true = ets:insert(table, {y,0})
     in etsi_2.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.91905591>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_2.0.42315063>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.91905591>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_2.1.42315063>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.91905591>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_2.2.42315063>,[]])
     in erlang.erl line 2329
    7: P.2: true = ets:insert(table, {y,1})
     in etsi_2.erl line 17
@@ -161,5 +161,5 @@ Interleaving info:
   10: P.2: [{x,1}] = ets:lookup(table, x)
     in etsi_2.erl line 18
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 5 errors, 5/5 interleavings explored

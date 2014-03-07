@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{ets_delete,ets_delete,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_delete.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_delete.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{ets_delete,ets_delete,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -18,23 +18,23 @@ Erroneous interleaving 1:
       {badarg,[{ets,insert,
                     [table,{key,value}],
                     [11,
-                     {file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_delete.erl"}]}]}
+                     {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_delete.erl"}]}]}
     Stacktrace:
       [{ets,insert,
             [table,{key,value}],
             [11,
-             {file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_delete.erl"}]}]
+             {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_delete.erl"}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_delete.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_delete.0.104336961>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_delete.0.101068984>,[]])
     in erlang.erl line 2329
    3: P: true = ets:delete(table)
     in ets_delete.erl line 13
-   4: P.1: Exception raised by: ets:insert(table, {key,value})
+   4: P.1: Exception badarg raised by: ets:insert(table, {key,value})
     in ets_delete.erl line 11
-   5: P.1: exits abnormally
+   5: P.1: exits abnormally ({badarg,[{ets,insert,[table,{key,value}],[11,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,100,101,108,101,116,101,46,101,114,108]}]}]})
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -43,7 +43,7 @@ Erroneous interleaving 2:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_delete.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_delete.0.104336961>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_delete.0.101068984>,[]])
     in erlang.erl line 2329
    3: P.1: true = ets:insert(table, {key,value})
     in ets_delete.erl line 11
@@ -51,5 +51,5 @@ Interleaving info:
     in ets_delete.erl line 13
    5: P.1: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 2 errors, 2/2 interleavings explored

@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{ets_dependencies_3,ets_dependencies_3,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies_3.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies_3.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{ets_dependencies_3,ets_dependencies_3,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -17,11 +17,11 @@ Erroneous interleaving 1:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -59,11 +59,11 @@ Erroneous interleaving 2:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -101,11 +101,11 @@ Erroneous interleaving 3:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -143,11 +143,11 @@ Erroneous interleaving 4:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -185,11 +185,11 @@ Erroneous interleaving 5:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -227,11 +227,11 @@ Erroneous interleaving 6:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -269,11 +269,11 @@ Erroneous interleaving 7:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -311,11 +311,11 @@ Erroneous interleaving 8:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -353,11 +353,11 @@ Erroneous interleaving 9:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -395,11 +395,11 @@ Erroneous interleaving 10:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -437,11 +437,11 @@ Erroneous interleaving 11:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -479,11 +479,11 @@ Erroneous interleaving 12:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.1: [] = ets:lookup(table, x)
     in ets_dependencies_3.erl line 12
@@ -521,11 +521,11 @@ Erroneous interleaving 13:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -563,11 +563,11 @@ Erroneous interleaving 14:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -605,11 +605,11 @@ Erroneous interleaving 15:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -647,11 +647,11 @@ Erroneous interleaving 16:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -689,11 +689,11 @@ Erroneous interleaving 17:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -731,11 +731,11 @@ Erroneous interleaving 18:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -773,11 +773,11 @@ Erroneous interleaving 19:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -815,11 +815,11 @@ Erroneous interleaving 20:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -857,11 +857,11 @@ Erroneous interleaving 21:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -899,11 +899,11 @@ Erroneous interleaving 22:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -941,11 +941,11 @@ Erroneous interleaving 23:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -983,11 +983,11 @@ Erroneous interleaving 24:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_3.erl line 10
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.61055621>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.0.36711117>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.61055621>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.1.36711117>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.61055621>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_3.2.36711117>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_3.erl line 16
@@ -1018,5 +1018,5 @@ Interleaving info:
   21: P: receives message (ok)
     in ets_dependencies_3.erl line 29
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 24 errors, 24/24 interleavings explored

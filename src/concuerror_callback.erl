@@ -38,6 +38,7 @@
 %% -define(DEBUG, true).
 -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 
+-define(badarg_if_not(A), case A of true -> ok; false -> error(badarg) end).                              
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
@@ -211,10 +212,7 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
 
 %% Special instruction running control (e.g. send to unknown -> wait for reply)
 run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
-  case is_reference(Ref) of
-    true -> ok;
-    false -> error(badarg)
-  end,
+  ?badarg_if_not(is_reference(Ref)),
   #concuerror_info{monitors = Monitors} = Info,
   {Result, NewInfo} =
     case ets:match(Monitors, {'$1', {Ref, '$2'}, active}) of
@@ -252,6 +250,7 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
     #builtin_event{result = OldResult} -> {OldResult, Info};
     %% New event...
     undefined ->
+      ?badarg_if_not(is_pid(Pid)),
       Message =
         #message{data = {'EXIT', self(), Reason}, message_id = make_ref()},
       MessageEvent =
@@ -265,10 +264,7 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
   end;
 
 run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
-  case is_pid(Pid) of
-    false -> error(badarg);
-    true -> ok
-  end,
+  ?badarg_if_not(is_pid(Pid)),
   #concuerror_info{processes = Processes} = Info,
   Return =
     case ets:lookup(Processes, Pid) of
@@ -309,10 +305,7 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
      monitors = Monitors,
      next_event = #event{event_info = EventInfo} = Event,
      processes = Processes} = Info,
-  case Type =:= process andalso is_pid(Pid) of
-    true -> ok;
-    false -> error(badarg)
-  end,
+  ?badarg_if_not(Type =:= process andalso is_pid(Pid)),
   Ref =
     case EventInfo of
       %% Replaying...
@@ -553,15 +546,15 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   {Tid, Info};
 run_built_in(ets, insert, 2, [Tid, _] = Args, Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
-  ok = check_ets_access_rights(Tid, self(), insert, EtsTables),
+  check_ets_access_rights(Tid, self(), insert, EtsTables),
   {erlang:apply(ets, insert, Args), Info};
 run_built_in(ets, lookup, 2, [Tid, _] = Args, Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
-  ok = check_ets_access_rights(Tid, self(), lookup, EtsTables),
+  check_ets_access_rights(Tid, self(), lookup, EtsTables),
   {erlang:apply(ets, lookup, Args), Info};
 run_built_in(ets, delete, 1, [Tid], Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
-  ok = check_ets_access_rights(Tid, self(), delete, EtsTables),
+  check_ets_access_rights(Tid, self(), delete, EtsTables),
   Update = [{?ets_owner, none}],
   ets:update_element(EtsTables, Tid, Update),
   ets:delete_all_objects(Tid),
@@ -574,12 +567,7 @@ run_built_in(ets, give_away, 3, [Tid, Pid, GiftData],
   #concuerror_info{ets_tables = EtsTables} = Info,
   Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
   Self = self(),
-  case
-    is_pid(Pid) andalso Owner =:= Self andalso Pid =/= Self
-  of
-    true -> ok;
-    false -> error(badarg)
-  end,
+  ?badarg_if_not(is_pid(Pid) andalso Owner =:= Self andalso Pid =/= Self),
   case ets:lookup(Processes, Pid) of
     [?process_pat_pid_status(Pid, Status)]
       when Status =/= exiting andalso Status =/= exited -> ok;
@@ -943,10 +931,10 @@ ets_ownership_exiting_events(Info) ->
               end,
             case instrumented(call, MFArgs, exit, InfoIn) of
               {{didit, true}, NewInfo} -> NewInfo;
-              _ ->
+              {_, OtherInfo} ->
                 ?debug_flag(?heir, {problematic_heir, Tid, HeirSpec}),
                 {{didit, true}, NewInfo} =
-                  instrumented(call, [ets, delete, [Tid]], exit, InfoIn),
+                  instrumented(call, [ets, delete, [Tid]], exit, OtherInfo),
                 NewInfo
             end
         end,
@@ -983,20 +971,17 @@ link_monitor_handlers(Handler, LinksOrMonitors) ->
 
 check_ets_access_rights(Tid, Pid, Op, EtsTables) ->
   Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
-  case
+  Test =
     is_pid(Owner)
     andalso
-    (Owner =:= Pid
-     orelse
-     case ets_ops_access_rights_map(Op) of
-       write -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =:= public;
-       read -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =/= private;
-       delete -> false
-     end)
-  of
-    true -> ok;
-    false -> error(badarg)
-  end.
+      (Owner =:= Pid
+       orelse
+       case ets_ops_access_rights_map(Op) of
+         write -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =:= public;
+         read -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =/= private;
+         delete -> false
+       end),
+  ?badarg_if_not(Test).
 
 ets_ops_access_rights_map(Op) ->
   case Op of

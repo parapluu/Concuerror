@@ -126,13 +126,14 @@ dependent(_EventA, _EventB) ->
 
 %%------------------------------------------------------------------------------
 
-dependent_exit(_Exit, {erlang, Indep, _})
+dependent_exit(_Exit, {erlang, A, _})
   when
-    Indep =:= exit
-    ; Indep =:= process_flag
-    ; Indep =:= put
-    ; Indep =:= spawn
-    ; Indep =:= spawn_opt
+    false
+    ;A =:= exit
+    ;A =:= process_flag
+    ;A =:= put
+    ;A =:= spawn
+    ;A =:= spawn_opt
     ->
   false;
 dependent_exit(#exit_event{actor = Exiting},
@@ -203,21 +204,27 @@ dependent_built_in(#builtin_event{mfa = {erlang, make_ref, _}},
 dependent_built_in(#builtin_event{mfa = {erlang, A,_}},
                    #builtin_event{mfa = {erlang, B,_}})
   when
-    A =:= exit;
-    A =:= monitor;
-    A =:= demonitor;
-    A =:= spawn;
-    A =:= spawn_opt;
-    A =:= put;
-    A =:= make_ref;
-
-    B =:= exit;
-    B =:= monitor;
-    B =:= demonitor;
-    B =:= spawn;
-    B =:= spawn_opt;
-    B =:= put;
-    B =:= make_ref ->
+    false
+    ;A =:= demonitor        %% Depends only with an exit event or proc_info
+    ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
+    ;A =:= is_process_alive %% Depends only with an exit event
+    ;A =:= make_ref         %% Depends with nothing
+    ;A =:= monitor          %% Depends only with an exit event or proc_info
+    ;A =:= process_flag     %% Depends only with delivery of a signal
+    ;A =:= put              %% Depends only with proc_info
+    ;A =:= spawn            %% Depends only with proc_info
+    ;A =:= spawn_opt        %% Depends only with proc_info
+    
+    ;B =:= demonitor
+    ;B =:= exit
+    ;B =:= is_process_alive
+    ;B =:= make_ref
+    ;B =:= monitor
+    ;B =:= process_flag
+    ;B =:= put
+    ;B =:= spawn
+    ;B =:= spawn_opt
+    ->
   false;
 
 dependent_built_in(#builtin_event{mfa = {erlang, A, _}},

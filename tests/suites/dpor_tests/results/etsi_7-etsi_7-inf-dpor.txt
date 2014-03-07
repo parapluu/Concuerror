@@ -1,25 +1,25 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{etsi_7,etsi_7,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{etsi_7,etsi_7,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * At step 45 process P exited abnormally
     Reason:
       {{nocatch,[{z,0},{xy,{1,1}},{z5,0}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -35,15 +35,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -106,7 +106,7 @@ Interleaving info:
     in etsi_7.erl line 66
   44: P: [{z5,0}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  45: P: exits abnormally
+  45: P: exits abnormally ({{nocatch,[{z,0},{xy,{1,1}},{z5,0}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   46: P: true = ets:delete(table)
     (while exiting)
   47: P.1: exits normally
@@ -120,11 +120,11 @@ Erroneous interleaving 2:
     Reason:
       {{nocatch,[{z,1},{xy,{1,1}},{z5,0}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -140,15 +140,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -214,7 +214,7 @@ Interleaving info:
     in etsi_7.erl line 66
   46: P: [{z5,0}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,[{z,1},{xy,{1,1}},{z5,0}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -227,11 +227,11 @@ Erroneous interleaving 3:
     Reason:
       {{nocatch,[{z,1},{xy,{0,1}},{z5,0}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -247,15 +247,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -321,7 +321,7 @@ Interleaving info:
     in etsi_7.erl line 66
   46: P: [{z5,0}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,[{z,1},{xy,{0,1}},{z5,0}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -334,11 +334,11 @@ Erroneous interleaving 4:
     Reason:
       {{nocatch,[{z,0},{xy,{0,1}},{z5,0}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -354,15 +354,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -427,7 +427,7 @@ Interleaving info:
     in etsi_7.erl line 66
   46: P: [{z5,0}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,[{z,0},{xy,{0,1}},{z5,0}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -439,11 +439,11 @@ Erroneous interleaving 5:
     Reason:
       {{nocatch,[{z,1},{xy,{1,1}},{z5,1}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -459,15 +459,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -532,7 +532,7 @@ Interleaving info:
     in etsi_7.erl line 66
   45: P: [{z5,1}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,[{z,1},{xy,{1,1}},{z5,1}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -546,11 +546,11 @@ Erroneous interleaving 6:
     Reason:
       {{nocatch,[{z,1},{xy,{0,1}},{z5,1}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -566,15 +566,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -639,7 +639,7 @@ Interleaving info:
     in etsi_7.erl line 66
   45: P: [{z5,1}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,[{z,1},{xy,{0,1}},{z5,1}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -653,11 +653,11 @@ Erroneous interleaving 7:
     Reason:
       {{nocatch,[{z,0},{xy,{1,0}},{z5,0}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -673,15 +673,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -745,7 +745,7 @@ Interleaving info:
     in etsi_7.erl line 66
   45: P: [{z5,0}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,[{z,0},{xy,{1,0}},{z5,0}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -758,11 +758,11 @@ Erroneous interleaving 8:
     Reason:
       {{nocatch,[{z,1},{xy,{1,0}},{z5,0}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -778,15 +778,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -852,7 +852,7 @@ Interleaving info:
     in etsi_7.erl line 66
   46: P: [{z5,0}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,[{z,1},{xy,{1,0}},{z5,0}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -865,11 +865,11 @@ Erroneous interleaving 9:
     Reason:
       {{nocatch,[{z,1},{xy,{0,0}},{z5,0}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -885,15 +885,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -959,7 +959,7 @@ Interleaving info:
     in etsi_7.erl line 66
   46: P: [{z5,0}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,[{z,1},{xy,{0,0}},{z5,0}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -972,11 +972,11 @@ Erroneous interleaving 10:
     Reason:
       {{nocatch,[{z,0},{xy,{0,0}},{z5,0}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -992,15 +992,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -1064,7 +1064,7 @@ Interleaving info:
     in etsi_7.erl line 66
   45: P: [{z5,0}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,[{z,0},{xy,{0,0}},{z5,0}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -1077,11 +1077,11 @@ Erroneous interleaving 11:
     Reason:
       {{nocatch,[{z,1},{xy,{1,0}},{z5,1}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1097,15 +1097,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -1171,7 +1171,7 @@ Interleaving info:
     in etsi_7.erl line 66
   46: P: [{z5,1}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,[{z,1},{xy,{1,0}},{z5,1}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -1184,11 +1184,11 @@ Erroneous interleaving 12:
     Reason:
       {{nocatch,[{z,1},{xy,{0,0}},{z5,1}]},
        [{etsi_7,etsi_7,0,
-                [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+                [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                  {line,68}]}]}
     Stacktrace:
       [{etsi_7,etsi_7,0,
-               [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/etsi_7.erl"},
+               [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/etsi_7.erl"},
                 {line,68}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1204,15 +1204,15 @@ Interleaving info:
     in etsi_7.erl line 14
    6: P: true = ets:insert(table, {xy,0})
     in etsi_7.erl line 15
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.51508502>,[]])
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_7.0.104425228>,[]])
     in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.51508502>,[]])
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_7.1.104425228>,[]])
     in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.51508502>,[]])
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_7.2.104425228>,[]])
     in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.51508502>,[]])
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<etsi_7.3.104425228>,[]])
     in erlang.erl line 2329
-  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.51508502>,[]])
+  11: P: P.5 = erlang:spawn(erlang, apply, [#Fun<etsi_7.4.104425228>,[]])
     in erlang.erl line 2329
   12: P.1: true = ets:insert(table, {18,ok})
     in etsi_7.erl line 71
@@ -1278,7 +1278,7 @@ Interleaving info:
     in etsi_7.erl line 66
   46: P: [{z5,1}] = ets:lookup(table, z5)
     in etsi_7.erl line 67
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,[{z,1},{xy,{0,0}},{z5,1}]},[{etsi_7,etsi_7,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,101,116,115,105,95,55,46,101,114,108]},{line,68}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -1286,5 +1286,5 @@ Interleaving info:
   51: P.3: exits normally
   52: P.4: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 12 errors, 12/12 interleavings explored

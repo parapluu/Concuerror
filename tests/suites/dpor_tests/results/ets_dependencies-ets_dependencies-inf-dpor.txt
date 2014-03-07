@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{ets_dependencies,ets_dependencies,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/ets_dependencies.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_dependencies.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{ets_dependencies,ets_dependencies,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -17,11 +17,11 @@ Erroneous interleaving 1:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.99438611>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.70168859>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.99438611>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.70168859>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.99438611>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.70168859>,[]])
     in erlang.erl line 2329
    5: P.1: true = ets:insert(table, {x,1})
     in ets_dependencies.erl line 11
@@ -44,11 +44,11 @@ Erroneous interleaving 2:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.99438611>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.70168859>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.99438611>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.70168859>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.99438611>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.70168859>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies.erl line 14
@@ -71,11 +71,11 @@ Erroneous interleaving 3:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.99438611>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.70168859>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.99438611>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.70168859>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.99438611>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.70168859>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies.erl line 14
@@ -98,11 +98,11 @@ Erroneous interleaving 4:
 Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.99438611>,[]])
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.0.70168859>,[]])
     in erlang.erl line 2329
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.99438611>,[]])
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.1.70168859>,[]])
     in erlang.erl line 2329
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.99438611>,[]])
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies.2.70168859>,[]])
     in erlang.erl line 2329
    5: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies.erl line 14
@@ -118,5 +118,5 @@ Interleaving info:
     in ets_dependencies.erl line 15
   12: P.2: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 4 errors, 4/4 interleavings explored
