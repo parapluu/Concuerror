@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{depend_5,depend_5,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_5.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_5.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{depend_5,depend_5,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -23,15 +23,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.1: true = ets:insert(table, {z,1})
     in depend_5.erl line 13
@@ -68,15 +68,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.1: true = ets:insert(table, {z,1})
     in depend_5.erl line 13
@@ -113,15 +113,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.1: true = ets:insert(table, {z,1})
     in depend_5.erl line 13
@@ -156,15 +156,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.1: true = ets:insert(table, {z,1})
     in depend_5.erl line 13
@@ -197,15 +197,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.1: true = ets:insert(table, {z,1})
     in depend_5.erl line 13
@@ -238,15 +238,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.1: true = ets:insert(table, {z,1})
     in depend_5.erl line 13
@@ -283,15 +283,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.1: true = ets:insert(table, {z,1})
     in depend_5.erl line 13
@@ -328,15 +328,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.1: true = ets:insert(table, {z,1})
     in depend_5.erl line 13
@@ -371,15 +371,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.2: true = ets:insert(table, {x,1})
     in depend_5.erl line 14
@@ -416,15 +416,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.2: true = ets:insert(table, {x,1})
     in depend_5.erl line 14
@@ -461,15 +461,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.3: true = ets:insert(table, {y,1})
     in depend_5.erl line 15
@@ -506,15 +506,15 @@ Interleaving info:
     in depend_5.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_5.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.27468399>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_5.0.74122059>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.27468399>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_5.1.74122059>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.27468399>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_5.2.74122059>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.27468399>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_5.3.74122059>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.27468399>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_5.4.74122059>,[]])
     in erlang.erl line 2329
   10: P.3: true = ets:insert(table, {y,1})
     in depend_5.erl line 15
@@ -538,5 +538,5 @@ Interleaving info:
   21: P.1: exits normally
   22: P.4: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 12 errors, 12/12 interleavings explored

@@ -1,25 +1,25 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{depend_4_screen,depend_4_screen,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{depend_4_screen,depend_4_screen,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * At step 46 process P exited abnormally
     Reason:
       {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -31,17 +31,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -106,7 +106,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -121,11 +121,11 @@ Erroneous interleaving 2:
     Reason:
       {{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -137,17 +137,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -208,7 +208,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   43: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  44: P: exits abnormally
+  44: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   45: P: true = ets:delete(table)
     (while exiting)
   46: P.1: exits normally
@@ -223,11 +223,11 @@ Erroneous interleaving 3:
     Reason:
       {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -239,17 +239,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -313,7 +313,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,[49,48]}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -327,11 +327,11 @@ Erroneous interleaving 4:
     Reason:
       {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -343,17 +343,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -415,7 +415,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   44: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  45: P: exits abnormally
+  45: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,[49,48]}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   46: P: true = ets:delete(table)
     (while exiting)
   47: P.1: exits normally
@@ -429,11 +429,11 @@ Erroneous interleaving 5:
     Reason:
       {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -445,17 +445,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -520,7 +520,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   46: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -533,11 +533,11 @@ Erroneous interleaving 6:
     Reason:
       {{nocatch,{[{x,2}],[{p4,2}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -549,17 +549,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -619,7 +619,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   43: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  44: P: exits abnormally
+  44: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,2}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   45: P: true = ets:delete(table)
     (while exiting)
   46: P.1: exits normally
@@ -633,11 +633,11 @@ Erroneous interleaving 7:
     Reason:
       {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -649,17 +649,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -720,7 +720,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   43: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  44: P: exits abnormally
+  44: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   45: P: true = ets:delete(table)
     (while exiting)
   46: P.1: exits normally
@@ -735,11 +735,11 @@ Erroneous interleaving 8:
     Reason:
       {{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -751,17 +751,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -822,7 +822,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   43: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  44: P: exits abnormally
+  44: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   45: P: true = ets:delete(table)
     (while exiting)
   46: P.1: exits normally
@@ -837,11 +837,11 @@ Erroneous interleaving 9:
     Reason:
       {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -853,17 +853,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -928,7 +928,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -943,11 +943,11 @@ Erroneous interleaving 10:
     Reason:
       {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -959,17 +959,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1032,7 +1032,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -1045,11 +1045,11 @@ Erroneous interleaving 11:
     Reason:
       {{nocatch,{[{x,2}],[{p4,0}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1061,17 +1061,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1130,7 +1130,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   42: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  43: P: exits abnormally
+  43: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,0}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   44: P: true = ets:delete(table)
     (while exiting)
   45: P.1: exits normally
@@ -1145,11 +1145,11 @@ Erroneous interleaving 12:
     Reason:
       {{nocatch,{[{x,1}],[{p4,0}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1161,17 +1161,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1230,7 +1230,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   42: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  43: P: exits abnormally
+  43: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,0}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   44: P: true = ets:delete(table)
     (while exiting)
   45: P.1: exits normally
@@ -1245,11 +1245,11 @@ Erroneous interleaving 13:
     Reason:
       {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1261,17 +1261,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1334,7 +1334,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   44: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  45: P: exits abnormally
+  45: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   46: P: true = ets:delete(table)
     (while exiting)
   47: P.1: exits normally
@@ -1349,11 +1349,11 @@ Erroneous interleaving 14:
     Reason:
       {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1365,17 +1365,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1438,7 +1438,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   45: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,[49,48]}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -1451,11 +1451,11 @@ Erroneous interleaving 15:
     Reason:
       {{nocatch,{[{x,1}],[{p4,2}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1467,17 +1467,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1538,7 +1538,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   44: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  45: P: exits abnormally
+  45: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,2}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   46: P: true = ets:delete(table)
     (while exiting)
   47: P.1: exits normally
@@ -1551,11 +1551,11 @@ Erroneous interleaving 16:
     Reason:
       {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1567,17 +1567,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1641,7 +1641,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   45: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,[49,48]}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -1655,11 +1655,11 @@ Erroneous interleaving 17:
     Reason:
       {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1671,17 +1671,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1747,7 +1747,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   46: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -1761,11 +1761,11 @@ Erroneous interleaving 18:
     Reason:
       {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1777,17 +1777,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1853,7 +1853,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   46: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -1867,11 +1867,11 @@ Erroneous interleaving 19:
     Reason:
       {{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1883,17 +1883,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -1960,7 +1960,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   47: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  48: P: exits abnormally
+  48: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   49: P: true = ets:delete(table)
     (while exiting)
   50: P.1: exits normally
@@ -1973,11 +1973,11 @@ Erroneous interleaving 20:
     Reason:
       {{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -1989,17 +1989,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2061,7 +2061,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  45: P: exits abnormally
+  45: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,2}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   46: P: true = ets:delete(table)
     (while exiting)
   47: P.1: exits normally
@@ -2075,11 +2075,11 @@ Erroneous interleaving 21:
     Reason:
       {{nocatch,{[{x,2}],[{p4,"10"}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2091,17 +2091,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2165,7 +2165,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   45: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,[49,48]}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -2179,11 +2179,11 @@ Erroneous interleaving 22:
     Reason:
       {{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2195,17 +2195,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2270,7 +2270,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   46: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,[{z,0}]}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -2283,11 +2283,11 @@ Erroneous interleaving 23:
     Reason:
       {{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2299,17 +2299,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2371,7 +2371,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  45: P: exits abnormally
+  45: P: exits abnormally ({{nocatch,{[{x,2}],[{p4,0}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   46: P: true = ets:delete(table)
     (while exiting)
   47: P.1: exits normally
@@ -2385,11 +2385,11 @@ Erroneous interleaving 24:
     Reason:
       {{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2401,17 +2401,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2473,7 +2473,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  45: P: exits abnormally
+  45: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,0}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   46: P: true = ets:delete(table)
     (while exiting)
   47: P.1: exits normally
@@ -2487,11 +2487,11 @@ Erroneous interleaving 25:
     Reason:
       {{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2503,17 +2503,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2579,7 +2579,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   46: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,[{z,1}]}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -2593,11 +2593,11 @@ Erroneous interleaving 26:
     Reason:
       {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2609,17 +2609,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2686,7 +2686,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   47: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  48: P: exits abnormally
+  48: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   49: P: true = ets:delete(table)
     (while exiting)
   50: P.1: exits normally
@@ -2699,11 +2699,11 @@ Erroneous interleaving 27:
     Reason:
       {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2715,17 +2715,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2791,7 +2791,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   46: P: [{p5,[{z,1}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[{z,1}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -2805,11 +2805,11 @@ Erroneous interleaving 28:
     Reason:
       {{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2821,17 +2821,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2893,7 +2893,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   44: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  45: P: exits abnormally
+  45: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,2}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   46: P: true = ets:delete(table)
     (while exiting)
   47: P.1: exits normally
@@ -2907,11 +2907,11 @@ Erroneous interleaving 29:
     Reason:
       {{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,"0"}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -2923,17 +2923,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -2998,7 +2998,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   46: P: [{p5,[48]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  47: P: exits abnormally
+  47: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,[{z,0}]}],[{p5,[48]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   48: P: true = ets:delete(table)
     (while exiting)
   49: P.1: exits normally
@@ -3011,11 +3011,11 @@ Erroneous interleaving 30:
     Reason:
       {{nocatch,{[{x,1}],[{p4,"10"}],[{p5,[{z,0}]}]}},
        [{depend_4_screen,depend_4_screen,0,
-                         [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                           {line,49}]}]}
     Stacktrace:
       [{depend_4_screen,depend_4_screen,0,
-                        [{file,"/home/stavros/git/Concuerror/testsuite/suites/dpor/src/depend_4_screen.erl"},
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/depend_4_screen.erl"},
                          {line,49}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
@@ -3027,17 +3027,17 @@ Interleaving info:
     in depend_4_screen.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in depend_4_screen.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.113870623>,[]])
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.0.57218389>,[]])
     in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.113870623>,[]])
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.1.57218389>,[]])
     in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.113870623>,[]])
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.2.57218389>,[]])
     in erlang.erl line 2329
-   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.113870623>,[]])
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.3.57218389>,[]])
     in erlang.erl line 2329
-   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.113870623>,[]])
+   9: P: P.5 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.4.57218389>,[]])
     in erlang.erl line 2329
-  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.113870623>,[]])
+  10: P: P.6 = erlang:spawn(erlang, apply, [#Fun<depend_4_screen.5.57218389>,[]])
     in erlang.erl line 2329
   11: P: ok = P.6 ! ok
     in depend_4_screen.erl line 43
@@ -3101,7 +3101,7 @@ Interleaving info:
     in depend_4_screen.erl line 47
   45: P: [{p5,[{z,0}]}] = ets:lookup(table, p5)
     in depend_4_screen.erl line 48
-  46: P: exits abnormally
+  46: P: exits abnormally ({{nocatch,{[{x,1}],[{p4,[49,48]}],[{p5,[{z,0}]}]}},[{depend_4_screen,depend_4_screen,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,100,101,112,101,110,100,95,52,95,115,99,114,101,101,110,46,101,114,108]},{line,49}]}]})
   47: P: true = ets:delete(table)
     (while exiting)
   48: P.1: exits normally
@@ -3110,5 +3110,5 @@ Interleaving info:
   51: P.4: exits normally
   52: P.5: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 30 errors, 30/30 interleavings explored

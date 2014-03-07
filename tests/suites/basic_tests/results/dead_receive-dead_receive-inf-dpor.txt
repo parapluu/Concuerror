@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{dead_receive,dead_receive,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/dead_receive.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/dead_receive.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{dead_receive,dead_receive,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -16,5 +16,5 @@ Erroneous interleaving 1:
 --------------------------------------------------------------------------------
 Interleaving info:
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 1 errors, 1/1 interleavings explored

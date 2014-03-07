@@ -1,14 +1,14 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{diff_dep_3,diff_dep_3,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/diff_dep_3.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/diff_dep_3.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{diff_dep_3,diff_dep_3,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -21,13 +21,13 @@ Interleaving info:
     in diff_dep_3.erl line 10
    3: P: true = ets:insert(table, {z,0})
     in diff_dep_3.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.51287956>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.20172388>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.51287956>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.20172388>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.51287956>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.20172388>,[]])
     in erlang.erl line 2329
-   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.51287956>,[]])
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.20172388>,[]])
     in erlang.erl line 2329
    8: P.1: true = ets:insert(table, {x,1})
     in diff_dep_3.erl line 12
@@ -55,13 +55,13 @@ Interleaving info:
     in diff_dep_3.erl line 10
    3: P: true = ets:insert(table, {z,0})
     in diff_dep_3.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.51287956>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.20172388>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.51287956>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.20172388>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.51287956>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.20172388>,[]])
     in erlang.erl line 2329
-   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.51287956>,[]])
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.20172388>,[]])
     in erlang.erl line 2329
    8: P.1: true = ets:insert(table, {x,1})
     in diff_dep_3.erl line 12
@@ -87,13 +87,13 @@ Interleaving info:
     in diff_dep_3.erl line 10
    3: P: true = ets:insert(table, {z,0})
     in diff_dep_3.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.51287956>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.20172388>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.51287956>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.20172388>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.51287956>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.20172388>,[]])
     in erlang.erl line 2329
-   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.51287956>,[]])
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.20172388>,[]])
     in erlang.erl line 2329
    8: P.2: true = ets:insert(table, {z,1})
     in diff_dep_3.erl line 13
@@ -121,13 +121,13 @@ Interleaving info:
     in diff_dep_3.erl line 10
    3: P: true = ets:insert(table, {z,0})
     in diff_dep_3.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.51287956>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.20172388>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.51287956>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.20172388>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.51287956>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.20172388>,[]])
     in erlang.erl line 2329
-   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.51287956>,[]])
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.20172388>,[]])
     in erlang.erl line 2329
    8: P.2: true = ets:insert(table, {z,1})
     in diff_dep_3.erl line 13
@@ -155,13 +155,13 @@ Interleaving info:
     in diff_dep_3.erl line 10
    3: P: true = ets:insert(table, {z,0})
     in diff_dep_3.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.51287956>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.20172388>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.51287956>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.20172388>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.51287956>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.20172388>,[]])
     in erlang.erl line 2329
-   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.51287956>,[]])
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.20172388>,[]])
     in erlang.erl line 2329
    8: P.2: true = ets:insert(table, {z,1})
     in diff_dep_3.erl line 13
@@ -189,13 +189,13 @@ Interleaving info:
     in diff_dep_3.erl line 10
    3: P: true = ets:insert(table, {z,0})
     in diff_dep_3.erl line 11
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.51287956>,[]])
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.0.20172388>,[]])
     in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.51287956>,[]])
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.1.20172388>,[]])
     in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.51287956>,[]])
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.2.20172388>,[]])
     in erlang.erl line 2329
-   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.51287956>,[]])
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_dep_3.3.20172388>,[]])
     in erlang.erl line 2329
    8: P.3: [{z,0}] = ets:lookup(table, z)
     in diff_dep_3.erl line 15
@@ -210,5 +210,5 @@ Interleaving info:
   14: P.1: exits normally
   15: P.4: exits normally
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 6 errors, 6/6 interleavings explored
