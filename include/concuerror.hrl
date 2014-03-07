@@ -43,13 +43,10 @@
 -define(debug_flag(_A, _B, _C), ?debug(_B, _C)).
 -endif.
 %%------------------------------------------------------------------------------
--ifdef(CHECK_ASSERTIONS).
--define(assert(A, B), A = B).
--else.
--define(assert(_A, _B), ok).
--endif.
+-type scheduler() :: pid().
+-type logger()    :: pid().
+-type options()   :: proplists:proplist().
 %%------------------------------------------------------------------------------
-
 %% Logger verbosity
 -define(lerror, 0).
 -define(lwarn, 1).
@@ -81,25 +78,34 @@
 
 -type log_level() :: ?lerror | ?lwarn | ?linfo | ?ldebug | ?ltrace.
 
-%% Scheduler's timeout
--define(MINIMUM_TIMEOUT, 500).
 -define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------
-
+%% Scheduler's timeout
+-define(MINIMUM_TIMEOUT, 500).
+%%------------------------------------------------------------------------------
 -type message_info() :: ets:tid().
+
 -define(new_message_info(Id), {Id, undefined, undefined, undefined}).
 -define(message_pattern, 2).
 -define(message_sent, 3).
 -define(message_delivered, 4).
-
+%%------------------------------------------------------------------------------
 -type ets_tables() :: ets:tid().
--define(new_ets_table(Tid, Protection), {Tid, unknown, Protection, unknown}).
--define(new_system_ets_table(Tid, Protect), {Tid, self(), Protect, unknown}).
--define(ets_owner, 2).
--define(ets_protection, 3).
--define(ets_heir, 4).
--define(ets_match_owner_to_tid_heir(Owner), {'$1', Owner, '_', '$2'}).
 
+-define(ets_name_none, 0).
+-define(new_ets_table(Tid, Protection),
+        {Tid, unknown, unknown, Protection, unknown, true}).
+-define(new_system_ets_table(Tid, Protect),
+        {Tid, Tid, self(), Protect, unknown, true}).
+-define(ets_name, 2).
+-define(ets_owner, 3).
+-define(ets_protection, 4).
+-define(ets_heir, 5).
+-define(ets_alive, 6).
+-define(ets_match_owner_to_name_heir(Owner), {'_', '$1', Owner, '_', '$2', true}).
+-define(ets_match_name(Name), {'$1', Name, '$2', '$3', '_', true}).
+-define(ets_match_mine(), {'_', '_', self(), '_', '_', '_'}).
+%%------------------------------------------------------------------------------
 -type processes() :: ets:tid().
 -type symbolic_name() :: string().
 
@@ -118,15 +124,18 @@
 -define(process_children, 5).
 -define(process_kind, 6).
 -define(process_match_name_to_pid(Name),  {'$1',   '_', Name, '_', '_', '_'}).
-
+%%------------------------------------------------------------------------------
 -type links() :: ets:tid().
+
+-define(links(Pid1, Pid2), [{Pid1, Pid2, active}, {Pid2, Pid1, active}]).
+-define(links_match_mine(), {self(), '_', '_'}).
+%%------------------------------------------------------------------------------
 -type monitors() :: ets:tid().
 
--type scheduler() :: pid().
--type logger()    :: pid().
+-define(monitor(Ref, Target, Source, Status),{Target, {Ref, Source}, Status}).
+-define(monitors_match_mine(), {self(), '_', '_'}).
+-define(monitor_match_to_target_source(Ref), {'$1', {Ref, '$2'}, active}).
 %%------------------------------------------------------------------------------
-
--type options() :: proplists:proplist().
 
 -type label() :: reference().
 

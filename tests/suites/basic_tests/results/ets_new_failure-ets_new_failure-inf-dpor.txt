@@ -1,0 +1,36 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_new_failure.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{ets_new_failure,ets_new_failure,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 3 process P exited abnormally
+    Reason:
+      {badarg,[{ets,new,
+                    [table,[named_table,public]],
+                    [10,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_new_failure.erl"}]}]}
+    Stacktrace:
+      [{ets,new,
+            [table,[named_table,public]],
+            [10,
+             {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_new_failure.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_new_failure.erl line 9
+   2: P: Exception badarg raised by: ets:new(table, [named_table,public])
+    in ets_new_failure.erl line 10
+   3: P: exits abnormally ({badarg,[{ets,new,[table,[named_table,public]],[10,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,110,101,119,95,102,97,105,108,117,114,101,46,101,114,108]}]}]})
+   4: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

@@ -264,7 +264,7 @@ dependent_built_in(#builtin_event{mfa = {ets,_Any,_}} = EtsAny,
   dependent_built_in(EtsDelete, EtsAny);
 
 dependent_built_in(#builtin_event{mfa = {ets,Insert1,[Table1,Tuples1]},
-                                  result = Result1},
+                                  result = Result1, extra = Tid},
                    #builtin_event{mfa = {ets,Insert2,[Table2,Tuples2]},
                                   result = Result2})
   when (Insert1 =:= insert orelse Insert1 =:= insert_new) andalso
@@ -272,7 +272,7 @@ dependent_built_in(#builtin_event{mfa = {ets,Insert1,[Table1,Tuples1]},
   case Table1 =:= Table2 andalso (Result1 orelse Result2) of
     false -> false;
     true ->
-      KeyPos = ets:info(Table1, keypos),
+      KeyPos = ets:info(Tid, keypos),
       List1 = case is_list(Tuples1) of true -> Tuples1; false -> [Tuples1] end,
       List2 = case is_list(Tuples2) of true -> Tuples2; false -> [Tuples2] end,
       %% At least one has succeeded. If both succeeded, none is a dangerous
@@ -290,13 +290,13 @@ dependent_built_in(#builtin_event{mfa = {ets,lookup,_}},
   false;
 
 dependent_built_in(#builtin_event{mfa = {ets,Insert,[Table1,Tuples]},
-                                  result = Result},
+                                  result = Result, extra = Tid},
                    #builtin_event{mfa = {ets,lookup,[Table2,Key]}})
   when Insert =:= insert; Insert =:= insert_new ->
   case Table1 =:= Table2 andalso Result of
     false -> false;
     true ->
-      KeyPos = ets:info(Table1, keypos),
+      KeyPos = ets:info(Tid, keypos),
       List = case is_list(Tuples) of true -> Tuples; false -> [Tuples] end,
       lists:keyfind(Key, KeyPos, List) =/= false
   end;

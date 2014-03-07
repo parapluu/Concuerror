@@ -211,7 +211,7 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
   ?badarg_if_not(is_reference(Ref)),
   #concuerror_info{monitors = Monitors} = Info,
   {Result, NewInfo} =
-    case ets:match(Monitors, {'$1', {Ref, '$2'}, active}) of
+    case ets:match(Monitors, ?monitor_match_to_target_source(Ref)) of
       [] ->
         PatternFun =
           fun(M) ->
@@ -229,8 +229,9 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
             {false, Info}
         end;
       [[Target, Source]] ->
-        true = ets:delete_object(Monitors, {Target, {Ref, Source}, active}),
-        true = ets:insert(Monitors, {Target, {Ref, Source}, inactive}),
+        ?badarg_if_not(Source =:= self()),
+        true = ets:delete_object(Monitors, ?monitor(Ref, Target, Source, active)),
+        true = ets:insert(Monitors, ?monitor(Ref, Target, Source, inactive)),
         {not lists:member(flush, Options), Info}
     end,
   case lists:member(info, Options) of
@@ -273,7 +274,7 @@ run_built_in(erlang, link, 1, [Pid], #concuerror_info{links = Links} = Info) ->
   case run_built_in(erlang, is_process_alive, 1, [Pid], Info) of
     {true, Info}->
       Self = self(),
-      true = ets:insert(Links, [{Self, Pid, active}, {Pid, Self, active}]),
+      true = ets:insert(Links, ?links(Self, Pid)),
       {true, Info};
     {false, _} ->
       error(noproc)
@@ -303,7 +304,7 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
     end,
   {IsActive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   case IsActive of
-    true -> true = ets:insert(Monitors, {Pid, {Ref, self()}, active});
+    true -> true = ets:insert(Monitors, ?monitor(Ref, Pid, self(), active));
     false -> ok
   end,
   NewInfo =
@@ -419,14 +420,14 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
     true ->
       {Pid, Ref} = Result,
       #concuerror_info{monitors = Monitors} = Info,
-      true = ets:insert(Monitors, {Pid, {Ref, Parent}, active});
+      true = ets:insert(Monitors, ?monitor(Ref, Pid, Parent, active));
     false ->
       Pid = Result
   end,
   case lists:member(link, SpawnOpts) of
     true ->
       #concuerror_info{links = Links} = Info,
-      true = ets:insert(Links, [{Parent, Pid, active}, {Pid, Parent, active}]);
+      true = ets:insert(Links, ?links(Parent, Pid));
     false -> ok
   end,
   Pid ! {start, Module, Name, Args},
@@ -487,70 +488,85 @@ run_built_in(erlang, whereis, 1, [Name],
     [[Pid]] -> {Pid, Info}
   end;
 run_built_in(ets, new, 2, [Name, Options], Info) ->
+  ?badarg_if_not(is_atom(Name)),
+  NoNameOptions = [O || O <- Options, O =/= named_table],
   #concuerror_info{
      ets_tables = EtsTables,
      next_event = #event{event_info = EventInfo},
      scheduler = Scheduler
     } = Info,
-  %% XXX: Allow dead named tables
+  Named =
+    case Options =/= NoNameOptions of
+      true ->
+        Ta = ets:match(EtsTables, ?ets_match_name(Name)),
+        ?badarg_if_not(ets:match(EtsTables, ?ets_match_name(Name)) =:= []),
+        true;
+      false -> false
+    end,
   Tid =
     case EventInfo of
       %% Replaying...
-      #builtin_event{result = OldResult} -> OldResult;
+      #builtin_event{extra = Extra} -> Extra;
       %% New event...
       undefined ->
         %% Looks like the last option is the one actually used.
-        ProtectFold =
-          fun(Option, Selected) ->
-              case Option of
-                O when O =:= 'private';
-                       O =:= 'protected';
-                       O =:= 'public' -> O;
-                _ -> Selected
-              end
-          end,
-        Protection = lists:foldl(ProtectFold, protected, Options),
-        T = ets:new(Name, Options ++ [public]),
-        true = ets:insert(EtsTables, ?new_ets_table(T, Protection)),
+        T = ets:new(Name, NoNameOptions ++ [public]),
         true = ets:give_away(T, Scheduler, given_to_scheduler),
         T
+    end,
+  ProtectFold =
+    fun(Option, Selected) ->
+        case Option of
+          O when O =:= 'private';
+                 O =:= 'protected';
+                 O =:= 'public' -> O;
+          _ -> Selected
+        end
+    end,
+  Protection = lists:foldl(ProtectFold, protected, NoNameOptions),
+  true = ets:insert(EtsTables, ?new_ets_table(Tid, Protection)),
+  Ret =
+    case Named of
+      true -> Name;
+      false -> Tid
     end,
   Heir =
     case proplists:lookup(heir, Options) of
       none -> {heir, none};
       Other -> Other
     end,
-  Update = [{?ets_heir, Heir}, {?ets_owner, self()}],
+  Update =
+    [{?ets_alive, true},
+     {?ets_heir, Heir},
+     {?ets_owner, self()},
+     {?ets_name, Ret}],
   ets:update_element(EtsTables, Tid, Update),
   ets:delete_all_objects(Tid),
-  {Tid, Info};
-run_built_in(ets, insert, 2, [Tid, _] = Args, Info) ->
-  check_ets_access_rights(Tid, self(), insert, Info),
-  {erlang:apply(ets, insert, Args), Info};
-run_built_in(ets, lookup, 2, [Tid, _] = Args, Info) ->
-  check_ets_access_rights(Tid, self(), lookup, Info),
-  {erlang:apply(ets, lookup, Args), Info};
-run_built_in(ets, delete, 1, [Tid], Info) ->
+  {Ret, Info#concuerror_info{extra = Tid}};
+run_built_in(ets, F, N, [Name|Args], Info)
+  when
+    false
+    ;{F,N} =:= {insert, 2}
+    ;{F,N} =:= {insert_new,2}
+    ;{F,N} =:= {lookup, 2}
+    ->
+  Tid = check_ets_access_rights(Name, F, Info),
+  {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Tid}};
+run_built_in(ets, delete, 1, [Name], Info) ->
+  Tid = check_ets_access_rights(Name, delete, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
-  check_ets_access_rights(Tid, self(), delete, Info),
-  Update = [{?ets_owner, none}],
-  ets:update_element(EtsTables, Tid, Update),
+  ets:update_element(EtsTables, Tid, [{?ets_alive, false}]),
   ets:delete_all_objects(Tid),
-  {true, Info};
-run_built_in(ets, give_away, 3, [Tid, Pid, GiftData],
+  {true, Info#concuerror_info{extra = Tid}};
+run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
              #concuerror_info{
-                next_event = #event{event_info = EventInfo} = Event,
-                processes = Processes
+                next_event = #event{event_info = EventInfo} = Event
                } = Info) ->
+  Tid = check_ets_access_rights(Name, give_away, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
-  Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
+  {Alive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   Self = self(),
-  ?badarg_if_not(is_pid(Pid) andalso Owner =:= Self andalso Pid =/= Self),
-  case ets:lookup(Processes, Pid) of
-    [?process_pat_pid_status(Pid, Status)]
-      when Status =/= exiting andalso Status =/= exited -> ok;
-    _ -> error(badarg)
-  end,
+  ?badarg_if_not(is_pid(Pid) andalso Pid =/= Self andalso Alive),
   NewInfo =
     case EventInfo of
       %% Replaying. Keep original Message reference.
@@ -570,7 +586,7 @@ run_built_in(ets, give_away, 3, [Tid, Pid, GiftData],
     end,
   Update = [{?ets_owner, Pid}],
   true = ets:update_element(EtsTables, Tid, Update),
-  {true, NewInfo};
+  {true, NewInfo#concuerror_info{extra = Tid}};
 
 %% For other built-ins check whether replaying has the same result:
 run_built_in(Module, Name, Arity, Args, Info) ->
@@ -825,10 +841,17 @@ process_loop(Info) ->
       end;
     reset ->
       ?debug_flag(?wait, {waiting, reset}),
-      NewInfo = #concuerror_info{processes = Processes} =
-        init_concuerror_info(Info),
+      NewInfo =
+        #concuerror_info{
+           ets_tables = EtsTables,
+           links = Links,
+           monitors = Monitors,
+           processes = Processes} = init_concuerror_info(Info),
       _ = erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
+      ets:match_delete(EtsTables, ?ets_match_mine()),
+      ets:match_delete(Links, ?links_match_mine()),
+      ets:match_delete(Monitors, ?monitors_match_mine()),
       erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo, Symbol]);
     deadlock_poll ->
       Info
@@ -893,7 +916,7 @@ ets_ownership_exiting_events(Info) ->
   %% XXX:  - transfer ets ownership and send message or delete table
   %% XXX: Mention that order of deallocation/transfer is not monitored.
   #concuerror_info{ets_tables = EtsTables} = Info,
-  case ets:match(EtsTables, ?ets_match_owner_to_tid_heir(self())) of
+  case ets:match(EtsTables, ?ets_match_owner_to_name_heir(self())) of
     [] -> Info;
     Tables ->
       Fold =
@@ -947,26 +970,29 @@ link_monitor_handlers(Handler, LinksOrMonitors) ->
 
 %%------------------------------------------------------------------------------
 
-check_ets_access_rights(Tid, Pid, Op, Info) ->
+check_ets_access_rights(Name, Op, Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
-  Owner = ets:lookup_element(EtsTables, Tid, ?ets_owner),
-  Test =
-    is_pid(Owner)
-    andalso
-      (Owner =:= Pid
-       orelse
-       case ets_ops_access_rights_map(Op) of
-         write -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =:= public;
-         read -> ets:lookup_element(EtsTables, Tid, ?ets_protection) =/= private;
-         delete -> false
-       end),
-  ?badarg_if_not(Test).
+  case ets:match(EtsTables, ?ets_match_name(Name)) of
+    [] -> error(badarg);
+    [[Tid,Owner,Protection]] ->
+      Test =
+        (Owner =:= self()
+         orelse
+         case ets_ops_access_rights_map(Op) of
+           read -> Protection =/= private;
+           write -> Protection =:= public;
+           own -> false
+         end),
+      ?badarg_if_not(Test),
+      Tid
+  end.
 
 ets_ops_access_rights_map(Op) ->
   case Op of
     insert -> write;
     lookup -> read;
-    delete -> delete
+    delete -> own;
+    give_away -> own
   end.
 
 %%------------------------------------------------------------------------------
