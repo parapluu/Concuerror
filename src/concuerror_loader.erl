@@ -2,7 +2,7 @@
 
 -module(concuerror_loader).
 
--export([load/1, is_loaded/1, load_if_needed/1]).
+-export([load/1, is_loaded/1, load_if_needed/1, binary_load/2]).
 
 -define(flag(A), (1 bsl A)).
 
@@ -61,6 +61,11 @@ do_load(Module) ->
           {error, _} -> error
         end
     end,
+  binary_load(Module, BeamRet).
+
+-spec binary_load(module(), {ok, beam_lib:beam()} | error) -> ok.
+
+binary_load(Module, BeamRet) ->
   case BeamRet of
     error -> ok;
     {ok, Beam} ->

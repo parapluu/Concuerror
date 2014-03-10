@@ -7,7 +7,7 @@
          code_change/3]).
 
 scenarios() ->
-    [%{test_register, inf, dpor},
+    [{test_register, inf, dpor},
      {test_without_register, inf, dpor}].
 
 test_register() ->

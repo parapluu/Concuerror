@@ -207,39 +207,23 @@ finalize([{Key, Value}|Rest], Acc) ->
   end.
 
 compile_and_load(Files) ->
-  %% Platform-dependent directory to store compiled .erl files
-  {OsType, _} = os:type(),
-  TmpDir =
-    case OsType of
-      unix -> "/tmp/";
-      win32 -> os:getenv("TEMP")
-    end,
-  compile_and_load(Files, TmpDir, []).
+  compile_and_load(Files, []).
 
-compile_and_load([], _TmpDir, Acc) -> lists:sort(Acc);
-compile_and_load([File|Rest], TmpDir, Acc) ->
+compile_and_load([], Acc) ->
+  lists:sort(Acc);
+compile_and_load([File|Rest], Acc) ->
   case filename:extension(File) of
     ".erl" ->
-      case compile:file(File, [{outdir, TmpDir}, debug_info, report_errors]) of
-        {ok, Module} ->
+      case compile:file(File, [binary, debug_info, report_errors]) of
+        {ok, Module, Binary} ->
           Default = code:which(Module),
           case Default =:= non_existing of
             true -> ok;
             false ->
               opt_warn("file ~s shadows the default ~s", [File, Default])
           end,
-          BeamFile = atom_to_list(Module),
-          FullBeamFile = filename:join(TmpDir, BeamFile),
-          LoadRes = code:load_abs(FullBeamFile),
-          ok = concuerror_loader:load(Module),
-          %% This may fail when concurrently running a test... Ignore.
-          _ = file:delete(FullBeamFile ++ code:objfile_extension()),
-          case LoadRes of
-            {module, Module} ->
-              compile_and_load(Rest, TmpDir, [File|Acc]);
-            {error, What} ->
-              opt_error("could not load ~s: ~p", [FullBeamFile, What])
-          end;
+          ok = concuerror_loader:binary_load(Module, {ok, Binary}),
+          compile_and_load(Rest, [File|Acc]);
         error ->
           Format = "could not compile ~s (try to add the .beam file instead)",
           opt_error(Format, [File])
@@ -248,7 +232,7 @@ compile_and_load([File|Rest], TmpDir, Acc) ->
       Filename = filename:basename(File, ".beam"),
       case code:load_abs(Filename) of
         {module, _Module} ->
-          compile_and_load(Rest, TmpDir, [File|Acc]);
+          compile_and_load(Rest, [File|Acc]);
         {error, What} ->
           opt_error("could not load ~s: ~p", [File, What])
       end;
