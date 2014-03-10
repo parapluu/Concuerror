@@ -1,0 +1,16 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{sched_tests,test_send_receive_3,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+  No errors found!
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1/1 interleavings explored

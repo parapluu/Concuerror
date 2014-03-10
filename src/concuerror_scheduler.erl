@@ -344,6 +344,9 @@ update_special(none, State) ->
 update_special(Special, State) ->
   #scheduler_state{message_info = MessageInfo, trace = [Next|Trace]} = State,
   case Special of
+    halt ->
+      NewNext = Next#trace_state{active_processes = []},
+      State#scheduler_state{trace = [NewNext|Trace]};
     {message, Message} ->
       #trace_state{pending_messages = PendingMessages} = Next,
       NewPendingMessages =

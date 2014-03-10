@@ -260,6 +260,11 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       {true, Info#concuerror_info{next_event = NewEvent}}
   end;
 
+run_built_in(erlang, halt, _, _, Info) ->
+  #concuerror_info{next_event = Event} = Info,
+  NewEvent = Event#event{special = halt},
+  {no_return, Info#concuerror_info{next_event = NewEvent}};
+
 run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
   ?badarg_if_not(is_pid(Pid)),
   #concuerror_info{processes = Processes} = Info,
@@ -466,6 +471,10 @@ run_built_in(erlang, process_flag, 2, [trap_exit, Value],
              #concuerror_info{trap_exit = OldValue} = Info) ->
   ?debug_flag(?trap, {trap_exit_set, Value}),
   {OldValue, Info#concuerror_info{trap_exit = Value}};
+run_built_in(erlang, unlink, 1, [Pid], #concuerror_info{links = Links} = Info) ->
+  Self = self(),
+  [true,true] = [ets:delete_object(Links, L) || L <- ?links(Self, Pid)],
+  {true, Info};
 run_built_in(erlang, unregister, 1, [Name],
              #concuerror_info{processes = Processes} = Info) ->
   try
@@ -498,7 +507,6 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   Named =
     case Options =/= NoNameOptions of
       true ->
-        Ta = ets:match(EtsTables, ?ets_match_name(Name)),
         ?badarg_if_not(ets:match(EtsTables, ?ets_match_name(Name)) =:= []),
         true;
       false -> false

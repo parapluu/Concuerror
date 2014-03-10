@@ -21,6 +21,11 @@
 
 -spec dependent(event_info(), event_info()) -> boolean().
 
+dependent(#builtin_event{mfa = {erlang, halt, _}}, _) ->
+  true;
+dependent(_, #builtin_event{mfa = {erlang, halt, _}}) ->
+  true;
+
 dependent(#builtin_event{mfa = {erlang, process_info, _}} = PInfo, B) ->
   dependent_process_info(PInfo, B);
 dependent(B, #builtin_event{mfa = {erlang, process_info, _}} = PInfo) ->
@@ -134,14 +139,16 @@ dependent_exit(_Exit, {erlang, A, _})
     ;A =:= put
     ;A =:= spawn
     ;A =:= spawn_opt
+    ;A =:= spawn_link
     ->
   false;
 dependent_exit(#exit_event{actor = Exiting},
                {erlang, is_process_alive, [Pid]}) ->
   Exiting =:= Pid;
-dependent_exit(#exit_event{actor = Exiting}, {erlang, link, [Linked]}) ->
+dependent_exit(#exit_event{actor = Exiting}, {erlang, UnLink, [Linked]})
+  when UnLink =:= link; UnLink =:= unlink ->
   Exiting =:= Linked;
-dependent_exit(#exit_event{monitors = Monitors}, {erlang, demonitor, [Ref, _]}) ->
+dependent_exit(#exit_event{monitors = Monitors}, {erlang, demonitor, [Ref|_]}) ->
   false =/= lists:keyfind(Ref, 1, Monitors);
 dependent_exit(#exit_event{actor = Exiting, name = Name},
                {erlang, monitor, [process, PidOrName]}) ->
@@ -230,9 +237,9 @@ dependent_built_in(#builtin_event{mfa = {erlang, A,_}},
 dependent_built_in(#builtin_event{mfa = {erlang, A, _}},
                    #builtin_event{mfa = {erlang, B, _}})
   when (A =:= '!' orelse A =:= send orelse A =:= whereis orelse
-        A =:= process_flag orelse A =:= link),
+        A =:= process_flag orelse A =:= link orelse A =:= unlink),
        (B =:= '!' orelse B =:= send orelse B =:= whereis orelse
-        B =:= process_flag orelse B =:= link) ->
+        B =:= process_flag orelse B =:= link orelse B =:= unlink) ->
   false;
 
 dependent_built_in(#builtin_event{mfa = {erlang,UnRegisterA,[AName|ARest]}},
