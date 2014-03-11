@@ -16,9 +16,9 @@ Erroneous interleaving 1:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 23
    4: P.1: ok2 = P ! ok2
@@ -42,9 +42,9 @@ Erroneous interleaving 2:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 23
    4: P.1: ok2 = P ! ok2
@@ -68,9 +68,9 @@ Erroneous interleaving 3:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
    4: P.1: exits normally
@@ -92,9 +92,9 @@ Erroneous interleaving 4:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
    4: P.1: exits normally
@@ -118,9 +118,9 @@ Erroneous interleaving 5:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
    4: P.1: exits normally
@@ -142,9 +142,9 @@ Erroneous interleaving 6:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
    4: P.1: exits normally

@@ -92,6 +92,7 @@ options() ->
   ,{target, [logger, scheduler]} %% Generated from module and test or given explicitlyq
   ,{quit, []}                    %% Controlling whether a halt will happen
   ,{files, [logger]}             %% List of included files (to be shown in the log)
+  ,{modules, [logger, process]}  %% List of included files (to be shown in the log)
   ].
 
 -spec filter_options(atom(), {atom(), term()}) -> boolean().
@@ -108,7 +109,8 @@ cl_version() ->
   ok.
 
 finalize(Options) ->
-  Finalized = finalize(lists:reverse(proplists:unfold(Options)), []),
+  Modules = [{modules, ets:new(modules, [public])}],
+  Finalized = finalize(lists:reverse(proplists:unfold(Options),Modules), []),
   case proplists:get_value(target, Finalized, undefined) of
     {M,F,B} when is_atom(M), is_atom(F), is_list(B) -> Finalized;
     _ ->
@@ -134,8 +136,9 @@ finalize([{Key, Value}|Rest], Acc)
   when Key =:= file; Key =:= patha; Key =:=pathz ->
   case Key of
     file ->
+      Modules = proplists:get_value(modules, Rest),
       Files = [Value|proplists:get_all_values(file, Rest)],
-      LoadedFiles = compile_and_load(Files),
+      LoadedFiles = compile_and_load(Files, Modules),
       NewRest = proplists:delete(file, Rest),
       finalize(NewRest, [{files, LoadedFiles}|Acc]);
     Else ->
@@ -181,21 +184,6 @@ finalize([{Key, Value}|Rest], Acc) ->
               opt_error("--~s value must be -1 (infinite) or > "
                        ++ integer_to_list(?MINIMUM_TIMEOUT), [Key])
           end;
-        symbolic ->
-          case Value of
-            false -> finalize(Rest, [{Key, false}|Acc]);
-            true ->
-              HaveMeck =
-                try meck:module_info() of
-                    _ -> true
-                catch
-                  _:_ -> false
-                end,
-              case HaveMeck of
-                true -> finalize(Rest, [{Key, true}|Acc]);
-                false -> opt_error("to use symbolic PIDs you need to have meck")
-              end
-          end;
         test ->
           case Rest =:= [] of
             true -> finalize(Rest, Acc);
@@ -206,12 +194,12 @@ finalize([{Key, Value}|Rest], Acc) ->
       end
   end.
 
-compile_and_load(Files) ->
-  compile_and_load(Files, []).
+compile_and_load(Files, Modules) ->
+  compile_and_load(Files, Modules, []).
 
-compile_and_load([], Acc) ->
+compile_and_load([], _Modules, Acc) ->
   lists:sort(Acc);
-compile_and_load([File|Rest], Acc) ->
+compile_and_load([File|Rest], Modules, Acc) ->
   case filename:extension(File) of
     ".erl" ->
       case compile:file(File, [binary, debug_info, report_errors]) of
@@ -222,19 +210,19 @@ compile_and_load([File|Rest], Acc) ->
             false ->
               opt_warn("file ~s shadows the default ~s", [File, Default])
           end,
-          ok = concuerror_loader:binary_load(Module, {ok, Binary}),
-          compile_and_load(Rest, [File|Acc]);
+          ok = concuerror_loader:load_binary(Module, File, Binary, Modules),
+          compile_and_load(Rest, Modules, [File|Acc]);
         error ->
           Format = "could not compile ~s (try to add the .beam file instead)",
           opt_error(Format, [File])
       end;
     ".beam" ->
-      Filename = filename:basename(File, ".beam"),
-      case code:load_abs(Filename) of
-        {module, _Module} ->
-          compile_and_load(Rest, [File|Acc]);
-        {error, What} ->
-          opt_error("could not load ~s: ~p", [File, What])
+      case beam_lib:chunks(File, []) of
+        {ok, {Module, []}} ->
+          ok = concuerror_loader:load_binary(Module, File, File, Modules),
+          compile_and_load(Rest, Modules, [File|Acc]);
+        Else ->
+          opt_error(beam_lib:format_error(Else))
       end;
     _Other ->
       opt_error("~s is not a .erl or .beam file", [File])

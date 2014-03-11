@@ -12,10 +12,10 @@ Concuerror started with options:
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
-    P in sched_tests.erl line 237
+    P in sched_tests.erl line 245
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<sched_tests.25.7276234>,[]])
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<sched_tests.25.94842083>,[]])
     in erlang.erl line 2209
    2: P.1: exits normally
    3: P.1: true = erlang:exit(P, normal)

@@ -12,7 +12,7 @@ Concuerror started with options:
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
-    P in sched_tests.erl line 247
+    P in sched_tests.erl line 255
 --------------------------------------------------------------------------------
 Interleaving info:
 ################################################################################

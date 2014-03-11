@@ -18,13 +18,13 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_n.erl line 12
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.1.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P.1: true = ets:insert(table, {x,42})
     in ets_dependencies_n.erl line 15
    7: P.1: exits normally
@@ -52,13 +52,13 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_n.erl line 12
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.1.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P.2: [] = ets:lookup(table, 1)
     in ets_dependencies_n.erl line 19
    7: P.3: [] = ets:lookup(table, 2)
@@ -86,13 +86,13 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_n.erl line 12
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.1.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P.2: [] = ets:lookup(table, 1)
     in ets_dependencies_n.erl line 19
    7: P.3: [] = ets:lookup(table, 2)
@@ -120,13 +120,13 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_n.erl line 12
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.1.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P.2: [] = ets:lookup(table, 1)
     in ets_dependencies_n.erl line 19
    7: P.3: [] = ets:lookup(table, 2)
@@ -154,13 +154,13 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_n.erl line 12
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.1.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P.2: [] = ets:lookup(table, 1)
     in ets_dependencies_n.erl line 19
    7: P.3: [] = ets:lookup(table, 2)
@@ -188,13 +188,13 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_n.erl line 12
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.1.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P.2: [] = ets:lookup(table, 1)
     in ets_dependencies_n.erl line 19
    7: P.3: [] = ets:lookup(table, 2)
@@ -222,13 +222,13 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_n.erl line 12
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.1.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P.2: [] = ets:lookup(table, 1)
     in ets_dependencies_n.erl line 19
    7: P.3: [] = ets:lookup(table, 2)
@@ -256,13 +256,13 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_dependencies_n.erl line 12
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.1.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_n.5.73526763>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P.2: [] = ets:lookup(table, 1)
     in ets_dependencies_n.erl line 19
    7: P.3: [] = ets:lookup(table, 2)

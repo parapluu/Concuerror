@@ -24,9 +24,9 @@ Erroneous interleaving 1:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.53213093>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.53213093>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: receive timeout expired after 0 ms
     in after_test_3.erl line 25
    4: P: c = P.1 ! c
@@ -60,9 +60,9 @@ Erroneous interleaving 2:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.53213093>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.53213093>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: receive timeout expired after 0 ms
     in after_test_3.erl line 25
    4: P: c = P.1 ! c
@@ -96,9 +96,9 @@ Erroneous interleaving 3:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.53213093>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.53213093>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P.2: a = P.1 ! a
     in after_test_3.erl line 21
    4: P.2: f = P ! f
@@ -132,9 +132,9 @@ Erroneous interleaving 4:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_3.0.53213093>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_3.1.53213093>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P.2: a = P.1 ! a
     in after_test_3.erl line 21
    4: P.2: f = P ! f

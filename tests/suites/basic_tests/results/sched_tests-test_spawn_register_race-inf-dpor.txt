@@ -12,27 +12,27 @@ Concuerror started with options:
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
-    P in sched_tests.erl line 364
+    P in sched_tests.erl line 372
 * At step 4 process P.1 exited abnormally
     Reason:
       {badarg,[{erlang,'!',
                        [foo,bar],
-                       [362,
+                       [370,
                         {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"}]}]}
     Stacktrace:
       [{erlang,'!',
                [foo,bar],
-               [362,
+               [370,
                 {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.48.7276234>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.48.94842083>,[]])
     in erlang.erl line 2188
    2: P.1: Exception badarg raised by: foo ! bar
-    in sched_tests.erl line 362
+    in sched_tests.erl line 370
    3: P: true = erlang:register(foo, P)
-    in sched_tests.erl line 363
-   4: P.1: exits abnormally ({badarg,[{erlang,'!',[foo,bar],[362,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]}]}]})
+    in sched_tests.erl line 371
+   4: P.1: exits abnormally ({badarg,[{erlang,'!',[foo,bar],[370,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]}]}]})
 ################################################################################
 Done! (Exit status: completed)
   Summary: 1 errors, 2/2 interleavings explored

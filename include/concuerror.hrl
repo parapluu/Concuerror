@@ -136,7 +136,8 @@
 -define(monitors_match_mine(), {self(), '_', '_'}).
 -define(monitor_match_to_target_source(Ref), {'$1', {Ref, '$2'}, active}).
 %%------------------------------------------------------------------------------
-
+-type modules() :: ets:tid().
+%%------------------------------------------------------------------------------
 -type label() :: reference().
 
 -type mfargs() :: {atom(), atom(), [term()]}.
@@ -230,6 +231,7 @@
         [{erlang, N, A} ||
             {N, A} <-
                 [
+                 {atom_to_list,1},
                  {'bor', 2},
                  {binary_to_list, 1},
                  {binary_to_term, 1},

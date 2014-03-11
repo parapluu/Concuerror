@@ -33,9 +33,9 @@ run(Options) ->
   {Output, OutputName} =  proplists:get_value(output, Options),
   SymbolicNames = proplists:get_value(symbolic, Options),
   Processes = proplists:get_value(processes, Options),
-  ok = setup_symbolic_names(SymbolicNames, Processes),
-  PrintableOptions =
-    proplists:delete(processes, proplists:delete(output, Options)),
+  Modules = proplists:get_value(modules, Options),
+  ok = setup_symbolic_names(SymbolicNames, Processes, Modules),
+  PrintableOptions = delete_many([processes, output, modules], Options),
   separator(Output, $#),
   io:format(Output,
             "Concuerror started with options:~n"
@@ -48,6 +48,11 @@ run(Options) ->
        output_name = OutputName,
        verbosity = Verbosity},
   loop_entry(State).
+
+delete_many([], Proplist) ->
+  Proplist;
+delete_many([Key|Rest], Proplist) ->
+  delete_many(Rest, proplists:delete(Key, Proplist)).
 
 -spec plan(logger()) -> ok.
 
@@ -261,22 +266,10 @@ interleavings_message(Errors, TracesExplored, TracesTotal) ->
 
 %%------------------------------------------------------------------------------
 
-setup_symbolic_names(SymbolicNames, Processes) ->
+setup_symbolic_names(SymbolicNames, Processes, Modules) ->
   case SymbolicNames of
     false -> ok;
     true ->
-      MyWrite = make_my_write(Processes),
-      meck:new(io_lib, [unstick, passthrough]),
-      meck:expect(io_lib, write, MyWrite),
-      meck:expect(io_lib, write, fun(A) -> MyWrite(A, -1) end),
+      put(concuerror_info, {logger, Processes, Modules}),
       ok
-  end.
-
-make_my_write(Processes) ->
-  Logger = self(),
-  fun(Term, Depth) ->
-      case self() =:= Logger andalso is_pid(Term) of
-        false -> meck:passthrough([Term, Depth]);
-        true -> ets:lookup_element(Processes, Term, ?process_symbolic)
-      end
   end.

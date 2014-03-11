@@ -28,15 +28,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -95,15 +95,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -162,15 +162,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -229,15 +229,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -296,15 +296,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -363,15 +363,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -430,15 +430,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -497,15 +497,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -564,15 +564,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -631,15 +631,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -698,15 +698,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -765,15 +765,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -832,15 +832,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -899,15 +899,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -966,15 +966,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -1033,15 +1033,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -1100,15 +1100,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -1167,15 +1167,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.1: [] = ets:lookup(table, y)
@@ -1234,15 +1234,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1301,15 +1301,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1368,15 +1368,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1435,15 +1435,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1502,15 +1502,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1569,15 +1569,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1636,15 +1636,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1703,15 +1703,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1770,15 +1770,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1837,15 +1837,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1904,15 +1904,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -1971,15 +1971,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2038,15 +2038,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2105,15 +2105,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2172,15 +2172,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2239,15 +2239,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2306,15 +2306,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2373,15 +2373,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2440,15 +2440,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2507,15 +2507,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2574,15 +2574,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.1: [] = ets:lookup(table, x)
     in ets_insert_objects.erl line 11
    8: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
@@ -2641,15 +2641,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -2708,15 +2708,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -2775,15 +2775,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -2842,15 +2842,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -2909,15 +2909,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -2976,15 +2976,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3043,15 +3043,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3110,15 +3110,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3177,15 +3177,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3244,15 +3244,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3311,15 +3311,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3378,15 +3378,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3445,15 +3445,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3512,15 +3512,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3579,15 +3579,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3646,15 +3646,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3713,15 +3713,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3780,15 +3780,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3847,15 +3847,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3914,15 +3914,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -3981,15 +3981,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4048,15 +4048,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4115,15 +4115,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4182,15 +4182,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4249,15 +4249,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4316,15 +4316,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4383,15 +4383,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4450,15 +4450,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4517,15 +4517,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4584,15 +4584,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4651,15 +4651,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok
@@ -4718,15 +4718,15 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_insert_objects.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.0.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.1.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.2.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.3.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<ets_insert_objects.4.35531418>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.5: true = ets:insert(table, [{w,0},{q,0,0}])
     in ets_insert_objects.erl line 37
    8: P.5: ok = P.4 ! ok

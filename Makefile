@@ -52,7 +52,7 @@ vpath %.erl src
 
 .PHONY: compile clean dialyze test submodules
 
-compile: $(MODULES:%=ebin/%.beam) meck getopt concuerror
+compile: $(MODULES:%=ebin/%.beam) getopt concuerror
 
 include $(MODULES:%=ebin/%.Pbeam)
 
@@ -71,13 +71,6 @@ concuerror:
 getopt: submodules
 	make -C deps/getopt
 
-meck: submodules
-	cd deps/meck \
-		&& sed 's/warnings_as_errors, //' rebar.config > tmprebar.config \
-		&& ./rebar -C tmprebar.config get-deps \
-		&& ./rebar -C tmprebar.config compile \
-		&& rm tmprebar.config
-
 submodules:
 	git submodule update --init
 
@@ -88,9 +81,9 @@ clean:
 dialyze: all .concuerror_plt
 	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) ebin/*.beam
 
-.concuerror_plt: | meck getopt
+.concuerror_plt: | getopt
 	dialyzer --build_plt --output_plt $@ --apps erts kernel stdlib compiler \
-	deps/*/ebin/*.beam deps/*/deps/*/ebin/*.beam 
+	deps/*/ebin/*.beam
 
 ###----------------------------------------------------------------------
 ### Testing

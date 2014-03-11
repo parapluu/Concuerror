@@ -14,32 +14,32 @@ Erroneous interleaving 1:
 * At step 8 process P.1 exited abnormally
     Reason:
       {{assertEqual_failed,[{module,sched_tests},
-                            {line,382},
+                            {line,390},
                             {expression,"whereis ( Any )"},
                             {expected,P},
                             {value,undefined}]},
        [{sched_tests,'-test_whereis/0-fun-0-',2,
                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"},
-                      {line,382}]}]}
+                      {line,390}]}]}
     Stacktrace:
       [{sched_tests,'-test_whereis/0-fun-0-',2,
                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"},
-                     {line,382}]}]
+                     {line,390}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.52.7276234>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.52.94842083>,[]])
     in erlang.erl line 2188
    2: P: true = erlang:register(foo, P)
-    in sched_tests.erl line 385
+    in sched_tests.erl line 393
    3: P: foo = P.1 ! foo
-    in sched_tests.erl line 386
+    in sched_tests.erl line 394
    4: Message (foo) from P reaches P.1
    5: P: exits normally
    6: P.1: receives message (foo)
-    in sched_tests.erl line 382
+    in sched_tests.erl line 390
    7: P.1: undefined = erlang:whereis(foo)
-    in sched_tests.erl line 382
-   8: P.1: exits abnormally ({{assertEqual_failed,[{module,sched_tests},{line,382},{expression,[119,104,101,114,101,105,115,32,40,32,65,110,121,32,41]},{expected,<0.67.0>},{value,undefined}]},[{sched_tests,'-test_whereis/0-fun-0-',2,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]},{line,382}]}]})
+    in sched_tests.erl line 390
+   8: P.1: exits abnormally ({{assertEqual_failed,[{module,sched_tests},{line,390},{expression,[119,104,101,114,101,105,115,32,40,32,65,110,121,32,41]},{expected,P},{value,undefined}]},[{sched_tests,'-test_whereis/0-fun-0-',2,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]},{line,390}]}]})
 ################################################################################
 Done! (Exit status: completed)
   Summary: 1 errors, 2/2 interleavings explored

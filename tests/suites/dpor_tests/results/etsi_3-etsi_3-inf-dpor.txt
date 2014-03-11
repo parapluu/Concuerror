@@ -23,12 +23,12 @@ Interleaving info:
     in etsi_3.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in etsi_3.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.12792974>,[]])
-    in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.12792974>,[]])
-    in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.12792974>,[]])
-    in erlang.erl line 2329
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.95439606>,[]])
+    in erlang.erl line 2188
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.95439606>,[]])
+    in erlang.erl line 2188
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.95439606>,[]])
+    in erlang.erl line 2188
    8: P.1: true = ets:insert(table, {y,1})
     in etsi_3.erl line 13
    9: P.1: exits normally
@@ -56,12 +56,12 @@ Interleaving info:
     in etsi_3.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in etsi_3.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.12792974>,[]])
-    in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.12792974>,[]])
-    in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.12792974>,[]])
-    in erlang.erl line 2329
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.95439606>,[]])
+    in erlang.erl line 2188
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.95439606>,[]])
+    in erlang.erl line 2188
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.95439606>,[]])
+    in erlang.erl line 2188
    8: P.1: true = ets:insert(table, {y,1})
     in etsi_3.erl line 13
    9: P.1: exits normally
@@ -87,12 +87,12 @@ Interleaving info:
     in etsi_3.erl line 11
    4: P: true = ets:insert(table, {z,0})
     in etsi_3.erl line 12
-   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.12792974>,[]])
-    in erlang.erl line 2329
-   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.12792974>,[]])
-    in erlang.erl line 2329
-   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.12792974>,[]])
-    in erlang.erl line 2329
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<etsi_3.0.95439606>,[]])
+    in erlang.erl line 2188
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<etsi_3.1.95439606>,[]])
+    in erlang.erl line 2188
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<etsi_3.2.95439606>,[]])
+    in erlang.erl line 2188
    8: P.2: [{z,0}] = ets:lookup(table, z)
     in etsi_3.erl line 15
    9: P.2: [{x,0}] = ets:lookup(table, x)

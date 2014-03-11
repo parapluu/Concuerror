@@ -2,7 +2,7 @@
 
 -module(concuerror_instrumenter).
 
--export([instrument/1]).
+-export([instrument/2]).
 
 -define(inspect, concuerror_inspect).
 
@@ -16,19 +16,19 @@
 %% -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 -include("concuerror.hrl").
 
--spec instrument(cerl:cerl()) -> cerl:cerl().
+-spec instrument(cerl:cerl(), ets:tid()) -> cerl:cerl().
 
-instrument(CoreCode) ->
+instrument(CoreCode, Instrumented) ->
   ?if_debug(Stripper = fun(Tree) -> cerl:set_ann(Tree, []) end),
   ?debug_flag(?input, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, CoreCode))]),
-  Name = cerl:concrete(cerl:module_name(CoreCode)),
-  {R, {Name, _}} = cerl_trees:mapfold(fun mapfold/2, {Name, 1}, CoreCode),
+  {R, {Instrumented, _}} =
+    cerl_trees:mapfold(fun mapfold/2, {Instrumented, 1}, CoreCode),
   ?debug_flag(?output, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, R))]),
   R.
 
-mapfold(Tree, {ModName, Var}) ->
+mapfold(Tree, {Instrumented, Var}) ->
   Type = cerl:type(Tree),
   NewTree =
     case Type of
@@ -44,7 +44,7 @@ mapfold(Tree, {ModName, Var}) ->
         Module = cerl:call_module(Tree),
         Name = cerl:call_name(Tree),
         Args = cerl:call_args(Tree),
-        case is_safe(ModName, Module, Name, length(Args)) of
+        case is_safe(Module, Name, length(Args), Instrumented) of
           true -> Tree;
           false ->
             inspect(call, [Module, Name, cerl:make_list(Args)], Tree)
@@ -75,7 +75,7 @@ mapfold(Tree, {ModName, Var}) ->
       'receive' -> Var + 1;
       _ -> Var
     end,
-  {NewTree, {ModName, NewVar}}.
+  {NewTree, {Instrumented, NewVar}}.
 
 inspect(Tag, Args, Tree) ->
   CTag = cerl:c_atom(Tag),
@@ -105,7 +105,7 @@ extract_patterns([Tree|Rest], Acc) ->
   Guard = cerl:clause_guard(Tree),
   extract_patterns(Rest, [cerl:update_c_clause(Tree, Pats, Guard, Body)|Acc]).
 
-is_safe(ModName, Module, Name, Arity) ->
+is_safe(Module, Name, Arity, Instrumented) ->
   case
     cerl:is_literal(Module) andalso
     cerl:is_literal(Name)
@@ -114,13 +114,8 @@ is_safe(ModName, Module, Name, Arity) ->
     true ->
       NameLit = cerl:concrete(Name),
       ModuleLit = cerl:concrete(Module),
-      %% Within the erlang module, variants of 'apply' are defined as
-      %% erlang:apply and somehow this is not a BIF. These should be
-      %% uninstrumented, or arbitrary applies will end up in an infinite loop:
-      %% i.e. (erlang:apply -> concuerror -> not builtin ->
-      %%       erlang:apply -> concuerror ...)
-      {ModName, NameLit} =:= {'erlang', 'apply'}
-        orelse
+      case erlang:is_builtin(ModuleLit, NameLit, Arity) of
+        true ->
           (ModuleLit =:= erlang
            andalso
              (erl_internal:guard_bif(NameLit, Arity)
@@ -129,7 +124,9 @@ is_safe(ModName, Module, Name, Arity) ->
               orelse erl_internal:comp_op(NameLit, Arity)
               orelse erl_internal:list_op(NameLit, Arity)
              )
-          )
-        orelse %% The rest are defined in concuerror.hrl
-        lists:member({ModuleLit, NameLit, Arity}, ?RACE_FREE_BIFS)
+          ) orelse %% The rest are defined in concuerror.hrl
+            lists:member({ModuleLit, NameLit, Arity}, ?RACE_FREE_BIFS);
+        false ->
+          ets:lookup(Instrumented, ModuleLit) =/= []
+      end
   end.

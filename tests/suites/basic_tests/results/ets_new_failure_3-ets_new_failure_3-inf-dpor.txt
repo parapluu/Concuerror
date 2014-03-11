@@ -25,9 +25,9 @@ Erroneous interleaving 1:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_new_failure_3.0.113166548>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_new_failure_3.0.113166548>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: exits normally
    4: P.1: table = ets:new(table, [named_table,public])
     in ets_new_failure_3.erl line 11
@@ -53,9 +53,9 @@ Erroneous interleaving 2:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_new_failure_3.0.113166548>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_new_failure_3.0.113166548>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: exits normally
    4: P.2: table = ets:new(table, [named_table,public])
     in ets_new_failure_3.erl line 11

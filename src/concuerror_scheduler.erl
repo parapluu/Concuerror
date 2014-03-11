@@ -46,7 +46,7 @@
           message_info          :: message_info(),
           options          = [] :: proplists:proplist(),
           processes             :: processes(),
-          trace            = []  :: [trace_state()],
+          trace            = [] :: [trace_state()],
           wait                  :: non_neg_integer()
          }).
 
@@ -78,11 +78,14 @@ run(Options) ->
 backend_run(Options) ->
   true = code:add_pathz(code:root_dir()++"/erts/preloaded/ebin"),
   Processes = ets:new(processes, [public]),
-  system_processes_wrappers(Processes),
   LoggerOptions =
     [{processes, Processes} |
      [O || O <- Options, concuerror_options:filter_options('logger', O)]
     ],
+  Modules = proplists:get_value(modules, Options),
+  Target = proplists:get_value(target, Options),
+  Wait = proplists:get_value(wait, Options),
+  ok = concuerror_loader:load(concuerror_logger, Modules),
   Logger = spawn_link(fun() -> concuerror_logger:run(LoggerOptions) end),
   ProcessOptions0 =
     [O || O <- Options, concuerror_options:filter_options('process', O)],
@@ -92,8 +95,6 @@ backend_run(Options) ->
      ProcessOptions0],
   ?debug(Logger, "Starting first process...~n",[]),
   FirstProcess = concuerror_callback:spawn_first_process(ProcessOptions),
-  {target, Target} = proplists:lookup(target, Options),
-  {wait, Wait} = proplists:lookup(wait, Options),
   InitialTrace = #trace_state{active_processes = [FirstProcess]},
   InitialState =
     #scheduler_state{
@@ -848,37 +849,6 @@ lookup_clock_value(P, CV) ->
 max_cv(D1, D2) ->
   Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
   orddict:merge(Merger, D1, D2).
-
-system_processes_wrappers(Processes) ->
-  Scheduler = self(),
-  Map =
-    fun(Name) ->
-        Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Scheduler) end,
-        Pid = spawn_link(Fun),
-        ?new_system_process(Pid, Name)
-    end,
-  ets:insert(Processes, [Map(Name) || Name <- registered()]).
-
-system_wrapper_loop(Name, Wrapped, Scheduler) ->
-  receive
-    {message,
-     #message{data = Data, message_id = Id}} ->
-      case Name of
-        init ->
-          {From, Request} = Data,
-          erlang:send(Wrapped, {self(), Request}),
-          receive
-            Msg ->
-              Scheduler ! {system_reply, From, Id, Msg},
-              ok
-          end;
-        error_logger ->
-          erlang:send(Wrapped, Data),
-          Scheduler ! {trapping, false},
-          ok
-      end
-  end,
-  system_wrapper_loop(Name, Wrapped, Scheduler).
 
 assert_no_messages() ->
   receive

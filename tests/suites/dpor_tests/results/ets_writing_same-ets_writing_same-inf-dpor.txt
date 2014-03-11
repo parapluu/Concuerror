@@ -18,9 +18,9 @@ Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: true = ets:insert(table, {y,1})
     in ets_writing_same.erl line 23
    5: P: true = ets:insert(table, {x,42})
@@ -42,9 +42,9 @@ Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: true = ets:insert(table, {y,1})
     in ets_writing_same.erl line 23
    5: P: true = ets:insert(table, {x,42})
@@ -66,9 +66,9 @@ Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: true = ets:insert(table, {y,1})
     in ets_writing_same.erl line 23
    5: P.1: true = ets:insert(table, {x,42})
@@ -90,9 +90,9 @@ Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P: true = ets:insert(table, {y,1})
     in ets_writing_same.erl line 23
    5: P.2: [] = ets:lookup(table, x)
@@ -122,9 +122,9 @@ Interleaving info:
    1: P: table = ets:new(table, [named_table,public])
     in ets_writing_same.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.0.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_writing_same.1.11018540>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    4: P.1: true = ets:insert(table, {x,42})
     in ets_writing_same.erl line 11
    5: P.1: exits normally

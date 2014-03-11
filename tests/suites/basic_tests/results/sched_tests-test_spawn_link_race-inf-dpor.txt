@@ -15,27 +15,27 @@ Erroneous interleaving 1:
     Reason:
       {noproc,[{erlang,link,
                        [P.1],
-                       [266,
+                       [274,
                         {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"}]},
                {sched_tests,test_spawn_link_race,0,
                             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"},
-                             {line,266}]}]}
+                             {line,274}]}]}
     Stacktrace:
       [{erlang,link,
                [P.1],
-               [266,
+               [274,
                 {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"}]},
        {sched_tests,test_spawn_link_race,0,
                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"},
-                     {line,266}]}]
+                     {line,274}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.32.7276234>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.32.94842083>,[]])
     in erlang.erl line 2188
    2: P.1: exits normally
    3: P: Exception noproc raised by: erlang:link(P.1)
-    in sched_tests.erl line 266
-   4: P: exits abnormally ({noproc,[{erlang,link,[<0.70.0>],[266,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]}]},{sched_tests,test_spawn_link_race,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]},{line,266}]}]})
+    in sched_tests.erl line 274
+   4: P: exits abnormally ({noproc,[{erlang,link,[P.1],[274,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]}]},{sched_tests,test_spawn_link_race,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]},{line,274}]}]})
 ################################################################################
 Done! (Exit status: completed)
   Summary: 1 errors, 2/2 interleavings explored

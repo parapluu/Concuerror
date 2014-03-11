@@ -31,12 +31,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.1: true = ets:insert(table, {x,1})
     in ets_dependencies_deeper.erl line 14
    8: P.1: ok = P ! ok
@@ -98,12 +98,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.1: true = ets:insert(table, {x,1})
     in ets_dependencies_deeper.erl line 14
    8: P.1: ok = P ! ok
@@ -165,12 +165,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.1: true = ets:insert(table, {x,1})
     in ets_dependencies_deeper.erl line 14
    8: P.1: ok = P ! ok
@@ -232,12 +232,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.1: true = ets:insert(table, {x,1})
     in ets_dependencies_deeper.erl line 14
    8: P.1: ok = P ! ok
@@ -299,12 +299,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.1: true = ets:insert(table, {x,1})
     in ets_dependencies_deeper.erl line 14
    8: P.1: ok = P ! ok
@@ -366,12 +366,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.1: true = ets:insert(table, {x,1})
     in ets_dependencies_deeper.erl line 14
    8: P.1: ok = P ! ok
@@ -433,12 +433,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -500,12 +500,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -567,12 +567,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -634,12 +634,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -701,12 +701,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -768,12 +768,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -835,12 +835,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -904,12 +904,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -973,12 +973,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1042,12 +1042,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1111,12 +1111,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1180,12 +1180,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1249,12 +1249,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1318,12 +1318,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1387,12 +1387,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1456,12 +1456,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1525,12 +1525,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1594,12 +1594,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.2: true = ets:insert(table, {y,2})
     in ets_dependencies_deeper.erl line 18
    8: P.3: true = ets:insert(table, {z,3})
@@ -1663,12 +1663,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -1732,12 +1732,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -1801,12 +1801,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -1870,12 +1870,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -1939,12 +1939,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -2008,12 +2008,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -2077,12 +2077,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -2146,12 +2146,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -2215,12 +2215,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -2284,12 +2284,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -2353,12 +2353,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)
@@ -2422,12 +2422,12 @@ Interleaving info:
     in ets_dependencies_deeper.erl line 11
    3: P: true = ets:insert(table, {y,0})
     in ets_dependencies_deeper.erl line 12
-   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.90237922>,[]])
-    in erlang.erl line 2329
-   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.90237922>,[]])
-    in erlang.erl line 2329
-   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.90237922>,[]])
-    in erlang.erl line 2329
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.0.71685295>,[]])
+    in erlang.erl line 2188
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.1.71685295>,[]])
+    in erlang.erl line 2188
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_dependencies_deeper.2.71685295>,[]])
+    in erlang.erl line 2188
    7: P.3: true = ets:insert(table, {z,3})
     in ets_dependencies_deeper.erl line 24
    8: P.3: [{x,0}] = ets:lookup(table, x)

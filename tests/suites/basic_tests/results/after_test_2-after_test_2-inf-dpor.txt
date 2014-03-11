@@ -16,7 +16,7 @@ Erroneous interleaving 1:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.109760583>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: receive timeout expired after 0 ms
     in after_test_2.erl line 11
    3: P: receive timeout expired after 0 ms
@@ -32,7 +32,7 @@ Erroneous interleaving 2:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_2.0.109760583>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: receive timeout expired after 0 ms
     in after_test_2.erl line 11
    3: P.1: one = P ! one

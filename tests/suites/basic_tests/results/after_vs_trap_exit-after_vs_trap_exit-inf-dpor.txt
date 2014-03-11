@@ -16,7 +16,7 @@ Erroneous interleaving 1:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<after_vs_trap_exit.0.114045005>,[]])
-    in erlang.erl line 2350
+    in erlang.erl line 2209
    2: P.1: false = erlang:process_flag(trap_exit, true)
    3: P.1: ok = P ! ok
     in after_vs_trap_exit.erl line 13
@@ -24,7 +24,7 @@ Interleaving info:
    5: P: receives message (ok)
     in after_vs_trap_exit.erl line 16
    6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_vs_trap_exit.2.114045005>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P: true = erlang:link(P.2)
     in after_vs_trap_exit.erl line 27
    8: P: exits normally
@@ -59,7 +59,7 @@ Erroneous interleaving 2:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<after_vs_trap_exit.0.114045005>,[]])
-    in erlang.erl line 2350
+    in erlang.erl line 2209
    2: P.1: false = erlang:process_flag(trap_exit, true)
    3: P.1: ok = P ! ok
     in after_vs_trap_exit.erl line 13
@@ -67,7 +67,7 @@ Interleaving info:
    5: P: receives message (ok)
     in after_vs_trap_exit.erl line 16
    6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_vs_trap_exit.2.114045005>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P: true = erlang:link(P.2)
     in after_vs_trap_exit.erl line 27
    8: P: exits normally
@@ -81,10 +81,10 @@ Interleaving info:
   13: Exit signal (normal) from P reaches P.2
   14: P.2: receives message ({'EXIT',P,normal})
     in after_vs_trap_exit.erl line 21
-  15: P.2: exits abnormally ({{nocatch,{'EXIT',<0.65.0>,normal}},[{after_vs_trap_exit,'-after_vs_trap_exit/0-fun-1-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,118,115,95,116,114,97,112,95,101,120,105,116,46,101,114,108]},{line,22}]}]})
-  16: P.2: true = erlang:exit(P, {{nocatch,{'EXIT',<0.65.0>,normal}},[{after_vs_trap_exit,'-after_vs_trap_exit/0-fun-1-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,118,115,95,116,114,97,112,95,101,120,105,116,46,101,114,108]},{line,22}]}]})
+  15: P.2: exits abnormally ({{nocatch,{'EXIT',P,normal}},[{after_vs_trap_exit,'-after_vs_trap_exit/0-fun-1-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,118,115,95,116,114,97,112,95,101,120,105,116,46,101,114,108]},{line,22}]}]})
+  16: P.2: true = erlang:exit(P, {{nocatch,{'EXIT',P,normal}},[{after_vs_trap_exit,'-after_vs_trap_exit/0-fun-1-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,118,115,95,116,114,97,112,95,101,120,105,116,46,101,114,108]},{line,22}]}]})
     (while exiting)
-  17: Exit signal ({{nocatch,{'EXIT',<0.65.0>,normal}},[{after_vs_trap_exit,'-after_vs_trap_exit/0-fun-1-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,118,115,95,116,114,97,112,95,101,120,105,116,46,101,114,108]},{line,22}]}]}) from P.2 reaches P
+  17: Exit signal ({{nocatch,{'EXIT',P,normal}},[{after_vs_trap_exit,'-after_vs_trap_exit/0-fun-1-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,97,102,116,101,114,95,118,115,95,116,114,97,112,95,101,120,105,116,46,101,114,108]},{line,22}]}]}) from P.2 reaches P
 ################################################################################
 Erroneous interleaving 3:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -92,7 +92,7 @@ Erroneous interleaving 3:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<after_vs_trap_exit.0.114045005>,[]])
-    in erlang.erl line 2350
+    in erlang.erl line 2209
    2: P.1: false = erlang:process_flag(trap_exit, true)
    3: P.1: ok = P ! ok
     in after_vs_trap_exit.erl line 13
@@ -100,7 +100,7 @@ Interleaving info:
    5: P: receives message (ok)
     in after_vs_trap_exit.erl line 16
    6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_vs_trap_exit.2.114045005>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P: true = erlang:link(P.2)
     in after_vs_trap_exit.erl line 27
    8: P: exits normally
@@ -125,7 +125,7 @@ Erroneous interleaving 4:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<after_vs_trap_exit.0.114045005>,[]])
-    in erlang.erl line 2350
+    in erlang.erl line 2209
    2: P.1: false = erlang:process_flag(trap_exit, true)
    3: P.1: ok = P ! ok
     in after_vs_trap_exit.erl line 13
@@ -133,7 +133,7 @@ Interleaving info:
    5: P: receives message (ok)
     in after_vs_trap_exit.erl line 16
    6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_vs_trap_exit.2.114045005>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    7: P.2: false = erlang:process_flag(trap_exit, true)
     in after_vs_trap_exit.erl line 20
    8: P.2: receive timeout expired after 0 ms

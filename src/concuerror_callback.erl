@@ -53,11 +53,11 @@
           logger                     :: pid(),
           messages_new = queue:new() :: queue(),
           messages_old = queue:new() :: queue(),
+          modules                    :: modules(),
           monitors                   :: monitors(),
           next_event = none          :: 'none' | event(),
           processes                  :: processes(),
           scheduler                  :: pid(),
-          stack = []                 :: [term()],
           stacktop = 'none'          :: 'none' | tuple(),
           status = exited            :: 'exited'| 'exiting' | 'running' | 'waiting',
           trap_exit = false          :: boolean()
@@ -70,22 +70,22 @@
 -spec spawn_first_process(options()) -> pid().
 
 spawn_first_process(Options) ->
-  [AfterTimeout, Logger, Processes] =
-    get_properties(['after-timeout', logger, processes], Options),
-  [Monitors, Links] =
-    [ets:new(Name, [bag, public]) || Name <- [monitors, links]],
+  [AfterTimeout, Logger, Processes, Modules] =
+    get_properties(['after-timeout', logger, processes, modules], Options),
   EtsTables = ets:new(ets_tables, [public]),
-  system_ets_entries(EtsTables),
   InitialInfo =
     #concuerror_info{
        'after-timeout' = AfterTimeout,
-       ets_tables = EtsTables,
-       links = Links,
-       logger = Logger,
-       monitors = Monitors,
-       processes = Processes,
-       scheduler = self()
+       ets_tables      = EtsTables,
+       links           = ets:new(links, [bag, public]),
+       logger          = Logger,
+       modules         = Modules,
+       monitors        = ets:new(monitors, [bag, public]),
+       processes       = Processes,
+       scheduler       = self()
       },
+  system_ets_entries(EtsTables),
+  system_processes_wrappers(Processes),
   spawn_link(fun() -> process_top_loop(InitialInfo, "P") end).
 
 get_properties(Props, PropList) ->
@@ -113,18 +113,23 @@ start_first_process(Pid, {Module, Name, Args}) ->
                           {'error', term()} |
                           'skip_timeout'.
 
-instrumented_top(Tag, Args, Location, Info) ->
+instrumented_top(Tag, Args, Location, #concuerror_info{} = Info) ->
   #concuerror_info{escaped_pdict = Escaped} = Info,
   lists:foreach(fun({K,V}) -> put(K,V) end, Escaped),
-  {Result, #concuerror_info{} = NewInfo} = instrumented(Tag, Args, Location, Info),
+  {Result, #concuerror_info{} = NewInfo} =
+    instrumented(Tag, Args, Location, Info),
   NewEscaped = erase(),
   FinalInfo = NewInfo#concuerror_info{escaped_pdict = NewEscaped},
   put(concuerror_info, FinalInfo),
+  Result;
+instrumented_top(Tag, Args, Location, {logger, _, _} = Info) ->
+  {Result, _} = instrumented(Tag, Args, Location, Info),
+  put(concuerror_info, Info),
   Result.
 
 instrumented(call, [Module, Name, Args], Location, Info) ->
   Arity = length(Args),
-  instrumented_aux(call, Module, Name, Arity, Args, Location, Info);
+  instrumented_aux(Module, Name, Arity, Args, Location, Info);
 instrumented(apply, [Fun, Args], Location, Info) ->
   case is_function(Fun) of
     true ->
@@ -132,35 +137,56 @@ instrumented(apply, [Fun, Args], Location, Info) ->
       Name = get_fun_info(Fun, name),
       Arity = get_fun_info(Fun, arity),
       case length(Args) =:= Arity of
-        true -> instrumented_aux(apply, Module, Name, Arity, Args, Location, Info);
+        true -> instrumented_aux(Module, Name, Arity, Args, Location, Info);
         false -> {doit, Info}
       end;
     false ->
       {doit, Info}
   end;
 instrumented('receive', [PatternFun, Timeout], Location, Info) ->
-  #concuerror_info{'after-timeout' = AfterTimeout} = Info,
-  RealTimeout =
-    case Timeout =:= infinity orelse Timeout > AfterTimeout of
-      false -> Timeout;
-      true -> infinity
-    end,
-  handle_receive(PatternFun, RealTimeout, Location, Info).
+  case Info of
+    #concuerror_info{'after-timeout' = AfterTimeout} ->
+      RealTimeout =
+        case Timeout =:= infinity orelse Timeout > AfterTimeout of
+          false -> Timeout;
+          true -> infinity
+        end,
+      handle_receive(PatternFun, RealTimeout, Location, Info);
+    _Logger ->
+      {doit, Info}
+  end.
 
-instrumented_aux(Tag, Module, Name, Arity, Args, Location, Info) ->
+instrumented_aux(Module, Name, Arity, Args, Location, Info) ->
   case
     erlang:is_builtin(Module, Name, Arity) andalso
     not lists:member({Module, Name, Arity}, ?RACE_FREE_BIFS)
   of
-    true  ->
-      built_in(Module, Name, Arity, Args, Location, Info);
+    true ->
+      case Info of
+        #concuerror_info{} ->
+          built_in(Module, Name, Arity, Args, Location, Info);
+        {logger, Processes, _} ->
+          case {Module, Name, Arity} =:= {erlang, pid_to_list, 1} of
+            true ->
+              [Term] = Args,
+              try
+                Symbol = ets:lookup_element(Processes, Term, ?process_symbolic),
+                {{didit, Symbol}, Info}
+              catch
+                _:_ -> {doit, Info}
+              end;
+            false ->
+              {doit, Info}
+          end
+      end;
     false ->
-      _Log = {Tag, Module, Name, Arity, Location},
-      ?debug_flag(?non_builtin, _Log),
-      ?debug_flag(?args, {args, Args}),
-      NewInfo = Info,%append_stack(Log, Info),
-      ok = concuerror_loader:load_if_needed(Module),
-      {doit, NewInfo}
+      Modules =
+        case Info of
+          #concuerror_info{modules = M} -> M;
+          {logger, _, M} -> M
+        end,
+      ok = concuerror_loader:load(Module, Modules),
+      {doit, Info}
   end.
 
 get_fun_info(Fun, Tag) ->
@@ -169,6 +195,10 @@ get_fun_info(Fun, Tag) ->
 
 %%------------------------------------------------------------------------------
 
+%% Instrumented processes may just call pid_to_list (we instrument this builtin
+%% for the logger)
+built_in(erlang, pid_to_list, _Arity, _Args, _Location, Info) ->
+  {doit, Info};
 %% Process dictionary has been restored here. No need to report such ops.
 built_in(erlang, get, _Arity, Args, _Location, Info) ->
   {{didit, erlang:apply(erlang,get,Args)}, Info};
@@ -747,7 +777,7 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
       %% Wait for 1st event (= 'run') signal, accepting messages
       StartInfo = process_loop(Running),
       %% It is ok for this load to fail
-      _ = concuerror_loader:load_if_needed(Module),
+      concuerror_loader:load(Module, Info#concuerror_info.modules),
       put(concuerror_info, StartInfo),
       try
         erlang:apply(Module, Name, Args),
@@ -1009,12 +1039,44 @@ system_ets_entries(EtsTables) ->
   Map = fun(Tid) -> ?new_system_ets_table(Tid, ets:info(Tid, protection)) end,
   ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
 
+system_processes_wrappers(Processes) ->
+  Scheduler = self(),
+  Map =
+    fun(Name) ->
+        Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Scheduler) end,
+        Pid = spawn_link(Fun),
+        ?new_system_process(Pid, Name)
+    end,
+  ets:insert(Processes, [Map(Name) || Name <- registered()]).
+
+system_wrapper_loop(Name, Wrapped, Scheduler) ->
+  receive
+    {message,
+     #message{data = Data, message_id = Id}} ->
+      case Name of
+        init ->
+          {From, Request} = Data,
+          erlang:send(Wrapped, {self(), Request}),
+          receive
+            Msg ->
+              Scheduler ! {system_reply, From, Id, Msg},
+              ok
+          end;
+        error_logger ->
+          erlang:send(Wrapped, Data),
+          Scheduler ! {trapping, false},
+          ok
+      end
+  end,
+  system_wrapper_loop(Name, Wrapped, Scheduler).
+
 init_concuerror_info(Info) ->
   #concuerror_info{
      'after-timeout' = AfterTimeout,
      ets_tables = EtsTables,
      links = Links,
      logger = Logger,
+     modules = Modules,
      monitors = Monitors,
      processes = Processes,
      scheduler = Scheduler
@@ -1024,6 +1086,7 @@ init_concuerror_info(Info) ->
      ets_tables = EtsTables,
      links = Links,
      logger = Logger,
+     modules = Modules,
      monitors = Monitors,
      processes = Processes,
      scheduler = Scheduler

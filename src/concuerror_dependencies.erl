@@ -220,6 +220,7 @@ dependent_built_in(#builtin_event{mfa = {erlang, A,_}},
     ;A =:= process_flag     %% Depends only with delivery of a signal
     ;A =:= put              %% Depends only with proc_info
     ;A =:= spawn            %% Depends only with proc_info
+    ;A =:= spawn_link       %% Depends only with proc_info
     ;A =:= spawn_opt        %% Depends only with proc_info
     
     ;B =:= demonitor
@@ -230,6 +231,7 @@ dependent_built_in(#builtin_event{mfa = {erlang, A,_}},
     ;B =:= process_flag
     ;B =:= put
     ;B =:= spawn
+    ;B =:= spawn_link
     ;B =:= spawn_opt
     ->
   false;

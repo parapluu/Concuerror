@@ -12,29 +12,29 @@ Concuerror started with options:
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
-    P in sched_tests.erl line 374
+    P in sched_tests.erl line 382
 * At step 5 process P.1 exited abnormally
     Reason:
       {badarg,[{erlang,'!',
                        [foo,bar],
-                       [372,
+                       [380,
                         {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"}]}]}
     Stacktrace:
       [{erlang,'!',
                [foo,bar],
-               [372,
+               [380,
                 {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: true = erlang:register(foo, P)
-    in sched_tests.erl line 371
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.50.7276234>,[]])
+    in sched_tests.erl line 379
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.50.94842083>,[]])
     in erlang.erl line 2188
    3: P: true = erlang:unregister(foo)
-    in sched_tests.erl line 373
+    in sched_tests.erl line 381
    4: P.1: Exception badarg raised by: foo ! bar
-    in sched_tests.erl line 372
-   5: P.1: exits abnormally ({badarg,[{erlang,'!',[foo,bar],[372,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]}]}]})
+    in sched_tests.erl line 380
+   5: P.1: exits abnormally ({badarg,[{erlang,'!',[foo,bar],[380,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]}]}]})
 ################################################################################
 Done! (Exit status: completed)
   Summary: 1 errors, 2/2 interleavings explored

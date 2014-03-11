@@ -29,7 +29,7 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_delete.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_delete.0.101068984>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P: true = ets:delete(table)
     in ets_delete.erl line 13
    4: P.1: Exception badarg raised by: ets:insert(table, {key,value})
@@ -44,7 +44,7 @@ Interleaving info:
    1: P: table = ets:new(table, [public,named_table])
     in ets_delete.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_delete.0.101068984>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P.1: true = ets:insert(table, {key,value})
     in ets_delete.erl line 11
    4: P: true = ets:delete(table)

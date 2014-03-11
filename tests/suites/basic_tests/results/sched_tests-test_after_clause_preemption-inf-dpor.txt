@@ -14,57 +14,57 @@ Erroneous interleaving 1:
 * At step 7 process P exited abnormally
     Reason:
       {{assertEqual_failed,[{module,sched_tests},
-                            {line,229},
+                            {line,237},
                             {expression,"Result"},
                             {expected,result3},
                             {value,result2}]},
        [{sched_tests,'-test_after_clause_preemption/0-fun-1-',2,
                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"},
-                      {line,229}]}]}
+                      {line,237}]}]}
     Stacktrace:
       [{sched_tests,'-test_after_clause_preemption/0-fun-1-',2,
                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"},
-                     {line,229}]}]
+                     {line,237}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.21.71141109>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.21.94842083>,[]])
     in erlang.erl line 2188
    2: P: receive timeout expired after 42 ms
-    in sched_tests.erl line 221
+    in sched_tests.erl line 229
    3: P.1: foo = P ! foo
-    in sched_tests.erl line 220
+    in sched_tests.erl line 228
    4: P.1: exits normally
    5: Message (foo) from P.1 reaches P
    6: P: receives message (foo)
-    in sched_tests.erl line 224
-   7: P: exits abnormally ({{assertEqual_failed,[{module,sched_tests},{line,229},{expression,[82,101,115,117,108,116]},{expected,result3},{value,result2}]},[{sched_tests,'-test_after_clause_preemption/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]},{line,229}]}]})
+    in sched_tests.erl line 232
+   7: P: exits abnormally ({{assertEqual_failed,[{module,sched_tests},{line,237},{expression,[82,101,115,117,108,116]},{expected,result3},{value,result2}]},[{sched_tests,'-test_after_clause_preemption/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]},{line,237}]}]})
 ################################################################################
 Erroneous interleaving 2:
 * At step 6 process P exited abnormally
     Reason:
       {{assertEqual_failed,[{module,sched_tests},
-                            {line,229},
+                            {line,237},
                             {expression,"Result"},
                             {expected,result3},
                             {value,result1}]},
        [{sched_tests,'-test_after_clause_preemption/0-fun-1-',2,
                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"},
-                      {line,229}]}]}
+                      {line,237}]}]}
     Stacktrace:
       [{sched_tests,'-test_after_clause_preemption/0-fun-1-',2,
                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"},
-                     {line,229}]}]
+                     {line,237}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.21.71141109>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sched_tests.21.94842083>,[]])
     in erlang.erl line 2188
    2: P.1: foo = P ! foo
-    in sched_tests.erl line 220
+    in sched_tests.erl line 228
    3: P.1: exits normally
    4: Message (foo) from P.1 reaches P
    5: P: receives message (foo)
-    in sched_tests.erl line 221
-   6: P: exits abnormally ({{assertEqual_failed,[{module,sched_tests},{line,229},{expression,[82,101,115,117,108,116]},{expected,result3},{value,result1}]},[{sched_tests,'-test_after_clause_preemption/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]},{line,229}]}]})
+    in sched_tests.erl line 229
+   6: P: exits abnormally ({{assertEqual_failed,[{module,sched_tests},{line,237},{expression,[82,101,115,117,108,116]},{expected,result3},{value,result1}]},[{sched_tests,'-test_after_clause_preemption/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,99,104,101,100,95,116,101,115,116,115,46,101,114,108]},{line,237}]}]})
 ################################################################################
 Done! (Exit status: completed)
   Summary: 2 errors, 3/3 interleavings explored

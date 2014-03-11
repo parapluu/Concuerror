@@ -37,9 +37,9 @@ Erroneous interleaving 1:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_new_failure_2.0.1511511>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_new_failure_2.0.1511511>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P.1: table = ets:new(table, [named_table,public])
     in ets_new_failure_2.erl line 12
    4: P.1: ok = P ! ok
@@ -78,9 +78,9 @@ Erroneous interleaving 2:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_new_failure_2.0.1511511>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_new_failure_2.0.1511511>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2188
    3: P.2: table = ets:new(table, [named_table,public])
     in ets_new_failure_2.erl line 12
    4: P.1: Exception badarg raised by: ets:new(table, [named_table,public])
