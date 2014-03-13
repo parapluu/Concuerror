@@ -602,24 +602,30 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   ets:update_element(EtsTables, Tid, Update),
   ets:delete_all_objects(Tid),
   {Ret, Info#concuerror_info{extra = Tid}};
-run_built_in(ets, info, 1, [Name], Info) ->
+run_built_in(ets, info, _, [Name|Rest], Info) ->
   try
     Tid = check_ets_access_rights(Name, info, Info),
-    {erlang:apply(ets, info, [Tid]), Info#concuerror_info{extra = Tid}}
+    {erlang:apply(ets, info, [Tid|Rest]), Info#concuerror_info{extra = Tid}}
   catch
     error:badarg -> {undefined, Info}
   end;
 run_built_in(ets, F, N, [Name|Args], Info)
   when
     false
+    ;{F,N} =:= {delete, 2}
     ;{F,N} =:= {insert, 2}
-    ;{F,N} =:= {insert_new,2}
+    ;{F,N} =:= {insert_new, 2}
     ;{F,N} =:= {lookup, 2}
+    ;{F,N} =:= {match, 2}
+    ;{F,N} =:= {member, 2}
+    ;{F,N} =:= {select, 2}
+    ;{F,N} =:= {select, 3}
+    ;{F,N} =:= {select_delete, 2}
     ->
-  Tid = check_ets_access_rights(Name, F, Info),
+  Tid = check_ets_access_rights(Name, {F,N}, Info),
   {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Tid}};
 run_built_in(ets, delete, 1, [Name], Info) ->
-  Tid = check_ets_access_rights(Name, delete, Info),
+  Tid = check_ets_access_rights(Name, {delete,1}, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
   ets:update_element(EtsTables, Tid, [{?ets_alive, false}]),
   ets:delete_all_objects(Tid),
@@ -628,7 +634,7 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
              #concuerror_info{
                 next_event = #event{event_info = EventInfo} = Event
                } = Info) ->
-  Tid = check_ets_access_rights(Name, give_away, Info),
+  Tid = check_ets_access_rights(Name, {give_away,3}, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
   {Alive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   Self = self(),
@@ -1056,11 +1062,17 @@ check_ets_access_rights(Name, Op, Info) ->
 
 ets_ops_access_rights_map(Op) ->
   case Op of
-    info   -> none;
-    insert -> write;
-    lookup -> read;
-    delete -> own;
-    give_away -> own
+    {delete       ,1} -> own;
+    {delete       ,2} -> write;
+    {give_away    ,_} -> own;
+    {info         ,_} -> none;
+    {insert       ,_} -> write;
+    {insert_new   ,_} -> write;
+    {lookup       ,_} -> read;
+    {match        ,_} -> read;
+    {member       ,_} -> read;
+    {select       ,_} -> read;
+    {select_delete,_} -> write
   end.
 
 %%------------------------------------------------------------------------------
