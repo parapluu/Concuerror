@@ -1,16 +1,16 @@
 ################################################################################
 Concuerror started with options:
-  [{target,{same_messages,same_messages,[]}},
-   {symbolic,true},
-   {verbose,0},
-   {timeout,1000},
-   {files,["/home/stavros/git/Concuerror/testsuite/suites/dpor/src/same_messages.erl"]},
-   {'after-timeout',infinite},
-   {bound,2},
+  [{'after-timeout',infinite},
+   {bound,-1},
    {distributed,true},
-   {'light-dpor',false}]
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{same_messages,same_messages,[]}},
+   {verbose,0},
+   {wait,5000}]
 ################################################################################
   No errors found!
 ################################################################################
-Done! (Exit status: ok)
+Done! (Exit status: completed)
   Summary: 0 errors, 2/2 interleavings explored

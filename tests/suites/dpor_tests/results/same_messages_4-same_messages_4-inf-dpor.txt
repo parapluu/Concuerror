@@ -1,0 +1,105 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_4.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{same_messages_4,same_messages_4,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {badarg,
+          [{ets,insert,
+               [table,{foo}],
+               [15,
+                {file,
+                    "/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_4.erl"}]},
+           {same_messages_4,'-same_messages_4/0-fun-0-',2,
+               [{file,
+                    "/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_4.erl"},
+                {line,15}]}]}
+    Stacktrace:
+      [{ets,insert,
+            [table,{foo}],
+            [15,
+             {file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_4.erl"}]},
+       {same_messages_4,'-same_messages_4/0-fun-0-',2,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_4.erl"},
+                         {line,15}]}]
+* At step 9 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{same_messages_4,same_messages_4,0,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_4.erl"},
+                          {line,25}]}]}
+    Stacktrace:
+      [{same_messages_4,same_messages_4,0,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_4.erl"},
+                         {line,25}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in same_messages_4.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<same_messages_4.2.121373200>,[]])
+    in erlang.erl line 2188
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<same_messages_4.2.121373200>,[]])
+    in erlang.erl line 2188
+   4: P.2: unlock = P ! unlock
+    in same_messages_4.erl line 18
+   5: P.2: exits normally
+   6: Message (unlock) from P.2 reaches P
+   7: P: receives message (unlock)
+    in same_messages_4.erl line 23
+   8: P: [] = ets:lookup(table, foo)
+    in same_messages_4.erl line 25
+   9: P: exits abnormally ({{badmatch,false},[{same_messages_4,same_messages_4,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,97,109,101,95,109,101,115,115,97,103,101,115,95,52,46,101,114,108]},{line,25}]}]})
+  10: P: true = ets:delete(table)
+    (while exiting)
+  11: P.1: Exception badarg raised by: ets:insert(table, {foo})
+    in same_messages_4.erl line 15
+  12: P.1: exits abnormally ({badarg,[{ets,insert,[table,{foo}],[15,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,97,109,101,95,109,101,115,115,97,103,101,115,95,52,46,101,114,108]}]},{same_messages_4,'-same_messages_4/0-fun-0-',2,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,97,109,101,95,109,101,115,115,97,103,101,115,95,52,46,101,114,108]},{line,15}]}]})
+################################################################################
+Erroneous interleaving 2:
+* At step 9 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{same_messages_4,same_messages_4,0,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_4.erl"},
+                          {line,25}]}]}
+    Stacktrace:
+      [{same_messages_4,same_messages_4,0,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_4.erl"},
+                         {line,25}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in same_messages_4.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<same_messages_4.2.121373200>,[]])
+    in erlang.erl line 2188
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<same_messages_4.2.121373200>,[]])
+    in erlang.erl line 2188
+   4: P.2: unlock = P ! unlock
+    in same_messages_4.erl line 18
+   5: P.2: exits normally
+   6: Message (unlock) from P.2 reaches P
+   7: P: receives message (unlock)
+    in same_messages_4.erl line 23
+   8: P: [] = ets:lookup(table, foo)
+    in same_messages_4.erl line 25
+   9: P: exits abnormally ({{badmatch,false},[{same_messages_4,same_messages_4,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,97,109,101,95,109,101,115,115,97,103,101,115,95,52,46,101,114,108]},{line,25}]}]})
+  10: P.1: true = ets:insert(table, {foo})
+    in same_messages_4.erl line 15
+  11: P: true = ets:delete(table)
+    (while exiting)
+  12: P.1: unlock = P ! unlock
+    in same_messages_4.erl line 18
+  13: Message (unlock) from P.1 reaches P
+  14: P.1: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 4/4 interleavings explored

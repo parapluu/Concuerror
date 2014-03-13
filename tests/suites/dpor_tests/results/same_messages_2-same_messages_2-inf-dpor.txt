@@ -1,0 +1,162 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_2.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{same_messages_2,same_messages_2,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 9 process P exited abnormally
+    Reason:
+      {{nocatch,a},
+       [{same_messages_2,same_messages_2,0,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_2.erl"},
+                          {line,23}]}]}
+    Stacktrace:
+      [{same_messages_2,same_messages_2,0,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_2.erl"},
+                         {line,23}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<same_messages_2.3.10958995>,[]])
+    in erlang.erl line 2188
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<same_messages_2.3.10958995>,[]])
+    in erlang.erl line 2188
+   3: P.1: unlock = P ! unlock
+    in same_messages_2.erl line 13
+   4: Message (unlock) from P.1 reaches P
+   5: P: receives message (unlock)
+    in same_messages_2.erl line 19
+   6: P.1: a = P ! a
+    in same_messages_2.erl line 14
+   7: Message (a) from P.1 reaches P
+   8: P: receives message (a)
+    in same_messages_2.erl line 21
+   9: P: exits abnormally ({{nocatch,a},[{same_messages_2,same_messages_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,97,109,101,95,109,101,115,115,97,103,101,115,95,50,46,101,114,108]},{line,23}]}]})
+  10: P.1: exits normally
+  11: P.2: unlock = P ! unlock
+    in same_messages_2.erl line 13
+  12: Message (unlock) from P.2 reaches P
+  13: P.2: b = P ! b
+    in same_messages_2.erl line 14
+  14: Message (b) from P.2 reaches P
+  15: P.2: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 15 process P exited abnormally
+    Reason:
+      {{nocatch,b},
+       [{same_messages_2,same_messages_2,0,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_2.erl"},
+                          {line,23}]}]}
+    Stacktrace:
+      [{same_messages_2,same_messages_2,0,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_2.erl"},
+                         {line,23}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<same_messages_2.3.10958995>,[]])
+    in erlang.erl line 2188
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<same_messages_2.3.10958995>,[]])
+    in erlang.erl line 2188
+   3: P.1: unlock = P ! unlock
+    in same_messages_2.erl line 13
+   4: Message (unlock) from P.1 reaches P
+   5: P: receives message (unlock)
+    in same_messages_2.erl line 19
+   6: P.1: a = P ! a
+    in same_messages_2.erl line 14
+   7: P.1: exits normally
+   8: P.2: unlock = P ! unlock
+    in same_messages_2.erl line 13
+   9: Message (unlock) from P.2 reaches P
+  10: P.2: b = P ! b
+    in same_messages_2.erl line 14
+  11: P.2: exits normally
+  12: Message (b) from P.2 reaches P
+  13: Message (a) from P.1 reaches P
+  14: P: receives message (b)
+    in same_messages_2.erl line 21
+  15: P: exits abnormally ({{nocatch,b},[{same_messages_2,same_messages_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,97,109,101,95,109,101,115,115,97,103,101,115,95,50,46,101,114,108]},{line,23}]}]})
+################################################################################
+Erroneous interleaving 3:
+* At step 15 process P exited abnormally
+    Reason:
+      {{nocatch,a},
+       [{same_messages_2,same_messages_2,0,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_2.erl"},
+                          {line,23}]}]}
+    Stacktrace:
+      [{same_messages_2,same_messages_2,0,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_2.erl"},
+                         {line,23}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<same_messages_2.3.10958995>,[]])
+    in erlang.erl line 2188
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<same_messages_2.3.10958995>,[]])
+    in erlang.erl line 2188
+   3: P.1: unlock = P ! unlock
+    in same_messages_2.erl line 13
+   4: P.1: a = P ! a
+    in same_messages_2.erl line 14
+   5: P.1: exits normally
+   6: P.2: unlock = P ! unlock
+    in same_messages_2.erl line 13
+   7: P.2: b = P ! b
+    in same_messages_2.erl line 14
+   8: P.2: exits normally
+   9: Message (unlock) from P.2 reaches P
+  10: Message (unlock) from P.1 reaches P
+  11: Message (a) from P.1 reaches P
+  12: Message (b) from P.2 reaches P
+  13: P: receives message (unlock)
+    in same_messages_2.erl line 19
+  14: P: receives message (a)
+    in same_messages_2.erl line 21
+  15: P: exits abnormally ({{nocatch,a},[{same_messages_2,same_messages_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,97,109,101,95,109,101,115,115,97,103,101,115,95,50,46,101,114,108]},{line,23}]}]})
+################################################################################
+Erroneous interleaving 4:
+* At step 15 process P exited abnormally
+    Reason:
+      {{nocatch,b},
+       [{same_messages_2,same_messages_2,0,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_2.erl"},
+                          {line,23}]}]}
+    Stacktrace:
+      [{same_messages_2,same_messages_2,0,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/same_messages_2.erl"},
+                         {line,23}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<same_messages_2.3.10958995>,[]])
+    in erlang.erl line 2188
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<same_messages_2.3.10958995>,[]])
+    in erlang.erl line 2188
+   3: P.1: unlock = P ! unlock
+    in same_messages_2.erl line 13
+   4: P.1: a = P ! a
+    in same_messages_2.erl line 14
+   5: P.1: exits normally
+   6: P.2: unlock = P ! unlock
+    in same_messages_2.erl line 13
+   7: P.2: b = P ! b
+    in same_messages_2.erl line 14
+   8: P.2: exits normally
+   9: Message (unlock) from P.2 reaches P
+  10: Message (unlock) from P.1 reaches P
+  11: P: receives message (unlock)
+    in same_messages_2.erl line 19
+  12: Message (b) from P.2 reaches P
+  13: Message (a) from P.1 reaches P
+  14: P: receives message (b)
+    in same_messages_2.erl line 21
+  15: P: exits abnormally ({{nocatch,b},[{same_messages_2,same_messages_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,97,109,101,95,109,101,115,115,97,103,101,115,95,50,46,101,114,108]},{line,23}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 4 errors, 4/4 interleavings explored
