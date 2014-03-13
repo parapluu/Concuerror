@@ -156,7 +156,10 @@ instrumented('receive', [PatternFun, Timeout], Location, Info) ->
       {doit, Info}
   end.
 
-instrumented_aux(Module, Name, Arity, Args, Location, Info) ->
+instrumented_aux(erlang, apply, 3, [Module, Name, Args], Location, Info) ->
+  instrumented_aux(Module, Name, length(Args), Args, Location, Info);
+instrumented_aux(Module, Name, Arity, Args, Location, Info)
+  when is_atom(Module) ->
   case
     erlang:is_builtin(Module, Name, Arity) andalso
     not lists:member({Module, Name, Arity}, ?RACE_FREE_BIFS)
@@ -187,7 +190,11 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info) ->
         end,
       ok = concuerror_loader:load(Module, Modules),
       {doit, Info}
-  end.
+  end;
+instrumented_aux({Module, _} = Tuple, Name, Arity, Args, Location, Info) ->
+  instrumented_aux(Module, Name, Arity + 1, Args ++ Tuple, Location, Info);
+instrumented_aux(_, _, _, _, _, Info) ->
+  {doit, Info}.
 
 get_fun_info(Fun, Tag) ->
   {Tag, Info} = erlang:fun_info(Fun, Tag),
@@ -581,6 +588,13 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   ets:update_element(EtsTables, Tid, Update),
   ets:delete_all_objects(Tid),
   {Ret, Info#concuerror_info{extra = Tid}};
+run_built_in(ets, info, 1, [Name], Info) ->
+  try
+    Tid = check_ets_access_rights(Name, info, Info),
+    {erlang:apply(ets, info, [Tid]), Info#concuerror_info{extra = Tid}}
+  catch
+    error:badarg -> {undefined, Info}
+  end;
 run_built_in(ets, F, N, [Name|Args], Info)
   when
     false
@@ -796,7 +810,7 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
                   exit  -> Reason
                 end,
               exiting(NewReason, Stacktrace, EndInfo);
-            _ -> exit({process_crashed, Class, Reason})
+            _ -> exit({process_crashed, Class, Reason, erlang:get_stacktrace()})
           end
       end
   end.
@@ -1017,9 +1031,10 @@ check_ets_access_rights(Name, Op, Info) ->
         (Owner =:= self()
          orelse
          case ets_ops_access_rights_map(Op) of
-           read -> Protection =/= private;
-           write -> Protection =:= public;
-           own -> false
+           none  -> true;
+           own   -> false;
+           read  -> Protection =/= private;
+           write -> Protection =:= public
          end),
       ?badarg_if_not(Test),
       Tid
@@ -1027,6 +1042,7 @@ check_ets_access_rights(Name, Op, Info) ->
 
 ets_ops_access_rights_map(Op) ->
   case Op of
+    info   -> none;
     insert -> write;
     lookup -> read;
     delete -> own;

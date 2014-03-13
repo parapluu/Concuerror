@@ -45,8 +45,11 @@ dependent(#builtin_event{mfa = {erlang,process_flag,[trap_exit,New]}} = Builtin,
   #builtin_event{actor = Actor, result = Old} = Builtin,
   New =/= Old andalso
     Type =:= exit_signal andalso
-    Data =/= kill andalso
-    Actor =:= Recipient;
+    Actor =:= Recipient andalso
+    begin
+      {'EXIT', _, Reason} = Data,
+      Reason =/= kill
+    end;
 dependent(#message_event{} = Message,
           #builtin_event{mfa = {erlang,process_flag,[trap_exit,_]}} = PFlag) ->
   dependent(PFlag, Message);
@@ -63,6 +66,7 @@ dependent(#exit_event{actor = Exiting, reason = Reason, trapping = Trapping},
     case Data of
       {'EXIT', _, NewReason} ->
         NewReason =/= normal andalso Reason =/= NewReason
+          andalso not (Reason =:= killed andalso NewReason =:= kill)
     end;
 dependent(#message_event{} = Message, #exit_event{} = Exit) ->
   dependent(Exit, Message);

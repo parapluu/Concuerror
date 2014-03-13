@@ -15,7 +15,7 @@
 -export([test/0, action/2]).
 
 scenarios() ->
-    [{test, 0}].
+    [{test,inf,dpor}].
 
 test() ->
     P = {?MODULE, [1,2,3]},

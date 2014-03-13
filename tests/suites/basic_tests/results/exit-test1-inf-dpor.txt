@@ -1,0 +1,28 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{exit,test1,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P.1 in exit.erl line 24
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<exit.1.119383971>,[]])
+    in erlang.erl line 2188
+   2: P: true = erlang:exit(P.1, normal)
+    in exit.erl line 26
+   3: Exit signal (normal) from P reaches P.1
+   4: P: exits normally
+   5: P.1: false = erlang:process_flag(trap_exit, true)
+    in exit.erl line 23
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 2/2 interleavings explored

@@ -1,0 +1,38 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_new.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{ets_new,test,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 6 process P.1 exited abnormally
+    Reason:
+      {{badmatch,2},
+       [{ets_new,child,0,
+                 [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_new.erl"},
+                  {line,32}]}]}
+    Stacktrace:
+      [{ets_new,child,0,
+                [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_new.erl"},
+                 {line,32}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_new.0.60615423>,[]])
+    in erlang.erl line 2188
+   2: P: table = ets:new(table, [named_table,public])
+    in ets_new.erl line 24
+   3: P.1: [{compressed,false},{memory,299},{owner,<0.38.0>},{heir,none},{name,table},{size,0},{node,nonode@nohost},{named_table,false},{type,set},{keypos,1},{protection,public}] = ets:info(table)
+    in ets_new.erl line 30
+   4: P: true = ets:delete(table)
+    in ets_new.erl line 25
+   5: P: exits normally
+   6: P.1: exits abnormally ({{badmatch,2},[{ets_new,child,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,110,101,119,46,101,114,108]},{line,32}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 3/3 interleavings explored

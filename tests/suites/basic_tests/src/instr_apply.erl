@@ -16,7 +16,7 @@
 -export([test/0]).
 
 scenarios() ->
-    [{test, inf, full}, {test, inf, dpor}].
+    [{test, inf, dpor}].
 
 test() ->
     Pid = spawn(fun() -> ok end),

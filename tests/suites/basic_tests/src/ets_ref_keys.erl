@@ -6,8 +6,7 @@
 -export([ets_ref_keys/0]).
 -export([scenarios/0]).
 
-scenarios() -> [{?MODULE, 0, full},
-                {?MODULE, inf, dpor}].
+scenarios() -> [{?MODULE, inf, dpor}].
 
 ets_ref_keys() ->
     Parent = self(),

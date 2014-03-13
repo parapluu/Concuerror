@@ -1,0 +1,16 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/init_race_condition.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{init_race_condition,test,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+  No errors found!
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 2/2 interleavings explored

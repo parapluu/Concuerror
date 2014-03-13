@@ -6,7 +6,7 @@
 -export([scenarios/0]).
 -export([test/0]).
 
-scenarios() -> [{test, inf, full}, {test, inf, dpor}].
+scenarios() -> [{test, inf, dpor}].
 
 get_arguments() ->
     init ! {self(), get_arguments},

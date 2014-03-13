@@ -8,26 +8,33 @@
 %%% Details can be found in the LICENSE file.
 %%%----------------------------------------------------------------------
 %%% Authors     : Ilias Tsitsimpis <iliastsi@hotmail.com>
-%%% Description : Test the `ets:new' instrumentation
-%%%                 (This test should currenty fail)
+%%% Description : A regress test case for the bug fix introduced
+%%%                 in commit 645ccee1a61dd1c33681544d5e02c8a4b2be0c04
 %%%----------------------------------------------------------------------
 
--module(ets_new).
+-module(receive_catchall).
 -export([scenarios/0]).
--export([test/0]).
+-export([test1/0, test2/0, test3/0]).
 
 scenarios() ->
-    [{test, inf, full}, {test, inf, dpor}].
+    [{N,inf,dpor} || N <- [test1,test2,test3]].
 
-test() ->
-    spawn(fun child/0),
-    ets:new(table, [named_table, public]),
-    ets:delete(table).
+%% This is ok.
+test1() ->
+    self() ! hoho,
+    self() ! foo,
+    receive foo -> ok end.
 
-%% There should be an exception if this happens
-%% between `new' and `delete'
-child() ->
-    case ets:info(table) of
-        undefined -> ok;
-        _ -> 1 = 2
-    end.
+%% This is ok.
+test2() ->
+    Msg = foo,
+    self() ! foo,
+    self() ! hoho,
+    receive Msg -> ok end.
+
+%% This used to fail.
+test3() ->
+    Msg = foo,
+    self() ! hoho,
+    self() ! foo,
+    receive Msg -> ok end.

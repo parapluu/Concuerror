@@ -756,8 +756,13 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   replay_prefix_aux(Rest, maybe_log_crash(Event, State, I)).
 
 %% XXX: Stub
-cleanup(#scheduler_state{logger = Logger, processes = Processes}) ->
+cleanup(State) ->
+  #scheduler_state{
+     first_process = {First, _},
+     logger = Logger,
+     processes = Processes} = State,
   %% Kill still running processes, deallocate tables, etc...
+  unlink(First),
   Fold = fun(?process_pat_pid(P), true) -> unlink(P), exit(P, kill) end,
   true = ets:foldl(Fold, true, Processes),
   ?trace(Logger, "Reached the end!~n",[]),

@@ -31,7 +31,7 @@ load(Module, Instrumented) ->
           F ->
             {F, F}
         end,
-      load_binary(Module, Filename, Beam, Instrumented),
+      catch load_binary(Module, Filename, Beam, Instrumented),
       maybe_instrumenting_myself(Module, Instrumented)
   end.
 

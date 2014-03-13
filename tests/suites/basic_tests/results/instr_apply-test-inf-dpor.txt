@@ -1,0 +1,35 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/instr_apply.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{instr_apply,test,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 4 process P exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [test,P.1],
+                       [23,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/instr_apply.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [test,P.1],
+               [23,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/instr_apply.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<instr_apply.0.58808744>,[]])
+    in erlang.erl line 2188
+   2: P.1: exits normally
+   3: P: Exception badarg raised by: erlang:register(test, P.1)
+    in instr_apply.erl line 23
+   4: P: exits abnormally ({badarg,[{erlang,register,[test,P.1],[23,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,110,115,116,114,95,97,112,112,108,121,46,101,114,108]}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 2/2 interleavings explored

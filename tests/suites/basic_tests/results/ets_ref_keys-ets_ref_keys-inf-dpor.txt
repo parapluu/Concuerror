@@ -1,0 +1,177 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_ref_keys.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{ets_ref_keys,ets_ref_keys,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_ref_keys.erl line 31
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: #Ref<0.0.0.143> = erlang:make_ref()
+    in ets_ref_keys.erl line 13
+   2: P: table = ets:new(table, [named_table,public])
+    in ets_ref_keys.erl line 14
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.0.114362845>,[]])
+    in erlang.erl line 2188
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.1.114362845>,[]])
+    in erlang.erl line 2188
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.2.114362845>,[]])
+    in erlang.erl line 2188
+   6: P.2: true = ets:insert(table, {#Ref<0.0.0.143>,p2})
+    in ets_ref_keys.erl line 23
+   7: P.2: continue = P.1 ! continue
+    in ets_ref_keys.erl line 24
+   8: Message (continue) from P.2 reaches P.1
+   9: P.1: receives message (continue)
+    in ets_ref_keys.erl line 16
+  10: P.1: true = ets:insert(table, {#Ref<0.0.0.143>,p1})
+    in ets_ref_keys.erl line 18
+  11: P.1: continue = P ! continue
+    in ets_ref_keys.erl line 19
+  12: Message (continue) from P.1 reaches P
+  13: P: receives message (continue)
+    in ets_ref_keys.erl line 27
+  14: P: [{#Ref<0.0.0.143>,p1}] = ets:lookup(table, #Ref<0.0.0.143>)
+    in ets_ref_keys.erl line 29
+  15: P.1: exits normally
+  16: P.2: exits normally
+  17: P.3: continue = P.1 ! continue
+    in ets_ref_keys.erl line 26
+  18: Message (continue) from P.3 reaches P.1
+  19: P.3: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_ref_keys.erl line 31
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: #Ref<0.0.0.143> = erlang:make_ref()
+    in ets_ref_keys.erl line 13
+   2: P: table = ets:new(table, [named_table,public])
+    in ets_ref_keys.erl line 14
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.0.114362845>,[]])
+    in erlang.erl line 2188
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.1.114362845>,[]])
+    in erlang.erl line 2188
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.2.114362845>,[]])
+    in erlang.erl line 2188
+   6: P.2: true = ets:insert(table, {#Ref<0.0.0.143>,p2})
+    in ets_ref_keys.erl line 23
+   7: P.2: continue = P.1 ! continue
+    in ets_ref_keys.erl line 24
+   8: P.2: exits normally
+   9: P.3: continue = P.1 ! continue
+    in ets_ref_keys.erl line 26
+  10: P.3: exits normally
+  11: Message (continue) from P.3 reaches P.1
+  12: Message (continue) from P.2 reaches P.1
+  13: P.1: receives message (continue)
+    in ets_ref_keys.erl line 16
+  14: P.1: true = ets:insert(table, {#Ref<0.0.0.143>,p1})
+    in ets_ref_keys.erl line 18
+  15: P.1: continue = P ! continue
+    in ets_ref_keys.erl line 19
+  16: Message (continue) from P.1 reaches P
+  17: P: receives message (continue)
+    in ets_ref_keys.erl line 27
+  18: P: [{#Ref<0.0.0.143>,p1}] = ets:lookup(table, #Ref<0.0.0.143>)
+    in ets_ref_keys.erl line 29
+  19: P.1: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_ref_keys.erl line 31
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: #Ref<0.0.0.143> = erlang:make_ref()
+    in ets_ref_keys.erl line 13
+   2: P: table = ets:new(table, [named_table,public])
+    in ets_ref_keys.erl line 14
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.0.114362845>,[]])
+    in erlang.erl line 2188
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.1.114362845>,[]])
+    in erlang.erl line 2188
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.2.114362845>,[]])
+    in erlang.erl line 2188
+   6: P.3: continue = P.1 ! continue
+    in ets_ref_keys.erl line 26
+   7: P.3: exits normally
+   8: Message (continue) from P.3 reaches P.1
+   9: P.1: receives message (continue)
+    in ets_ref_keys.erl line 16
+  10: P.1: true = ets:insert(table, {#Ref<0.0.0.143>,p1})
+    in ets_ref_keys.erl line 18
+  11: P.1: continue = P ! continue
+    in ets_ref_keys.erl line 19
+  12: Message (continue) from P.1 reaches P
+  13: P: receives message (continue)
+    in ets_ref_keys.erl line 27
+  14: P: [{#Ref<0.0.0.143>,p1}] = ets:lookup(table, #Ref<0.0.0.143>)
+    in ets_ref_keys.erl line 29
+  15: P.1: exits normally
+  16: P.2: true = ets:insert(table, {#Ref<0.0.0.143>,p2})
+    in ets_ref_keys.erl line 23
+  17: P.2: continue = P.1 ! continue
+    in ets_ref_keys.erl line 24
+  18: Message (continue) from P.2 reaches P.1
+  19: P.2: exits normally
+################################################################################
+Erroneous interleaving 4:
+* At step 17 process P exited abnormally
+    Reason:
+      {{badmatch,[{#Ref<0.0.0.143>,p2}]},
+       [{ets_ref_keys,ets_ref_keys,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_ref_keys.erl"},
+                       {line,29}]}]}
+    Stacktrace:
+      [{ets_ref_keys,ets_ref_keys,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_ref_keys.erl"},
+                      {line,29}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: #Ref<0.0.0.143> = erlang:make_ref()
+    in ets_ref_keys.erl line 13
+   2: P: table = ets:new(table, [named_table,public])
+    in ets_ref_keys.erl line 14
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.0.114362845>,[]])
+    in erlang.erl line 2188
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.1.114362845>,[]])
+    in erlang.erl line 2188
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_ref_keys.2.114362845>,[]])
+    in erlang.erl line 2188
+   6: P.3: continue = P.1 ! continue
+    in ets_ref_keys.erl line 26
+   7: P.3: exits normally
+   8: Message (continue) from P.3 reaches P.1
+   9: P.1: receives message (continue)
+    in ets_ref_keys.erl line 16
+  10: P.1: true = ets:insert(table, {#Ref<0.0.0.143>,p1})
+    in ets_ref_keys.erl line 18
+  11: P.1: continue = P ! continue
+    in ets_ref_keys.erl line 19
+  12: Message (continue) from P.1 reaches P
+  13: P: receives message (continue)
+    in ets_ref_keys.erl line 27
+  14: P.1: exits normally
+  15: P.2: true = ets:insert(table, {#Ref<0.0.0.143>,p2})
+    in ets_ref_keys.erl line 23
+  16: P: [{#Ref<0.0.0.143>,p2}] = ets:lookup(table, #Ref<0.0.0.143>)
+    in ets_ref_keys.erl line 29
+  17: P: exits abnormally ({{badmatch,[{#Ref<0.0.0.143>,p2}]},[{ets_ref_keys,ets_ref_keys,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,101,116,115,95,114,101,102,95,107,101,121,115,46,101,114,108]},{line,29}]}]})
+  18: P: true = ets:delete(table)
+    (while exiting)
+  19: P.2: continue = P.1 ! continue
+    in ets_ref_keys.erl line 24
+  20: Message (continue) from P.2 reaches P.1
+  21: P.2: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 4 errors, 4/4 interleavings explored

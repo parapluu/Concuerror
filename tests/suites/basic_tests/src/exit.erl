@@ -8,33 +8,33 @@
 %%% Details can be found in the LICENSE file.
 %%%----------------------------------------------------------------------
 %%% Authors     : Ilias Tsitsimpis <iliastsi@hotmail.com>
-%%% Description : A regress test case for the bug fix introduced
-%%%                 in commit 645ccee1a61dd1c33681544d5e02c8a4b2be0c04
+%%% Description : Test the `exit/2' instrumentation
 %%%----------------------------------------------------------------------
 
--module(receive_catchall).
+-module(exit).
 -export([scenarios/0]).
 -export([test1/0, test2/0, test3/0]).
 
 scenarios() ->
-    [{test1, inf}, {test2, inf}, {test3, inf}].
+    [{N,inf,dpor} || N <- [test1,test2,test3]].
 
-%% This is ok.
 test1() ->
-    self() ! hoho,
-    self() ! foo,
-    receive foo -> ok end.
+    Pid = spawn(fun() ->
+                        process_flag(trap_exit, true),
+                        receive _ -> ok end
+                end),
+    exit(Pid, normal).
 
-%% This is ok.
 test2() ->
-    Msg = foo,
-    self() ! foo,
-    self() ! hoho,
-    receive Msg -> ok end.
+    Pid = spawn(fun() ->
+                        process_flag(trap_exit, true),
+                        receive _ -> ok end
+                end),
+    exit(Pid, foo).
 
-%% This used to fail.
 test3() ->
-    Msg = foo,
-    self() ! hoho,
-    self() ! foo,
-    receive Msg -> ok end.
+    Pid = spawn(fun() ->
+                        process_flag(trap_exit, true),
+                        receive _ -> ok end
+                end),
+    exit(Pid, kill).

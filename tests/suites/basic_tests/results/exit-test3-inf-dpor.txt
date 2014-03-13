@@ -1,0 +1,30 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{exit,test3,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 5 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<exit.3.119383971>,[]])
+    in erlang.erl line 2188
+   2: P: true = erlang:exit(P.1, kill)
+    in exit.erl line 40
+   3: Exit signal (kill) from P reaches P.1
+   4: P: exits normally
+   5: P.1: exits abnormally (killed)
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

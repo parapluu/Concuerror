@@ -16,7 +16,7 @@
 -export([test/0]).
 
 scenarios() ->
-    [{test, 0}].
+    [{test, inf, dpor}].
 
 test() ->
     %% Spawn a big number of processes
