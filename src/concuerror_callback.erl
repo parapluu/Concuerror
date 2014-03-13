@@ -43,12 +43,18 @@
 
 -include("concuerror.hrl").
 
+-record(process_flags, {
+          trap_exit = false  :: boolean(),
+          priority  = normal :: 'low' | 'normal' | 'high' | 'max'
+         }).
+
 -record(concuerror_info, {
           'after-timeout'            :: infinite | integer(),
           escaped_pdict = []         :: term(),
           ets_tables                 :: ets_tables(),
           exit_reason = normal       :: term(),
           extra                      :: term(),
+          flags = #process_flags{}   :: #process_flags{},
           links                      :: links(),
           logger                     :: pid(),
           messages_new = queue:new() :: queue(),
@@ -59,8 +65,7 @@
           processes                  :: processes(),
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
-          status = exited            :: 'exited'| 'exiting' | 'running' | 'waiting',
-          trap_exit = false          :: boolean()
+          status = exited            :: 'exited'| 'exiting' | 'running' | 'waiting'
          }).
 
 -type concuerror_info() :: #concuerror_info{}.
@@ -405,8 +410,7 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
         #concuerror_info{status = Status} = TheirInfo,
         Status;
       trap_exit ->
-        #concuerror_info{trap_exit = TrapExit} = TheirInfo,
-        TrapExit;
+        TheirInfo#concuerror_info.flags#process_flags.trap_exit;
       ExpectsANumber when
           ExpectsANumber =:= heap_size;
           ExpectsANumber =:= reductions;
@@ -504,10 +508,20 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
       ?debug_flag(?send, {send, successful}),
       {Message, Info#concuerror_info{next_event = NewEvent}}
   end;
-run_built_in(erlang, process_flag, 2, [trap_exit, Value],
-             #concuerror_info{trap_exit = OldValue} = Info) ->
-  ?debug_flag(?trap, {trap_exit_set, Value}),
-  {OldValue, Info#concuerror_info{trap_exit = Value}};
+run_built_in(erlang, process_flag, 2, [Flag, Value],
+             #concuerror_info{flags = Flags} = Info) ->
+  {Result, NewInfo} =
+    case Flag of
+      trap_exit ->
+        ?badarg_if_not(is_boolean(Value)),
+        {Flags#process_flags.trap_exit,
+         Info#concuerror_info{flags = Flags#process_flags{trap_exit = Value}}};
+      priority ->
+        ?badarg_if_not(lists:member(Value, [low,normal,high,max])),
+        {Flags#process_flags.priority,
+         Info#concuerror_info{flags = Flags#process_flags{priority = Value}}}
+    end,
+  {Result, NewInfo};
 run_built_in(erlang, unlink, 1, [Pid], #concuerror_info{links = Links} = Info) ->
   Self = self(),
   [true,true] = [ets:delete_object(Links, L) || L <- ?links(Self, Pid)],
@@ -692,16 +706,16 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   case Match of
     {true, MessageOrAfter} ->
       #concuerror_info{
-      next_event = NextEvent,
-      trap_exit = Trapping
-     } = UpdatedInfo =
+         next_event = NextEvent,
+         flags = #process_flags{trap_exit = Trapping}
+        } = UpdatedInfo =
         add_location_info(Location, ReceiveInfo),
       ReceiveEvent =
         #receive_event{
-        message = MessageOrAfter,
-        patterns = PatternFun,
-        timeout = Timeout,
-        trapping = Trapping},
+           message = MessageOrAfter,
+           patterns = PatternFun,
+           timeout = Timeout,
+           trapping = Trapping},
       {Special, CreateMessage} =
         case MessageOrAfter of
           #message{data = Data, message_id = Id} ->
@@ -836,7 +850,7 @@ process_loop(Info) ->
       end;
     {exit_signal, #message{data = {'EXIT', _From, Reason}} = Message} ->
       Scheduler = Info#concuerror_info.scheduler,
-      Trapping = Info#concuerror_info.trap_exit,
+      Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
       case is_active(Info) of
         true ->
           %% XXX: Verify that this is the correct behaviour
@@ -876,7 +890,7 @@ process_loop(Info) ->
     {message, Message} ->
       ?debug_flag(?wait, {waiting, got_message}),
       Scheduler = Info#concuerror_info.scheduler,
-      Trapping = Info#concuerror_info.trap_exit,
+      Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
       Scheduler ! {trapping, Trapping},
       case is_active(Info) of
         true ->
@@ -928,7 +942,7 @@ exiting(Reason, Stacktrace, Info) ->
   #concuerror_info{
      links = LinksTable,
      monitors = MonitorsTable,
-     trap_exit = Trapping} = Info,
+     flags = #process_flags{trap_exit = Trapping}} = Info,
   FetchFun =
     fun(Table) ->
         [begin ets:delete_object(Table, E), {D, S} end ||
