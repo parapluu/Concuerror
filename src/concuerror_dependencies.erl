@@ -115,7 +115,7 @@ dependent(#receive_event{
              recipient = Recipient,
              type = Type
             }) ->
-   Patterns(Data) andalso message_could_match(Patterns, Data, Trapping, Type);
+  message_could_match(Patterns, Data, Trapping, Type);
 
 dependent(#message_event{}, _EventB) ->
   false;
@@ -144,6 +144,7 @@ dependent_exit(_Exit, {erlang, A, _})
     ;A =:= spawn
     ;A =:= spawn_opt
     ;A =:= spawn_link
+    ;A =:= group_leader
     ->
   false;
 dependent_exit(#exit_event{actor = Exiting},
@@ -201,6 +202,21 @@ dependent_process_info(#builtin_event{mfa = {_,_,[Pid, registered_name]}},
       Pid =:= EPid;
     _ -> false
   end;
+dependent_process_info(#builtin_event{mfa = {_,_,[Pid, dictionary]}},
+                       Other) ->
+  case Other of
+    #builtin_event{actor = EPid, mfa = {Module, Name, _}} ->
+      Pid =:= EPid
+        andalso
+        case Module =:= erlang of
+          true when Name =:= put; Name =:= erase ->
+            true;
+          _ -> false
+        end;
+    #exit_event{actor = EPid} ->
+      Pid =:= EPid;
+    _ -> false
+  end;
 dependent_process_info(_Pinfo, _B) ->
   ?debug("UNSPECIFIED PINFO DEPENDENCY!\n~p\n", [{_Pinfo, _B}]),
   ?undefined_error,
@@ -212,12 +228,26 @@ dependent_built_in(#builtin_event{mfa = {erlang, make_ref, _}},
                    #builtin_event{mfa = {erlang, make_ref, _}}) ->
   true;
 
+dependent_built_in(#builtin_event{mfa = {erlang,group_leader,ArgsA}} = A,
+                   #builtin_event{mfa = {erlang,group_leader,ArgsB}} = B) ->
+  case {ArgsA, ArgsB} of
+    {[], []} -> false;
+    {[New, For], []} ->
+      #builtin_event{actor = Actor, result = Result} = B,
+      New =/= Result andalso Actor =:= For;
+    {[], [_,_]} -> dependent_built_in(B, A);
+    {[_, ForA], [_, ForB]} ->
+      ForA =:= ForB
+  end;
+
 dependent_built_in(#builtin_event{mfa = {erlang, A,_}},
                    #builtin_event{mfa = {erlang, B,_}})
   when
     false
     ;A =:= demonitor        %% Depends only with an exit event or proc_info
     ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
+    ;A =:= get_stacktrace   %% Depends with nothing
+    ;A =:= group_leader     %% Depends only with another group_leader get/set
     ;A =:= is_process_alive %% Depends only with an exit event
     ;A =:= make_ref         %% Depends with nothing
     ;A =:= monitor          %% Depends only with an exit event or proc_info
@@ -229,6 +259,8 @@ dependent_built_in(#builtin_event{mfa = {erlang, A,_}},
     
     ;B =:= demonitor
     ;B =:= exit
+    ;B =:= get_stacktrace
+    ;B =:= group_leader
     ;B =:= is_process_alive
     ;B =:= make_ref
     ;B =:= monitor
