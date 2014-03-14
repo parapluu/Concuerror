@@ -19,7 +19,7 @@
 
 %% The first event happens before the second.
 
--spec dependent(event_info(), event_info()) -> boolean().
+-spec dependent(event_info(), event_info()) -> boolean() | irreversible.
 
 dependent(#builtin_event{mfa = {erlang, halt, _}}, _) ->
   true;
@@ -39,34 +39,33 @@ dependent(#builtin_event{mfa = MFA}, #exit_event{} = Exit) ->
 dependent(#exit_event{} = Exit, #builtin_event{} = Builtin) ->
   dependent(Builtin, Exit);
 
-dependent(#builtin_event{mfa = {erlang,process_flag,[trap_exit,New]}} = Builtin,
-          #message_event{message = #message{data = Data},
-                         recipient = Recipient, type = Type}) ->
-  #builtin_event{actor = Actor, result = Old} = Builtin,
-  New =/= Old andalso
-    Type =:= exit_signal andalso
-    Actor =:= Recipient andalso
-    begin
-      {'EXIT', _, Reason} = Data,
-      Reason =/= kill
-    end;
+dependent(#builtin_event{actor = Actor, trapping = Trapping} = Builtin,
+          #message_event{message = #message{data = {'EXIT', _, Reason}},
+                         recipient = Recipient, type = exit_signal}) ->
+  #builtin_event{mfa = MFA, result = Old} = Builtin,
+  Actor =:= Recipient
+    andalso
+      (Reason =:= kill
+       orelse
+       case MFA of
+         {erlang,process_flag,[trap_exit,New]} when New =/= Old -> true;
+         _ -> not Trapping andalso Reason =/= normal
+       end);
 dependent(#message_event{} = Message,
           #builtin_event{mfa = {erlang,process_flag,[trap_exit,_]}} = PFlag) ->
   dependent(PFlag, Message);
 
-dependent(#exit_event{actor = Exiting, reason = Reason, trapping = Trapping},
-          #message_event{message = #message{data = Data},
-                         recipient = Recipient, type = Type}) ->
-  Type =:= exit_signal
+dependent(#exit_event{actor = Exiting, status = Status, trapping = Trapping},
+          #message_event{message = #message{data = {'EXIT', _, Reason}},
+                         recipient = Recipient, type = exit_signal}) ->
+  Exiting =:= Recipient
     andalso
-    (not Trapping orelse Reason =:= kill)
-    andalso
-    Exiting =:= Recipient
-    andalso
-    case Data of
-      {'EXIT', _, NewReason} ->
-        NewReason =/= normal andalso Reason =/= NewReason
-          andalso not (Reason =:= killed andalso NewReason =:= kill)
+    case Status =:= running of
+      false -> irreversible;
+      true ->
+        Reason =:= kill
+         orelse
+           (not Trapping andalso Reason =/= normal)
     end;
 dependent(#message_event{} = Message, #exit_event{} = Exit) ->
   dependent(Exit, Message);

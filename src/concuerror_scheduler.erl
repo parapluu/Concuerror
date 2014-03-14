@@ -332,7 +332,7 @@ update_sleeping(#event{event_info = NewInfo}, Sleeping, State) ->
     fun(#event{event_info = OldInfo}) ->
         V = concuerror_dependencies:dependent(OldInfo, NewInfo),
         ?trace(Logger, "AWAKE (~p):~n~p~nvs~n~p~n", [V, OldInfo, NewInfo]),
-        not V
+        V =:= false
     end,
   lists:filter(Pred, Sleeping).
 
@@ -504,7 +504,7 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
           concuerror_dependencies:dependent(EarlyInfo, EventInfo),
         case Dependent of
           false -> Clock;
-          true ->
+          True when True =:= true; True =:= irreversible ->
             #trace_state{clock_map = ClockMap} = TraceState,
             EarlyActorClock = lookup_clock(EarlyActor, ClockMap),
             max_cv(Clock, EarlyActorClock)
@@ -554,6 +554,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
                              NewOldTrace) ->
   #scheduler_state{logger = Logger} = State,
   #trace_state{
+     clock_map = EarlyClockMap,
      done =
        [#event{actor = EarlyActor, event_info = EarlyInfo} = _EarlyEvent|Done],
      index = EarlyIndex,
@@ -569,11 +570,13 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
           concuerror_dependencies:dependent(EarlyInfo, EventInfo),
         case Dependent of
           false -> none;
+          irreversible ->
+            NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
+            {update_clock, NC};
           true ->
+            NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             ?trace_nl(Logger, "   with ~s~n",
                       [concuerror_printer:pretty_s({EarlyIndex, _EarlyEvent})]),
-            %% XXX: Why is this line needed?
-            NC = orddict:store(EarlyActor, EarlyIndex, Clock),
             NotDep =
               not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event, Logger),
             #trace_state{wakeup_tree = WakeupTree} = TraceState,
@@ -668,7 +671,7 @@ check_initial(Event, [E|NotDep], Acc) ->
     true -> lists:reverse(Acc,NotDep);
     false ->
       case concuerror_dependencies:dependent(EventInfo, EInfo) of
-        true -> false;
+        True when True =:= true; True =:= irreversible -> false;
         false -> check_initial(Event, NotDep, [E|Acc])
       end
   end.

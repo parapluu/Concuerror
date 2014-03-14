@@ -6,25 +6,21 @@ Concuerror started with options:
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"]},
    {'light-dpor',false},
    {symbolic,true},
-   {target,{exit,test2,[]}},
+   {target,{exit,test4,[]}},
    {verbose,0},
    {wait,5000}]
 ################################################################################
 Erroneous interleaving 1:
-* At step 5 process P.1 exited abnormally
-    Reason:
-      foo
-    Stacktrace:
-      []
+* Blocked at a 'receive' (when all other processes have exited):
+    P.1 in exit.erl line 44
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<exit.2.55808594>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<exit.4.55808594>,[]])
     in erlang.erl line 2329
-   2: P: true = erlang:exit(P.1, foo)
-    in exit.erl line 33
-   3: Exit signal (foo) from P reaches P.1
+   2: P: true = erlang:exit(P.1, normal)
+    in exit.erl line 46
+   3: Exit signal (normal) from P reaches P.1
    4: P: exits normally
-   5: P.1: exits abnormally (foo)
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 1 errors, 2/2 interleavings explored
+  Summary: 1 errors, 1/1 interleavings explored

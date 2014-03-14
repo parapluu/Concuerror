@@ -155,11 +155,12 @@
 -type message() :: #message{}.
 
 -record(builtin_event, {
-          actor = self() :: pid(),
-          extra          :: term(),
-          mfa            :: mfargs(),
-          result         :: term(),
-          status = ok    :: 'ok' | {'crashed', term()} | 'unknown'
+          actor = self()   :: pid(),
+          extra            :: term(),
+          mfa              :: mfargs(),
+          result           :: term(),
+          status = ok      :: 'ok' | {'crashed', term()} | 'unknown',
+          trapping = false :: boolean()
          }).
 
 -type builtin_event() :: #builtin_event{}.
@@ -194,6 +195,7 @@
           name = ?process_name_none :: ?process_name_none | atom(),
           reason = normal           :: term(),
           stacktrace = []           :: [term()],
+          status = running          :: running | waiting,
           trapping = false          :: boolean()
          }).
 

@@ -1,0 +1,80 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {bound,-1},
+   {distributed,true},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/ets_cross.erl"]},
+   {'light-dpor',false},
+   {symbolic,true},
+   {target,{ets_cross,test,[]}},
+   {verbose,0},
+   {wait,5000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_cross.erl line 17
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_cross.erl line 8
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_cross.0.17396110>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_cross.1.17396110>,[]])
+    in erlang.erl line 2329
+   4: P.1: true = ets:insert(table, {x,1})
+    in ets_cross.erl line 10
+   5: P.1: true = ets:insert(table, {y,1})
+    in ets_cross.erl line 11
+   6: P.1: exits normally
+   7: P.2: true = ets:insert(table, {y,2})
+    in ets_cross.erl line 14
+   8: P.2: true = ets:insert(table, {x,2})
+    in ets_cross.erl line 15
+   9: P.2: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_cross.erl line 17
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_cross.erl line 8
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_cross.0.17396110>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_cross.1.17396110>,[]])
+    in erlang.erl line 2329
+   4: P.1: true = ets:insert(table, {x,1})
+    in ets_cross.erl line 10
+   5: P.2: true = ets:insert(table, {y,2})
+    in ets_cross.erl line 14
+   6: P.1: true = ets:insert(table, {y,1})
+    in ets_cross.erl line 11
+   7: P.1: exits normally
+   8: P.2: true = ets:insert(table, {x,2})
+    in ets_cross.erl line 15
+   9: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_cross.erl line 17
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_cross.erl line 8
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_cross.0.17396110>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_cross.1.17396110>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = ets:insert(table, {y,2})
+    in ets_cross.erl line 14
+   5: P.2: true = ets:insert(table, {x,2})
+    in ets_cross.erl line 15
+   6: P.1: true = ets:insert(table, {x,1})
+    in ets_cross.erl line 10
+   7: P.1: true = ets:insert(table, {y,1})
+    in ets_cross.erl line 11
+   8: P.1: exits normally
+   9: P.2: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 3 errors, 3/3 interleavings explored

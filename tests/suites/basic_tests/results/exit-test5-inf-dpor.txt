@@ -6,7 +6,7 @@ Concuerror started with options:
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"]},
    {'light-dpor',false},
    {symbolic,true},
-   {target,{exit,test3,[]}},
+   {target,{exit,test5,[]}},
    {verbose,0},
    {wait,5000}]
 ################################################################################
@@ -18,31 +18,13 @@ Erroneous interleaving 1:
       []
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<exit.3.55808594>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<exit.5.55808594>,[]])
     in erlang.erl line 2329
    2: P: true = erlang:exit(P.1, kill)
-    in exit.erl line 40
+    in exit.erl line 52
    3: Exit signal (kill) from P reaches P.1
    4: P: exits normally
    5: P.1: exits abnormally (killed)
 ################################################################################
-Erroneous interleaving 2:
-* At step 6 process P.1 exited abnormally
-    Reason:
-      killed
-    Stacktrace:
-      []
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<exit.3.55808594>,[]])
-    in erlang.erl line 2329
-   2: P: true = erlang:exit(P.1, kill)
-    in exit.erl line 40
-   3: P: exits normally
-   4: P.1: false = erlang:process_flag(trap_exit, true)
-    in exit.erl line 37
-   5: Exit signal (kill) from P reaches P.1
-   6: P.1: exits abnormally (killed)
-################################################################################
 Done! (Exit status: completed)
-  Summary: 2 errors, 2/2 interleavings explored
+  Summary: 1 errors, 1/1 interleavings explored

@@ -215,11 +215,12 @@ built_in(erlang, pid_to_list, _Arity, _Args, _Location, Info) ->
 built_in(erlang, get, _Arity, Args, _Location, Info) ->
   {{didit, erlang:apply(erlang,get,Args)}, Info};
 %% XXX: Check if its redundant (e.g. link to already linked)
-built_in(Module, Name, Arity, Args, Location, Info) ->
+built_in(Module, Name, Arity, Args, Location, InfoIn) ->
+  Info = process_loop(InfoIn),
   ?debug_flag(?short_builtin, {'built-in', Module, Name, Arity, Location}),
   %% {Stack, ResetInfo} = reset_stack(Info),
   %% ?debug_flag(?stack, {stack, Stack}),
-  LocatedInfo =
+  #concuerror_info{flags = #process_flags{trap_exit = Trapping}} = LocatedInfo =
     add_location_info(Location, Info#concuerror_info{extra = undefined}),%ResetInfo),
   try
     {Value, UpdatedInfo} = run_built_in(Module, Name, Arity, Args, LocatedInfo),
@@ -240,7 +241,11 @@ built_in(Module, Name, Arity, Args, Location, Info) ->
     error:Reason ->
       #concuerror_info{next_event = FEvent} = LocatedInfo,
       FEventInfo =
-        #builtin_event{mfa = {Module, Name, Args}, status = {crashed, Reason}},
+        #builtin_event{
+           mfa = {Module, Name, Args},
+           status = {crashed, Reason},
+           trapping = Trapping
+          },
       FNotification = FEvent#event{event_info = FEventInfo},
       FNewInfo = notify(FNotification, LocatedInfo),
       FinalInfo =
@@ -265,7 +270,7 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
         case lists:member(flush, Options) of
           true ->
             {Match, FlushInfo} =
-              has_matching_or_after(PatternFun, infinity, Info),
+              has_matching_or_after(PatternFun, infinity, foo, Info, non_blocking),
             {Match =/= false, FlushInfo};
           false ->
             {false, Info}
@@ -659,6 +664,8 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
   Update = [{?ets_owner, Pid}],
   true = ets:update_element(EtsTables, Tid, Update),
   {true, NewInfo#concuerror_info{extra = Tid}};
+%% run_built_in(ets, Other, N, Args, _Info) ->
+%%  throw({uninstrumented, ets, Other, N, Args});
 
 %% For other built-ins check whether replaying has the same result:
 run_built_in(Module, Name, Arity, Args, Info) ->
@@ -708,72 +715,87 @@ run_built_in(Module, Name, Arity, Args, Info) ->
 handle_receive(PatternFun, Timeout, Location, Info) ->
   %% No distinction between replaying/new as we have to clear the message from
   %% the queue anyway...
-  {Match, ReceiveInfo} = has_matching_or_after(PatternFun, Timeout, Info),
-  case Match of
-    {true, MessageOrAfter} ->
-      #concuerror_info{
-         next_event = NextEvent,
-         flags = #process_flags{trap_exit = Trapping}
-        } = UpdatedInfo =
-        add_location_info(Location, ReceiveInfo),
-      ReceiveEvent =
-        #receive_event{
-           message = MessageOrAfter,
-           patterns = PatternFun,
-           timeout = Timeout,
-           trapping = Trapping},
-      {Special, CreateMessage} =
-        case MessageOrAfter of
-          #message{data = Data, message_id = Id} ->
-            {{message_received, Id, PatternFun}, {ok, Data}};
-          'after' -> {none, false}
-        end,
-      Notification =
-        NextEvent#event{event_info = ReceiveEvent, special = Special},
-      NewInfo = notify(Notification, UpdatedInfo),
-      case CreateMessage of
-        {ok, D} ->
-          ?debug_flag(?receive_, {deliver, D}),
-          self() ! D;
-        false -> ok
-      end,
-      {skip_timeout, set_status(NewInfo, running)};
-    false ->
-      WaitingInfo = set_status(ReceiveInfo, waiting),
-      NewInfo = notify({blocked, Location}, WaitingInfo),
-      handle_receive(PatternFun, Timeout, Location, NewInfo)
+  {MessageOrAfter, ReceiveInfo} =
+    has_matching_or_after(PatternFun, Timeout, Location, Info, blocking),
+  #concuerror_info{
+     next_event = NextEvent,
+     flags = #process_flags{trap_exit = Trapping}
+    } = UpdatedInfo =
+    add_location_info(Location, ReceiveInfo),
+  ReceiveEvent =
+    #receive_event{
+       message = MessageOrAfter,
+       patterns = PatternFun,
+       timeout = Timeout,
+       trapping = Trapping},
+  {Special, CreateMessage} =
+    case MessageOrAfter of
+      #message{data = Data, message_id = Id} ->
+        {{message_received, Id, PatternFun}, {ok, Data}};
+      'after' -> {none, false}
+    end,
+  Notification =
+    NextEvent#event{event_info = ReceiveEvent, special = Special},
+  case CreateMessage of
+    {ok, D} ->
+      ?debug_flag(?receive_, {deliver, D}),
+      self() ! D;
+    false -> ok
+  end,
+  {skip_timeout, notify(Notification, UpdatedInfo)}.
+
+has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
+  {Result, NewOldMessages} = has_matching_or_after(PatternFun, Timeout, InfoIn),
+  UpdatedInfo = update_messages(Result, NewOldMessages, InfoIn),
+  case Mode of
+    non_blocking -> {Result, UpdatedInfo};
+    blocking ->
+      case Result =:= false of
+        true ->
+          NewInfo =
+            case InfoIn#concuerror_info.status =:= waiting of
+              true ->
+                process_loop(notify({blocked, Location}, UpdatedInfo));
+              false ->
+                process_loop(set_status(UpdatedInfo, waiting))
+            end,
+          has_matching_or_after(PatternFun, Timeout, Location, NewInfo, Mode);
+        false ->
+          NewInfo = process_loop(InfoIn),
+          {FinalResult, FinalNewOldMessages} =
+            has_matching_or_after(PatternFun, Timeout, NewInfo),
+          FinalInfo = update_messages(Result, FinalNewOldMessages, NewInfo),
+          {FinalResult, FinalInfo}
+      end
   end.
+
+update_messages(Result, NewOldMessages, Info) ->
+  case Result =:= false of
+    true ->
+      Info#concuerror_info{
+        messages_new = queue:new(),
+        messages_old = NewOldMessages};
+    false ->
+      Info#concuerror_info{
+        messages_new = NewOldMessages,
+        messages_old = queue:new()}
+  end.      
 
 has_matching_or_after(PatternFun, Timeout, Info) ->
   #concuerror_info{messages_new = NewMessages,
                    messages_old = OldMessages} = Info,
   {Result, NewOldMessages} =
     fold_with_patterns(PatternFun, NewMessages, OldMessages),
-  case Result =:= false of
-    false ->
-      {Result,
-       Info#concuerror_info{
-         messages_new = NewOldMessages,
-         messages_old = queue:new()
-        }
-      };
-    true ->
-      case Timeout =:= infinity of
-        false ->
-          {{true, 'after'},
-           Info#concuerror_info{
-             messages_new = NewOldMessages,
-             messages_old = queue:new()
-            }
-          };
-        true ->
-          {false,
-           Info#concuerror_info{
-             messages_new = queue:new(),
-             messages_old = NewOldMessages}
-          }
-      end
-  end.
+  AfterOrMessage =
+    case Result =:= false of
+      false -> Result;
+      true ->
+        case Timeout =:= infinity of
+          false -> 'after';
+          true -> false
+        end
+    end,
+  {AfterOrMessage, NewOldMessages}.
 
 fold_with_patterns(PatternFun, NewMessages, OldMessages) ->
   {Value, NewNewMessages} = queue:out(NewMessages),
@@ -783,7 +805,7 @@ fold_with_patterns(PatternFun, NewMessages, OldMessages) ->
       case PatternFun(Data) of
         true  ->
           ?debug_flag(?receive_, matches),
-          {{true, Message}, queue:join(OldMessages, NewNewMessages)};
+          {Message, queue:join(OldMessages, NewNewMessages)};
         false ->
           ?debug_flag(?receive_, doesnt_match),
           NewOldMessages = queue:in(Message, OldMessages),
@@ -797,7 +819,7 @@ fold_with_patterns(PatternFun, NewMessages, OldMessages) ->
 
 notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
   Scheduler ! Notification,
-  process_loop(Info).
+  Info.
 
 -spec process_top_loop(concuerror_info(), string()) -> no_return().
 
@@ -807,9 +829,7 @@ process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
   receive
     {start, Module, Name, Args} ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
-      Running = set_status(Info, running),
-      %% Wait for 1st event (= 'run') signal, accepting messages
-      StartInfo = process_loop(Running),
+      StartInfo = set_status(Info, running),
       %% It is ok for this load to fail
       concuerror_loader:load(Module, Info#concuerror_info.modules),
       put(concuerror_info, StartInfo),
@@ -842,7 +862,7 @@ process_loop(Info) ->
       Status = Info#concuerror_info.status,
       case Status =:= exited of
         true ->
-          notify(exited, Info);
+          process_loop(notify(exited, Info));
         false ->
           NewInfo = Info#concuerror_info{next_event = Event},
           case EventInfo of
@@ -868,8 +888,7 @@ process_loop(Info) ->
             true ->
               ?debug_flag(?wait, {waiting, kill_signal}),
               Scheduler ! {trapping, Trapping},
-              NewInfo = process_loop(Info),
-              exiting(killed, [], NewInfo);
+              exiting(killed, [], Info);
             false ->
               case Trapping of
                 true ->
@@ -884,8 +903,7 @@ process_loop(Info) ->
                       process_loop(Info);
                     false ->
                       ?debug_flag(?wait, {waiting, exiting_signal}),
-                      NewInfo = process_loop(Info),
-                      exiting(Reason, [], NewInfo)
+                      exiting(Reason, [], Info)
                   end
               end
           end;
@@ -906,7 +924,10 @@ process_loop(Info) ->
             Info#concuerror_info{
               messages_new = queue:in(Message, Old)
              },
-          process_loop(NewInfo);
+          case NewInfo#concuerror_info.status =:= waiting of
+            true -> NewInfo#concuerror_info{status = running};
+            false -> process_loop(NewInfo)
+          end;
         false ->
           ?debug_flag(?receive_, {message_ignored, Info#concuerror_info.status}),
           process_loop(Info)
@@ -931,7 +952,7 @@ process_loop(Info) ->
 
 %%------------------------------------------------------------------------------
 
-exiting(Reason, Stacktrace, Info) ->
+exiting(Reason, Stacktrace, #concuerror_info{status = Status} = InfoIn) ->
   %% XXX: The ordering of the following events has to be verified (e.g. R16B03):
   %% XXX:  - process marked as exiting, new messages are not delivered, name is
   %%         unregistered
@@ -939,6 +960,7 @@ exiting(Reason, Stacktrace, Info) ->
   %% XXX:  - transfer ets ownership and send message or delete table
   %% XXX:  - send link signals
   %% XXX:  - send monitor messages
+  Info = process_loop(InfoIn),
   ?debug_flag(?exit, {going_to_exit, Reason}),
   Self = self(),
   {MaybeName, Info} =
@@ -970,6 +992,7 @@ exiting(Reason, Stacktrace, Info) ->
            name = Name,
            reason = Reason,
            stacktrace = Stacktrace,
+           status = Status,
            trapping = Trapping
           }
      },
@@ -979,9 +1002,8 @@ exiting(Reason, Stacktrace, Info) ->
     [fun ets_ownership_exiting_events/1,
      link_monitor_handlers(fun handle_link/3, Links),
      link_monitor_handlers(fun handle_monitor/3, Monitors)],
-  FinalInfo = #concuerror_info{next_event = FinalEvent} =
+  FinalInfo =
     lists:foldl(FunFold, ExitInfo#concuerror_info{exit_reason = Reason}, FunList),
-  self() ! FinalEvent,
   process_loop(set_status(FinalInfo, exited)).
 
 ets_ownership_exiting_events(Info) ->
