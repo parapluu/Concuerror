@@ -34,7 +34,7 @@ mapfold(Tree, {Instrumented, Var}) ->
     case Type of
       apply ->
         Op = cerl:apply_op(Tree),
-        case cerl:type(Op) =:= atom of
+        case cerl:is_c_fname(Op) of
           true -> Tree;
           false ->
             OldArgs = cerl:make_list(cerl:apply_args(Tree)),
