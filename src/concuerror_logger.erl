@@ -98,8 +98,7 @@ loop_entry(State) ->
         Timestamp = format_utc_timestamp(),
         inner_diagnostic("Concuerror started at ~s~n", [Timestamp]),
         inner_diagnostic("Writing results in ~s~n", [OutputName]),
-        inner_diagnostic("Verbosity is set to ~p~n", [Verbosity]),
-        inner_diagnostic("(Enter q to quit)~n~n"),
+        inner_diagnostic("Verbosity is set to ~p~n~n~n", [Verbosity]),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
@@ -226,9 +225,6 @@ diagnostic(State, Format, Data) ->
 
 clear_progress() ->
   inner_diagnostic("~c[1A~c[2K\r", [27, 27]).
-
-inner_diagnostic(Format) ->
-  inner_diagnostic(Format, []).
 
 inner_diagnostic(Format, Data) ->
   io:format(standard_error, Format, Data).

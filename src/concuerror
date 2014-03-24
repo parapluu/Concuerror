@@ -1,31 +1,17 @@
 #!/usr/bin/env escript
 %% -*- erlang-indent-level: 2 -*-
-%%! +S1 +Bi -nostick -noshell
+%%! +S1 -nostick -noshell
 
 main(Args) ->
   ScriptDir = filename:dirname(escript:script_name()),
   EbinDir = filename:join([ScriptDir,"ebin"]),
   GetoptDir = filename:join([ScriptDir,"deps","getopt","ebin"]),
-  MeckDir = filename:join([ScriptDir,"deps","meck","ebin"]),
-  ok = code:add_pathsa([EbinDir, GetoptDir, MeckDir]),
+  ok = code:add_pathsa([EbinDir, GetoptDir]),
   {module, concuerror_inspect} = code:load_file(concuerror_inspect),
   case concuerror_options:parse_cl(Args) of
     {exit, Exit} -> cl_exit(Exit);
-    Options ->
-      Main = concuerror_scheduler:run([{quit, true}|Options]),
-      loop(Main)
+    Options -> concuerror:run([{halt, true}|Options])
   end.
-
-loop(Main) ->
-  case io:get_line("") of
-    [$q|_] ->
-      Main ! cl_exit;
-    eof ->
-      Main ! cl_exit;
-    _ ->
-      ok
-  end,
-  loop(Main).
 
 cl_exit(ok) ->
   erlang:halt(0);

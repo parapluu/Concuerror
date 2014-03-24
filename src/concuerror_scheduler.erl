@@ -3,7 +3,7 @@
 -module(concuerror_scheduler).
 
 %% User interface
--export([run/1]).
+-export([run/1, explain_error/1]).
 
 %%------------------------------------------------------------------------------
 
@@ -40,6 +40,7 @@
 %% -type preemption_bound() :: non_neg_integer() | 'inf'.
 
 -record(scheduler_state, {
+          assume_racing = true  :: boolean(),
           current_warnings = [] :: [concuerror_warning_info()],
           first_process         :: {pid(), mfargs()},
           logger                :: pid(),
@@ -57,25 +58,6 @@
 -spec run(options()) -> ok.
 
 run(Options) ->
-  {Pid, Ref} = spawn_monitor(fun() -> backend_run(Options) end),
-  Quit = proplists:get_value(quit, Options, false),
-  receive
-    {'DOWN', Ref, process, Pid, Reason} ->
-      QuitStatus =
-        case Reason =:= normal of
-          true -> 0;
-          false ->
-            io:format(standard_error, "Concuerror crashed!~nReason:~n~p~n",
-                      [Reason]),
-            1
-        end,
-      case Quit of
-        true  -> erlang:halt(QuitStatus);
-        false -> ok
-      end
-  end.
-
-backend_run(Options) ->
   case code:get_object_code(erlang) =:= error of
     true ->
       true =
@@ -83,27 +65,18 @@ backend_run(Options) ->
     false ->
       ok
   end,
-  Processes = ets:new(processes, [public]),
-  LoggerOptions =
-    [{processes, Processes} |
-     [O || O <- Options, concuerror_options:filter_options('logger', O)]
-    ],
-  Modules = proplists:get_value(modules, Options),
-  Target = proplists:get_value(target, Options),
-  Wait = proplists:get_value(wait, Options),
-  ok = concuerror_loader:load(concuerror_logger, Modules),
-  Logger = spawn_link(fun() -> concuerror_logger:run(LoggerOptions) end),
-  ProcessOptions0 =
-    [O || O <- Options, concuerror_options:filter_options('process', O)],
+  [Processes, Logger, Target, Wait, AssumeRacing] =
+    get_properties(
+      [processes, logger, target, wait, assume_racing],
+      Options),
   ProcessOptions =
-    [{logger, Logger},
-     {processes, Processes}|
-     ProcessOptions0],
+    [O || O <- Options, concuerror_options:filter_options('process', O)],
   ?debug(Logger, "Starting first process...~n",[]),
   FirstProcess = concuerror_callback:spawn_first_process(ProcessOptions),
   InitialTrace = #trace_state{active_processes = [FirstProcess]},
   InitialState =
     #scheduler_state{
+       assume_racing = AssumeRacing,
        first_process = {FirstProcess, Target},
        logger = Logger,
        message_info = ets:new(message_info, [private]),
@@ -111,42 +84,32 @@ backend_run(Options) ->
        processes = Processes,
        trace = [InitialTrace],
        wait = Wait},
-  %%meck:new(file, [unstick, passthrough]),
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
-  {Status, FinalState} =
-    try
-      ?debug(Logger, "Starting exploration...~n",[]),
-      concuerror_logger:plan(Logger),
-      explore(InitialState)
-    catch
-      Type:Reason ->
-        ?log(Logger, ?lerror,
-             "Concuerror scheduler crashed (~p)~n"
-             "Reason: ~p~n"
-             "Trace: ~p~n",
-             [Type, Reason, erlang:get_stacktrace()]),
-        {error, InitialState}
-    end,
-  cleanup(FinalState),
-  concuerror_logger:stop(Logger, Status).
+  ?debug(Logger, "Starting exploration...~n",[]),
+  concuerror_logger:plan(Logger),
+  explore(InitialState).
+
+get_properties(Props, Options) ->
+  get_properties(Props, Options, []).
+
+get_properties([], _Options, Acc) ->
+  lists:reverse(Acc);
+get_properties([Prop|Rest], Options, Acc) ->
+  get_properties(Rest, Options, [proplists:get_value(Prop, Options)|Acc]).  
 
 %%------------------------------------------------------------------------------
 
 explore(State) ->
-  receive
-    cl_exit -> {interrupted, State}
-  after 0 ->
-      {Status, UpdatedState} = get_next_event(State),
-      case Status of
-        ok -> explore(UpdatedState);
-        none ->
-          RacesDetectedState = plan_more_interleavings(UpdatedState),
-          LogState = log_trace(RacesDetectedState),
-          {HasMore, NewState} = has_more_to_explore(LogState),
-          case HasMore of
-            true -> explore(NewState);
-            false -> {completed, NewState}
-          end
+  {Status, UpdatedState} = get_next_event(State),
+  case Status of
+    ok -> explore(UpdatedState);
+    none ->
+      RacesDetectedState = plan_more_interleavings(UpdatedState),
+      LogState = log_trace(RacesDetectedState),
+      {HasMore, NewState} = has_more_to_explore(LogState),
+      case HasMore of
+        true -> explore(NewState);
+        false -> ok
       end
   end.
 
@@ -189,7 +152,7 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
                   try {ok, Event} = NewEvent
                   catch
                     _:_ ->
-                      error({{new, element(2, NewEvent)}, {old, Event}})
+                      ?crash({replay_error, Event, element(2, NewEvent)})
                   end;
           false ->
             %% Last event = Previously racing event = Result may differ.
@@ -330,7 +293,7 @@ update_sleeping(#event{event_info = NewInfo}, Sleeping, State) ->
   #scheduler_state{logger = Logger} = State,
   Pred =
     fun(#event{event_info = OldInfo}) ->
-        V = concuerror_dependencies:dependent(OldInfo, NewInfo),
+        V = concuerror_dependencies:dependent_safe(OldInfo, NewInfo),
         ?trace(Logger, "AWAKE (~p):~n~p~nvs~n~p~n", [V, OldInfo, NewInfo]),
         V =:= false
     end,
@@ -499,9 +462,10 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
     case EarlyIndex > EarlyClock of
       false -> Clock;
       true ->
+        AssumeRacing = State#scheduler_state.assume_racing,
         #event{event_info = EventInfo} = Event,
         Dependent =
-          concuerror_dependencies:dependent(EarlyInfo, EventInfo),
+          concuerror_dependencies:dependent(EarlyInfo, EventInfo, AssumeRacing),
         case Dependent of
           false -> Clock;
           True when True =:= true; True =:= irreversible ->
@@ -567,7 +531,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
       true ->
         #event{event_info = EventInfo} = Event,
         Dependent =
-          concuerror_dependencies:dependent(EarlyInfo, EventInfo),
+          concuerror_dependencies:dependent_safe(EarlyInfo, EventInfo),
         case Dependent of
           false -> none;
           irreversible ->
@@ -670,7 +634,7 @@ check_initial(Event, [E|NotDep], Acc) ->
   case EventActor =:= EActor of
     true -> lists:reverse(Acc,NotDep);
     false ->
-      case concuerror_dependencies:dependent(EventInfo, EInfo) of
+      case concuerror_dependencies:dependent_safe(EventInfo, EInfo) of
         True when True =:= true; True =:= irreversible -> false;
         false -> check_initial(Event, NotDep, [E|Acc])
       end
@@ -752,19 +716,6 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   end,
   replay_prefix_aux(Rest, maybe_log_crash(Event, State, I)).
 
-%% XXX: Stub
-cleanup(State) ->
-  #scheduler_state{
-     first_process = {First, _},
-     logger = Logger,
-     processes = Processes} = State,
-  %% Kill still running processes, deallocate tables, etc...
-  unlink(First),
-  Fold = fun(?process_pat_pid(P), true) -> unlink(P), exit(P, kill) end,
-  true = ets:foldl(Fold, true, Processes),
-  ?trace(Logger, "Reached the end!~n",[]),
-  ok.
-
 %% =============================================================================
 %% INTERNAL INTERFACES
 %% =============================================================================
@@ -825,7 +776,7 @@ get_next_event_backend_loop(Trigger, State) ->
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
       get_next_event_backend_loop(Trigger, State)
   after
-    Wait -> error({process_did_not_respond, Trigger})
+    Wait -> ?crash({process_did_not_respond, Wait, Trigger})
   end.
 
 collect_deadlock_info(ActiveProcesses) ->
@@ -864,3 +815,14 @@ assert_no_messages() ->
   after
     0 -> ok
   end.
+
+-spec explain_error(term()) -> string().
+
+explain_error({process_did_not_respond, Wait, #event{actor = Actor}}) ->
+  io_lib:format( 
+    "A process took more than ~pms to report a built-in event. You can try~n"
+    "increasing the --wait limit and/or ensure that there are no infinite~n"
+    "loops in your test. (Process: ~p)",
+    [Wait, Actor]
+   ).
+  

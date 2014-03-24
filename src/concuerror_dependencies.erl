@@ -2,24 +2,46 @@
 
 -module(concuerror_dependencies).
 
--export([dependent/2]).
+-export([dependent/3, dependent_safe/2, explain_error/1]).
 
 %%------------------------------------------------------------------------------
 
--define(DEBUG, true).
-% -define(UNDEFINED_ERROR, true).
--ifdef(UNDEFINED_ERROR).
--define(undefined_error, error(undefined_dependency)).
--else.
--define(undefined_error, ok).
--endif.
+-define(undefined_dependency(A,B), ?crash({undefined_dependency, A, B})).
+
 -include("concuerror.hrl").
 
 %%------------------------------------------------------------------------------
 
-%% The first event happens before the second.
+-spec explain_error(term()) -> string().
 
--spec dependent(event_info(), event_info()) -> boolean() | irreversible.
+explain_error({undefined_dependency, A, B}) ->
+  io_lib:format(
+    "There exists no race info about the following pair of instructions~n~n"
+    "1)~s~n2)~s~n~n"
+    "You can run without --assume_racing=false to treat them as racing.~n"
+    "Otherwise please ask the developers to add info about this pair.",
+    [concuerror_printer:pretty_s(#event{actor = self(), event_info = I})
+     || I <- [A,B]]).
+
+-spec dependent_safe(event_info(), event_info()) -> boolean() | irreversible.
+
+dependent_safe(E1, E2) ->
+  try dependent(E1, E2)
+  catch
+    _:_ -> true
+  end.
+
+-spec dependent(event_info(), event_info(), boolean()) ->
+                        boolean() | irreversible.
+
+dependent(E1, E2, AssumeRacing) ->
+  try dependent(E1, E2)
+  catch
+    _:_ ->
+      AssumeRacing orelse ?undefined_dependency(E1, E2)
+  end.
+
+%% The first event happens before the second.
 
 dependent(#builtin_event{mfa = {erlang, halt, _}}, _) ->
   true;
@@ -124,13 +146,7 @@ dependent(_EventA, #message_event{}) ->
 dependent(#receive_event{}, _EventB) ->
   false;
 dependent(_EventA, #receive_event{}) ->
-  false;
-
-%% XXX: Event may be undefined in a wakeup tree.
-dependent(_EventA, _EventB) ->
-  ?debug("UNSPECIFIED DEPENDENCY!\n~p\n~p\n", [_EventA, _EventB]),
-  ?undefined_error,
-  true.
+  false.
 
 %%------------------------------------------------------------------------------
 
@@ -177,11 +193,7 @@ dependent_exit(#exit_event{actor = Exiting, name = Name},
 dependent_exit(#exit_event{actor = Exiting}, {ets, give_away, [_, Pid, _]}) ->
   Exiting =:= Pid;
 dependent_exit(_Exit, {ets, _, _}) ->
-  false;
-dependent_exit(_Exit, _MFA) ->
-  ?debug("UNSPECIFIED EXIT DEPENDENCY!\n~p\n", [_MFA]),
-  ?undefined_error,
-  true.
+  false.
 
 %%------------------------------------------------------------------------------
 
@@ -215,11 +227,7 @@ dependent_process_info(#builtin_event{mfa = {_,_,[Pid, dictionary]}},
     #exit_event{actor = EPid} ->
       Pid =:= EPid;
     _ -> false
-  end;
-dependent_process_info(_Pinfo, _B) ->
-  ?debug("UNSPECIFIED PINFO DEPENDENCY!\n~p\n", [{_Pinfo, _B}]),
-  ?undefined_error,
-  true.
+  end.
 
 %%------------------------------------------------------------------------------
 
@@ -361,13 +369,7 @@ dependent_built_in(#builtin_event{mfa = {erlang,_,_}},
   false;
 dependent_built_in(#builtin_event{mfa = {ets,_,_}} = Ets,
                    #builtin_event{mfa = {erlang,_,_}} = Erlang) ->
-  dependent_built_in(Erlang, Ets);
-
-dependent_built_in(#builtin_event{mfa = {M1,_,_}} = _MFA1,
-                   #builtin_event{mfa = {M2,_,_}} = _MFA2) ->
-  ?debug("UNSPECIFIED DEPENDENCY!\n~p\n~p\n", [_MFA1, _MFA2]),
-  ?undefined_error,
-  M1 =:= M2.
+  dependent_built_in(Erlang, Ets).
 
 %%------------------------------------------------------------------------------
 

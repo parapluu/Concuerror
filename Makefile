@@ -46,7 +46,8 @@ MODULES = \
 	concuerror_logger \
 	concuerror_options \
 	concuerror_printer \
-	concuerror_scheduler
+	concuerror_scheduler \
+	concuerror
 
 vpath %.erl src
 
@@ -59,7 +60,7 @@ include $(MODULES:%=ebin/%.Pbeam)
 ebin/%.Pbeam: %.erl | ebin
 	erlc -o ebin -I include -MD $<
 
-ebin/concuerror_%.beam: concuerror_%.erl Makefile | ebin
+ebin/%.beam: %.erl Makefile | ebin
 	erlc $(ERL_COMPILE_FLAGS) -I include -DVSN="\"$(VSN)\"" -o ebin $<
 
 ebin:

@@ -2,7 +2,7 @@
 
 -module(concuerror_options).
 
--export([parse_cl/1, filter_options/2]).
+-export([parse_cl/1, filter_options/2, finalize/1]).
 
 -include("concuerror.hrl").
 
@@ -31,7 +31,7 @@ parse_cl_aux(CommandLineArgs) ->
             true -> ok;
             false -> opt_warn("Ignoring: ~s", [string:join(OtherArgs, " ")])
           end,
-          finalize(Options)
+          Options
       end;
     {error, Error} ->
       case Error of
@@ -69,8 +69,12 @@ options() ->
   ,{quiet, [frontend], $q, "quiet", undefined,
     "Do not write anything to standard output. Equivalent to --verbose 0."}
   ,{verbose, [logger], $v, "verbose", integer,
-    io_lib:format("Verbosity level (0-~p) [default: ~p].",
+    io_lib:format("Sets the verbosity level (0-~p) [default: ~p].",
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
+  ,{assume_racing, [logger, scheduler], undefined, "assume_racing", {boolean, true},
+    "If there is no info about whether a specific pair of built-ins may race,"
+    " assume that they do indeed race. Set to false to detect missing dependency"
+    " info."}
   ,{'after-timeout', [logger, process], $a, "after", {integer, infinite},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered, unless no other process can progress."}
@@ -83,16 +87,19 @@ options() ->
     "Use lightweight (source) DPOR instead of optimal."}
   ,{version, [frontend], undefined, "version", undefined,
     "Display version information about Concuerror."}
-  ,{wait, [logger, scheduler], $w, "wait", {integer, 20000},
+  ,{wait, [logger, scheduler], $w, "wait", {integer, ?MINIMUM_TIMEOUT},
     "How many ms to wait before assuming a process to be stuck in an infinite"
     " loop between two operations with side-effects. Setting it to -1 makes"
-    " Concuerror wait indefinitely. Otherwise must be > " ++
+    " Concuerror wait indefinitely. Otherwise must be >= " ++
       integer_to_list(?MINIMUM_TIMEOUT) ++ "."}
    %% These options won't make it to the getopt script
   ,{target, [logger, scheduler]} %% Generated from module and test or given explicitlyq
-  ,{quit, []}                    %% Controlling whether a halt will happen
+  ,{halt, []}                    %% Controlling whether a halt will happen
   ,{files, [logger]}             %% List of included files (to be shown in the log)
   ,{modules, [logger, process]}  %% List of included files (to be shown in the log)
+  ,{processes, [logger, process]}
+  ,{logger, [process]}
+  ,{frontend, []}
   ].
 
 -spec filter_options(atom(), {atom(), term()}) -> boolean().
@@ -108,14 +115,24 @@ cl_version() ->
   io:format(standard_error, "Concuerror v~s~n",[?VSN]),
   ok.
 
+
+-spec finalize(options()) -> options().
+
 finalize(Options) ->
-  Modules = [{modules, ets:new(modules, [public])}],
-  Finalized = finalize(lists:reverse(proplists:unfold(Options),Modules), []),
-  case proplists:get_value(target, Finalized, undefined) of
-    {M,F,B} when is_atom(M), is_atom(F), is_list(B) -> Finalized;
-    _ ->
-      opt_error("The module containing the main test function has not been"
-                " specified.")
+  case code:is_sticky(ets) of
+    true ->
+      opt_error("Concuerror must be able to reload sticky modules."
+                " Use the command-line script or start Erlang with -nostick.");
+    false ->
+      Modules = [{modules, ets:new(modules, [public])}],
+      Finalized = finalize(lists:reverse(proplists:unfold(Options),Modules), []),
+      case proplists:get_value(target, Finalized, undefined) of
+        {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
+          Finalized;
+        _ ->
+          opt_error("The module containing the main test function has not been"
+                    " specified.")
+      end
   end.
 
 finalize([], Acc) -> Acc;
@@ -178,10 +195,10 @@ finalize([{Key, Value}|Rest], Acc) ->
           case Value of
             -1 ->
               finalize(Rest, [{Key, infinite}|Acc]);
-            N when is_integer(N), N > ?MINIMUM_TIMEOUT ->
+            N when is_integer(N), N >= ?MINIMUM_TIMEOUT ->
               finalize(Rest, [{Key, N}|Acc]);
             _Else ->
-              opt_error("--~s value must be -1 (infinite) or > "
+              opt_error("--~s value must be -1 (infinite) or >= "
                        ++ integer_to_list(?MINIMUM_TIMEOUT), [Key])
           end;
         test ->
