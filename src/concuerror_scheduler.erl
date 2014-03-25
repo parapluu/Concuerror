@@ -136,6 +136,7 @@ log_trace(State) ->
 get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
   #trace_state{
      active_processes = ActiveProcesses,
+     index            = I,
      pending_messages = PendingMessages,
      sleeping         = Sleeping,
      wakeup_tree      = WakeupTree
@@ -154,7 +155,7 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
                   try {ok, Event} = NewEvent
                   catch
                     _:_ ->
-                      ?crash({replay_error, Event, element(2, NewEvent)})
+                      ?crash({replay_mismatch, I, Event, element(2, NewEvent)})
                   end;
           false ->
             %% Last event = Previously racing event = Result may differ.
@@ -711,14 +712,8 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   try
     true = Event =:= NewEvent
   catch
-    A:B ->
-      ?log(Logger, ?lerror,
-           "replay mismatch (~p):~n"
-           "~p~n"
-           "  original: ~p~n"
-           "  new     : ~p~n",
-           [A, B, Event, NewEvent]),
-      error(replay_crashed)
+    _:_ ->
+      ?crash({replay_mismatch, I, Event, NewEvent})
   end,
   replay_prefix_aux(Rest, maybe_log_crash(Event, State, I)).
 
@@ -830,5 +825,14 @@ explain_error({process_did_not_respond, Wait, #event{actor = Actor}}) ->
     "increasing the --wait limit and/or ensure that there are no infinite~n"
     "loops in your test. (Process: ~p)",
     [Wait, Actor]
+   );
+explain_error({replay_mismatch, I, Event, NewEvent}) ->
+  io_lib:format(
+    "On step ~p replaying a built-in returned a different result than expected:"
+    "~n  original: ~s"
+    "~n  new     : ~s"
+    "~nPlease notify the developers, as this is a bug of Concuerror!",
+    [I,
+     concuerror_printer:pretty_s(Event),
+     concuerror_printer:pretty_s(NewEvent)]
    ).
-  

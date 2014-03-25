@@ -60,7 +60,7 @@ explain(Reason) ->
       _ -> error(undef)
     end
   catch
-    error:undef ->
+    _:_ ->
       io_lib:format("Reason: ~p~nTrace: ~p~n", [Reason, Stacktrace])
   end.
 
