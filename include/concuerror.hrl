@@ -246,6 +246,7 @@
                  {dt_spread_tag, 1},
                  {dt_restore_tag,1},
                  {error, 1},
+                 {error, 2},
                  {exit, 1},
                  {float_to_list, 1},
                  {function_exported, 3},

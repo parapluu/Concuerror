@@ -365,6 +365,14 @@ dependent_built_in(#builtin_event{mfa = {ets,_Any,_}} = EtsAny,
                    #builtin_event{mfa = {ets,new,_}} = EtsNew) ->
   dependent_built_in(EtsNew, EtsAny);
 
+%% XXX: This can probably be refined.
+dependent_built_in(#builtin_event{mfa = {ets,give_away,[Table1|_]}},
+                   #builtin_event{mfa = {ets,_Any,[Table2|_]}}) ->
+  Table1 =:= Table2;
+dependent_built_in(#builtin_event{mfa = {ets,_Any,_}} = EtsAny,
+                   #builtin_event{mfa = {ets,give_away,_}} = EtsGiveAway) ->
+  dependent_built_in(EtsGiveAway, EtsAny);
+
 dependent_built_in(#builtin_event{mfa = {erlang,_,_}},
                    #builtin_event{mfa = {ets,_,_}}) ->
   false;
