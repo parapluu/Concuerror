@@ -1,0 +1,36 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/hopeless_after.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{hopeless_after,hopeless_after,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 3 process P exited abnormally
+    Reason:
+      {{nocatch,no_hope},
+       [{hopeless_after,hopeless_after,0,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/hopeless_after.erl"},
+                         {line,15}]}]}
+    Stacktrace:
+      [{hopeless_after,hopeless_after,0,
+                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/hopeless_after.erl"},
+                        {line,15}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hopeless_after.0.62895958>,[]])
+    in erlang.erl line 2329
+   2: P: receive timeout expired after 100 ms
+    in hopeless_after.erl line 11
+   3: P: exits abnormally ({{nocatch,no_hope},[{hopeless_after,hopeless_after,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,104,111,112,101,108,101,115,115,95,97,102,116,101,114,46,101,114,108]},{line,15}]}]})
+   4: P.1: hopeless = P ! hopeless
+    in hopeless_after.erl line 10
+   5: Message (hopeless) from P.1 reaches P
+   6: P.1: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

@@ -1,0 +1,166 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/not_prerequisite_1.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{not_prerequisite_1,not_prerequisite_1,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in not_prerequisite_1.erl line 26
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in not_prerequisite_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in not_prerequisite_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in not_prerequisite_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.0.2315718>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.1.2315718>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.2.2315718>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in not_prerequisite_1.erl line 13
+   8: P.1: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 14
+   9: P.1: exits normally
+  10: P.2: [{y,1}] = ets:lookup(table, y)
+    in not_prerequisite_1.erl line 17
+  11: P.2: [{x,1}] = ets:lookup(table, x)
+    in not_prerequisite_1.erl line 20
+  12: P.2: exits normally
+  13: P.3: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 24
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in not_prerequisite_1.erl line 26
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in not_prerequisite_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in not_prerequisite_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in not_prerequisite_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.0.2315718>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.1.2315718>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.2.2315718>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in not_prerequisite_1.erl line 13
+   8: P.1: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 14
+   9: P.1: exits normally
+  10: P.3: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 24
+  11: P.2: [{y,1}] = ets:lookup(table, y)
+    in not_prerequisite_1.erl line 17
+  12: P.2: [{x,1}] = ets:lookup(table, x)
+    in not_prerequisite_1.erl line 20
+  13: P.2: exits normally
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in not_prerequisite_1.erl line 26
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in not_prerequisite_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in not_prerequisite_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in not_prerequisite_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.0.2315718>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.1.2315718>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.2.2315718>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in not_prerequisite_1.erl line 13
+   8: P.2: [{y,0}] = ets:lookup(table, y)
+    in not_prerequisite_1.erl line 17
+   9: P.1: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 14
+  10: P.1: exits normally
+  11: P.2: exits normally
+  12: P.3: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 24
+  13: P.3: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in not_prerequisite_1.erl line 26
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in not_prerequisite_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in not_prerequisite_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in not_prerequisite_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.0.2315718>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.1.2315718>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.2.2315718>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in not_prerequisite_1.erl line 13
+   8: P.3: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 24
+   9: P.3: exits normally
+  10: P.2: [{y,1}] = ets:lookup(table, y)
+    in not_prerequisite_1.erl line 17
+  11: P.1: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 14
+  12: P.1: exits normally
+  13: P.2: [{x,1}] = ets:lookup(table, x)
+    in not_prerequisite_1.erl line 20
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in not_prerequisite_1.erl line 26
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in not_prerequisite_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in not_prerequisite_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in not_prerequisite_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.0.2315718>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.1.2315718>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<not_prerequisite_1.2.2315718>,[]])
+    in erlang.erl line 2329
+   7: P.3: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 24
+   8: P.3: exits normally
+   9: P.2: [{y,1}] = ets:lookup(table, y)
+    in not_prerequisite_1.erl line 17
+  10: P.2: [{x,0}] = ets:lookup(table, x)
+    in not_prerequisite_1.erl line 20
+  11: P.1: true = ets:insert(table, {x,1})
+    in not_prerequisite_1.erl line 13
+  12: P.1: true = ets:insert(table, {y,1})
+    in not_prerequisite_1.erl line 14
+  13: P.1: exits normally
+  14: P.2: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 5 errors, 5/5 interleavings explored

@@ -1,0 +1,38 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_missing_messages.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{monitor_missing_messages,monitor_missing_messages,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 6 process P exited abnormally
+    Reason:
+      {{nocatch,boo},
+       [{monitor_missing_messages,monitor_missing_messages,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_missing_messages.erl"},
+             {line,11}]}]}
+    Stacktrace:
+      [{monitor_missing_messages,monitor_missing_messages,0,
+           [{file,
+                "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_missing_messages.erl"},
+            {line,11}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: {P.1,#Ref<0.0.0.128>} = erlang:spawn_opt({erlang,apply,[#Fun<monitor_missing_messages.0.81501584>,[]],[monitor]})
+    in erlang.erl line 2373
+   2: P.1: exits normally
+   3: P.1: {'DOWN',#Ref<0.0.0.128>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.128>,process,P.1,normal})
+    (while exiting)
+   4: Message ({'DOWN',#Ref<0.0.0.128>,process,P.1,normal}) from P.1 reaches P
+   5: P: receives message ({'DOWN',#Ref<0.0.0.128>,process,P.1,normal})
+    in monitor_missing_messages.erl line 10
+   6: P: exits abnormally ({{nocatch,boo},[{monitor_missing_messages,monitor_missing_messages,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,109,111,110,105,116,111,114,95,109,105,115,115,105,110,103,95,109,101,115,115,97,103,101,115,46,101,114,108]},{line,11}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 2/2 interleavings explored

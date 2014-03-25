@@ -1,0 +1,95 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/irrelevant_send.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{irrelevant_send,irrelevant_send,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 11 process P exited abnormally
+    Reason:
+      {{nocatch,error},
+       [{irrelevant_send,irrelevant_send,0,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/irrelevant_send.erl"},
+                          {line,14}]}]}
+    Stacktrace:
+      [{irrelevant_send,irrelevant_send,0,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/irrelevant_send.erl"},
+                         {line,14}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: false = erlang:process_flag(trap_exit, true)
+    in irrelevant_send.erl line 9
+   2: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<irrelevant_send.0.81168580>,[]])
+    in erlang.erl line 2350
+   3: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<irrelevant_send.1.81168580>,[]])
+    in erlang.erl line 2350
+   4: P.1: exits normally
+   5: P.1: true = erlang:exit(P, normal)
+    (while exiting)
+   6: P.2: exits normally
+   7: P.2: true = erlang:exit(P, normal)
+    (while exiting)
+   8: Exit signal (normal) from P.2 reaches P
+   9: Exit signal (normal) from P.1 reaches P
+  10: P: receives message ({'EXIT',P.2,normal})
+    in irrelevant_send.erl line 12
+  11: P: exits abnormally ({{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]})
+  12: P: true = erlang:exit(P.1, {{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]})
+    (while exiting)
+  13: Exit signal ({{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]}) from P reaches P.1
+  14: P: true = erlang:exit(P.2, {{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]})
+    (while exiting)
+  15: Exit signal ({{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]}) from P reaches P.2
+################################################################################
+Erroneous interleaving 2:
+* At step 8 process P exited abnormally
+    Reason:
+      {{nocatch,error},
+       [{irrelevant_send,irrelevant_send,0,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/irrelevant_send.erl"},
+                          {line,14}]}]}
+    Stacktrace:
+      [{irrelevant_send,irrelevant_send,0,
+                        [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/irrelevant_send.erl"},
+                         {line,14}]}]
+* At step 13 process P.1 exited abnormally
+    Reason:
+      {{nocatch,error},
+       [{irrelevant_send,irrelevant_send,0,
+                         [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/irrelevant_send.erl"},
+                          {line,14}]}]}
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: false = erlang:process_flag(trap_exit, true)
+    in irrelevant_send.erl line 9
+   2: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<irrelevant_send.0.81168580>,[]])
+    in erlang.erl line 2350
+   3: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<irrelevant_send.1.81168580>,[]])
+    in erlang.erl line 2350
+   4: P.2: exits normally
+   5: P.2: true = erlang:exit(P, normal)
+    (while exiting)
+   6: Exit signal (normal) from P.2 reaches P
+   7: P: receives message ({'EXIT',P.2,normal})
+    in irrelevant_send.erl line 12
+   8: P: exits abnormally ({{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]})
+   9: P: true = erlang:exit(P.1, {{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]})
+    (while exiting)
+  10: P: true = erlang:exit(P.2, {{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]})
+    (while exiting)
+  11: Exit signal ({{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]}) from P reaches P.2
+  12: Exit signal ({{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]}) from P reaches P.1
+  13: P.1: exits abnormally ({{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]})
+  14: P.1: true = erlang:exit(P, {{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]})
+    (while exiting)
+  15: Exit signal ({{nocatch,error},[{irrelevant_send,irrelevant_send,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,114,114,101,108,101,118,97,110,116,95,115,101,110,100,46,101,114,108]},{line,14}]}]}) from P.1 reaches P
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 3/3 interleavings explored

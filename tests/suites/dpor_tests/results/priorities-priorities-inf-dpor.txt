@@ -1,0 +1,149 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/priorities.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{priorities,priorities,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in priorities.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in priorities.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<priorities.0.56490607>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<priorities.1.56490607>,[]])
+    in erlang.erl line 2329
+   4: P.2: ok = P.1 ! ok
+    in priorities.erl line 20
+   5: Message (ok) from P.2 reaches P.1
+   6: P.1: receives message (ok)
+    in priorities.erl line 13
+   7: P.1: ok = P ! ok
+    in priorities.erl line 14
+   8: Message (ok) from P.1 reaches P
+   9: P: receives message (ok)
+    in priorities.erl line 23
+  10: P: [] = ets:lookup(table, y)
+    in priorities.erl line 25
+  11: P: [] = ets:lookup(table, x)
+    in priorities.erl line 26
+  12: P.1: [] = ets:lookup(table, y)
+    in priorities.erl line 16
+  13: P.1: [] = ets:lookup(table, x)
+    in priorities.erl line 17
+  14: P.1: exits normally
+  15: P.2: true = ets:insert(table, {x,42})
+    in priorities.erl line 21
+  16: P.2: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in priorities.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in priorities.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<priorities.0.56490607>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<priorities.1.56490607>,[]])
+    in erlang.erl line 2329
+   4: P.2: ok = P.1 ! ok
+    in priorities.erl line 20
+   5: Message (ok) from P.2 reaches P.1
+   6: P.1: receives message (ok)
+    in priorities.erl line 13
+   7: P.1: ok = P ! ok
+    in priorities.erl line 14
+   8: Message (ok) from P.1 reaches P
+   9: P: receives message (ok)
+    in priorities.erl line 23
+  10: P: [] = ets:lookup(table, y)
+    in priorities.erl line 25
+  11: P: [] = ets:lookup(table, x)
+    in priorities.erl line 26
+  12: P.1: [] = ets:lookup(table, y)
+    in priorities.erl line 16
+  13: P.2: true = ets:insert(table, {x,42})
+    in priorities.erl line 21
+  14: P.1: [{x,42}] = ets:lookup(table, x)
+    in priorities.erl line 17
+  15: P.1: exits normally
+  16: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in priorities.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in priorities.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<priorities.0.56490607>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<priorities.1.56490607>,[]])
+    in erlang.erl line 2329
+   4: P.2: ok = P.1 ! ok
+    in priorities.erl line 20
+   5: Message (ok) from P.2 reaches P.1
+   6: P.1: receives message (ok)
+    in priorities.erl line 13
+   7: P.1: ok = P ! ok
+    in priorities.erl line 14
+   8: Message (ok) from P.1 reaches P
+   9: P: receives message (ok)
+    in priorities.erl line 23
+  10: P: [] = ets:lookup(table, y)
+    in priorities.erl line 25
+  11: P.1: [] = ets:lookup(table, y)
+    in priorities.erl line 16
+  12: P.1: [] = ets:lookup(table, x)
+    in priorities.erl line 17
+  13: P.1: exits normally
+  14: P.2: true = ets:insert(table, {x,42})
+    in priorities.erl line 21
+  15: P: [{x,42}] = ets:lookup(table, x)
+    in priorities.erl line 26
+  16: P.2: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in priorities.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in priorities.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<priorities.0.56490607>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<priorities.1.56490607>,[]])
+    in erlang.erl line 2329
+   4: P.2: ok = P.1 ! ok
+    in priorities.erl line 20
+   5: Message (ok) from P.2 reaches P.1
+   6: P.1: receives message (ok)
+    in priorities.erl line 13
+   7: P.1: ok = P ! ok
+    in priorities.erl line 14
+   8: Message (ok) from P.1 reaches P
+   9: P: receives message (ok)
+    in priorities.erl line 23
+  10: P: [] = ets:lookup(table, y)
+    in priorities.erl line 25
+  11: P.1: [] = ets:lookup(table, y)
+    in priorities.erl line 16
+  12: P.2: true = ets:insert(table, {x,42})
+    in priorities.erl line 21
+  13: P: [{x,42}] = ets:lookup(table, x)
+    in priorities.erl line 26
+  14: P.1: [{x,42}] = ets:lookup(table, x)
+    in priorities.erl line 17
+  15: P.1: exits normally
+  16: P.2: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 4 errors, 4/4 interleavings explored

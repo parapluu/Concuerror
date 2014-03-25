@@ -1,0 +1,1165 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/manywrite_2.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{manywrite_2,manywrite_2,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  16: P.1: exits normally
+  17: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  18: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  19: P.2: exits normally
+  20: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  21: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  22: P.3: exits normally
+  23: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  24: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  25: P.4: exits normally
+  26: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  27: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  28: P.5: exits normally
+  29: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  30: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  31: P.6: exits normally
+  32: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  33: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  34: P.7: exits normally
+  35: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  36: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  37: P.8: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  16: P.1: exits normally
+  17: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  18: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  19: P.2: exits normally
+  20: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  21: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  22: P.3: exits normally
+  23: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  24: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  25: P.4: exits normally
+  26: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  27: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  28: P.5: exits normally
+  29: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  30: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  31: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  32: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  33: P.8: exits normally
+  34: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  35: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  36: P.6: exits normally
+  37: P.7: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  16: P.1: exits normally
+  17: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  18: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  19: P.2: exits normally
+  20: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  21: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  22: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  23: P.4: exits normally
+  24: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  25: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  26: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  27: P.6: exits normally
+  28: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  29: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  30: P.7: exits normally
+  31: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  32: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  33: P.8: exits normally
+  34: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  35: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  36: P.3: exits normally
+  37: P.5: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  16: P.1: exits normally
+  17: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  18: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  19: P.2: exits normally
+  20: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  21: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  22: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  23: P.4: exits normally
+  24: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  25: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  26: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  27: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  28: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  29: P.8: exits normally
+  30: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  31: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  32: P.6: exits normally
+  33: P.7: exits normally
+  34: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  35: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  36: P.3: exits normally
+  37: P.5: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  16: P.1: exits normally
+  17: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  18: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  19: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  20: P.3: exits normally
+  21: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  22: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  23: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  24: P.5: exits normally
+  25: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  26: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  27: P.6: exits normally
+  28: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  29: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  30: P.7: exits normally
+  31: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  32: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  33: P.8: exits normally
+  34: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  35: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  36: P.2: exits normally
+  37: P.4: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  16: P.1: exits normally
+  17: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  18: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  19: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  20: P.3: exits normally
+  21: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  22: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  23: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  24: P.5: exits normally
+  25: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  26: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  27: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  28: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  29: P.8: exits normally
+  30: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  31: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  32: P.6: exits normally
+  33: P.7: exits normally
+  34: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  35: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  36: P.2: exits normally
+  37: P.4: exits normally
+################################################################################
+Erroneous interleaving 7:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  16: P.1: exits normally
+  17: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  18: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  19: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  20: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  21: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  22: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  23: P.6: exits normally
+  24: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  25: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  26: P.7: exits normally
+  27: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  28: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  29: P.8: exits normally
+  30: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  31: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  32: P.3: exits normally
+  33: P.5: exits normally
+  34: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  35: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  36: P.2: exits normally
+  37: P.4: exits normally
+################################################################################
+Erroneous interleaving 8:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  16: P.1: exits normally
+  17: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  18: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  19: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  20: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  21: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  22: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  23: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  24: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  25: P.8: exits normally
+  26: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  27: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  28: P.6: exits normally
+  29: P.7: exits normally
+  30: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  31: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  32: P.3: exits normally
+  33: P.5: exits normally
+  34: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  35: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  36: P.2: exits normally
+  37: P.4: exits normally
+################################################################################
+Erroneous interleaving 9:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  16: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  17: P.2: exits normally
+  18: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  19: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  20: P.3: exits normally
+  21: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  22: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  23: P.4: exits normally
+  24: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  25: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  26: P.5: exits normally
+  27: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  28: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  29: P.6: exits normally
+  30: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  31: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  32: P.7: exits normally
+  33: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  34: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  35: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  36: P.1: exits normally
+  37: P.8: exits normally
+################################################################################
+Erroneous interleaving 10:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  16: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  17: P.2: exits normally
+  18: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  19: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  20: P.3: exits normally
+  21: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  22: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  23: P.4: exits normally
+  24: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  25: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  26: P.5: exits normally
+  27: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  28: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  29: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  30: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  31: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  32: P.6: exits normally
+  33: P.7: exits normally
+  34: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  35: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  36: P.1: exits normally
+  37: P.8: exits normally
+################################################################################
+Erroneous interleaving 11:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  16: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  17: P.2: exits normally
+  18: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  19: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  20: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  21: P.4: exits normally
+  22: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  23: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  24: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  25: P.6: exits normally
+  26: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  27: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  28: P.7: exits normally
+  29: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  30: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  31: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  32: P.3: exits normally
+  33: P.5: exits normally
+  34: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  35: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  36: P.1: exits normally
+  37: P.8: exits normally
+################################################################################
+Erroneous interleaving 12:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  16: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  17: P.2: exits normally
+  18: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  19: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  20: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  21: P.4: exits normally
+  22: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  23: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  24: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  25: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  26: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  27: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  28: P.6: exits normally
+  29: P.7: exits normally
+  30: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  31: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  32: P.3: exits normally
+  33: P.5: exits normally
+  34: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  35: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  36: P.1: exits normally
+  37: P.8: exits normally
+################################################################################
+Erroneous interleaving 13:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  16: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  17: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  18: P.3: exits normally
+  19: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  20: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  21: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  22: P.5: exits normally
+  23: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  24: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  25: P.6: exits normally
+  26: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  27: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  28: P.7: exits normally
+  29: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  30: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  31: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  32: P.2: exits normally
+  33: P.4: exits normally
+  34: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  35: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  36: P.1: exits normally
+  37: P.8: exits normally
+################################################################################
+Erroneous interleaving 14:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  16: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  17: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  18: P.3: exits normally
+  19: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  20: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  21: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  22: P.5: exits normally
+  23: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  24: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  25: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  26: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  27: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  28: P.6: exits normally
+  29: P.7: exits normally
+  30: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  31: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  32: P.2: exits normally
+  33: P.4: exits normally
+  34: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  35: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  36: P.1: exits normally
+  37: P.8: exits normally
+################################################################################
+Erroneous interleaving 15:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  16: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  17: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  18: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  19: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  20: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  21: P.6: exits normally
+  22: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  23: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  24: P.7: exits normally
+  25: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  26: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  27: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  28: P.3: exits normally
+  29: P.5: exits normally
+  30: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  31: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  32: P.2: exits normally
+  33: P.4: exits normally
+  34: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  35: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  36: P.1: exits normally
+  37: P.8: exits normally
+################################################################################
+Erroneous interleaving 16:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in manywrite_2.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in manywrite_2.erl line 9
+   2: P: true = ets:insert(table, {w,0})
+    in manywrite_2.erl line 10
+   3: P: true = ets:insert(table, {x,0})
+    in manywrite_2.erl line 11
+   4: P: true = ets:insert(table, {y,0})
+    in manywrite_2.erl line 12
+   5: P: true = ets:insert(table, {z,0})
+    in manywrite_2.erl line 13
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.0.78786120>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.1.78786120>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.2.78786120>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.3.78786120>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.4.78786120>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.5.78786120>,[]])
+    in erlang.erl line 2329
+  12: P: P.7 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.6.78786120>,[]])
+    in erlang.erl line 2329
+  13: P: P.8 = erlang:spawn(erlang, apply, [#Fun<manywrite_2.7.78786120>,[]])
+    in erlang.erl line 2329
+  14: P.1: true = ets:insert(table, {P.1,ok})
+    in manywrite_2.erl line 25
+  15: P.2: true = ets:insert(table, {P.2,ok})
+    in manywrite_2.erl line 25
+  16: P.3: true = ets:insert(table, {P.3,ok})
+    in manywrite_2.erl line 25
+  17: P.4: true = ets:insert(table, {P.4,ok})
+    in manywrite_2.erl line 25
+  18: P.5: true = ets:insert(table, {P.5,ok})
+    in manywrite_2.erl line 25
+  19: P.6: true = ets:insert(table, {P.6,ok})
+    in manywrite_2.erl line 25
+  20: P.7: true = ets:insert(table, {P.7,ok})
+    in manywrite_2.erl line 25
+  21: P.8: true = ets:insert(table, {P.8,ok})
+    in manywrite_2.erl line 25
+  22: P.7: true = ets:insert(table, {z,2})
+    in manywrite_2.erl line 20
+  23: P.6: true = ets:insert(table, {z,1})
+    in manywrite_2.erl line 19
+  24: P.6: exits normally
+  25: P.7: exits normally
+  26: P.5: true = ets:insert(table, {y,2})
+    in manywrite_2.erl line 18
+  27: P.3: true = ets:insert(table, {y,1})
+    in manywrite_2.erl line 16
+  28: P.3: exits normally
+  29: P.5: exits normally
+  30: P.4: true = ets:insert(table, {x,2})
+    in manywrite_2.erl line 17
+  31: P.2: true = ets:insert(table, {x,1})
+    in manywrite_2.erl line 15
+  32: P.2: exits normally
+  33: P.4: exits normally
+  34: P.8: true = ets:insert(table, {w,2})
+    in manywrite_2.erl line 21
+  35: P.1: true = ets:insert(table, {w,1})
+    in manywrite_2.erl line 14
+  36: P.1: exits normally
+  37: P.8: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 16 errors, 16/16 interleavings explored

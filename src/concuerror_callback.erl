@@ -38,7 +38,7 @@
 %% -define(DEBUG, true).
 -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 
--define(badarg_if_not(A), case A of true -> ok; false -> error(badarg) end).                              
+-define(badarg_if_not(A), case A of true -> ok; false -> error(badarg) end).
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
@@ -262,6 +262,8 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
   end.
 
 %% Special instruction running control (e.g. send to unknown -> wait for reply)
+run_built_in(erlang, demonitor, 1, [Ref], Info) ->
+  run_built_in(erlang, demonitor, 2, [Ref, []], Info);
 run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
   ?badarg_if_not(is_reference(Ref)),
   #concuerror_info{monitors = Monitors} = Info,
@@ -330,14 +332,39 @@ run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
     end,
   {Return, Info};
 
-run_built_in(erlang, link, 1, [Pid], #concuerror_info{links = Links} = Info) ->
+run_built_in(erlang, link, 1, [Pid], Info) ->
+  #concuerror_info{
+     flags = #process_flags{trap_exit = TrapExit},
+     links = Links,
+     next_event = #event{event_info = EventInfo} = Event} = Info,
   case run_built_in(erlang, is_process_alive, 1, [Pid], Info) of
     {true, Info}->
       Self = self(),
       true = ets:insert(Links, ?links(Self, Pid)),
       {true, Info};
     {false, _} ->
-      error(noproc)
+      case TrapExit of
+        false -> error(noproc);
+        true ->
+          NewInfo =
+            case EventInfo of
+              %% Replaying...
+              #builtin_event{} -> Info;
+              %% New event...
+              undefined ->
+                Message =
+                  #message{data = {'EXIT', Pid, noproc},
+                           message_id = make_ref()},
+                MessageEvent =
+                  #message_event{
+                     cause_label = Event#event.label,
+                     message = Message,
+                     recipient = self()},
+                NewEvent = Event#event{special = {message, MessageEvent}},
+                Info#concuerror_info{next_event = NewEvent}
+            end,
+          {true, NewInfo}
+      end
   end;
 
 run_built_in(erlang, make_ref, 0, [], Info) ->

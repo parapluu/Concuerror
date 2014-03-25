@@ -1,0 +1,59 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/receive_and_after.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{receive_and_after,receive_and_after,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 6 process P.1 exited abnormally
+    Reason:
+      {{nocatch,kaboom},
+       [{receive_and_after,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/receive_and_after.erl"},
+                            {line,13}]}]}
+    Stacktrace:
+      [{receive_and_after,p1,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/receive_and_after.erl"},
+                           {line,13}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_and_after.0.111628160>,[]])
+    in erlang.erl line 2329
+   2: P: enable = P.1 ! enable
+    in receive_and_after.erl line 9
+   3: Message (enable) from P reaches P.1
+   4: P: exits normally
+   5: P.1: receives message (enable)
+    in receive_and_after.erl line 12
+   6: P.1: exits abnormally ({{nocatch,kaboom},[{receive_and_after,p1,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,114,101,99,101,105,118,101,95,97,110,100,95,97,102,116,101,114,46,101,114,108]},{line,13}]}]})
+################################################################################
+Erroneous interleaving 2:
+* At step 6 process P.1 exited abnormally
+    Reason:
+      {{nocatch,boom},
+       [{receive_and_after,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/receive_and_after.erl"},
+                            {line,16}]}]}
+    Stacktrace:
+      [{receive_and_after,p1,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/receive_and_after.erl"},
+                           {line,16}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_and_after.0.111628160>,[]])
+    in erlang.erl line 2329
+   2: P: enable = P.1 ! enable
+    in receive_and_after.erl line 9
+   3: P: exits normally
+   4: P.1: receive timeout expired after 10 ms
+    in receive_and_after.erl line 12
+   5: Message (enable) from P reaches P.1
+   6: P.1: exits abnormally ({{nocatch,boom},[{receive_and_after,p1,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,114,101,99,101,105,118,101,95,97,110,100,95,97,102,116,101,114,46,101,114,108]},{line,16}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 2/2 interleavings explored

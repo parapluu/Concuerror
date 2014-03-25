@@ -1,0 +1,42 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/late_hope.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{late_hope,late_hope,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 10 process P exited abnormally
+    Reason:
+      {{nocatch,saved},
+       [{late_hope,late_hope,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/late_hope.erl"},
+                    {line,14}]}]}
+    Stacktrace:
+      [{late_hope,late_hope,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/late_hope.erl"},
+                   {line,14}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<late_hope.0.3583495>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<late_hope.1.3583495>,[]])
+    in erlang.erl line 2329
+   3: P.1: exits normally
+   4: P.2: ignore = P.1 ! ignore
+    in late_hope.erl line 11
+   5: Message (ignore) from P.2 reaches P.1
+   6: P.2: hope = P ! hope
+    in late_hope.erl line 12
+   7: P.2: exits normally
+   8: Message (hope) from P.2 reaches P
+   9: P: receives message (hope)
+    in late_hope.erl line 13
+  10: P: exits abnormally ({{nocatch,saved},[{late_hope,late_hope,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,108,97,116,101,95,104,111,112,101,46,101,114,108]},{line,14}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 2/2 interleavings explored

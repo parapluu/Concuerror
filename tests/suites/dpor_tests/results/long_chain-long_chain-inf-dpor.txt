@@ -1,0 +1,2035 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/long_chain.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{long_chain,long_chain,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  29: P.3: exits normally
+  30: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  31: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  32: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  33: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  34: P.4: exits normally
+  35: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  36: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  37: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  38: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  39: P.5: exits normally
+  40: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  41: P.6: [{c,1}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  42: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  43: P.6: true = ets:insert(table, {z,1})
+    in long_chain.erl line 40
+  44: P.6: exits normally
+  45: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  46: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  47: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  48: P.7: [{w,1}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  49: P.7: exits normally
+  50: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  51: P.8: [{z,1}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  52: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  53: P.8: [{w,1}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  54: P.8: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  29: P.3: exits normally
+  30: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  31: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  32: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  33: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  34: P.4: exits normally
+  35: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  36: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  37: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  38: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  39: P.5: exits normally
+  40: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  41: P.6: [{c,1}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  42: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  43: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  44: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  45: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  46: P.7: [{w,1}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  47: P.7: exits normally
+  48: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  49: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  50: P.6: true = ets:insert(table, {z,1})
+    in long_chain.erl line 40
+  51: P.6: exits normally
+  52: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  53: P.8: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  29: P.3: exits normally
+  30: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  31: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  32: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  33: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  34: P.4: exits normally
+  35: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  36: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  37: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  38: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  39: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  40: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  41: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  42: P.7: [{w,1}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  43: P.7: exits normally
+  44: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  45: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  46: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  47: P.5: exits normally
+  48: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  49: P.6: exits normally
+  50: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  51: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  52: P.8: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  29: P.3: exits normally
+  30: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  31: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  32: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  33: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  34: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  35: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  36: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  37: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  38: P.7: [{w,1}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  39: P.7: exits normally
+  40: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  41: P.5: [{b,0}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  42: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  43: P.4: exits normally
+  44: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  45: P.5: exits normally
+  46: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  47: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  48: P.6: exits normally
+  49: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  50: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  51: P.8: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  30: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  31: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  32: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  33: P.4: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  34: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  35: P.3: exits normally
+  36: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  37: P.4: exits normally
+  38: P.5: [{b,0}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  39: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  40: P.5: exits normally
+  41: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  42: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  43: P.6: exits normally
+  44: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  45: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  46: P.7: [{w,1}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  47: P.7: exits normally
+  48: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  49: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  50: P.8: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  30: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  31: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  32: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  33: P.4: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  34: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  35: P.4: exits normally
+  36: P.5: [{b,0}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  37: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  38: P.5: exits normally
+  39: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  40: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  41: P.6: exits normally
+  42: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  43: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  44: P.8: exits normally
+  45: P.7: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  46: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  47: P.3: exits normally
+  48: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  49: P.7: exits normally
+################################################################################
+Erroneous interleaving 7:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  30: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  31: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  32: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  33: P.5: [{b,0}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  34: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  35: P.5: exits normally
+  36: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  37: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  38: P.6: exits normally
+  39: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  40: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  41: P.8: exits normally
+  42: P.7: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  43: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  44: P.7: exits normally
+  45: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  46: P.3: exits normally
+  47: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  48: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  49: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  50: P.4: exits normally
+################################################################################
+Erroneous interleaving 8:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  30: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  31: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  32: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  33: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  34: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  35: P.6: exits normally
+  36: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  37: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  38: P.8: exits normally
+  39: P.7: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  40: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  41: P.7: exits normally
+  42: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  43: P.3: exits normally
+  44: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  45: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  46: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  47: P.4: exits normally
+  48: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  49: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  50: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  51: P.5: exits normally
+################################################################################
+Erroneous interleaving 9:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  30: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  31: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  32: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  33: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  34: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  35: P.8: exits normally
+  36: P.7: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  37: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  38: P.7: exits normally
+  39: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  40: P.3: exits normally
+  41: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  42: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  43: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  44: P.4: exits normally
+  45: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  46: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  47: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  48: P.5: exits normally
+  49: P.6: [{c,1}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  50: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  51: P.6: true = ets:insert(table, {z,1})
+    in long_chain.erl line 40
+  52: P.6: exits normally
+################################################################################
+Erroneous interleaving 10:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  24: P.2: exits normally
+  25: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  27: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  30: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  31: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  32: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  33: P.7: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  34: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  35: P.7: exits normally
+  36: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  37: P.3: exits normally
+  38: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  39: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  40: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  41: P.4: exits normally
+  42: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  43: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  44: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  45: P.5: exits normally
+  46: P.6: [{c,1}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  47: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  48: P.6: true = ets:insert(table, {z,1})
+    in long_chain.erl line 40
+  49: P.6: exits normally
+  50: P.8: [{z,1}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  51: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  52: P.8: [{w,1}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  53: P.8: exits normally
+################################################################################
+Erroneous interleaving 11:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  19: P.1: exits normally
+  20: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  21: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  22: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  23: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  24: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  25: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  26: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  27: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  28: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  29: P.3: [{y,0}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  30: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  31: P.2: exits normally
+  32: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  33: P.3: exits normally
+  34: P.4: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  35: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  36: P.4: exits normally
+  37: P.5: [{b,0}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  38: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  39: P.5: exits normally
+  40: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  41: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  42: P.6: exits normally
+  43: P.7: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  44: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  45: P.7: exits normally
+  46: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  47: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  48: P.8: exits normally
+################################################################################
+Erroneous interleaving 12:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  19: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  20: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  21: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  22: P.2: exits normally
+  23: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  25: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  26: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  27: P.3: exits normally
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  30: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  31: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  32: P.4: exits normally
+  33: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  34: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  35: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  36: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  37: P.5: exits normally
+  38: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  39: P.6: [{c,1}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  40: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  41: P.6: true = ets:insert(table, {z,1})
+    in long_chain.erl line 40
+  42: P.6: exits normally
+  43: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  44: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  45: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  46: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  47: P.8: [{z,1}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  48: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  49: P.7: [{w,0}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  50: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  51: P.1: exits normally
+  52: P.7: exits normally
+  53: P.8: [{w,1}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  54: P.8: exits normally
+################################################################################
+Erroneous interleaving 13:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  19: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  20: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  21: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  22: P.2: exits normally
+  23: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  25: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  26: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  27: P.3: exits normally
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  30: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  31: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  32: P.4: exits normally
+  33: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  34: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  35: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  36: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  37: P.5: exits normally
+  38: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  39: P.6: [{c,1}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  40: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  41: P.6: true = ets:insert(table, {z,1})
+    in long_chain.erl line 40
+  42: P.6: exits normally
+  43: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  44: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  45: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  46: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  47: P.8: [{z,1}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  48: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  49: P.7: [{w,0}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  50: P.7: exits normally
+  51: P.8: [{w,0}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  52: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  53: P.1: exits normally
+  54: P.8: exits normally
+################################################################################
+Erroneous interleaving 14:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  19: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  20: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  21: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  22: P.2: exits normally
+  23: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  25: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  26: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  27: P.3: exits normally
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  30: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  31: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  32: P.4: exits normally
+  33: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  34: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  35: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  36: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  37: P.5: exits normally
+  38: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  39: P.6: [{c,1}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  40: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  41: P.6: true = ets:insert(table, {z,1})
+    in long_chain.erl line 40
+  42: P.6: exits normally
+  43: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  44: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  45: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  46: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  47: P.8: [{z,1}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  48: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  49: P.8: [{w,0}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  50: P.8: exits normally
+  51: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  52: P.1: exits normally
+  53: P.7: [{w,1}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  54: P.7: exits normally
+################################################################################
+Erroneous interleaving 15:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  19: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  20: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  21: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  22: P.2: exits normally
+  23: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  25: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  26: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  27: P.3: exits normally
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  30: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  31: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  32: P.4: exits normally
+  33: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  34: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  35: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  36: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  37: P.5: exits normally
+  38: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  39: P.6: [{c,1}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  40: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  41: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  42: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  43: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  44: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  45: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  46: P.6: true = ets:insert(table, {z,1})
+    in long_chain.erl line 40
+  47: P.6: exits normally
+  48: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  49: P.8: exits normally
+  50: P.7: [{w,0}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  51: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  52: P.1: exits normally
+  53: P.7: exits normally
+################################################################################
+Erroneous interleaving 16:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  19: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  20: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  21: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  22: P.2: exits normally
+  23: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  25: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  26: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  27: P.3: exits normally
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  30: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  31: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  32: P.4: exits normally
+  33: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  34: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  35: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  36: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  37: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  38: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  39: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  40: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  41: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  42: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  43: P.5: exits normally
+  44: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  45: P.6: exits normally
+  46: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  47: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  48: P.8: exits normally
+  49: P.7: [{w,0}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  50: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  51: P.1: exits normally
+  52: P.7: exits normally
+################################################################################
+Erroneous interleaving 17:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  19: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  20: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  21: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  22: P.2: exits normally
+  23: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  25: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  26: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  27: P.3: exits normally
+  28: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  29: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  30: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  31: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  32: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  33: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  34: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  35: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  36: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  37: P.5: [{b,0}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  38: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  39: P.4: exits normally
+  40: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  41: P.5: exits normally
+  42: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  43: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  44: P.6: exits normally
+  45: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  46: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  47: P.8: exits normally
+  48: P.7: [{w,0}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  49: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  50: P.1: exits normally
+  51: P.7: exits normally
+################################################################################
+Erroneous interleaving 18:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  19: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  20: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  21: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  22: P.2: exits normally
+  23: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  25: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  26: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  27: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  28: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  29: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  30: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  31: P.4: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  32: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  33: P.3: exits normally
+  34: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  35: P.4: exits normally
+  36: P.5: [{b,0}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  37: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  38: P.5: exits normally
+  39: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  40: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  41: P.6: exits normally
+  42: P.7: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  43: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  44: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  45: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  46: P.8: exits normally
+  47: P.7: [{w,0}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  48: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  49: P.1: exits normally
+  50: P.7: exits normally
+################################################################################
+Erroneous interleaving 19:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  18: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  19: P.2: [{x,1}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  20: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  21: P.2: true = ets:insert(table, {y,1})
+    in long_chain.erl line 40
+  22: P.2: exits normally
+  23: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  25: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  26: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  27: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  28: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  29: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  30: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  31: P.7: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  32: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  33: P.7: exits normally
+  34: P.3: true = ets:insert(table, {a,1})
+    in long_chain.erl line 40
+  35: P.3: exits normally
+  36: P.4: [{a,1}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  37: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  38: P.4: true = ets:insert(table, {b,1})
+    in long_chain.erl line 40
+  39: P.4: exits normally
+  40: P.5: [{b,1}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  41: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  42: P.5: true = ets:insert(table, {c,1})
+    in long_chain.erl line 40
+  43: P.5: exits normally
+  44: P.6: [{c,1}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  45: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  46: P.6: true = ets:insert(table, {z,1})
+    in long_chain.erl line 40
+  47: P.6: exits normally
+  48: P.8: [{z,1}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  49: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  50: P.8: [{w,0}] = ets:lookup(table, w)
+    in long_chain.erl line 41
+  51: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  52: P.1: exits normally
+  53: P.8: exits normally
+################################################################################
+Erroneous interleaving 20:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in long_chain.erl line 28
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in long_chain.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in long_chain.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in long_chain.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in long_chain.erl line 12
+   5: P: true = ets:insert(table, {a,0})
+    in long_chain.erl line 13
+   6: P: true = ets:insert(table, {b,0})
+    in long_chain.erl line 14
+   7: P: true = ets:insert(table, {c,0})
+    in long_chain.erl line 15
+   8: P: true = ets:insert(table, {w,0})
+    in long_chain.erl line 16
+   9: P: P.1 = erlang:spawn(erlang, apply, [#Fun<long_chain.0.58796269>,[]])
+    in erlang.erl line 2329
+  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<long_chain.1.58796269>,[]])
+    in erlang.erl line 2329
+  11: P: P.3 = erlang:spawn(erlang, apply, [#Fun<long_chain.2.58796269>,[]])
+    in erlang.erl line 2329
+  12: P: P.4 = erlang:spawn(erlang, apply, [#Fun<long_chain.3.58796269>,[]])
+    in erlang.erl line 2329
+  13: P: P.5 = erlang:spawn(erlang, apply, [#Fun<long_chain.4.58796269>,[]])
+    in erlang.erl line 2329
+  14: P: P.6 = erlang:spawn(erlang, apply, [#Fun<long_chain.5.58796269>,[]])
+    in erlang.erl line 2329
+  15: P: P.7 = erlang:spawn(erlang, apply, [#Fun<long_chain.6.58796269>,[]])
+    in erlang.erl line 2329
+  16: P: P.8 = erlang:spawn(erlang, apply, [#Fun<long_chain.7.58796269>,[]])
+    in erlang.erl line 2329
+  17: P.2: true = ets:insert(table, {{P.2,34}})
+    in long_chain.erl line 34
+  18: P.3: true = ets:insert(table, {{P.3,34}})
+    in long_chain.erl line 34
+  19: P.4: true = ets:insert(table, {{P.4,34}})
+    in long_chain.erl line 34
+  20: P.5: true = ets:insert(table, {{P.5,34}})
+    in long_chain.erl line 34
+  21: P.6: true = ets:insert(table, {{P.6,34}})
+    in long_chain.erl line 34
+  22: P.7: true = ets:insert(table, {{P.7,34}})
+    in long_chain.erl line 34
+  23: P.8: true = ets:insert(table, {{P.8,34}})
+    in long_chain.erl line 34
+  24: P.2: [{x,0}] = ets:lookup(table, x)
+    in long_chain.erl line 35
+  25: P.1: true = ets:insert(table, {x,1})
+    in long_chain.erl line 18
+  26: P.1: true = ets:insert(table, {w,1})
+    in long_chain.erl line 19
+  27: P.1: exits normally
+  28: P.2: true = ets:insert(table, {{P.2,36}})
+    in long_chain.erl line 36
+  29: P.2: exits normally
+  30: P.3: [{y,0}] = ets:lookup(table, y)
+    in long_chain.erl line 35
+  31: P.3: true = ets:insert(table, {{P.3,36}})
+    in long_chain.erl line 36
+  32: P.3: exits normally
+  33: P.4: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  34: P.4: true = ets:insert(table, {{P.4,36}})
+    in long_chain.erl line 36
+  35: P.4: exits normally
+  36: P.5: [{b,0}] = ets:lookup(table, b)
+    in long_chain.erl line 35
+  37: P.5: true = ets:insert(table, {{P.5,36}})
+    in long_chain.erl line 36
+  38: P.5: exits normally
+  39: P.6: [{c,0}] = ets:lookup(table, c)
+    in long_chain.erl line 35
+  40: P.6: true = ets:insert(table, {{P.6,36}})
+    in long_chain.erl line 36
+  41: P.6: exits normally
+  42: P.7: [{a,0}] = ets:lookup(table, a)
+    in long_chain.erl line 35
+  43: P.7: true = ets:insert(table, {{P.7,36}})
+    in long_chain.erl line 36
+  44: P.7: exits normally
+  45: P.8: [{z,0}] = ets:lookup(table, z)
+    in long_chain.erl line 35
+  46: P.8: true = ets:insert(table, {{P.8,36}})
+    in long_chain.erl line 36
+  47: P.8: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 20 errors, 20/20 interleavings explored

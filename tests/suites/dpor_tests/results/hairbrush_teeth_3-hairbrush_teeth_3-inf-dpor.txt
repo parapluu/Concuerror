@@ -1,0 +1,1129 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/hairbrush_teeth_3.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{hairbrush_teeth_3,hairbrush_teeth_3,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   7: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+   8: P.1: exits normally
+   9: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+  10: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  11: P.2: exits normally
+  12: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   8: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+   9: P.1: exits normally
+  10: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  11: P.2: exits normally
+  12: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   9: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  10: P.1: exits normally
+  11: P.2: exits normally
+  12: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   9: P.2: exits normally
+  10: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   9: P.2: exits normally
+  10: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  11: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  12: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  13: P.1: exits normally
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   8: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   9: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  10: P.1: exits normally
+  11: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 7:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   8: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   9: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  10: P.3: exits normally
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 8:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   7: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   8: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+   9: P.1: exits normally
+  10: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+  11: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 9:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   7: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   8: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+   9: P.3: exits normally
+  10: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  11: P.1: exits normally
+  12: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+  13: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 10:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+   9: P.1: exits normally
+  10: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  11: P.2: exits normally
+  12: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 11:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   9: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  10: P.1: exits normally
+  11: P.2: exits normally
+  12: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 12:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   9: P.2: exits normally
+  10: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 13:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   9: P.2: exits normally
+  10: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  11: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  12: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  13: P.1: exits normally
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 14:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   9: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  10: P.1: exits normally
+  11: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 15:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   9: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  10: P.3: exits normally
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 16:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   8: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   9: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  10: P.1: exits normally
+  11: P.2: exits normally
+  12: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 17:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   8: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   9: P.2: exits normally
+  10: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 18:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   8: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   9: P.2: exits normally
+  10: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  11: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  12: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  13: P.1: exits normally
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 19:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   8: P.2: exits normally
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  10: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 20:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   8: P.2: exits normally
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  10: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+  11: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  12: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  13: P.1: exits normally
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 21:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+   8: P.2: exits normally
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+  10: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  11: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+  12: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  13: P.1: exits normally
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 22:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   8: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   9: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  10: P.1: exits normally
+  11: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 23:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   8: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  10: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  11: P.1: exits normally
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 24:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   8: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  10: P.2: exits normally
+  11: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  12: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  13: P.1: exits normally
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 25:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   8: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   9: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  10: P.3: exits normally
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 26:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+   9: P.3: exits normally
+  10: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 27:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   7: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   8: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+   9: P.3: exits normally
+  10: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+  11: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  12: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  13: P.1: exits normally
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 28:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+   9: P.1: exits normally
+  10: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+  11: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 29:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   9: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  10: P.1: exits normally
+  11: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 30:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  10: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  11: P.1: exits normally
+  12: P.2: exits normally
+  13: P.3: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 31:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  10: P.2: exits normally
+  11: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  12: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  13: P.1: exits normally
+  14: P.3: exits normally
+################################################################################
+Erroneous interleaving 32:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+   9: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+  10: P.3: exits normally
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 33:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   7: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+   8: P.3: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+   9: P.3: exits normally
+  10: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  11: P.1: exits normally
+  12: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+  13: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 34:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   7: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+   8: P.3: exits normally
+   9: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+  10: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  11: P.1: exits normally
+  12: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+  13: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 35:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   7: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+   8: P.3: exits normally
+   9: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+  10: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+  11: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  12: P.1: exits normally
+  13: P.2: [{x,2}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 36:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in hairbrush_teeth_3.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in hairbrush_teeth_3.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in hairbrush_teeth_3.erl line 10
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.0.59657232>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.1.59657232>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<hairbrush_teeth_3.2.59657232>,[]])
+    in erlang.erl line 2329
+   6: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 20
+   7: P.3: [{x,0}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 21
+   8: P.3: exits normally
+   9: P.1: true = ets:insert(table, {x,1})
+    in hairbrush_teeth_3.erl line 12
+  10: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 16
+  11: P.2: [{x,1}] = ets:lookup(table, x)
+    in hairbrush_teeth_3.erl line 17
+  12: P.1: true = ets:insert(table, {x,2})
+    in hairbrush_teeth_3.erl line 13
+  13: P.1: exits normally
+  14: P.2: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 36 errors, 36/36 interleavings explored

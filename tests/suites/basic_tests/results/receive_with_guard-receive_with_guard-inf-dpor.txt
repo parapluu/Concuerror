@@ -1,0 +1,25 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/receive_with_guard.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{receive_with_guard,receive_with_guard,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P.1 in receive_with_guard.erl line 11
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_with_guard.0.52572013>,[]])
+    in erlang.erl line 2329
+   2: P: 10 = P.1 ! 10
+    in receive_with_guard.erl line 15
+   3: Message (10) from P reaches P.1
+   4: P: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

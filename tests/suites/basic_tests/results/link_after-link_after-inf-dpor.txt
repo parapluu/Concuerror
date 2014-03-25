@@ -1,0 +1,43 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/link_after.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{link_after,link_after,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 8 process P.1 exited abnormally
+    Reason:
+      {{nocatch,untrapped},
+       [{link_after,'-link_after/0-fun-0-',0,
+                    [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/link_after.erl"},
+                     {line,12}]}]}
+    Stacktrace:
+      [{link_after,'-link_after/0-fun-0-',0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/link_after.erl"},
+                    {line,12}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<link_after.0.47637797>,[]])
+    in erlang.erl line 2329
+   2: P: true = erlang:link(P.1)
+    in link_after.erl line 17
+   3: P: exits normally
+   4: P: true = erlang:exit(P.1, normal)
+    (while exiting)
+   5: P.1: false = erlang:process_flag(trap_exit, true)
+    in link_after.erl line 10
+   6: Exit signal (normal) from P reaches P.1
+   7: P.1: receives message ({'EXIT',P,normal})
+    in link_after.erl line 11
+   8: P.1: exits abnormally ({{nocatch,untrapped},[{link_after,'-link_after/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,108,105,110,107,95,97,102,116,101,114,46,101,114,108]},{line,12}]}]})
+   9: P.1: true = erlang:exit(P, {{nocatch,untrapped},[{link_after,'-link_after/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,108,105,110,107,95,97,102,116,101,114,46,101,114,108]},{line,12}]}]})
+    (while exiting)
+  10: Exit signal ({{nocatch,untrapped},[{link_after,'-link_after/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,108,105,110,107,95,97,102,116,101,114,46,101,114,108]},{line,12}]}]}) from P.1 reaches P
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 4/4 interleavings explored

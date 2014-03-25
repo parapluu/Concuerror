@@ -1,0 +1,51 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/process_flag_link.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{process_flag_link,process_flag_link,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 13 process P exited abnormally
+    Reason:
+      {{badmatch,{'EXIT',P.2,normal}},
+       [{process_flag_link,process_flag_link,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/process_flag_link.erl"},
+                            {line,17}]}]}
+    Stacktrace:
+      [{process_flag_link,process_flag_link,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/process_flag_link.erl"},
+                           {line,17}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: false = erlang:process_flag(trap_exit, true)
+    in process_flag_link.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<process_flag_link.0.96054002>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<process_flag_link.1.96054002>,[]])
+    in erlang.erl line 2329
+   4: P.1: message = P ! message
+    in process_flag_link.erl line 11
+   5: P.1: exits normally
+   6: P.2: true = erlang:link(P)
+    in process_flag_link.erl line 12
+   7: P.2: exits normally
+   8: P.2: true = erlang:exit(P, normal)
+    (while exiting)
+   9: Exit signal (normal) from P.2 reaches P
+  10: Message (message) from P.1 reaches P
+  11: P: receives message ({'EXIT',P.2,normal})
+    in process_flag_link.erl line 13
+  12: P: receives message (message)
+    in process_flag_link.erl line 15
+  13: P: exits abnormally ({{badmatch,{'EXIT',P.2,normal}},[{process_flag_link,process_flag_link,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,112,114,111,99,101,115,115,95,102,108,97,103,95,108,105,110,107,46,101,114,108]},{line,17}]}]})
+  14: P: true = erlang:exit(P.2, {{badmatch,{'EXIT',P.2,normal}},[{process_flag_link,process_flag_link,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,112,114,111,99,101,115,115,95,102,108,97,103,95,108,105,110,107,46,101,114,108]},{line,17}]}]})
+    (while exiting)
+  15: Exit signal ({{badmatch,{'EXIT',P.2,normal}},[{process_flag_link,process_flag_link,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,112,114,111,99,101,115,115,95,102,108,97,103,95,108,105,110,107,46,101,114,108]},{line,17}]}]}) from P reaches P.2
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 2/2 interleavings explored

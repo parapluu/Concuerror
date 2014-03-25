@@ -1,0 +1,36 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/is_process_alive_1.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{is_process_alive_1,is_process_alive_1,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 5 process P exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [child,P.1],
+                       [11,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/is_process_alive_1.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [child,P.1],
+               [11,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/is_process_alive_1.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<is_process_alive_1.0.71597206>,[]])
+    in erlang.erl line 2329
+   2: P: true = erlang:is_process_alive(P.1)
+    in is_process_alive_1.erl line 10
+   3: P.1: exits normally
+   4: P: Exception badarg raised by: erlang:register(child, P.1)
+    in is_process_alive_1.erl line 11
+   5: P: exits abnormally ({badarg,[{erlang,register,[child,P.1],[11,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,105,115,95,112,114,111,99,101,115,115,95,97,108,105,118,101,95,49,46,101,114,108]}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 3/3 interleavings explored
