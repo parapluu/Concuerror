@@ -1,0 +1,55 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/unregister_deadlocked.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{unregister_deadlocked,test1,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 4 process P exited abnormally
+    Reason:
+      {badarg,[{erlang,'!',
+                       [one,boo],
+                       [15,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/unregister_deadlocked.erl"}]}]}
+    Stacktrace:
+      [{erlang,'!',
+               [one,boo],
+               [15,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/unregister_deadlocked.erl"}]}]
+* Blocked at a 'receive' (when all other processes have exited):
+    P.1 in unregister_deadlocked.erl line 13
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: undefined = erlang:whereis(one)
+    in unregister_deadlocked.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<unregister_deadlocked.0.71911002>,[]])
+    in erlang.erl line 2329
+   3: P: Exception badarg raised by: one ! boo
+    in unregister_deadlocked.erl line 15
+   4: P: exits abnormally ({badarg,[{erlang,'!',[one,boo],[15,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,117,110,114,101,103,105,115,116,101,114,95,100,101,97,100,108,111,99,107,101,100,46,101,114,108]}]}]})
+   5: P.1: true = erlang:register(one, P.1)
+    in unregister_deadlocked.erl line 12
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P.1 in unregister_deadlocked.erl line 13
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: undefined = erlang:whereis(one)
+    in unregister_deadlocked.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<unregister_deadlocked.0.71911002>,[]])
+    in erlang.erl line 2329
+   3: P.1: true = erlang:register(one, P.1)
+    in unregister_deadlocked.erl line 12
+   4: P: boo = one ! boo
+    in unregister_deadlocked.erl line 15
+   5: Message (boo) from P reaches P.1
+   6: P: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 2/2 interleavings explored

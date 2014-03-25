@@ -9,7 +9,7 @@
 -export([spawn_first_process/1, start_first_process/2]).
 
 %% Interface for resetting:
--export([process_top_loop/2]).
+-export([process_top_loop/1]).
 
 %%------------------------------------------------------------------------------
 
@@ -66,7 +66,7 @@
           processes                  :: processes(),
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
-          status = exited            :: 'exited'| 'exiting' | 'running' | 'waiting'
+          status = running           :: 'exited'| 'exiting' | 'running' | 'waiting'
          }).
 
 -type concuerror_info() :: #concuerror_info{}.
@@ -92,7 +92,9 @@ spawn_first_process(Options) ->
       },
   system_ets_entries(EtsTables),
   system_processes_wrappers(Processes),
-  spawn_link(fun() -> process_top_loop(InitialInfo, "P") end).
+  P = spawn_link(fun() -> process_top_loop(InitialInfo) end),
+  true = ets:insert(Processes, ?new_process(P, "P")),
+  P.
 
 get_properties(Props, PropList) ->
   get_properties(Props, PropList, []).
@@ -464,7 +466,8 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
         ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
         ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
         ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, ChildId]),
-        P = spawn_link(fun() -> process_top_loop(PassedInfo, ChildSymbol) end),
+        P = spawn_link(fun() -> process_top_loop(PassedInfo) end),
+        true = ets:insert(Processes, ?new_process(P, ChildSymbol)),
         NewResult =
           case lists:member(monitor, SpawnOpts) of
             true -> {P, make_ref()};
@@ -827,18 +830,16 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
   Scheduler ! Notification,
   Info.
 
--spec process_top_loop(concuerror_info(), string()) -> no_return().
+-spec process_top_loop(concuerror_info()) -> no_return().
 
-process_top_loop(#concuerror_info{processes = Processes} = Info, Symbolic) ->
-  true = ets:insert(Processes, ?new_process(self(), Symbolic)),
+process_top_loop(Info) ->
   ?debug_flag(?wait, top_waiting),
   receive
     {start, Module, Name, Args} ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
-      StartInfo = set_status(Info, running),
       %% It is ok for this load to fail
       concuerror_loader:load(Module, Info#concuerror_info.modules),
-      put(concuerror_info, StartInfo),
+      put(concuerror_info, Info),
       try
         erlang:apply(Module, Name, Args),
         exit(normal)
@@ -943,10 +944,11 @@ process_loop(Info) ->
            processes = Processes} = init_concuerror_info(Info),
       _ = erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
+      ets:insert(Processes, ?new_process(self(), Symbol)),
       ets:match_delete(EtsTables, ?ets_match_mine()),
       ets:match_delete(Links, ?links_match_mine()),
       ets:match_delete(Monitors, ?monitors_match_mine()),
-      erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo, Symbol]);
+      erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo]);
     deadlock_poll ->
       Info
   end.
