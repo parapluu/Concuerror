@@ -56,7 +56,7 @@ options() ->
   ,{output, [logger], $o, "output", {string, "results.txt"},
     "Output file."}
   ,{symbolic, [logger], $s, "symbolic", {boolean, false},
-    "Use symbolic names for process identifiers. Requires 'meck'"}
+    "Use symbolic names for process identifiers."}
   ,{patha, [frontend, logger], undefined, "pa", string,
     "Add directory to the front of the code path."}
   ,{pathz, [frontend, logger], undefined, "pz", string,
@@ -73,18 +73,22 @@ options() ->
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
   ,{assume_racing, [logger, scheduler], undefined, "assume_racing", {boolean, true},
     "If there is no info about whether a specific pair of built-ins may race,"
-    " assume that they do indeed race. Set to false to detect missing dependency"
-    " info."}
+    " assume that they do indeed race. Set this to false to detect missing"
+    " dependency info."}
   ,{'after-timeout', [logger, process], $a, "after", {integer, infinite},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
-    " will never be triggered, unless no other process can progress."}
-  ,{bound, [logger, scheduler], $b, "bound", {integer, -1},
-    "Preemption bound (-1 for infinite)."}
-  ,{distributed, [logger, scheduler], $d, "distributed", {boolean, true},
-    "Use distributed Erlang semantics: messages are not delivered immediately"
-    " after being sent."}
-  ,{'light-dpor', [logger, scheduler], $l, "light-dpor", {boolean, false},
-    "Use lightweight (source) DPOR instead of optimal."}
+    " will never be triggered."} %% XXX, unless no other process can progress."}
+  ,{normal_exit, [logger, scheduler], undefined, "treat_as_normal", {atom, normal},
+    "Specify exit reasons that are considered 'normal' and not reported as"
+    " crashes. Useful e.g. when analyzing supervisors ('shutdown' is probably"
+    " also a normal reason in this case)."}
+  %% ,{bound, [logger, scheduler], $b, "bound", {integer, -1},
+  %%   "Preemption bound (-1 for infinite)."}
+  %% ,{distributed, [logger, scheduler], $d, "distributed", {boolean, true},
+  %%   "Use distributed Erlang semantics: messages are not delivered immediately"
+  %%   " after being sent."}
+  %% ,{'light-dpor', [logger, scheduler], $l, "light-dpor", {boolean, false},
+  %%   "Use lightweight (source) DPOR instead of optimal."}
   ,{version, [frontend], undefined, "version", undefined,
     "Display version information about Concuerror."}
   ,{wait, [logger, scheduler], $w, "wait", {integer, ?MINIMUM_TIMEOUT},
@@ -139,6 +143,10 @@ finalize([], Acc) -> Acc;
 finalize([{quiet, true}|Rest], Acc) ->
   NewRest = proplists:delete(verbose, proplists:delete(quiet, Rest)),
   finalize(NewRest, [{verbose, 0}|Acc]);
+finalize([{normal_exit, N}|Rest], Acc) ->
+  Normals = [normal,N|proplists:get_all_values(normal_exit, Rest)],
+  NewRest = proplists:delete(normal_exit, Rest),
+  finalize(NewRest, [{normal_exit, lists:usort(Normals)}|Acc]);
 finalize([{verbose, N}|Rest], Acc) ->
   case proplists:is_defined(quiet, Rest) =:= true andalso N =/= 0 of
     true ->

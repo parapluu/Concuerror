@@ -45,6 +45,7 @@
           first_process         :: {pid(), mfargs()},
           logger                :: pid(),
           message_info          :: message_info(),
+          normal_exit = [normal]:: [atom()],
           options          = [] :: proplists:proplist(),
           processes             :: processes(),
           trace            = [] :: [trace_state()],
@@ -65,9 +66,9 @@ run(Options) ->
     false ->
       ok
   end,
-  [Processes, Logger, Target, Wait, AssumeRacing] =
+  [Processes, Logger, Target, Wait, AssumeRacing, NormalExit] =
     get_properties(
-      [processes, logger, target, wait, assume_racing],
+      [processes, logger, target, wait, assume_racing, normal_exit],
       Options),
   ProcessOptions =
     [O || O <- Options, concuerror_options:filter_options('process', O)],
@@ -80,6 +81,7 @@ run(Options) ->
        first_process = {FirstProcess, Target},
        logger = Logger,
        message_info = ets:new(message_info, [private]),
+       normal_exit = NormalExit,
        options = Options,
        processes = Processes,
        trace = [InitialTrace],
@@ -278,14 +280,18 @@ update_state(#event{actor = Actor, special = Special} = Event,
   NewState = maybe_log_crash(Event, InitNewState, Index),
   {ok, update_special(Special, NewState)}.
 
-maybe_log_crash(Event, State, Index) ->
+maybe_log_crash(Event, #scheduler_state{normal_exit = Normal} = State, Index) ->
   case Event#event.event_info of
-    #exit_event{reason = Reason} = Exit when Reason =/= normal ->
-      #event{actor = Actor} = Event,
-      Warnings = State#scheduler_state.current_warnings,
-      Stacktrace = Exit#exit_event.stacktrace,
-      NewWarnings = [{crash, {Index, Actor, Reason, Stacktrace}}|Warnings],
-      State#scheduler_state{current_warnings = NewWarnings};
+    #exit_event{reason = Reason} = Exit ->
+      case lists:member(Reason, Normal) of
+        true -> State;
+        false ->
+          #event{actor = Actor} = Event,
+          Warnings = State#scheduler_state.current_warnings,
+          Stacktrace = Exit#exit_event.stacktrace,
+          NewWarnings = [{crash, {Index, Actor, Reason, Stacktrace}}|Warnings],
+          State#scheduler_state{current_warnings = NewWarnings}
+      end;
     _ -> State
   end.
 
