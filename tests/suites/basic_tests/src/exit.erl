@@ -13,10 +13,10 @@
 
 -module(exit).
 -export([scenarios/0]).
--export([test1/0, test2/0, test3/0, test4/0, test5/0]).
+-export([test1/0, test2/0, test3/0, test4/0, test5/0, test6/0]).
 
 scenarios() ->
-    [{N,inf,dpor} || N <- [test1,test2,test3,test4,test5]].
+    [{N,inf,dpor} || N <- [test1,test2,test3,test4,test5,test6]].
 
 test1() ->
     Pid = spawn(fun() ->
@@ -50,3 +50,8 @@ test5() ->
                         receive infinity -> ok end
                 end),
     exit(Pid, kill).
+
+test6() ->
+    spawn_link(fun() -> exit(crash_1) end),
+    spawn_link(fun() -> exit(crash_2) end),
+    exit(crash_main).

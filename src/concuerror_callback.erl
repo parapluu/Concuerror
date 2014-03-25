@@ -50,6 +50,7 @@
 
 -record(concuerror_info, {
           'after-timeout'            :: infinite | integer(),
+          caught_signal = false      :: boolean(),
           escaped_pdict = []         :: term(),
           ets_tables                 :: ets_tables(),
           exit_reason = normal       :: term(),
@@ -229,7 +230,12 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
     ?debug_flag(?args, {args, Args}),
     ?debug_flag(?result, {args, Value}),
     EventInfo =
-      #builtin_event{extra = Extra, mfa = {Module, Name, Args}, result = Value},
+      #builtin_event{
+         exiting = Location =:= exit,
+         extra = Extra,
+         mfa = {Module, Name, Args},
+         result = Value
+        },
     Notification = Event#event{event_info = EventInfo},
     NewInfo = notify(Notification, UpdatedInfo),
     {{didit, Value}, NewInfo}
@@ -877,18 +883,13 @@ process_loop(Info) ->
     {exit_signal, #message{data = {'EXIT', _From, Reason}} = Message} ->
       Scheduler = Info#concuerror_info.scheduler,
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
-      case is_active(Info) of
+      case is_active(Info) andalso not Info#concuerror_info.caught_signal of
         true ->
-          %% XXX: Verify that this is the correct behaviour
-          %% NewInfo =
-          %%   Info#concuerror_info{
-          %%     links = ordsets:del_element(From, Info#concuerror_info.links)
-          %%    },
           case Reason =:= kill of
             true ->
               ?debug_flag(?wait, {waiting, kill_signal}),
               Scheduler ! {trapping, Trapping},
-              exiting(killed, [], Info);
+              exiting(killed, [], Info#concuerror_info{caught_signal = true});
             false ->
               case Trapping of
                 true ->
@@ -903,7 +904,7 @@ process_loop(Info) ->
                       process_loop(Info);
                     false ->
                       ?debug_flag(?wait, {waiting, exiting_signal}),
-                      exiting(Reason, [], Info)
+                      exiting(Reason, [], Info#concuerror_info{caught_signal = true})
                   end
               end
           end;

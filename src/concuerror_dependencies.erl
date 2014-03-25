@@ -61,7 +61,8 @@ dependent(#builtin_event{mfa = MFA}, #exit_event{} = Exit) ->
 dependent(#exit_event{} = Exit, #builtin_event{} = Builtin) ->
   dependent(Builtin, Exit);
 
-dependent(#builtin_event{actor = Actor, trapping = Trapping} = Builtin,
+dependent(#builtin_event{actor = Actor, exiting = false,
+                         trapping = Trapping} = Builtin,
           #message_event{message = #message{data = {'EXIT', _, Reason}},
                          recipient = Recipient, type = exit_signal}) ->
   #builtin_event{mfa = MFA, result = Old} = Builtin,

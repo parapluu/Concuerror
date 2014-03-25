@@ -159,6 +159,7 @@
 -record(builtin_event, {
           actor = self()   :: pid(),
           extra            :: term(),
+          exiting = false  :: boolean(),
           mfa              :: mfargs(),
           result           :: term(),
           status = ok      :: 'ok' | {'crashed', term()} | 'unknown',

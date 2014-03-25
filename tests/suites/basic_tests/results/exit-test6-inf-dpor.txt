@@ -1,0 +1,413 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{exit,test6,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 3 process P exited abnormally
+    Reason:
+      crash_main
+    Stacktrace:
+      [{exit,test6,0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,57}]}]
+* At step 8 process P.1 exited abnormally
+    Reason:
+      crash_main
+    Stacktrace:
+      []
+* At step 11 process P.2 exited abnormally
+    Reason:
+      crash_main
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<exit.6.30000528>,[]])
+    in erlang.erl line 2350
+   3: P: exits abnormally (crash_main)
+   4: P: true = erlang:exit(P.1, crash_main)
+    (while exiting)
+   5: Exit signal (crash_main) from P reaches P.1
+   6: P: true = erlang:exit(P.2, crash_main)
+    (while exiting)
+   7: Exit signal (crash_main) from P reaches P.2
+   8: P.1: exits abnormally (crash_main)
+   9: P.1: true = erlang:exit(P, crash_main)
+    (while exiting)
+  10: Exit signal (crash_main) from P.1 reaches P
+  11: P.2: exits abnormally (crash_main)
+  12: P.2: true = erlang:exit(P, crash_main)
+    (while exiting)
+  13: Exit signal (crash_main) from P.2 reaches P
+################################################################################
+Erroneous interleaving 2:
+* At step 3 process P exited abnormally
+    Reason:
+      crash_main
+    Stacktrace:
+      [{exit,test6,0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,57}]}]
+* At step 7 process P.1 exited abnormally
+    Reason:
+      crash_main
+    Stacktrace:
+      []
+* At step 10 process P.2 exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      [{exit,'-test6/0-fun-1-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,56}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<exit.6.30000528>,[]])
+    in erlang.erl line 2350
+   3: P: exits abnormally (crash_main)
+   4: P: true = erlang:exit(P.1, crash_main)
+    (while exiting)
+   5: Exit signal (crash_main) from P reaches P.1
+   6: P: true = erlang:exit(P.2, crash_main)
+    (while exiting)
+   7: P.1: exits abnormally (crash_main)
+   8: P.1: true = erlang:exit(P, crash_main)
+    (while exiting)
+   9: Exit signal (crash_main) from P.1 reaches P
+  10: P.2: exits abnormally (crash_2)
+  11: Exit signal (crash_main) from P reaches P.2
+  12: P.2: true = erlang:exit(P, crash_2)
+    (while exiting)
+  13: Exit signal (crash_2) from P.2 reaches P
+################################################################################
+Erroneous interleaving 3:
+* At step 3 process P exited abnormally
+    Reason:
+      crash_main
+    Stacktrace:
+      [{exit,test6,0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,57}]}]
+* At step 7 process P.2 exited abnormally
+    Reason:
+      crash_main
+    Stacktrace:
+      []
+* At step 10 process P.1 exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      [{exit,'-test6/0-fun-0-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,55}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<exit.6.30000528>,[]])
+    in erlang.erl line 2350
+   3: P: exits abnormally (crash_main)
+   4: P: true = erlang:exit(P.1, crash_main)
+    (while exiting)
+   5: P: true = erlang:exit(P.2, crash_main)
+    (while exiting)
+   6: Exit signal (crash_main) from P reaches P.2
+   7: P.2: exits abnormally (crash_main)
+   8: P.2: true = erlang:exit(P, crash_main)
+    (while exiting)
+   9: Exit signal (crash_main) from P.2 reaches P
+  10: P.1: exits abnormally (crash_1)
+  11: Exit signal (crash_main) from P reaches P.1
+  12: P.1: true = erlang:exit(P, crash_1)
+    (while exiting)
+  13: Exit signal (crash_1) from P.1 reaches P
+################################################################################
+Erroneous interleaving 4:
+* At step 3 process P exited abnormally
+    Reason:
+      crash_main
+    Stacktrace:
+      [{exit,test6,0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,57}]}]
+* At step 6 process P.2 exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      [{exit,'-test6/0-fun-1-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,56}]}]
+* At step 10 process P.1 exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      [{exit,'-test6/0-fun-0-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,55}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<exit.6.30000528>,[]])
+    in erlang.erl line 2350
+   3: P: exits abnormally (crash_main)
+   4: P: true = erlang:exit(P.1, crash_main)
+    (while exiting)
+   5: P: true = erlang:exit(P.2, crash_main)
+    (while exiting)
+   6: P.2: exits abnormally (crash_2)
+   7: Exit signal (crash_main) from P reaches P.2
+   8: P.2: true = erlang:exit(P, crash_2)
+    (while exiting)
+   9: Exit signal (crash_2) from P.2 reaches P
+  10: P.1: exits abnormally (crash_1)
+  11: Exit signal (crash_main) from P reaches P.1
+  12: P.1: true = erlang:exit(P, crash_1)
+    (while exiting)
+  13: Exit signal (crash_1) from P.1 reaches P
+################################################################################
+Erroneous interleaving 5:
+* At step 3 process P.2 exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      [{exit,'-test6/0-fun-1-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,56}]}]
+* At step 6 process P exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      []
+* At step 11 process P.1 exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<exit.6.30000528>,[]])
+    in erlang.erl line 2350
+   3: P.2: exits abnormally (crash_2)
+   4: P.2: true = erlang:exit(P, crash_2)
+    (while exiting)
+   5: Exit signal (crash_2) from P.2 reaches P
+   6: P: exits abnormally (crash_2)
+   7: P: true = erlang:exit(P.1, crash_2)
+    (while exiting)
+   8: Exit signal (crash_2) from P reaches P.1
+   9: P: true = erlang:exit(P.2, crash_2)
+    (while exiting)
+  10: Exit signal (crash_2) from P reaches P.2
+  11: P.1: exits abnormally (crash_2)
+  12: P.1: true = erlang:exit(P, crash_2)
+    (while exiting)
+  13: Exit signal (crash_2) from P.1 reaches P
+################################################################################
+Erroneous interleaving 6:
+* At step 3 process P.2 exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      [{exit,'-test6/0-fun-1-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,56}]}]
+* At step 6 process P exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      []
+* At step 10 process P.1 exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      [{exit,'-test6/0-fun-0-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,55}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<exit.6.30000528>,[]])
+    in erlang.erl line 2350
+   3: P.2: exits abnormally (crash_2)
+   4: P.2: true = erlang:exit(P, crash_2)
+    (while exiting)
+   5: Exit signal (crash_2) from P.2 reaches P
+   6: P: exits abnormally (crash_2)
+   7: P: true = erlang:exit(P.1, crash_2)
+    (while exiting)
+   8: P: true = erlang:exit(P.2, crash_2)
+    (while exiting)
+   9: Exit signal (crash_2) from P reaches P.2
+  10: P.1: exits abnormally (crash_1)
+  11: Exit signal (crash_2) from P reaches P.1
+  12: P.1: true = erlang:exit(P, crash_1)
+    (while exiting)
+  13: Exit signal (crash_1) from P.1 reaches P
+################################################################################
+Erroneous interleaving 7:
+* At step 3 process P.2 exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      [{exit,'-test6/0-fun-1-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,56}]}]
+* At step 6 process P.1 exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      [{exit,'-test6/0-fun-0-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,55}]}]
+* At step 9 process P exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<exit.6.30000528>,[]])
+    in erlang.erl line 2350
+   3: P.2: exits abnormally (crash_2)
+   4: P.2: true = erlang:exit(P, crash_2)
+    (while exiting)
+   5: Exit signal (crash_2) from P.2 reaches P
+   6: P.1: exits abnormally (crash_1)
+   7: P.1: true = erlang:exit(P, crash_1)
+    (while exiting)
+   8: Exit signal (crash_1) from P.1 reaches P
+   9: P: exits abnormally (crash_2)
+  10: P: true = erlang:exit(P.1, crash_2)
+    (while exiting)
+  11: Exit signal (crash_2) from P reaches P.1
+  12: P: true = erlang:exit(P.2, crash_2)
+    (while exiting)
+  13: Exit signal (crash_2) from P reaches P.2
+################################################################################
+Erroneous interleaving 8:
+* At step 3 process P.2 exited abnormally
+    Reason:
+      crash_2
+    Stacktrace:
+      [{exit,'-test6/0-fun-1-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,56}]}]
+* At step 5 process P.1 exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      [{exit,'-test6/0-fun-0-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,55}]}]
+* At step 8 process P exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<exit.6.30000528>,[]])
+    in erlang.erl line 2350
+   3: P.2: exits abnormally (crash_2)
+   4: P.2: true = erlang:exit(P, crash_2)
+    (while exiting)
+   5: P.1: exits abnormally (crash_1)
+   6: P.1: true = erlang:exit(P, crash_1)
+    (while exiting)
+   7: Exit signal (crash_1) from P.1 reaches P
+   8: P: exits abnormally (crash_1)
+   9: Exit signal (crash_2) from P.2 reaches P
+  10: P: true = erlang:exit(P.1, crash_1)
+    (while exiting)
+  11: Exit signal (crash_1) from P reaches P.1
+  12: P: true = erlang:exit(P.2, crash_1)
+    (while exiting)
+  13: Exit signal (crash_1) from P reaches P.2
+################################################################################
+Erroneous interleaving 9:
+* At step 3 process P.1 exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      [{exit,'-test6/0-fun-0-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,55}]}]
+* At step 6 process P exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      []
+* At step 11 process P.2 exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P: P.2 = erlang:spawn_link(erlang, apply, [#Fun<exit.6.30000528>,[]])
+    in erlang.erl line 2350
+   3: P.1: exits abnormally (crash_1)
+   4: P.1: true = erlang:exit(P, crash_1)
+    (while exiting)
+   5: Exit signal (crash_1) from P.1 reaches P
+   6: P: exits abnormally (crash_1)
+   7: P: true = erlang:exit(P.1, crash_1)
+    (while exiting)
+   8: Exit signal (crash_1) from P reaches P.1
+   9: P: true = erlang:exit(P.2, crash_1)
+    (while exiting)
+  10: Exit signal (crash_1) from P reaches P.2
+  11: P.2: exits abnormally (crash_1)
+  12: P.2: true = erlang:exit(P, crash_1)
+    (while exiting)
+  13: Exit signal (crash_1) from P.2 reaches P
+################################################################################
+Erroneous interleaving 10:
+* At step 2 process P.1 exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      [{exit,'-test6/0-fun-0-',0,
+             [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/exit.erl"},
+              {line,55}]}]
+* At step 5 process P exited abnormally
+    Reason:
+      crash_1
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<exit.5.30000528>,[]])
+    in erlang.erl line 2350
+   2: P.1: exits abnormally (crash_1)
+   3: P.1: true = erlang:exit(P, crash_1)
+    (while exiting)
+   4: Exit signal (crash_1) from P.1 reaches P
+   5: P: exits abnormally (crash_1)
+   6: P: true = erlang:exit(P.1, crash_1)
+    (while exiting)
+   7: Exit signal (crash_1) from P reaches P.1
+################################################################################
+Done! (Exit status: completed)
+  Summary: 10 errors, 10/10 interleavings explored
