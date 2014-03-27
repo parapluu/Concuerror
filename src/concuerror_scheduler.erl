@@ -821,9 +821,9 @@ assert_no_messages() ->
 
 explain_error({process_did_not_respond, Wait, #event{actor = Actor}}) ->
   io_lib:format( 
-    "A process took more than ~pms to report a built-in event. You can try~n"
-    "increasing the --wait limit and/or ensure that there are no infinite~n"
-    "loops in your test. (Process: ~p)",
+    "A process took more than ~pms to report a built-in event. You can try to"
+    " increase the --wait limit and/or ensure that there are no infinite"
+    " loops in your test. (Process: ~p)",
     [Wait, Actor]
    );
 explain_error({replay_mismatch, I, Event, NewEvent}) ->

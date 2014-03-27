@@ -11,6 +11,8 @@
 %% Interface for resetting:
 -export([process_top_loop/1]).
 
+-export([explain_error/1]).
+
 %%------------------------------------------------------------------------------
 
 %% DEBUGGING SETTINGS
@@ -1162,7 +1164,9 @@ system_wrapper_loop(Name, Wrapped, Scheduler) ->
         error_logger ->
           erlang:send(Wrapped, Data),
           Scheduler ! {trapping, false},
-          ok
+          ok;
+        Else ->
+          ?crash({unknown_protocol_for_system, Else})
       end
   end,
   system_wrapper_loop(Name, Wrapped, Scheduler).
@@ -1223,3 +1227,11 @@ fix_stacktrace(#concuerror_info{stacktop = Top}) ->
       RemoveInspect = lists:keydelete(concuerror_inspect, 1, RemoveSelf),
       [Top|RemoveInspect]
   end.
+
+-spec explain_error(term()) -> string().
+
+explain_error({unknown_protocol_for_system, System}) ->
+  io_lib:format(
+    "A process tried to communicate with system process ~p. Concuerror does not"
+    " currently support communication with this process. Please contact the"
+    " developers for more information.",[System]).
