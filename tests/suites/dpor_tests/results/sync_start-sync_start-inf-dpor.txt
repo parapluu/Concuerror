@@ -1,0 +1,361 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/sync_start.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{sync_start,sync_start,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sync_start.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   3: P: table = ets:new(table, [named_table,public])
+    in sync_start.erl line 14
+   4: P: true = ets:insert(table, {pids,[P.1,P.2]})
+    in sync_start.erl line 15
+   5: P: ok = P.1 ! ok
+    in sync_start.erl line 16
+   6: Message (ok) from P reaches P.1
+   7: P: ok = P.2 ! ok
+    in sync_start.erl line 16
+   8: Message (ok) from P reaches P.2
+   9: P.1: receives message (ok)
+    in sync_start.erl line 25
+  10: P.1: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  11: P.1: ok = P.2 ! ok
+    in sync_start.erl line 28
+  12: Message (ok) from P.1 reaches P.2
+  13: P.2: receives message (ok)
+    in sync_start.erl line 25
+  14: P.2: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  15: P.2: ok = P.1 ! ok
+    in sync_start.erl line 28
+  16: Message (ok) from P.2 reaches P.1
+  17: P.1: receives message (ok)
+    in sync_start.erl line 29
+  18: P.1: true = ets:insert(table, {P.1,1})
+    in sync_start.erl line 30
+  19: P.1: ok = P ! ok
+    in sync_start.erl line 31
+  20: Message (ok) from P.1 reaches P
+  21: P: receives message (ok)
+    in sync_start.erl line 17
+  22: P.1: exits normally
+  23: P.2: receives message (ok)
+    in sync_start.erl line 29
+  24: P.2: true = ets:insert(table, {P.2,2})
+    in sync_start.erl line 30
+  25: P.2: ok = P ! ok
+    in sync_start.erl line 31
+  26: Message (ok) from P.2 reaches P
+  27: P: receives message (ok)
+    in sync_start.erl line 17
+  28: P: 1 = ets:lookup_element(table, P.1, 2)
+    in sync_start.erl line 18
+  29: P: 2 = ets:lookup_element(table, P.2, 2)
+    in sync_start.erl line 18
+  30: P.2: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sync_start.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   3: P: table = ets:new(table, [named_table,public])
+    in sync_start.erl line 14
+   4: P: true = ets:insert(table, {pids,[P.1,P.2]})
+    in sync_start.erl line 15
+   5: P: ok = P.1 ! ok
+    in sync_start.erl line 16
+   6: Message (ok) from P reaches P.1
+   7: P: ok = P.2 ! ok
+    in sync_start.erl line 16
+   8: Message (ok) from P reaches P.2
+   9: P.1: receives message (ok)
+    in sync_start.erl line 25
+  10: P.1: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  11: P.1: ok = P.2 ! ok
+    in sync_start.erl line 28
+  12: Message (ok) from P.1 reaches P.2
+  13: P.2: receives message (ok)
+    in sync_start.erl line 25
+  14: P.2: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  15: P.2: ok = P.1 ! ok
+    in sync_start.erl line 28
+  16: Message (ok) from P.2 reaches P.1
+  17: P.1: receives message (ok)
+    in sync_start.erl line 29
+  18: P.1: true = ets:insert(table, {P.1,1})
+    in sync_start.erl line 30
+  19: P.1: ok = P ! ok
+    in sync_start.erl line 31
+  20: P.1: exits normally
+  21: P.2: receives message (ok)
+    in sync_start.erl line 29
+  22: P.2: true = ets:insert(table, {P.2,2})
+    in sync_start.erl line 30
+  23: P.2: ok = P ! ok
+    in sync_start.erl line 31
+  24: P.2: exits normally
+  25: Message (ok) from P.2 reaches P
+  26: Message (ok) from P.1 reaches P
+  27: P: receives message (ok)
+    in sync_start.erl line 17
+  28: P: receives message (ok)
+    in sync_start.erl line 17
+  29: P: 1 = ets:lookup_element(table, P.1, 2)
+    in sync_start.erl line 18
+  30: P: 2 = ets:lookup_element(table, P.2, 2)
+    in sync_start.erl line 18
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sync_start.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   3: P: table = ets:new(table, [named_table,public])
+    in sync_start.erl line 14
+   4: P: true = ets:insert(table, {pids,[P.1,P.2]})
+    in sync_start.erl line 15
+   5: P: ok = P.1 ! ok
+    in sync_start.erl line 16
+   6: Message (ok) from P reaches P.1
+   7: P: ok = P.2 ! ok
+    in sync_start.erl line 16
+   8: P.1: receives message (ok)
+    in sync_start.erl line 25
+   9: P.1: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  10: P.1: ok = P.2 ! ok
+    in sync_start.erl line 28
+  11: Message (ok) from P.1 reaches P.2
+  12: Message (ok) from P reaches P.2
+  13: P.2: receives message (ok)
+    in sync_start.erl line 25
+  14: P.2: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  15: P.2: ok = P.1 ! ok
+    in sync_start.erl line 28
+  16: Message (ok) from P.2 reaches P.1
+  17: P.1: receives message (ok)
+    in sync_start.erl line 29
+  18: P.1: true = ets:insert(table, {P.1,1})
+    in sync_start.erl line 30
+  19: P.1: ok = P ! ok
+    in sync_start.erl line 31
+  20: Message (ok) from P.1 reaches P
+  21: P: receives message (ok)
+    in sync_start.erl line 17
+  22: P.1: exits normally
+  23: P.2: receives message (ok)
+    in sync_start.erl line 29
+  24: P.2: true = ets:insert(table, {P.2,2})
+    in sync_start.erl line 30
+  25: P.2: ok = P ! ok
+    in sync_start.erl line 31
+  26: Message (ok) from P.2 reaches P
+  27: P: receives message (ok)
+    in sync_start.erl line 17
+  28: P: 1 = ets:lookup_element(table, P.1, 2)
+    in sync_start.erl line 18
+  29: P: 2 = ets:lookup_element(table, P.2, 2)
+    in sync_start.erl line 18
+  30: P.2: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sync_start.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   3: P: table = ets:new(table, [named_table,public])
+    in sync_start.erl line 14
+   4: P: true = ets:insert(table, {pids,[P.1,P.2]})
+    in sync_start.erl line 15
+   5: P: ok = P.1 ! ok
+    in sync_start.erl line 16
+   6: Message (ok) from P reaches P.1
+   7: P: ok = P.2 ! ok
+    in sync_start.erl line 16
+   8: P.1: receives message (ok)
+    in sync_start.erl line 25
+   9: P.1: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  10: P.1: ok = P.2 ! ok
+    in sync_start.erl line 28
+  11: Message (ok) from P.1 reaches P.2
+  12: Message (ok) from P reaches P.2
+  13: P.2: receives message (ok)
+    in sync_start.erl line 25
+  14: P.2: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  15: P.2: ok = P.1 ! ok
+    in sync_start.erl line 28
+  16: Message (ok) from P.2 reaches P.1
+  17: P.1: receives message (ok)
+    in sync_start.erl line 29
+  18: P.1: true = ets:insert(table, {P.1,1})
+    in sync_start.erl line 30
+  19: P.1: ok = P ! ok
+    in sync_start.erl line 31
+  20: P.1: exits normally
+  21: P.2: receives message (ok)
+    in sync_start.erl line 29
+  22: P.2: true = ets:insert(table, {P.2,2})
+    in sync_start.erl line 30
+  23: P.2: ok = P ! ok
+    in sync_start.erl line 31
+  24: P.2: exits normally
+  25: Message (ok) from P.2 reaches P
+  26: Message (ok) from P.1 reaches P
+  27: P: receives message (ok)
+    in sync_start.erl line 17
+  28: P: receives message (ok)
+    in sync_start.erl line 17
+  29: P: 1 = ets:lookup_element(table, P.1, 2)
+    in sync_start.erl line 18
+  30: P: 2 = ets:lookup_element(table, P.2, 2)
+    in sync_start.erl line 18
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sync_start.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   3: P: table = ets:new(table, [named_table,public])
+    in sync_start.erl line 14
+   4: P: true = ets:insert(table, {pids,[P.1,P.2]})
+    in sync_start.erl line 15
+   5: P: ok = P.1 ! ok
+    in sync_start.erl line 16
+   6: P: ok = P.2 ! ok
+    in sync_start.erl line 16
+   7: Message (ok) from P reaches P.2
+   8: P.2: receives message (ok)
+    in sync_start.erl line 25
+   9: P.2: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  10: P.2: ok = P.1 ! ok
+    in sync_start.erl line 28
+  11: Message (ok) from P.2 reaches P.1
+  12: Message (ok) from P reaches P.1
+  13: P.1: receives message (ok)
+    in sync_start.erl line 25
+  14: P.1: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  15: P.1: ok = P.2 ! ok
+    in sync_start.erl line 28
+  16: Message (ok) from P.1 reaches P.2
+  17: P.1: receives message (ok)
+    in sync_start.erl line 29
+  18: P.1: true = ets:insert(table, {P.1,1})
+    in sync_start.erl line 30
+  19: P.1: ok = P ! ok
+    in sync_start.erl line 31
+  20: Message (ok) from P.1 reaches P
+  21: P: receives message (ok)
+    in sync_start.erl line 17
+  22: P.1: exits normally
+  23: P.2: receives message (ok)
+    in sync_start.erl line 29
+  24: P.2: true = ets:insert(table, {P.2,2})
+    in sync_start.erl line 30
+  25: P.2: ok = P ! ok
+    in sync_start.erl line 31
+  26: Message (ok) from P.2 reaches P
+  27: P: receives message (ok)
+    in sync_start.erl line 17
+  28: P: 1 = ets:lookup_element(table, P.1, 2)
+    in sync_start.erl line 18
+  29: P: 2 = ets:lookup_element(table, P.2, 2)
+    in sync_start.erl line 18
+  30: P.2: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sync_start.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sync_start.4.28577447>,[]])
+    in erlang.erl line 2329
+   3: P: table = ets:new(table, [named_table,public])
+    in sync_start.erl line 14
+   4: P: true = ets:insert(table, {pids,[P.1,P.2]})
+    in sync_start.erl line 15
+   5: P: ok = P.1 ! ok
+    in sync_start.erl line 16
+   6: P: ok = P.2 ! ok
+    in sync_start.erl line 16
+   7: Message (ok) from P reaches P.2
+   8: P.2: receives message (ok)
+    in sync_start.erl line 25
+   9: P.2: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  10: P.2: ok = P.1 ! ok
+    in sync_start.erl line 28
+  11: Message (ok) from P.2 reaches P.1
+  12: Message (ok) from P reaches P.1
+  13: P.1: receives message (ok)
+    in sync_start.erl line 25
+  14: P.1: [P.1,P.2] = ets:lookup_element(table, pids, 2)
+    in sync_start.erl line 27
+  15: P.1: ok = P.2 ! ok
+    in sync_start.erl line 28
+  16: Message (ok) from P.1 reaches P.2
+  17: P.1: receives message (ok)
+    in sync_start.erl line 29
+  18: P.1: true = ets:insert(table, {P.1,1})
+    in sync_start.erl line 30
+  19: P.1: ok = P ! ok
+    in sync_start.erl line 31
+  20: P.1: exits normally
+  21: P.2: receives message (ok)
+    in sync_start.erl line 29
+  22: P.2: true = ets:insert(table, {P.2,2})
+    in sync_start.erl line 30
+  23: P.2: ok = P ! ok
+    in sync_start.erl line 31
+  24: P.2: exits normally
+  25: Message (ok) from P.2 reaches P
+  26: Message (ok) from P.1 reaches P
+  27: P: receives message (ok)
+    in sync_start.erl line 17
+  28: P: receives message (ok)
+    in sync_start.erl line 17
+  29: P: 1 = ets:lookup_element(table, P.1, 2)
+    in sync_start.erl line 18
+  30: P: 2 = ets:lookup_element(table, P.2, 2)
+    in sync_start.erl line 18
+################################################################################
+Done! (Exit status: completed)
+  Summary: 6 errors, 6/6 interleavings explored

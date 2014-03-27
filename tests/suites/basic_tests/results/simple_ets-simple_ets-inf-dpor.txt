@@ -1,0 +1,175 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/simple_ets.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{simple_ets,simple_ets,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 20 process P exited abnormally
+    Reason:
+      {{case_clause,{eulav,souffle}},
+       [{simple_ets,simple_ets,0,
+                    [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/simple_ets.erl"},
+                     {line,33}]}]}
+    Stacktrace:
+      [{simple_ets,simple_ets,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/simple_ets.erl"},
+                    {line,33}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: simple_ets = ets:new(simple_ets, [public,named_table])
+    in simple_ets.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<simple_ets.1.42806511>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<simple_ets.2.42806511>,[]])
+    in erlang.erl line 2329
+   4: P: ok = P.2 ! ok
+    in simple_ets.erl line 28
+   5: Message (ok) from P reaches P.2
+   6: P.1: true = ets:insert(simple_ets, {key,value})
+    in simple_ets.erl line 13
+   7: P.1: true = ets:insert(simple_ets, {key,new_value})
+    in simple_ets.erl line 13
+   8: P.2: true = ets:insert(simple_ets, {key,eulav})
+    in simple_ets.erl line 13
+   9: P.2: true = ets:insert(simple_ets, {clef,elffuos})
+    in simple_ets.erl line 13
+  10: P.1: true = ets:insert(simple_ets, {clef,souffle})
+    in simple_ets.erl line 13
+  11: P.2: receives message (ok)
+    in simple_ets.erl line 24
+  12: P.2: ok = P.1 ! ok
+    in simple_ets.erl line 25
+  13: Message (ok) from P.2 reaches P.1
+  14: P.1: receives message (ok)
+    in simple_ets.erl line 18
+  15: P.1: ok = P ! ok
+    in simple_ets.erl line 19
+  16: Message (ok) from P.1 reaches P
+  17: P: receives message (ok)
+    in simple_ets.erl line 29
+  18: P: [{key,eulav}] = ets:lookup(simple_ets, key)
+    in simple_ets.erl line 31
+  19: P: [{clef,souffle}] = ets:lookup(simple_ets, clef)
+    in simple_ets.erl line 32
+  20: P: exits abnormally ({{case_clause,{eulav,souffle}},[{simple_ets,simple_ets,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,105,109,112,108,101,95,101,116,115,46,101,114,108]},{line,33}]}]})
+  21: P: true = ets:delete(simple_ets)
+    (while exiting)
+  22: P.1: exits normally
+  23: P.2: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 20 process P exited abnormally
+    Reason:
+      {{case_clause,{new_value,elffuos}},
+       [{simple_ets,simple_ets,0,
+                    [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/simple_ets.erl"},
+                     {line,33}]}]}
+    Stacktrace:
+      [{simple_ets,simple_ets,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/simple_ets.erl"},
+                    {line,33}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: simple_ets = ets:new(simple_ets, [public,named_table])
+    in simple_ets.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<simple_ets.1.42806511>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<simple_ets.2.42806511>,[]])
+    in erlang.erl line 2329
+   4: P: ok = P.2 ! ok
+    in simple_ets.erl line 28
+   5: Message (ok) from P reaches P.2
+   6: P.1: true = ets:insert(simple_ets, {key,value})
+    in simple_ets.erl line 13
+   7: P.2: true = ets:insert(simple_ets, {key,eulav})
+    in simple_ets.erl line 13
+   8: P.1: true = ets:insert(simple_ets, {key,new_value})
+    in simple_ets.erl line 13
+   9: P.1: true = ets:insert(simple_ets, {clef,souffle})
+    in simple_ets.erl line 13
+  10: P.2: true = ets:insert(simple_ets, {clef,elffuos})
+    in simple_ets.erl line 13
+  11: P.2: receives message (ok)
+    in simple_ets.erl line 24
+  12: P.2: ok = P.1 ! ok
+    in simple_ets.erl line 25
+  13: Message (ok) from P.2 reaches P.1
+  14: P.1: receives message (ok)
+    in simple_ets.erl line 18
+  15: P.1: ok = P ! ok
+    in simple_ets.erl line 19
+  16: Message (ok) from P.1 reaches P
+  17: P: receives message (ok)
+    in simple_ets.erl line 29
+  18: P: [{key,new_value}] = ets:lookup(simple_ets, key)
+    in simple_ets.erl line 31
+  19: P: [{clef,elffuos}] = ets:lookup(simple_ets, clef)
+    in simple_ets.erl line 32
+  20: P: exits abnormally ({{case_clause,{new_value,elffuos}},[{simple_ets,simple_ets,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,105,109,112,108,101,95,101,116,115,46,101,114,108]},{line,33}]}]})
+  21: P: true = ets:delete(simple_ets)
+    (while exiting)
+  22: P.1: exits normally
+  23: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* At step 20 process P exited abnormally
+    Reason:
+      {{case_clause,{new_value,elffuos}},
+       [{simple_ets,simple_ets,0,
+                    [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/simple_ets.erl"},
+                     {line,33}]}]}
+    Stacktrace:
+      [{simple_ets,simple_ets,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/simple_ets.erl"},
+                    {line,33}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: simple_ets = ets:new(simple_ets, [public,named_table])
+    in simple_ets.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<simple_ets.1.42806511>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<simple_ets.2.42806511>,[]])
+    in erlang.erl line 2329
+   4: P: ok = P.2 ! ok
+    in simple_ets.erl line 28
+   5: Message (ok) from P reaches P.2
+   6: P.2: true = ets:insert(simple_ets, {key,eulav})
+    in simple_ets.erl line 13
+   7: P.1: true = ets:insert(simple_ets, {key,value})
+    in simple_ets.erl line 13
+   8: P.1: true = ets:insert(simple_ets, {key,new_value})
+    in simple_ets.erl line 13
+   9: P.1: true = ets:insert(simple_ets, {clef,souffle})
+    in simple_ets.erl line 13
+  10: P.2: true = ets:insert(simple_ets, {clef,elffuos})
+    in simple_ets.erl line 13
+  11: P.2: receives message (ok)
+    in simple_ets.erl line 24
+  12: P.2: ok = P.1 ! ok
+    in simple_ets.erl line 25
+  13: Message (ok) from P.2 reaches P.1
+  14: P.1: receives message (ok)
+    in simple_ets.erl line 18
+  15: P.1: ok = P ! ok
+    in simple_ets.erl line 19
+  16: Message (ok) from P.1 reaches P
+  17: P: receives message (ok)
+    in simple_ets.erl line 29
+  18: P: [{key,new_value}] = ets:lookup(simple_ets, key)
+    in simple_ets.erl line 31
+  19: P: [{clef,elffuos}] = ets:lookup(simple_ets, clef)
+    in simple_ets.erl line 32
+  20: P: exits abnormally ({{case_clause,{new_value,elffuos}},[{simple_ets,simple_ets,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,105,109,112,108,101,95,101,116,115,46,101,114,108]},{line,33}]}]})
+  21: P: true = ets:delete(simple_ets)
+    (while exiting)
+  22: P.1: exits normally
+  23: P.2: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 3 errors, 6/6 interleavings explored

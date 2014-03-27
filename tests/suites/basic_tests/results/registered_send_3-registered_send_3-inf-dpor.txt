@@ -1,0 +1,76 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_3.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{registered_send_3,registered_send_3,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 8 process P exited abnormally
+    Reason:
+      {badarg,[{erlang,'!',
+                       [child,foo],
+                       [17,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_3.erl"}]}]}
+    Stacktrace:
+      [{erlang,'!',
+               [child,foo],
+               [17,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_3.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<registered_send_3.0.121249298>,[]])
+    in erlang.erl line 2329
+   2: P: ok = P.1 ! ok
+    in registered_send_3.erl line 15
+   3: Message (ok) from P reaches P.1
+   4: P: true = erlang:register(child, P.1)
+    in registered_send_3.erl line 16
+   5: P.1: receives message (ok)
+    in registered_send_3.erl line 11
+   6: P.1: exits normally
+   7: P: Exception badarg raised by: child ! foo
+    in registered_send_3.erl line 17
+   8: P: exits abnormally ({badarg,[{erlang,'!',[child,foo],[17,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,114,101,103,105,115,116,101,114,101,100,95,115,101,110,100,95,51,46,101,114,108]}]}]})
+################################################################################
+Erroneous interleaving 2:
+* At step 7 process P exited abnormally
+    Reason:
+      {badarg,
+          [{erlang,register,
+               [child,P.1],
+               [16,
+                {file,
+                    "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_3.erl"}]},
+           {registered_send_3,registered_send_3,0,
+               [{file,
+                    "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_3.erl"},
+                {line,16}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [child,P.1],
+               [16,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_3.erl"}]},
+       {registered_send_3,registered_send_3,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_3.erl"},
+                           {line,16}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<registered_send_3.0.121249298>,[]])
+    in erlang.erl line 2329
+   2: P: ok = P.1 ! ok
+    in registered_send_3.erl line 15
+   3: Message (ok) from P reaches P.1
+   4: P.1: receives message (ok)
+    in registered_send_3.erl line 11
+   5: P.1: exits normally
+   6: P: Exception badarg raised by: erlang:register(child, P.1)
+    in registered_send_3.erl line 16
+   7: P: exits abnormally ({badarg,[{erlang,register,[child,P.1],[16,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,114,101,103,105,115,116,101,114,101,100,95,115,101,110,100,95,51,46,101,114,108]}]},{registered_send_3,registered_send_3,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,114,101,103,105,115,116,101,114,101,100,95,115,101,110,100,95,51,46,101,114,108]},{line,16}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 3/3 interleavings explored

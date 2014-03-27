@@ -1,0 +1,15 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/workers_2.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{workers_2,workers_2,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+  No errors found!
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1296/1296 interleavings explored

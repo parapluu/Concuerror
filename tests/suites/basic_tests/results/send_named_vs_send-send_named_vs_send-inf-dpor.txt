@@ -1,0 +1,239 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{send_named_vs_send,send_named_vs_send,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in send_named_vs_send.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(name, P)
+    in send_named_vs_send.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.0.81546321>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.1.81546321>,[]])
+    in erlang.erl line 2329
+   4: P.1: message_1 = name ! message_1
+    in send_named_vs_send.erl line 10
+   5: Message (message_1) from P.1 reaches P
+   6: P: receives message (message_1)
+    in send_named_vs_send.erl line 20
+   7: P.1: exits normally
+   8: P.2: true = erlang:unregister(name)
+    in send_named_vs_send.erl line 12
+   9: P.2: true = erlang:register(name, P.2)
+    in send_named_vs_send.erl line 13
+  10: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.4.81546321>,[]])
+    in erlang.erl line 2329
+  11: P.2.1: message_2 = name ! message_2
+    in send_named_vs_send.erl line 14
+  12: Message (message_2) from P.2.1 reaches P.2
+  13: P.2: receives message (message_2)
+    in send_named_vs_send.erl line 15
+  14: P.2: exits normally
+  15: P.2.1: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 6 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,'!',
+                       [name,message_1],
+                       [10,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"}]}]}
+    Stacktrace:
+      [{erlang,'!',
+               [name,message_1],
+               [10,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"}]}]
+* Blocked at a 'receive' (when all other processes have exited):
+    P in send_named_vs_send.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(name, P)
+    in send_named_vs_send.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.0.81546321>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.1.81546321>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = erlang:unregister(name)
+    in send_named_vs_send.erl line 12
+   5: P.1: Exception badarg raised by: name ! message_1
+    in send_named_vs_send.erl line 10
+   6: P.1: exits abnormally ({badarg,[{erlang,'!',[name,message_1],[10,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,101,110,100,95,110,97,109,101,100,95,118,115,95,115,101,110,100,46,101,114,108]}]}]})
+   7: P.2: true = erlang:register(name, P.2)
+    in send_named_vs_send.erl line 13
+   8: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.4.81546321>,[]])
+    in erlang.erl line 2329
+   9: P.2.1: message_2 = name ! message_2
+    in send_named_vs_send.erl line 14
+  10: Message (message_2) from P.2.1 reaches P.2
+  11: P.2: receives message (message_2)
+    in send_named_vs_send.erl line 15
+  12: P.2: exits normally
+  13: P.2.1: exits normally
+################################################################################
+Erroneous interleaving 3:
+* At step 11 process P.2 exited abnormally
+    Reason:
+      {{nocatch,error},
+       [{send_named_vs_send,'-send_named_vs_send/0-fun-2-',0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{send_named_vs_send,'-send_named_vs_send/0-fun-2-',0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"},
+                            {line,17}]}]
+* At step 13 process P.2.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,'!',
+                       [name,message_2],
+                       [14,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"}]}]}
+    Stacktrace:
+      [{erlang,'!',
+               [name,message_2],
+               [14,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"}]}]
+* Blocked at a 'receive' (when all other processes have exited):
+    P in send_named_vs_send.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(name, P)
+    in send_named_vs_send.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.0.81546321>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.1.81546321>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = erlang:unregister(name)
+    in send_named_vs_send.erl line 12
+   5: P.2: true = erlang:register(name, P.2)
+    in send_named_vs_send.erl line 13
+   6: P.1: message_1 = name ! message_1
+    in send_named_vs_send.erl line 10
+   7: Message (message_1) from P.1 reaches P.2
+   8: P.1: exits normally
+   9: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.4.81546321>,[]])
+    in erlang.erl line 2329
+  10: P.2: receives message (message_1)
+    in send_named_vs_send.erl line 15
+  11: P.2: exits abnormally ({{nocatch,error},[{send_named_vs_send,'-send_named_vs_send/0-fun-2-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,101,110,100,95,110,97,109,101,100,95,118,115,95,115,101,110,100,46,101,114,108]},{line,17}]}]})
+  12: P.2.1: Exception badarg raised by: name ! message_2
+    in send_named_vs_send.erl line 14
+  13: P.2.1: exits abnormally ({badarg,[{erlang,'!',[name,message_2],[14,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,101,110,100,95,110,97,109,101,100,95,118,115,95,115,101,110,100,46,101,114,108]}]}]})
+################################################################################
+Erroneous interleaving 4:
+* At step 13 process P.2 exited abnormally
+    Reason:
+      {{nocatch,error},
+       [{send_named_vs_send,'-send_named_vs_send/0-fun-2-',0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{send_named_vs_send,'-send_named_vs_send/0-fun-2-',0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"},
+                            {line,17}]}]
+* Blocked at a 'receive' (when all other processes have exited):
+    P in send_named_vs_send.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(name, P)
+    in send_named_vs_send.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.0.81546321>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.1.81546321>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = erlang:unregister(name)
+    in send_named_vs_send.erl line 12
+   5: P.2: true = erlang:register(name, P.2)
+    in send_named_vs_send.erl line 13
+   6: P.1: message_1 = name ! message_1
+    in send_named_vs_send.erl line 10
+   7: Message (message_1) from P.1 reaches P.2
+   8: P.1: exits normally
+   9: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.4.81546321>,[]])
+    in erlang.erl line 2329
+  10: P.2: receives message (message_1)
+    in send_named_vs_send.erl line 15
+  11: P.2.1: message_2 = name ! message_2
+    in send_named_vs_send.erl line 14
+  12: Message (message_2) from P.2.1 reaches P.2
+  13: P.2: exits abnormally ({{nocatch,error},[{send_named_vs_send,'-send_named_vs_send/0-fun-2-',0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,101,110,100,95,110,97,109,101,100,95,118,115,95,115,101,110,100,46,101,114,108]},{line,17}]}]})
+  14: P.2.1: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in send_named_vs_send.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(name, P)
+    in send_named_vs_send.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.0.81546321>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.1.81546321>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = erlang:unregister(name)
+    in send_named_vs_send.erl line 12
+   5: P.2: true = erlang:register(name, P.2)
+    in send_named_vs_send.erl line 13
+   6: P.1: message_1 = name ! message_1
+    in send_named_vs_send.erl line 10
+   7: P.1: exits normally
+   8: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.4.81546321>,[]])
+    in erlang.erl line 2329
+   9: P.2.1: message_2 = name ! message_2
+    in send_named_vs_send.erl line 14
+  10: P.2.1: exits normally
+  11: Message (message_2) from P.2.1 reaches P.2
+  12: Message (message_1) from P.1 reaches P.2
+  13: P.2: receives message (message_2)
+    in send_named_vs_send.erl line 15
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 6:
+* At step 13 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,'!',
+                       [name,message_1],
+                       [10,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"}]}]}
+    Stacktrace:
+      [{erlang,'!',
+               [name,message_1],
+               [10,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_named_vs_send.erl"}]}]
+* Blocked at a 'receive' (when all other processes have exited):
+    P in send_named_vs_send.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: true = erlang:register(name, P)
+    in send_named_vs_send.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.0.81546321>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.1.81546321>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = erlang:unregister(name)
+    in send_named_vs_send.erl line 12
+   5: P.2: true = erlang:register(name, P.2)
+    in send_named_vs_send.erl line 13
+   6: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<send_named_vs_send.4.81546321>,[]])
+    in erlang.erl line 2329
+   7: P.2.1: message_2 = name ! message_2
+    in send_named_vs_send.erl line 14
+   8: P.2.1: exits normally
+   9: Message (message_2) from P.2.1 reaches P.2
+  10: P.2: receives message (message_2)
+    in send_named_vs_send.erl line 15
+  11: P.2: exits normally
+  12: P.1: Exception badarg raised by: name ! message_1
+    in send_named_vs_send.erl line 10
+  13: P.1: exits abnormally ({badarg,[{erlang,'!',[name,message_1],[10,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,101,110,100,95,110,97,109,101,100,95,118,115,95,115,101,110,100,46,101,114,108]}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 6 errors, 6/6 interleavings explored

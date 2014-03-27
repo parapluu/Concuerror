@@ -1,0 +1,1301 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/sleeping_races_5.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{sleeping_races_5,sleeping_races_5,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  13: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  14: P.2: exits normally
+  15: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  16: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  17: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  18: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  19: P.3: exits normally
+  20: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  21: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  22: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  23: P.4: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  24: P.4: exits normally
+  25: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  26: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  27: P.5: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  15: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  16: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  17: P.5: exits normally
+  18: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  19: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  20: P.2: exits normally
+  21: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  22: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  23: P.3: exits normally
+  24: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  25: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  26: P.4: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  27: P.4: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  15: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  16: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  17: P.5: exits normally
+  18: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  19: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  20: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  21: P.3: exits normally
+  22: P.4: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  23: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  24: P.2: exits normally
+  25: P.4: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  11: P.1: exits normally
+  12: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  15: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  16: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  17: P.5: exits normally
+  18: P.4: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  19: P.4: exits normally
+  20: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  21: P.2: exits normally
+  22: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  23: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  25: P.3: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  12: P.2: exits normally
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  17: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  18: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  19: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  20: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  21: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  22: P.1: exits normally
+  23: P.3: exits normally
+  24: P.4: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  25: P.4: exits normally
+  26: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  27: P.5: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  12: P.2: exits normally
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  17: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  18: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  19: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  20: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  21: P.3: exits normally
+  22: P.4: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  23: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  24: P.1: exits normally
+  25: P.4: exits normally
+  26: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  27: P.5: exits normally
+################################################################################
+Erroneous interleaving 7:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  12: P.2: exits normally
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  17: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  18: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  19: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  20: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  21: P.3: exits normally
+  22: P.4: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  23: P.4: exits normally
+  24: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  25: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  26: P.1: exits normally
+  27: P.5: exits normally
+################################################################################
+Erroneous interleaving 8:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  12: P.2: exits normally
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  17: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  18: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  19: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  20: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  21: P.3: exits normally
+  22: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  23: P.5: exits normally
+  24: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  25: P.1: exits normally
+  26: P.4: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  27: P.4: exits normally
+################################################################################
+Erroneous interleaving 9:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  12: P.2: exits normally
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  17: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  18: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  19: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  20: P.4: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  21: P.4: exits normally
+  22: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  23: P.1: exits normally
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  25: P.3: exits normally
+  26: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  27: P.5: exits normally
+################################################################################
+Erroneous interleaving 10:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  12: P.2: exits normally
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  17: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  18: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  19: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  20: P.4: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  21: P.4: exits normally
+  22: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  23: P.5: exits normally
+  24: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  25: P.1: exits normally
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  27: P.3: exits normally
+################################################################################
+Erroneous interleaving 11:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  12: P.2: exits normally
+  13: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  14: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  17: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  18: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  19: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  20: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  21: P.5: exits normally
+  22: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  23: P.1: exits normally
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  25: P.3: exits normally
+  26: P.4: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  27: P.4: exits normally
+################################################################################
+Erroneous interleaving 12:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  16: P.2: exits normally
+  17: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  18: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  19: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  20: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  21: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  22: P.1: exits normally
+  23: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  24: P.3: exits normally
+  25: P.4: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  26: P.4: exits normally
+  27: P.5: exits normally
+################################################################################
+Erroneous interleaving 13:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  16: P.2: exits normally
+  17: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  18: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  19: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  20: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  21: P.5: exits normally
+  22: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  23: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  24: P.1: exits normally
+  25: P.3: exits normally
+  26: P.4: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  27: P.4: exits normally
+################################################################################
+Erroneous interleaving 14:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  16: P.2: exits normally
+  17: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  18: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  19: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  20: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  21: P.5: exits normally
+  22: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  23: P.3: exits normally
+  24: P.4: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  25: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  26: P.1: exits normally
+  27: P.4: exits normally
+################################################################################
+Erroneous interleaving 15:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  16: P.2: exits normally
+  17: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  18: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  19: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  20: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  21: P.5: exits normally
+  22: P.4: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  23: P.4: exits normally
+  24: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  25: P.1: exits normally
+  26: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  27: P.3: exits normally
+################################################################################
+Erroneous interleaving 16:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  16: P.2: exits normally
+  17: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  18: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  19: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  20: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  21: P.3: exits normally
+  22: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  23: P.1: exits normally
+  24: P.4: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  25: P.4: exits normally
+  26: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  27: P.5: exits normally
+################################################################################
+Erroneous interleaving 17:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  16: P.2: exits normally
+  17: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  18: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  19: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  20: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  21: P.3: exits normally
+  22: P.4: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  23: P.4: exits normally
+  24: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  25: P.1: exits normally
+  26: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  27: P.5: exits normally
+################################################################################
+Erroneous interleaving 18:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  16: P.2: exits normally
+  17: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  18: P.4: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  19: P.4: true = ets:insert(table, {P.4,33})
+    in sleeping_races_5.erl line 33
+  20: P.4: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 34
+  21: P.4: exits normally
+  22: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  23: P.1: exits normally
+  24: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  25: P.3: exits normally
+  26: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  27: P.5: exits normally
+################################################################################
+Erroneous interleaving 19:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  17: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  18: P.2: exits normally
+  19: P.4: exits normally
+  20: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  21: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  22: P.1: exits normally
+  23: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  24: P.3: exits normally
+  25: P.5: exits normally
+################################################################################
+Erroneous interleaving 20:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  17: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  18: P.2: exits normally
+  19: P.4: exits normally
+  20: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  21: P.5: exits normally
+  22: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  23: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  24: P.1: exits normally
+  25: P.3: exits normally
+################################################################################
+Erroneous interleaving 21:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.3: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  15: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  16: P.4: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  17: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  18: P.2: exits normally
+  19: P.4: exits normally
+  20: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  21: P.3: exits normally
+  22: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  23: P.1: exits normally
+  24: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  25: P.5: exits normally
+################################################################################
+Erroneous interleaving 22:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.4: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  15: P.4: exits normally
+  16: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  17: P.2: exits normally
+  18: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  19: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  20: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  21: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  22: P.1: exits normally
+  23: P.3: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  24: P.3: exits normally
+  25: P.5: exits normally
+################################################################################
+Erroneous interleaving 23:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.4: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  15: P.4: exits normally
+  16: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  17: P.2: exits normally
+  18: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  19: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  20: P.5: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  21: P.5: exits normally
+  22: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  23: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  24: P.1: exits normally
+  25: P.3: exits normally
+################################################################################
+Erroneous interleaving 24:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in sleeping_races_5.erl line 44
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in sleeping_races_5.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in sleeping_races_5.erl line 11
+   3: P: true = ets:insert(table, {y,0})
+    in sleeping_races_5.erl line 12
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.0.58618631>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.1.58618631>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.2.58618631>,[]])
+    in erlang.erl line 2329
+   7: P: P.4 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.3.58618631>,[]])
+    in erlang.erl line 2329
+   8: P: P.5 = erlang:spawn(erlang, apply, [#Fun<sleeping_races_5.4.58618631>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {P.1,14})
+    in sleeping_races_5.erl line 14
+  10: P.2: true = ets:insert(table, {P.2,18})
+    in sleeping_races_5.erl line 18
+  11: P.3: true = ets:insert(table, {P.3,22})
+    in sleeping_races_5.erl line 22
+  12: P.4: true = ets:insert(table, {P.4,28})
+    in sleeping_races_5.erl line 28
+  13: P.5: true = ets:insert(table, {P.5,38})
+    in sleeping_races_5.erl line 38
+  14: P.4: [{x,0}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 29
+  15: P.4: exits normally
+  16: P.2: true = ets:insert(table, {x,1})
+    in sleeping_races_5.erl line 19
+  17: P.2: exits normally
+  18: P.3: [{x,1}] = ets:lookup(table, x)
+    in sleeping_races_5.erl line 23
+  19: P.3: true = ets:insert(table, {P.3,24})
+    in sleeping_races_5.erl line 24
+  20: P.3: [{y,0}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 25
+  21: P.3: exits normally
+  22: P.1: true = ets:insert(table, {y,1})
+    in sleeping_races_5.erl line 15
+  23: P.1: exits normally
+  24: P.5: [{y,1}] = ets:lookup(table, y)
+    in sleeping_races_5.erl line 39
+  25: P.5: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 24 errors, 24/24 interleavings explored

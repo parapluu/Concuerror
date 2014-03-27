@@ -1,0 +1,27 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/report_blocks.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{report_blocks,test,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in report_blocks.erl line 15
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<report_blocks.0.96117319>,[]])
+    in erlang.erl line 2329
+   2: P.1: ok = P ! ok
+    in report_blocks.erl line 11
+   3: Message (ok) from P.1 reaches P
+   4: P: receives message (ok)
+    in report_blocks.erl line 12
+   5: P.1: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

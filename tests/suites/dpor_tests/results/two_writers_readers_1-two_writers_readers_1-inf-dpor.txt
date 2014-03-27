@@ -1,0 +1,310 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/two_writers_readers_1.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{two_writers_readers_1,two_writers_readers_1,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in two_writers_readers_1.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in two_writers_readers_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in two_writers_readers_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in two_writers_readers_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.0.40718896>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in two_writers_readers_1.erl line 13
+   8: P.1: true = ets:insert(table, {x,2})
+    in two_writers_readers_1.erl line 14
+   9: P.1: exits normally
+  10: P.2: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+  11: P.2: [{x,2}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  12: P.2: exits normally
+  13: P.3: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+  14: P.3: [{x,2}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  15: P.3: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in two_writers_readers_1.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in two_writers_readers_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in two_writers_readers_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in two_writers_readers_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.0.40718896>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in two_writers_readers_1.erl line 13
+   8: P.2: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+  10: P.2: [{x,1}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  11: P.1: true = ets:insert(table, {x,2})
+    in two_writers_readers_1.erl line 14
+  12: P.1: exits normally
+  13: P.2: exits normally
+  14: P.3: [{x,2}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  15: P.3: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in two_writers_readers_1.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in two_writers_readers_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in two_writers_readers_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in two_writers_readers_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.0.40718896>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in two_writers_readers_1.erl line 13
+   8: P.2: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+  10: P.2: [{x,1}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  11: P.2: exits normally
+  12: P.3: [{x,1}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  13: P.1: true = ets:insert(table, {x,2})
+    in two_writers_readers_1.erl line 14
+  14: P.1: exits normally
+  15: P.3: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in two_writers_readers_1.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in two_writers_readers_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in two_writers_readers_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in two_writers_readers_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.0.40718896>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   7: P.1: true = ets:insert(table, {x,1})
+    in two_writers_readers_1.erl line 13
+   8: P.2: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+  10: P.3: [{x,1}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  11: P.3: exits normally
+  12: P.1: true = ets:insert(table, {x,2})
+    in two_writers_readers_1.erl line 14
+  13: P.1: exits normally
+  14: P.2: [{x,2}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  15: P.2: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in two_writers_readers_1.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in two_writers_readers_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in two_writers_readers_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in two_writers_readers_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.0.40718896>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   7: P.2: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   8: P.3: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  10: P.1: true = ets:insert(table, {x,1})
+    in two_writers_readers_1.erl line 13
+  11: P.1: true = ets:insert(table, {x,2})
+    in two_writers_readers_1.erl line 14
+  12: P.1: exits normally
+  13: P.2: exits normally
+  14: P.3: [{x,2}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  15: P.3: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in two_writers_readers_1.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in two_writers_readers_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in two_writers_readers_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in two_writers_readers_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.0.40718896>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   7: P.2: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   8: P.3: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  10: P.1: true = ets:insert(table, {x,1})
+    in two_writers_readers_1.erl line 13
+  11: P.2: exits normally
+  12: P.3: [{x,1}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  13: P.1: true = ets:insert(table, {x,2})
+    in two_writers_readers_1.erl line 14
+  14: P.1: exits normally
+  15: P.3: exits normally
+################################################################################
+Erroneous interleaving 7:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in two_writers_readers_1.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in two_writers_readers_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in two_writers_readers_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in two_writers_readers_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.0.40718896>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   7: P.2: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   8: P.3: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  10: P.2: exits normally
+  11: P.3: [{x,0}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  12: P.1: true = ets:insert(table, {x,1})
+    in two_writers_readers_1.erl line 13
+  13: P.1: true = ets:insert(table, {x,2})
+    in two_writers_readers_1.erl line 14
+  14: P.1: exits normally
+  15: P.3: exits normally
+################################################################################
+Erroneous interleaving 8:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in two_writers_readers_1.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in two_writers_readers_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in two_writers_readers_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in two_writers_readers_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.0.40718896>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   7: P.2: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   8: P.3: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  10: P.3: exits normally
+  11: P.1: true = ets:insert(table, {x,1})
+    in two_writers_readers_1.erl line 13
+  12: P.1: true = ets:insert(table, {x,2})
+    in two_writers_readers_1.erl line 14
+  13: P.1: exits normally
+  14: P.2: [{x,2}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  15: P.2: exits normally
+################################################################################
+Erroneous interleaving 9:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in two_writers_readers_1.erl line 23
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in two_writers_readers_1.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in two_writers_readers_1.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in two_writers_readers_1.erl line 11
+   4: P: P.1 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.0.40718896>,[]])
+    in erlang.erl line 2329
+   5: P: P.2 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   6: P: P.3 = erlang:spawn(erlang, apply, [#Fun<two_writers_readers_1.1.40718896>,[]])
+    in erlang.erl line 2329
+   7: P.2: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   8: P.3: [{y,0}] = ets:lookup(table, y)
+    in two_writers_readers_1.erl line 18
+   9: P.3: [{x,0}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  10: P.3: exits normally
+  11: P.1: true = ets:insert(table, {x,1})
+    in two_writers_readers_1.erl line 13
+  12: P.2: [{x,1}] = ets:lookup(table, x)
+    in two_writers_readers_1.erl line 19
+  13: P.1: true = ets:insert(table, {x,2})
+    in two_writers_readers_1.erl line 14
+  14: P.1: exits normally
+  15: P.2: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 9 errors, 9/9 interleavings explored

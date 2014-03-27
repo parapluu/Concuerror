@@ -1,0 +1,15 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/shared_ptr.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{shared_ptr,shared_ptr,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+  No errors found!
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 822/822 interleavings explored

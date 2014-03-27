@@ -1,0 +1,957 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{tricky_predecessors,tricky_predecessors,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 52 process P exited abnormally
+    Reason:
+      {{nocatch,[1,1,1]},
+       [{tricky_predecessors,tricky_predecessors,0,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                              {line,34}]}]}
+    Stacktrace:
+      [{tricky_predecessors,tricky_predecessors,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                             {line,34}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in tricky_predecessors.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in tricky_predecessors.erl line 11
+   3: P: true = ets:insert(table, {l1,false})
+    in tricky_predecessors.erl line 12
+   4: P: true = ets:insert(table, {l2,false})
+    in tricky_predecessors.erl line 13
+   5: P: true = ets:insert(table, {l3,false})
+    in tricky_predecessors.erl line 14
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  12: P: ok = P.6 ! ok
+    in tricky_predecessors.erl line 24
+  13: Message (ok) from P reaches P.6
+  14: P: true = ets:insert(table, {x,1})
+    in tricky_predecessors.erl line 25
+  15: P.1: true = ets:insert(table, {l1,true})
+    in tricky_predecessors.erl line 60
+  16: P.2: true = ets:insert(table, {l2,true})
+    in tricky_predecessors.erl line 60
+  17: P.3: true = ets:insert(table, {l3,true})
+    in tricky_predecessors.erl line 60
+  18: P.4: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 41
+  19: P.4: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 42
+  20: P.4: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  21: P.4: true = ets:insert(table, {{l1,l2},1})
+    in tricky_predecessors.erl line 51
+  22: P.5: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 41
+  23: P.5: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 42
+  24: P.5: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  25: P.5: true = ets:insert(table, {{l2,l3},1})
+    in tricky_predecessors.erl line 51
+  26: P.6: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 41
+  27: P.6: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 42
+  28: P.6: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  29: P.6: true = ets:insert(table, {{l3,l1},1})
+    in tricky_predecessors.erl line 51
+  30: P.6: receives message (ok)
+    in tricky_predecessors.erl line 52
+  31: P.6: ok = P.5 ! ok
+    in tricky_predecessors.erl line 53
+  32: Message (ok) from P.6 reaches P.5
+  33: P.5: receives message (ok)
+    in tricky_predecessors.erl line 52
+  34: P.5: ok = P.4 ! ok
+    in tricky_predecessors.erl line 53
+  35: Message (ok) from P.5 reaches P.4
+  36: P.4: receives message (ok)
+    in tricky_predecessors.erl line 52
+  37: P.4: ok = P.3 ! ok
+    in tricky_predecessors.erl line 53
+  38: Message (ok) from P.4 reaches P.3
+  39: P.3: receives message (ok)
+    in tricky_predecessors.erl line 61
+  40: P.3: ok = P.2 ! ok
+    in tricky_predecessors.erl line 62
+  41: Message (ok) from P.3 reaches P.2
+  42: P.2: receives message (ok)
+    in tricky_predecessors.erl line 61
+  43: P.2: ok = P.1 ! ok
+    in tricky_predecessors.erl line 62
+  44: Message (ok) from P.2 reaches P.1
+  45: P.1: receives message (ok)
+    in tricky_predecessors.erl line 61
+  46: P.1: ok = P ! ok
+    in tricky_predecessors.erl line 62
+  47: Message (ok) from P.1 reaches P
+  48: P: receives message (ok)
+    in tricky_predecessors.erl line 26
+  49: P: [{{l1,l2},1}] = ets:lookup(table, {l1,l2})
+    in tricky_predecessors.erl line 28
+  50: P: [{{l2,l3},1}] = ets:lookup(table, {l2,l3})
+    in tricky_predecessors.erl line 29
+  51: P: [{{l3,l1},1}] = ets:lookup(table, {l3,l1})
+    in tricky_predecessors.erl line 30
+  52: P: exits abnormally ({{nocatch,[1,1,1]},[{tricky_predecessors,tricky_predecessors,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,116,114,105,99,107,121,95,112,114,101,100,101,99,101,115,115,111,114,115,46,101,114,108]},{line,34}]}]})
+  53: P: true = ets:delete(table)
+    (while exiting)
+  54: P.1: exits normally
+  55: P.2: exits normally
+  56: P.3: exits normally
+  57: P.4: exits normally
+  58: P.5: exits normally
+  59: P.6: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 52 process P exited abnormally
+    Reason:
+      {{nocatch,[0,1,1]},
+       [{tricky_predecessors,tricky_predecessors,0,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                              {line,34}]}]}
+    Stacktrace:
+      [{tricky_predecessors,tricky_predecessors,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                             {line,34}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in tricky_predecessors.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in tricky_predecessors.erl line 11
+   3: P: true = ets:insert(table, {l1,false})
+    in tricky_predecessors.erl line 12
+   4: P: true = ets:insert(table, {l2,false})
+    in tricky_predecessors.erl line 13
+   5: P: true = ets:insert(table, {l3,false})
+    in tricky_predecessors.erl line 14
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  12: P: ok = P.6 ! ok
+    in tricky_predecessors.erl line 24
+  13: Message (ok) from P reaches P.6
+  14: P.1: true = ets:insert(table, {l1,true})
+    in tricky_predecessors.erl line 60
+  15: P.2: true = ets:insert(table, {l2,true})
+    in tricky_predecessors.erl line 60
+  16: P.3: true = ets:insert(table, {l3,true})
+    in tricky_predecessors.erl line 60
+  17: P.4: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 41
+  18: P.4: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 42
+  19: P.5: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 41
+  20: P.5: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 42
+  21: P.6: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 41
+  22: P.6: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 42
+  23: P.4: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  24: P: true = ets:insert(table, {x,1})
+    in tricky_predecessors.erl line 25
+  25: P.4: true = ets:insert(table, {{l1,l2},0})
+    in tricky_predecessors.erl line 51
+  26: P.5: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  27: P.5: true = ets:insert(table, {{l2,l3},1})
+    in tricky_predecessors.erl line 51
+  28: P.6: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  29: P.6: true = ets:insert(table, {{l3,l1},1})
+    in tricky_predecessors.erl line 51
+  30: P.6: receives message (ok)
+    in tricky_predecessors.erl line 52
+  31: P.6: ok = P.5 ! ok
+    in tricky_predecessors.erl line 53
+  32: Message (ok) from P.6 reaches P.5
+  33: P.5: receives message (ok)
+    in tricky_predecessors.erl line 52
+  34: P.5: ok = P.4 ! ok
+    in tricky_predecessors.erl line 53
+  35: Message (ok) from P.5 reaches P.4
+  36: P.4: receives message (ok)
+    in tricky_predecessors.erl line 52
+  37: P.4: ok = P.3 ! ok
+    in tricky_predecessors.erl line 53
+  38: Message (ok) from P.4 reaches P.3
+  39: P.3: receives message (ok)
+    in tricky_predecessors.erl line 61
+  40: P.3: ok = P.2 ! ok
+    in tricky_predecessors.erl line 62
+  41: Message (ok) from P.3 reaches P.2
+  42: P.2: receives message (ok)
+    in tricky_predecessors.erl line 61
+  43: P.2: ok = P.1 ! ok
+    in tricky_predecessors.erl line 62
+  44: Message (ok) from P.2 reaches P.1
+  45: P.1: receives message (ok)
+    in tricky_predecessors.erl line 61
+  46: P.1: ok = P ! ok
+    in tricky_predecessors.erl line 62
+  47: Message (ok) from P.1 reaches P
+  48: P: receives message (ok)
+    in tricky_predecessors.erl line 26
+  49: P: [{{l1,l2},0}] = ets:lookup(table, {l1,l2})
+    in tricky_predecessors.erl line 28
+  50: P: [{{l2,l3},1}] = ets:lookup(table, {l2,l3})
+    in tricky_predecessors.erl line 29
+  51: P: [{{l3,l1},1}] = ets:lookup(table, {l3,l1})
+    in tricky_predecessors.erl line 30
+  52: P: exits abnormally ({{nocatch,[0,1,1]},[{tricky_predecessors,tricky_predecessors,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,116,114,105,99,107,121,95,112,114,101,100,101,99,101,115,115,111,114,115,46,101,114,108]},{line,34}]}]})
+  53: P: true = ets:delete(table)
+    (while exiting)
+  54: P.1: exits normally
+  55: P.2: exits normally
+  56: P.3: exits normally
+  57: P.4: exits normally
+  58: P.5: exits normally
+  59: P.6: exits normally
+################################################################################
+Erroneous interleaving 3:
+* At step 52 process P exited abnormally
+    Reason:
+      {{nocatch,[0,0,1]},
+       [{tricky_predecessors,tricky_predecessors,0,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                              {line,34}]}]}
+    Stacktrace:
+      [{tricky_predecessors,tricky_predecessors,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                             {line,34}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in tricky_predecessors.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in tricky_predecessors.erl line 11
+   3: P: true = ets:insert(table, {l1,false})
+    in tricky_predecessors.erl line 12
+   4: P: true = ets:insert(table, {l2,false})
+    in tricky_predecessors.erl line 13
+   5: P: true = ets:insert(table, {l3,false})
+    in tricky_predecessors.erl line 14
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  12: P: ok = P.6 ! ok
+    in tricky_predecessors.erl line 24
+  13: Message (ok) from P reaches P.6
+  14: P.1: true = ets:insert(table, {l1,true})
+    in tricky_predecessors.erl line 60
+  15: P.2: true = ets:insert(table, {l2,true})
+    in tricky_predecessors.erl line 60
+  16: P.3: true = ets:insert(table, {l3,true})
+    in tricky_predecessors.erl line 60
+  17: P.4: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 41
+  18: P.4: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 42
+  19: P.5: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 41
+  20: P.5: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 42
+  21: P.6: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 41
+  22: P.6: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 42
+  23: P.4: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  24: P.4: true = ets:insert(table, {{l1,l2},0})
+    in tricky_predecessors.erl line 51
+  25: P.5: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  26: P: true = ets:insert(table, {x,1})
+    in tricky_predecessors.erl line 25
+  27: P.5: true = ets:insert(table, {{l2,l3},0})
+    in tricky_predecessors.erl line 51
+  28: P.6: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  29: P.6: true = ets:insert(table, {{l3,l1},1})
+    in tricky_predecessors.erl line 51
+  30: P.6: receives message (ok)
+    in tricky_predecessors.erl line 52
+  31: P.6: ok = P.5 ! ok
+    in tricky_predecessors.erl line 53
+  32: Message (ok) from P.6 reaches P.5
+  33: P.5: receives message (ok)
+    in tricky_predecessors.erl line 52
+  34: P.5: ok = P.4 ! ok
+    in tricky_predecessors.erl line 53
+  35: Message (ok) from P.5 reaches P.4
+  36: P.4: receives message (ok)
+    in tricky_predecessors.erl line 52
+  37: P.4: ok = P.3 ! ok
+    in tricky_predecessors.erl line 53
+  38: Message (ok) from P.4 reaches P.3
+  39: P.3: receives message (ok)
+    in tricky_predecessors.erl line 61
+  40: P.3: ok = P.2 ! ok
+    in tricky_predecessors.erl line 62
+  41: Message (ok) from P.3 reaches P.2
+  42: P.2: receives message (ok)
+    in tricky_predecessors.erl line 61
+  43: P.2: ok = P.1 ! ok
+    in tricky_predecessors.erl line 62
+  44: Message (ok) from P.2 reaches P.1
+  45: P.1: receives message (ok)
+    in tricky_predecessors.erl line 61
+  46: P.1: ok = P ! ok
+    in tricky_predecessors.erl line 62
+  47: Message (ok) from P.1 reaches P
+  48: P: receives message (ok)
+    in tricky_predecessors.erl line 26
+  49: P: [{{l1,l2},0}] = ets:lookup(table, {l1,l2})
+    in tricky_predecessors.erl line 28
+  50: P: [{{l2,l3},0}] = ets:lookup(table, {l2,l3})
+    in tricky_predecessors.erl line 29
+  51: P: [{{l3,l1},1}] = ets:lookup(table, {l3,l1})
+    in tricky_predecessors.erl line 30
+  52: P: exits abnormally ({{nocatch,[0,0,1]},[{tricky_predecessors,tricky_predecessors,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,116,114,105,99,107,121,95,112,114,101,100,101,99,101,115,115,111,114,115,46,101,114,108]},{line,34}]}]})
+  53: P: true = ets:delete(table)
+    (while exiting)
+  54: P.1: exits normally
+  55: P.2: exits normally
+  56: P.3: exits normally
+  57: P.4: exits normally
+  58: P.5: exits normally
+  59: P.6: exits normally
+################################################################################
+Erroneous interleaving 4:
+* At step 52 process P exited abnormally
+    Reason:
+      {{nocatch,[0,0,0]},
+       [{tricky_predecessors,tricky_predecessors,0,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                              {line,34}]}]}
+    Stacktrace:
+      [{tricky_predecessors,tricky_predecessors,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                             {line,34}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in tricky_predecessors.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in tricky_predecessors.erl line 11
+   3: P: true = ets:insert(table, {l1,false})
+    in tricky_predecessors.erl line 12
+   4: P: true = ets:insert(table, {l2,false})
+    in tricky_predecessors.erl line 13
+   5: P: true = ets:insert(table, {l3,false})
+    in tricky_predecessors.erl line 14
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  12: P: ok = P.6 ! ok
+    in tricky_predecessors.erl line 24
+  13: Message (ok) from P reaches P.6
+  14: P.1: true = ets:insert(table, {l1,true})
+    in tricky_predecessors.erl line 60
+  15: P.2: true = ets:insert(table, {l2,true})
+    in tricky_predecessors.erl line 60
+  16: P.3: true = ets:insert(table, {l3,true})
+    in tricky_predecessors.erl line 60
+  17: P.4: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 41
+  18: P.4: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 42
+  19: P.5: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 41
+  20: P.5: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 42
+  21: P.6: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 41
+  22: P.6: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 42
+  23: P.4: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  24: P.4: true = ets:insert(table, {{l1,l2},0})
+    in tricky_predecessors.erl line 51
+  25: P.5: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  26: P.5: true = ets:insert(table, {{l2,l3},0})
+    in tricky_predecessors.erl line 51
+  27: P.6: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  28: P: true = ets:insert(table, {x,1})
+    in tricky_predecessors.erl line 25
+  29: P.6: true = ets:insert(table, {{l3,l1},0})
+    in tricky_predecessors.erl line 51
+  30: P.6: receives message (ok)
+    in tricky_predecessors.erl line 52
+  31: P.6: ok = P.5 ! ok
+    in tricky_predecessors.erl line 53
+  32: Message (ok) from P.6 reaches P.5
+  33: P.5: receives message (ok)
+    in tricky_predecessors.erl line 52
+  34: P.5: ok = P.4 ! ok
+    in tricky_predecessors.erl line 53
+  35: Message (ok) from P.5 reaches P.4
+  36: P.4: receives message (ok)
+    in tricky_predecessors.erl line 52
+  37: P.4: ok = P.3 ! ok
+    in tricky_predecessors.erl line 53
+  38: Message (ok) from P.4 reaches P.3
+  39: P.3: receives message (ok)
+    in tricky_predecessors.erl line 61
+  40: P.3: ok = P.2 ! ok
+    in tricky_predecessors.erl line 62
+  41: Message (ok) from P.3 reaches P.2
+  42: P.2: receives message (ok)
+    in tricky_predecessors.erl line 61
+  43: P.2: ok = P.1 ! ok
+    in tricky_predecessors.erl line 62
+  44: Message (ok) from P.2 reaches P.1
+  45: P.1: receives message (ok)
+    in tricky_predecessors.erl line 61
+  46: P.1: ok = P ! ok
+    in tricky_predecessors.erl line 62
+  47: Message (ok) from P.1 reaches P
+  48: P: receives message (ok)
+    in tricky_predecessors.erl line 26
+  49: P: [{{l1,l2},0}] = ets:lookup(table, {l1,l2})
+    in tricky_predecessors.erl line 28
+  50: P: [{{l2,l3},0}] = ets:lookup(table, {l2,l3})
+    in tricky_predecessors.erl line 29
+  51: P: [{{l3,l1},0}] = ets:lookup(table, {l3,l1})
+    in tricky_predecessors.erl line 30
+  52: P: exits abnormally ({{nocatch,[0,0,0]},[{tricky_predecessors,tricky_predecessors,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,116,114,105,99,107,121,95,112,114,101,100,101,99,101,115,115,111,114,115,46,101,114,108]},{line,34}]}]})
+  53: P: true = ets:delete(table)
+    (while exiting)
+  54: P.1: exits normally
+  55: P.2: exits normally
+  56: P.3: exits normally
+  57: P.4: exits normally
+  58: P.5: exits normally
+  59: P.6: exits normally
+################################################################################
+Erroneous interleaving 5:
+* At step 53 process P exited abnormally
+    Reason:
+      {{nocatch,[0,1,0]},
+       [{tricky_predecessors,tricky_predecessors,0,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                              {line,34}]}]}
+    Stacktrace:
+      [{tricky_predecessors,tricky_predecessors,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                             {line,34}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in tricky_predecessors.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in tricky_predecessors.erl line 11
+   3: P: true = ets:insert(table, {l1,false})
+    in tricky_predecessors.erl line 12
+   4: P: true = ets:insert(table, {l2,false})
+    in tricky_predecessors.erl line 13
+   5: P: true = ets:insert(table, {l3,false})
+    in tricky_predecessors.erl line 14
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  12: P: ok = P.6 ! ok
+    in tricky_predecessors.erl line 24
+  13: Message (ok) from P reaches P.6
+  14: P.1: true = ets:insert(table, {l1,true})
+    in tricky_predecessors.erl line 60
+  15: P.2: true = ets:insert(table, {l2,true})
+    in tricky_predecessors.erl line 60
+  16: P.3: true = ets:insert(table, {l3,true})
+    in tricky_predecessors.erl line 60
+  17: P.4: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 41
+  18: P.4: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 42
+  19: P.5: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 41
+  20: P.5: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 42
+  21: P.6: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 41
+  22: P.6: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 42
+  23: P.4: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  24: P.4: true = ets:insert(table, {{l1,l2},0})
+    in tricky_predecessors.erl line 51
+  25: P.6: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  26: P.6: true = ets:insert(table, {{l3,l1},0})
+    in tricky_predecessors.erl line 51
+  27: P.6: receives message (ok)
+    in tricky_predecessors.erl line 52
+  28: P.6: ok = P.5 ! ok
+    in tricky_predecessors.erl line 53
+  29: Message (ok) from P.6 reaches P.5
+  30: P.6: exits normally
+  31: P: true = ets:insert(table, {x,1})
+    in tricky_predecessors.erl line 25
+  32: P.5: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  33: P.5: true = ets:insert(table, {{l2,l3},1})
+    in tricky_predecessors.erl line 51
+  34: P.5: receives message (ok)
+    in tricky_predecessors.erl line 52
+  35: P.5: ok = P.4 ! ok
+    in tricky_predecessors.erl line 53
+  36: Message (ok) from P.5 reaches P.4
+  37: P.4: receives message (ok)
+    in tricky_predecessors.erl line 52
+  38: P.4: ok = P.3 ! ok
+    in tricky_predecessors.erl line 53
+  39: Message (ok) from P.4 reaches P.3
+  40: P.3: receives message (ok)
+    in tricky_predecessors.erl line 61
+  41: P.3: ok = P.2 ! ok
+    in tricky_predecessors.erl line 62
+  42: Message (ok) from P.3 reaches P.2
+  43: P.2: receives message (ok)
+    in tricky_predecessors.erl line 61
+  44: P.2: ok = P.1 ! ok
+    in tricky_predecessors.erl line 62
+  45: Message (ok) from P.2 reaches P.1
+  46: P.1: receives message (ok)
+    in tricky_predecessors.erl line 61
+  47: P.1: ok = P ! ok
+    in tricky_predecessors.erl line 62
+  48: Message (ok) from P.1 reaches P
+  49: P: receives message (ok)
+    in tricky_predecessors.erl line 26
+  50: P: [{{l1,l2},0}] = ets:lookup(table, {l1,l2})
+    in tricky_predecessors.erl line 28
+  51: P: [{{l2,l3},1}] = ets:lookup(table, {l2,l3})
+    in tricky_predecessors.erl line 29
+  52: P: [{{l3,l1},0}] = ets:lookup(table, {l3,l1})
+    in tricky_predecessors.erl line 30
+  53: P: exits abnormally ({{nocatch,[0,1,0]},[{tricky_predecessors,tricky_predecessors,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,116,114,105,99,107,121,95,112,114,101,100,101,99,101,115,115,111,114,115,46,101,114,108]},{line,34}]}]})
+  54: P: true = ets:delete(table)
+    (while exiting)
+  55: P.1: exits normally
+  56: P.2: exits normally
+  57: P.3: exits normally
+  58: P.4: exits normally
+  59: P.5: exits normally
+################################################################################
+Erroneous interleaving 6:
+* At step 52 process P exited abnormally
+    Reason:
+      {{nocatch,[1,0,1]},
+       [{tricky_predecessors,tricky_predecessors,0,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                              {line,34}]}]}
+    Stacktrace:
+      [{tricky_predecessors,tricky_predecessors,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                             {line,34}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in tricky_predecessors.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in tricky_predecessors.erl line 11
+   3: P: true = ets:insert(table, {l1,false})
+    in tricky_predecessors.erl line 12
+   4: P: true = ets:insert(table, {l2,false})
+    in tricky_predecessors.erl line 13
+   5: P: true = ets:insert(table, {l3,false})
+    in tricky_predecessors.erl line 14
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  12: P: ok = P.6 ! ok
+    in tricky_predecessors.erl line 24
+  13: Message (ok) from P reaches P.6
+  14: P.1: true = ets:insert(table, {l1,true})
+    in tricky_predecessors.erl line 60
+  15: P.2: true = ets:insert(table, {l2,true})
+    in tricky_predecessors.erl line 60
+  16: P.3: true = ets:insert(table, {l3,true})
+    in tricky_predecessors.erl line 60
+  17: P.4: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 41
+  18: P.4: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 42
+  19: P.5: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 41
+  20: P.5: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 42
+  21: P.6: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 41
+  22: P.6: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 42
+  23: P.5: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  24: P.5: true = ets:insert(table, {{l2,l3},0})
+    in tricky_predecessors.erl line 51
+  25: P: true = ets:insert(table, {x,1})
+    in tricky_predecessors.erl line 25
+  26: P.4: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  27: P.4: true = ets:insert(table, {{l1,l2},1})
+    in tricky_predecessors.erl line 51
+  28: P.6: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  29: P.6: true = ets:insert(table, {{l3,l1},1})
+    in tricky_predecessors.erl line 51
+  30: P.6: receives message (ok)
+    in tricky_predecessors.erl line 52
+  31: P.6: ok = P.5 ! ok
+    in tricky_predecessors.erl line 53
+  32: Message (ok) from P.6 reaches P.5
+  33: P.5: receives message (ok)
+    in tricky_predecessors.erl line 52
+  34: P.5: ok = P.4 ! ok
+    in tricky_predecessors.erl line 53
+  35: Message (ok) from P.5 reaches P.4
+  36: P.4: receives message (ok)
+    in tricky_predecessors.erl line 52
+  37: P.4: ok = P.3 ! ok
+    in tricky_predecessors.erl line 53
+  38: Message (ok) from P.4 reaches P.3
+  39: P.3: receives message (ok)
+    in tricky_predecessors.erl line 61
+  40: P.3: ok = P.2 ! ok
+    in tricky_predecessors.erl line 62
+  41: Message (ok) from P.3 reaches P.2
+  42: P.2: receives message (ok)
+    in tricky_predecessors.erl line 61
+  43: P.2: ok = P.1 ! ok
+    in tricky_predecessors.erl line 62
+  44: Message (ok) from P.2 reaches P.1
+  45: P.1: receives message (ok)
+    in tricky_predecessors.erl line 61
+  46: P.1: ok = P ! ok
+    in tricky_predecessors.erl line 62
+  47: Message (ok) from P.1 reaches P
+  48: P: receives message (ok)
+    in tricky_predecessors.erl line 26
+  49: P: [{{l1,l2},1}] = ets:lookup(table, {l1,l2})
+    in tricky_predecessors.erl line 28
+  50: P: [{{l2,l3},0}] = ets:lookup(table, {l2,l3})
+    in tricky_predecessors.erl line 29
+  51: P: [{{l3,l1},1}] = ets:lookup(table, {l3,l1})
+    in tricky_predecessors.erl line 30
+  52: P: exits abnormally ({{nocatch,[1,0,1]},[{tricky_predecessors,tricky_predecessors,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,116,114,105,99,107,121,95,112,114,101,100,101,99,101,115,115,111,114,115,46,101,114,108]},{line,34}]}]})
+  53: P: true = ets:delete(table)
+    (while exiting)
+  54: P.1: exits normally
+  55: P.2: exits normally
+  56: P.3: exits normally
+  57: P.4: exits normally
+  58: P.5: exits normally
+  59: P.6: exits normally
+################################################################################
+Erroneous interleaving 7:
+* At step 54 process P exited abnormally
+    Reason:
+      {{nocatch,[1,0,0]},
+       [{tricky_predecessors,tricky_predecessors,0,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                              {line,34}]}]}
+    Stacktrace:
+      [{tricky_predecessors,tricky_predecessors,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                             {line,34}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in tricky_predecessors.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in tricky_predecessors.erl line 11
+   3: P: true = ets:insert(table, {l1,false})
+    in tricky_predecessors.erl line 12
+   4: P: true = ets:insert(table, {l2,false})
+    in tricky_predecessors.erl line 13
+   5: P: true = ets:insert(table, {l3,false})
+    in tricky_predecessors.erl line 14
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  12: P: ok = P.6 ! ok
+    in tricky_predecessors.erl line 24
+  13: Message (ok) from P reaches P.6
+  14: P.1: true = ets:insert(table, {l1,true})
+    in tricky_predecessors.erl line 60
+  15: P.2: true = ets:insert(table, {l2,true})
+    in tricky_predecessors.erl line 60
+  16: P.3: true = ets:insert(table, {l3,true})
+    in tricky_predecessors.erl line 60
+  17: P.4: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 41
+  18: P.4: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 42
+  19: P.5: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 41
+  20: P.5: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 42
+  21: P.6: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 41
+  22: P.6: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 42
+  23: P.5: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  24: P.5: true = ets:insert(table, {{l2,l3},0})
+    in tricky_predecessors.erl line 51
+  25: P.6: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  26: P.6: true = ets:insert(table, {{l3,l1},0})
+    in tricky_predecessors.erl line 51
+  27: P.6: receives message (ok)
+    in tricky_predecessors.erl line 52
+  28: P.6: ok = P.5 ! ok
+    in tricky_predecessors.erl line 53
+  29: Message (ok) from P.6 reaches P.5
+  30: P.5: receives message (ok)
+    in tricky_predecessors.erl line 52
+  31: P.5: ok = P.4 ! ok
+    in tricky_predecessors.erl line 53
+  32: Message (ok) from P.5 reaches P.4
+  33: P.5: exits normally
+  34: P.6: exits normally
+  35: P: true = ets:insert(table, {x,1})
+    in tricky_predecessors.erl line 25
+  36: P.4: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  37: P.4: true = ets:insert(table, {{l1,l2},1})
+    in tricky_predecessors.erl line 51
+  38: P.4: receives message (ok)
+    in tricky_predecessors.erl line 52
+  39: P.4: ok = P.3 ! ok
+    in tricky_predecessors.erl line 53
+  40: Message (ok) from P.4 reaches P.3
+  41: P.3: receives message (ok)
+    in tricky_predecessors.erl line 61
+  42: P.3: ok = P.2 ! ok
+    in tricky_predecessors.erl line 62
+  43: Message (ok) from P.3 reaches P.2
+  44: P.2: receives message (ok)
+    in tricky_predecessors.erl line 61
+  45: P.2: ok = P.1 ! ok
+    in tricky_predecessors.erl line 62
+  46: Message (ok) from P.2 reaches P.1
+  47: P.1: receives message (ok)
+    in tricky_predecessors.erl line 61
+  48: P.1: ok = P ! ok
+    in tricky_predecessors.erl line 62
+  49: Message (ok) from P.1 reaches P
+  50: P: receives message (ok)
+    in tricky_predecessors.erl line 26
+  51: P: [{{l1,l2},1}] = ets:lookup(table, {l1,l2})
+    in tricky_predecessors.erl line 28
+  52: P: [{{l2,l3},0}] = ets:lookup(table, {l2,l3})
+    in tricky_predecessors.erl line 29
+  53: P: [{{l3,l1},0}] = ets:lookup(table, {l3,l1})
+    in tricky_predecessors.erl line 30
+  54: P: exits abnormally ({{nocatch,[1,0,0]},[{tricky_predecessors,tricky_predecessors,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,116,114,105,99,107,121,95,112,114,101,100,101,99,101,115,115,111,114,115,46,101,114,108]},{line,34}]}]})
+  55: P: true = ets:delete(table)
+    (while exiting)
+  56: P.1: exits normally
+  57: P.2: exits normally
+  58: P.3: exits normally
+  59: P.4: exits normally
+################################################################################
+Erroneous interleaving 8:
+* At step 53 process P exited abnormally
+    Reason:
+      {{nocatch,[1,1,0]},
+       [{tricky_predecessors,tricky_predecessors,0,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                              {line,34}]}]}
+    Stacktrace:
+      [{tricky_predecessors,tricky_predecessors,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/tricky_predecessors.erl"},
+                             {line,34}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in tricky_predecessors.erl line 10
+   2: P: true = ets:insert(table, {x,0})
+    in tricky_predecessors.erl line 11
+   3: P: true = ets:insert(table, {l1,false})
+    in tricky_predecessors.erl line 12
+   4: P: true = ets:insert(table, {l2,false})
+    in tricky_predecessors.erl line 13
+   5: P: true = ets:insert(table, {l3,false})
+    in tricky_predecessors.erl line 14
+   6: P: P.1 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   7: P: P.2 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   8: P: P.3 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.2.117051117>,[]])
+    in erlang.erl line 2329
+   9: P: P.4 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  10: P: P.5 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  11: P: P.6 = erlang:spawn(erlang, apply, [#Fun<tricky_predecessors.1.117051117>,[]])
+    in erlang.erl line 2329
+  12: P: ok = P.6 ! ok
+    in tricky_predecessors.erl line 24
+  13: Message (ok) from P reaches P.6
+  14: P.1: true = ets:insert(table, {l1,true})
+    in tricky_predecessors.erl line 60
+  15: P.2: true = ets:insert(table, {l2,true})
+    in tricky_predecessors.erl line 60
+  16: P.3: true = ets:insert(table, {l3,true})
+    in tricky_predecessors.erl line 60
+  17: P.4: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 41
+  18: P.4: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 42
+  19: P.5: [{l2,true}] = ets:lookup(table, l2)
+    in tricky_predecessors.erl line 41
+  20: P.5: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 42
+  21: P.6: [{l3,true}] = ets:lookup(table, l3)
+    in tricky_predecessors.erl line 41
+  22: P.6: [{l1,true}] = ets:lookup(table, l1)
+    in tricky_predecessors.erl line 42
+  23: P.6: [{x,0}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  24: P.6: true = ets:insert(table, {{l3,l1},0})
+    in tricky_predecessors.erl line 51
+  25: P.6: receives message (ok)
+    in tricky_predecessors.erl line 52
+  26: P.6: ok = P.5 ! ok
+    in tricky_predecessors.erl line 53
+  27: Message (ok) from P.6 reaches P.5
+  28: P.6: exits normally
+  29: P: true = ets:insert(table, {x,1})
+    in tricky_predecessors.erl line 25
+  30: P.4: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  31: P.4: true = ets:insert(table, {{l1,l2},1})
+    in tricky_predecessors.erl line 51
+  32: P.5: [{x,1}] = ets:lookup(table, x)
+    in tricky_predecessors.erl line 46
+  33: P.5: true = ets:insert(table, {{l2,l3},1})
+    in tricky_predecessors.erl line 51
+  34: P.5: receives message (ok)
+    in tricky_predecessors.erl line 52
+  35: P.5: ok = P.4 ! ok
+    in tricky_predecessors.erl line 53
+  36: Message (ok) from P.5 reaches P.4
+  37: P.4: receives message (ok)
+    in tricky_predecessors.erl line 52
+  38: P.4: ok = P.3 ! ok
+    in tricky_predecessors.erl line 53
+  39: Message (ok) from P.4 reaches P.3
+  40: P.3: receives message (ok)
+    in tricky_predecessors.erl line 61
+  41: P.3: ok = P.2 ! ok
+    in tricky_predecessors.erl line 62
+  42: Message (ok) from P.3 reaches P.2
+  43: P.2: receives message (ok)
+    in tricky_predecessors.erl line 61
+  44: P.2: ok = P.1 ! ok
+    in tricky_predecessors.erl line 62
+  45: Message (ok) from P.2 reaches P.1
+  46: P.1: receives message (ok)
+    in tricky_predecessors.erl line 61
+  47: P.1: ok = P ! ok
+    in tricky_predecessors.erl line 62
+  48: Message (ok) from P.1 reaches P
+  49: P: receives message (ok)
+    in tricky_predecessors.erl line 26
+  50: P: [{{l1,l2},1}] = ets:lookup(table, {l1,l2})
+    in tricky_predecessors.erl line 28
+  51: P: [{{l2,l3},1}] = ets:lookup(table, {l2,l3})
+    in tricky_predecessors.erl line 29
+  52: P: [{{l3,l1},0}] = ets:lookup(table, {l3,l1})
+    in tricky_predecessors.erl line 30
+  53: P: exits abnormally ({{nocatch,[1,1,0]},[{tricky_predecessors,tricky_predecessors,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,116,114,105,99,107,121,95,112,114,101,100,101,99,101,115,115,111,114,115,46,101,114,108]},{line,34}]}]})
+  54: P: true = ets:delete(table)
+    (while exiting)
+  55: P.1: exits normally
+  56: P.2: exits normally
+  57: P.3: exits normally
+  58: P.4: exits normally
+  59: P.5: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 8 errors, 124/124 interleavings explored

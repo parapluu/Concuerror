@@ -1,0 +1,34 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_2.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{registered_send_2,registered_send_2,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 4 process P exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [child,P.1],
+                       [10,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_2.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [child,P.1],
+               [10,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/registered_send_2.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<registered_send_2.0.88522283>,[]])
+    in erlang.erl line 2329
+   2: P.1: exits normally
+   3: P: Exception badarg raised by: erlang:register(child, P.1)
+    in registered_send_2.erl line 10
+   4: P: exits abnormally ({badarg,[{erlang,register,[child,P.1],[10,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,114,101,103,105,115,116,101,114,101,100,95,115,101,110,100,95,50,46,101,114,108]}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 2/2 interleavings explored

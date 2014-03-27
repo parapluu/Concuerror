@@ -338,14 +338,19 @@ dependent_built_in(#builtin_event{mfa = {ets,Insert1,[Table1,Tuples1]},
       end
   end;
 
-dependent_built_in(#builtin_event{mfa = {ets,lookup,_}},
-                   #builtin_event{mfa = {ets,lookup,_}}) ->
+dependent_built_in(#builtin_event{mfa = {ets,LookupA,_}},
+                   #builtin_event{mfa = {ets,LookupB,_}})
+  when
+    (LookupA =:= lookup orelse LookupA =:= lookup_element),
+    (LookupB =:= lookup orelse LookupB =:= lookup_element) ->
   false;
 
 dependent_built_in(#builtin_event{mfa = {ets,Insert,[Table1,Tuples]},
                                   result = Result, extra = Tid},
-                   #builtin_event{mfa = {ets,lookup,[Table2,Key]}})
-  when Insert =:= insert; Insert =:= insert_new ->
+                   #builtin_event{mfa = {ets,Lookup,[Table2,Key|_]}})
+  when
+    (Insert =:= insert orelse Insert =:= insert_new),
+    (Lookup =:= lookup orelse Lookup =:= lookup_element) ->
   case Table1 =:= Table2 andalso Result of
     false -> false;
     true ->
@@ -353,9 +358,11 @@ dependent_built_in(#builtin_event{mfa = {ets,Insert,[Table1,Tuples]},
       List = case is_list(Tuples) of true -> Tuples; false -> [Tuples] end,
       lists:keyfind(Key, KeyPos, List) =/= false
   end;
-dependent_built_in(#builtin_event{mfa = {ets,lookup,_}} = EtsLookup,
+dependent_built_in(#builtin_event{mfa = {ets,Lookup,_}} = EtsLookup,
                    #builtin_event{mfa = {ets,Insert,_}} = EtsInsert)
-  when Insert =:= insert; Insert =:= insert_new ->
+  when
+    (Insert =:= insert orelse Insert =:= insert_new),
+    (Lookup =:= lookup orelse Lookup =:= lookup_element) ->
   dependent_built_in(EtsInsert, EtsLookup);
 
 dependent_built_in(#builtin_event{mfa = {ets,new,_}, result = Table1},

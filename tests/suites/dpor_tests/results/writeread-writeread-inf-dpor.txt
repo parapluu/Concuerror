@@ -1,0 +1,445 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/writeread.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{writeread,writeread,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   5: P: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   6: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   7: P.1: exits normally
+   8: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   5: P: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   6: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+   8: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   9: P.1: exits normally
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   5: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   6: P: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   7: P.1: exits normally
+   8: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   5: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   6: P.1: exits normally
+   7: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   8: P: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   5: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   6: P: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   7: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   8: P.1: exits normally
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   5: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   6: P: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+   8: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   9: P.1: exits normally
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 7:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   5: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   6: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+   7: P.2: exits normally
+   8: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   9: P: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 19
+  10: P.1: exits normally
+################################################################################
+Erroneous interleaving 8:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   5: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   6: P: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   7: P.1: exits normally
+   8: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 9:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   5: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   6: P.1: exits normally
+   7: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   8: P: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 10:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   5: P.1: exits normally
+   6: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   7: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   8: P: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   9: P.2: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 16
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 11:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   5: P.1: exits normally
+   6: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+   8: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   9: P: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 19
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 12:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   5: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   6: P: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   7: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   8: P.1: exits normally
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 13:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   5: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   6: P: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   7: P.2: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 16
+   8: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   9: P.1: exits normally
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 14:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   5: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   6: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   7: P: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   8: P.1: exits normally
+   9: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 15:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   5: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   6: P.2: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 16
+   7: P.2: exits normally
+   8: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   9: P: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 19
+  10: P.1: exits normally
+################################################################################
+Erroneous interleaving 16:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   5: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+   6: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   7: P: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 19
+   8: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   9: P.1: exits normally
+  10: P.2: exits normally
+################################################################################
+Erroneous interleaving 17:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   5: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+   6: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   7: P.2: exits normally
+   8: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   9: P: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 19
+  10: P.1: exits normally
+################################################################################
+Erroneous interleaving 18:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in writeread.erl line 20
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in writeread.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<writeread.0.41450884>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<writeread.1.41450884>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = ets:insert(table, {x,1})
+    in writeread.erl line 15
+   5: P.2: [{x,1}] = ets:lookup(table, x)
+    in writeread.erl line 16
+   6: P.2: exits normally
+   7: P.1: true = ets:insert(table, {x,1})
+    in writeread.erl line 11
+   8: P: true = ets:insert(table, {x,0})
+    in writeread.erl line 18
+   9: P: [{x,0}] = ets:lookup(table, x)
+    in writeread.erl line 19
+  10: P.1: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 18 errors, 18/18 interleavings explored

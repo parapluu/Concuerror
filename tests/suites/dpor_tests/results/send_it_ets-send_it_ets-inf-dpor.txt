@@ -1,0 +1,101 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/send_it_ets.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{send_it_ets,send_it_ets,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 9 process P exited abnormally
+    Reason:
+      {{nocatch,boom},
+       [{send_it_ets,send_it_ets,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/send_it_ets.erl"},
+                      {line,21}]}]}
+    Stacktrace:
+      [{send_it_ets,send_it_ets,0,
+                    [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/send_it_ets.erl"},
+                     {line,21}]}]
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {badarg,[{ets,insert,
+                    [table,{x,1}],
+                    [12,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/send_it_ets.erl"}]},
+               {send_it_ets,'-send_it_ets/0-fun-0-',1,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/send_it_ets.erl"},
+                             {line,12}]}]}
+    Stacktrace:
+      [{ets,insert,
+            [table,{x,1}],
+            [12,
+             {file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/send_it_ets.erl"}]},
+       {send_it_ets,'-send_it_ets/0-fun-0-',1,
+                    [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/send_it_ets.erl"},
+                     {line,12}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in send_it_ets.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_it_ets.0.44414114>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_it_ets.1.44414114>,[]])
+    in erlang.erl line 2329
+   4: P.2: ok = P ! ok
+    in send_it_ets.erl line 16
+   5: P.2: exits normally
+   6: Message (ok) from P.2 reaches P
+   7: P: receives message (ok)
+    in send_it_ets.erl line 18
+   8: P: [] = ets:lookup(table, x)
+    in send_it_ets.erl line 20
+   9: P: exits abnormally ({{nocatch,boom},[{send_it_ets,send_it_ets,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,101,110,100,95,105,116,95,101,116,115,46,101,114,108]},{line,21}]}]})
+  10: P: true = ets:delete(table)
+    (while exiting)
+  11: P.1: Exception badarg raised by: ets:insert(table, {x,1})
+    in send_it_ets.erl line 12
+  12: P.1: exits abnormally ({badarg,[{ets,insert,[table,{x,1}],[12,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,101,110,100,95,105,116,95,101,116,115,46,101,114,108]}]},{send_it_ets,'-send_it_ets/0-fun-0-',1,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,101,110,100,95,105,116,95,101,116,115,46,101,114,108]},{line,12}]}]})
+################################################################################
+Erroneous interleaving 2:
+* At step 9 process P exited abnormally
+    Reason:
+      {{nocatch,boom},
+       [{send_it_ets,send_it_ets,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/send_it_ets.erl"},
+                      {line,21}]}]}
+    Stacktrace:
+      [{send_it_ets,send_it_ets,0,
+                    [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/send_it_ets.erl"},
+                     {line,21}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in send_it_ets.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_it_ets.0.44414114>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_it_ets.1.44414114>,[]])
+    in erlang.erl line 2329
+   4: P.2: ok = P ! ok
+    in send_it_ets.erl line 16
+   5: P.2: exits normally
+   6: Message (ok) from P.2 reaches P
+   7: P: receives message (ok)
+    in send_it_ets.erl line 18
+   8: P: [] = ets:lookup(table, x)
+    in send_it_ets.erl line 20
+   9: P: exits abnormally ({{nocatch,boom},[{send_it_ets,send_it_ets,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,95,116,101,115,116,115,47,115,114,99,47,115,101,110,100,95,105,116,95,101,116,115,46,101,114,108]},{line,21}]}]})
+  10: P.1: true = ets:insert(table, {x,1})
+    in send_it_ets.erl line 12
+  11: P: true = ets:delete(table)
+    (while exiting)
+  12: P.1: ok = P ! ok
+    in send_it_ets.erl line 13
+  13: Message (ok) from P.1 reaches P
+  14: P.1: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 4/4 interleavings explored

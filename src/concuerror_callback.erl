@@ -657,6 +657,7 @@ run_built_in(ets, F, N, [Name|Args], Info)
     ;{F,N} =:= {insert, 2}
     ;{F,N} =:= {insert_new, 2}
     ;{F,N} =:= {lookup, 2}
+    ;{F,N} =:= {lookup_element, 3}
     ;{F,N} =:= {match, 2}
     ;{F,N} =:= {member, 2}
     ;{F,N} =:= {select, 2}
@@ -862,6 +863,7 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
 process_top_loop(Info) ->
   ?debug_flag(?wait, top_waiting),
   receive
+    reset -> process_top_loop(Info);
     {start, Module, Name, Args} ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
       %% It is ok for this load to fail
@@ -1114,17 +1116,18 @@ check_ets_access_rights(Name, Op, Info) ->
 
 ets_ops_access_rights_map(Op) ->
   case Op of
-    {delete       ,1} -> own;
-    {delete       ,2} -> write;
-    {give_away    ,_} -> own;
-    {info         ,_} -> none;
-    {insert       ,_} -> write;
-    {insert_new   ,_} -> write;
-    {lookup       ,_} -> read;
-    {match        ,_} -> read;
-    {member       ,_} -> read;
-    {select       ,_} -> read;
-    {select_delete,_} -> write
+    {delete        ,1} -> own;
+    {delete        ,2} -> write;
+    {give_away     ,_} -> own;
+    {info          ,_} -> none;
+    {insert        ,_} -> write;
+    {insert_new    ,_} -> write;
+    {lookup        ,_} -> read;
+    {lookup_element,_} -> read;
+    {match         ,_} -> read;
+    {member        ,_} -> read;
+    {select        ,_} -> read;
+    {select_delete ,_} -> write
   end.
 
 %%------------------------------------------------------------------------------

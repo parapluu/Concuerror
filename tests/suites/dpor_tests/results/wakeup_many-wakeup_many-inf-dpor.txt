@@ -1,0 +1,93 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/wakeup_many.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{wakeup_many,wakeup_many,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in wakeup_many.erl line 13
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in wakeup_many.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<wakeup_many.0.36606294>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<wakeup_many.1.36606294>,[]])
+    in erlang.erl line 2329
+   4: P: true = ets:insert(table, {x,1})
+    in wakeup_many.erl line 12
+   5: P.1: true = ets:insert(table, {x,1})
+    in wakeup_many.erl line 10
+   6: P.1: exits normally
+   7: P.2: true = ets:insert(table, {x,0})
+    in wakeup_many.erl line 11
+   8: P.2: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in wakeup_many.erl line 13
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in wakeup_many.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<wakeup_many.0.36606294>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<wakeup_many.1.36606294>,[]])
+    in erlang.erl line 2329
+   4: P: true = ets:insert(table, {x,1})
+    in wakeup_many.erl line 12
+   5: P.2: true = ets:insert(table, {x,0})
+    in wakeup_many.erl line 11
+   6: P.1: true = ets:insert(table, {x,1})
+    in wakeup_many.erl line 10
+   7: P.1: exits normally
+   8: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in wakeup_many.erl line 13
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in wakeup_many.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<wakeup_many.0.36606294>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<wakeup_many.1.36606294>,[]])
+    in erlang.erl line 2329
+   4: P.1: true = ets:insert(table, {x,1})
+    in wakeup_many.erl line 10
+   5: P.1: exits normally
+   6: P.2: true = ets:insert(table, {x,0})
+    in wakeup_many.erl line 11
+   7: P: true = ets:insert(table, {x,1})
+    in wakeup_many.erl line 12
+   8: P.2: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in wakeup_many.erl line 13
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in wakeup_many.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<wakeup_many.0.36606294>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<wakeup_many.1.36606294>,[]])
+    in erlang.erl line 2329
+   4: P.2: true = ets:insert(table, {x,0})
+    in wakeup_many.erl line 11
+   5: P: true = ets:insert(table, {x,1})
+    in wakeup_many.erl line 12
+   6: P.1: true = ets:insert(table, {x,1})
+    in wakeup_many.erl line 10
+   7: P.1: exits normally
+   8: P.2: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 4 errors, 4/4 interleavings explored

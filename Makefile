@@ -90,7 +90,7 @@ dialyze: all .concuerror_plt
 ### Testing
 ###----------------------------------------------------------------------
 
-SUITES = basic_tests,dpor_tests,advanced_tests
+SUITES = advanced_tests,dpor_tests,basic_tests
 
 test: all
 	@(cd tests; bash -c "./runtests.py suites/{$(SUITES)}/src/*")

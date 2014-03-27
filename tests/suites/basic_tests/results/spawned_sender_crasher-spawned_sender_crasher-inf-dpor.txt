@@ -1,0 +1,83 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawned_sender_crasher.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{spawned_sender_crasher,spawned_sender_crasher,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {{badmatch,[one,two]},
+       [{spawned_sender_crasher,receive_two,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawned_sender_crasher.erl"},
+             {line,21}]}]}
+    Stacktrace:
+      [{spawned_sender_crasher,receive_two,0,
+                               [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawned_sender_crasher.erl"},
+                                {line,21}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<spawned_sender_crasher.0.94175156>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<spawned_sender_crasher.3.94175156>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<spawned_sender_crasher.3.94175156>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.2: one = P.1 ! one
+    in spawned_sender_crasher.erl line 26
+   6: Message (one) from P.2 reaches P.1
+   7: P.1: receives message (one)
+    in spawned_sender_crasher.erl line 16
+   8: P.2: exits normally
+   9: P.3: two = P.1 ! two
+    in spawned_sender_crasher.erl line 26
+  10: Message (two) from P.3 reaches P.1
+  11: P.1: receives message (two)
+    in spawned_sender_crasher.erl line 18
+  12: P.1: exits abnormally ({{badmatch,[one,two]},[{spawned_sender_crasher,receive_two,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,112,97,119,110,101,100,95,115,101,110,100,101,114,95,99,114,97,115,104,101,114,46,101,114,108]},{line,21}]}]})
+  13: P.3: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 13 process P.1 exited abnormally
+    Reason:
+      {{badmatch,[two,one]},
+       [{spawned_sender_crasher,receive_two,0,
+            [{file,
+                 "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawned_sender_crasher.erl"},
+             {line,20}]}]}
+    Stacktrace:
+      [{spawned_sender_crasher,receive_two,0,
+                               [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawned_sender_crasher.erl"},
+                                {line,20}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<spawned_sender_crasher.0.94175156>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<spawned_sender_crasher.3.94175156>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<spawned_sender_crasher.3.94175156>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.2: one = P.1 ! one
+    in spawned_sender_crasher.erl line 26
+   6: P.2: exits normally
+   7: P.3: two = P.1 ! two
+    in spawned_sender_crasher.erl line 26
+   8: P.3: exits normally
+   9: Message (two) from P.3 reaches P.1
+  10: Message (one) from P.2 reaches P.1
+  11: P.1: receives message (two)
+    in spawned_sender_crasher.erl line 16
+  12: P.1: receives message (one)
+    in spawned_sender_crasher.erl line 18
+  13: P.1: exits abnormally ({{badmatch,[two,one]},[{spawned_sender_crasher,receive_two,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,112,97,119,110,101,100,95,115,101,110,100,101,114,95,99,114,97,115,104,101,114,46,101,114,108]},{line,20}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 2/2 interleavings explored

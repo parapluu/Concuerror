@@ -1,0 +1,42 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawn_monitor_test.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{spawn_monitor_test,spawn_monitor_test,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 7 process P exited abnormally
+    Reason:
+      {{assertEqual_failed,[{module,spawn_monitor_test},
+                            {line,17},
+                            {expression,"Result"},
+                            {expected,result2},
+                            {value,result1}]},
+       [{spawn_monitor_test,'-spawn_monitor_test/0-fun-1-',2,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawn_monitor_test.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{spawn_monitor_test,'-spawn_monitor_test/0-fun-1-',2,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/spawn_monitor_test.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: {P.1,#Ref<0.0.0.288>} = erlang:spawn_opt({erlang,apply,[#Fun<spawn_monitor_test.0.133352140>,[]],[monitor]})
+    in erlang.erl line 2373
+   2: P.1: exits normally
+   3: P: true = erlang:demonitor(#Ref<0.0.0.288>)
+    in spawn_monitor_test.erl line 11
+   4: P.1: {'DOWN',#Ref<0.0.0.288>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.0.288>,process,P.1,normal})
+    (while exiting)
+   5: Message ({'DOWN',#Ref<0.0.0.288>,process,P.1,normal}) from P.1 reaches P
+   6: P: receives message ({'DOWN',#Ref<0.0.0.288>,process,P.1,normal})
+    in spawn_monitor_test.erl line 13
+   7: P: exits abnormally ({{assertEqual_failed,[{module,spawn_monitor_test},{line,17},{expression,[82,101,115,117,108,116]},{expected,result2},{value,result1}]},[{spawn_monitor_test,'-spawn_monitor_test/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,98,97,115,105,99,95,116,101,115,116,115,47,115,114,99,47,115,112,97,119,110,95,109,111,110,105,116,111,114,95,116,101,115,116,46,101,114,108]},{line,17}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 3/3 interleavings explored
