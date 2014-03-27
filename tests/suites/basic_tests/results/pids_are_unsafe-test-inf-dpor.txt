@@ -1,0 +1,169 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/pids_are_unsafe.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{pids_are_unsafe,test,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in pids_are_unsafe.erl line 13
+    P.1 in pids_are_unsafe.erl line 35
+    P.3 in pids_are_unsafe.erl line 35
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.1.27362249>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.2.27362249>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.1.27362249>,[]])
+    in erlang.erl line 2329
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.2.27362249>,[]])
+    in erlang.erl line 2329
+   5: P: freeze = P.3 ! freeze
+    in pids_are_unsafe.erl line 45
+   6: Message (freeze) from P reaches P.3
+   7: P: freeze = P.1 ! freeze
+    in pids_are_unsafe.erl line 45
+   8: Message (freeze) from P reaches P.1
+   9: P: {token,[]} = P.3 ! {token,[]}
+    in pids_are_unsafe.erl line 12
+  10: Message ({token,[]}) from P reaches P.3
+  11: P.1: receives message (freeze)
+    in pids_are_unsafe.erl line 32
+  12: P.2: toggle = P.1 ! toggle
+    in pids_are_unsafe.erl line 42
+  13: Message (toggle) from P.2 reaches P.1
+  14: P.2: exits normally
+  15: P.3: receives message (freeze)
+    in pids_are_unsafe.erl line 32
+  16: P.4: toggle = P.3 ! toggle
+    in pids_are_unsafe.erl line 42
+  17: Message (toggle) from P.4 reaches P.3
+  18: P.4: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in pids_are_unsafe.erl line 13
+    P.1 in pids_are_unsafe.erl line 35
+    P.3 in pids_are_unsafe.erl line 35
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.1.27362249>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.2.27362249>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.1.27362249>,[]])
+    in erlang.erl line 2329
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.2.27362249>,[]])
+    in erlang.erl line 2329
+   5: P: freeze = P.3 ! freeze
+    in pids_are_unsafe.erl line 45
+   6: Message (freeze) from P reaches P.3
+   7: P: freeze = P.1 ! freeze
+    in pids_are_unsafe.erl line 45
+   8: P: {token,[]} = P.3 ! {token,[]}
+    in pids_are_unsafe.erl line 12
+   9: Message ({token,[]}) from P reaches P.3
+  10: P.2: toggle = P.1 ! toggle
+    in pids_are_unsafe.erl line 42
+  11: P.2: exits normally
+  12: P.3: receives message (freeze)
+    in pids_are_unsafe.erl line 32
+  13: P.4: toggle = P.3 ! toggle
+    in pids_are_unsafe.erl line 42
+  14: Message (toggle) from P.4 reaches P.3
+  15: P.4: exits normally
+  16: Message (toggle) from P.2 reaches P.1
+  17: Message (freeze) from P reaches P.1
+  18: P.1: receives message (toggle)
+    in pids_are_unsafe.erl line 32
+  19: P.1: receives message (freeze)
+    in pids_are_unsafe.erl line 32
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in pids_are_unsafe.erl line 13
+    P.1 in pids_are_unsafe.erl line 35
+    P.3 in pids_are_unsafe.erl line 35
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.1.27362249>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.2.27362249>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.1.27362249>,[]])
+    in erlang.erl line 2329
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.2.27362249>,[]])
+    in erlang.erl line 2329
+   5: P: freeze = P.3 ! freeze
+    in pids_are_unsafe.erl line 45
+   6: P: freeze = P.1 ! freeze
+    in pids_are_unsafe.erl line 45
+   7: Message (freeze) from P reaches P.1
+   8: P: {token,[]} = P.3 ! {token,[]}
+    in pids_are_unsafe.erl line 12
+   9: P.1: receives message (freeze)
+    in pids_are_unsafe.erl line 32
+  10: P.2: toggle = P.1 ! toggle
+    in pids_are_unsafe.erl line 42
+  11: Message (toggle) from P.2 reaches P.1
+  12: P.2: exits normally
+  13: P.4: toggle = P.3 ! toggle
+    in pids_are_unsafe.erl line 42
+  14: P.4: exits normally
+  15: Message (toggle) from P.4 reaches P.3
+  16: Message (freeze) from P reaches P.3
+  17: Message ({token,[]}) from P reaches P.3
+  18: P.3: receives message (toggle)
+    in pids_are_unsafe.erl line 32
+  19: P.3: receives message (freeze)
+    in pids_are_unsafe.erl line 32
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in pids_are_unsafe.erl line 13
+    P.1 in pids_are_unsafe.erl line 35
+    P.3 in pids_are_unsafe.erl line 35
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.1.27362249>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.2.27362249>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.1.27362249>,[]])
+    in erlang.erl line 2329
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<pids_are_unsafe.2.27362249>,[]])
+    in erlang.erl line 2329
+   5: P: freeze = P.3 ! freeze
+    in pids_are_unsafe.erl line 45
+   6: P: freeze = P.1 ! freeze
+    in pids_are_unsafe.erl line 45
+   7: P: {token,[]} = P.3 ! {token,[]}
+    in pids_are_unsafe.erl line 12
+   8: P.2: toggle = P.1 ! toggle
+    in pids_are_unsafe.erl line 42
+   9: P.2: exits normally
+  10: P.4: toggle = P.3 ! toggle
+    in pids_are_unsafe.erl line 42
+  11: P.4: exits normally
+  12: Message (toggle) from P.2 reaches P.1
+  13: Message (freeze) from P reaches P.1
+  14: P.1: receives message (toggle)
+    in pids_are_unsafe.erl line 32
+  15: P.1: receives message (freeze)
+    in pids_are_unsafe.erl line 32
+  16: Message (toggle) from P.4 reaches P.3
+  17: Message (freeze) from P reaches P.3
+  18: Message ({token,[]}) from P reaches P.3
+  19: P.3: receives message (toggle)
+    in pids_are_unsafe.erl line 32
+  20: P.3: receives message (freeze)
+    in pids_are_unsafe.erl line 32
+################################################################################
+Done! (Exit status: completed)
+  Summary: 4 errors, 4/4 interleavings explored

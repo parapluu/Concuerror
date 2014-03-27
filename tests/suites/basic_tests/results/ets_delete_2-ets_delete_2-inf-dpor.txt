@@ -1,0 +1,69 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_delete_2.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{ets_delete_2,ets_delete_2,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_delete_2.erl line 17
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_delete_2.0.126979874>,[]])
+    in erlang.erl line 2329
+   2: P.1: table = ets:new(table, [public,named_table])
+    in ets_delete_2.erl line 11
+   3: P.1: ok = P ! ok
+    in ets_delete_2.erl line 12
+   4: Message (ok) from P.1 reaches P
+   5: P: receives message (ok)
+    in ets_delete_2.erl line 14
+   6: P: true = ets:insert(table, {key,value})
+    in ets_delete_2.erl line 15
+   7: P.1: exits normally
+   8: P.1: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 2:
+* At step 9 process P exited abnormally
+    Reason:
+      {badarg,[{ets,insert,
+                    [table,{key,value}],
+                    [15,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_delete_2.erl"}]},
+               {ets_delete_2,ets_delete_2,0,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_delete_2.erl"},
+                              {line,15}]}]}
+    Stacktrace:
+      [{ets,insert,
+            [table,{key,value}],
+            [15,
+             {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_delete_2.erl"}]},
+       {ets_delete_2,ets_delete_2,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/ets_delete_2.erl"},
+                      {line,15}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_delete_2.0.126979874>,[]])
+    in erlang.erl line 2329
+   2: P.1: table = ets:new(table, [public,named_table])
+    in ets_delete_2.erl line 11
+   3: P.1: ok = P ! ok
+    in ets_delete_2.erl line 12
+   4: Message (ok) from P.1 reaches P
+   5: P: receives message (ok)
+    in ets_delete_2.erl line 14
+   6: P.1: exits normally
+   7: P.1: true = ets:delete(table)
+    (while exiting)
+   8: P: Exception badarg raised by: ets:insert(table, {key,value})
+    in ets_delete_2.erl line 15
+   9: P: exits abnormally ({badarg,[{ets,insert,[table,{key,value}],[15,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,100,101,108,101,116,101,95,50,46,101,114,108]}]},{ets_delete_2,ets_delete_2,0,[{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,101,116,115,95,100,101,108,101,116,101,95,50,46,101,114,108]},{line,15}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 2/2 interleavings explored

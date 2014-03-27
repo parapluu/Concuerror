@@ -4,7 +4,7 @@
 -export([test/0]).
 
 scenarios() ->
-    [{test, inf, R} || R <- [full, dpor]].
+    [{test, inf, dpor}].
 
 test() ->
     {Last, Switches} = spawn_switches_and_togglers(2),

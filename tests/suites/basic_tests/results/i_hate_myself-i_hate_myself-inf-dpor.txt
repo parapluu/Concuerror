@@ -1,0 +1,39 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor/src/i_hate_myself.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{i_hate_myself,i_hate_myself,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* At step 5 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,'!',
+                       ['#Ref<0.0.0.124>',message],
+                       [10,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/i_hate_myself.erl"}]}]}
+    Stacktrace:
+      [{erlang,'!',
+               ['#Ref<0.0.0.124>',message],
+               [10,
+                {file,"/home/stavros/git/Concuerror/tests/suites/dpor/src/i_hate_myself.erl"}]}]
+* Blocked at a 'receive' (when all other processes have exited):
+    P in i_hate_myself.erl line 12
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: #Ref<0.0.0.124> = erlang:make_ref()
+    in i_hate_myself.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<i_hate_myself.0.12554880>,[]])
+    in erlang.erl line 2329
+   3: P.1: Exception badarg raised by: '#Ref<0.0.0.124>' ! message
+    in i_hate_myself.erl line 10
+   4: P: true = erlang:register('#Ref<0.0.0.124>', P)
+    in i_hate_myself.erl line 11
+   5: P.1: exits abnormally ({badarg,[{erlang,'!',['#Ref<0.0.0.124>',message],[10,{file,[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103,105,116,47,67,111,110,99,117,101,114,114,111,114,47,116,101,115,116,115,47,115,117,105,116,101,115,47,100,112,111,114,47,115,114,99,47,105,95,104,97,116,101,95,109,121,115,101,108,102,46,101,114,108]}]}]})
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 2/2 interleavings explored

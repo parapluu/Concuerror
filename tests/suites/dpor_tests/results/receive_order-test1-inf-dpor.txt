@@ -1,0 +1,15 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/receive_order.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{receive_order,test1,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+  No errors found!
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1/1 interleavings explored

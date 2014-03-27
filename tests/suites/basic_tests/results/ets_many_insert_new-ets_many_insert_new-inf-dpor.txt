@@ -1,0 +1,163 @@
+################################################################################
+Concuerror started with options:
+  [{'after-timeout',infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_many_insert_new.erl"]},
+   {normal_exit,[normal]},
+   {symbolic,true},
+   {target,{ets_many_insert_new,ets_many_insert_new,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_many_insert_new.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_many_insert_new.erl line 12
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   5: P: [] = ets:lookup(table, x)
+    in ets_many_insert_new.erl line 18
+   6: P.1: true = ets:insert_new(table, {x,1})
+    in ets_many_insert_new.erl line 15
+   7: P.1: exits normally
+   8: P.2: false = ets:insert_new(table, {x,2})
+    in ets_many_insert_new.erl line 15
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {x,3})
+    in ets_many_insert_new.erl line 15
+  11: P.3: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_many_insert_new.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_many_insert_new.erl line 12
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   5: P: [] = ets:lookup(table, x)
+    in ets_many_insert_new.erl line 18
+   6: P.2: true = ets:insert_new(table, {x,2})
+    in ets_many_insert_new.erl line 15
+   7: P.1: false = ets:insert_new(table, {x,1})
+    in ets_many_insert_new.erl line 15
+   8: P.1: exits normally
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {x,3})
+    in ets_many_insert_new.erl line 15
+  11: P.3: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_many_insert_new.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_many_insert_new.erl line 12
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   5: P: [] = ets:lookup(table, x)
+    in ets_many_insert_new.erl line 18
+   6: P.3: true = ets:insert_new(table, {x,3})
+    in ets_many_insert_new.erl line 15
+   7: P.1: false = ets:insert_new(table, {x,1})
+    in ets_many_insert_new.erl line 15
+   8: P.1: exits normally
+   9: P.2: false = ets:insert_new(table, {x,2})
+    in ets_many_insert_new.erl line 15
+  10: P.2: exits normally
+  11: P.3: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_many_insert_new.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_many_insert_new.erl line 12
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   5: P.1: true = ets:insert_new(table, {x,1})
+    in ets_many_insert_new.erl line 15
+   6: P: [{x,1}] = ets:lookup(table, x)
+    in ets_many_insert_new.erl line 18
+   7: P.1: exits normally
+   8: P.2: false = ets:insert_new(table, {x,2})
+    in ets_many_insert_new.erl line 15
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {x,3})
+    in ets_many_insert_new.erl line 15
+  11: P.3: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_many_insert_new.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_many_insert_new.erl line 12
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   5: P.2: true = ets:insert_new(table, {x,2})
+    in ets_many_insert_new.erl line 15
+   6: P: [{x,2}] = ets:lookup(table, x)
+    in ets_many_insert_new.erl line 18
+   7: P.1: false = ets:insert_new(table, {x,1})
+    in ets_many_insert_new.erl line 15
+   8: P.1: exits normally
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {x,3})
+    in ets_many_insert_new.erl line 15
+  11: P.3: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_many_insert_new.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in ets_many_insert_new.erl line 12
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_many_insert_new.2.5703380>,[]])
+    in erlang.erl line 2329
+   5: P.3: true = ets:insert_new(table, {x,3})
+    in ets_many_insert_new.erl line 15
+   6: P: [{x,3}] = ets:lookup(table, x)
+    in ets_many_insert_new.erl line 18
+   7: P.1: false = ets:insert_new(table, {x,1})
+    in ets_many_insert_new.erl line 15
+   8: P.1: exits normally
+   9: P.2: false = ets:insert_new(table, {x,2})
+    in ets_many_insert_new.erl line 15
+  10: P.2: exits normally
+  11: P.3: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 6 errors, 6/6 interleavings explored

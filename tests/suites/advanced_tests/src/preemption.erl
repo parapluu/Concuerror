@@ -6,13 +6,13 @@
 scenarios() -> [{?MODULE, inf, dpor}].
 
 -define(senders, 2).
--define(receivers, 5).
+-define(receivers, 2).
 
 preemption() ->
     Parent = self(),
     Receivers = spawn_receivers(?senders, ?receivers),
-    spawn_senders(?senders, Receivers, Parent),
-    wait_senders(?senders),
+    Senders = spawn_senders(?senders, Receivers, Parent),
+    wait_senders(Senders),
     trigger_receivers(Receivers),
     receive
         deadlock -> ok
@@ -39,13 +39,13 @@ spawn_senders(N, Receivers, Parent) ->
 
 sender(I, Receivers, Parent) ->
     [R ! I-1 || R <- Receivers],
-    Parent ! sender.
+    Parent ! {sender, self()}.
 
-wait_senders(0) -> ok;
-wait_senders(N) ->
+wait_senders([]) -> ok;
+wait_senders([P|R]) ->
     receive
-        sender ->
-            wait_senders(N-1)
+        {sender, P} ->
+            wait_senders(R)
     end.
 
 trigger_receivers(Receivers) ->
