@@ -490,7 +490,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
       #builtin_event{result = OldResult} -> {OldResult, Info};
       %% New event...
       undefined ->
-        PassedInfo = init_concuerror_info(Info),
+        PassedInfo = reset_concuerror_info(Info),
         ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
         ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
         ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
@@ -972,7 +972,7 @@ process_loop(Info) ->
            ets_tables = EtsTables,
            links = Links,
            monitors = Monitors,
-           processes = Processes} = init_concuerror_info(Info),
+           processes = Processes} = reset_concuerror_info(Info),
       _ = erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
       ets:insert(Processes, ?new_process(self(), Symbol)),
@@ -1171,7 +1171,7 @@ system_wrapper_loop(Name, Wrapped, Scheduler) ->
   end,
   system_wrapper_loop(Name, Wrapped, Scheduler).
 
-init_concuerror_info(Info) ->
+reset_concuerror_info(Info) ->
   #concuerror_info{
      'after-timeout' = AfterTimeout,
      ets_tables = EtsTables,
