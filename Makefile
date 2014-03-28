@@ -39,6 +39,7 @@ DIALYZER_FLAGS = -Wunmatched_returns
 
 MODULES = \
 	concuerror_callback \
+	concuerror_common \
 	concuerror_dependencies \
 	concuerror_inspect \
 	concuerror_instrumenter \

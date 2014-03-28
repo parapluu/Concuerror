@@ -124,7 +124,6 @@ cl_version() ->
   io:format(standard_error, "Concuerror v~s~n",[?VSN]),
   ok.
 
-
 -spec finalize(options()) -> options().
 
 finalize(Options) ->
@@ -137,7 +136,10 @@ finalize(Options) ->
       Finalized = finalize(lists:reverse(proplists:unfold(Options),Modules), []),
       case proplists:get_value(target, Finalized, undefined) of
         {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
-          Finalized;
+          case  proplists:is_defined(verbose, Finalized) of
+            true -> Finalized;
+            false -> [{verbose, ?DEFAULT_VERBOSITY}|Finalized]
+          end;
         _ ->
           opt_error("The module containing the main test function has not been"
                     " specified.")

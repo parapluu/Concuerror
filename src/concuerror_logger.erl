@@ -25,15 +25,9 @@
 -spec run(options()) -> ok.
 
 run(Options) ->
-  Verbosity =
-    case proplists:lookup(verbose, Options) of
-      none -> ?DEFAULT_VERBOSITY;
-      {verbose, V} -> V
-    end,
-  {Output, OutputName} =  proplists:get_value(output, Options),
-  SymbolicNames = proplists:get_value(symbolic, Options),
-  Processes = proplists:get_value(processes, Options),
-  Modules = proplists:get_value(modules, Options),
+  [Verbosity,{Output, OutputName},SymbolicNames,Processes,Modules] =
+    concuerror_common:get_properties(
+      [verbose,output,symbolic,processes,modules], Options),
   ok = setup_symbolic_names(SymbolicNames, Processes, Modules),
   PrintableOptions = delete_many([processes, output, modules], Options),
   separator(Output, $#),

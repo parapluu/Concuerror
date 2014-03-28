@@ -80,7 +80,7 @@
 
 spawn_first_process(Options) ->
   [AfterTimeout, Logger, Processes, ReportUnknown, Modules] =
-    get_properties(
+    concuerror_common:get_properties(
       [after_timeout, logger, processes, report_unknown, modules],
       Options),
   EtsTables = ets:new(ets_tables, [public]),
@@ -101,14 +101,6 @@ spawn_first_process(Options) ->
   P = spawn_link(fun() -> process_top_loop(InitialInfo) end),
   true = ets:insert(Processes, ?new_process(P, "P")),
   P.
-
-get_properties(Props, PropList) ->
-  get_properties(Props, PropList, []).
-
-get_properties([], _, Acc) -> lists:reverse(Acc);
-get_properties([Prop|Props], PropList, Acc) ->
-  PropVal = proplists:get_value(Prop, PropList),
-  get_properties(Props, PropList, [PropVal|Acc]).
 
 -spec start_first_process(pid(), {atom(), atom(), [term()]}) -> ok.
 
