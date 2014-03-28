@@ -51,7 +51,7 @@
          }).
 
 -record(concuerror_info, {
-          'after-timeout'            :: infinite | integer(),
+          after_timeout              :: infinite | integer(),
           caught_signal = false      :: boolean(),
           escaped_pdict = []         :: term(),
           ets_tables                 :: ets_tables(),
@@ -66,6 +66,7 @@
           monitors                   :: monitors(),
           next_event = none          :: 'none' | event(),
           processes                  :: processes(),
+          report_unknown = false     :: boolean(),
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
           status = running           :: 'exited'| 'exiting' | 'running' | 'waiting'
@@ -78,19 +79,22 @@
 -spec spawn_first_process(options()) -> pid().
 
 spawn_first_process(Options) ->
-  [AfterTimeout, Logger, Processes, Modules] =
-    get_properties(['after-timeout', logger, processes, modules], Options),
+  [AfterTimeout, Logger, Processes, ReportUnknown, Modules] =
+    get_properties(
+      [after_timeout, logger, processes, report_unknown, modules],
+      Options),
   EtsTables = ets:new(ets_tables, [public]),
   InitialInfo =
     #concuerror_info{
-       'after-timeout' = AfterTimeout,
-       ets_tables      = EtsTables,
-       links           = ets:new(links, [bag, public]),
-       logger          = Logger,
-       modules         = Modules,
-       monitors        = ets:new(monitors, [bag, public]),
-       processes       = Processes,
-       scheduler       = self()
+       after_timeout  = AfterTimeout,
+       ets_tables     = EtsTables,
+       links          = ets:new(links, [bag, public]),
+       logger         = Logger,
+       modules        = Modules,
+       monitors       = ets:new(monitors, [bag, public]),
+       processes      = Processes,
+       report_unknown = ReportUnknown,
+       scheduler      = self()
       },
   system_ets_entries(EtsTables),
   system_processes_wrappers(Processes),
@@ -155,7 +159,7 @@ instrumented(apply, [Fun, Args], Location, Info) ->
   end;
 instrumented('receive', [PatternFun, Timeout], Location, Info) ->
   case Info of
-    #concuerror_info{'after-timeout' = AfterTimeout} ->
+    #concuerror_info{after_timeout = AfterTimeout} ->
       RealTimeout =
         case Timeout =:= infinity orelse Timeout > AfterTimeout of
           false -> Timeout;
@@ -329,7 +333,7 @@ run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
   #concuerror_info{processes = Processes} = Info,
   Return =
     case ets:lookup(Processes, Pid) of
-      [] -> throw(unknown_process);
+      [] -> ?crash({checking_system_process, Pid});
       [?process_pat_pid_status(Pid, Status)] -> is_active(Status)
     end,
   {Return, Info};
@@ -703,11 +707,23 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
   Update = [{?ets_owner, Pid}],
   true = ets:update_element(EtsTables, Tid, Update),
   {true, NewInfo#concuerror_info{extra = Tid}};
-%% run_built_in(ets, Other, N, Args, _Info) ->
-%%  throw({uninstrumented, ets, Other, N, Args});
+
+run_built_in(Module, Name, Arity, Args, Info)
+  when
+    false
+    ;{Module, Name, Arity} =:= {erlang, put, 2}
+    ;{Module, Name, Arity} =:= {erlang, group_leader, 0}
+    ->
+  consistent_replay(Module, Name, Arity, Args, Info);
 
 %% For other built-ins check whether replaying has the same result:
+run_built_in(Module, Name, Arity, _Args,
+             #concuerror_info{report_unknown = true}) ->
+  ?crash({unknown_built_in, {Module, Name, Arity}});
 run_built_in(Module, Name, Arity, Args, Info) ->
+  consistent_replay(Module, Name, Arity, Args, Info).
+
+consistent_replay(Module, Name, Arity, Args, Info) ->
   #concuerror_info{next_event =
                      #event{event_info = EventInfo,
                             location = Location}
@@ -719,30 +735,13 @@ run_built_in(Module, Name, Arity, Args, Info) ->
       case OldResult =:= NewResult of
         true  -> {OldResult, Info};
         false ->
-          #concuerror_info{logger = Logger} = Info,
           case M =:= Module andalso F =:= Name andalso Args =:= OArgs of
             true ->
-              ?log(Logger, ?lerror,
-                   "~nWhile re-running the program, a call to ~p:~p/~p with"
-                   " arguments:~n  ~p~nreturned a different result:~n"
-                   "Earlier result: ~p~n"
-                   "  Later result: ~p~n"
-                   "Concuerror cannot explore behaviours that depend on~n"
-                   "data that may differ on separate runs of the program.~n"
-                   "Location: ~p~n~n",
-                   [Module, Name, Arity, Args, OldResult, NewResult, Location]),
-              throw(inconsistent_builtin_behaviour);
+              ?crash({inconsistent_builtin,
+                      [Module, Name, Arity, Args, OldResult, NewResult, Location]});
             false ->
-              ?log(Logger, ?lerror,
-                   "~nWhile re-running the program, a call to ~p:~p/~p with"
-                   " arguments:~n  ~p~nwas found instead of the original call~n"
-                   "to ~p:~p/~p with args:~n  ~p~n"
-                   "Concuerror cannot explore behaviours that depend on~n"
-                   "data that may differ on separate runs of the program.~n"
-                   "Location: ~p~n~n",
-                   [Module, Name, Arity, Args, M, F,
-                    length(OArgs), OArgs, Location]),
-              throw(inconsistent_builtin_behaviour)
+              ?crash({unexpected_builtin_change,
+                      [Module, Name, Arity, Args, M, F, OArgs, Location]})
           end
       end;
     undefined ->
@@ -875,6 +874,8 @@ process_top_loop(Info) ->
         erlang:apply(Module, Name, Args),
         exit(normal)
       catch
+        exit:{?MODULE, _} = Reason ->
+          exit(Reason);
         Class:Reason ->
           case erase(concuerror_info) of
             #concuerror_info{escaped_pdict = Escaped} = EndInfo ->
@@ -1173,23 +1174,25 @@ system_wrapper_loop(Name, Wrapped, Scheduler) ->
 
 reset_concuerror_info(Info) ->
   #concuerror_info{
-     'after-timeout' = AfterTimeout,
+     after_timeout = AfterTimeout,
      ets_tables = EtsTables,
      links = Links,
      logger = Logger,
      modules = Modules,
      monitors = Monitors,
      processes = Processes,
+     report_unknown = ReportUnknown,
      scheduler = Scheduler
     } = Info,
   #concuerror_info{
-     'after-timeout' = AfterTimeout,
+     after_timeout = AfterTimeout,
      ets_tables = EtsTables,
      links = Links,
      logger = Logger,
      modules = Modules,
      monitors = Monitors,
      processes = Processes,
+     report_unknown = ReportUnknown,
      scheduler = Scheduler
     }.
 
@@ -1228,10 +1231,44 @@ fix_stacktrace(#concuerror_info{stacktop = Top}) ->
       [Top|RemoveInspect]
   end.
 
+%%------------------------------------------------------------------------------
+
 -spec explain_error(term()) -> string().
 
 explain_error({unknown_protocol_for_system, System}) ->
   io_lib:format(
     "A process tried to communicate with system process ~p. Concuerror does not"
     " currently support communication with this process. Please contact the"
-    " developers for more information.",[System]).
+    " developers for more information.",[System]);
+explain_error({inconsistent_builtin,
+               [Module, Name, Arity, Args, OldResult, NewResult, Location]}) ->
+  io_lib:format(
+    "While re-running the program, a call to ~p:~p/~p with"
+    " arguments:~n  ~p~nreturned a different result:~n"
+    "Earlier result: ~p~n"
+    "  Later result: ~p~n"
+    "Concuerror cannot explore behaviours that depend on~n"
+    "data that may differ on separate runs of the program.~n"
+    "Location: ~p~n~n",
+    [Module, Name, Arity, Args, OldResult, NewResult, Location]);
+explain_error({unexpected_builtin_change,
+               [Module, Name, Arity, Args, M, F, OArgs, Location]}) ->
+  io_lib:format(
+    "While re-running the program, a call to ~p:~p/~p with"
+    " arguments:~n  ~p~nwas found instead of the original call~n"
+    "to ~p:~p/~p with args:~n  ~p~n"
+    "Concuerror cannot explore behaviours that depend on~n"
+    "data that may differ on separate runs of the program.~n"
+    "Location: ~p~n~n",
+    [Module, Name, Arity, Args, M, F, length(OArgs), OArgs, Location]);
+explain_error({unknown_built_in, {Module, Name, Arity}}) ->
+  io_lib:format(
+    "No special handling found for built-in ~p:~p/~p. Run without"
+    " --report_unknown or contact the developers.",
+    [Module, Name, Arity]);
+explain_error({checking_system_process, Pid}) ->
+  io_lib:format(
+    "A process tried to link/monitor/inspect process ~p which was not"
+    " started by Concuerror and has no suitable wrapper to work with"
+    " Concuerror. Contact the developers.",
+    [Pid]).

@@ -75,13 +75,18 @@ options() ->
     "If there is no info about whether a specific pair of built-ins may race,"
     " assume that they do indeed race. Set this to false to detect missing"
     " dependency info."}
-  ,{'after-timeout', [logger, process], $a, "after", {integer, infinite},
+  ,{after_timeout, [logger, process], $a, "after", {integer, infinite},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."} %% XXX, unless no other process can progress."}
   ,{normal_exit, [logger, scheduler], undefined, "treat_as_normal", {atom, normal},
     "Specify exit reasons that are considered 'normal' and not reported as"
     " crashes. Useful e.g. when analyzing supervisors ('shutdown' is probably"
     " also a normal reason in this case)."}
+  ,{report_unknown, [logger, process], undefined, "report_unknown",
+    {boolean, false},
+    "Report built-ins that are not explicitly classified by Concuerror as"
+    " racing or race-free. (Concuerror expects such built-ins to always return"
+    " the same result otherwise"}
   %% ,{bound, [logger, scheduler], $b, "bound", {integer, -1},
   %%   "Preemption bound (-1 for infinite)."}
   %% ,{distributed, [logger, scheduler], $d, "distributed", {boolean, true},
