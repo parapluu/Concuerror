@@ -29,8 +29,10 @@ run(RawOptions) ->
         case Reason =:= normal of
           true -> completed;
           false ->
-            ?log(Logger, ?lerror, "Concuerror crashed!~n~n~s~n~n",
-                 [explain(Reason)]),
+            ?error(Logger,
+                   "Concuerror crashed!~n~n~s~n~n"
+                   "Get more info by running Concuerror with -vvvv~n~n",
+                   [explain(Reason)]),
             error
         end,
       cleanup(Processes),
