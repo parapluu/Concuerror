@@ -1162,7 +1162,7 @@ system_wrapper_loop(Name, Wrapped, Scheduler) ->
               ok
           end;
         error_logger ->
-          erlang:send(Wrapped, Data),
+          %erlang:send(Wrapped, Data),
           Scheduler ! {trapping, false},
           ok;
         Else ->
