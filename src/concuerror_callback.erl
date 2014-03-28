@@ -58,6 +58,7 @@
           exit_reason = normal       :: term(),
           extra                      :: term(),
           flags = #process_flags{}   :: #process_flags{},
+          group_leader               :: pid(),
           links                      :: links(),
           logger                     :: pid(),
           messages_new = queue:new() :: queue(),
@@ -84,10 +85,17 @@ spawn_first_process(Options) ->
       [after_timeout, logger, processes, report_unknown, modules],
       Options),
   EtsTables = ets:new(ets_tables, [public]),
+  system_processes_wrappers(Processes),
+  {GroupLeader, _} =
+    run_built_in(
+      erlang,whereis,1,[user],
+      #concuerror_info{processes = Processes}),
+  system_ets_entries(EtsTables),
   InitialInfo =
     #concuerror_info{
        after_timeout  = AfterTimeout,
        ets_tables     = EtsTables,
+       group_leader   = GroupLeader,
        links          = ets:new(links, [bag, public]),
        logger         = Logger,
        modules        = Modules,
@@ -96,8 +104,6 @@ spawn_first_process(Options) ->
        report_unknown = ReportUnknown,
        scheduler      = self()
       },
-  system_ets_entries(EtsTables),
-  system_processes_wrappers(Processes),
   P = spawn_link(fun() -> process_top_loop(InitialInfo) end),
   true = ets:insert(Processes, ?new_process(P, "P")),
   P.
@@ -314,6 +320,10 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       NewEvent = Event#event{special = {message, MessageEvent}},
       {true, Info#concuerror_info{next_event = NewEvent}}
   end;
+
+run_built_in(erlang, group_leader, 0, [],
+             #concuerror_info{group_leader = Leader} = Info) ->
+  {Leader, Info};
 
 run_built_in(erlang, halt, _, _, Info) ->
   #concuerror_info{next_event = Event} = Info,
@@ -701,8 +711,8 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
   {true, NewInfo#concuerror_info{extra = Tid}};
 
 run_built_in(Module, Name, Arity, Args, Info)
-  when {Module, Name, Arity} =:= {erlang, put, 2};
-       {Module, Name, Arity} =:= {erlang, group_leader, 0} ->
+  when
+    {Module, Name, Arity} =:= {erlang, put, 2} ->
   consistent_replay(Module, Name, Arity, Args, Info);
 
 %% For other built-ins check whether replaying has the same result:
@@ -1165,6 +1175,7 @@ reset_concuerror_info(Info) ->
   #concuerror_info{
      after_timeout = AfterTimeout,
      ets_tables = EtsTables,
+     group_leader = GroupLeader,
      links = Links,
      logger = Logger,
      modules = Modules,
@@ -1176,6 +1187,7 @@ reset_concuerror_info(Info) ->
   #concuerror_info{
      after_timeout = AfterTimeout,
      ets_tables = EtsTables,
+     group_leader = GroupLeader,
      links = Links,
      logger = Logger,
      modules = Modules,
@@ -1226,8 +1238,8 @@ fix_stacktrace(#concuerror_info{stacktop = Top}) ->
 
 explain_error({unknown_protocol_for_system, System}) ->
   io_lib:format(
-    "A process tried to communicate with system process ~p. Concuerror does not"
-    " currently support communication with this process. Please contact the"
+    "A process tried to send a message to system process ~p. Concuerror does"
+    " not currently support communication with this process. Please contact the"
     " developers for more information.",[System]);
 explain_error({inconsistent_builtin,
                [Module, Name, Arity, Args, OldResult, NewResult, Location]}) ->
