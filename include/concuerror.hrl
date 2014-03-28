@@ -267,6 +267,11 @@
                  {throw, 1},
                  {tuple_to_list, 1}
                 ]]
+        ++ [{file, N, A} ||
+               {N, A} <-
+                   [
+                    {native_name_encoding, 0}
+                   ]]
         ++ [{lists, N, A} ||
                {N, A} <-
                    [
@@ -276,10 +281,10 @@
                     {member, 2},
                     {reverse, 2}
                    ]]
-        ++ [{file, N, A} ||
+        ++ [{net_kernel, N, A} ||
                {N, A} <-
                    [
-                    {native_name_encoding, 0}
+                    {dflag_unicode_io, 1}
                    ]]
         ++ [{prim_file, N, A} ||
                {N, A} <-
