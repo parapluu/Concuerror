@@ -43,21 +43,21 @@ dependent(E1, E2, AssumeRacing) ->
 
 %% The first event happens before the second.
 
-dependent(#builtin_event{mfa = {erlang, halt, _}}, _) ->
+dependent(#builtin_event{mfargs = {erlang, halt, _}}, _) ->
   true;
-dependent(_, #builtin_event{mfa = {erlang, halt, _}}) ->
+dependent(_, #builtin_event{mfargs = {erlang, halt, _}}) ->
   true;
 
-dependent(#builtin_event{mfa = {erlang, process_info, _}} = PInfo, B) ->
+dependent(#builtin_event{mfargs = {erlang, process_info, _}} = PInfo, B) ->
   dependent_process_info(PInfo, B);
-dependent(B, #builtin_event{mfa = {erlang, process_info, _}} = PInfo) ->
+dependent(B, #builtin_event{mfargs = {erlang, process_info, _}} = PInfo) ->
   dependent_process_info(PInfo, B);
 
 dependent(#builtin_event{} = BI1, #builtin_event{} = BI2) ->
   dependent_built_in(BI1, BI2);
 
-dependent(#builtin_event{mfa = MFA}, #exit_event{} = Exit) ->
-  dependent_exit(Exit, MFA);
+dependent(#builtin_event{mfargs = MFArgs}, #exit_event{} = Exit) ->
+  dependent_exit(Exit, MFArgs);
 dependent(#exit_event{} = Exit, #builtin_event{} = Builtin) ->
   dependent(Builtin, Exit);
 
@@ -65,17 +65,17 @@ dependent(#builtin_event{actor = Actor, exiting = false,
                          trapping = Trapping} = Builtin,
           #message_event{message = #message{data = {'EXIT', _, Reason}},
                          recipient = Recipient, type = exit_signal}) ->
-  #builtin_event{mfa = MFA, result = Old} = Builtin,
+  #builtin_event{mfargs = MFArgs, result = Old} = Builtin,
   Actor =:= Recipient
     andalso
       (Reason =:= kill
        orelse
-       case MFA of
+       case MFArgs of
          {erlang,process_flag,[trap_exit,New]} when New =/= Old -> true;
          _ -> not Trapping andalso Reason =/= normal
        end);
 dependent(#message_event{} = Message,
-          #builtin_event{mfa = {erlang,process_flag,[trap_exit,_]}} = PFlag) ->
+          #builtin_event{mfargs = {erlang,process_flag,[trap_exit,_]}} = PFlag) ->
   dependent(PFlag, Message);
 
 dependent(#exit_event{actor = Exiting, status = Status, trapping = Trapping},
@@ -197,10 +197,10 @@ dependent_exit(_Exit, {ets, _, _}) ->
 
 %%------------------------------------------------------------------------------
 
-dependent_process_info(#builtin_event{mfa = {_,_,[Pid, registered_name]}},
+dependent_process_info(#builtin_event{mfargs = {_, _, [Pid, registered_name]}},
                        Other) ->
   case Other of
-    #builtin_event{extra = E, mfa = {Module, Name, Args}} ->
+    #builtin_event{extra = E, mfargs = {Module, Name, Args}} ->
       case Module =:= erlang of
         true when Name =:= register ->
           [_, RPid] = Args,
@@ -213,10 +213,10 @@ dependent_process_info(#builtin_event{mfa = {_,_,[Pid, registered_name]}},
       Pid =:= EPid;
     _ -> false
   end;
-dependent_process_info(#builtin_event{mfa = {_,_,[Pid, dictionary]}},
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, dictionary]}},
                        Other) ->
   case Other of
-    #builtin_event{actor = EPid, mfa = {Module, Name, _}} ->
+    #builtin_event{actor = EPid, mfargs = {Module, Name, _}} ->
       Pid =:= EPid
         andalso
         case Module =:= erlang of
@@ -231,12 +231,12 @@ dependent_process_info(#builtin_event{mfa = {_,_,[Pid, dictionary]}},
 
 %%------------------------------------------------------------------------------
 
-dependent_built_in(#builtin_event{mfa = {erlang, make_ref, _}},
-                   #builtin_event{mfa = {erlang, make_ref, _}}) ->
+dependent_built_in(#builtin_event{mfargs = {erlang, make_ref, _}},
+                   #builtin_event{mfargs = {erlang, make_ref, _}}) ->
   true;
 
-dependent_built_in(#builtin_event{mfa = {erlang,group_leader,ArgsA}} = A,
-                   #builtin_event{mfa = {erlang,group_leader,ArgsB}} = B) ->
+dependent_built_in(#builtin_event{mfargs = {erlang,group_leader,ArgsA}} = A,
+                   #builtin_event{mfargs = {erlang,group_leader,ArgsB}} = B) ->
   case {ArgsA, ArgsB} of
     {[], []} -> false;
     {[New, For], []} ->
@@ -247,8 +247,8 @@ dependent_built_in(#builtin_event{mfa = {erlang,group_leader,ArgsA}} = A,
       ForA =:= ForB
   end;
 
-dependent_built_in(#builtin_event{mfa = {erlang, A,_}},
-                   #builtin_event{mfa = {erlang, B,_}})
+dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
+                   #builtin_event{mfargs = {erlang, B, _}})
   when
     false
     ;A =:= demonitor        %% Depends only with an exit event or proc_info
@@ -279,45 +279,45 @@ dependent_built_in(#builtin_event{mfa = {erlang, A,_}},
     ->
   false;
 
-dependent_built_in(#builtin_event{mfa = {erlang, A, _}},
-                   #builtin_event{mfa = {erlang, B, _}})
+dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
+                   #builtin_event{mfargs = {erlang, B, _}})
   when (A =:= '!' orelse A =:= send orelse A =:= whereis orelse
         A =:= process_flag orelse A =:= link orelse A =:= unlink),
        (B =:= '!' orelse B =:= send orelse B =:= whereis orelse
         B =:= process_flag orelse B =:= link orelse B =:= unlink) ->
   false;
 
-dependent_built_in(#builtin_event{mfa = {erlang,UnRegisterA,[AName|ARest]}},
-                   #builtin_event{mfa = {erlang,UnRegisterB,[BName|BRest]}})
+dependent_built_in(#builtin_event{mfargs = {erlang,UnRegisterA,[AName|ARest]}},
+                   #builtin_event{mfargs = {erlang,UnRegisterB,[BName|BRest]}})
   when (UnRegisterA =:= register orelse UnRegisterA =:= unregister),
        (UnRegisterB =:= register orelse UnRegisterB =:= unregister) ->
   AName =:= BName
     orelse
       (ARest =/= [] andalso ARest =:= BRest);
 
-dependent_built_in(#builtin_event{mfa = {erlang,SendOrWhereis,[SName|_]}},
-                   #builtin_event{mfa = {erlang,UnRegisterOp,[RName|_]}})
+dependent_built_in(#builtin_event{mfargs = {erlang,SendOrWhereis,[SName|_]}},
+                   #builtin_event{mfargs = {erlang,UnRegisterOp,[RName|_]}})
   when (UnRegisterOp =:= register orelse UnRegisterOp =:= unregister),
        (SendOrWhereis =:= '!' orelse SendOrWhereis =:= send orelse
         SendOrWhereis =:= whereis) ->
   SName =:= RName;
-dependent_built_in(#builtin_event{mfa = {erlang,UnRegisterOp,_}} = R,
-                   #builtin_event{mfa = {erlang,SendOrWhereis,_}} = S)
+dependent_built_in(#builtin_event{mfargs = {erlang,UnRegisterOp,_}} = R,
+                   #builtin_event{mfargs = {erlang,SendOrWhereis,_}} = S)
   when (UnRegisterOp =:= register orelse UnRegisterOp =:= unregister),
        (SendOrWhereis =:= '!' orelse SendOrWhereis =:= send orelse
         SendOrWhereis =:= whereis) ->
   dependent_built_in(S, R);
 
-dependent_built_in(#builtin_event{mfa = {ets,delete,[Table1]}},
-                   #builtin_event{mfa = {ets,_Any,[Table2|_]}}) ->
+dependent_built_in(#builtin_event{mfargs = {ets,delete,[Table1]}},
+                   #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
   Table1 =:= Table2;
-dependent_built_in(#builtin_event{mfa = {ets,_Any,_}} = EtsAny,
-                   #builtin_event{mfa = {ets,delete,[_]}} = EtsDelete) ->
+dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
+                   #builtin_event{mfargs = {ets,delete,[_]}} = EtsDelete) ->
   dependent_built_in(EtsDelete, EtsAny);
 
-dependent_built_in(#builtin_event{mfa = {ets,Insert1,[Table1,Tuples1]},
+dependent_built_in(#builtin_event{mfargs = {ets,Insert1,[Table1,Tuples1]},
                                   result = Result1, extra = Tid},
-                   #builtin_event{mfa = {ets,Insert2,[Table2,Tuples2]},
+                   #builtin_event{mfargs = {ets,Insert2,[Table2,Tuples2]},
                                   result = Result2})
   when (Insert1 =:= insert orelse Insert1 =:= insert_new) andalso
        (Insert2 =:= insert orelse Insert2 =:= insert_new)->
@@ -337,16 +337,16 @@ dependent_built_in(#builtin_event{mfa = {ets,Insert1,[Table1,Tuples1]},
       end
   end;
 
-dependent_built_in(#builtin_event{mfa = {ets,LookupA,_}},
-                   #builtin_event{mfa = {ets,LookupB,_}})
+dependent_built_in(#builtin_event{mfargs = {ets,LookupA,_}},
+                   #builtin_event{mfargs = {ets,LookupB,_}})
   when
     (LookupA =:= lookup orelse LookupA =:= lookup_element),
     (LookupB =:= lookup orelse LookupB =:= lookup_element) ->
   false;
 
-dependent_built_in(#builtin_event{mfa = {ets,Insert,[Table1,Tuples]},
+dependent_built_in(#builtin_event{mfargs = {ets,Insert,[Table1,Tuples]},
                                   result = Result, extra = Tid},
-                   #builtin_event{mfa = {ets,Lookup,[Table2,Key|_]}})
+                   #builtin_event{mfargs = {ets,Lookup,[Table2,Key|_]}})
   when
     (Insert =:= insert orelse Insert =:= insert_new),
     (Lookup =:= lookup orelse Lookup =:= lookup_element) ->
@@ -357,33 +357,33 @@ dependent_built_in(#builtin_event{mfa = {ets,Insert,[Table1,Tuples]},
       List = case is_list(Tuples) of true -> Tuples; false -> [Tuples] end,
       lists:keyfind(Key, KeyPos, List) =/= false
   end;
-dependent_built_in(#builtin_event{mfa = {ets,Lookup,_}} = EtsLookup,
-                   #builtin_event{mfa = {ets,Insert,_}} = EtsInsert)
+dependent_built_in(#builtin_event{mfargs = {ets,Lookup,_}} = EtsLookup,
+                   #builtin_event{mfargs = {ets,Insert,_}} = EtsInsert)
   when
     (Insert =:= insert orelse Insert =:= insert_new),
     (Lookup =:= lookup orelse Lookup =:= lookup_element) ->
   dependent_built_in(EtsInsert, EtsLookup);
 
-dependent_built_in(#builtin_event{mfa = {ets,new,_}, result = Table1},
-                   #builtin_event{mfa = {ets,_Any,[Table2|_]}}) ->
+dependent_built_in(#builtin_event{mfargs = {ets,new,_}, result = Table1},
+                   #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
   Table1 =:= Table2;
-dependent_built_in(#builtin_event{mfa = {ets,_Any,_}} = EtsAny,
-                   #builtin_event{mfa = {ets,new,_}} = EtsNew) ->
+dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
+                   #builtin_event{mfargs = {ets,new,_}} = EtsNew) ->
   dependent_built_in(EtsNew, EtsAny);
 
 %% XXX: This can probably be refined.
-dependent_built_in(#builtin_event{mfa = {ets,give_away,[Table1|_]}},
-                   #builtin_event{mfa = {ets,_Any,[Table2|_]}}) ->
+dependent_built_in(#builtin_event{mfargs = {ets,give_away,[Table1|_]}},
+                   #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
   Table1 =:= Table2;
-dependent_built_in(#builtin_event{mfa = {ets,_Any,_}} = EtsAny,
-                   #builtin_event{mfa = {ets,give_away,_}} = EtsGiveAway) ->
+dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
+                   #builtin_event{mfargs = {ets,give_away,_}} = EtsGiveAway) ->
   dependent_built_in(EtsGiveAway, EtsAny);
 
-dependent_built_in(#builtin_event{mfa = {erlang,_,_}},
-                   #builtin_event{mfa = {ets,_,_}}) ->
+dependent_built_in(#builtin_event{mfargs = {erlang,_,_}},
+                   #builtin_event{mfargs = {ets,_,_}}) ->
   false;
-dependent_built_in(#builtin_event{mfa = {ets,_,_}} = Ets,
-                   #builtin_event{mfa = {erlang,_,_}} = Erlang) ->
+dependent_built_in(#builtin_event{mfargs = {ets,_,_}} = Ets,
+                   #builtin_event{mfargs = {erlang,_,_}} = Erlang) ->
   dependent_built_in(Erlang, Ets).
 
 %%------------------------------------------------------------------------------

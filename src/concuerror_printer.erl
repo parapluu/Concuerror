@@ -77,15 +77,17 @@ pretty_aux(#event{} = Event, FAcc) ->
 pretty_aux(List, FAcc) when is_list(List) ->
   lists:foldl(fun pretty_aux/2, FAcc, List).
 
-pretty_info(#builtin_event{mfa = {erlang, '!', [To, Msg]},
+pretty_info(#builtin_event{mfargs = {erlang, '!', [To, Msg]},
                            status = {crashed, Reason}}) ->
   io_lib:format("Exception ~w raised by: ~w ! ~w", [Reason, To, Msg]);
-pretty_info(#builtin_event{mfa = {M, F, Args}, status = {crashed, Reason}}) ->
+pretty_info(#builtin_event{mfargs = {M, F, Args},
+			   status = {crashed, Reason}}) ->
   ArgString = pretty_arg(Args),
   io_lib:format("Exception ~w raised by: ~p:~p(~s)",[Reason, M, F, ArgString]);
-pretty_info(#builtin_event{mfa = {erlang, '!', [To, Msg]}, result = Result}) ->
+pretty_info(#builtin_event{mfargs = {erlang, '!', [To, Msg]},
+			   result = Result}) ->
   io_lib:format("~w = ~w ! ~w", [Result, To, Msg]);
-pretty_info(#builtin_event{mfa = {M, F, Args}, result = Result}) ->
+pretty_info(#builtin_event{mfargs = {M, F, Args}, result = Result}) ->
   ArgString = pretty_arg(Args),
   io_lib:format("~w = ~p:~p(~s)",[Result, M, F, ArgString]);
 pretty_info(#exit_event{reason = Reason}) ->

@@ -233,7 +233,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
       #builtin_event{
          exiting = Location =:= exit,
          extra = Extra,
-         mfa = {Module, Name, Args},
+         mfargs = {Module, Name, Args},
          result = Value
         },
     Notification = Event#event{event_info = EventInfo},
@@ -248,7 +248,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
       #concuerror_info{next_event = FEvent} = LocatedInfo,
       FEventInfo =
         #builtin_event{
-           mfa = {Module, Name, Args},
+           mfargs = {Module, Name, Args},
            status = {crashed, Reason},
            trapping = Trapping
           },
@@ -701,11 +701,8 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
   {true, NewInfo#concuerror_info{extra = Tid}};
 
 run_built_in(Module, Name, Arity, Args, Info)
-  when
-    false
-    ;{Module, Name, Arity} =:= {erlang, put, 2}
-    ;{Module, Name, Arity} =:= {erlang, group_leader, 0}
-    ->
+  when {Module, Name, Arity} =:= {erlang, put, 2};
+       {Module, Name, Arity} =:= {erlang, group_leader, 0} ->
   consistent_replay(Module, Name, Arity, Args, Info);
 
 %% For other built-ins check whether replaying has the same result:
@@ -723,7 +720,7 @@ consistent_replay(Module, Name, Arity, Args, Info) ->
   NewResult = erlang:apply(Module, Name, Args),
   case EventInfo of
     %% Replaying...
-    #builtin_event{mfa = {M,F,OArgs}, result = OldResult} ->
+    #builtin_event{mfargs = {M,F,OArgs}, result = OldResult} ->
       case OldResult =:= NewResult of
         true  -> {OldResult, Info};
         false ->

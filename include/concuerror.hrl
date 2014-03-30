@@ -160,7 +160,7 @@
           actor = self()   :: pid(),
           extra            :: term(),
           exiting = false  :: boolean(),
-          mfa              :: mfargs(),
+          mfargs           :: mfargs(),
           result           :: term(),
           status = ok      :: 'ok' | {'crashed', term()} | 'unknown',
           trapping = false :: boolean()
