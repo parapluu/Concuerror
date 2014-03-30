@@ -150,18 +150,13 @@ dependent(_EventA, #receive_event{}) ->
 
 %%------------------------------------------------------------------------------
 
-dependent_exit(_Exit, {erlang, A, _})
-  when
-    false
-    ;A =:= exit
-    ;A =:= process_flag
-    ;A =:= put
-    ;A =:= spawn
-    ;A =:= spawn_opt
-    ;A =:= spawn_link
-    ;A =:= group_leader
-    ->
-  false;
+dependent_exit(_Exit, {erlang, exit, _}) -> false;
+dependent_exit(_Exit, {erlang, process_flag, _}) -> false;
+dependent_exit(_Exit, {erlang, put, _}) -> false;
+dependent_exit(_Exit, {erlang, spawn, _}) -> false;
+dependent_exit(_Exit, {erlang, spawn_opt, _}) -> false;
+dependent_exit(_Exit, {erlang, spawn_link, _}) -> false;
+dependent_exit(_Exit, {erlang, group_leader, _}) -> false;
 dependent_exit(#exit_event{actor = Exiting},
                {erlang, is_process_alive, [Pid]}) ->
   Exiting =:= Pid;
