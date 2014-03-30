@@ -105,10 +105,9 @@ dependent(#message_event{
              recipient = Recipient,
              type = Type
             }) ->
-  case is_function(Patterns) of
-    true -> message_could_match(Patterns, Data, Trapping, Type);
-    false -> false
-  end;
+  is_function(Patterns)
+    andalso
+    message_could_match(Patterns, Data, Trapping, Type);
 
 dependent(#message_event{
              message = #message{data = Data, message_id = Id},
