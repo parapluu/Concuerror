@@ -68,7 +68,7 @@
         ?log(Logger, ?linfo, Format, Data)).
 
 -define(error(Logger, Format, Data),
-        ?mf_log(Logger, ?lerror, Format, Data)).
+        ?log(Logger, ?lerror, Format, Data)).
 
 -define(debug(Logger, Format, Data),
         ?mf_log(Logger, ?ldebug, Format, Data)).
