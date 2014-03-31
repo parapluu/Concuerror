@@ -1,0 +1,88 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/io_format_3.erl"]},
+   {non_racing_system,[user]},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{io_format_3,test,[]}},
+   {treat_as_normal,[normal]},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in io_format_3.erl line 24
+--------------------------------------------------------------------------------
+Text printed to Standard Output:
+Child
+
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<io_format_3.0.3173110>,[]])
+    in erlang.erl line 2329
+   2: P: receive timeout expired after 0 ms
+    in io_format_3.erl line 19
+   3: P.1: ok = P ! ok
+    in io_format_3.erl line 16
+   4: Message (ok) from P.1 reaches P
+   5: P.1: user = erlang:group_leader()
+    in io.erl line 598
+   6: P.1: #Ref<0.0.0.137> = erlang:monitor(process, user)
+    in io.erl line 568
+   7: P.1: {io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}} = user ! {io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}}
+    in io.erl line 569
+   8: Message ({io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}}) from P.1 reaches user
+   9: Message ({io_reply,user,ok}) from user reaches P.1
+  10: P.1: receives message ({io_reply,user,ok})
+    in io.erl line 601
+  11: P.1: true = erlang:demonitor(#Ref<0.0.0.137>, [flush])
+    in io.erl line 603
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in io_format_3.erl line 24
+--------------------------------------------------------------------------------
+Text printed to Standard Output:
+Parent
+Child
+
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<io_format_3.0.3173110>,[]])
+    in erlang.erl line 2329
+   2: P.1: ok = P ! ok
+    in io_format_3.erl line 16
+   3: P.1: user = erlang:group_leader()
+    in io.erl line 598
+   4: P.1: #Ref<0.0.0.137> = erlang:monitor(process, user)
+    in io.erl line 568
+   5: P.1: {io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}} = user ! {io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}}
+    in io.erl line 569
+   6: Message ({io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}}) from P.1 reaches user
+   7: Message ({io_reply,user,ok}) from user reaches P.1
+   8: P.1: receives message ({io_reply,user,ok})
+    in io.erl line 601
+   9: P.1: true = erlang:demonitor(#Ref<0.0.0.137>, [flush])
+    in io.erl line 603
+  10: P.1: exits normally
+  11: Message (ok) from P.1 reaches P
+  12: P: receives message (ok)
+    in io_format_3.erl line 19
+  13: P: user = erlang:group_leader()
+    in io.erl line 598
+  14: P: #Ref<0.0.0.197> = erlang:monitor(process, user)
+    in io.erl line 568
+  15: P: {io_request,P,user,{put_chars,unicode,io_lib,format,[[80,97,114,101,110,116,126,110],[]]}} = user ! {io_request,P,user,{put_chars,unicode,io_lib,format,[[80,97,114,101,110,116,126,110],[]]}}
+    in io.erl line 569
+  16: Message ({io_request,P,user,{put_chars,unicode,io_lib,format,[[80,97,114,101,110,116,126,110],[]]}}) from P reaches user
+  17: Message ({io_reply,user,ok}) from user reaches P
+  18: P: receives message ({io_reply,user,ok})
+    in io.erl line 601
+  19: P: true = erlang:demonitor(#Ref<0.0.0.197>, [flush])
+    in io.erl line 603
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 2/2 interleavings explored

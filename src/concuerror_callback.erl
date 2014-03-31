@@ -1159,7 +1159,7 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                 erlang:send(Wrapped, {self(), Request}),
                 receive
                   Msg ->
-                    Scheduler ! {system_reply, From, Id, Msg},
+                    Scheduler ! {system_reply, From, Id, Msg, Name},
                     ok
                 end;
               error_logger ->
@@ -1169,12 +1169,12 @@ system_wrapper_loop(Name, Wrapped, Info) ->
               standard_error ->
                 #concuerror_info{logger = Logger} = Info,
                 {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
-                Scheduler ! {system_reply, From, Id, Reply},
+                Scheduler ! {system_reply, From, Id, Reply, Name},
                 ok;
               user ->
                 #concuerror_info{logger = Logger} = Info,
                 {From, Reply, _} = handle_io(Data, {standard_io, Logger}),
-                Scheduler ! {system_reply, From, Id, Reply},
+                Scheduler ! {system_reply, From, Id, Reply, Name},
                 ok;
               Else ->
                 ?crash({unknown_protocol_for_system, Else})

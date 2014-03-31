@@ -45,10 +45,11 @@
           first_process         :: {pid(), mfargs()},
           logger                :: pid(),
           message_info          :: message_info(),
-          normal_exit = [normal]:: [atom()],
+          non_racing_system = []:: [atom()],
           options          = [] :: proplists:proplist(),
           processes             :: processes(),
           trace            = [] :: [trace_state()],
+          treat_as_normal = []  :: [atom()],
           wait                  :: non_neg_integer()
          }).
 
@@ -66,9 +67,10 @@ run(Options) ->
     false ->
       ok
   end,
-  [Processes, Logger, Target, Wait, AssumeRacing, NormalExit] =
+  [Processes, Logger, Target, Wait, AssumeRacing, TreatAsNormal, NonRacingSystem] =
     get_properties(
-      [processes, logger, target, wait, assume_racing, normal_exit],
+      [processes, logger, target, wait, assume_racing, treat_as_normal,
+       non_racing_system],
       Options),
   ProcessOptions =
     [O || O <- Options, concuerror_options:filter_options('process', O)],
@@ -81,10 +83,11 @@ run(Options) ->
        first_process = {FirstProcess, Target},
        logger = Logger,
        message_info = ets:new(message_info, [private]),
-       normal_exit = NormalExit,
+       non_racing_system = NonRacingSystem,
        options = Options,
        processes = Processes,
        trace = [InitialTrace],
+       treat_as_normal = TreatAsNormal,
        wait = Wait},
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
   ?debug(Logger, "Starting exploration...~n",[]),
@@ -281,7 +284,7 @@ update_state(#event{actor = Actor, special = Special} = Event,
   NewState = maybe_log_crash(Event, InitNewState, Index),
   {ok, update_special(Special, NewState)}.
 
-maybe_log_crash(Event, #scheduler_state{normal_exit = Normal} = State, Index) ->
+maybe_log_crash(Event, #scheduler_state{treat_as_normal = Normal} = State, Index) ->
   case Event#event.event_info of
     #exit_event{reason = Reason} = Exit ->
       case lists:member(Reason, Normal) of
@@ -341,6 +344,8 @@ update_special(Special, State) ->
           active_processes = ordsets:add_element(SpawnedPid, ActiveProcesses)
          },
       State#scheduler_state{trace = [NewNext|Trace]};
+    {system_communication, _} ->
+      State;
     List when is_list(List) ->
       lists:foldl(fun update_special/2, State, Special)
   end.
@@ -497,24 +502,39 @@ maybe_mark_sent_message(Special, Clock, MessageInfo) ->
 plan_more_interleavings([], OldTrace, _SchedulerState) ->
   OldTrace;
 plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
-  #scheduler_state{logger = Logger, message_info = MessageInfo} = State,
+  #scheduler_state{
+     logger = Logger,
+     message_info = MessageInfo,
+     non_racing_system = NonRacingSystem
+    } = State,
   #trace_state{done = [Event|_], index = Index} = TraceState,
-  #event{actor = Actor, event_info = EventInfo} = Event,
-  ClockMap = get_base_clock(OldTrace),
-  ActorClock = lookup_clock(Actor, ClockMap),
-  BaseClock =
-    case Actor of
-      {_, _} ->
-        #message_event{message = #message{message_id = Id}} = EventInfo,
-        message_clock(Id, MessageInfo, ActorClock);
-      _ -> ActorClock
+  #event{actor = Actor, event_info = EventInfo, special = Special} = Event,
+  Skip =
+    case Special of
+      [{system_communication, System}|_] ->
+        lists:member(System, NonRacingSystem);
+      _ -> false
     end,
-  ?trace_nl(Logger, "===~nRaces ~s~n",
-            [concuerror_printer:pretty_s({Index, Event})]),
-  BaseNewOldTrace =
-    more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, State),
-  NewOldTrace = [TraceState|BaseNewOldTrace],
-  plan_more_interleavings(Rest, NewOldTrace, State).
+  case Skip of
+    true ->
+      plan_more_interleavings(Rest, [TraceState|OldTrace], State);
+    false ->
+      ClockMap = get_base_clock(OldTrace),
+      ActorClock = lookup_clock(Actor, ClockMap),
+      BaseClock =
+        case Actor of
+          {_, _} ->
+            #message_event{message = #message{message_id = Id}} = EventInfo,
+            message_clock(Id, MessageInfo, ActorClock);
+          _ -> ActorClock
+        end,
+      ?trace_nl(Logger, "===~nRaces ~s~n",
+                [concuerror_printer:pretty_s({Index, Event})]),
+      BaseNewOldTrace =
+        more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, State),
+      NewOldTrace = [TraceState|BaseNewOldTrace],
+      plan_more_interleavings(Rest, NewOldTrace, State)
+  end.
 
 more_interleavings_for_event(OldTrace, Event, Later, Clock, State) ->
   more_interleavings_for_event(OldTrace, Event, Later, Clock, State, []).
@@ -735,7 +755,7 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, _State) ->
       {trapping, Trapping} ->
         NewEventInfo = EventInfo#message_event{trapping = Trapping},
         Event#event{event_info = NewEventInfo};
-      {system_reply, From, Id, Reply} ->
+      {system_reply, From, Id, Reply, System} ->
         #event{special = Special} = Event,
         case is_list(Special) of
           true ->
@@ -756,7 +776,11 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, _State) ->
             Specials =
               [{message_received, Id, fun(_) -> true end},
                {message, MessageEvent}],
-            Event#event{special = [Special|Specials]}
+            %% The system_communication message should be first, since we are
+            %% pattern matching against this in plan_more_interleavings to
+            %% exclude reordering delivery of messages to system processes
+            Event#event{
+              special = [{system_communication, System},Special|Specials]}
         end
     after
       2000 ->

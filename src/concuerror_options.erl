@@ -75,10 +75,14 @@ options() ->
     "If there is no info about whether a specific pair of built-ins may race,"
     " assume that they do indeed race. Set this to false to detect missing"
     " dependency info."}
-  ,{after_timeout, [logger, process], $a, "after", {integer, infinite},
+  ,{non_racing_system, [logger, scheduler], undefined, "non_racing_system", atom,
+    "Assume that any messages sent to the specified system process are not racing"
+    " with each-other. Useful for reducing the number of interleavings when a lot"
+    " of processes have calls to io:format/1,2 or similar."}
+  ,{after_timeout, [logger, process], $a, "after_timeout", {integer, infinite},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."} %% XXX, unless no other process can progress."}
-  ,{normal_exit, [logger, scheduler], undefined, "treat_as_normal", {atom, normal},
+  ,{treat_as_normal, [logger, scheduler], undefined, "treat_as_normal", {atom, normal},
     "Specify exit reasons that are considered 'normal' and not reported as"
     " crashes. Useful e.g. when analyzing supervisors ('shutdown' is probably"
     " also a normal reason in this case)."}
@@ -136,10 +140,17 @@ finalize(Options) ->
       Finalized = finalize(lists:reverse(proplists:unfold(Options),Modules), []),
       case proplists:get_value(target, Finalized, undefined) of
         {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
-          case  proplists:is_defined(verbose, Finalized) of
-            true -> Finalized;
-            false -> [{verbose, ?DEFAULT_VERBOSITY}|Finalized]
-          end;
+          Verbosity =
+            case proplists:is_defined(verbose, Finalized) of
+              true -> [];
+              false -> [{verbose, ?DEFAULT_VERBOSITY}]
+            end,
+          NonRacingSystem =
+            case proplists:is_defined(non_racing_system, Finalized) of
+              true -> [];
+              false -> [{non_racing_system, []}]
+            end,
+          Verbosity ++ NonRacingSystem ++ Finalized;
         _ ->
           opt_error("The module containing the main test function has not been"
                     " specified.")
@@ -150,10 +161,16 @@ finalize([], Acc) -> Acc;
 finalize([{quiet, true}|Rest], Acc) ->
   NewRest = proplists:delete(verbose, proplists:delete(quiet, Rest)),
   finalize(NewRest, [{verbose, 0}|Acc]);
-finalize([{normal_exit, N}|Rest], Acc) ->
-  Normals = [normal,N|proplists:get_all_values(normal_exit, Rest)],
-  NewRest = proplists:delete(normal_exit, Rest),
-  finalize(NewRest, [{normal_exit, lists:usort(Normals)}|Acc]);
+finalize([{Key, V}|Rest], Acc)
+  when Key =:= treat_as_normal; Key =:= non_racing_system ->
+  AlwaysAdd =
+    case Key of
+      treat_as_normal -> [normal];
+      _ -> []
+    end,
+  Values = [V|AlwaysAdd] ++ proplists:get_all_values(Key, Rest),
+  NewRest = proplists:delete(Key, Rest),
+  finalize(NewRest, [{Key, lists:usort(Values)}|Acc]);
 finalize([{verbose, N}|Rest], Acc) ->
   case proplists:is_defined(quiet, Rest) =:= true andalso N =/= 0 of
     true ->

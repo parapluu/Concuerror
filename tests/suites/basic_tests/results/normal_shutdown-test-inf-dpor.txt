@@ -1,0 +1,18 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/normal_shutdown.erl"]},
+   {non_racing_system,[]},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{normal_shutdown,test,[]}},
+   {treat_as_normal,[normal]},
+   {treat_as_normal,[normal,shutdown]},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+  No errors found!
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1/1 interleavings explored
