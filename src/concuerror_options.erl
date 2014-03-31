@@ -170,9 +170,9 @@ finalize([{Key, Value}|Rest], Acc)
     file ->
       Modules = proplists:get_value(modules, Rest),
       Files = [Value|proplists:get_all_values(file, Rest)],
-      LoadedFiles = compile_and_load(Files, Modules),
+      {LoadedFiles, MoreOptions} = compile_and_load(Files, Modules),
       NewRest = proplists:delete(file, Rest),
-      finalize(NewRest, [{files, LoadedFiles}|Acc]);
+      finalize(MoreOptions ++ NewRest, [{files, LoadedFiles}|Acc]);
     Else ->
       PathAdd =
         case Else of
@@ -227,11 +227,11 @@ finalize([{Key, Value}|Rest], Acc) ->
   end.
 
 compile_and_load(Files, Modules) ->
-  compile_and_load(Files, Modules, []).
+  compile_and_load(Files, Modules, {[],[]}).
 
-compile_and_load([], _Modules, Acc) ->
-  lists:sort(Acc);
-compile_and_load([File|Rest], Modules, Acc) ->
+compile_and_load([], _Modules, {Acc, MoreOpts}) ->
+  {lists:sort(Acc), MoreOpts};
+compile_and_load([File|Rest], Modules, {Acc, MoreOpts}) ->
   case filename:extension(File) of
     ".erl" ->
       case compile:file(File, [binary, debug_info, report_errors]) of
@@ -243,7 +243,8 @@ compile_and_load([File|Rest], Modules, Acc) ->
               opt_warn("file ~s shadows the default ~s", [File, Default])
           end,
           ok = concuerror_loader:load_binary(Module, File, Binary, Modules),
-          compile_and_load(Rest, Modules, [File|Acc]);
+          NewMoreOpts = try Module:concuerror_options() catch _:_ -> [] end,
+          compile_and_load(Rest, Modules, {[File|Acc], NewMoreOpts++MoreOpts});
         error ->
           Format = "could not compile ~s (try to add the .beam file instead)",
           opt_error(Format, [File])
@@ -252,7 +253,8 @@ compile_and_load([File|Rest], Modules, Acc) ->
       case beam_lib:chunks(File, []) of
         {ok, {Module, []}} ->
           ok = concuerror_loader:load_binary(Module, File, File, Modules),
-          compile_and_load(Rest, Modules, [File|Acc]);
+          NewMoreOpts = try Module:concuerror_options() catch _:_ -> [] end,
+          compile_and_load(Rest, Modules, {[File|Acc], NewMoreOpts++MoreOpts});
         Else ->
           opt_error(beam_lib:format_error(Else))
       end;
