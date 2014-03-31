@@ -85,17 +85,10 @@ spawn_first_process(Options) ->
       [after_timeout, logger, processes, report_unknown, modules],
       Options),
   EtsTables = ets:new(ets_tables, [public]),
-  system_processes_wrappers(Processes),
-  {GroupLeader, _} =
-    run_built_in(
-      erlang,whereis,1,[user],
-      #concuerror_info{processes = Processes}),
-  system_ets_entries(EtsTables),
   InitialInfo =
     #concuerror_info{
        after_timeout  = AfterTimeout,
        ets_tables     = EtsTables,
-       group_leader   = GroupLeader,
        links          = ets:new(links, [bag, public]),
        logger         = Logger,
        modules        = Modules,
@@ -104,7 +97,11 @@ spawn_first_process(Options) ->
        report_unknown = ReportUnknown,
        scheduler      = self()
       },
-  P = spawn_link(fun() -> process_top_loop(InitialInfo) end),
+  system_processes_wrappers(InitialInfo),
+  system_ets_entries(InitialInfo),
+  {GroupLeader, _} = run_built_in(erlang,whereis,1,[user], InitialInfo),
+  CompleteInfo = InitialInfo#concuerror_info{group_leader = GroupLeader},
+  P = spawn_link(fun() -> process_top_loop(CompleteInfo) end),
   true = ets:insert(Processes, ?new_process(P, "P")),
   P.
 
@@ -1134,42 +1131,63 @@ ets_ops_access_rights_map(Op) ->
 
 %%------------------------------------------------------------------------------
 
-system_ets_entries(EtsTables) ->
+system_ets_entries(#concuerror_info{ets_tables = EtsTables}) ->
   Map = fun(Tid) -> ?new_system_ets_table(Tid, ets:info(Tid, protection)) end,
   ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
 
-system_processes_wrappers(Processes) ->
-  Scheduler = self(),
+system_processes_wrappers(Info) ->
+  #concuerror_info{processes = Processes} = Info,
   Map =
     fun(Name) ->
-        Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Scheduler) end,
+        Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Info) end,
         Pid = spawn_link(Fun),
         ?new_system_process(Pid, Name)
     end,
   ets:insert(Processes, [Map(Name) || Name <- registered()]).
 
-system_wrapper_loop(Name, Wrapped, Scheduler) ->
+system_wrapper_loop(Name, Wrapped, Info) ->
+  #concuerror_info{scheduler = Scheduler} = Info,
   receive
-    {message,
-     #message{data = Data, message_id = Id}} ->
-      case Name of
-        init ->
-          {From, Request} = Data,
-          erlang:send(Wrapped, {self(), Request}),
-          receive
-            Msg ->
-              Scheduler ! {system_reply, From, Id, Msg},
-              ok
-          end;
-        error_logger ->
-          %erlang:send(Wrapped, Data),
-          Scheduler ! {trapping, false},
-          ok;
-        Else ->
-          ?crash({unknown_protocol_for_system, Else})
+    Message ->
+      case Message of
+        {message,
+         #message{data = Data, message_id = Id}} ->
+          try
+            case Name of
+              init ->
+                {From, Request} = Data,
+                erlang:send(Wrapped, {self(), Request}),
+                receive
+                  Msg ->
+                    Scheduler ! {system_reply, From, Id, Msg},
+                    ok
+                end;
+              error_logger ->
+                %% erlang:send(Wrapped, Data),
+                Scheduler ! {trapping, false},
+                ok;
+              standard_error ->
+                #concuerror_info{logger = Logger} = Info,
+                {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
+                Scheduler ! {system_reply, From, Id, Reply},
+                ok;
+              user ->
+                #concuerror_info{logger = Logger} = Info,
+                {From, Reply, _} = handle_io(Data, {standard_io, Logger}),
+                Scheduler ! {system_reply, From, Id, Reply},
+                ok;
+              Else ->
+                ?crash({unknown_protocol_for_system, Else})
+            end
+          catch
+            exit:{?MODULE, _} = Reason -> exit(Reason);
+            Type:Reason ->
+              Stacktrace = erlang:get_stacktrace(),
+              ?crash({system_wrapper_error, Name, Type, Reason, Stacktrace})
+          end
       end
   end,
-  system_wrapper_loop(Name, Wrapped, Scheduler).
+  system_wrapper_loop(Name, Wrapped, Info).
 
 reset_concuerror_info(Info) ->
   #concuerror_info{
@@ -1234,6 +1252,57 @@ fix_stacktrace(#concuerror_info{stacktop = Top}) ->
 
 %%------------------------------------------------------------------------------
 
+handle_io({io_request, From, ReplyAs, Req}, IOState) ->
+  {Reply, NewIOState} = io_request(Req, IOState),
+  {From, {io_reply, ReplyAs, Reply}, NewIOState}.
+
+io_request({put_chars, Chars}, {Tag, Data} = IOState) ->
+  case is_atom(Tag) of
+    true ->
+      Logger = Data,
+      concuerror_logger:print(Logger, Tag, Chars),
+      {ok, IOState}
+  end;
+io_request({put_chars, M, F, As}, IOState) ->
+  try apply(M, F, As) of
+      Chars -> io_request({put_chars, Chars}, IOState)
+  catch
+    _:_ -> {{error, request}, IOState}
+  end;
+io_request({put_chars, _Enc, Chars}, IOState) ->
+    io_request({put_chars, Chars}, IOState);
+io_request({put_chars, _Enc, Mod, Func, Args}, IOState) ->
+    io_request({put_chars, Mod, Func, Args}, IOState);
+%% io_request({get_chars, _Enc, _Prompt, _N}, IOState) ->
+%%     {eof, IOState};
+%% io_request({get_chars, _Prompt, _N}, IOState) ->
+%%     {eof, IOState};
+%% io_request({get_line, _Prompt}, IOState) ->
+%%     {eof, IOState};
+%% io_request({get_line, _Enc, _Prompt}, IOState) ->
+%%     {eof, IOState};
+%% io_request({get_until, _Prompt, _M, _F, _As}, IOState) ->
+%%     {eof, IOState};
+%% io_request({setopts, _Opts}, IOState) ->
+%%     {ok, IOState};
+%% io_request(getopts, IOState) ->
+%%     {error, {error, enotsup}, IOState};
+%% io_request({get_geometry,columns}, IOState) ->
+%%     {error, {error, enotsup}, IOState};
+%% io_request({get_geometry,rows}, IOState) ->
+%%     {error, {error, enotsup}, IOState};
+%% io_request({requests, Reqs}, IOState) ->
+%%     io_requests(Reqs, {ok, IOState});
+io_request(_, IOState) ->
+    {{error, request}, IOState}.
+
+%% io_requests([R | Rs], {ok, IOState}) ->
+%%     io_requests(Rs, io_request(R, IOState));
+%% io_requests(_, Result) ->
+%%     Result.
+
+%%------------------------------------------------------------------------------
+
 -spec explain_error(term()) -> string().
 
 explain_error({unknown_protocol_for_system, System}) ->
@@ -1272,4 +1341,11 @@ explain_error({checking_system_process, Pid}) ->
     "A process tried to link/monitor/inspect process ~p which was not"
     " started by Concuerror and has no suitable wrapper to work with"
     " Concuerror. Contact the developers.",
-    [Pid]).
+    [Pid]);
+explain_error({system_wrapper_error, Name, Type, Reason, Stacktrace}) ->
+  io_lib:format(
+    "Concuerror's wrapper for system process ~p crashed (~p):~n"
+    "  Reason:~p~n"
+    "Stacktrace:~n"
+    " ~p~n",
+    [Name, Type, Reason, Stacktrace]).

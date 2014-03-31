@@ -2,7 +2,7 @@
 
 -module(concuerror_logger).
 
--export([run/1, complete/2, plan/1, log/3, log/4, stop/2]).
+-export([run/1, complete/2, plan/1, log/3, log/4, stop/2, print/3]).
 
 -include("concuerror.hrl").
 
@@ -13,6 +13,7 @@
           modules = []        :: [atom()],
           output              :: file:io_device(),
           output_name         :: string(),
+          streams = []        :: [{stream(), [string()]}],
           ticker = none       :: pid() | 'none',
           traces_explored = 0 :: non_neg_integer(),
           traces_ssb = 0      :: non_neg_integer(),
@@ -81,6 +82,12 @@ stop(Logger, Status) ->
     closed -> ok
   end.
 
+-spec print(logger(), stream(), string()) -> ok.
+
+print(Logger, Type, String) ->
+  Logger ! {print, Type, String},
+  ok.
+
 %%------------------------------------------------------------------------------
 
 loop_entry(State) ->
@@ -103,6 +110,7 @@ loop(State) ->
      errors = Errors,
      modules = Modules,
      output = Output,
+     streams = Streams,
      ticker = Ticker,
      traces_explored = TracesExplored,
      traces_total = TracesTotal,
@@ -145,6 +153,10 @@ loop(State) ->
       NewState = State#logger_state{traces_total = TracesTotal + 1},
       update_on_ticker(NewState),
       loop(NewState);
+    {print, Type, String} ->
+      NewStreams = orddict:append(Type, String, Streams),
+      NewState = State#logger_state{streams = NewStreams},
+      loop(NewState);
     {complete, Warn} ->
       %% XXX: Print error info
       %% io:format("\n"),
@@ -165,12 +177,14 @@ loop(State) ->
             WarnStr = [concuerror_printer:error_s(W) || W <-Warnings],
             io:format(Output, "~s", [WarnStr]),
             separator(Output, $-),
+            print_streams(Streams, Output),
             io:format(Output, "Interleaving info:~n", []),
             concuerror_printer:pretty(Output, TraceInfo),
             NE
         end,
       NewState =
         State#logger_state{
+          streams = [],
           traces_explored = TracesExplored + 1,
           errors = NewErrors
          },
@@ -249,6 +263,23 @@ has_tick(Result) ->
 
 separator(Output, Char) ->
   io:format(Output, "~s~n", [lists:duplicate(80, Char)]).
+
+print_streams(Streams, Output) ->
+  Fold =
+    fun(Tag, Buffer, ok) ->
+        print_stream(Tag, Buffer, Output),
+        ok
+    end,
+  orddict:fold(Fold, ok, Streams).
+
+print_stream(Tag, Buffer, Output) ->
+  io:format(Output, "Text printed to ~s:~n", [tag_to_filename(Tag)]),
+  io:format(Output, "~s~n", [lists:reverse(Buffer)]),
+  separator(Output, $-).
+
+tag_to_filename(standard_io) -> "Standard Output";
+tag_to_filename(standard_error) -> "Standard Error";
+tag_to_filename(Filename) when is_list(Filename) -> Filename.
 
 interleavings_message(Errors, TracesExplored, TracesTotal) ->
   io_lib:format("~p errors, ~p/~p interleavings explored~n",

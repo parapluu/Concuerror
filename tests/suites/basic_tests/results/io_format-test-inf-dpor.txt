@@ -1,0 +1,35 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/io_format.erl"]},
+   {normal_exit,[normal]},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{io_format,test,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in io_format.erl line 11
+--------------------------------------------------------------------------------
+Text printed to Standard Output:
+Test
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: user = erlang:group_leader()
+    in io.erl line 598
+   2: P: #Ref<0.0.0.125> = erlang:monitor(process, user)
+    in io.erl line 568
+   3: P: {io_request,P,user,{put_chars,unicode,io_lib,format,[[84,101,115,116],[]]}} = user ! {io_request,P,user,{put_chars,unicode,io_lib,format,[[84,101,115,116],[]]}}
+    in io.erl line 569
+   4: Message ({io_request,P,user,{put_chars,unicode,io_lib,format,[[84,101,115,116],[]]}}) from P reaches user
+   5: Message ({io_reply,user,ok}) from user reaches P
+   6: P: receives message ({io_reply,user,ok})
+    in io.erl line 601
+   7: P: true = erlang:demonitor(#Ref<0.0.0.125>, [flush])
+    in io.erl line 603
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

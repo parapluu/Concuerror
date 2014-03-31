@@ -1,0 +1,35 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/io_error.erl"]},
+   {normal_exit,[normal]},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{io_error,test,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in io_error.erl line 11
+--------------------------------------------------------------------------------
+Text printed to Standard Error:
+Test
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: standard_error = erlang:whereis(standard_error)
+    in io.erl line 560
+   2: P: #Ref<0.0.0.125> = erlang:monitor(process, standard_error)
+    in io.erl line 568
+   3: P: {io_request,P,standard_error,{put_chars,unicode,io_lib,format,[[84,101,115,116],[]]}} = standard_error ! {io_request,P,standard_error,{put_chars,unicode,io_lib,format,[[84,101,115,116],[]]}}
+    in io.erl line 569
+   4: Message ({io_request,P,standard_error,{put_chars,unicode,io_lib,format,[[84,101,115,116],[]]}}) from P reaches standard_error
+   5: Message ({io_reply,standard_error,ok}) from standard_error reaches P
+   6: P: receives message ({io_reply,standard_error,ok})
+    in io.erl line 601
+   7: P: true = erlang:demonitor(#Ref<0.0.0.125>, [flush])
+    in io.erl line 603
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

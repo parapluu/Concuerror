@@ -45,6 +45,7 @@
 %%------------------------------------------------------------------------------
 -type scheduler() :: pid().
 -type logger()    :: pid().
+-type stream()    :: 'standard_io' | 'standard_error' | filename:filename().
 -type options()   :: proplists:proplist().
 %%------------------------------------------------------------------------------
 %% Logger verbosity

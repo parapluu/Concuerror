@@ -1,0 +1,90 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/io_format_2.erl"]},
+   {normal_exit,[normal]},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{io_format_2,test,[]}},
+   {verbose,0},
+   {wait,2000}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in io_format_2.erl line 12
+--------------------------------------------------------------------------------
+Text printed to Standard Output:
+Child
+Parent
+
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<io_format_2.0.71726876>,[]])
+    in erlang.erl line 2329
+   2: P: user = erlang:group_leader()
+    in io.erl line 598
+   3: P: #Ref<0.0.0.129> = erlang:monitor(process, user)
+    in io.erl line 568
+   4: P: {io_request,P,user,{put_chars,unicode,io_lib,format,[[80,97,114,101,110,116,126,110],[]]}} = user ! {io_request,P,user,{put_chars,unicode,io_lib,format,[[80,97,114,101,110,116,126,110],[]]}}
+    in io.erl line 569
+   5: Message ({io_request,P,user,{put_chars,unicode,io_lib,format,[[80,97,114,101,110,116,126,110],[]]}}) from P reaches user
+   6: Message ({io_reply,user,ok}) from user reaches P
+   7: P: receives message ({io_reply,user,ok})
+    in io.erl line 601
+   8: P: true = erlang:demonitor(#Ref<0.0.0.129>, [flush])
+    in io.erl line 603
+   9: P.1: user = erlang:group_leader()
+    in io.erl line 598
+  10: P.1: #Ref<0.0.0.142> = erlang:monitor(process, user)
+    in io.erl line 568
+  11: P.1: {io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}} = user ! {io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}}
+    in io.erl line 569
+  12: Message ({io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}}) from P.1 reaches user
+  13: Message ({io_reply,user,ok}) from user reaches P.1
+  14: P.1: receives message ({io_reply,user,ok})
+    in io.erl line 601
+  15: P.1: true = erlang:demonitor(#Ref<0.0.0.142>, [flush])
+    in io.erl line 603
+  16: P.1: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in io_format_2.erl line 12
+--------------------------------------------------------------------------------
+Text printed to Standard Output:
+Parent
+Child
+
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<io_format_2.0.71726876>,[]])
+    in erlang.erl line 2329
+   2: P: user = erlang:group_leader()
+    in io.erl line 598
+   3: P: #Ref<0.0.0.129> = erlang:monitor(process, user)
+    in io.erl line 568
+   4: P: {io_request,P,user,{put_chars,unicode,io_lib,format,[[80,97,114,101,110,116,126,110],[]]}} = user ! {io_request,P,user,{put_chars,unicode,io_lib,format,[[80,97,114,101,110,116,126,110],[]]}}
+    in io.erl line 569
+   5: P.1: user = erlang:group_leader()
+    in io.erl line 598
+   6: P.1: #Ref<0.0.0.142> = erlang:monitor(process, user)
+    in io.erl line 568
+   7: P.1: {io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}} = user ! {io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}}
+    in io.erl line 569
+   8: Message ({io_request,P.1,user,{put_chars,unicode,io_lib,format,[[67,104,105,108,100,126,110],[]]}}) from P.1 reaches user
+   9: Message ({io_reply,user,ok}) from user reaches P.1
+  10: Message ({io_request,P,user,{put_chars,unicode,io_lib,format,[[80,97,114,101,110,116,126,110],[]]}}) from P reaches user
+  11: Message ({io_reply,user,ok}) from user reaches P
+  12: P: receives message ({io_reply,user,ok})
+    in io.erl line 601
+  13: P: true = erlang:demonitor(#Ref<0.0.0.129>, [flush])
+    in io.erl line 603
+  14: P.1: receives message ({io_reply,user,ok})
+    in io.erl line 601
+  15: P.1: true = erlang:demonitor(#Ref<0.0.0.142>, [flush])
+    in io.erl line 603
+  16: P.1: exits normally
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 2/2 interleavings explored
