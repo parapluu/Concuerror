@@ -144,7 +144,9 @@ loop(State) ->
       ok = file:close(Output),
       case Verbosity < ?lprogress of
         true -> ok;
-        false ->  diagnostic(State, Format, [Status])
+        false ->
+          ForcePrintState = State#logger_state{verbosity = ?lprogress},
+          diagnostic(ForcePrintState, Format, [Status])
       end,
       Scheduler ! closed,
       ok;
@@ -205,7 +207,7 @@ diagnostic(State, Format, Data) ->
      traces_total = TracesTotal,
      verbosity = Verbosity
     } = State,
-  case Verbosity < ?lprogress of
+  case Verbosity =/= ?lprogress of
     true ->
       inner_diagnostic(Format, Data);
     false ->
@@ -225,7 +227,7 @@ print_log_msgs(Output, LogMsgs) ->
             ?lwarning -> "Warnings";
             ?linfo    -> "Info"
           end,
-        io:format(Output, "~s:~n", [Header]),
+        io:format(Output, "Concuerror ~s:~n", [Header]),
         separator(Output, $-),
         lists:foreach(ForeachInner, Messages),
         separator(Output, $#)
