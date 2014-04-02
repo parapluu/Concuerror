@@ -79,9 +79,10 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     sema.acquire()
     # Run concuerror
     status = os.system(
-        ("%s -sq -w 2000 --assume_racing=false --report_unknown -f %s "
-         "--output %s/%s/results/%s-%s-%s%s.txt "
-         "-m %s -t %s"
+        ("%s -q --timeout 2000 --assume_racing false --report_unknown"
+         " -f %s"
+         " --output %s/%s/results/%s-%s-%s%s.txt"
+         " -m %s -t %s"
          )
         % (concuerror, " -f ".join(files),
            results, suite, name, funn, preb, file_ext,

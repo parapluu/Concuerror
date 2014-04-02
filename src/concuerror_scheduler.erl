@@ -48,9 +48,9 @@
           non_racing_system = []:: [atom()],
           options          = [] :: proplists:proplist(),
           processes             :: processes(),
+          timeout               :: non_neg_integer(),
           trace            = [] :: [trace_state()],
-          treat_as_normal = []  :: [atom()],
-          wait                  :: non_neg_integer()
+          treat_as_normal = []  :: [atom()]
          }).
 
 %% =============================================================================
@@ -67,9 +67,10 @@ run(Options) ->
     false ->
       ok
   end,
-  [Processes, Logger, Target, Wait, AssumeRacing, TreatAsNormal, NonRacingSystem] =
+  [Processes, Logger, Target, Timeout, AssumeRacing, TreatAsNormal,
+   NonRacingSystem] =
     get_properties(
-      [processes, logger, target, wait, assume_racing, treat_as_normal,
+      [processes, logger, target, timeout, assume_racing, treat_as_normal,
        non_racing_system],
       Options),
   ProcessOptions =
@@ -88,7 +89,7 @@ run(Options) ->
        processes = Processes,
        trace = [InitialTrace],
        treat_as_normal = TreatAsNormal,
-       wait = Wait},
+       timeout = Timeout},
   ok = concuerror_callback:start_first_process(FirstProcess, Target),
   ?debug(Logger, "Starting exploration...~n",[]),
   concuerror_logger:plan(Logger),
@@ -747,7 +748,7 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
 get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
   #event{event_info = EventInfo} = Event,
   #message_event{message = Message, type = Type} = EventInfo,
-  #scheduler_state{wait = Wait} = State,
+  #scheduler_state{timeout = Timeout} = State,
   %% Message delivery always succeeds
   assert_no_messages(),
   Recipient ! {Type, Message},
@@ -784,8 +785,8 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
               special = [{system_communication, System},Special|Specials]}
         end
     after
-      Wait ->
-        ?crash({no_response_for_message, Wait, Recipient})
+      Timeout ->
+        ?crash({no_response_for_message, Timeout, Recipient})
     end,
   {ok, UpdatedEvent};
 get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
@@ -794,7 +795,7 @@ get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
   get_next_event_backend_loop(Event, State).
 
 get_next_event_backend_loop(Trigger, State) ->
-  #scheduler_state{wait = Wait} = State,
+  #scheduler_state{timeout = Timeout} = State,
   receive
     exited -> exited;
     {blocked, _} -> retry;
@@ -802,7 +803,7 @@ get_next_event_backend_loop(Trigger, State) ->
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
       get_next_event_backend_loop(Trigger, State)
   after
-    Wait -> ?crash({process_did_not_respond, Wait, Trigger})
+    Timeout -> ?crash({process_did_not_respond, Timeout, Trigger})
   end.
 
 collect_deadlock_info(ActiveProcesses) ->
@@ -844,18 +845,18 @@ assert_no_messages() ->
 
 -spec explain_error(term()) -> string().
 
-explain_error({no_response_for_message, Wait, Recipient}) ->
+explain_error({no_response_for_message, Timeout, Recipient}) ->
   io_lib:format(
     "A process took more than ~pms to send an acknowledgement for a message"
     " that was sent to it. (Process: ~p)~n"
     ?notify_us_msg,
-    [Wait, Recipient]);
-explain_error({process_did_not_respond, Wait, #event{actor = Actor}}) ->
+    [Timeout, Recipient]);
+explain_error({process_did_not_respond, Timeout, #event{actor = Actor}}) ->
   io_lib:format( 
     "A process took more than ~pms to report a built-in event. You can try to"
-    " increase the --wait limit and/or ensure that there are no infinite"
+    " increase the --timeout limit and/or ensure that there are no infinite"
     " loops in your test. (Process: ~p)",
-    [Wait, Actor]
+    [Timeout, Actor]
    );
 explain_error({replay_mismatch, I, Event, NewEvent}) ->
   io_lib:format(

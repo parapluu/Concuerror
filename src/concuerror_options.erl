@@ -54,63 +54,60 @@ options() ->
   ,{test, [frontend], $t, "test", {atom, test},
     "The name of the 0-arity function that starts the test."}
   ,{output, [logger], $o, "output", {string, "results.txt"},
-    "Output file."}
-  ,{symbolic, [logger], $s, "symbolic", {boolean, false},
-    "Use symbolic names for process identifiers."}
-  ,{patha, [frontend, logger], undefined, "pa", string,
-    "Add directory to the front of the code path."}
-  ,{pathz, [frontend, logger], undefined, "pz", string,
-    "Add directory to the end of the code path."}
-  ,{file, [frontend], $f, "file", string,
-    "Load a specific file (.beam or .erl). (A .erl file should not require"
-    " any command line compile options.)"}
+    "Output file where Concuerror shall write the results of the analysis."}
   ,{help, [frontend], $h, "help", undefined,
     "Display this information."}
-  ,{quiet, [frontend], $q, "quiet", undefined,
-    "Do not write anything to standard output. Equivalent to --verbose 0."}
+  ,{version, [frontend], undefined, "version", undefined,
+    "Display version information about Concuerror."}
+  ,{patha, [frontend, logger], undefined, "pa", string,
+    "Add directory at the front of Erlang's code path."}
+  ,{pathz, [frontend, logger], undefined, "pz", string,
+    "Add directory at the end of Erlang's code path."}
+  ,{file, [frontend], $f, "file", string,
+    "Explicitly load a file (.beam or .erl). (A .erl file should not require"
+    " any command line compile options.)"}
   ,{verbose, [logger], $v, "verbose", integer,
     io_lib:format("Sets the verbosity level (0-~p) [default: ~p].",
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
-  ,{assume_racing, [logger, scheduler], undefined, "assume_racing", {boolean, true},
-    "If there is no info about whether a specific pair of built-ins may race,"
-    " assume that they do indeed race. Set this to false to detect missing"
-    " dependency info."}
-  ,{non_racing_system, [logger, scheduler], undefined, "non_racing_system", atom,
-    "Assume that any messages sent to the specified system process are not racing"
-    " with each-other. Useful for reducing the number of interleavings when a lot"
-    " of processes have calls to io:format/1,2 or similar."}
+  ,{quiet, [frontend], $q, "quiet", undefined,
+    "Do not write anything to standard output. Equivalent to --verbose 0."}
+  ,{symbolic, [logger], $s, "symbolic", {boolean, true},
+    "Use symbolic names for process identifiers in the output traces."}
   ,{after_timeout, [logger, process], $a, "after_timeout", {integer, infinite},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
-    " will never be triggered."} %% XXX, unless no other process can progress."}
+    " will never be triggered."}
   ,{treat_as_normal, [logger, scheduler], undefined, "treat_as_normal", {atom, normal},
     "Specify exit reasons that are considered 'normal' and not reported as"
     " crashes. Useful e.g. when analyzing supervisors ('shutdown' is probably"
-    " also a normal reason in this case)."}
-  ,{report_unknown, [logger, process], undefined, "report_unknown",
-    {boolean, false},
-    "Report built-ins that are not explicitly classified by Concuerror as"
-    " racing or race-free. (Concuerror expects such built-ins to always return"
-    " the same result otherwise"}
-  %% ,{bound, [logger, scheduler], $b, "bound", {integer, -1},
-  %%   "Preemption bound (-1 for infinite)."}
-  %% ,{distributed, [logger, scheduler], $d, "distributed", {boolean, true},
-  %%   "Use distributed Erlang semantics: messages are not delivered immediately"
-  %%   " after being sent."}
-  %% ,{'light-dpor', [logger, scheduler], $l, "light-dpor", {boolean, false},
-  %%   "Use lightweight (source) DPOR instead of optimal."}
-  ,{version, [frontend], undefined, "version", undefined,
-    "Display version information about Concuerror."}
-  ,{wait, [logger, scheduler], $w, "wait", {integer, ?MINIMUM_TIMEOUT},
+    " also a normal exit reason in this case)."}
+  ,{timeout, [logger, scheduler], undefined, "timeout", {integer, ?MINIMUM_TIMEOUT},
     "How many ms to wait before assuming a process to be stuck in an infinite"
     " loop between two operations with side-effects. Setting it to -1 makes"
     " Concuerror wait indefinitely. Otherwise must be >= " ++
       integer_to_list(?MINIMUM_TIMEOUT) ++ "."}
-   %% These options won't make it to the getopt script
-  ,{target, [logger, scheduler]} %% Generated from module and test or given explicitlyq
+  ,{assume_racing, [logger, scheduler], undefined, "assume_racing", {boolean, true},
+    "If there is no info about whether a specific pair of built-in operations"
+    " may race, assume that they do indeed race. Set this to false to detect"
+    " missing dependency info."}
+  ,{non_racing_system, [logger, scheduler], undefined, "non_racing_system", atom,
+    "Assume that any messages sent to the specified system process (specified"
+    " by registered name) are not racing with each-other. Useful for reducing"
+    " the number of interleavings when processes have calls to io:format/1,2 or"
+    " similar."}
+  ,{report_unknown, [logger, process], undefined, "report_unknown",
+    {boolean, false},
+    "Report built-ins that are not explicitly classified by Concuerror as"
+    " racing or race-free. Otherwise, Concuerror expects such built-ins to"
+    " always return the same result."}
+  %% ,{bound, [logger, scheduler], $b, "bound", {integer, -1},
+  %%   "Preemption bound (-1 for infinite)."}
+
+   %% The following options won't make it to the getopt script
+  ,{target, [logger, scheduler]} %% Generated from module and test or given explicitly
   ,{halt, []}                    %% Controlling whether a halt will happen
   ,{files, [logger]}             %% List of included files (to be shown in the log)
-  ,{modules, [logger, process]}  %% List of included files (to be shown in the log)
-  ,{processes, [logger, process]}
+  ,{modules, [logger, process]}  %% Ets table of instrumented modules
+  ,{processes, [logger, process]}%% Ets table containing processes under concuerror
   ,{logger, [process]}
   ,{frontend, []}
   ].
@@ -223,7 +220,7 @@ finalize([{Key, Value}|Rest], Acc) ->
             {error, _} ->
               opt_error("could not open file ~s for writing", [Value])
           end;
-        wait ->
+        timeout ->
           case Value of
             -1 ->
               finalize(Rest, [{Key, infinite}|Acc]);
