@@ -1334,18 +1334,20 @@ explain_error({unexpected_builtin_change,
 explain_error({unknown_built_in, {Module, Name, Arity}}) ->
   io_lib:format(
     "No special handling found for built-in ~p:~p/~p. Run without"
-    " --report_unknown or contact the developers.",
+    " --report_unknown or contact the developers to add support for it.",
     [Module, Name, Arity]);
 explain_error({checking_system_process, Pid}) ->
   io_lib:format(
     "A process tried to link/monitor/inspect process ~p which was not"
     " started by Concuerror and has no suitable wrapper to work with"
-    " Concuerror. Contact the developers.",
+    " Concuerror.~n"
+    ?notify_us_msg,
     [Pid]);
 explain_error({system_wrapper_error, Name, Type, Reason, Stacktrace}) ->
   io_lib:format(
     "Concuerror's wrapper for system process ~p crashed (~p):~n"
     "  Reason:~p~n"
     "Stacktrace:~n"
-    " ~p~n",
+    " ~p~n"
+    ?notify_us_msg,
     [Name, Type, Reason, Stacktrace]).

@@ -744,9 +744,10 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
 %% Between scheduler and an instrumented process
 %%------------------------------------------------------------------------------
 
-get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, _State) ->
+get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
   #event{event_info = EventInfo} = Event,
   #message_event{message = Message, type = Type} = EventInfo,
+  #scheduler_state{wait = Wait} = State,
   %% Message delivery always succeeds
   assert_no_messages(),
   Recipient ! {Type, Message},
@@ -783,8 +784,8 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, _State) ->
               special = [{system_communication, System},Special|Specials]}
         end
     after
-      2000 ->
-        error(too_late)
+      Wait ->
+        ?crash({no_response_for_message, Wait, Recipient})
     end,
   {ok, UpdatedEvent};
 get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
@@ -843,6 +844,12 @@ assert_no_messages() ->
 
 -spec explain_error(term()) -> string().
 
+explain_error({no_response_for_message, Wait, Recipient}) ->
+  io_lib:format(
+    "A process took more than ~pms to send an acknowledgement for a message"
+    " that was sent to it. (Process: ~p)~n"
+    ?notify_us_msg,
+    [Wait, Recipient]);
 explain_error({process_did_not_respond, Wait, #event{actor = Actor}}) ->
   io_lib:format( 
     "A process took more than ~pms to report a built-in event. You can try to"
@@ -852,10 +859,11 @@ explain_error({process_did_not_respond, Wait, #event{actor = Actor}}) ->
    );
 explain_error({replay_mismatch, I, Event, NewEvent}) ->
   io_lib:format(
-    "On step ~p replaying a built-in returned a different result than expected:"
-    "~n  original: ~s"
-    "~n  new     : ~s"
-    "~nPlease notify the developers, as this is a bug of Concuerror!",
+    "On step ~p, replaying a built-in returned a different result than"
+    " expected:~n"
+    "  original: ~s~n"
+    "  new     : ~s~n"
+    ?notify_us_msg,
     [I,
      concuerror_printer:pretty_s(Event),
      concuerror_printer:pretty_s(NewEvent)]

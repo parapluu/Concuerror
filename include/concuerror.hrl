@@ -85,6 +85,8 @@
 -define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------
 -define(crash(Reason), exit({?MODULE, Reason})).
+-define(notify_us_msg,
+        "~nPlease notify the developers, as this is a bug of Concuerror.").
 %%------------------------------------------------------------------------------
 %% Scheduler's timeout
 -define(MINIMUM_TIMEOUT, 1000).
