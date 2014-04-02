@@ -192,12 +192,12 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
           end
       end;
     false ->
-      Modules =
+      {Modules, Report} =
         case Info of
-          #concuerror_info{modules = M} -> M;
-          {logger, _, M} -> M
+          #concuerror_info{modules = M} -> {M, true};
+          {logger, _, M} -> {M, false}
         end,
-      ok = concuerror_loader:load(Module, Modules),
+      ok = concuerror_loader:load(Module, Modules, Report),
       {doit, Info}
   end;
 instrumented_aux({Module, _} = Tuple, Name, Arity, Args, Location, Info) ->
@@ -864,7 +864,7 @@ process_top_loop(Info) ->
     {start, Module, Name, Args} ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
       %% It is ok for this load to fail
-      concuerror_loader:load(Module, Info#concuerror_info.modules),
+      concuerror_loader:load(Module, Info#concuerror_info.modules, true),
       put(concuerror_info, Info),
       try
         erlang:apply(Module, Name, Args),

@@ -19,9 +19,10 @@ run(RawOptions) ->
         [{processes, Processes} |
          [O || O <- Options, concuerror_options:filter_options('logger', O)]
         ],
-      ok = concuerror_loader:load(concuerror_logger, Modules),
+      ok = concuerror_loader:load(concuerror_logger, Modules, false),
       Logger = spawn_link(fun() -> concuerror_logger:run(LoggerOptions) end),
       SchedulerOptions = [{processes, Processes}, {logger, Logger}|Options],
+      ets:insert(Modules, {{logger}, Logger}),
       {Pid, Ref} =
         spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
       Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
@@ -31,8 +32,8 @@ run(RawOptions) ->
           false ->
             ?error(Logger,
                    "Concuerror crashed!~n~n~s~n~n"
-                   "Get more info by running Concuerror with -vvvv~n~n",
-                   [explain(Reason)]),
+                   "Get more info by running Concuerror with -~s~n~n",
+                   [explain(Reason), lists:duplicate(?MAX_VERBOSITY, $v)]),
             error
         end,
       cleanup(Processes),

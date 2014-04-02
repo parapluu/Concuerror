@@ -66,11 +66,11 @@ options() ->
   ,{file, [frontend], $f, "file", string,
     "Explicitly load a file (.beam or .erl). (A .erl file should not require"
     " any command line compile options.)"}
-  ,{verbose, [logger], $v, "verbose", integer,
+  ,{verbosity, [logger], $v, "verbosity", integer,
     io_lib:format("Sets the verbosity level (0-~p) [default: ~p].",
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
   ,{quiet, [frontend], $q, "quiet", undefined,
-    "Do not write anything to standard output. Equivalent to --verbose 0."}
+    "Do not write anything to standard output. Equivalent to -v 0."}
   ,{symbolic, [logger], $s, "symbolic", {boolean, true},
     "Use symbolic names for process identifiers in the output traces."}
   ,{after_timeout, [logger, process], $a, "after_timeout", {integer, infinite},
@@ -138,9 +138,9 @@ finalize(Options) ->
       case proplists:get_value(target, Finalized, undefined) of
         {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
           Verbosity =
-            case proplists:is_defined(verbose, Finalized) of
+            case proplists:is_defined(verbosity, Finalized) of
               true -> [];
-              false -> [{verbose, ?DEFAULT_VERBOSITY}]
+              false -> [{verbosity, ?DEFAULT_VERBOSITY}]
             end,
           NonRacingSystem =
             case proplists:is_defined(non_racing_system, Finalized) of
@@ -156,8 +156,8 @@ finalize(Options) ->
 
 finalize([], Acc) -> Acc;
 finalize([{quiet, true}|Rest], Acc) ->
-  NewRest = proplists:delete(verbose, proplists:delete(quiet, Rest)),
-  finalize(NewRest, [{verbose, 0}|Acc]);
+  NewRest = proplists:delete(verbosity, proplists:delete(quiet, Rest)),
+  finalize(NewRest, [{verbosity, 0}|Acc]);
 finalize([{Key, V}|Rest], Acc)
   when Key =:= treat_as_normal; Key =:= non_racing_system ->
   AlwaysAdd =
@@ -168,15 +168,15 @@ finalize([{Key, V}|Rest], Acc)
   Values = [V|AlwaysAdd] ++ proplists:get_all_values(Key, Rest),
   NewRest = proplists:delete(Key, Rest),
   finalize(NewRest, [{Key, lists:usort(Values)}|Acc]);
-finalize([{verbose, N}|Rest], Acc) ->
+finalize([{verbosity, N}|Rest], Acc) ->
   case proplists:is_defined(quiet, Rest) =:= true andalso N =/= 0 of
     true ->
-      opt_error("--verbose defined after --quiet");
+      opt_error("--verbosity defined after --quiet");
     false ->
-      Sum = lists:sum([N|proplists:get_all_values(verbose, Rest)]),
+      Sum = lists:sum([N|proplists:get_all_values(verbosity, Rest)]),
       Verbosity = min(Sum, ?MAX_VERBOSITY),
-      NewRest = proplists:delete(verbose, Rest),
-      finalize(NewRest, [{verbose, Verbosity}|Acc])
+      NewRest = proplists:delete(verbosity, Rest),
+      finalize(NewRest, [{verbosity, Verbosity}|Acc])
   end;
 finalize([{Key, Value}|Rest], Acc)
   when Key =:= file; Key =:= patha; Key =:=pathz ->

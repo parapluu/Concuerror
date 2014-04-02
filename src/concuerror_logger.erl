@@ -10,7 +10,7 @@
 
 -record(logger_state, {
           errors = 0          :: non_neg_integer(),
-          modules = []        :: [atom()],
+          log_msgs = []       :: [string()],
           output              :: file:io_device(),
           output_name         :: string(),
           streams = []        :: [{stream(), [string()]}],
@@ -28,7 +28,7 @@
 run(Options) ->
   [Verbosity,{Output, OutputName},SymbolicNames,Processes,Modules] =
     concuerror_common:get_properties(
-      [verbose,output,symbolic,processes,modules], Options),
+      [verbosity,output,symbolic,processes,modules], Options),
   ok = setup_symbolic_names(SymbolicNames, Processes, Modules),
   PrintableOptions = delete_many([processes, output, modules], Options),
   separator(Output, $#),
@@ -69,10 +69,8 @@ log(Logger, Level, Format) ->
 -spec log(logger(), log_level(), string(), [term()]) -> ok.
 
 log(Logger, Level, Format, Data) ->
-  Logger ! {log, self(), Level, Format, Data},
-  receive
-    logged -> ok
-  end.
+  Logger ! {log, Level, Format, Data},
+  ok.
 
 -spec stop(logger(), term()) -> ok.
 
@@ -93,7 +91,7 @@ print(Logger, Type, String) ->
 loop_entry(State) ->
   #logger_state{output_name = OutputName, verbosity = Verbosity} = State,
   Ticker =
-    case Verbosity < ?linfo of
+    case Verbosity < ?lprogress of
       true -> none;
       false ->
         Timestamp = format_utc_timestamp(),
@@ -108,7 +106,7 @@ loop_entry(State) ->
 loop(State) ->
   #logger_state{
      errors = Errors,
-     modules = Modules,
+     log_msgs = LogMsgs,
      output = Output,
      streams = Streams,
      ticker = Ticker,
@@ -117,13 +115,17 @@ loop(State) ->
      verbosity = Verbosity
     } = State,
   receive
-    {log, Pid, Level, Format, Data} ->
+    {log, Level, Format, Data} ->
       case Verbosity < Level of
         true  -> ok;
         false -> diagnostic(State, Format, Data)
       end,
-      Pid ! logged,
-      loop(State);
+      NewLogMsgs =
+        case Level =< ?linfo of
+          true  -> orddict:append(Level, {Format,Data}, LogMsgs);
+          false -> LogMsgs
+        end,
+      loop(State#logger_state{log_msgs = NewLogMsgs});
     {close, Status, Scheduler} ->
       case is_pid(Ticker) of
         true -> Ticker ! stop;
@@ -134,18 +136,15 @@ loop(State) ->
         false -> ok
       end,
       separator(Output, $#),
+      print_log_msgs(Output, LogMsgs),
       Format = "Done! (Exit status: ~p)~n  Summary: ",
       IntMsg = interleavings_message(Errors, TracesExplored, TracesTotal),
       io:format(Output, Format, [Status]),
       io:format(Output, "~s", [IntMsg]),
       ok = file:close(Output),
-      case Verbosity < ?linfo of
-        true  -> ok;
-        false ->
-          clear_progress(),
-          inner_diagnostic(Format, [Status]),
-          IntMsg = interleavings_message(Errors, TracesExplored, TracesTotal),
-          inner_diagnostic("~s", [IntMsg])
+      case Verbosity < ?lprogress of
+        true -> ok;
+        false ->  diagnostic(State, Format, [Status])
       end,
       Scheduler ! closed,
       ok;
@@ -158,12 +157,6 @@ loop(State) ->
       NewState = State#logger_state{streams = NewStreams},
       loop(NewState);
     {complete, Warn} ->
-      %% XXX: Print error info
-      %% io:format("\n"),
-      %% ReversedTrace = lists:reverse(UpdatedState#scheduler_state.trace),
-      %% Map = fun(#trace_state{done = [A|_]}) -> A end,
-      %%
-      %% io:format("\n"),
       NewErrors =
         case Warn of
           none -> Errors;
@@ -189,17 +182,7 @@ loop(State) ->
           errors = NewErrors
          },
       update_on_ticker(NewState),
-      loop(NewState);
-    {module, M} ->
-      case ordsets:is_element(M, Modules) of
-        true -> loop(State);
-        false ->
-          case Verbosity < ?ldebug of
-            true  -> ok;
-            false -> diagnostic(State, "Including ~p~n", [M])
-          end,
-          loop(State#logger_state{modules = ordsets:add_element(M, Modules)})
-      end
+      loop(NewState)
   end.
 
 format_utc_timestamp() ->
@@ -216,20 +199,38 @@ diagnostic(State, Format) ->
   diagnostic(State, Format, []).
 
 diagnostic(State, Format, Data) ->
-  #logger_state{verbosity = Verbosity} = State,
-  case Verbosity =/= ?linfo of
-    true  -> inner_diagnostic(Format, Data);
+  #logger_state{
+     errors = Errors,
+     traces_explored = TracesExplored,
+     traces_total = TracesTotal,
+     verbosity = Verbosity
+    } = State,
+  case Verbosity < ?lprogress of
+    true ->
+      inner_diagnostic(Format, Data);
     false ->
-      #logger_state{
-         errors = Errors,
-         traces_explored = TracesExplored,
-         traces_total = TracesTotal
-        } = State,
+      IntMsg = interleavings_message(Errors, TracesExplored, TracesTotal),
       clear_progress(),
       inner_diagnostic(Format, Data),
-      IntMsg = interleavings_message(Errors, TracesExplored, TracesTotal),
       inner_diagnostic("~s", [IntMsg])
   end.
+
+print_log_msgs(Output, LogMsgs) ->
+  ForeachInner = fun({Format, Data}) -> io:format(Output,Format,Data) end,
+  Foreach =
+    fun({Type, Messages}) ->
+        Header =
+          case Type of
+            ?lerror   -> "Errors";
+            ?lwarning -> "Warnings";
+            ?linfo    -> "Info"
+          end,
+        io:format(Output, "~s:~n", [Header]),
+        separator(Output, $-),
+        lists:foreach(ForeachInner, Messages),
+        separator(Output, $#)
+    end,
+  lists:foreach(Foreach, LogMsgs).
 
 clear_progress() ->
   inner_diagnostic("~c[1A~c[2K\r", [27, 27]).

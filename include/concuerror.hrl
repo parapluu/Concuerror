@@ -49,14 +49,16 @@
 -type options()   :: proplists:proplist().
 %%------------------------------------------------------------------------------
 %% Logger verbosity
--define(lerror, 0).
--define(lwarn, 1).
--define(linfo, 2).
--define(ldebug, 3).
--define(ltrace, 4).
+-define(lquiet,    0).
+-define(lerror,    1).
+-define(lwarning,  2).
+-define(linfo,     3).
+-define(lprogress, 4).
+-define(ldebug,    5).
+-define(ltrace,    6).
 
+-define(DEFAULT_VERBOSITY, ?lprogress).
 -define(MAX_VERBOSITY, ?ltrace).
--define(DEFAULT_VERBOSITY, ?linfo).
 
 -define(log(Logger, Level, Format, Data),
         concuerror_logger:log(Logger, Level, Format, Data)).
@@ -64,9 +66,6 @@
 -define(mf_log(Logger, Level, Format, Data),
         concuerror_logger:log(Logger, Level, "~p:~p " ++ Format,
                               [?MODULE, ?LINE|Data])).
-
--define(info(Logger, Format, Data),
-        ?log(Logger, ?linfo, Format, Data)).
 
 -define(error(Logger, Format, Data),
         ?log(Logger, ?lerror, Format, Data)).
@@ -80,7 +79,7 @@
 -define(trace_nl(Logger, Format, Data),
         ?log(Logger, ?ltrace, Format, Data)).
 
--type log_level() :: ?lerror | ?lwarn | ?linfo | ?ldebug | ?ltrace.
+-type log_level() :: ?lquiet..?MAX_VERBOSITY.
 
 -define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------
