@@ -13,6 +13,7 @@
           log_msgs = []       :: [string()],
           output              :: file:io_device(),
           output_name         :: string(),
+          print_depth         :: pos_integer(),
           streams = []        :: [{stream(), [string()]}],
           ticker = none       :: pid() | 'none',
           traces_explored = 0 :: non_neg_integer(),
@@ -26,9 +27,9 @@
 -spec run(options()) -> ok.
 
 run(Options) ->
-  [Verbosity,{Output, OutputName},SymbolicNames,Processes,Modules] =
+  [Verbosity,{Output, OutputName},SymbolicNames,PrintDepth,Processes,Modules] =
     concuerror_common:get_properties(
-      [verbosity,output,symbolic,processes,modules], Options),
+      [verbosity,output,symbolic,print_depth,processes,modules], Options),
   ok = setup_symbolic_names(SymbolicNames, Processes, Modules),
   PrintableOptions = delete_many([processes, output, modules], Options),
   separator(Output, $#),
@@ -41,6 +42,7 @@ run(Options) ->
     #logger_state{
        output = Output,
        output_name = OutputName,
+       print_depth = PrintDepth,
        verbosity = Verbosity},
   loop_entry(State).
 
@@ -108,6 +110,7 @@ loop(State) ->
      errors = Errors,
      log_msgs = LogMsgs,
      output = Output,
+     print_depth = PrintDepth,
      streams = Streams,
      ticker = Ticker,
      traces_explored = TracesExplored,
@@ -169,12 +172,13 @@ loop(State) ->
               false -> ok
             end,
             io:format(Output, "Erroneous interleaving ~p:~n", [NE]),
-            WarnStr = [concuerror_printer:error_s(W) || W <-Warnings],
+            WarnStr =
+              [concuerror_printer:error_s(W, PrintDepth) || W <-Warnings],
             io:format(Output, "~s", [WarnStr]),
             separator(Output, $-),
             print_streams(Streams, Output),
             io:format(Output, "Interleaving info:~n", []),
-            concuerror_printer:pretty(Output, TraceInfo),
+            concuerror_printer:pretty(Output, TraceInfo, PrintDepth),
             NE
         end,
       NewState =

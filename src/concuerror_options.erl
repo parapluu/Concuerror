@@ -6,6 +6,9 @@
 
 -include("concuerror.hrl").
 
+-define(DEFAULT_VERBOSITY, ?lprogress).
+-define(DEFAULT_PRINT_DEPTH, 20).
+
 -spec parse_cl([string()]) -> options().
 
 parse_cl(CommandLineArgs) ->
@@ -73,6 +76,11 @@ options() ->
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
   ,{quiet, [frontend], $q, undefined,
     "Do not write anything to standard output. Equivalent to -v 0."}
+  ,{print_depth, [logger, scheduler], undefined, {integer, ?DEFAULT_PRINT_DEPTH},
+    "Specifies the max depth for any terms printed in the log (behaves just as"
+    " the extra argument of ~W and ~P argument of io:format/3. If you want more"
+    " info about a particular piece of data consider using erlang:display/1"
+    " and check the standard output section instead."}
   ,{symbolic, [logger], $s, {boolean, true},
     "Use symbolic names for process identifiers in the output traces."}
   ,{after_timeout, [logger, process], $a, {integer, infinite},

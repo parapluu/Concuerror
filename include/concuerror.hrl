@@ -57,7 +57,6 @@
 -define(ldebug,    5).
 -define(ltrace,    6).
 
--define(DEFAULT_VERBOSITY, ?lprogress).
 -define(MAX_VERBOSITY, ?ltrace).
 
 -define(log(Logger, Level, Format, Data),

@@ -47,6 +47,7 @@
           message_info          :: message_info(),
           non_racing_system = []:: [atom()],
           options          = [] :: proplists:proplist(),
+          print_depth           :: pos_integer(),
           processes             :: processes(),
           timeout               :: non_neg_integer(),
           trace            = [] :: [trace_state()],
@@ -67,12 +68,11 @@ run(Options) ->
     false ->
       ok
   end,
-  [Processes, Logger, Target, Timeout, AssumeRacing, TreatAsNormal,
-   NonRacingSystem] =
+  [AssumeRacing,Logger,NonRacingSystem,PrintDepth,Processes,Target,
+   Timeout,TreatAsNormal] =
     get_properties(
-      [processes, logger, target, timeout, assume_racing, treat_as_normal,
-       non_racing_system],
-      Options),
+      [assume_racing,logger,non_racing_system,print_depth,processes,target,
+       timeout,treat_as_normal], Options),
   ProcessOptions =
     [O || O <- Options, concuerror_options:filter_options('process', O)],
   ?debug(Logger, "Starting first process...~n",[]),
@@ -86,6 +86,7 @@ run(Options) ->
        message_info = ets:new(message_info, [private]),
        non_racing_system = NonRacingSystem,
        options = Options,
+       print_depth = PrintDepth,
        processes = Processes,
        trace = [InitialTrace],
        treat_as_normal = TreatAsNormal,
@@ -159,7 +160,8 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
                   try {ok, Event} = NewEvent
                   catch
                     _:_ ->
-                      ?crash({replay_mismatch, I, Event, element(2, NewEvent)})
+                      #scheduler_state{print_depth = PrintDepth} = State,
+                      ?crash({replay_mismatch, I, Event, element(2, NewEvent), PrintDepth})
                   end;
           false ->
             %% Last event = Previously racing event = Result may differ.
@@ -247,8 +249,12 @@ reset_event(#event{actor = Actor} = Event) ->
 
 %%------------------------------------------------------------------------------
 
-update_state(#event{actor = Actor, special = Special} = Event,
-             #scheduler_state{logger = Logger, trace = [Last|Prev]} = State) ->
+update_state(#event{actor = Actor, special = Special} = Event, State) ->
+  #scheduler_state{
+     logger = Logger,
+     print_depth = PrintDepth,
+     trace = [Last|Prev]
+    } = State,
   #trace_state{
      active_processes = ActiveProcesses,
      done             = Done,
@@ -258,7 +264,8 @@ update_state(#event{actor = Actor, special = Special} = Event,
      sleeping         = Sleeping,
      wakeup_tree      = WakeupTree
     } = Last,
-  ?trace(Logger, "+++ ~s~n", [concuerror_printer:pretty_s({Index, Event})]),
+  ?trace(Logger, "+++ ~s~n",
+         [concuerror_printer:pretty_s({Index, Event}, PrintDepth)]),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
   NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =
@@ -506,7 +513,8 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
   #scheduler_state{
      logger = Logger,
      message_info = MessageInfo,
-     non_racing_system = NonRacingSystem
+     non_racing_system = NonRacingSystem,
+     print_depth = PrintDepth
     } = State,
   #trace_state{done = [Event|_], index = Index} = TraceState,
   #event{actor = Actor, event_info = EventInfo, special = Special} = Event,
@@ -530,7 +538,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
           _ -> ActorClock
         end,
       ?trace_nl(Logger, "===~nRaces ~s~n",
-                [concuerror_printer:pretty_s({Index, Event})]),
+                [concuerror_printer:pretty_s({Index, Event}, PrintDepth)]),
       BaseNewOldTrace =
         more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, State),
       NewOldTrace = [TraceState|BaseNewOldTrace],
@@ -544,7 +552,7 @@ more_interleavings_for_event([], _Event, _Later, _Clock, _State, NewOldTrace) ->
   lists:reverse(NewOldTrace);
 more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
                              NewOldTrace) ->
-  #scheduler_state{logger = Logger} = State,
+  #scheduler_state{logger = Logger, print_depth = PrintDepth} = State,
   #trace_state{
      clock_map = EarlyClockMap,
      done =
@@ -568,7 +576,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
           true ->
             NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             ?trace_nl(Logger, "   with ~s~n",
-                      [concuerror_printer:pretty_s({EarlyIndex, _EarlyEvent})]),
+                      [concuerror_printer:pretty_s({EarlyIndex, _EarlyEvent}, PrintDepth)]),
             NotDep =
               not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event, Logger),
             #trace_state{wakeup_tree = WakeupTree} = TraceState,
@@ -581,7 +589,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
                           [lists:append(
                              [io_lib:format(
                                 "        ~s~n",
-                                [concuerror_printer:pretty_s(S)]) ||
+                                [concuerror_printer:pretty_s(S, PrintDepth)]) ||
                                S <- NotDep])]),
                 NS = TraceState#trace_state{wakeup_tree = NewWakeupTree},
                 {update, NS, NC}
@@ -727,8 +735,8 @@ replay_prefix_aux([_], State) ->
   %% Last state has to be properly replayed.
   State;
 replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
-  #scheduler_state{logger = Logger} = State,
-  ?trace_nl(Logger, "~s~n", [concuerror_printer:pretty_s({I, Event})]),
+  #scheduler_state{logger = Logger, print_depth = PrintDepth} = State,
+  ?trace_nl(Logger, "~s~n", [concuerror_printer:pretty_s({I, Event}, PrintDepth)]),
   {ok, NewEvent} = get_next_event_backend(Event, State),
   try
     true = Event =:= NewEvent
@@ -858,7 +866,7 @@ explain_error({process_did_not_respond, Timeout, #event{actor = Actor}}) ->
     " loops in your test. (Process: ~p)",
     [Timeout, Actor]
    );
-explain_error({replay_mismatch, I, Event, NewEvent}) ->
+explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   io_lib:format(
     "On step ~p, replaying a built-in returned a different result than"
     " expected:~n"
@@ -866,6 +874,6 @@ explain_error({replay_mismatch, I, Event, NewEvent}) ->
     "  new     : ~s~n"
     ?notify_us_msg,
     [I,
-     concuerror_printer:pretty_s(Event),
-     concuerror_printer:pretty_s(NewEvent)]
+     concuerror_printer:pretty_s(Event, Depth),
+     concuerror_printer:pretty_s(NewEvent, Depth)]
    ).
