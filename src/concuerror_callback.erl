@@ -863,8 +863,6 @@ process_top_loop(Info) ->
     reset -> process_top_loop(Info);
     {start, Module, Name, Args} ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
-      %% It is ok for this load to fail
-      concuerror_loader:load(Module, Info#concuerror_info.modules, true),
       put(concuerror_info, Info),
       try
         erlang:apply(Module, Name, Args),
