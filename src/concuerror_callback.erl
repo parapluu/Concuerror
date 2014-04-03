@@ -1179,6 +1179,17 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                 %% erlang:send(Wrapped, Data),
                 Scheduler ! {trapping, false},
                 ok;
+              file_server_2 ->
+                case Data of
+                  {Call, {From, Ref}, Request} ->
+                    check_fileserver_request(Request),
+                    erlang:send(Wrapped, {Call, {self(), Ref}, Request}),
+                    receive
+                      Msg ->
+                        Scheduler ! {system_reply, From, Id, Msg, Name},
+                        ok
+                    end
+                end;
               standard_error ->
                 #concuerror_info{logger = Logger} = Info,
                 {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
@@ -1201,6 +1212,10 @@ system_wrapper_loop(Name, Wrapped, Info) ->
       end
   end,
   system_wrapper_loop(Name, Wrapped, Info).
+
+check_fileserver_request({get_cwd}) -> ok;
+check_fileserver_request(Other) ->
+  ?crash({unsupported_fileserver, element(1,Other)}).
 
 reset_concuerror_info(Info) ->
   #concuerror_info{
@@ -1320,11 +1335,13 @@ io_request(_, IOState) ->
 
 -spec explain_error(term()) -> string().
 
-explain_error({unknown_protocol_for_system, System}) ->
+explain_error({checking_system_process, Pid}) ->
   io_lib:format(
-    "A process tried to send a message to system process ~p. Concuerror does"
-    " not currently support communication with this process. Please contact the"
-    " developers for more information.",[System]);
+    "A process tried to link/monitor/inspect process ~p which was not"
+    " started by Concuerror and has no suitable wrapper to work with"
+    " Concuerror.~n"
+    ?notify_us_msg,
+    [Pid]);
 explain_error({inconsistent_builtin,
                [Module, Name, Arity, Args, OldResult, NewResult, Location]}) ->
   io_lib:format(
@@ -1336,6 +1353,14 @@ explain_error({inconsistent_builtin,
     "data that may differ on separate runs of the program.~n"
     "Location: ~p~n~n",
     [Module, Name, Arity, Args, OldResult, NewResult, Location]);
+explain_error({system_wrapper_error, Name, Type, Reason, Stacktrace}) ->
+  io_lib:format(
+    "Concuerror's wrapper for system process ~p crashed (~p):~n"
+    "  Reason:~p~n"
+    "Stacktrace:~n"
+    " ~p~n"
+    ?notify_us_msg,
+    [Name, Type, Reason, Stacktrace]);
 explain_error({unexpected_builtin_change,
                [Module, Name, Arity, Args, M, F, OArgs, Location]}) ->
   io_lib:format(
@@ -1346,23 +1371,20 @@ explain_error({unexpected_builtin_change,
     "data that may differ on separate runs of the program.~n"
     "Location: ~p~n~n",
     [Module, Name, Arity, Args, M, F, length(OArgs), OArgs, Location]);
+explain_error({unknown_protocol_for_system, System}) ->
+  io_lib:format(
+    "A process tried to send a message to system process ~p. Concuerror does"
+    " not currently support communication with this process. Please contact the"
+    " developers for more information.",[System]);
 explain_error({unknown_built_in, {Module, Name, Arity}}) ->
   io_lib:format(
     "No special handling found for built-in ~p:~p/~p. Run without"
     " --report_unknown or contact the developers to add support for it.",
     [Module, Name, Arity]);
-explain_error({checking_system_process, Pid}) ->
+explain_error({unsupported_fileserver, Type}) ->
   io_lib:format(
-    "A process tried to link/monitor/inspect process ~p which was not"
-    " started by Concuerror and has no suitable wrapper to work with"
-    " Concuerror.~n"
+    "A process send a request of type '~p' to the fileserver. This type of"
+    " request has not been checked to ensure it always returns the same"
+    " result.~n"
     ?notify_us_msg,
-    [Pid]);
-explain_error({system_wrapper_error, Name, Type, Reason, Stacktrace}) ->
-  io_lib:format(
-    "Concuerror's wrapper for system process ~p crashed (~p):~n"
-    "  Reason:~p~n"
-    "Stacktrace:~n"
-    " ~p~n"
-    ?notify_us_msg,
-    [Name, Type, Reason, Stacktrace]).
+    [Type]).

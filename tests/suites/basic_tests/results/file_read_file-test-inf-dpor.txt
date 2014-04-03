@@ -1,0 +1,24 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/file_read_file.erl"]},
+   {non_racing_system,[]},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{file_read_file,test,[]}},
+   {timeout,2000},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+  No errors found!
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: erlang
+Instrumenting: file
+Instrumenting: gen_server
+Instrumenting: gen
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 2/2 interleavings explored
