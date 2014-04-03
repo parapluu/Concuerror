@@ -45,57 +45,58 @@ parse_cl_aux(CommandLineArgs) ->
 getopt_spec() ->
   %% We are storing additional info in the options spec. Filter these before
   %% running getopt.
-  [{Name, Short, Long, Type, Help} ||
-    {Name, _Classes, Short, Long, Type, Help} <- options()].
+  %% Options long name is the same as the inner representation atom for
+  %% consistency.
+  [{Name, Short, atom_to_list(Name), Type, Help} ||
+    {Name, _Classes, Short, Type, Help} <- options()].
 
 options() ->
-  [{module, [frontend], $m, "module", atom,
+  [{module, [frontend], $m, atom,
     "The module containing the main test function."}
-  ,{test, [frontend], $t, "test", {atom, test},
+  ,{test, [frontend], $t, {atom, test},
     "The name of the 0-arity function that starts the test."}
-  ,{output, [logger], $o, "output", {string, "results.txt"},
+  ,{output, [logger], $o, {string, "results.txt"},
     "Output file where Concuerror shall write the results of the analysis."}
-  ,{help, [frontend], $h, "help", undefined,
+  ,{help, [frontend], $h, undefined,
     "Display this information."}
-  ,{version, [frontend], undefined, "version", undefined,
+  ,{version, [frontend], undefined, undefined,
     "Display version information about Concuerror."}
-  ,{patha, [frontend, logger], undefined, "pa", string,
+  ,{pa, [frontend, logger], undefined, string,
     "Add directory at the front of Erlang's code path."}
-  ,{pathz, [frontend, logger], undefined, "pz", string,
+  ,{pz, [frontend, logger], undefined, string,
     "Add directory at the end of Erlang's code path."}
-  ,{file, [frontend], $f, "file", string,
+  ,{file, [frontend], $f, string,
     "Explicitly load a file (.beam or .erl). (A .erl file should not require"
     " any command line compile options.)"}
-  ,{verbosity, [logger], $v, "verbosity", integer,
+  ,{verbosity, [logger], $v, integer,
     io_lib:format("Sets the verbosity level (0-~p) [default: ~p].",
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
-  ,{quiet, [frontend], $q, "quiet", undefined,
+  ,{quiet, [frontend], $q, undefined,
     "Do not write anything to standard output. Equivalent to -v 0."}
-  ,{symbolic, [logger], $s, "symbolic", {boolean, true},
+  ,{symbolic, [logger], $s, {boolean, true},
     "Use symbolic names for process identifiers in the output traces."}
-  ,{after_timeout, [logger, process], $a, "after_timeout", {integer, infinite},
+  ,{after_timeout, [logger, process], $a, {integer, infinite},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}
-  ,{treat_as_normal, [logger, scheduler], undefined, "treat_as_normal", {atom, normal},
+  ,{treat_as_normal, [logger, scheduler], undefined, {atom, normal},
     "Specify exit reasons that are considered 'normal' and not reported as"
     " crashes. Useful e.g. when analyzing supervisors ('shutdown' is probably"
     " also a normal exit reason in this case)."}
-  ,{timeout, [logger, scheduler], undefined, "timeout", {integer, ?MINIMUM_TIMEOUT},
+  ,{timeout, [logger, process, scheduler], undefined, {integer, ?MINIMUM_TIMEOUT},
     "How many ms to wait before assuming a process to be stuck in an infinite"
     " loop between two operations with side-effects. Setting it to -1 makes"
     " Concuerror wait indefinitely. Otherwise must be >= " ++
       integer_to_list(?MINIMUM_TIMEOUT) ++ "."}
-  ,{assume_racing, [logger, scheduler], undefined, "assume_racing", {boolean, true},
+  ,{assume_racing, [logger, scheduler], undefined, {boolean, true},
     "If there is no info about whether a specific pair of built-in operations"
     " may race, assume that they do indeed race. Set this to false to detect"
     " missing dependency info."}
-  ,{non_racing_system, [logger, scheduler], undefined, "non_racing_system", atom,
+  ,{non_racing_system, [logger, scheduler], undefined, atom,
     "Assume that any messages sent to the specified system process (specified"
     " by registered name) are not racing with each-other. Useful for reducing"
     " the number of interleavings when processes have calls to io:format/1,2 or"
     " similar."}
-  ,{report_unknown, [logger, process], undefined, "report_unknown",
-    {boolean, false},
+  ,{report_unknown, [logger, process], undefined, {boolean, false},
     "Report built-ins that are not explicitly classified by Concuerror as"
     " racing or race-free. Otherwise, Concuerror expects such built-ins to"
     " always return the same result."}
@@ -179,7 +180,7 @@ finalize([{verbosity, N}|Rest], Acc) ->
       finalize(NewRest, [{verbosity, Verbosity}|Acc])
   end;
 finalize([{Key, Value}|Rest], Acc)
-  when Key =:= file; Key =:= patha; Key =:=pathz ->
+  when Key =:= file; Key =:= pa; Key =:=pz ->
   case Key of
     file ->
       Modules = proplists:get_value(modules, Rest),
@@ -190,8 +191,8 @@ finalize([{Key, Value}|Rest], Acc)
     Else ->
       PathAdd =
         case Else of
-          patha -> fun code:add_patha/1;
-          pathz -> fun code:add_pathz/1
+          pa -> fun code:add_patha/1;
+          pz -> fun code:add_pathz/1
         end,
       case PathAdd(Value) of
         true -> ok;
