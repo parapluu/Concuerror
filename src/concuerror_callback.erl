@@ -66,6 +66,7 @@
           modules                    :: modules(),
           monitors                   :: monitors(),
           next_event = none          :: 'none' | event(),
+          notify_when_ready          :: {pid(), boolean()},
           processes                  :: processes(),
           report_unknown = false     :: boolean(),
           scheduler                  :: pid(),
@@ -101,7 +102,7 @@ spawn_first_process(Options) ->
   system_ets_entries(InitialInfo),
   {GroupLeader, _} = run_built_in(erlang,whereis,1,[user], InitialInfo),
   CompleteInfo = InitialInfo#concuerror_info{group_leader = GroupLeader},
-  P = spawn_link(fun() -> process_top_loop(CompleteInfo) end),
+  P = new_process(CompleteInfo),
   true = ets:insert(Processes, ?new_process(P, "P")),
   P.
 
@@ -109,6 +110,7 @@ spawn_first_process(Options) ->
 
 start_first_process(Pid, {Module, Name, Args}) ->
   Pid ! {start, Module, Name, Args},
+  wait_process(),
   ok.
 
 %%------------------------------------------------------------------------------
@@ -498,7 +500,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
         ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
         ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
         ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, ChildId]),
-        P = spawn_link(fun() -> process_top_loop(PassedInfo) end),
+        P = new_process(PassedInfo),
         true = ets:insert(Processes, ?new_process(P, ChildSymbol)),
         NewResult =
           case lists:member(monitor, SpawnOpts) of
@@ -523,6 +525,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
     false -> ok
   end,
   Pid ! {start, Module, Name, Args},
+  wait_process(),
   {Result, NewInfo};
 run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   when Send =:= '!'; Send =:= 'send' ->
@@ -888,6 +891,18 @@ process_top_loop(Info) ->
       end
   end.
 
+new_process(ParentInfo) ->
+  Info = ParentInfo#concuerror_info{notify_when_ready = {self(), true}},
+  spawn_link(fun() -> process_top_loop(Info) end).
+
+wait_process() ->
+  %% Wait for the new process to instrument any code.
+  receive ready -> ok end.
+
+process_loop(#concuerror_info{notify_when_ready = {Pid, true}} = Info) ->
+  ?debug_flag(?wait, notifying_parent),
+  Pid ! ready,
+  process_loop(Info#concuerror_info{notify_when_ready = {Pid, false}});
 process_loop(Info) ->
   ?debug_flag(?wait, waiting),
   receive
@@ -1196,6 +1211,7 @@ reset_concuerror_info(Info) ->
      logger = Logger,
      modules = Modules,
      monitors = Monitors,
+     notify_when_ready = {Pid, _},
      processes = Processes,
      report_unknown = ReportUnknown,
      scheduler = Scheduler
@@ -1208,6 +1224,7 @@ reset_concuerror_info(Info) ->
      logger = Logger,
      modules = Modules,
      monitors = Monitors,
+     notify_when_ready = {Pid, true},
      processes = Processes,
      report_unknown = ReportUnknown,
      scheduler = Scheduler
