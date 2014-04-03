@@ -124,7 +124,9 @@ is_safe(Module, Name, Arity, Instrumented) ->
               orelse erl_internal:comp_op(NameLit, Arity)
               orelse erl_internal:list_op(NameLit, Arity)
              )
-          ) orelse %% The rest are defined in concuerror.hrl
+          ) orelse
+            ModuleLit =:= binary
+            orelse %% The rest are defined in concuerror.hrl
             lists:member({ModuleLit, NameLit, Arity}, ?RACE_FREE_BIFS);
         false ->
           ets:lookup(Instrumented, ModuleLit) =/= []

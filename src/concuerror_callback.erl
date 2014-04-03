@@ -220,6 +220,12 @@ built_in(erlang, pid_to_list, _Arity, _Args, _Location, Info) ->
 %% Process dictionary has been restored here. No need to report such ops.
 built_in(erlang, get, _Arity, Args, _Location, Info) ->
   {{didit, erlang:apply(erlang,get,Args)}, Info};
+built_in(erlang, system_info, 1, [A], _Location, Info)
+  when A =:= os_type;
+       A =:= schedulers;
+       A =:= logical_processors_available
+       ->
+  {doit, Info};
 %% XXX: Check if its redundant (e.g. link to already linked)
 built_in(Module, Name, Arity, Args, Location, InfoIn) ->
   Info = process_loop(InfoIn),
