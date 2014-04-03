@@ -213,13 +213,18 @@ get_fun_info(Fun, Tag) ->
 
 %%------------------------------------------------------------------------------
 
+built_in(erlang, display, 1, [Term], _Location, Info) ->
+  #concuerror_info{logger = Logger} = Info,
+  Chars = io_lib:format("~w",[Term]),
+  concuerror_logger:print(Logger, standard_io, Chars),
+  {{didit, true}, Info};
+%% Process dictionary has been restored here. No need to report such ops.
+built_in(erlang, get, _Arity, Args, _Location, Info) ->
+  {{didit, erlang:apply(erlang,get,Args)}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
 %% for the logger)
 built_in(erlang, pid_to_list, _Arity, _Args, _Location, Info) ->
   {doit, Info};
-%% Process dictionary has been restored here. No need to report such ops.
-built_in(erlang, get, _Arity, Args, _Location, Info) ->
-  {{didit, erlang:apply(erlang,get,Args)}, Info};
 built_in(erlang, system_info, 1, [A], _Location, Info)
   when A =:= os_type;
        A =:= schedulers;

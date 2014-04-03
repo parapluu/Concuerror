@@ -1,0 +1,24 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/erlang_display.erl"]},
+   {non_racing_system,[]},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{erlang_display,test,[]}},
+   {timeout,2000},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in erlang_display.erl line 11
+--------------------------------------------------------------------------------
+Text printed to Standard Output:
+test
+--------------------------------------------------------------------------------
+Interleaving info:
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

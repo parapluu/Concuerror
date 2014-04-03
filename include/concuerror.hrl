@@ -246,7 +246,6 @@
                  {binary_to_list, 1},
                  {binary_to_term, 1},
                  {bump_reductions, 1}, %% XXX: This may change
-                 {display, 1},
                  {dt_append_vm_tag_data, 1},
                  {dt_spread_tag, 1},
                  {dt_restore_tag,1},
