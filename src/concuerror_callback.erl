@@ -522,14 +522,16 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
         NewEvent = Event#event{special = [{new, P}]},
         {NewResult, Info#concuerror_info{next_event = NewEvent}}
     end,
-  case lists:member(monitor, SpawnOpts) of
-    true ->
-      {Pid, Ref} = Result,
-      #concuerror_info{monitors = Monitors} = Info,
-      true = ets:insert(Monitors, ?monitor(Ref, Pid, Parent, active));
-    false ->
-      Pid = Result
-  end,
+  Pid =
+    case lists:member(monitor, SpawnOpts) of
+      true ->
+        {P1, Ref} = Result,
+        #concuerror_info{monitors = Monitors} = Info,
+        true = ets:insert(Monitors, ?monitor(Ref, P1, Parent, active)),
+        P1;
+      false ->
+        Result
+    end,
   case lists:member(link, SpawnOpts) of
     true ->
       #concuerror_info{links = Links} = Info,

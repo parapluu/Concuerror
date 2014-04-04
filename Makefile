@@ -26,7 +26,7 @@ VSN = 0.10
 
 ERL_COMPILE_FLAGS = \
 	+debug_info \
-	+warn_exported_vars \
+	+warn_export_vars \
 	+warn_unused_import \
 	+warn_missing_spec \
 	+warn_untyped_record
