@@ -40,18 +40,19 @@
 %% -type preemption_bound() :: non_neg_integer() | 'inf'.
 
 -record(scheduler_state, {
-          assume_racing = true  :: boolean(),
-          current_warnings = [] :: [concuerror_warning_info()],
-          first_process         :: {pid(), mfargs()},
-          logger                :: pid(),
-          message_info          :: message_info(),
-          non_racing_system = []:: [atom()],
-          options          = [] :: proplists:proplist(),
-          print_depth           :: pos_integer(),
-          processes             :: processes(),
-          timeout               :: non_neg_integer(),
-          trace            = [] :: [trace_state()],
-          treat_as_normal = []  :: [atom()]
+          allow_first_crash = true :: boolean(),
+          assume_racing     = true :: boolean(),
+          current_warnings  = []   :: [concuerror_warning_info()],
+          first_process            :: {pid(), mfargs()},
+          logger                   :: pid(),
+          message_info             :: message_info(),
+          non_racing_system = []   :: [atom()],
+          options           = []   :: proplists:proplist(),
+          print_depth              :: pos_integer(),
+          processes                :: processes(),
+          timeout                  :: non_neg_integer(),
+          trace             = []   :: [trace_state()],
+          treat_as_normal   = []   :: [atom()]
          }).
 
 %% =============================================================================
@@ -68,11 +69,11 @@ run(Options) ->
     false ->
       ok
   end,
-  [AssumeRacing,Logger,NonRacingSystem,PrintDepth,Processes,Target,
-   Timeout,TreatAsNormal] =
+  [AllowFirstCrash,AssumeRacing,Logger,NonRacingSystem,PrintDepth,
+   Processes,Target,Timeout,TreatAsNormal] =
     get_properties(
-      [assume_racing,logger,non_racing_system,print_depth,processes,target,
-       timeout,treat_as_normal], Options),
+      [allow_first_crash,assume_racing,logger,non_racing_system,print_depth,
+       processes,target,timeout,treat_as_normal], Options),
   ProcessOptions =
     [O || O <- Options, concuerror_options:filter_options('process', O)],
   ?debug(Logger, "Starting first process...~n",[]),
@@ -80,6 +81,7 @@ run(Options) ->
   InitialTrace = #trace_state{active_processes = [FirstProcess]},
   InitialState =
     #scheduler_state{
+       allow_first_crash = AllowFirstCrash,
        assume_racing = AssumeRacing,
        first_process = {FirstProcess, Target},
        logger = Logger,
@@ -136,7 +138,11 @@ log_trace(State) ->
         {lists:reverse(Warnings), TraceInfo}
     end,
   concuerror_logger:complete(Logger, Log),
-  State#scheduler_state{current_warnings = []}.
+  case (not State#scheduler_state.allow_first_crash) andalso (Log =/= none) of
+    true -> ?crash(first_interleaving_crashed);
+    false ->
+      State#scheduler_state{allow_first_crash = true, current_warnings = []}
+  end.
 
 get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
   #trace_state{
@@ -847,6 +853,11 @@ assert_no_messages() ->
 
 -spec explain_error(term()) -> string().
 
+explain_error(first_interleaving_crashed) ->
+  io_lib:format(
+    "The first interleaving of your test had some error. You may pass"
+    " --allow_first_crash to let Concuerror continue or use some other option"
+    " to ignore the reported error.",[]);
 explain_error({no_response_for_message, Timeout, Recipient}) ->
   io_lib:format(
     "A process took more than ~pms to send an acknowledgement for a message"

@@ -80,7 +80,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     # Run concuerror
     status = os.system(
         ("%s -q --timeout 2000 --assume_racing false --report_unknown"
-         " -f %s"
+         " --allow_first_crash -f %s"
          " --output %s/%s/results/%s-%s-%s%s.txt"
          " -m %s -t %s"
          )

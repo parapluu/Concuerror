@@ -87,6 +87,9 @@ options() ->
   ,{after_timeout, [logger, process], $a, {integer, infinite},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}
+  ,{allow_first_crash, [logger, scheduler], undefined, {boolean, false},
+    "If not enabled, Concuerror will immediately exit if the first interleaving"
+    " contains errors."}
   ,{treat_as_normal, [logger, scheduler], undefined, {atom, normal},
     "Specify exit reasons that are considered 'normal' and not reported as"
     " crashes. Useful e.g. when analyzing supervisors ('shutdown' is probably"

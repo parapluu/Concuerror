@@ -1,0 +1,49 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {allow_first_crash,false},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/allow_first_crash.erl"]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{allow_first_crash,test,[]}},
+   {timeout,2000},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* At step 3 process P exited abnormally
+    Reason:
+      error
+    Stacktrace:
+      [{allow_first_crash,test,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/allow_first_crash.erl"},
+                           {line,21}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<allow_first_crash.0.52293812>,[]])
+    in erlang.erl line 2329
+   2: P: receive timeout expired after 0 ms
+    in allow_first_crash.erl line 16
+   3: P: exits abnormally (error)
+   4: P.1: ok = P ! ok
+    in allow_first_crash.erl line 15
+   5: Message (ok) from P.1 reaches P
+   6: P.1: exits normally
+################################################################################
+Concuerror Errors:
+--------------------------------------------------------------------------------
+The first interleaving of your test had some error. You may pass --allow_first_crash to let Concuerror continue or use some other option to ignore the reported error.
+
+Get more info by running Concuerror with -vvvvvv
+
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: error)
+  Summary: 1 errors, 1/2 interleavings explored
