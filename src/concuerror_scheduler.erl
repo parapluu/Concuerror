@@ -185,7 +185,7 @@ filter_sleeping([#event{actor = Pid}|Sleeping],
 get_next_event(Event, [{Pair, Queue}|_], _ActiveProcesses, State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
-  Special = {message_delivered, MessageEvent},
+  Special = [{message_delivered, MessageEvent}],
   UpdatedEvent =
     Event#event{
       actor = Pair,
@@ -238,7 +238,7 @@ reset_event(#event{actor = Actor} = Event) ->
       {_, _} ->
         #event{event_info = EventInfo, special = Special} = Event,
         {EventInfo#message_event{patterns = none}, Special};
-      _ -> {undefined, none}
+      _ -> {undefined, []}
     end,
   #event{
      actor = Actor,
@@ -321,8 +321,8 @@ update_sleeping(#event{event_info = NewInfo}, Sleeping, State) ->
 update_preemptions(_Pid, _ActiveProcesses, _Prev, Preemptions) ->
   Preemptions.
 
-update_special(none, State) ->
-  State;
+update_special(List, State) when is_list(List) ->
+  lists:foldl(fun update_special/2, State, List);
 update_special(Special, State) ->
   #scheduler_state{message_info = MessageInfo, trace = [Next|Trace]} = State,
   case Special of
@@ -353,9 +353,7 @@ update_special(Special, State) ->
          },
       State#scheduler_state{trace = [NewNext|Trace]};
     {system_communication, _} ->
-      State;
-    List when is_list(List) ->
-      lists:foldl(fun update_special/2, State, Special)
+      State
   end.
 
 process_message(MessageEvent, PendingMessages, MessageInfo) ->
@@ -447,14 +445,13 @@ assign_happens_before([TraceState|Rest], TimedNewTrace, OldTrace, State) ->
   BaseNewClockMap = dict:store(Actor, NewClock, ClockMap),
   NewClockMap =
     case Special of
-      {new, SpawnedPid} -> dict:store(SpawnedPid, NewClock, BaseNewClockMap);
+      [{new, SpawnedPid}] -> dict:store(SpawnedPid, NewClock, BaseNewClockMap);
       _ -> BaseNewClockMap
     end,
-  case Actor of
-    {_, _} ->
-      #message_event{message = #message{message_id = IdB}} = EventInfo,
+  case lists:keyfind(message_delivered, 1, Special) of
+    {message_delivered, #message_event{message = #message{message_id = IdB}}} ->
       ets:update_element(MessageInfo, IdB, {?message_delivered, NewClock});
-    _ -> ok
+    false -> ok
   end,
   maybe_mark_sent_message(Special, NewClock, MessageInfo),
   NewTraceState = BaseTraceState#trace_state{clock_map = NewClockMap},
@@ -496,16 +493,13 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
     end,
   update_clock(Rest, Event, NewClock, State).
 
+maybe_mark_sent_message(Special, Clock, MessageInfo) when is_list(Special)->
+  Message = proplists:lookup(message, Special),
+  maybe_mark_sent_message(Message, Clock, MessageInfo);
 maybe_mark_sent_message({message, Message}, Clock, MessageInfo) ->
   #message_event{message = #message{message_id = Id}} = Message,
   ets:update_element(MessageInfo, Id, {?message_sent, Clock});
-maybe_mark_sent_message(Special, Clock, MessageInfo) ->
-  case is_list(Special) of
-    false -> true;
-    true ->
-      Message = proplists:lookup(message, Special),
-      maybe_mark_sent_message(Message, Clock, MessageInfo)
-  end.
+maybe_mark_sent_message(_, _, _) -> true.
 
 plan_more_interleavings([], OldTrace, _SchedulerState) ->
   OldTrace;
@@ -759,7 +753,7 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
   #scheduler_state{timeout = Timeout} = State,
   %% Message delivery always succeeds
   assert_no_messages(),
-  Recipient ! {Type, Message},
+  Recipient ! {Type, Message, self()},
   UpdatedEvent =
     receive
       {trapping, Trapping} ->
@@ -767,16 +761,8 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
         Event#event{event_info = NewEventInfo};
       {system_reply, From, Id, Reply, System} ->
         #event{special = Special} = Event,
-        case is_list(Special) of
-          true ->
-            #message_event{message = #message{data = OldReply}} =
-              proplists:get_value(message, Special),
-            case OldReply =:= Reply of
-              true -> Event;
-              false ->
-                error({system_reply_differs, OldReply, Reply})
-            end;
-          false ->
+        case Special of
+          [Single] ->
             MessageEvent =
               #message_event{
                  cause_label = Event#event.label,
@@ -790,7 +776,15 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
             %% pattern matching against this in plan_more_interleavings to
             %% exclude reordering delivery of messages to system processes
             Event#event{
-              special = [{system_communication, System},Special|Specials]}
+              special = [{system_communication, System},Single|Specials]};
+          _ ->
+            #message_event{message = #message{data = OldReply}} =
+              proplists:get_value(message, Special),
+            case OldReply =:= Reply of
+              true -> Event;
+              false ->
+                error({system_reply_differs, OldReply, Reply})
+            end
         end
     after
       Timeout ->

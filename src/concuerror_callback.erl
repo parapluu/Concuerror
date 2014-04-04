@@ -34,6 +34,7 @@
 -define(trap, ?flag(13)).
 -define(undefined, ?flag(14)).
 -define(heir, ?flag(15)).
+-define(notify, ?flag(16)).
 
 -define(ACTIVE_FLAGS, [?undefined]).
 
@@ -327,7 +328,7 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
            message = Message,
            recipient = Pid,
            type = exit_signal},
-      NewEvent = Event#event{special = {message, MessageEvent}},
+      NewEvent = Event#event{special = [{message, MessageEvent}]},
       {true, Info#concuerror_info{next_event = NewEvent}}
   end;
 
@@ -337,7 +338,7 @@ run_built_in(erlang, group_leader, 0, [],
 
 run_built_in(erlang, halt, _, _, Info) ->
   #concuerror_info{next_event = Event} = Info,
-  NewEvent = Event#event{special = halt},
+  NewEvent = Event#event{special = [halt]},
   {no_return, Info#concuerror_info{next_event = NewEvent}};
 
 run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
@@ -378,7 +379,7 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
                      cause_label = Event#event.label,
                      message = Message,
                      recipient = self()},
-                NewEvent = Event#event{special = {message, MessageEvent}},
+                NewEvent = Event#event{special = [{message, MessageEvent}]},
                 Info#concuerror_info{next_event = NewEvent}
             end,
           {true, NewInfo}
@@ -428,7 +429,7 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
                  cause_label = Event#event.label,
                  message = Message,
                  recipient = self()},
-            NewEvent = Event#event{special = {message, MessageEvent}},
+            NewEvent = Event#event{special = [{message, MessageEvent}]},
             Info#concuerror_info{next_event = NewEvent};
           true -> Info
         end
@@ -518,7 +519,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
             true -> {P, make_ref()};
             false -> P
           end,
-        NewEvent = Event#event{special = {new, P}},
+        NewEvent = Event#event{special = [{new, P}]},
         {NewResult, Info#concuerror_info{next_event = NewEvent}}
     end,
   case lists:member(monitor, SpawnOpts) of
@@ -553,21 +554,41 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
         P
     end,
   ?badarg_if_not(is_pid(Pid)),
-  case EventInfo of
-    %% Replaying...
-    #builtin_event{result = OldResult} -> {OldResult, Info};
-    %% New event...
-    undefined ->
-      ?debug_flag(?send, {send, Recipient, Message}),
-      MessageEvent =
-        #message_event{
-           cause_label = Event#event.label,
-           message = #message{data = Message, message_id = make_ref()},
-           recipient = Pid},
-      NewEvent = Event#event{special = {message, MessageEvent}},
-      ?debug_flag(?send, {send, successful}),
-      {Message, Info#concuerror_info{next_event = NewEvent}}
-  end;
+  SelfDelivery = Recipient =:= self(),
+  {WrappedMsg, Result, NewInfo} =
+    case EventInfo of
+      %% Replaying...
+      #builtin_event{result = OldResult} ->
+        [{message, Msg}|_] = Event#event.special,
+        {Msg, OldResult, Info};
+      %% New event...
+      undefined ->
+        ?debug_flag(?send, {send, Recipient, Message}),
+        Msg = #message{data = Message, message_id = make_ref()},
+        MessageEvent =
+          #message_event{
+             cause_label = Event#event.label,
+             message = Msg,
+             recipient = Pid},
+        Deliver =
+          case SelfDelivery of
+            true ->
+              [{message_delivered, MessageEvent}];
+            false ->
+              []
+          end,
+        NewEvent = Event#event{special = [{message, MessageEvent}|Deliver]},
+        ?debug_flag(?send, {send, successful}),
+        {Msg, Message, Info#concuerror_info{next_event = NewEvent}}
+    end,
+  case SelfDelivery of
+    false -> ok;
+    true -> 
+      self() ! {message, WrappedMsg, 0},
+      ok
+  end,
+  {Result, NewInfo};
+
 run_built_in(erlang, process_flag, 2, [Flag, Value],
              #concuerror_info{flags = Flags} = Info) ->
   {Result, NewInfo} =
@@ -714,7 +735,7 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
                   data = {'ETS-TRANSFER', Tid, Self, GiftData},
                   message_id = make_ref()},
              recipient = Pid},
-        NewEvent = Event#event{special = {message, MessageEvent}},
+        NewEvent = Event#event{special = [{message, MessageEvent}]},
         Info#concuerror_info{next_event = NewEvent}
     end,
   Update = [{?ets_owner, Pid}],
@@ -779,8 +800,8 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   {Special, CreateMessage} =
     case MessageOrAfter of
       #message{data = Data, message_id = Id} ->
-        {{message_received, Id, PatternFun}, {ok, Data}};
-      'after' -> {none, false}
+        {[{message_received, Id, PatternFun}], {ok, Data}};
+      'after' -> {[], false}
     end,
   Notification =
     NextEvent#event{event_info = ReceiveEvent, special = Special},
@@ -866,6 +887,7 @@ fold_with_patterns(PatternFun, NewMessages, OldMessages) ->
 %%------------------------------------------------------------------------------
 
 notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
+  ?debug_flag(?notify, Notification),
   Scheduler ! Notification,
   Info.
 
@@ -933,24 +955,23 @@ process_loop(Info) ->
               NewInfo
           end
       end;
-    {exit_signal, #message{data = {'EXIT', _From, Reason}} = Message} ->
-      Scheduler = Info#concuerror_info.scheduler,
+    {exit_signal, #message{data = {'EXIT', _From, Reason}} = Message, Notify} ->
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
       case is_active(Info) andalso not Info#concuerror_info.caught_signal of
         true ->
           case Reason =:= kill of
             true ->
               ?debug_flag(?wait, {waiting, kill_signal}),
-              Scheduler ! {trapping, Trapping},
+              catch Notify ! {trapping, Trapping},
               exiting(killed, [], Info#concuerror_info{caught_signal = true});
             false ->
               case Trapping of
                 true ->
                   ?debug_flag(?trap, {waiting, signal_trapped}),
-                  self() ! {message, Message},
+                  self() ! {message, Message, Notify},
                   process_loop(Info);
                 false ->
-                  Scheduler ! {trapping, Trapping},
+                  catch Notify ! {trapping, Trapping},
                   case Reason =:= normal of
                     true ->
                       ?debug_flag(?wait, {waiting, normal_signal_ignored}),
@@ -962,14 +983,13 @@ process_loop(Info) ->
               end
           end;
         false ->
-          Scheduler ! {trapping, Trapping},
+          catch Notify ! {trapping, Trapping},
           process_loop(Info)
       end;
-    {message, Message} ->
+    {message, Message, Notify} ->
       ?debug_flag(?wait, {waiting, got_message}),
-      Scheduler = Info#concuerror_info.scheduler,
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
-      Scheduler ! {trapping, Trapping},
+      catch Notify ! {trapping, Trapping},
       case is_active(Info) of
         true ->
           ?debug_flag(?receive_, {message_enqueued, Message}),
@@ -1170,12 +1190,11 @@ system_processes_wrappers(Info) ->
   ets:insert(Processes, [Map(Name) || Name <- registered()]).
 
 system_wrapper_loop(Name, Wrapped, Info) ->
-  #concuerror_info{scheduler = Scheduler} = Info,
   receive
     Message ->
       case Message of
         {message,
-         #message{data = Data, message_id = Id}} ->
+         #message{data = Data, message_id = Id}, Report} ->
           try
             case Name of
               init ->
@@ -1183,12 +1202,12 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                 erlang:send(Wrapped, {self(), Request}),
                 receive
                   Msg ->
-                    Scheduler ! {system_reply, From, Id, Msg, Name},
+                    Report ! {system_reply, From, Id, Msg, Name},
                     ok
                 end;
               error_logger ->
                 %% erlang:send(Wrapped, Data),
-                Scheduler ! {trapping, false},
+                Report ! {trapping, false},
                 ok;
               file_server_2 ->
                 case Data of
@@ -1197,19 +1216,19 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                     erlang:send(Wrapped, {Call, {self(), Ref}, Request}),
                     receive
                       Msg ->
-                        Scheduler ! {system_reply, From, Id, Msg, Name},
+                        Report ! {system_reply, From, Id, Msg, Name},
                         ok
                     end
                 end;
               standard_error ->
                 #concuerror_info{logger = Logger} = Info,
                 {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
-                Scheduler ! {system_reply, From, Id, Reply, Name},
+                Report ! {system_reply, From, Id, Reply, Name},
                 ok;
               user ->
                 #concuerror_info{logger = Logger} = Info,
                 {From, Reply, _} = handle_io(Data, {standard_io, Logger}),
-                Scheduler ! {system_reply, From, Id, Reply, Name},
+                Report ! {system_reply, From, Id, Reply, Name},
                 ok;
               Else ->
                 ?crash({unknown_protocol_for_system, Else})

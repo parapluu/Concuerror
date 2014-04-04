@@ -155,7 +155,8 @@
 
 -record(message, {
           data       :: term(),
-          message_id :: reference()
+          message_id :: reference(),
+          xxx = 0    :: 0 %% UGLY! Added to differ from the {message,_,_} tuple
          }).
 
 -type message() :: #message{}.
@@ -215,11 +216,11 @@
         receive_event().
 
 -record(event, {
-          actor          :: pid() | {pid(), pid()}, %% Pair: message from/to
-          event_info     :: event_info(),
-          label          :: label(),
-          location       :: location(),
-          special = none :: term() %% XXX: Specify
+          actor        :: pid() | {pid(), pid()}, %% Pair: message from/to
+          event_info   :: event_info(),
+          label        :: label(),
+          location     :: location(),
+          special = [] :: [term()] %% XXX: Specify
          }).
 
 -type event() :: #event{}.
