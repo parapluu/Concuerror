@@ -18,8 +18,6 @@ Howto
 
 * Build Concuerror   : `make`
 * Run Concuerror     : `concuerror --help`
-* Run Concuerror GUI : `concuerror --gui`
 * Run testsuite      : `make THREADS=4 test`
-* Run unit tests     : `make utest`
 * Dialyze            : `make dialyze`
 * Cleanup            : `make clean`
