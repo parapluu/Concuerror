@@ -65,7 +65,7 @@ pretty_aux({I, #event{} = Event}, {F, Acc}, Depth) ->
   ActorString =
     case Actor of
       P when is_pid(P) -> io_lib:format("~p: ",[P]);
-      {_, _} -> ""
+      _ -> ""
     end,
   EventString = pretty_info(EventInfo, Depth),
   LocationString =

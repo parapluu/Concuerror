@@ -754,7 +754,8 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
     true = Event =:= NewEvent
   catch
     _:_ ->
-      ?crash({replay_mismatch, I, Event, NewEvent})
+      #scheduler_state{print_depth = PrintDepth} = State,
+      ?crash({replay_mismatch, I, Event, NewEvent, PrintDepth})
   end,
   replay_prefix_aux(Rest, maybe_log_crash(Event, State, I)).
 
