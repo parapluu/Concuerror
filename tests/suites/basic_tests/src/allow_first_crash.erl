@@ -8,7 +8,7 @@ concuerror_options() ->
     [{allow_first_crash, false}].
 
 scenarios() ->
-    [{test, inf, dpor}].
+    [{test, inf, dpor, crash}].
 
 test() ->
     P = self(),
