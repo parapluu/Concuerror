@@ -10,6 +10,18 @@
 
 error_s({Type, Info}, Depth) ->
   case Type of
+    crash ->
+      {Step, P, Reason, Stacktrace} = Info,
+      S1 = io_lib:format("* At step ~w process ~p exited abnormally~n", [Step, P]),
+      S2 =
+        io_lib:format(
+          "    Reason:~n"
+          "      ~P~n", [Reason, Depth]),
+      S3 =
+        io_lib:format(
+          "    Stacktrace:~n"
+          "      ~p~n", [Stacktrace]),
+      [S1,S2,S3];
     deadlock ->
       InfoStr =
         [io_lib:format("    ~p ~s~n", [P, location(F, L)]) ||
@@ -17,14 +29,8 @@ error_s({Type, Info}, Depth) ->
       Format =
         "* Blocked at a 'receive' (when all other processes have exited):~n~s",
       io_lib:format(Format, [InfoStr]);
-    crash ->
-      {Step, P, Reason, Stacktrace} = Info,
-      S1 = io_lib:format("* At step ~w process ~p exited abnormally~n", [Step, P]),
-      S2 = io_lib:format("    Reason:~n"
-                         "      ~P~n", [Reason, Depth]),
-      S3 = io_lib:format("    Stacktrace:~n"
-                         "      ~p~n", [Stacktrace]),
-      [S1,S2,S3];
+    depth_bound ->
+      io_lib:format("* Reached the depth bound of ~p events~n",[Info]);
     sleep_set_block ->
       io_lib:format("* Nobody woke-up: ~p~n", [Info])
   end.

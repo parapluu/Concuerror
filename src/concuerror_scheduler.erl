@@ -43,6 +43,7 @@
           allow_first_crash = true :: boolean(),
           assume_racing     = true :: boolean(),
           current_warnings  = []   :: [concuerror_warning_info()],
+          depth_bound              :: pos_integer(),
           first_process            :: {pid(), mfargs()},
           logger                   :: pid(),
           message_info             :: message_info(),
@@ -69,11 +70,11 @@ run(Options) ->
     false ->
       ok
   end,
-  [AllowFirstCrash,AssumeRacing,Logger,NonRacingSystem,PrintDepth,
+  [AllowFirstCrash,AssumeRacing,DepthBound,Logger,NonRacingSystem,PrintDepth,
    Processes,Target,Timeout,TreatAsNormal] =
     get_properties(
-      [allow_first_crash,assume_racing,logger,non_racing_system,print_depth,
-       processes,target,timeout,treat_as_normal], Options),
+      [allow_first_crash,assume_racing,depth_bound,logger,non_racing_system,
+       print_depth,processes,target,timeout,treat_as_normal], Options),
   ProcessOptions =
     [O || O <- Options, concuerror_options:filter_options('process', O)],
   ?debug(Logger, "Starting first process...~n",[]),
@@ -83,6 +84,7 @@ run(Options) ->
     #scheduler_state{
        allow_first_crash = AllowFirstCrash,
        assume_racing = AssumeRacing,
+       depth_bound = DepthBound,
        first_process = {FirstProcess, Target},
        logger = Logger,
        message_info = ets:new(message_info, [private]),
@@ -144,6 +146,16 @@ log_trace(State) ->
       State#scheduler_state{allow_first_crash = true, current_warnings = []}
   end.
 
+get_next_event(
+  #scheduler_state{
+     current_warnings = Warnings,
+     depth_bound = Bound,
+     trace = [#trace_state{index = I}|Old]} = State) when I =:= Bound + 1->
+  NewState =
+    State#scheduler_state{
+      current_warnings = [{depth_bound, Bound}|Warnings],
+      trace = Old},
+  {none, NewState};
 get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
   #trace_state{
      active_processes = ActiveProcesses,

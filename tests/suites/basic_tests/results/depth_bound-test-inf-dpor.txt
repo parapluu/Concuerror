@@ -1,0 +1,52 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {allow_first_crash,false},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,10},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/depth_bound.erl"]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{depth_bound,test,[]}},
+   {timeout,2000},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* Reached the depth bound of 10 events
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: false = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+   2: P: true = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+   3: P: true = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+   4: P: true = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+   5: P: true = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+   6: P: true = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+   7: P: true = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+   8: P: true = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+   9: P: true = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+  10: P: true = erlang:process_flag(trap_exit, true)
+    in depth_bound.erl line 14
+################################################################################
+Concuerror Errors:
+--------------------------------------------------------------------------------
+The first interleaving of your test had some error. You may pass --allow_first_crash to let Concuerror continue or use some other option to ignore the reported error.
+
+Get more info by running Concuerror with -vvvvvv
+
+################################################################################
+Done! (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored

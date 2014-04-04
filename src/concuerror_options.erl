@@ -84,6 +84,9 @@ options() ->
     " and check the standard output section instead."}
   ,{symbolic, [logger], $s, {boolean, true},
     "Use symbolic names for process identifiers in the output traces."}
+  ,{depth_bound, [logger, scheduler], undefined, {integer, 5000},
+    "The maximum number of events allowed in a trace. Concuerror will stop"
+    " exploration beyond this limit."}
   ,{after_timeout, [logger, process], $a, {integer, infinite},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}
