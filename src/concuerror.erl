@@ -31,7 +31,7 @@ run(RawOptions) ->
           true -> completed;
           false ->
             ?error(Logger,
-                   "Concuerror crashed!~n~n~s~n~n"
+                   "~s~n~n"
                    "Get more info by running Concuerror with -~s~n~n",
                    [explain(Reason), lists:duplicate(?MAX_VERBOSITY, $v)]),
             error
@@ -42,7 +42,7 @@ run(RawOptions) ->
       ets:delete(Processes),
       Status
     catch
-      _:_ -> error
+      throw:opt_error -> error
     end,
   case Halt of
     true  ->

@@ -32,7 +32,8 @@ parse_cl_aux(CommandLineArgs) ->
         {false, false} ->
           case OtherArgs =:= [] of
             true -> ok;
-            false -> opt_warn("Ignoring: ~s", [string:join(OtherArgs, " ")])
+            false ->
+              opt_warn("Ignoring: ~s", [string:join(OtherArgs, " ")], Options)
           end,
           Options
       end;
@@ -72,7 +73,7 @@ options() ->
     "Explicitly load a file (.beam or .erl). (A .erl file should not require"
     " any command line compile options.)"}
   ,{verbosity, [logger], $v, integer,
-    io_lib:format("Sets the verbosity level (0-~p) [default: ~p].",
+    io_lib:format("Sets the verbosity level (0-~p). [default: ~p]",
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
   ,{quiet, [frontend], $q, undefined,
     "Do not write anything to standard output. Equivalent to -v 0."}
@@ -142,8 +143,8 @@ finalize(Options) ->
       opt_error("Concuerror must be able to reload sticky modules."
                 " Use the command-line script or start Erlang with -nostick.");
     false ->
-      Modules = [{modules, ets:new(modules, [public])}],
-      Finalized = finalize(lists:reverse(proplists:unfold(Options),Modules), []),
+      Finalized =
+        finalize_aux(proplists:unfold(Options)),
       case proplists:get_value(target, Finalized, undefined) of
         {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
           Verbosity =
@@ -156,17 +157,29 @@ finalize(Options) ->
               true -> [];
               false -> [{non_racing_system, []}]
             end,
-          Verbosity ++ NonRacingSystem ++ Finalized;
+          Final = Verbosity ++ NonRacingSystem ++ Finalized,
+          add_missing_defaults(Final);
         _ ->
           opt_error("The module containing the main test function has not been"
                     " specified.")
       end
   end.
 
+finalize_aux(Options) ->
+  Modules = [{modules, ets:new(modules, [public])}],
+  case lists:keytake(file, 1, Options) of
+    false -> finalize(Options, Modules);
+    {value, Tuple, RestOptions} ->
+      finalize([Tuple|RestOptions], Modules)
+  end.
+
 finalize([], Acc) -> Acc;
 finalize([{quiet, true}|Rest], Acc) ->
-  NewRest = proplists:delete(verbosity, proplists:delete(quiet, Rest)),
-  finalize(NewRest, [{verbosity, 0}|Acc]);
+  case proplists:is_defined(verbosity, Rest) of
+    true -> opt_error("--verbosity defined after --quiet");
+    false -> ok
+  end,
+  finalize(Rest, [{verbosity, 0},{quiet,true}|Acc]);
 finalize([{Key, V}|Rest], Acc)
   when Key =:= treat_as_normal; Key =:= non_racing_system ->
   AlwaysAdd =
@@ -178,24 +191,19 @@ finalize([{Key, V}|Rest], Acc)
   NewRest = proplists:delete(Key, Rest),
   finalize(NewRest, [{Key, lists:usort(Values)}|Acc]);
 finalize([{verbosity, N}|Rest], Acc) ->
-  case proplists:is_defined(quiet, Rest) =:= true andalso N =/= 0 of
-    true ->
-      opt_error("--verbosity defined after --quiet");
-    false ->
-      Sum = lists:sum([N|proplists:get_all_values(verbosity, Rest)]),
-      Verbosity = min(Sum, ?MAX_VERBOSITY),
-      NewRest = proplists:delete(verbosity, Rest),
-      finalize(NewRest, [{verbosity, Verbosity}|Acc])
-  end;
+  Sum = lists:sum([N|proplists:get_all_values(verbosity, Rest)]),
+  Verbosity = min(Sum, ?MAX_VERBOSITY),
+  NewRest = proplists:delete(verbosity, Rest),
+  finalize(NewRest, [{verbosity, Verbosity}|Acc]);
 finalize([{Key, Value}|Rest], Acc)
   when Key =:= file; Key =:= pa; Key =:=pz ->
   case Key of
     file ->
-      Modules = proplists:get_value(modules, Rest),
+      Modules = proplists:get_value(modules, Acc),
       Files = [Value|proplists:get_all_values(file, Rest)],
       {LoadedFiles, MoreOptions} = compile_and_load(Files, Modules),
       NewRest = proplists:delete(file, Rest),
-      finalize(MoreOptions ++ NewRest, [{files, LoadedFiles}|Acc]);
+      finalize(NewRest ++ MoreOptions, [{files, LoadedFiles}|Acc]);
     Else ->
       PathAdd =
         case Else of
@@ -210,43 +218,45 @@ finalize([{Key, Value}|Rest], Acc)
       finalize(Rest, Acc)
   end;
 finalize([{Key, Value}|Rest], Acc) ->
-  case proplists:is_defined(Key, Rest) of
+  case proplists:is_defined(Key, Acc) of
     true ->
-      opt_error("multiple instances of --~s defined", [Key]);
+      Format = "multiple instances of --~s defined. Using last value: ~p.",
+      opt_warn(Format, [Key, Value], Acc ++ Rest);
     false ->
-      case Key of
-        module ->
-          case proplists:get_value(test, Rest, 1) of
-            Name when is_atom(Name) ->
-              NewRest = proplists:delete(test, Rest),
-              finalize(NewRest, [{target, {Value, Name, []}}|Acc]);
-            _ -> opt_error("The name of the test function is missing")
-          end;
-        output ->
-          case file:open(Value, [write]) of
-            {ok, IoDevice} ->
-              finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
-            {error, _} ->
-              opt_error("could not open file ~s for writing", [Value])
-          end;
-        timeout ->
-          case Value of
-            -1 ->
-              finalize(Rest, [{Key, infinite}|Acc]);
-            N when is_integer(N), N >= ?MINIMUM_TIMEOUT ->
-              finalize(Rest, [{Key, N}|Acc]);
-            _Else ->
-              opt_error("--~s value must be -1 (infinite) or >= "
-                       ++ integer_to_list(?MINIMUM_TIMEOUT), [Key])
-          end;
-        test ->
-          case Rest =:= [] of
-            true -> finalize(Rest, Acc);
-            false -> finalize(Rest ++ [{Key, Value}], Acc)
-          end;
-        _ ->
-          finalize(Rest, [{Key, Value}|Acc])
-      end
+      ok
+  end,
+  case Key of
+    module ->
+      case proplists:get_value(test, Rest, 1) of
+        Name when is_atom(Name) ->
+          NewRest = proplists:delete(test, Rest),
+          finalize(NewRest, [{target, {Value, Name, []}}|Acc]);
+        _ -> opt_error("The name of the test function is missing")
+      end;
+    output ->
+      case file:open(Value, [write]) of
+        {ok, IoDevice} ->
+          finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
+        {error, _} ->
+          opt_error("could not open file ~s for writing", [Value])
+      end;
+    timeout ->
+      case Value of
+        -1 ->
+          finalize(Rest, [{Key, infinite}|Acc]);
+        N when is_integer(N), N >= ?MINIMUM_TIMEOUT ->
+          finalize(Rest, [{Key, N}|Acc]);
+        _Else ->
+          opt_error("--~s value must be -1 (infinite) or >= "
+                    ++ integer_to_list(?MINIMUM_TIMEOUT), [Key])
+      end;
+    test ->
+      case Rest =:= [] of
+        true -> finalize(Rest, Acc);
+        false -> finalize(Rest ++ [{Key, Value}], Acc)
+      end;
+    _ ->
+      finalize(Rest, [{Key, Value}|Acc])
   end.
 
 compile_and_load(Files, Modules) ->
@@ -263,7 +273,7 @@ compile_and_load([File|Rest], Modules, {Acc, MoreOpts}) ->
           case Default =:= non_existing of
             true -> ok;
             false ->
-              opt_warn("file ~s shadows the default ~s", [File, Default])
+              opt_warn("file ~s shadows the default ~s", [File, Default], [])
           end,
           ok = concuerror_loader:load_binary(Module, File, Binary, Modules),
           NewMoreOpts = try Module:concuerror_options() catch _:_ -> [] end,
@@ -285,6 +295,14 @@ compile_and_load([File|Rest], Modules, {Acc, MoreOpts}) ->
       opt_error("~s is not a .erl or .beam file", [File])
   end.
 
+add_missing_defaults(Opts) ->
+  MissingDefaults =
+    [{Name, Default} ||
+      {Name, _Classes, _Short, {_, Default}, _Help} <- options(),
+      not proplists:is_defined(Name, Opts)
+    ],
+  MissingDefaults ++ Opts.
+
 -spec opt_error(string()) -> no_return().
 
 opt_error(Format) ->
@@ -295,6 +313,9 @@ opt_error(Format, Data) ->
   io:format(standard_error, "concuerror: Use --help for more information.\n", []),
   throw(opt_error).
 
-opt_warn(Format, Data) ->
-  io:format(standard_error, "concuerror: WARNING: " ++ Format ++ "~n", Data),
-  ok.
+opt_warn(Format, Data, MaybeQuiet) ->
+  case proplists:is_defined(quiet, MaybeQuiet) of
+    true -> ok;
+    false ->
+      io:format(standard_error, "concuerror: WARNING: " ++ Format ++ "~n", Data)
+  end.
