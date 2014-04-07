@@ -9,7 +9,7 @@
 %%------------------------------------------------------------------------------
 
 -record(logger_state, {
-          already_emitted = sets:new() :: sets:set(),
+          already_emitted = sets:new() :: set(),
           errors = 0                   :: non_neg_integer(),
           log_msgs = []                :: [string()],
           output                       :: file:io_device(),
