@@ -1,5 +1,8 @@
 Concuerror
 ==========
+
+[![Build Status](https://travis-ci.org/parapluu/Concuerror.svg?branch=master)](https://travis-ci.org/parapluu/Concuerror)
+
 Concuerror is a systematic testing tool for concurrent Erlang programs.
 
 Copyright and License
