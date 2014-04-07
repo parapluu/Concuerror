@@ -1,0 +1,52 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {assume_racing,true},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/concuerror_crash.erl"]},
+   {ignore_error,[]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,false},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{concuerror_crash,test,[]}},
+   {timeout,1000},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* Concuerror crashed
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<concuerror_crash.0.67739841>,[]])
+    in erlang.erl line 2329
+   2: P.1: ok = P ! ok
+    in concuerror_crash.erl line 15
+   3: P.1: exits normally
+   4: Message (ok) from P.1 reaches P
+   5: P: receives message (ok)
+    in concuerror_crash.erl line 16
+   6: P: <0.42.42> = erlang:list_to_pid([60,48,46,52,50,46,52,50,62])
+    in concuerror_crash.erl line 18
+   7: P: ok = <0.42.42> ! ok
+    in concuerror_crash.erl line 18
+################################################################################
+Concuerror Errors:
+--------------------------------------------------------------------------------
+A process took more than 1000ms to send an acknowledgement for a message that was sent to it. (Process: <0.42.42>)
+
+Please notify the developers, as this is a bug of Concuerror.
+
+Get more info by running Concuerror with -vvvvvv
+
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: error)
+  Summary: 1 errors, 2/2 interleavings explored

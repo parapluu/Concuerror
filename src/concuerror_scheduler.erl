@@ -64,6 +64,7 @@
 -spec run(options()) -> ok.
 
 run(Options) ->
+  process_flag(trap_exit, true),
   case code:get_object_code(erlang) =:= error of
     true ->
       true =
@@ -114,7 +115,12 @@ get_properties([Prop|Rest], Options, Acc) ->
 %%------------------------------------------------------------------------------
 
 explore(State) ->
-  {Status, UpdatedState} = get_next_event(State),
+  {Status, UpdatedState} =
+    try
+      get_next_event(State)
+    catch
+      exit:Reason -> {{crash, Reason}, State}
+    end,
   case Status of
     ok -> explore(UpdatedState);
     none ->
@@ -124,7 +130,19 @@ explore(State) ->
       case HasMore of
         true -> explore(NewState);
         false -> ok
-      end
+      end;
+    {crash, Why} ->
+      #scheduler_state{
+         current_warnings = Warnings,
+         trace = [_|Trace]
+        } = UpdatedState,
+      FatalCrashState =
+        UpdatedState#scheduler_state{
+          current_warnings = [fatal|Warnings],
+          trace = Trace
+         },
+      catch log_trace(FatalCrashState),
+      exit(Why)
   end.
 
 %%------------------------------------------------------------------------------
@@ -826,7 +844,9 @@ get_next_event_backend(#event{actor = {_Sender, Recipient}} = Event, State) ->
               false ->
                 error({system_reply_differs, OldReply, Reply})
             end
-        end
+        end;
+      {'EXIT', _, What} ->
+        exit(What)
     after
       Timeout ->
         ?crash({no_response_for_message, Timeout, Recipient})
@@ -844,7 +864,9 @@ get_next_event_backend_loop(Trigger, State) ->
     {blocked, _} -> retry;
     #event{} = Event -> {ok, Event};
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
-      get_next_event_backend_loop(Trigger, State)
+      get_next_event_backend_loop(Trigger, State);
+    {'EXIT', _, What} ->
+      exit(What)
   after
     Timeout -> ?crash({process_did_not_respond, Timeout, Trigger#event.actor})
   end.

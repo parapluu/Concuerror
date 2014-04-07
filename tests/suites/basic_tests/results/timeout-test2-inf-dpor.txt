@@ -1,10 +1,11 @@
 ################################################################################
 Concuerror started with options:
-  [{after_timeout,infinite},
+  [{after_timeout,infinity},
    {allow_first_crash,true},
    {assume_racing,false},
    {depth_bound,5000},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timeout.erl"]},
+   {ignore_error,[]},
    {non_racing_system,[]},
    {print_depth,20},
    {report_unknown,true},
@@ -15,7 +16,12 @@ Concuerror started with options:
    {treat_as_normal,[normal]},
    {verbosity,0}]
 ################################################################################
-  No errors found!
+Erroneous interleaving 1:
+* Concuerror crashed
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: false = erlang:process_flag(trap_exit, true)
+    in timeout.erl line 17
 ################################################################################
 Concuerror Errors:
 --------------------------------------------------------------------------------
@@ -25,4 +31,4 @@ Get more info by running Concuerror with -vvvvvv
 
 ################################################################################
 Done! (Exit status: error)
-  Summary: 0 errors, 0/1 interleavings explored
+  Summary: 1 errors, 1/1 interleavings explored

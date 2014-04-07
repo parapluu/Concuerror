@@ -8,6 +8,8 @@
 
 -spec error_s(concuerror_warning_info(), pos_integer()) -> string().
 
+error_s(fatal, _Depth) ->
+  io_lib:format("* Concuerror crashed~n", []);
 error_s({Type, Info}, Depth) ->
   case Type of
     crash ->

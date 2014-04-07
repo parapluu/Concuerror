@@ -238,9 +238,10 @@
         'none' | {[concuerror_warning_info()], [event()]}.
 
 -type concuerror_warning_info() ::
-        'depth_bound' |
+        'fatal' |
         {'crash', {index(), pid(), term(), [term()]}} |
         {'deadlock', [pid()]} |
+        {'depth_bound', pos_integer()} |
         {'sleep_set_block', [pid()]}.
 
 %%------------------------------------------------------------------------------
