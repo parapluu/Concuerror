@@ -189,3 +189,6 @@ print "  %d caused unexpected failures!" % total_failed.value
 
 # Cleanup temp files
 os.system("find %s -name '*.beam' -exec rm {} \;" % dirname)
+
+if total_failed.value != 0:
+    exit(1)
