@@ -45,13 +45,14 @@
           current_warnings  = []   :: [concuerror_warning_info()],
           depth_bound              :: pos_integer(),
           first_process            :: {pid(), mfargs()},
+          ignore_error      = []   :: [atom()],
           logger                   :: pid(),
           message_info             :: message_info(),
           non_racing_system = []   :: [atom()],
           options           = []   :: proplists:proplist(),
           print_depth              :: pos_integer(),
           processes                :: processes(),
-          timeout                  :: non_neg_integer(),
+          timeout                  :: timeout(),
           trace             = []   :: [trace_state()],
           treat_as_normal   = []   :: [atom()]
          }).
@@ -70,11 +71,12 @@ run(Options) ->
     false ->
       ok
   end,
-  [AllowFirstCrash,AssumeRacing,DepthBound,Logger,NonRacingSystem,PrintDepth,
-   Processes,Target,Timeout,TreatAsNormal] =
+  [AllowFirstCrash,AssumeRacing,DepthBound,IgnoreError,Logger,NonRacingSystem,
+   PrintDepth,Processes,Target,Timeout,TreatAsNormal] =
     get_properties(
-      [allow_first_crash,assume_racing,depth_bound,logger,non_racing_system,
-       print_depth,processes,target,timeout,treat_as_normal], Options),
+      [allow_first_crash,assume_racing,depth_bound,ignore_error,logger,
+       non_racing_system,print_depth,processes,target,timeout,treat_as_normal],
+      Options),
   ProcessOptions =
     [O || O <- Options, concuerror_options:filter_options('process', O)],
   ?debug(Logger, "Starting first process...~n",[]),
@@ -86,6 +88,7 @@ run(Options) ->
        assume_racing = AssumeRacing,
        depth_bound = DepthBound,
        first_process = {FirstProcess, Target},
+       ignore_error = IgnoreError,
        logger = Logger,
        message_info = ets:new(message_info, [private]),
        non_racing_system = NonRacingSystem,
@@ -127,7 +130,18 @@ explore(State) ->
 %%------------------------------------------------------------------------------
 
 log_trace(State) ->
-  #scheduler_state{logger = Logger, current_warnings = Warnings} = State,
+  #scheduler_state{
+     current_warnings = UnfilteredWarnings,
+     ignore_error = Ignored,
+     logger = Logger} = State,
+  Warnings =  filter_warnings(UnfilteredWarnings, Ignored),
+  case UnfilteredWarnings =/= Warnings of
+    true ->
+      Message = "Some warnings were silenced (--ignore_error).~n",
+      ?unique_info(Logger, Message, []);
+    false ->
+      ok
+  end,
   Log =
     case Warnings =:= [] of
       true -> none;
@@ -144,6 +158,13 @@ log_trace(State) ->
     true -> ?crash(first_interleaving_crashed);
     false ->
       State#scheduler_state{allow_first_crash = true, current_warnings = []}
+  end.
+
+filter_warnings(Warnings, []) -> Warnings;
+filter_warnings(Warnings, [Ignore|Rest] = Ignored) ->
+  case lists:keytake(Ignore, 1, Warnings) of
+    false -> filter_warnings(Warnings, Rest);
+    {value, _, NewWarnings} -> filter_warnings(NewWarnings, Ignored)
   end.
 
 get_next_event(

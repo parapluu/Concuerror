@@ -51,8 +51,8 @@ getopt_spec() ->
   %% running getopt.
   %% Options long name is the same as the inner representation atom for
   %% consistency.
-  [{Name, Short, atom_to_list(Name), Type, Help} ||
-    {Name, _Classes, Short, Type, Help} <- options()].
+  [{Key, Short, atom_to_list(Key), Type, Help} ||
+    {Key, _Classes, Short, Type, Help} <- options()].
 
 options() ->
   [{module, [frontend], $m, atom,
@@ -93,6 +93,10 @@ options() ->
   ,{allow_first_crash, [logger, scheduler], undefined, {boolean, false},
     "If not enabled, Concuerror will immediately exit if the first interleaving"
     " contains errors."}
+  ,{ignore_error, [logger, scheduler], undefined, atom,
+    "Concuerror will not report errors of the specified kind: 'crash' (all"
+    " process crashes, see also next option for more refined control), 'deadlock'"
+    " (processes waiting at a receive statement), 'depth_bound'."}
   ,{treat_as_normal, [logger, scheduler], undefined, {atom, normal},
     "Specify exit reasons that are considered 'normal' and not reported as"
     " crashes. Useful e.g. when analyzing supervisors ('shutdown' is probably"
@@ -153,18 +157,12 @@ finalize(Options) ->
         finalize_aux(proplists:unfold(Options)),
       case proplists:get_value(target, Finalized, undefined) of
         {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
-          Verbosity =
-            case proplists:is_defined(verbosity, Finalized) of
-              true -> [];
-              false -> [{verbosity, ?DEFAULT_VERBOSITY}]
-            end,
-          NonRacingSystem =
-            case proplists:is_defined(non_racing_system, Finalized) of
-              true -> [];
-              false -> [{non_racing_system, []}]
-            end,
-          Final = Verbosity ++ NonRacingSystem ++ Finalized,
-          add_missing_defaults(Final);
+          MissingDefaults =
+            add_missing_defaults(
+              [{verbosity, ?DEFAULT_VERBOSITY},
+               {non_racing_system, []},
+               {ignore_error, []}], Finalized),
+          add_missing_getopt_defaults(MissingDefaults);
         _ ->
           opt_error("The module containing the main test function has not been"
                     " specified.")
@@ -187,7 +185,10 @@ finalize([{quiet, true}|Rest], Acc) ->
   end,
   finalize(Rest, [{verbosity, 0},{quiet,true}|Acc]);
 finalize([{Key, V}|Rest], Acc)
-  when Key =:= treat_as_normal; Key =:= non_racing_system ->
+  when
+    Key =:= ignore_error;
+    Key =:= non_racing_system;
+    Key =:= treat_as_normal ->
   AlwaysAdd =
     case Key of
       treat_as_normal -> [normal];
@@ -301,11 +302,18 @@ compile_and_load([File|Rest], Modules, {Acc, MoreOpts}) ->
       opt_error("~s is not a .erl or .beam file", [File])
   end.
 
-add_missing_defaults(Opts) ->
+add_missing_defaults([], Options) -> Options;
+add_missing_defaults([{Key, _} = Default|Rest], Options) ->
+  case proplists:is_defined(Key, Options) of
+    true -> add_missing_defaults(Rest, Options);
+    false -> [Default|add_missing_defaults(Rest, Options)]
+  end.
+
+add_missing_getopt_defaults(Opts) ->
   MissingDefaults =
-    [{Name, Default} ||
-      {Name, _Classes, _Short, {_, Default}, _Help} <- options(),
-      not proplists:is_defined(Name, Opts)
+    [{Key, Default} ||
+      {Key, _Classes, _Short, {_, Default}, _Help} <- options(),
+      not proplists:is_defined(Key, Opts)
     ],
   MissingDefaults ++ Opts.
 

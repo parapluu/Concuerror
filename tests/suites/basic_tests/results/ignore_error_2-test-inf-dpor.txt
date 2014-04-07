@@ -1,0 +1,38 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ignore_error_2.erl"]},
+   {ignore_error,[deadlock]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{ignore_error_2,test,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* At step 2 process P.1 exited abnormally
+    Reason:
+      boom
+    Stacktrace:
+      [{ignore_error_2,'-test/0-fun-0-',0,
+                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ignore_error_2.erl"},
+                        {line,15}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ignore_error_2.0.64758301>,[]])
+    in erlang.erl line 2329
+   2: P.1: exits abnormally (boom)
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: erlang
+Some warnings were silenced (--ignore_error).
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

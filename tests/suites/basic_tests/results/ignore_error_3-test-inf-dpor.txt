@@ -1,0 +1,26 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,10},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ignore_error_3.erl"]},
+   {ignore_error,[deadlock,depth_bound]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{ignore_error_3,test,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+  No errors found!
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Some warnings were silenced (--ignore_error).
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1/1 interleavings explored

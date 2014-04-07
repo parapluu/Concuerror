@@ -2,24 +2,25 @@
 
 -module(concuerror_logger).
 
--export([run/1, complete/2, plan/1, log/3, log/4, stop/2, print/3]).
+-export([run/1, complete/2, plan/1, log/5, stop/2, print/3]).
 
 -include("concuerror.hrl").
 
 %%------------------------------------------------------------------------------
 
 -record(logger_state, {
-          errors = 0          :: non_neg_integer(),
-          log_msgs = []       :: [string()],
-          output              :: file:io_device(),
-          output_name         :: string(),
-          print_depth         :: pos_integer(),
-          streams = []        :: [{stream(), [string()]}],
-          ticker = none       :: pid() | 'none',
-          traces_explored = 0 :: non_neg_integer(),
-          traces_ssb = 0      :: non_neg_integer(),
-          traces_total = 0    :: non_neg_integer(),
-          verbosity           :: non_neg_integer()
+          already_emitted = sets:new() :: sets:set(),
+          errors = 0                   :: non_neg_integer(),
+          log_msgs = []                :: [string()],
+          output                       :: file:io_device(),
+          output_name                  :: string(),
+          print_depth                  :: pos_integer(),
+          streams = []                 :: [{stream(), [string()]}],
+          ticker = none                :: pid() | 'none',
+          traces_explored = 0          :: non_neg_integer(),
+          traces_ssb = 0               :: non_neg_integer(),
+          traces_total = 0             :: non_neg_integer(),
+          verbosity                    :: non_neg_integer()
          }).
 
 %%------------------------------------------------------------------------------
@@ -63,15 +64,10 @@ complete(Logger, Warnings) ->
   Logger ! {complete, Warnings},
   ok.
 
--spec log(logger(), log_level(), string()) -> ok.
+-spec log(logger(), log_level(), term(), string(), [term()]) -> ok.
 
-log(Logger, Level, Format) ->
-  log(Logger, Level, Format, []).
-
--spec log(logger(), log_level(), string(), [term()]) -> ok.
-
-log(Logger, Level, Format, Data) ->
-  Logger ! {log, Level, Format, Data},
+log(Logger, Level, Tag, Format, Data) ->
+  Logger ! {log, Level, Tag, Format, Data},
   ok.
 
 -spec stop(logger(), term()) -> ok.
@@ -107,6 +103,7 @@ loop_entry(State) ->
 
 loop(State) ->
   #logger_state{
+     already_emitted = AlreadyEmitted,
      errors = Errors,
      log_msgs = LogMsgs,
      output = Output,
@@ -118,17 +115,30 @@ loop(State) ->
      verbosity = Verbosity
     } = State,
   receive
-    {log, Level, Format, Data} ->
-      case Verbosity < Level of
-        true  -> ok;
-        false -> diagnostic(State, Format, Data)
-      end,
-      NewLogMsgs =
-        case Level =< ?linfo of
-          true  -> orddict:append(Level, {Format,Data}, LogMsgs);
-          false -> LogMsgs
+    {log, Level, Tag, Format, Data} ->
+      {NewLogMsgs, NewAlreadyEmitted} =
+        case Tag =/= ?nonunique andalso sets:is_element(Tag, AlreadyEmitted) of
+          true -> {LogMsgs, AlreadyEmitted};
+          false ->
+            case Verbosity < Level of
+              true  -> ok;
+              false -> diagnostic(State, Format, Data)
+            end,
+            NLM =
+              case Level =< ?linfo of
+                true  -> orddict:append(Level, {Format,Data}, LogMsgs);
+                false -> LogMsgs
+              end,
+            NAE =
+              case Tag =/= ?nonunique of
+                true -> sets:add_element(Tag, AlreadyEmitted);
+                false -> AlreadyEmitted
+              end,
+            {NLM, NAE}
         end,
-      loop(State#logger_state{log_msgs = NewLogMsgs});
+      loop(State#logger_state{
+             already_emitted = NewAlreadyEmitted,
+             log_msgs = NewLogMsgs});
     {close, Status, Scheduler} ->
       case is_pid(Ticker) of
         true -> Ticker ! stop;

@@ -57,14 +57,18 @@
 -define(ldebug,    5).
 -define(ltrace,    6).
 
+-define(nonunique, none).
+
 -define(MAX_VERBOSITY, ?ltrace).
 
+-define(log(Logger, Level, Tag, Format, Data),
+        concuerror_logger:log(Logger, Level, Tag, Format, Data)).
+
 -define(log(Logger, Level, Format, Data),
-        concuerror_logger:log(Logger, Level, Format, Data)).
+        ?log(Logger, Level, ?nonunique, Format, Data)).
 
 -define(mf_log(Logger, Level, Format, Data),
-        concuerror_logger:log(Logger, Level, "~p:~p " ++ Format,
-                              [?MODULE, ?LINE|Data])).
+        ?log(Logger, Level, "~p:~p " ++ Format, [?MODULE, ?LINE|Data])).
 
 -define(error(Logger, Format, Data),
         ?log(Logger, ?lerror, Format, Data)).
@@ -77,6 +81,9 @@
 
 -define(trace_nl(Logger, Format, Data),
         ?log(Logger, ?ltrace, Format, Data)).
+
+-define(unique_info(Logger, Format, Data),
+        ?log(Logger, ?linfo, {?MODULE, ?LINE}, Format, Data)).
 
 -type log_level() :: ?lquiet..?MAX_VERBOSITY.
 
@@ -231,7 +238,8 @@
         'none' | {[concuerror_warning_info()], [event()]}.
 
 -type concuerror_warning_info() ::
-        {'crash', pid(), index()} |
+        'depth_bound' |
+        {'crash', {index(), pid(), term(), [term()]}} |
         {'deadlock', [pid()]} |
         {'sleep_set_block', [pid()]}.
 
