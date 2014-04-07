@@ -56,7 +56,7 @@ vpath %.erl src
 
 compile: $(MODULES:%=ebin/%.beam) getopt concuerror
 
-include $(MODULES:%=ebin/%.Pbeam)
+-include $(MODULES:%=ebin/%.Pbeam)
 
 ebin/%.Pbeam: %.erl | ebin
 	erlc -o ebin -I include -MD $<
