@@ -5,7 +5,7 @@
 -export([test/0]).
 
 concuerror_options() ->
-    [{timeout, 1000}, {report_unknown, false}, {assume_racing, true}].
+    [{timeout, 3000}, {report_unknown, false}, {assume_racing, true}].
 
 scenarios() ->
     [{test, inf, dpor, crash}].
