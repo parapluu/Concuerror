@@ -95,7 +95,7 @@ run(Options) ->
        trace = [InitialTrace],
        treat_as_normal = TreatAsNormal,
        timeout = Timeout},
-  ok = concuerror_callback:start_first_process(FirstProcess, Target),
+  ok = concuerror_callback:start_first_process(FirstProcess, Target, Timeout),
   ?debug(Logger, "Starting exploration...~n",[]),
   concuerror_logger:plan(Logger),
   explore(InitialState).
@@ -729,7 +729,8 @@ reset_receive(Last, State) ->
 replay_prefix(Trace, State) ->
   #scheduler_state{
      first_process = {FirstProcess, Target},
-     processes = Processes
+     processes = Processes,
+     timeout = Timeout
     } = State,
   Fold =
     fun(?process_pat_pid_kind(P, Kind), _) ->
@@ -740,7 +741,7 @@ replay_prefix(Trace, State) ->
         ok
     end,
   ok = ets:foldl(Fold, ok, Processes),
-  ok = concuerror_callback:start_first_process(FirstProcess, Target),
+  ok = concuerror_callback:start_first_process(FirstProcess, Target, Timeout),
   replay_prefix_aux(lists:reverse(Trace), State).
 
 replay_prefix_aux([_], State) ->
@@ -824,7 +825,7 @@ get_next_event_backend_loop(Trigger, State) ->
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
       get_next_event_backend_loop(Trigger, State)
   after
-    Timeout -> ?crash({process_did_not_respond, Timeout, Trigger})
+    Timeout -> ?crash({process_did_not_respond, Timeout, Trigger#event.actor})
   end.
 
 collect_deadlock_info(ActiveProcesses) ->
@@ -877,7 +878,7 @@ explain_error({no_response_for_message, Timeout, Recipient}) ->
     " that was sent to it. (Process: ~p)~n"
     ?notify_us_msg,
     [Timeout, Recipient]);
-explain_error({process_did_not_respond, Timeout, #event{actor = Actor}}) ->
+explain_error({process_did_not_respond, Timeout, Actor}) ->
   io_lib:format( 
     "A process took more than ~pms to report a built-in event. You can try to"
     " increase the --timeout limit and/or ensure that there are no infinite"

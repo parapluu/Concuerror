@@ -1,0 +1,28 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinite},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timeout.erl"]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{timeout,test2,[]}},
+   {timeout,1000},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+  No errors found!
+################################################################################
+Concuerror Errors:
+--------------------------------------------------------------------------------
+A process took more than 1000ms to report a built-in event. You can try to increase the --timeout limit and/or ensure that there are no infinite loops in your test. (Process: <0.57.0>)
+
+Get more info by running Concuerror with -vvvvvv
+
+################################################################################
+Done! (Exit status: error)
+  Summary: 0 errors, 0/1 interleavings explored

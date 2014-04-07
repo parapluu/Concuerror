@@ -87,7 +87,7 @@ options() ->
   ,{depth_bound, [logger, scheduler], undefined, {integer, 5000},
     "The maximum number of events allowed in a trace. Concuerror will stop"
     " exploration beyond this limit."}
-  ,{after_timeout, [logger, process], $a, {integer, infinite},
+  ,{after_timeout, [logger, process], $a, {integer, infinity},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}
   ,{allow_first_crash, [logger, scheduler], undefined, {boolean, false},
@@ -249,7 +249,7 @@ finalize([{Key, Value}|Rest], Acc) ->
     timeout ->
       case Value of
         -1 ->
-          finalize(Rest, [{Key, infinite}|Acc]);
+          finalize(Rest, [{Key, infinity}|Acc]);
         N when is_integer(N), N >= ?MINIMUM_TIMEOUT ->
           finalize(Rest, [{Key, N}|Acc]);
         _Else ->

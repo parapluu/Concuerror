@@ -6,7 +6,7 @@
 -export([instrumented_top/4]).
 
 %% Interface to scheduler:
--export([spawn_first_process/1, start_first_process/2]).
+-export([spawn_first_process/1, start_first_process/3]).
 
 %% Interface for resetting:
 -export([process_top_loop/1]).
@@ -72,7 +72,8 @@
           report_unknown = false     :: boolean(),
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
-          status = running           :: 'exited'| 'exiting' | 'running' | 'waiting'
+          status = running           :: 'exited'| 'exiting' | 'running' | 'waiting',
+          timeout                    :: timeout()
          }).
 
 -type concuerror_info() :: #concuerror_info{}.
@@ -82,9 +83,9 @@
 -spec spawn_first_process(options()) -> pid().
 
 spawn_first_process(Options) ->
-  [AfterTimeout, Logger, Processes, ReportUnknown, Modules] =
+  [AfterTimeout, Logger, Modules, Processes, ReportUnknown, Timeout] =
     concuerror_common:get_properties(
-      [after_timeout, logger, processes, report_unknown, modules],
+      [after_timeout, logger, modules, processes, report_unknown, timeout],
       Options),
   EtsTables = ets:new(ets_tables, [public]),
   InitialInfo =
@@ -97,7 +98,8 @@ spawn_first_process(Options) ->
        monitors       = ets:new(monitors, [bag, public]),
        processes      = Processes,
        report_unknown = ReportUnknown,
-       scheduler      = self()
+       scheduler      = self(),
+       timeout        = Timeout
       },
   system_processes_wrappers(InitialInfo),
   system_ets_entries(InitialInfo),
@@ -107,11 +109,11 @@ spawn_first_process(Options) ->
   true = ets:insert(Processes, ?new_process(P, "P")),
   P.
 
--spec start_first_process(pid(), {atom(), atom(), [term()]}) -> ok.
+-spec start_first_process(pid(), {atom(), atom(), [term()]}, timeout()) -> ok.
 
-start_first_process(Pid, {Module, Name, Args}) ->
+start_first_process(Pid, {Module, Name, Args}, Timeout) ->
   Pid ! {start, Module, Name, Args},
-  wait_process(),
+  wait_process(Pid, Timeout),
   ok.
 
 %%------------------------------------------------------------------------------
@@ -498,7 +500,10 @@ run_built_in(erlang, spawn, 3, [M, F, Args], Info) ->
 run_built_in(erlang, spawn_link, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, [link]}], Info);
 run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
-  #concuerror_info{next_event = Event, processes = Processes} = Info,
+  #concuerror_info{
+     next_event = Event,
+     processes = Processes,
+     timeout = Timeout} = Info,
   #event{event_info = EventInfo} = Event,
   Parent = self(),
   {Result, NewInfo} =
@@ -539,7 +544,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
     false -> ok
   end,
   Pid ! {start, Module, Name, Args},
-  wait_process(),
+  wait_process(Pid, Timeout),
   {Result, NewInfo};
 run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   when Send =:= '!'; Send =:= 'send' ->
@@ -930,9 +935,14 @@ new_process(ParentInfo) ->
   Info = ParentInfo#concuerror_info{notify_when_ready = {self(), true}},
   spawn_link(fun() -> process_top_loop(Info) end).
 
-wait_process() ->
+wait_process(Pid, Timeout) ->
   %% Wait for the new process to instrument any code.
-  receive ready -> ok end.
+  receive
+    ready -> ok
+  after
+    Timeout ->
+      exit({concuerror_scheduler, {process_did_not_respond, Timeout, Pid}})
+  end.
 
 process_loop(#concuerror_info{notify_when_ready = {Pid, true}} = Info) ->
   ?debug_flag(?wait, notifying_parent),
@@ -1261,7 +1271,8 @@ reset_concuerror_info(Info) ->
      notify_when_ready = {Pid, _},
      processes = Processes,
      report_unknown = ReportUnknown,
-     scheduler = Scheduler
+     scheduler = Scheduler,
+     timeout = Timeout
     } = Info,
   #concuerror_info{
      after_timeout = AfterTimeout,
@@ -1274,7 +1285,8 @@ reset_concuerror_info(Info) ->
      notify_when_ready = {Pid, true},
      processes = Processes,
      report_unknown = ReportUnknown,
-     scheduler = Scheduler
+     scheduler = Scheduler,
+     timeout = Timeout
     }.
 
 %% reset_stack(#concuerror_info{stack = Stack} = Info) ->
