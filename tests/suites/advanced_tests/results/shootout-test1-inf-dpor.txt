@@ -1,0 +1,28 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/shootout/pidigits.erl",
+           "/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/shootout/test.erl",
+           "/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/shootout/thread_ring.erl"]},
+   {ignore_error,[]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{test,test1,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+  No errors found!
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: thread_ring
+Instrumenting: lists
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1/1 interleavings explored
