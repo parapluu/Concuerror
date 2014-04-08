@@ -498,7 +498,6 @@ assign_happens_before([TraceState|Rest], TimedNewTrace, OldTrace, State) ->
             ActorNewClock
         end
     end,
-  ?trace_nl(Logger, "~p: ~w:~w~n", [Index, Actor, NewClock]),
   BaseNewClockMap = dict:store(Actor, NewClock, ClockMap),
   NewClockMap =
     case Special of
@@ -662,7 +661,6 @@ not_dep(Trace, Actor, Index, Event, Logger) ->
 
 not_dep([], _Actor, _Index, Event, Logger, NotDep) ->
   %% The racing event's effect may differ, so new label.
-  ?trace_nl(Logger, "      not_dep: last:~p ~n", [Event#event.actor]),
   lists:reverse([Event#event{label = undefined}|NotDep]);
 not_dep([TraceState|Rest], Actor, Index, Event, Logger, NotDep) ->
   #trace_state{
@@ -676,7 +674,6 @@ not_dep([TraceState|Rest], Actor, Index, Event, Logger, NotDep) ->
     case Index > ActorLaterClock of
       false -> NotDep;
       true ->
-        ?trace_nl(Logger, "      not_dep: ~p:~p ~n", [LaterIndex, LaterActor]),
         [LaterEvent|NotDep]
     end,
   not_dep(Rest, Actor, Index, Event, Logger, NewNotDep).
