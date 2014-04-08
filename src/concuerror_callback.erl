@@ -88,6 +88,7 @@ spawn_first_process(Options) ->
       [after_timeout, logger, modules, processes, report_unknown, timeout],
       Options),
   EtsTables = ets:new(ets_tables, [public]),
+  ets:insert(EtsTables, {tid,1}),
   InitialInfo =
     #concuerror_info{
        after_timeout  = AfterTimeout,
@@ -675,7 +676,14 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   Ret =
     case Named of
       true -> Name;
-      false -> Tid
+      false ->
+        case EventInfo of
+          %% Replaying...
+          #builtin_event{result = R} -> R;
+          %% New event...
+          undefined ->
+            ets:update_counter(EtsTables, tid, 1)
+        end
     end,
   Heir =
     case proplists:lookup(heir, Options) of
@@ -1098,7 +1106,8 @@ ets_ownership_exiting_events(Info) ->
   #concuerror_info{ets_tables = EtsTables} = Info,
   case ets:match(EtsTables, ?ets_match_owner_to_name_heir(self())) of
     [] -> Info;
-    Tables ->
+    UnsortedTables ->
+      Tables = lists:sort(UnsortedTables),
       Fold =
         fun([Tid, HeirSpec], InfoIn) ->
             MFArgs =
