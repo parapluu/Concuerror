@@ -969,7 +969,7 @@ process_loop(Info) ->
       end;
     {exit_signal, #message{data = {'EXIT', _From, Reason}} = Message, Notify} ->
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
-      case is_active(Info) andalso not Info#concuerror_info.caught_signal of
+      case is_active(Info) of
         true ->
           case Reason =:= kill of
             true ->
@@ -1310,8 +1310,8 @@ set_status(#concuerror_info{processes = Processes} = Info, Status) ->
   true = ets:update_element(Processes, self(), Updates),
   Info#concuerror_info{status = Status}.
 
-is_active(#concuerror_info{status = Status}) ->
-  is_active(Status);
+is_active(#concuerror_info{caught_signal = CaughtSignal, status = Status}) ->
+  not CaughtSignal andalso is_active(Status);
 is_active(Status) when is_atom(Status) ->
   (Status =:= running) orelse (Status =:= waiting).
 
