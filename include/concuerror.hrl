@@ -54,8 +54,9 @@
 -define(lwarning,  2).
 -define(linfo,     3).
 -define(lprogress, 4).
--define(ldebug,    5).
--define(ltrace,    6).
+-define(ltiming,   5).
+-define(ldebug,    6).
+-define(ltrace,    7).
 
 -define(nonunique, none).
 
@@ -84,6 +85,9 @@
 
 -define(unique_info(Logger, Format, Data),
         ?log(Logger, ?linfo, {?MODULE, ?LINE}, Format, Data)).
+
+-define(time(Logger, Tag),
+        concuerror_logger:time(Logger, Tag)).
 
 -type log_level() :: ?lquiet..?MAX_VERBOSITY.
 

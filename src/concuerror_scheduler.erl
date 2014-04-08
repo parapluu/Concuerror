@@ -100,8 +100,8 @@ run(Options) ->
        treat_as_normal = TreatAsNormal,
        timeout = Timeout},
   ok = concuerror_callback:start_first_process(FirstProcess, Target, Timeout),
-  ?debug(Logger, "Starting exploration...~n",[]),
   concuerror_logger:plan(Logger),
+  ?time(Logger, "Exploration start"),
   explore(InitialState).
 
 get_properties(Props, Options) ->
@@ -439,9 +439,10 @@ remove_pending_message(#message_event{recipient = Recipient, sender = Sender},
 
 plan_more_interleavings(State) ->
   #scheduler_state{logger = Logger, trace = Trace} = State,
-  ?trace(Logger, "Plan more interleavings:~n", []),
+  ?time(Logger, "Assigning happens-before..."),
   {OldTrace, NewTrace} = split_trace(Trace),
   TimedNewTrace = assign_happens_before(NewTrace, OldTrace, State),
+  ?time(Logger, "Planning more interleavings..."),
   FinalTrace =
     plan_more_interleavings(lists:reverse(OldTrace, TimedNewTrace), [], State),
   State#scheduler_state{trace = FinalTrace}.
@@ -731,7 +732,7 @@ has_more_to_explore(State) ->
   case TracePrefix =:= [] of
     true -> {false, State#scheduler_state{trace = []}};
     false ->
-      ?debug(Logger, "New interleaving, replaying...~n", []),
+      ?time(Logger, "New interleaving..."),
       NewState = replay_prefix(TracePrefix, State),
       ?debug(Logger, "~s~n",["Replay done...!"]),
       FinalState = NewState#scheduler_state{trace = TracePrefix},

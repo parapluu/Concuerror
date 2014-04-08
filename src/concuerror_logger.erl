@@ -2,7 +2,7 @@
 
 -module(concuerror_logger).
 
--export([run/1, complete/2, plan/1, log/5, stop/2, print/3]).
+-export([run/1, complete/2, plan/1, log/5, stop/2, print/3, time/2]).
 
 -include("concuerror.hrl").
 
@@ -16,6 +16,7 @@
           output_name                  :: string(),
           print_depth                  :: pos_integer(),
           streams = []                 :: [{stream(), [string()]}],
+          timestamp = erlang:now()     :: erlang:timestamp(),
           ticker = none                :: pid() | 'none',
           traces_explored = 0          :: non_neg_integer(),
           traces_ssb = 0               :: non_neg_integer(),
@@ -84,6 +85,12 @@ print(Logger, Type, String) ->
   Logger ! {print, Type, String},
   ok.
 
+-spec time(logger(), term()) -> ok.
+
+time(Logger, Tag) ->
+  Logger ! {time, Tag},
+  ok.
+
 %%------------------------------------------------------------------------------
 
 loop_entry(State) ->
@@ -110,11 +117,18 @@ loop(State) ->
      print_depth = PrintDepth,
      streams = Streams,
      ticker = Ticker,
+     timestamp = Timestamp,
      traces_explored = TracesExplored,
      traces_total = TracesTotal,
      verbosity = Verbosity
     } = State,
   receive
+    {time, Tag} ->
+      Now = erlang:now(),
+      Diff = timer:now_diff(Now, Timestamp) / 1000000,
+      Msg = "Timer: +~5.2fs ~s~n",
+      self() ! {log, ?ltiming, none, Msg, [Diff, Tag]},
+      loop(State#logger_state{timestamp = Now});
     {log, Level, Tag, Format, Data} ->
       {NewLogMsgs, NewAlreadyEmitted} =
         case Tag =/= ?nonunique andalso sets:is_element(Tag, AlreadyEmitted) of
