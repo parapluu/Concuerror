@@ -900,7 +900,7 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
 
 -spec process_top_loop(concuerror_info()) -> no_return().
 
-process_top_loop(Info) ->
+process_top_loop(#concuerror_info{modules = Modules} = Info) ->
   ?debug_flag(?wait, top_waiting),
   receive
     reset -> process_top_loop(Info);
@@ -908,7 +908,7 @@ process_top_loop(Info) ->
       ?debug_flag(?wait, {start, Module, Name, Args}),
       put(concuerror_info, Info),
       try
-        erlang:apply(Module, Name, Args),
+        concuerror_inspect:instrumented(call, [Module,Name,Args], start),
         exit(normal)
       catch
         exit:{?MODULE, _} = Reason ->

@@ -1,0 +1,63 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/load_before_start.erl"]},
+   {ignore_error,[]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{load_before_start,test,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* At step 8 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,lookup,[table,key],start}]}
+    Stacktrace:
+      [{ets,lookup,[table,key],start}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(ets, new, [table,[named_table]])
+    in load_before_start.erl line 10
+   2: P: P.2 = erlang:spawn(ets, lookup, [table,key])
+    in load_before_start.erl line 11
+   3: P: exits normally
+   4: P.1: table = ets:new(table, [named_table])
+   5: P.1: exits normally
+   6: P.1: true = ets:delete(table)
+    (while exiting)
+   7: P.2: Exception badarg raised by: ets:lookup(table, key)
+   8: P.2: exits abnormally ({badarg,[{ets,lookup,[table,key],start}]})
+################################################################################
+Erroneous interleaving 2:
+* At step 8 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,lookup,[table,key],start}]}
+    Stacktrace:
+      [{ets,lookup,[table,key],start}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(ets, new, [table,[named_table]])
+    in load_before_start.erl line 10
+   2: P: P.2 = erlang:spawn(ets, lookup, [table,key])
+    in load_before_start.erl line 11
+   3: P: exits normally
+   4: P.2: Exception badarg raised by: ets:lookup(table, key)
+   5: P.1: table = ets:new(table, [named_table])
+   6: P.1: exits normally
+   7: P.1: true = ets:delete(table)
+    (while exiting)
+   8: P.2: exits abnormally ({badarg,[{ets,lookup,[table,key],start}]})
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: load_before_start
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 3/3 interleavings explored
