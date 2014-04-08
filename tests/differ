@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+Base=$(basename $1)
 diff \
      <(grep -B1 "  Summary" $1 2> /dev/null || echo empty1) \
      <(grep -B1 "  Summary" $2 2> /dev/null || echo empty2) \
-    > /dev/null
+    | sed "s#^\(.*\)#$Base \1#g" >> thediff
