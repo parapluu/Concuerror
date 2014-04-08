@@ -464,7 +464,7 @@ assign_happens_before(NewTrace, OldTrace, State) ->
 assign_happens_before([], TimedNewTrace, _OldTrace, _State) ->
   lists:reverse(TimedNewTrace);
 assign_happens_before([TraceState|Rest], TimedNewTrace, OldTrace, State) ->
-  #scheduler_state{logger = Logger, message_info = MessageInfo} = State,
+  #scheduler_state{message_info = MessageInfo} = State,
   #trace_state{done = [Event|RestEvents], index = Index} = TraceState,
   #event{actor = Actor, event_info = EventInfo, special = Special} = Event,
   ClockMap = get_base_clock(OldTrace),
@@ -587,7 +587,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
             message_clock(Id, MessageInfo, ActorClock);
           _ -> ActorClock
         end,
-      ?trace_nl(Logger, "===~nRaces ~s~n",
+      ?trace_nl(Logger, "===~n~s~n",
                 [concuerror_printer:pretty_s({Index, Event}, PrintDepth)]),
       BaseNewOldTrace =
         more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, State),
@@ -625,10 +625,10 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
             {update_clock, NC};
           true ->
             NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
-            ?trace_nl(Logger, "   with ~s~n",
+            ?trace_nl(Logger, "   races with ~s~n",
                       [concuerror_printer:pretty_s({EarlyIndex, _EarlyEvent}, PrintDepth)]),
             NotDep =
-              not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event, Logger),
+              not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event),
             #trace_state{wakeup_tree = WakeupTree} = TraceState,
             case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep) of
               skip -> {update_clock, NC};
@@ -656,17 +656,16 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
     end,
   more_interleavings_for_event(Rest, Event, Later, NewClock, State, NewTrace).
 
-not_dep(Trace, Actor, Index, Event, Logger) ->
-  not_dep(Trace, Actor, Index, Event, Logger, []).
+not_dep(Trace, Actor, Index, Event) ->
+  not_dep(Trace, Actor, Index, Event, []).
 
-not_dep([], _Actor, _Index, Event, Logger, NotDep) ->
+not_dep([], _Actor, _Index, Event, NotDep) ->
   %% The racing event's effect may differ, so new label.
   lists:reverse([Event#event{label = undefined}|NotDep]);
-not_dep([TraceState|Rest], Actor, Index, Event, Logger, NotDep) ->
+not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
   #trace_state{
      clock_map = ClockMap,
-     done = [#event{actor = LaterActor} = LaterEvent|_],
-     index = LaterIndex
+     done = [#event{actor = LaterActor} = LaterEvent|_]
     } = TraceState,
   LaterClock = lookup_clock(LaterActor, ClockMap),
   ActorLaterClock = lookup_clock_value(Actor, LaterClock),
@@ -676,7 +675,7 @@ not_dep([TraceState|Rest], Actor, Index, Event, Logger, NotDep) ->
       true ->
         [LaterEvent|NotDep]
     end,
-  not_dep(Rest, Actor, Index, Event, Logger, NewNotDep).
+  not_dep(Rest, Actor, Index, Event, NewNotDep).
 
 insert_wakeup([Sleeping|Rest], Wakeup, NotDep) ->
   case check_initial(Sleeping, NotDep) =:= false of
@@ -926,13 +925,19 @@ explain_error({process_did_not_respond, Timeout, Actor}) ->
     [Timeout, Actor]
    );
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
+  [EString, NEString] =
+    [concuerror_printer:pretty_s(E, Depth) || E <- [Event, NewEvent]],
+  [Original, New] =
+    case EString =/= NEString of
+      true -> [EString, NEString];
+      false ->
+        [io_lib:format("~p",[E]) || E <- [Event, NewEvent]]
+    end,
   io_lib:format(
     "On step ~p, replaying a built-in returned a different result than"
     " expected:~n"
     "  original: ~s~n"
     "  new     : ~s~n"
     ?notify_us_msg,
-    [I,
-     concuerror_printer:pretty_s(Event, Depth),
-     concuerror_printer:pretty_s(NewEvent, Depth)]
+    [I,Original,New]
    ).

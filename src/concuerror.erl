@@ -32,8 +32,8 @@ run(RawOptions) ->
           false ->
             ?error(Logger,
                    "~s~n~n"
-                   "Get more info by running Concuerror with -~s~n~n",
-                   [explain(Reason), lists:duplicate(?MAX_VERBOSITY, $v)]),
+                   "Get more info by running Concuerror with -v ~p~n~n",
+                   [explain(Reason), ?MAX_VERBOSITY]),
             error
         end,
       cleanup(Processes),

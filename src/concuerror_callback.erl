@@ -900,7 +900,7 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
 
 -spec process_top_loop(concuerror_info()) -> no_return().
 
-process_top_loop(#concuerror_info{modules = Modules} = Info) ->
+process_top_loop(Info) ->
   ?debug_flag(?wait, top_waiting),
   receive
     reset -> process_top_loop(Info);
@@ -911,8 +911,7 @@ process_top_loop(#concuerror_info{modules = Modules} = Info) ->
         concuerror_inspect:instrumented(call, [Module,Name,Args], start),
         exit(normal)
       catch
-        exit:{?MODULE, _} = Reason ->
-          exit(Reason);
+        exit:{?MODULE, _} = Reason -> exit(Reason);
         Class:Reason ->
           case erase(concuerror_info) of
             #concuerror_info{escaped_pdict = Escaped} = EndInfo ->
