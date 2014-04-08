@@ -1,0 +1,26 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/signals_vs_messages.erl"]},
+   {ignore_error,[]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{signals_vs_messages,test,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[die,normal]},
+   {verbosity,0}]
+################################################################################
+  No errors found!
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: signals_vs_messages
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 4/4 interleavings explored
