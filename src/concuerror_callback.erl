@@ -286,7 +286,7 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
   ?badarg_if_not(is_reference(Ref)),
   #concuerror_info{monitors = Monitors} = Info,
   {Result, NewInfo} =
-    case ets:match(Monitors, ?monitor_match_to_target_source(Ref)) of
+    case ets:match(Monitors, ?monitor_match_to_target_source_as(Ref)) of
       [] ->
         PatternFun =
           fun(M) ->
@@ -303,10 +303,10 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
           false ->
             {false, Info}
         end;
-      [[Target, Source]] ->
+      [[Target, Source, As]] ->
         ?badarg_if_not(Source =:= self()),
-        true = ets:delete_object(Monitors, ?monitor(Ref, Target, Source, active)),
-        true = ets:insert(Monitors, ?monitor(Ref, Target, Source, inactive)),
+        true = ets:delete_object(Monitors, ?monitor(Ref, Target, As, active)),
+        true = ets:insert(Monitors, ?monitor(Ref, Target, As, inactive)),
         {not lists:member(flush, Options), Info}
     end,
   case lists:member(info, Options) of
@@ -399,11 +399,20 @@ run_built_in(erlang, make_ref, 0, [], Info) ->
       undefined -> make_ref()
     end,
   {Ref, Info};
-run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
+run_built_in(erlang, monitor, 2, [Type, Target], Info) ->
   #concuerror_info{
      monitors = Monitors,
      next_event = #event{event_info = EventInfo} = Event} = Info,
-  ?badarg_if_not(Type =:= process andalso is_pid(Pid)),
+  ?badarg_if_not(Type =:= process),
+  {Target, As} =
+    case Target of
+      P when is_pid(P) -> {Target, Target};
+      A when is_atom(A) -> {Target, {Target, node()}};
+      {Name, Node} = Local when is_atom(Name), Node =:= node() ->
+        {Name, Local};
+      {Name, Node} when is_atom(Name) -> ?crash({not_local_node, Node});
+      _ -> error(badarg)
+    end,
   Ref =
     case EventInfo of
       %% Replaying...
@@ -411,9 +420,16 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
       %% New event...
       undefined -> make_ref()
     end,
+  Pid =
+    case is_pid(Target) of
+      true -> Target;
+      false ->
+        {P1, Info} = run_built_in(erlang, whereis, 1, [Target], Info),
+        P1
+    end,
   {IsActive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   case IsActive of
-    true -> true = ets:insert(Monitors, ?monitor(Ref, Pid, self(), active));
+    true -> true = ets:insert(Monitors, ?monitor(Ref, Pid, As, active));
     false -> ok
   end,
   NewInfo =
@@ -425,7 +441,7 @@ run_built_in(erlang, monitor, 2, [Type, Pid], Info) ->
         case IsActive of
           false ->
             Message =
-              #message{data = {'DOWN', Ref, process, Pid, noproc},
+              #message{data = {'DOWN', Ref, process, As, noproc},
                        message_id = make_ref()},
             MessageEvent =
               #message_event{
@@ -533,7 +549,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
       true ->
         {P1, Ref} = Result,
         #concuerror_info{monitors = Monitors} = Info,
-        true = ets:insert(Monitors, ?monitor(Ref, P1, Parent, active)),
+        true = ets:insert(Monitors, ?monitor(Ref, P1, P1, active)),
         P1;
       false ->
         Result
@@ -1137,8 +1153,8 @@ handle_link(Link, Reason, InfoIn) ->
     instrumented(call, MFArgs, exit, InfoIn),
   NewInfo.
 
-handle_monitor({Ref, P}, Reason, InfoIn) ->
-  Msg = {'DOWN', Ref, process, self(), Reason},
+handle_monitor({Ref, P, As}, Reason, InfoIn) ->
+  Msg = {'DOWN', Ref, process, As, Reason},
   MFArgs = [erlang, send, [P, Msg]],
   {{didit, Msg}, NewInfo} =
     instrumented(call, MFArgs, exit, InfoIn),
@@ -1405,6 +1421,11 @@ explain_error({inconsistent_builtin,
     "data that may differ on separate runs of the program.~n"
     "Location: ~p~n~n",
     [Module, Name, Arity, Args, OldResult, NewResult, Location]);
+explain_error({not_local_node, Node}) ->
+  io_lib:format(
+    "A built-in tried to use ~p as a remote node. Concuerror does not support"
+    " remote nodes yet.",
+    [Node]);
 explain_error({system_wrapper_error, Name, Type, Reason, Stacktrace}) ->
   io_lib:format(
     "Concuerror's wrapper for system process ~p crashed (~p):~n"

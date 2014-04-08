@@ -149,9 +149,9 @@
 %%------------------------------------------------------------------------------
 -type monitors() :: ets:tid().
 
--define(monitor(Ref, Target, Source, Status),{Target, {Ref, Source}, Status}).
+-define(monitor(Ref, Target, As, Status),{Target, {Ref, self(), As}, Status}).
 -define(monitors_match_mine(), {self(), '_', '_'}).
--define(monitor_match_to_target_source(Ref), {'$1', {Ref, '$2'}, active}).
+-define(monitor_match_to_target_source_as(Ref), {'$1', {Ref, '$2', '$3'}, active}).
 %%------------------------------------------------------------------------------
 -type modules() :: ets:tid().
 %%------------------------------------------------------------------------------
