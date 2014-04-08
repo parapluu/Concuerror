@@ -191,6 +191,6 @@ print "  %d caused unexpected failures!" % total_failed.value
 os.system("find %s -name '*.beam' -exec rm {} \;" % dirname)
 
 if total_failed.value != 0:
-    subprocess.call("cat thediff", shell=True)
+    subprocess.call("bash thediff", shell=True)
     os.remove("thediff")
     exit(1)
