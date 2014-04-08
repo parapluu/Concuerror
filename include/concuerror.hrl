@@ -267,6 +267,7 @@
                  {iolist_size, 1},
                  {iolist_to_binary, 1},
                  {list_to_atom, 1},
+                 {list_to_binary, 1},
                  {list_to_integer, 1},
                  {list_to_tuple, 1},
                  {make_fun, 3},
