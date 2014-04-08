@@ -2,7 +2,7 @@
 
 -module(concuerror_logger).
 
--export([run/1, complete/2, plan/1, log/5, stop/2, print/3, time/2]).
+-export([start/1, complete/2, plan/1, log/5, stop/2, print/3, time/2]).
 
 -include("concuerror.hrl").
 
@@ -26,12 +26,20 @@
 
 %%------------------------------------------------------------------------------
 
--spec run(options()) -> ok.
+-spec start(options()) -> pid().
 
-run(Options) ->
+start(Options) ->
+  Parent = self(),
+  P = spawn_link(fun() -> run(Parent, Options) end),
+  receive
+    logger_ready -> P
+  end.
+
+run(Parent, Options) ->
   [Verbosity,{Output, OutputName},SymbolicNames,PrintDepth,Processes,Modules] =
     concuerror_common:get_properties(
       [verbosity,output,symbolic,print_depth,processes,modules], Options),
+  ets:insert(Modules, {{logger}, self()}),
   ok = setup_symbolic_names(SymbolicNames, Processes, Modules),
   PrintableOptions = delete_many([processes, output, modules], Options),
   separator(Output, $#),
@@ -46,6 +54,7 @@ run(Options) ->
        output_name = OutputName,
        print_depth = PrintDepth,
        verbosity = Verbosity},
+  Parent ! logger_ready,
   loop_entry(State).
 
 delete_many([], Proplist) ->

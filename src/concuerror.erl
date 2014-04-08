@@ -20,9 +20,8 @@ run(RawOptions) ->
          [O || O <- Options, concuerror_options:filter_options('logger', O)]
         ],
       ok = concuerror_loader:load(concuerror_logger, Modules, false),
-      Logger = spawn_link(fun() -> concuerror_logger:run(LoggerOptions) end),
+      Logger = concuerror_logger:start(LoggerOptions),
       SchedulerOptions = [{processes, Processes}, {logger, Logger}|Options],
-      ets:insert(Modules, {{logger}, Logger}),
       {Pid, Ref} =
         spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
       Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
