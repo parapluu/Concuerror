@@ -28,7 +28,7 @@
 -define(result, ?flag(7)).
 -define(spawn, ?flag(8)).
 -define(short_builtin, ?flag(9)).
--define(wait, ?flag(10)).
+-define(loop, ?flag(10)).
 -define(send, ?flag(11)).
 -define(exit, ?flag(12)).
 -define(trap, ?flag(13)).
@@ -262,6 +262,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
   catch
     throw:Reason ->
       #concuerror_info{scheduler = Scheduler} = Info,
+      ?debug_flag(?loop, crashing),
       exit(Scheduler, {Reason, Module, Name, Arity, Args, Location}),
       receive after infinity -> ok end;
     error:Reason ->
@@ -852,6 +853,7 @@ has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
     blocking ->
       case Result =:= false of
         true ->
+          ?debug_flag(?loop, blocked),
           NewInfo =
             case InfoIn#concuerror_info.status =:= waiting of
               true ->
@@ -861,6 +863,7 @@ has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
             end,
           has_matching_or_after(PatternFun, Timeout, Location, NewInfo, Mode);
         false ->
+          ?debug_flag(?loop, ready_to_receive),
           NewInfo = process_loop(InfoIn),
           {FinalResult, FinalNewOldMessages} =
             has_matching_or_after(PatternFun, Timeout, NewInfo),
@@ -918,18 +921,18 @@ fold_with_patterns(PatternFun, NewMessages, OldMessages) ->
 %%------------------------------------------------------------------------------
 
 notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
-  ?debug_flag(?notify, Notification),
+  ?debug_flag(?notify, {notify, Notification}),
   Scheduler ! Notification,
   Info.
 
 -spec process_top_loop(concuerror_info()) -> no_return().
 
 process_top_loop(Info) ->
-  ?debug_flag(?wait, top_waiting),
+  ?debug_flag(?loop, top_waiting),
   receive
     reset -> process_top_loop(Info);
     {start, Module, Name, Args} ->
-      ?debug_flag(?wait, {start, Module, Name, Args}),
+      ?debug_flag(?loop, {start, Module, Name, Args}),
       put(concuerror_info, Info),
       try
         concuerror_inspect:instrumented(call, [Module,Name,Args], start),
@@ -968,81 +971,86 @@ wait_process(Pid, Timeout) ->
   end.
 
 process_loop(#concuerror_info{notify_when_ready = {Pid, true}} = Info) ->
-  ?debug_flag(?wait, notifying_parent),
+  ?debug_flag(?loop, notifying_parent),
   Pid ! ready,
   process_loop(Info#concuerror_info{notify_when_ready = {Pid, false}});
 process_loop(Info) ->
-  ?debug_flag(?wait, waiting),
+  ?debug_flag(?loop, process_loop),
   receive
     #event{event_info = EventInfo} = Event ->
+      ?debug_flag(?loop, got_event),
       Status = Info#concuerror_info.status,
       case Status =:= exited of
         true ->
+          ?debug_flag(?loop, exited),
           process_loop(notify(exited, Info));
         false ->
           NewInfo = Info#concuerror_info{next_event = Event},
           case EventInfo of
             undefined ->
-              ?debug_flag(?wait, {waiting, exploring}),
+              ?debug_flag(?loop, exploring),
               NewInfo;
             _OtherReplay ->
-              ?debug_flag(?wait, {waiting, replaying}),
+              ?debug_flag(?loop, replaying),
               NewInfo
           end
       end;
     {exit_signal, #message{data = {'EXIT', _From, Reason}} = Message, Notify} ->
+      ?debug_flag(?loop, {signal, Reason}),
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
       case is_active(Info) of
         true ->
           case Reason =:= kill of
             true ->
-              ?debug_flag(?wait, {waiting, kill_signal}),
+              ?debug_flag(?loop, kill_signal),
               catch Notify ! {trapping, Trapping},
               exiting(killed, [], Info#concuerror_info{caught_signal = true});
             false ->
               case Trapping of
                 true ->
-                  ?debug_flag(?trap, {waiting, signal_trapped}),
+                  ?debug_flag(?loop, signal_trapped),
                   self() ! {message, Message, Notify},
                   process_loop(Info);
                 false ->
                   catch Notify ! {trapping, Trapping},
                   case Reason =:= normal of
                     true ->
-                      ?debug_flag(?wait, {waiting, normal_signal_ignored}),
+                      ?debug_flag(?loop, ignore_normal_signal),
                       process_loop(Info);
                     false ->
-                      ?debug_flag(?wait, {waiting, exiting_signal}),
+                      ?debug_flag(?loop, error_signal),
                       exiting(Reason, [], Info#concuerror_info{caught_signal = true})
                   end
               end
           end;
         false ->
+          ?debug_flag(?loop, ignoring_signal),
           catch Notify ! {trapping, Trapping},
           process_loop(Info)
       end;
     {message, Message, Notify} ->
-      ?debug_flag(?wait, {waiting, got_message}),
+      ?debug_flag(?loop, message),
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
       catch Notify ! {trapping, Trapping},
       case is_active(Info) of
         true ->
-          ?debug_flag(?receive_, {message_enqueued, Message}),
+          ?debug_flag(?loop, enqueueing_message),
           Old = Info#concuerror_info.messages_new,
           NewInfo =
             Info#concuerror_info{
               messages_new = queue:in(Message, Old)
              },
+          ?debug_flag(?loop, enqueued_msg),
           case NewInfo#concuerror_info.status =:= waiting of
             true -> NewInfo#concuerror_info{status = running};
             false -> process_loop(NewInfo)
           end;
         false ->
-          ?debug_flag(?receive_, {message_ignored, Info#concuerror_info.status}),
+          ?debug_flag(?loop, ignoring_message),
           process_loop(Info)
       end;
     reset ->
-      ?debug_flag(?wait, {waiting, reset}),
+      ?debug_flag(?loop, reset),
       NewInfo =
         #concuerror_info{
            ets_tables = EtsTables,
@@ -1057,6 +1065,7 @@ process_loop(Info) ->
       ets:match_delete(Monitors, ?monitors_match_mine()),
       erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo]);
     deadlock_poll ->
+      ?debug_flag(?loop, deadlock_poll),
       Info
   end.
 
@@ -1070,8 +1079,8 @@ exiting(Reason, Stacktrace, #concuerror_info{status = Status} = InfoIn) ->
   %% XXX:  - transfer ets ownership and send message or delete table
   %% XXX:  - send link signals
   %% XXX:  - send monitor messages
+  ?debug_flag(?loop, {going_to_exit, Reason}),
   Info = process_loop(InfoIn),
-  ?debug_flag(?exit, {going_to_exit, Reason}),
   Self = self(),
   {MaybeName, Info} =
     run_built_in(erlang, process_info, 2, [Self, registered_name], Info),
@@ -1114,6 +1123,7 @@ exiting(Reason, Stacktrace, #concuerror_info{status = Status} = InfoIn) ->
      link_monitor_handlers(fun handle_monitor/3, Monitors)],
   FinalInfo =
     lists:foldl(FunFold, ExitInfo#concuerror_info{exit_reason = Reason}, FunList),
+  ?debug_flag(?loop, exited),
   process_loop(set_status(FinalInfo, exited)).
 
 ets_ownership_exiting_events(Info) ->
