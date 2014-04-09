@@ -131,8 +131,11 @@ is_safe(Module, Name, Arity, Instrumented) ->
         false ->
           %% This special test is needed as long as erlang:apply/3 is not
           %% classified as a builtin in case we instrument erlang before we find
-          %% a call to it.
-          {ModuleLit, NameLit, Arity} =/= {erlang, apply, 3}
+          %% a call to it. We need to not instrument it in erlang.erl itself,
+          %% though.
+          (ets:lookup_element(Instrumented, {current}, 2) =:= erlang
+           orelse
+           {ModuleLit, NameLit, Arity} =/= {erlang, apply, 3})
             andalso
             ets:lookup(Instrumented, ModuleLit) =/= []
       end

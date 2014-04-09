@@ -59,7 +59,9 @@ load_binary(Module, Filename, Beam, Instrumented) ->
   InstrumentedCore =
     case Module =:= concuerror_inspect of
       true -> Core;
-      false -> concuerror_instrumenter:instrument(Core, Instrumented)
+      false ->
+        true = ets:insert(Instrumented, {{current}, Module}),
+        concuerror_instrumenter:instrument(Core, Instrumented)
     end,
   {ok, _, NewBinary} =
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
