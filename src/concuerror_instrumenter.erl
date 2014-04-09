@@ -129,6 +129,11 @@ is_safe(Module, Name, Arity, Instrumented) ->
             orelse %% The rest are defined in concuerror.hrl
             lists:member({ModuleLit, NameLit, Arity}, ?RACE_FREE_BIFS);
         false ->
-          ets:lookup(Instrumented, ModuleLit) =/= []
+          %% This special test is needed as long as erlang:apply/3 is not
+          %% classified as a builtin in case we instrument erlang before we find
+          %% a call to it.
+          {ModuleLit, NameLit, Arity} =/= {erlang, apply, 3}
+            andalso
+            ets:lookup(Instrumented, ModuleLit) =/= []
       end
   end.
