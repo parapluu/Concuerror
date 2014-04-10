@@ -9,49 +9,37 @@
 -spec run(options()) -> 'completed' | 'error'.
 
 run(RawOptions) ->
-  Halt = proplists:get_value(halt, RawOptions, false),
-  S =
-    try
-      Options = concuerror_options:finalize(RawOptions),
-      Modules = proplists:get_value(modules, Options),
-      Processes = ets:new(processes, [public]),
-      LoggerOptions =
-        [{processes, Processes} |
-         [O || O <- Options, concuerror_options:filter_options('logger', O)]
-        ],
-      ok = concuerror_loader:load(concuerror_logger, Modules, false),
-      Logger = concuerror_logger:start(LoggerOptions),
-      SchedulerOptions = [{processes, Processes}, {logger, Logger}|Options],
-      {Pid, Ref} =
-        spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
-      Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
-      Status =
-        case Reason =:= normal of
-          true -> completed;
-          false ->
-            ?error(Logger,
-                   "~s~n~n"
-                   "Get more info by running Concuerror with -v ~p~n~n",
-                   [explain(Reason), ?MAX_VERBOSITY]),
-            error
-        end,
-      cleanup(Processes),
-      ?trace(Logger, "Reached the end!~n",[]),
-      concuerror_logger:stop(Logger, Status),
-      ets:delete(Processes),
-      Status
-    catch
-      throw:opt_error -> error
-    end,
-  case Halt of
-    true  ->
-      ExitStatus =
-        case S =:= completed of
-          true -> 0;
-          false -> 1
-        end,
-      erlang:halt(ExitStatus);
-    false -> S
+  try
+    Options = concuerror_options:finalize(RawOptions),
+    Modules = proplists:get_value(modules, Options),
+    Processes = ets:new(processes, [public]),
+    LoggerOptions =
+      [{processes, Processes} |
+       [O || O <- Options, concuerror_options:filter_options('logger', O)]
+      ],
+    ok = concuerror_loader:load(concuerror_logger, Modules, false),
+    Logger = concuerror_logger:start(LoggerOptions),
+    SchedulerOptions = [{processes, Processes}, {logger, Logger}|Options],
+    {Pid, Ref} =
+      spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
+    Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
+    Status =
+      case Reason =:= normal of
+        true -> completed;
+        false ->
+          ?error(Logger,
+                 "~s~n~n"
+                 "Get more info by running Concuerror with -v ~p~n~n",
+                 [explain(Reason), ?MAX_VERBOSITY]),
+          error
+      end,
+    cleanup(Processes),
+    ?trace(Logger, "Reached the end!~n",[]),
+    concuerror_logger:stop(Logger, Status),
+    ets:delete(Processes),
+    Status
+  catch
+    throw:opt_error -> error
   end.
 
 explain(Reason) ->

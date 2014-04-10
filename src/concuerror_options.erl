@@ -25,10 +25,10 @@ parse_cl_aux(CommandLineArgs) ->
             proplists:get_bool(version, Options)} of
         {true,_} ->
           cl_usage(),
-          {exit, ok};
+          {exit, completed};
         {_,true} ->
           cl_version(),
-          {exit, ok};
+          {exit, completed};
         {false, false} ->
           case OtherArgs =:= [] of
             true -> ok;
@@ -124,7 +124,6 @@ options() ->
 
    %% The following options won't make it to the getopt script
   ,{target, [logger, scheduler]} %% Generated from module and test or given explicitly
-  ,{halt, []}                    %% Controlling whether a halt will happen
   ,{files, [logger]}             %% List of included files (to be shown in the log)
   ,{modules, [logger, process]}  %% Ets table of instrumented modules
   ,{processes, [logger, process]}%% Ets table containing processes under concuerror

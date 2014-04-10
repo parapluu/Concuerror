@@ -10,10 +10,10 @@ main(Args) ->
   {module, concuerror_inspect} = code:load_file(concuerror_inspect),
   case concuerror_options:parse_cl(Args) of
     {exit, Exit} -> cl_exit(Exit);
-    Options -> concuerror:run([{halt, true}|Options])
+    Options -> cl_exit(concuerror:run(Options))
   end.
 
-cl_exit(ok) ->
+cl_exit(completed) ->
   erlang:halt(0);
 cl_exit(_) ->
   erlang:halt(1).
