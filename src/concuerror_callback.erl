@@ -65,7 +65,7 @@
           messages_old = queue:new() :: queue(),
           modules                    :: modules(),
           monitors                   :: monitors(),
-          next_event = none          :: 'none' | event(),
+          event = none               :: 'none' | event(),
           notify_when_ready          :: {pid(), boolean()},
           processes                  :: processes(),
           report_unknown = false     :: boolean(),
@@ -244,7 +244,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
     add_location_info(Location, Info#concuerror_info{extra = undefined}),%ResetInfo),
   try
     {Value, UpdatedInfo} = run_built_in(Module, Name, Arity, Args, LocatedInfo),
-    #concuerror_info{extra = Extra, next_event = Event} = UpdatedInfo,
+    #concuerror_info{extra = Extra, event = Event} = UpdatedInfo,
     ?debug_flag(?builtin, {'built-in', Module, Name, Arity, Value, Location}),
     ?debug_flag(?args, {args, Args}),
     ?debug_flag(?result, {args, Value}),
@@ -265,7 +265,7 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
       exit(Scheduler, {Reason, Module, Name, Arity, Args, Location}),
       receive after infinity -> ok end;
     error:Reason ->
-      #concuerror_info{next_event = FEvent} = LocatedInfo,
+      #concuerror_info{event = FEvent} = LocatedInfo,
       FEventInfo =
         #builtin_event{
            mfargs = {Module, Name, Args},
@@ -315,7 +315,7 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
   end;
 run_built_in(erlang, exit, 2, [Pid, Reason],
              #concuerror_info{
-                next_event = #event{event_info = EventInfo} = Event
+                event = #event{event_info = EventInfo} = Event
                } = Info) ->
   ?badarg_if_not(is_pid(Pid)),
   case EventInfo of
@@ -337,7 +337,7 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
            recipient = Pid,
            type = exit_signal},
       NewEvent = Event#event{special = [{message, MessageEvent}]},
-      {true, Info#concuerror_info{next_event = NewEvent}}
+      {true, Info#concuerror_info{event = NewEvent}}
   end;
 
 run_built_in(erlang, group_leader, 0, [],
@@ -352,9 +352,9 @@ run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
   {true, Info};
 
 run_built_in(erlang, halt, _, _, Info) ->
-  #concuerror_info{next_event = Event} = Info,
+  #concuerror_info{event = Event} = Info,
   NewEvent = Event#event{special = [halt]},
-  {no_return, Info#concuerror_info{next_event = NewEvent}};
+  {no_return, Info#concuerror_info{event = NewEvent}};
 
 run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
   ?badarg_if_not(is_pid(Pid)),
@@ -370,7 +370,7 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
   #concuerror_info{
      flags = #process_flags{trap_exit = TrapExit},
      links = Links,
-     next_event = #event{event_info = EventInfo} = Event} = Info,
+     event = #event{event_info = EventInfo} = Event} = Info,
   case run_built_in(erlang, is_process_alive, 1, [Pid], Info) of
     {true, Info}->
       Self = self(),
@@ -395,7 +395,7 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
                      message = Message,
                      recipient = self()},
                 NewEvent = Event#event{special = [{message, MessageEvent}]},
-                Info#concuerror_info{next_event = NewEvent}
+                Info#concuerror_info{event = NewEvent}
             end,
           {true, NewInfo}
       end
@@ -407,7 +407,7 @@ run_built_in(erlang, Name, 0, [], Info)
     Name =:= make_ref;
     Name =:= time
     ->
-  #concuerror_info{next_event = #event{event_info = EventInfo}} = Info,
+  #concuerror_info{event = #event{event_info = EventInfo}} = Info,
   Ref =
     case EventInfo of
       %% Replaying...
@@ -419,7 +419,7 @@ run_built_in(erlang, Name, 0, [], Info)
 run_built_in(erlang, monitor, 2, [Type, Target], Info) ->
   #concuerror_info{
      monitors = Monitors,
-     next_event = #event{event_info = EventInfo} = Event} = Info,
+     event = #event{event_info = EventInfo} = Event} = Info,
   ?badarg_if_not(Type =:= process),
   {Target, As} =
     case Target of
@@ -466,7 +466,7 @@ run_built_in(erlang, monitor, 2, [Type, Target], Info) ->
                  message = Message,
                  recipient = self()},
             NewEvent = Event#event{special = [{message, MessageEvent}]},
-            Info#concuerror_info{next_event = NewEvent};
+            Info#concuerror_info{event = NewEvent};
           true -> Info
         end
     end,
@@ -535,7 +535,7 @@ run_built_in(erlang, spawn_link, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, [link]}], Info);
 run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
   #concuerror_info{
-     next_event = Event,
+     event = Event,
      processes = Processes,
      timeout = Timeout} = Info,
   #event{event_info = EventInfo} = Event,
@@ -559,7 +559,7 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
             false -> P
           end,
         NewEvent = Event#event{special = [{new, P}]},
-        {NewResult, Info#concuerror_info{next_event = NewEvent}}
+        {NewResult, Info#concuerror_info{event = NewEvent}}
     end,
   Pid =
     case lists:member(monitor, SpawnOpts) of
@@ -587,7 +587,7 @@ run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   run_built_in(erlang, send, 3, [Recipient, Message, []], Info);
 run_built_in(erlang, send, 3, [Recipient, Message, _Options],
              #concuerror_info{
-                next_event = #event{event_info = EventInfo} = Event
+                event = #event{event_info = EventInfo} = Event
                } = Info) ->
   Pid =
     case is_pid(Recipient) of
@@ -622,7 +622,7 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
           end,
         NewEvent = Event#event{special = [{message, MessageEvent}|Deliver]},
         ?debug_flag(?send, {send, successful}),
-        {Msg, Message, Info#concuerror_info{next_event = NewEvent}}
+        {Msg, Message, Info#concuerror_info{event = NewEvent}}
     end,
   case SelfDelivery of
     false -> ok;
@@ -676,7 +676,7 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   NoNameOptions = [O || O <- Options, O =/= named_table],
   #concuerror_info{
      ets_tables = EtsTables,
-     next_event = #event{event_info = EventInfo},
+     event = #event{event_info = EventInfo},
      scheduler = Scheduler
     } = Info,
   Named =
@@ -766,7 +766,7 @@ run_built_in(ets, delete, 1, [Name], Info) ->
   {true, Info#concuerror_info{extra = Tid}};
 run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
              #concuerror_info{
-                next_event = #event{event_info = EventInfo} = Event
+                event = #event{event_info = EventInfo} = Event
                } = Info) ->
   Tid = check_ets_access_rights(Name, {give_away,3}, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
@@ -788,7 +788,7 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
                   message_id = make_ref()},
              recipient = Pid},
         NewEvent = Event#event{special = [{message, MessageEvent}]},
-        Info#concuerror_info{next_event = NewEvent}
+        Info#concuerror_info{event = NewEvent}
     end,
   Update = [{?ets_owner, Pid}],
   true = ets:update_element(EtsTables, Tid, Update),
@@ -807,10 +807,8 @@ run_built_in(Module, Name, Arity, Args, Info) ->
   consistent_replay(Module, Name, Arity, Args, Info).
 
 consistent_replay(Module, Name, Arity, Args, Info) ->
-  #concuerror_info{next_event =
-                     #event{event_info = EventInfo,
-                            location = Location}
-                  } = Info,
+  #concuerror_info{event = Event} = Info,
+  #event{event_info = EventInfo, location = Location} = Event,
   NewResult = erlang:apply(Module, Name, Args),
   case EventInfo of
     %% Replaying...
@@ -839,7 +837,7 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   {MessageOrAfter, ReceiveInfo} =
     has_matching_or_after(PatternFun, Timeout, Location, Info, blocking),
   #concuerror_info{
-     next_event = NextEvent,
+     event = NextEvent,
      flags = #process_flags{trap_exit = Trapping}
     } = UpdatedInfo =
     add_location_info(Location, ReceiveInfo),
@@ -1005,7 +1003,7 @@ process_loop(Info) ->
           ?debug_flag(?loop, exited),
           process_loop(notify(exited, Info));
         false ->
-          NewInfo = Info#concuerror_info{next_event = Event},
+          NewInfo = Info#concuerror_info{event = Event},
           case EventInfo of
             undefined ->
               ?debug_flag(?loop, exploring),
@@ -1106,7 +1104,7 @@ exiting(Reason, Stacktrace, #concuerror_info{status = Status} = InfoIn) ->
   Self = self(),
   {MaybeName, Info} =
     run_built_in(erlang, process_info, 2, [Self, registered_name], Info),
-  LocatedInfo = #concuerror_info{next_event = Event} =
+  LocatedInfo = #concuerror_info{event = Event} =
     add_location_info(exit, set_status(Info, exiting)),
   #concuerror_info{
      links = LinksTable,
@@ -1379,8 +1377,8 @@ reset_concuerror_info(Info) ->
 
 %%------------------------------------------------------------------------------
 
-add_location_info(Location, #concuerror_info{next_event = Event} = Info) ->
-  Info#concuerror_info{next_event = Event#event{location = Location}}.
+add_location_info(Location, #concuerror_info{event = Event} = Info) ->
+  Info#concuerror_info{event = Event#event{location = Location}}.
 
 set_status(#concuerror_info{processes = Processes} = Info, Status) ->
   MaybeDropName =
