@@ -59,7 +59,6 @@
           exit_reason = normal       :: term(),
           extra                      :: term(),
           flags = #process_flags{}   :: #process_flags{},
-          group_leader               :: pid(),
           links                      :: links(),
           logger                     :: pid(),
           messages_new = queue:new() :: queue(),
@@ -89,7 +88,7 @@ spawn_first_process(Options) ->
       Options),
   EtsTables = ets:new(ets_tables, [public]),
   ets:insert(EtsTables, {tid,1}),
-  InitialInfo =
+  Info =
     #concuerror_info{
        after_timeout  = AfterTimeout,
        ets_tables     = EtsTables,
@@ -102,12 +101,12 @@ spawn_first_process(Options) ->
        scheduler      = self(),
        timeout        = Timeout
       },
-  system_processes_wrappers(InitialInfo),
-  system_ets_entries(InitialInfo),
-  {GroupLeader, _} = run_built_in(erlang,whereis,1,[user], InitialInfo),
-  CompleteInfo = InitialInfo#concuerror_info{group_leader = GroupLeader},
-  P = new_process(CompleteInfo),
+  system_processes_wrappers(Info),
+  system_ets_entries(Info),
+  P = new_process(Info),
   true = ets:insert(Processes, ?new_process(P, "P")),
+  {DefLeader, _} = run_built_in(erlang,whereis,1,[user],Info),
+  true = ets:update_element(Processes, P, {?process_leader, DefLeader}),
   P.
 
 -spec start_first_process(pid(), {atom(), atom(), [term()]}, timeout()) -> ok.
@@ -342,8 +341,15 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
   end;
 
 run_built_in(erlang, group_leader, 0, [],
-             #concuerror_info{group_leader = Leader} = Info) ->
+             #concuerror_info{processes = Processes} = Info) ->
+  Leader = ets:lookup_element(Processes, self(), ?process_leader),
   {Leader, Info};
+
+run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
+             #concuerror_info{processes = Processes} = Info) ->
+  ?badarg_if_not(is_pid(GroupLeader) andalso is_pid(Pid)),
+  true = ets:update_element(Processes, Pid, {?process_leader, GroupLeader}),
+  {true, Info};
 
 run_built_in(erlang, halt, _, _, Info) ->
   #concuerror_info{next_event = Event} = Info,
@@ -566,6 +572,8 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
       true = ets:insert(Links, ?links(Parent, Pid));
     false -> ok
   end,
+  {GroupLeader, _} = run_built_in(erlang, group_leader, 0, [], Info),
+  true = ets:update_element(Processes, Pid, {?process_leader, GroupLeader}),
   Pid ! {start, Module, Name, Args},
   wait_process(Pid, Timeout),
   {Result, NewInfo};
@@ -1065,6 +1073,8 @@ process_loop(Info) ->
       _ = erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
       ets:insert(Processes, ?new_process(self(), Symbol)),
+      {DefLeader, _} = run_built_in(erlang,whereis,1,[user],Info),
+      true = ets:update_element(Processes, self(), {?process_leader, DefLeader}),
       ets:match_delete(EtsTables, ?ets_match_mine()),
       ets:match_delete(Links, ?links_match_mine()),
       ets:match_delete(Monitors, ?monitors_match_mine()),
@@ -1302,7 +1312,6 @@ reset_concuerror_info(Info) ->
   #concuerror_info{
      after_timeout = AfterTimeout,
      ets_tables = EtsTables,
-     group_leader = GroupLeader,
      links = Links,
      logger = Logger,
      modules = Modules,
@@ -1316,7 +1325,6 @@ reset_concuerror_info(Info) ->
   #concuerror_info{
      after_timeout = AfterTimeout,
      ets_tables = EtsTables,
-     group_leader = GroupLeader,
      links = Links,
      logger = Logger,
      modules = Modules,

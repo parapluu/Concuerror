@@ -128,19 +128,22 @@
 
 -define(process_name_none, 0).
 -define(new_process(Pid, Symbolic),
-        {Pid, running, ?process_name_none, Symbolic, 0, regular}).
--define(new_system_process(Pid, Name),
-        {Pid, running, Name, atom_to_list(Name), 0, system}).
--define(process_pat_pid(Pid),                {Pid,      _,    _, _, _,    _}).
--define(process_pat_pid_name(Pid, Name),     {Pid,      _, Name, _, _,    _}).
--define(process_pat_pid_status(Pid, Status), {Pid, Status,    _, _, _,    _}).
--define(process_pat_pid_kind(Pid, Kind),     {Pid,      _,    _, _, _, Kind}).
+        {Pid, running, ?process_name_none, undefined, Symbolic, 0, regular}).
+-define(new_system_process(Pid, Name, Type),
+        {Pid, running, Name, undefined, atom_to_list(Name), 0, Type}).
+-define(new_system_process(Pid, Name), ?new_system_process(Pid, Name, wrapped)).
+-define(process_pat_pid(Pid),                {Pid,      _,    _, _, _, _,    _}).
+-define(process_pat_pid_name(Pid, Name),     {Pid,      _, Name, _, _, _,    _}).
+-define(process_pat_pid_status(Pid, Status), {Pid, Status,    _, _, _, _,    _}).
+-define(process_pat_pid_kind(Pid, Kind),     {Pid,      _,    _, _, _, _, Kind}).
 -define(process_status, 2).
 -define(process_name, 3).
--define(process_symbolic, 4).
--define(process_children, 5).
--define(process_kind, 6).
--define(process_match_name_to_pid(Name),  {'$1',   '_', Name, '_', '_', '_'}).
+-define(process_leader, 4).
+-define(process_symbolic, 5).
+-define(process_children, 6).
+-define(process_kind, 7).
+-define(process_match_name_to_pid(Name),
+        {'$1',   '_', Name, '_', '_', '_', '_'}).
 %%------------------------------------------------------------------------------
 -type links() :: ets:tid().
 
