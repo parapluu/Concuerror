@@ -794,8 +794,8 @@ run_built_in(Module, Name, Arity, Args, Info)
 
 %% For other built-ins check whether replaying has the same result:
 run_built_in(Module, Name, Arity, _Args,
-             #concuerror_info{report_unknown = true}) ->
-  ?crash({unknown_built_in, {Module, Name, Arity}});
+             #concuerror_info{report_unknown = true, scheduler = Scheduler}) ->
+  ?crash({unknown_built_in, {Module, Name, Arity}}, Scheduler);
 run_built_in(Module, Name, Arity, Args, Info) ->
   consistent_replay(Module, Name, Arity, Args, Info).
 

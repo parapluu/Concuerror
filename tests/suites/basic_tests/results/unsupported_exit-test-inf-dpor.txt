@@ -1,0 +1,35 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/unsupported_exit.erl"]},
+   {ignore_error,[]},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{unsupported_exit,test,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* Concuerror crashed
+--------------------------------------------------------------------------------
+Interleaving info:
+################################################################################
+Concuerror Errors:
+--------------------------------------------------------------------------------
+No special handling found for built-in erlang:trace/3. Run without --report_unknown or contact the developers to add support for it.
+
+Get more info by running Concuerror with -v 7
+
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: unsupported_exit
+################################################################################
+Done! (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored
