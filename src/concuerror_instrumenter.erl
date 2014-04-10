@@ -126,6 +126,8 @@ is_safe(Module, Name, Arity, Instrumented) ->
              )
           ) orelse
             ModuleLit =:= binary
+            orelse
+            ModuleLit =:= unicode
             orelse %% The rest are defined in concuerror.hrl
             lists:member({ModuleLit, NameLit, Arity}, ?RACE_FREE_BIFS);
         false ->

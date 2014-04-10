@@ -401,14 +401,19 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
       end
   end;
 
-run_built_in(erlang, make_ref, 0, [], Info) ->
+run_built_in(erlang, Name, 0, [], Info)
+  when
+    Name =:= date;
+    Name =:= make_ref;
+    Name =:= time
+    ->
   #concuerror_info{next_event = #event{event_info = EventInfo}} = Info,
   Ref =
     case EventInfo of
       %% Replaying...
       #builtin_event{result = OldResult} -> OldResult;
       %% New event...
-      undefined -> make_ref()
+      undefined -> erlang:apply(erlang,Name,[])
     end,
   {Ref, Info};
 run_built_in(erlang, monitor, 2, [Type, Target], Info) ->
@@ -739,12 +744,14 @@ run_built_in(ets, F, N, [Name|Args], Info)
   when
     false
     ;{F,N} =:= {delete, 2}
+    ;{F,N} =:= {first, 1}
     ;{F,N} =:= {insert, 2}
     ;{F,N} =:= {insert_new, 2}
     ;{F,N} =:= {lookup, 2}
     ;{F,N} =:= {lookup_element, 3}
     ;{F,N} =:= {match, 2}
     ;{F,N} =:= {member, 2}
+    ;{F,N} =:= {next,   2}
     ;{F,N} =:= {select, 2}
     ;{F,N} =:= {select, 3}
     ;{F,N} =:= {select_delete, 2}
@@ -1222,6 +1229,7 @@ ets_ops_access_rights_map(Op) ->
   case Op of
     {delete        ,1} -> own;
     {delete        ,2} -> write;
+    {first         ,_} -> read;
     {give_away     ,_} -> own;
     {info          ,_} -> none;
     {insert        ,_} -> write;
@@ -1230,6 +1238,7 @@ ets_ops_access_rights_map(Op) ->
     {lookup_element,_} -> read;
     {match         ,_} -> read;
     {member        ,_} -> read;
+    {next          ,_} -> read;
     {select        ,_} -> read;
     {select_delete ,_} -> write
   end.
