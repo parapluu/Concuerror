@@ -1257,45 +1257,63 @@ system_wrapper_loop(Name, Wrapped, Info) ->
         {message,
          #message{data = Data, message_id = Id}, Report} ->
           try
-            case Name of
-              init ->
-                {From, Request} = Data,
-                erlang:send(Wrapped, {self(), Request}),
-                receive
-                  Msg ->
-                    Report ! {system_reply, From, Id, Msg, Name},
-                    ok
-                end;
-              error_logger ->
-                %% erlang:send(Wrapped, Data),
-                Report ! {trapping, false},
-                ok;
-              file_server_2 ->
-                case Data of
-                  {Call, {From, Ref}, Request} ->
-                    check_fileserver_request(Request),
-                    erlang:send(Wrapped, {Call, {self(), Ref}, Request}),
-                    receive
-                      Msg ->
-                        Report ! {system_reply, From, Id, Msg, Name},
-                        ok
-                    end
-                end;
-              standard_error ->
-                #concuerror_info{logger = Logger} = Info,
-                {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
-                Report ! {system_reply, From, Id, Reply, Name},
-                ok;
-              user ->
-                #concuerror_info{logger = Logger} = Info,
-                {From, Reply, _} = handle_io(Data, {standard_io, Logger}),
-                Report ! {system_reply, From, Id, Reply, Name},
-                ok;
-              Else ->
-                ?crash({unknown_protocol_for_system, Else})
-            end
+            {F, R} =
+              case Name of
+                code_server ->
+                  case Data of
+                    {Call, From, Request} ->
+                      check_request(Name, Request),
+                      erlang:send(Wrapped, {Call, self(), Request}),
+                      receive
+                        Msg -> {From, Msg}
+                      end
+                  end;
+                erl_prim_loader ->
+                  case Data of
+                    {From, Request} ->
+                      check_request(Name, Request),
+                      erlang:send(Wrapped, {self(), Request}),
+                      receive
+                        {_, Msg} -> {From, {self(), Msg}}
+                      end
+                  end;
+                error_logger ->
+                  %% erlang:send(Wrapped, Data),
+                  throw(no_reply);
+                file_server_2 ->
+                  case Data of
+                    {Call, {From, Ref}, Request} ->
+                      check_request(Name, Request),
+                      erlang:send(Wrapped, {Call, {self(), Ref}, Request}),
+                      receive
+                        Msg -> {From, Msg}
+                      end
+                  end;
+                init ->
+                  {From, Request} = Data,
+                  check_request(Name, Request),
+                  erlang:send(Wrapped, {self(), Request}),
+                  receive
+                    Msg -> {From, Msg}
+                  end;
+                standard_error ->
+                  #concuerror_info{logger = Logger} = Info,
+                  {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
+                  {From, Reply};
+                user ->
+                  #concuerror_info{logger = Logger} = Info,
+                  {From, Reply, _} = handle_io(Data, {standard_io, Logger}),
+                  {From, Reply};
+                Else ->
+                  ?crash({unknown_protocol_for_system, Else})
+              end,
+            Report ! {system_reply, F, Id, R, Name},
+            ok
           catch
             exit:{?MODULE, _} = Reason -> exit(Reason);
+            throw:no_reply ->
+              Report ! {trapping, false},
+              ok;
             Type:Reason ->
               Stacktrace = erlang:get_stacktrace(),
               ?crash({system_wrapper_error, Name, Type, Reason, Stacktrace})
@@ -1304,9 +1322,17 @@ system_wrapper_loop(Name, Wrapped, Info) ->
   end,
   system_wrapper_loop(Name, Wrapped, Info).
 
-check_fileserver_request({get_cwd}) -> ok;
-check_fileserver_request(Other) ->
-  ?crash({unsupported_fileserver, element(1,Other)}).
+check_request(code_server, get_path) -> ok;
+check_request(code_server, {ensure_loaded, _}) -> ok;
+check_request(code_server, {is_cached, _}) -> ok;
+check_request(erl_prim_loader, {get_file, _}) -> ok;
+check_request(erl_prim_loader, {list_dir, _}) -> ok;
+check_request(file_server_2, {get_cwd}) -> ok;
+check_request(file_server_2, {read_file_info, _}) -> ok;
+check_request(init, {get_argument, _}) -> ok;
+check_request(init, get_arguments) -> ok;
+check_request(Name, Other) ->
+  ?crash({unsupported_request, Name, try element(1,Other) catch _:_ -> Other end}).
 
 reset_concuerror_info(Info) ->
   #concuerror_info{
@@ -1477,10 +1503,10 @@ explain_error({unknown_built_in, {Module, Name, Arity}}) ->
     "No special handling found for built-in ~p:~p/~p. Run without"
     " --report_unknown or contact the developers to add support for it.",
     [Module, Name, Arity]);
-explain_error({unsupported_fileserver, Type}) ->
+explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
-    "A process send a request of type '~p' to the fileserver. This type of"
+    "A process send a request of type '~p' to ~p. This type of"
     " request has not been checked to ensure it always returns the same"
     " result.~n"
     ?notify_us_msg,
-    [Type]).
+    [Type, Name]).
