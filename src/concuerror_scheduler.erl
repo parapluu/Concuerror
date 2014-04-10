@@ -230,22 +230,22 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
 
 filter_sleeping([], PendingMessages, ActiveProcesses) ->
   {PendingMessages, ActiveProcesses};
-filter_sleeping([#event{actor = {_, _} = Pair}|Sleeping],
-                PendingMessages, ActiveProcesses) ->
-  NewPendingMessages = orddict:erase(Pair, PendingMessages),
+filter_sleeping([#event{actor = Channel}|Sleeping],
+                PendingMessages, ActiveProcesses) when ?is_channel(Channel) ->
+  NewPendingMessages = orddict:erase(Channel, PendingMessages),
   filter_sleeping(Sleeping, NewPendingMessages, ActiveProcesses);
 filter_sleeping([#event{actor = Pid}|Sleeping],
                 PendingMessages, ActiveProcesses) ->
   NewActiveProcesses = ordsets:del_element(Pid, ActiveProcesses),
   filter_sleeping(Sleeping, PendingMessages, NewActiveProcesses).
 
-get_next_event(Event, [{Pair, Queue}|_], _ActiveProcesses, State) ->
+get_next_event(Event, [{Channel, Queue}|_], _ActiveProcesses, State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
   Special = [{message_delivered, MessageEvent}],
   UpdatedEvent =
     Event#event{
-      actor = Pair,
+      actor = Channel,
       event_info = MessageEvent,
       special = Special},
   {ok, FinalEvent} = get_next_event_backend(UpdatedEvent, State),
@@ -291,11 +291,11 @@ get_next_event(_Event, [], [], State) ->
 
 reset_event(#event{actor = Actor} = Event) ->
   {ResetEventInfo, ResetSpecial} =
-    case Actor of
-      {_, _} ->
+    case ?is_channel(Actor) of
+      true ->
         #event{event_info = EventInfo, special = Special} = Event,
         {EventInfo#message_event{patterns = none}, Special};
-      _ -> {undefined, []}
+      false -> {undefined, []}
     end,
   #event{
      actor = Actor,
@@ -471,8 +471,8 @@ assign_happens_before([TraceState|Rest], TimedNewTrace, OldTrace, State) ->
   ClockMap = get_base_clock(OldTrace),
   ActorClock = lookup_clock(Actor, ClockMap),
   {BaseTraceState, BaseClock} =
-    case Actor of
-      {_, _} ->
+    case ?is_channel(Actor) of
+      true ->
         #message_event{message = #message{message_id = Id}} = EventInfo,
         SentClock = message_clock(Id, MessageInfo, ActorClock),
         Patterns = ets:lookup_element(MessageInfo, Id, ?message_pattern),
@@ -481,15 +481,15 @@ assign_happens_before([TraceState|Rest], TimedNewTrace, OldTrace, State) ->
         UpdatedTraceState =
           TraceState#trace_state{done = [UpdatedEvent|RestEvents]},
         {UpdatedTraceState, SentClock};
-      _ -> {TraceState, ActorClock}
+      false -> {TraceState, ActorClock}
     end,
   #trace_state{done = [BaseEvent|_]} = BaseTraceState,
   BaseNewClock = update_clock(OldTrace, BaseEvent, BaseClock, State),
   ActorNewClock = orddict:store(Actor, Index, BaseNewClock),
   NewClock =
-    case Actor of
-      {_, _} -> ActorNewClock;
-      _ ->
+    case ?is_channel(Actor) of
+      true -> ActorNewClock;
+      false ->
         case EventInfo of
           #receive_event{message = #message{message_id = RId}} ->
             RMessageClock =
@@ -582,11 +582,11 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
       ClockMap = get_base_clock(OldTrace),
       ActorClock = lookup_clock(Actor, ClockMap),
       BaseClock =
-        case Actor of
-          {_, _} ->
+        case ?is_channel(Actor) of
+          true ->
             #message_event{message = #message{message_id = Id}} = EventInfo,
             message_clock(Id, MessageInfo, ActorClock);
-          _ -> ActorClock
+          false -> ActorClock
         end,
       ?trace_nl(Logger, "===~n~s~n",
                 [concuerror_printer:pretty_s({Index, Event}, PrintDepth)]),

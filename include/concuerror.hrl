@@ -230,8 +230,12 @@
         message_event() |
         receive_event().
 
+-type actor() :: pid() | {pid(), pid()}.
+
+-define(is_channel(A), is_tuple(A)).
+
 -record(event, {
-          actor        :: pid() | {pid(), pid()}, %% Pair: message from/to
+          actor        :: actor(),
           event_info   :: event_info(),
           label        :: label(),
           location     :: location(),
