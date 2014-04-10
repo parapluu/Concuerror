@@ -121,7 +121,11 @@ pretty_info(#message_event{} = MessageEvent, Depth) ->
     case Type of
       message -> io_lib:format("Message (~W)", [Data, Depth]);
       exit_signal ->
-        {'EXIT', Sender, Reason} = Data,
+        Reason =
+          case Data of
+            {'EXIT', Sender, R} -> R;
+            kill -> kill
+          end,
         io_lib:format("Exit signal (~W)",[Reason, Depth])
     end,
   io_lib:format("~s from ~p reaches ~p", [MsgString, Sender, Recipient]);

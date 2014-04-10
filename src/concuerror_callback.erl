@@ -324,8 +324,13 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
     #builtin_event{result = OldResult} -> {OldResult, Info};
     %% New event...
     undefined ->
+      Content =
+        case Event#event.location =/= exit andalso Reason =:= kill of
+          true -> kill;
+          false -> {'EXIT', self(), Reason}
+        end,
       Message =
-        #message{data = {'EXIT', self(), Reason}, message_id = make_ref()},
+        #message{data = Content, message_id = make_ref()},
       MessageEvent =
         #message_event{
            cause_label = Event#event.label,
@@ -995,12 +1000,11 @@ process_loop(Info) ->
               NewInfo
           end
       end;
-    {exit_signal, #message{data = {'EXIT', _From, Reason}} = Message, Notify} ->
-      ?debug_flag(?loop, {signal, Reason}),
+    {exit_signal, #message{data = Data} = Message, Notify} ->
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
       case is_active(Info) of
         true ->
-          case Reason =:= kill of
+          case Data =:= kill of
             true ->
               ?debug_flag(?loop, kill_signal),
               catch Notify ! {trapping, Trapping},
@@ -1013,6 +1017,7 @@ process_loop(Info) ->
                   process_loop(Info);
                 false ->
                   catch Notify ! {trapping, Trapping},
+                  {'EXIT', _From, Reason} = Data,
                   case Reason =:= normal of
                     true ->
                       ?debug_flag(?loop, ignore_normal_signal),
