@@ -68,19 +68,16 @@
 -define(log(Logger, Level, Format, Data),
         ?log(Logger, Level, ?nonunique, Format, Data)).
 
--define(mf_log(Logger, Level, Format, Data),
+-define(ml_log(Logger, Level, Format, Data),
         ?log(Logger, Level, "~p:~p " ++ Format, [?MODULE, ?LINE|Data])).
 
 -define(error(Logger, Format, Data),
         ?log(Logger, ?lerror, Format, Data)).
 
 -define(debug(Logger, Format, Data),
-        ?mf_log(Logger, ?ldebug, Format, Data)).
+        ?ml_log(Logger, ?ldebug, Format, Data)).
 
 -define(trace(Logger, Format, Data),
-        ?mf_log(Logger, ?ltrace, Format, Data)).
-
--define(trace_nl(Logger, Format, Data),
         ?log(Logger, ?ltrace, Format, Data)).
 
 -define(unique_info(Logger, Format, Data),
@@ -90,6 +87,9 @@
         concuerror_logger:time(Logger, Tag)).
 
 -type log_level() :: ?lquiet..?MAX_VERBOSITY.
+
+-define(pretty_s(I,E), concuerror_printer:pretty_s({I,E#event{location = []}},5)).
+-define(pretty_s(E), ?pretty_s(0,E)).
 
 -define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------
@@ -103,7 +103,7 @@
 %%------------------------------------------------------------------------------
 -type message_info() :: ets:tid().
 
--define(new_message_info(Id), {Id, undefined, undefined, undefined}).
+-define(new_message_info(Id), {Id, none, undefined, undefined}).
 -define(message_pattern, 2).
 -define(message_sent, 3).
 -define(message_delivered, 4).
@@ -169,9 +169,9 @@
 -type index() :: non_neg_integer().
 
 -record(message, {
-          data       :: term(),
-          message_id :: reference(),
-          xxx = 0    :: 0 %% UGLY! Added to differ from the {message,_,_} tuple
+          data            :: term(),
+          id = make_ref() :: reference(),
+          xxx = 0         :: 0 %% UGLY! Added to differ from the {message,_,_} tuple
          }).
 
 -type message() :: #message{}.
@@ -190,6 +190,7 @@
 
 -record(message_event, {
           cause_label      :: label(),
+          instant = true   :: boolean(),
           message          :: message(),
           patterns = none  :: 'none' | receive_pattern_fun(),
           recipient        :: pid(),
@@ -230,8 +231,12 @@
         message_event() |
         receive_event().
 
+-type actor() :: pid() | {pid(), pid()}.
+
+-define(is_channel(A), is_tuple(A)).
+
 -record(event, {
-          actor        :: pid() | {pid(), pid()}, %% Pair: message from/to
+          actor        :: actor(),
           event_info   :: event_info(),
           label        :: label(),
           location     :: location(),

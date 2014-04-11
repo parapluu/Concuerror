@@ -1,0 +1,28 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/immediate_delivery.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,false},
+   {instant_delivery,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{immediate_delivery,test1,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+  No errors found!
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: immediate_delivery
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1/1 interleavings explored

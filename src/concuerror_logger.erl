@@ -118,6 +118,11 @@ loop_entry(State) ->
   loop(State#logger_state{ticker = Ticker}).
 
 loop(State) ->
+  receive
+    Message when Message =/= tick -> loop(Message, State)
+  end.
+
+loop(Message, State) ->
   #logger_state{
      already_emitted = AlreadyEmitted,
      errors = Errors,
@@ -131,13 +136,14 @@ loop(State) ->
      traces_total = TracesTotal,
      verbosity = Verbosity
     } = State,
-  receive
+  case Message of
     {time, Tag} ->
       Now = erlang:now(),
       Diff = timer:now_diff(Now, Timestamp) / 1000000,
       Msg = "Timer: +~5.2fs ~s~n",
-      self() ! {log, ?ltiming, none, Msg, [Diff, Tag]},
-      loop(State#logger_state{timestamp = Now});
+      loop(
+        {log, ?ltiming, none, Msg, [Diff, Tag]},
+        State#logger_state{timestamp = Now});
     {log, Level, Tag, Format, Data} ->
       {NewLogMsgs, NewAlreadyEmitted} =
         case Tag =/= ?nonunique andalso sets:is_element(Tag, AlreadyEmitted) of

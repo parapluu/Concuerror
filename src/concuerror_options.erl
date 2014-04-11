@@ -90,6 +90,9 @@ options() ->
   ,{after_timeout, [logger, process], $a, {integer, infinity},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}
+  ,{instant_delivery, [logger, process], undefined, {boolean, false},
+    "Assume that messages and signals are delivered immediately, when sent to a"
+    " process on the same node."}
   ,{allow_first_crash, [logger, scheduler], undefined, {boolean, false},
     "If not enabled, Concuerror will immediately exit if the first interleaving"
     " contains errors."}

@@ -1,0 +1,54 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/immediate_delivery.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,false},
+   {instant_delivery,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{immediate_delivery,test2,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* At step 7 process P.1 exited abnormally
+    Reason:
+      {fault,
+          [{immediate_delivery,'-test2/0-fun-0-',0,
+               [{file,
+                    "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/immediate_delivery.erl"},
+                {line,41}]}]}
+    Stacktrace:
+      [{immediate_delivery,'-test2/0-fun-0-',0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/immediate_delivery.erl"},
+                            {line,41}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<immediate_delivery.2.69780431>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<immediate_delivery.3.69780431>,[]])
+    in erlang.erl line 2329
+   3: P.2: c = P.1 ! c
+    in immediate_delivery.erl line 44
+   4: P: p = P.1 ! p
+    in immediate_delivery.erl line 45
+   5: P: exits normally
+   6: P.1: receives message (c)
+    in immediate_delivery.erl line 36
+   7: P.1: exits abnormally ({fault,[{immediate_delivery,'-test2/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,41}]}]})
+   8: P.2: exits normally
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: immediate_delivery
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 2/2 interleavings explored

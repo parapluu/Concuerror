@@ -1,0 +1,50 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{send_self,test3,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* At step 4 process P exited abnormally
+    Reason:
+      {{nocatch,one},
+       [{send_self,test3,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"},
+                    {line,30}]}]}
+    Stacktrace:
+      [{send_self,test3,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"},
+                   {line,30}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_self.3.78488577>,[]])
+    in erlang.erl line 2329
+   2: P: one = P ! one
+    in send_self.erl line 28
+   3: P: receives message (one)
+    in send_self.erl line 29
+   4: P: exits abnormally ({{nocatch,one},[{send_self,test3,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,30}]}]})
+   5: P.1: two = P ! two
+    in send_self.erl line 27
+   6: Message (two) from P.1 reaches P
+   7: P.1: exits normally
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: send_self
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored
