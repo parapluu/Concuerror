@@ -2,7 +2,7 @@
 
 -module(concuerror_options).
 
--export([parse_cl/1, filter_options/2, finalize/1]).
+-export([parse_cl/1, finalize/1]).
 
 -include("concuerror.hrl").
 
@@ -52,93 +52,79 @@ getopt_spec() ->
   %% Options long name is the same as the inner representation atom for
   %% consistency.
   [{Key, Short, atom_to_list(Key), Type, Help} ||
-    {Key, _Classes, Short, Type, Help} <- options()].
+    {Key, Short, Type, Help} <- options()].
 
 options() ->
-  [{module, [frontend], $m, atom,
+  [{module, $m, atom,
     "The module containing the main test function."}
-  ,{test, [frontend], $t, {atom, test},
+  ,{test, $t, {atom, test},
     "The name of the 0-arity function that starts the test."}
-  ,{output, [logger], $o, {string, "results.txt"},
+  ,{output, $o, {string, "results.txt"},
     "Output file where Concuerror shall write the results of the analysis."}
-  ,{help, [frontend], $h, undefined,
+  ,{help, $h, undefined,
     "Display this information."}
-  ,{version, [frontend], undefined, undefined,
+  ,{version, undefined, undefined,
     "Display version information about Concuerror."}
-  ,{pa, [frontend, logger], undefined, string,
+  ,{pa, undefined, string,
     "Add directory at the front of Erlang's code path."}
-  ,{pz, [frontend, logger], undefined, string,
+  ,{pz, undefined, string,
     "Add directory at the end of Erlang's code path."}
-  ,{file, [frontend], $f, string,
+  ,{file, $f, string,
     "Explicitly load a file (.beam or .erl). (A .erl file should not require"
     " any command line compile options.)"}
-  ,{verbosity, [logger], $v, integer,
+  ,{verbosity, $v, integer,
     io_lib:format("Sets the verbosity level (0-~p). [default: ~p]",
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY])}
-  ,{quiet, [frontend], $q, undefined,
+  ,{quiet, $q, undefined,
     "Do not write anything to standard output. Equivalent to -v 0."}
-  ,{print_depth, [logger, scheduler], undefined, {integer, ?DEFAULT_PRINT_DEPTH},
+  ,{print_depth, undefined, {integer, ?DEFAULT_PRINT_DEPTH},
     "Specifies the max depth for any terms printed in the log (behaves just as"
     " the extra argument of ~W and ~P argument of io:format/3. If you want more"
     " info about a particular piece of data consider using erlang:display/1"
     " and check the standard output section instead."}
-  ,{symbolic, [logger], $s, {boolean, true},
+  ,{symbolic_names, $s, {boolean, true},
     "Use symbolic names for process identifiers in the output traces."}
-  ,{depth_bound, [logger, scheduler], undefined, {integer, 5000},
+  ,{depth_bound, undefined, {integer, 5000},
     "The maximum number of events allowed in a trace. Concuerror will stop"
     " exploration beyond this limit."}
-  ,{after_timeout, [logger, process], $a, {integer, infinity},
+  ,{after_timeout, $a, {integer, infinity},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}
-  ,{instant_delivery, [logger, process], undefined, {boolean, false},
+  ,{instant_delivery, undefined, {boolean, false},
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
-  ,{allow_first_crash, [logger, scheduler], undefined, {boolean, false},
+  ,{allow_first_crash, undefined, {boolean, false},
     "If not enabled, Concuerror will immediately exit if the first interleaving"
     " contains errors."}
-  ,{ignore_error, [logger, scheduler], undefined, atom,
+  ,{ignore_error, undefined, atom,
     "Concuerror will not report errors of the specified kind: 'crash' (all"
     " process crashes, see also next option for more refined control), 'deadlock'"
     " (processes waiting at a receive statement), 'depth_bound'."}
-  ,{treat_as_normal, [logger, scheduler], undefined, {atom, normal},
+  ,{treat_as_normal, undefined, {atom, normal},
     "Specify exit reasons that are considered 'normal' and not reported as"
     " crashes. Useful e.g. when analyzing supervisors ('shutdown' is probably"
     " also a normal exit reason in this case)."}
-  ,{timeout, [logger, process, scheduler], undefined, {integer, ?MINIMUM_TIMEOUT},
+  ,{timeout, undefined, {integer, ?MINIMUM_TIMEOUT},
     "How many ms to wait before assuming a process to be stuck in an infinite"
     " loop between two operations with side-effects. Setting it to -1 makes"
     " Concuerror wait indefinitely. Otherwise must be >= " ++
       integer_to_list(?MINIMUM_TIMEOUT) ++ "."}
-  ,{assume_racing, [logger, scheduler], undefined, {boolean, true},
+  ,{assume_racing, undefined, {boolean, true},
     "If there is no info about whether a specific pair of built-in operations"
     " may race, assume that they do indeed race. Set this to false to detect"
     " missing dependency info."}
-  ,{non_racing_system, [logger, scheduler], undefined, atom,
+  ,{non_racing_system, undefined, atom,
     "Assume that any messages sent to the specified system process (specified"
     " by registered name) are not racing with each-other. Useful for reducing"
     " the number of interleavings when processes have calls to io:format/1,2 or"
     " similar."}
-  ,{report_unknown, [logger, process], undefined, {boolean, false},
+  ,{report_unknown, undefined, {boolean, false},
     "Report built-ins that are not explicitly classified by Concuerror as"
     " racing or race-free. Otherwise, Concuerror expects such built-ins to"
     " always return the same result."}
   %% ,{bound, [logger, scheduler], $b, "bound", {integer, -1},
   %%   "Preemption bound (-1 for infinite)."}
-
-   %% The following options won't make it to the getopt script
-  ,{target, [logger, scheduler]} %% Generated from module and test or given explicitly
-  ,{files, [logger]}             %% List of included files (to be shown in the log)
-  ,{modules, [logger, process]}  %% Ets table of instrumented modules
-  ,{processes, [logger, process]}%% Ets table containing processes under concuerror
-  ,{logger, [process]}
-  ,{frontend, []}
   ].
-
--spec filter_options(atom(), {atom(), term()}) -> boolean().
-
-filter_options(Mode, {Key, _}) ->
-  OptInfo = lists:keyfind(Key, 1, options()),
-  lists:member(Mode, element(2, OptInfo)).
 
 cl_usage() ->
   getopt:usage(getopt_spec(), "./concuerror").
@@ -157,7 +143,7 @@ finalize(Options) ->
     false ->
       Finalized =
         finalize_aux(proplists:unfold(Options)),
-      case proplists:get_value(target, Finalized, undefined) of
+      case proplists:get_value(entry_point, Finalized, undefined) of
         {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
           MissingDefaults =
             add_missing_defaults(
@@ -172,11 +158,14 @@ finalize(Options) ->
   end.
 
 finalize_aux(Options) ->
-  Modules = [{modules, ets:new(modules, [public])}],
+  Shared =
+    [{modules, ets:new(modules, [public])},
+     {processes, ets:new(processes, [public])},
+     {timers, ets:new(timers, [public])}],
   case lists:keytake(file, 1, Options) of
-    false -> finalize(Options, Modules);
+    false -> finalize(Options, Shared);
     {value, Tuple, RestOptions} ->
-      finalize([Tuple|RestOptions], Modules)
+      finalize([Tuple|RestOptions], Shared)
   end.
 
 finalize([], Acc) -> Acc;
@@ -226,20 +215,21 @@ finalize([{Key, Value}|Rest], Acc)
       end,
       finalize(Rest, Acc)
   end;
-finalize([{Key, Value}|Rest], Acc) ->
-  case proplists:is_defined(Key, Acc) of
-    true ->
-      Format = "multiple instances of --~s defined. Using last value: ~p.",
-      opt_warn(Format, [Key, Value], Acc ++ Rest);
-    false ->
-      ok
-  end,
+finalize([{Key, Value}|Rest], AccIn) ->
+  Acc =
+    case proplists:is_defined(Key, AccIn) of
+      true ->
+        Format = "multiple instances of --~s defined. Using last value: ~p.",
+        opt_warn(Format, [Key, Value], AccIn ++ Rest),
+        proplists:delete(Key, AccIn);
+      false -> AccIn
+    end,
   case Key of
     module ->
       case proplists:get_value(test, Rest, 1) of
         Name when is_atom(Name) ->
           NewRest = proplists:delete(test, Rest),
-          finalize(NewRest, [{target, {Value, Name, []}}|Acc]);
+          finalize(NewRest, [{entry_point, {Value, Name, []}}|Acc]);
         _ -> opt_error("The name of the test function is missing")
       end;
     output ->
@@ -314,8 +304,9 @@ add_missing_defaults([{Key, _} = Default|Rest], Options) ->
 add_missing_getopt_defaults(Opts) ->
   MissingDefaults =
     [{Key, Default} ||
-      {Key, _Classes, _Short, {_, Default}, _Help} <- options(),
-      not proplists:is_defined(Key, Opts)
+      {Key, _Short, {_, Default}, _Help} <- options(),
+      not proplists:is_defined(Key, Opts),
+      Key =/= test
     ],
   MissingDefaults ++ Opts.
 

@@ -36,12 +36,16 @@ start(Options) ->
   end.
 
 run(Parent, Options) ->
-  [Verbosity,{Output, OutputName},SymbolicNames,PrintDepth,Processes,Modules] =
-    concuerror_common:get_properties(
-      [verbosity,output,symbolic,print_depth,processes,modules], Options),
+  [{Output, OutputName},SymbolicNames,Processes,Modules] =
+    get_properties(
+      [output,symbolic_names,processes,modules],
+      Options),
   ets:insert(Modules, {{logger}, self()}),
   ok = setup_symbolic_names(SymbolicNames, Processes, Modules),
-  PrintableOptions = delete_many([processes, output, modules], Options),
+  PrintableOptions =
+    delete_many(
+      [modules, output, processes, timers, verbosity],
+      Options),
   separator(Output, $#),
   io:format(Output,
             "Concuerror started with options:~n"
@@ -52,10 +56,19 @@ run(Parent, Options) ->
     #logger_state{
        output = Output,
        output_name = OutputName,
-       print_depth = PrintDepth,
-       verbosity = Verbosity},
+       print_depth = ?opt(print_depth, Options),
+       verbosity = ?opt(verbosity, Options)
+      },
   Parent ! logger_ready,
   loop_entry(State).
+
+get_properties(Props, PropList) ->
+  get_properties(Props, PropList, []).
+
+get_properties([], _, Acc) -> lists:reverse(Acc);
+get_properties([Prop|Props], PropList, Acc) ->
+  PropVal = proplists:get_value(Prop, PropList),
+  get_properties(Props, PropList, [PropVal|Acc]).
 
 delete_many([], Proplist) ->
   Proplist;

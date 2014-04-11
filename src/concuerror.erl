@@ -11,15 +11,11 @@
 run(RawOptions) ->
   try
     Options = concuerror_options:finalize(RawOptions),
-    Modules = proplists:get_value(modules, Options),
-    Processes = ets:new(processes, [public]),
-    LoggerOptions =
-      [{processes, Processes} |
-       [O || O <- Options, concuerror_options:filter_options('logger', O)]
-      ],
+    Modules = ?opt(modules, Options),
+    Processes = ?opt(processes, Options),
     ok = concuerror_loader:load(concuerror_logger, Modules, false),
-    Logger = concuerror_logger:start(LoggerOptions),
-    SchedulerOptions = [{processes, Processes}, {logger, Logger}|Options],
+    Logger = concuerror_logger:start(Options),
+    SchedulerOptions = [{logger, Logger}|Options],
     {Pid, Ref} =
       spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
     Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,

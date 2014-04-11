@@ -47,6 +47,7 @@
 -type logger()    :: pid().
 -type stream()    :: 'standard_io' | 'standard_error' | file:filename().
 -type options()   :: proplists:proplist().
+-define(opt(A,O),proplists:get_value(A,O)).
 %%------------------------------------------------------------------------------
 %% Logger verbosity
 -define(lquiet,    0).

@@ -71,44 +71,28 @@ run(Options) ->
     false ->
       ok
   end,
-  [AllowFirstCrash,AssumeRacing,DepthBound,IgnoreError,Logger,NonRacingSystem,
-   PrintDepth,Processes,Target,Timeout,TreatAsNormal] =
-    get_properties(
-      [allow_first_crash,assume_racing,depth_bound,ignore_error,logger,
-       non_racing_system,print_depth,processes,target,timeout,treat_as_normal],
-      Options),
-  ProcessOptions =
-    [O || O <- Options, concuerror_options:filter_options('process', O)],
-  ?debug(Logger, "Starting first process...~n",[]),
-  FirstProcess = concuerror_callback:spawn_first_process(ProcessOptions),
+  FirstProcess = concuerror_callback:spawn_first_process(Options),
   InitialTrace = #trace_state{active_processes = [FirstProcess]},
   InitialState =
     #scheduler_state{
-       allow_first_crash = AllowFirstCrash,
-       assume_racing = AssumeRacing,
-       depth_bound = DepthBound,
-       first_process = {FirstProcess, Target},
-       ignore_error = IgnoreError,
-       logger = Logger,
+       allow_first_crash = ?opt(allow_first_crash,Options),
+       assume_racing = ?opt(assume_racing,Options),
+       depth_bound = ?opt(depth_bound, Options),
+       first_process = {FirstProcess, EntryPoint = ?opt(entry_point, Options)},
+       ignore_error = ?opt(ignore_error, Options),
+       logger = Logger = ?opt(logger, Options),
        message_info = ets:new(message_info, [private]),
-       non_racing_system = NonRacingSystem,
-       print_depth = PrintDepth,
-       processes = Processes,
+       non_racing_system = ?opt(non_racing_system, Options),
+       print_depth = ?opt(print_depth, Options),
+       processes = ?opt(processes, Options),
        trace = [InitialTrace],
-       treat_as_normal = TreatAsNormal,
-       timeout = Timeout},
-  ok = concuerror_callback:start_first_process(FirstProcess, Target, Timeout),
+       treat_as_normal = ?opt(treat_as_normal, Options),
+       timeout = Timeout = ?opt(timeout, Options)
+      },
+  ok = concuerror_callback:start_first_process(FirstProcess, EntryPoint, Timeout),
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
   explore(InitialState).
-
-get_properties(Props, Options) ->
-  get_properties(Props, Options, []).
-
-get_properties([], _Options, Acc) ->
-  lists:reverse(Acc);
-get_properties([Prop|Rest], Options, Acc) ->
-  get_properties(Rest, Options, [proplists:get_value(Prop, Options)|Acc]).  
 
 %%------------------------------------------------------------------------------
 
@@ -771,7 +755,7 @@ reset_receive(Last, State) ->
 
 replay_prefix(Trace, State) ->
   #scheduler_state{
-     first_process = {FirstProcess, Target},
+     first_process = {FirstProcess, EntryPoint},
      processes = Processes,
      timeout = Timeout
     } = State,
@@ -784,7 +768,8 @@ replay_prefix(Trace, State) ->
         ok
     end,
   ok = ets:foldl(Fold, ok, Processes),
-  ok = concuerror_callback:start_first_process(FirstProcess, Target, Timeout),
+  ok =
+    concuerror_callback:start_first_process(FirstProcess, EntryPoint, Timeout),
   replay_prefix_aux(lists:reverse(Trace), State).
 
 replay_prefix_aux([_], State) ->

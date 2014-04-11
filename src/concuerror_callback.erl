@@ -84,27 +84,21 @@
 -spec spawn_first_process(options()) -> pid().
 
 spawn_first_process(Options) ->
-  [AfterTimeout, InstantDelivery, Logger, Modules, Processes,
-   ReportUnknown, Timeout] =
-    concuerror_common:get_properties(
-      [after_timeout, instant_delivery, logger, modules, processes,
-       report_unknown, timeout],
-      Options),
   EtsTables = ets:new(ets_tables, [public]),
   ets:insert(EtsTables, {tid,1}),
   Info =
     #concuerror_info{
-       after_timeout  = AfterTimeout,
-       ets_tables     = EtsTables,
-       instant_delivery = InstantDelivery,
+       after_timeout = ?opt(after_timeout, Options),
+       ets_tables = EtsTables,
+       instant_delivery = ?opt(instant_delivery, Options),
        links          = ets:new(links, [bag, public]),
-       logger         = Logger,
-       modules        = Modules,
+       logger         = ?opt(logger, Options),
+       modules        = ?opt(modules, Options),
        monitors       = ets:new(monitors, [bag, public]),
-       processes      = Processes,
-       report_unknown = ReportUnknown,
+       processes      = Processes = ?opt(processes, Options),
+       report_unknown = ?opt(report_unknown, Options),
        scheduler      = self(),
-       timeout        = Timeout
+       timeout        = ?opt(timeout, Options)
       },
   system_processes_wrappers(Info),
   system_ets_entries(Info),
