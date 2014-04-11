@@ -6,39 +6,29 @@
 
 %%------------------------------------------------------------------------------
 
--define(undefined_dependency(A,B), ?crash({undefined_dependency, A, B})).
-
 -include("concuerror.hrl").
 
 %%------------------------------------------------------------------------------
 
--spec explain_error(term()) -> string().
-
-explain_error({undefined_dependency, A, B}) ->
-  io_lib:format(
-    "There exists no race info about the following pair of instructions~n~n"
-    "1) ~s~n2) ~s~n~n"
-    "You can run without --assume_racing=false to treat them as racing.~n"
-    "Otherwise please ask the developers to add info about this pair.",
-    [concuerror_printer:pretty_s(#event{event_info = I}, 10)
-     || I <- [A,B]]).
-
--spec dependent_safe(event_info(), event_info()) -> boolean() | irreversible.
+-spec dependent_safe(event(), event()) -> boolean() | irreversible.
 
 dependent_safe(E1, E2) ->
-  try dependent(E1, E2)
-  catch
-    _:_ -> true
-  end.
+  dependent(E1, E2, true).
 
--spec dependent(event_info(), event_info(), boolean()) ->
-                        boolean() | irreversible.
+-spec dependent(event(), event(), boolean()) -> boolean() | irreversible.
 
-dependent(E1, E2, AssumeRacing) ->
-  try dependent(E1, E2)
+dependent(#event{event_info = Info1, special = Special1},
+          #event{event_info = Info2, special = Special2},
+          AssumeRacing) ->
+  M1 = [M || {message_delivered, M} <- Special1],
+  M2 = [M || {message_delivered, M} <- Special2],
+  try
+    lists:any(fun({A,B}) -> dependent(A,B) end,
+              [{I1,I2}|| I1 <- [Info1|M1], I2 <- [Info2|M2]])
   catch
+    throw:irreversible -> irreversible;
     _:_ ->
-      AssumeRacing orelse ?undefined_dependency(E1, E2)
+      AssumeRacing orelse ?crash({undefined_dependency, Info1, Info2})
   end.
 
 %% The first event happens before the second.
@@ -86,7 +76,7 @@ dependent(#exit_event{actor = Exiting, status = Status, trapping = Trapping},
   Exiting =:= Recipient
     andalso
     case Status =:= running of
-      false -> irreversible;
+      false -> throw(irreversible);
       true ->
         case Signal of
           kill -> true;
@@ -114,7 +104,7 @@ dependent(#message_event{
     message_could_match(Patterns, Data, Trapping, Type);
 
 dependent(#message_event{
-             message = #message{data = Data, message_id = Id},
+             message = #message{data = Data, id = Id},
              recipient = Recipient
             },
           #receive_event{
@@ -127,7 +117,7 @@ dependent(#message_event{
     andalso
     case Message of
       'after' -> Patterns(Data);
-      #message{message_id = Id} -> true;
+      #message{id = Id} -> true;
       _ -> false
     end;
 dependent(#receive_event{
@@ -415,4 +405,17 @@ try_one_tuple(IgnoreSame, Tuple, KeyPos, List) ->
           end
       end
   end.
+
+%%------------------------------------------------------------------------------
+
+-spec explain_error(term()) -> string().
+
+explain_error({undefined_dependency, A, B}) ->
+  io_lib:format(
+    "There exists no race info about the following pair of instructions~n~n"
+    "1) ~s~n2) ~s~n~n"
+    "You can run without --assume_racing=false to treat them as racing.~n"
+    "Otherwise please ask the developers to add info about this pair.",
+    [concuerror_printer:pretty_s(#event{event_info = I}, 10)
+     || I <- [A,B]]).
 

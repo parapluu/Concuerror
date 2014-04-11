@@ -1,14 +1,18 @@
 ################################################################################
 Concuerror started with options:
-  [{after_timeout,infinite},
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
    {assume_racing,false},
+   {depth_bound,5000},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_vs_trap_exit.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,false},
    {non_racing_system,[]},
    {print_depth,20},
    {report_unknown,true},
    {symbolic,true},
    {target,{send_vs_trap_exit,send_vs_trap_exit,[]}},
-   {timeout,2000},
+   {timeout,infinity},
    {treat_as_normal,[normal]},
    {verbosity,0}]
 ################################################################################
@@ -94,9 +98,76 @@ Interleaving info:
     (while exiting)
   18: Exit signal ({{nocatch,{'EXIT',P,normal}},[{send_vs_trap_exit,'-send_vs_trap_exit/0-fun-1-',0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]}) from P.2 reaches P
 ################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P.1 in send_vs_trap_exit.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<send_vs_trap_exit.0.53187575>,[]])
+    in erlang.erl line 2350
+   2: P.1: false = erlang:process_flag(trap_exit, true)
+    in send_vs_trap_exit.erl line 12
+   3: P.1: ok = P ! ok
+    in send_vs_trap_exit.erl line 13
+   4: Message (ok) from P.1 reaches P
+   5: P: receives message (ok)
+    in send_vs_trap_exit.erl line 16
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_vs_trap_exit.2.53187575>,[]])
+    in erlang.erl line 2329
+   7: P: true = erlang:link(P.2)
+    in send_vs_trap_exit.erl line 27
+   8: P: exits normally
+   9: P: true = erlang:exit(P.1, normal)
+    (while exiting)
+  10: Exit signal (normal) from P reaches P.1
+  11: P: true = erlang:exit(P.2, normal)
+    (while exiting)
+  12: P.2: false = erlang:process_flag(trap_exit, true)
+    in send_vs_trap_exit.erl line 20
+  13: P.2: banana = P.2 ! banana
+    in send_vs_trap_exit.erl line 21
+  14: Exit signal (normal) from P reaches P.2
+  15: P.2: receives message (banana)
+    in send_vs_trap_exit.erl line 22
+  16: P.2: exits normally
+  17: P.2: true = erlang:exit(P, normal)
+    (while exiting)
+  18: Exit signal (normal) from P.2 reaches P
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P.1 in send_vs_trap_exit.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn_link(erlang, apply, [#Fun<send_vs_trap_exit.0.53187575>,[]])
+    in erlang.erl line 2350
+   2: P.1: false = erlang:process_flag(trap_exit, true)
+    in send_vs_trap_exit.erl line 12
+   3: P.1: ok = P ! ok
+    in send_vs_trap_exit.erl line 13
+   4: Message (ok) from P.1 reaches P
+   5: P: receives message (ok)
+    in send_vs_trap_exit.erl line 16
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<send_vs_trap_exit.2.53187575>,[]])
+    in erlang.erl line 2329
+   7: P.2: false = erlang:process_flag(trap_exit, true)
+    in send_vs_trap_exit.erl line 20
+   8: P.2: banana = P.2 ! banana
+    in send_vs_trap_exit.erl line 21
+   9: P.2: receives message (banana)
+    in send_vs_trap_exit.erl line 22
+  10: P.2: exits normally
+  11: P: Exception noproc raised by: erlang:link(P.2)
+    in send_vs_trap_exit.erl line 27
+  12: P: exits normally
+  13: P: true = erlang:exit(P.1, normal)
+    (while exiting)
+  14: Exit signal (normal) from P reaches P.1
+################################################################################
 Concuerror Info:
 --------------------------------------------------------------------------------
+Instrumenting: send_vs_trap_exit
 Instrumenting: erlang
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 2 errors, 2/2 interleavings explored
+  Summary: 4 errors, 4/4 interleavings explored

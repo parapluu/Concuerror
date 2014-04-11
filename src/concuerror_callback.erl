@@ -6,7 +6,8 @@
 -export([instrumented_top/4]).
 
 %% Interface to scheduler:
--export([spawn_first_process/1, start_first_process/3]).
+-export([spawn_first_process/1, start_first_process/3,
+         deliver_message/3, wait_actor_reply/2, collect_deadlock_info/1]).
 
 %% Interface for resetting:
 -export([process_top_loop/1]).
@@ -59,6 +60,7 @@
           exit_reason = normal       :: term(),
           extra                      :: term(),
           flags = #process_flags{}   :: #process_flags{},
+          instant_delivery = false   :: boolean(),
           links                      :: links(),
           logger                     :: pid(),
           messages_new = queue:new() :: queue(),
@@ -82,9 +84,11 @@
 -spec spawn_first_process(options()) -> pid().
 
 spawn_first_process(Options) ->
-  [AfterTimeout, Logger, Modules, Processes, ReportUnknown, Timeout] =
+  [AfterTimeout, InstantDelivery, Logger, Modules, Processes,
+   ReportUnknown, Timeout] =
     concuerror_common:get_properties(
-      [after_timeout, logger, modules, processes, report_unknown, timeout],
+      [after_timeout, instant_delivery, logger, modules, processes,
+       report_unknown, timeout],
       Options),
   EtsTables = ets:new(ets_tables, [public]),
   ets:insert(EtsTables, {tid,1}),
@@ -92,6 +96,7 @@ spawn_first_process(Options) ->
     #concuerror_info{
        after_timeout  = AfterTimeout,
        ets_tables     = EtsTables,
+       instant_delivery = InstantDelivery,
        links          = ets:new(links, [bag, public]),
        logger         = Logger,
        modules        = Modules,
@@ -244,7 +249,8 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
     add_location_info(Location, Info#concuerror_info{extra = undefined}),%ResetInfo),
   try
     {Value, UpdatedInfo} = run_built_in(Module, Name, Arity, Args, LocatedInfo),
-    #concuerror_info{extra = Extra, event = Event} = UpdatedInfo,
+    #concuerror_info{extra = Extra, event = MaybeMessageEvent} = UpdatedInfo,
+    Event = maybe_deliver_message(MaybeMessageEvent, UpdatedInfo),
     ?debug_flag(?builtin, {'built-in', Module, Name, Arity, Value, Location}),
     ?debug_flag(?args, {args, Args}),
     ?debug_flag(?result, {args, Value}),
@@ -328,12 +334,10 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
           true -> kill;
           false -> {'EXIT', self(), Reason}
         end,
-      Message =
-        #message{data = Content, message_id = make_ref()},
       MessageEvent =
         #message_event{
            cause_label = Event#event.label,
-           message = Message,
+           message = #message{data = Content},
            recipient = Pid,
            type = exit_signal},
       NewEvent = Event#event{special = [{message, MessageEvent}]},
@@ -386,13 +390,10 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
               #builtin_event{} -> Info;
               %% New event...
               undefined ->
-                Message =
-                  #message{data = {'EXIT', Pid, noproc},
-                           message_id = make_ref()},
                 MessageEvent =
                   #message_event{
                      cause_label = Event#event.label,
-                     message = Message,
+                     message = #message{data = {'EXIT', Pid, noproc}},
                      recipient = self()},
                 NewEvent = Event#event{special = [{message, MessageEvent}]},
                 Info#concuerror_info{event = NewEvent}
@@ -457,9 +458,7 @@ run_built_in(erlang, monitor, 2, [Type, Target], Info) ->
       undefined ->
         case IsActive of
           false ->
-            Message =
-              #message{data = {'DOWN', Ref, process, As, noproc},
-                       message_id = make_ref()},
+            Message = #message{data = {'DOWN', Ref, process, As, noproc}},
             MessageEvent =
               #message_event{
                  cause_label = Event#event.label,
@@ -597,40 +596,21 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
         P
     end,
   ?badarg_if_not(is_pid(Pid)),
-  SelfDelivery = Recipient =:= self(),
-  {WrappedMsg, Result, NewInfo} =
-    case EventInfo of
-      %% Replaying...
-      #builtin_event{result = OldResult} ->
-        [{message, Msg}|_] = Event#event.special,
-        {Msg, OldResult, Info};
-      %% New event...
-      undefined ->
-        ?debug_flag(?send, {send, Recipient, Message}),
-        Msg = #message{data = Message, message_id = make_ref()},
-        MessageEvent =
-          #message_event{
-             cause_label = Event#event.label,
-             message = Msg,
-             recipient = Pid},
-        Deliver =
-          case SelfDelivery of
-            true ->
-              [{message_delivered, MessageEvent}];
-            false ->
-              []
-          end,
-        NewEvent = Event#event{special = [{message, MessageEvent}|Deliver]},
-        ?debug_flag(?send, {send, successful}),
-        {Msg, Message, Info#concuerror_info{event = NewEvent}}
-    end,
-  case SelfDelivery of
-    false -> ok;
-    true -> 
-      self() ! {message, WrappedMsg, 0},
-      ok
-  end,
-  {Result, NewInfo};
+  case EventInfo of
+    %% Replaying...
+    #builtin_event{result = OldResult} -> {OldResult, Info};
+    %% New event...
+    undefined ->
+      ?debug_flag(?send, {send, Recipient, Message}),
+      MessageEvent =
+        #message_event{
+           cause_label = Event#event.label,
+           message = #message{data = Message},
+           recipient = Pid},
+      NewEvent = Event#event{special = [{message, MessageEvent}]},
+      ?debug_flag(?send, {send, successful}),
+      {Message, Info#concuerror_info{event = NewEvent}}
+  end;
 
 run_built_in(erlang, process_flag, 2, [Flag, Value],
              #concuerror_info{flags = Flags} = Info) ->
@@ -782,10 +762,7 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
         MessageEvent =
           #message_event{
              cause_label = Event#event.label,
-             message =
-               #message{
-                  data = {'ETS-TRANSFER', Tid, Self, GiftData},
-                  message_id = make_ref()},
+             message = #message{data = {'ETS-TRANSFER', Tid, Self, GiftData}},
              recipient = Pid},
         NewEvent = Event#event{special = [{message, MessageEvent}]},
         Info#concuerror_info{event = NewEvent}
@@ -831,6 +808,132 @@ consistent_replay(Module, Name, Arity, Args, Info) ->
 
 %%------------------------------------------------------------------------------
 
+maybe_deliver_message(#event{special = Special} = Event, Info) ->
+  case proplists:lookup(message, Special) of
+    none -> Event;
+    {message, MessageEvent} ->
+      #concuerror_info{instant_delivery = InstantDelivery} = Info,
+      #message_event{recipient = Recipient, instant = Instant} = MessageEvent,
+      case (InstantDelivery orelse Recipient =:= self()) andalso Instant of
+        false -> Event;
+        true ->
+          #concuerror_info{timeout = Timeout} = Info,
+          TrapExit = Info#concuerror_info.flags#process_flags.trap_exit,
+          deliver_message(Event, MessageEvent, Timeout, {true, TrapExit})
+      end
+  end.
+
+-spec deliver_message(event(), message_event(), timeout()) -> event().
+
+deliver_message(Event, MessageEvent, Timeout) ->
+  deliver_message(Event, MessageEvent, Timeout, false).
+
+deliver_message(Event, MessageEvent, Timeout, Instant) ->
+  #event{special = Special} = Event,
+  #message_event{
+     message = Message,
+     recipient = Recipient,
+     type = Type} = MessageEvent,
+  ?debug_flag(?loop, {deliver_message, Message, Instant}),
+  Self = self(),
+  Notify =
+    case Recipient =:= Self of
+      true ->
+        Recipient ! {trapping, element(2, Instant)},
+        1;
+      false -> Self
+    end,
+  Recipient ! {Type, Message, Notify},
+  receive
+    {trapping, Trapping} ->
+      NewMessageEvent = MessageEvent#message_event{trapping = Trapping},
+      NewSpecial =
+        case already_known_delivery(Message, Special) of
+          true -> Special;
+          false -> Special ++ [{message_delivered, NewMessageEvent}]
+        end,
+      Event#event{special = NewSpecial};
+    {system_reply, From, Id, Reply, System} ->
+      ?debug_flag(?loop, got_system_message),
+      case proplists:lookup(message_received, Special) =:= none of
+        true ->
+          SystemReply =
+            #message_event{
+               cause_label = Event#event.label,
+               message = #message{data = Reply},
+               sender = Recipient,
+               recipient = From},
+          SystemSpecials =
+            [{message_delivered, MessageEvent},
+             {message_received, Id, fun(_) -> true end},
+             {system_communication, System},
+             {message, SystemReply}],
+          NewEvent = Event#event{special = Special ++ SystemSpecials},
+          case Instant =:= false of
+            true -> NewEvent;
+            false -> deliver_message(NewEvent, SystemReply, Timeout, Instant)
+          end;
+        false ->
+          SystemReply = find_system_reply(Recipient, Special),
+          case Instant =:= false of
+            true -> Event;
+            false -> deliver_message(Event, SystemReply, Timeout, Instant)
+          end
+      end;
+    {'EXIT', _, What} ->
+      exit(What)
+  after
+    Timeout ->
+      ?crash({no_response_for_message, Timeout, Recipient})
+  end.
+
+already_known_delivery(_, []) -> false;
+already_known_delivery(Message, [{message_delivered, Event}|Special]) ->
+  #message{id = Id} = Message,
+  #message_event{message = #message{id = Del}} = Event,
+  Id =:= Del orelse already_known_delivery(Message, Special);
+already_known_delivery(Message, [_|Special]) ->
+  already_known_delivery(Message, Special).
+
+find_system_reply(System, [{message, #message_event{sender = System} = Message}|_]) ->
+  Message;
+find_system_reply(System, [_|Special]) ->
+  find_system_reply(System, Special).
+
+%%------------------------------------------------------------------------------
+
+-spec wait_actor_reply(event(), timeout()) ->
+                          'exited' | 'retry' | {'ok', event()}.
+
+wait_actor_reply(Event, Timeout) ->
+  receive
+    exited -> exited;
+    {blocked, _} -> retry;
+    #event{} = NewEvent -> {ok, NewEvent};
+    {'ETS-TRANSFER', _, _, given_to_scheduler} ->
+      wait_actor_reply(Event, Timeout);
+    {'EXIT', _, What} ->
+      exit(What)
+  after
+    Timeout -> ?crash({process_did_not_respond, Timeout, Event#event.actor})
+  end.
+
+%%------------------------------------------------------------------------------
+
+-spec collect_deadlock_info([pid()]) -> [{pid(), location()}].
+
+collect_deadlock_info(ActiveProcesses) ->
+  Map =
+    fun(P) ->
+        P ! deadlock_poll,
+        receive
+          {blocked, Location} -> {P, Location}
+        end
+    end,
+  [Map(P) || P <- ActiveProcesses].
+
+%%------------------------------------------------------------------------------
+
 handle_receive(PatternFun, Timeout, Location, Info) ->
   %% No distinction between replaying/new as we have to clear the message from
   %% the queue anyway...
@@ -849,7 +952,7 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
        trapping = Trapping},
   {Special, CreateMessage} =
     case MessageOrAfter of
-      #message{data = Data, message_id = Id} ->
+      #message{data = Data, id = Id} ->
         {[{message_received, Id, PatternFun}], {ok, Data}};
       'after' -> {[], false}
     end,
@@ -1262,7 +1365,7 @@ system_wrapper_loop(Name, Wrapped, Info) ->
     Message ->
       case Message of
         {message,
-         #message{data = Data, message_id = Id}, Report} ->
+         #message{data = Data, id = Id}, Report} ->
           try
             {F, R} =
               case Name of
@@ -1345,6 +1448,7 @@ reset_concuerror_info(Info) ->
   #concuerror_info{
      after_timeout = AfterTimeout,
      ets_tables = EtsTables,
+     instant_delivery = InstantDelivery,
      links = Links,
      logger = Logger,
      modules = Modules,
@@ -1358,6 +1462,7 @@ reset_concuerror_info(Info) ->
   #concuerror_info{
      after_timeout = AfterTimeout,
      ets_tables = EtsTables,
+     instant_delivery = InstantDelivery,
      links = Links,
      logger = Logger,
      modules = Modules,
@@ -1477,11 +1582,24 @@ explain_error({inconsistent_builtin,
     "data that may differ on separate runs of the program.~n"
     "Location: ~p~n~n",
     [Module, Name, Arity, Args, OldResult, NewResult, Location]);
+explain_error({no_response_for_message, Timeout, Recipient}) ->
+  io_lib:format(
+    "A process took more than ~pms to send an acknowledgement for a message"
+    " that was sent to it. (Process: ~p)~n"
+    ?notify_us_msg,
+    [Timeout, Recipient]);
 explain_error({not_local_node, Node}) ->
   io_lib:format(
     "A built-in tried to use ~p as a remote node. Concuerror does not support"
     " remote nodes yet.",
     [Node]);
+explain_error({process_did_not_respond, Timeout, Actor}) ->
+  io_lib:format( 
+    "A process took more than ~pms to report a built-in event. You can try to"
+    " increase the --timeout limit and/or ensure that there are no infinite"
+    " loops in your test. (Process: ~p)",
+    [Timeout, Actor]
+   );
 explain_error({system_wrapper_error, Name, Type, Reason, Stacktrace}) ->
   io_lib:format(
     "Concuerror's wrapper for system process ~p crashed (~p):~n"
