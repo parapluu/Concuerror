@@ -1,0 +1,75 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{send_self,test2,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* At step 4 process P exited abnormally
+    Reason:
+      {{nocatch,one},
+       [{send_self,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"},
+                    {line,22}]}]}
+    Stacktrace:
+      [{send_self,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"},
+                   {line,22}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_self.1.78488577>,[]])
+    in erlang.erl line 2329
+   2: P: one = P ! one
+    in send_self.erl line 20
+   3: P: receives message (one)
+    in send_self.erl line 21
+   4: P: exits abnormally ({{nocatch,one},[{send_self,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,22}]}]})
+   5: P.1: two = P ! two
+    in send_self.erl line 19
+   6: Message (two) from P.1 reaches P
+   7: P.1: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 7 process P exited abnormally
+    Reason:
+      {{nocatch,two},
+       [{send_self,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"},
+                    {line,22}]}]}
+    Stacktrace:
+      [{send_self,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"},
+                   {line,22}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_self.1.78488577>,[]])
+    in erlang.erl line 2329
+   2: P.1: two = P ! two
+    in send_self.erl line 19
+   3: P.1: exits normally
+   4: Message (two) from P.1 reaches P
+   5: P: one = P ! one
+    in send_self.erl line 20
+   6: P: receives message (two)
+    in send_self.erl line 21
+   7: P: exits abnormally ({{nocatch,two},[{send_self,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,22}]}]})
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: send_self
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 2/2 interleavings explored
