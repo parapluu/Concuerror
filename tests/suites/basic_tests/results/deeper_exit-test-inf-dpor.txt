@@ -1,0 +1,82 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {allow_first_crash,true},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/deeper_exit.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {report_unknown,true},
+   {symbolic,true},
+   {target,{deeper_exit,test,[]}},
+   {timeout,infinity},
+   {treat_as_normal,[normal]},
+   {verbosity,0}]
+################################################################################
+Erroneous interleaving 1:
+* At step 8 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+* At step 9 process P.2 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<deeper_exit.0.105377896>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deeper_exit.1.105377896>,[]])
+    in erlang.erl line 2329
+   3: P: true = erlang:exit(P.1, kill)
+    in deeper_exit.erl line 12
+   4: Exit signal (kill) from P reaches P.1
+   5: P: true = erlang:exit(P.2, kill)
+    in deeper_exit.erl line 13
+   6: Exit signal (kill) from P reaches P.2
+   7: P: exits normally
+   8: P.1: exits abnormally (killed)
+   9: P.2: exits abnormally (killed)
+################################################################################
+Erroneous interleaving 2:
+* At step 7 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+* At step 11 process P.2 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<deeper_exit.0.105377896>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deeper_exit.1.105377896>,[]])
+    in erlang.erl line 2329
+   3: P: true = erlang:exit(P.1, kill)
+    in deeper_exit.erl line 12
+   4: Exit signal (kill) from P reaches P.1
+   5: P: true = erlang:exit(P.2, kill)
+    in deeper_exit.erl line 13
+   6: P: exits normally
+   7: P.1: exits abnormally (killed)
+   8: P.2: P.2 = P.1 ! P.2
+    in deeper_exit.erl line 21
+   9: Exit signal (kill) from P reaches P.2
+  10: Message (P.2) from P.2 reaches P.1
+  11: P.2: exits abnormally (killed)
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: deeper_exit
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 2/2 interleavings explored

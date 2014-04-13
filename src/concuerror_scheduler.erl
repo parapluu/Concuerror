@@ -459,7 +459,6 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   OldClock = lookup_clock(Actor, ClockMap),
   ActorClock = orddict:store(Actor, Index, OldClock),
   ?trace(Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
-  ?trace(Logger, "~p~n", [Event]),
   BaseHappenedBeforeClock =
     add_pre_message_clocks(Special, MessageInfo, ActorClock),
   HappenedBeforeClock =

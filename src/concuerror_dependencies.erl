@@ -66,9 +66,9 @@ dependent(#builtin_event{actor = Actor, exiting = false,
            {'EXIT', _, Reason} = Signal,
            not Trapping andalso Reason =/= normal
        end);
-dependent(#message_event{} = Message,
-          #builtin_event{mfargs = {erlang,process_flag,[trap_exit,_]}} = PFlag) ->
-  dependent(PFlag, Message);
+dependent(#message_event{type = exit_signal} = Message,
+          #builtin_event{} = Builtin) ->
+  dependent(Builtin, Message);
 
 dependent(#exit_event{actor = Exiting, status = Status, trapping = Trapping},
           #message_event{message = #message{data = Signal},
