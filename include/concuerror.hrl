@@ -108,6 +108,8 @@
 -define(message_pattern, 2).
 -define(message_sent, 3).
 -define(message_delivered, 4).
+
+-define(notify_none, 1).
 %%------------------------------------------------------------------------------
 -type ets_tables() :: ets:tid().
 

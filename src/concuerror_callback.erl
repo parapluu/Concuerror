@@ -833,8 +833,9 @@ deliver_message(Event, MessageEvent, Timeout, Instant) ->
   Notify =
     case Recipient =:= Self of
       true ->
-        Recipient ! {trapping, element(2, Instant)},
-        1;
+        %% Instant delivery to self
+        Self ! {trapping, element(2, Instant)},
+        ?notify_none;
       false -> Self
     end,
   Recipient ! {Type, Message, Notify},
@@ -1117,7 +1118,7 @@ process_loop(Info) ->
           case Data =:= kill of
             true ->
               ?debug_flag(?loop, kill_signal),
-              catch Notify ! {trapping, Trapping},
+              send_message_ack(Notify, Trapping),
               exiting(killed, [], Info#concuerror_info{caught_signal = true});
             false ->
               case Trapping of
@@ -1126,7 +1127,7 @@ process_loop(Info) ->
                   self() ! {message, Message, Notify},
                   process_loop(Info);
                 false ->
-                  catch Notify ! {trapping, Trapping},
+                  send_message_ack(Notify, Trapping),
                   {'EXIT', _From, Reason} = Data,
                   case Reason =:= normal of
                     true ->
@@ -1140,13 +1141,13 @@ process_loop(Info) ->
           end;
         false ->
           ?debug_flag(?loop, ignoring_signal),
-          catch Notify ! {trapping, Trapping},
+          send_message_ack(Notify, Trapping),
           process_loop(Info)
       end;
     {message, Message, Notify} ->
       ?debug_flag(?loop, message),
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
-      catch Notify ! {trapping, Trapping},
+      send_message_ack(Notify, Trapping),
       case is_active(Info) of
         true ->
           ?debug_flag(?loop, enqueueing_message),
@@ -1184,6 +1185,14 @@ process_loop(Info) ->
     deadlock_poll ->
       ?debug_flag(?loop, deadlock_poll),
       Info
+  end.
+
+send_message_ack(Notify, Trapping) ->
+  case Notify =/= ?notify_none of
+    true ->
+      Notify ! {trapping, Trapping},
+      ok;
+    false -> ok
   end.
 
 %%------------------------------------------------------------------------------
