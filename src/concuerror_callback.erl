@@ -1441,6 +1441,7 @@ system_wrapper_loop(Name, Wrapped, Info) ->
 check_request(code_server, get_path) -> ok;
 check_request(code_server, {ensure_loaded, _}) -> ok;
 check_request(code_server, {is_cached, _}) -> ok;
+check_request(code_server, {is_loaded, _}) -> ok;
 check_request(erl_prim_loader, {get_file, _}) -> ok;
 check_request(erl_prim_loader, {list_dir, _}) -> ok;
 check_request(file_server_2, {get_cwd}) -> ok;
