@@ -5,7 +5,7 @@
 -export([test/0]).
 
 concuerror_options() ->
-    [{allow_first_crash, false}].
+    [{ignore_first_crash, false}].
 
 scenarios() ->
     [{test, inf, dpor, crash}].

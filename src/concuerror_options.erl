@@ -93,7 +93,7 @@ options() ->
   ,{instant_delivery, undefined, {boolean, false},
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
-  ,{allow_first_crash, undefined, {boolean, false},
+  ,{ignore_first_crash, $i, {boolean, false},
     "If not enabled, Concuerror will immediately exit if the first interleaving"
     " contains errors."}
   ,{ignore_error, undefined, atom,

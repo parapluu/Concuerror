@@ -40,7 +40,7 @@
 %% -type preemption_bound() :: non_neg_integer() | 'inf'.
 
 -record(scheduler_state, {
-          allow_first_crash = true :: boolean(),
+          ignore_first_crash = true :: boolean(),
           assume_racing     = true :: boolean(),
           current_warnings  = []   :: [concuerror_warning_info()],
           depth_bound              :: pos_integer(),
@@ -75,7 +75,7 @@ run(Options) ->
   InitialTrace = #trace_state{active_processes = [FirstProcess]},
   InitialState =
     #scheduler_state{
-       allow_first_crash = ?opt(allow_first_crash,Options),
+       ignore_first_crash = ?opt(ignore_first_crash,Options),
        assume_racing = ?opt(assume_racing,Options),
        depth_bound = ?opt(depth_bound, Options),
        first_process = {FirstProcess, EntryPoint = ?opt(entry_point, Options)},
@@ -154,10 +154,10 @@ log_trace(State) ->
         {lists:reverse(Warnings), TraceInfo}
     end,
   concuerror_logger:complete(Logger, Log),
-  case (not State#scheduler_state.allow_first_crash) andalso (Log =/= none) of
+  case (not State#scheduler_state.ignore_first_crash) andalso (Log =/= none) of
     true -> ?crash(first_interleaving_crashed);
     false ->
-      State#scheduler_state{allow_first_crash = true, current_warnings = []}
+      State#scheduler_state{ignore_first_crash = true, current_warnings = []}
   end.
 
 filter_warnings(Warnings, []) -> Warnings;
@@ -840,9 +840,9 @@ assert_no_messages() ->
 
 explain_error(first_interleaving_crashed) ->
   io_lib:format(
-    "The first interleaving of your test had some error. You may pass"
-    " --allow_first_crash to let Concuerror continue or use some other option"
-    " to ignore the reported error.",[]);
+    "The first interleaving of your test had some error. You may use"
+    " -i to let Concuerror continue or use some other option"
+    " to filter the reported error.",[]);
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   [EString, NEString] =
     [concuerror_printer:pretty_s(E, Depth) || E <- [Event, NewEvent]],
