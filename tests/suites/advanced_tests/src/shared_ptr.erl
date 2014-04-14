@@ -5,7 +5,7 @@
 -export([shared_ptr/0]).
 -export([scenarios/0]).
 
--define(N, 100).
+-define(N, 25).
 
 scenarios() -> [{?MODULE, inf, dpor}].
 

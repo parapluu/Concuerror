@@ -1,15 +1,27 @@
 ################################################################################
 Concuerror started with options:
-  [{'after-timeout',infinite},
+  [{after_timeout,infinity},
    {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{shared_ptr,shared_ptr,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/shared_ptr.erl"]},
-   {normal_exit,[normal]},
-   {symbolic,true},
-   {target,{shared_ptr,shared_ptr,[]}},
-   {verbose,0},
-   {wait,2000}]
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[normal]}]
 ################################################################################
   No errors found!
 ################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: shared_ptr
+Instrumenting: erlang
+################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 822/822 interleavings explored
+  Summary: 0 errors, 222/222 interleavings explored
