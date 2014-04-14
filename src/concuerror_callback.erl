@@ -772,8 +772,11 @@ run_built_in(Module, Name, Arity, Args, Info)
 
 %% For other built-ins check whether replaying has the same result:
 run_built_in(Module, Name, Arity, _Args,
-             #concuerror_info{report_unknown = true, scheduler = Scheduler}) ->
-  ?crash({unknown_built_in, {Module, Name, Arity}}, Scheduler);
+             #concuerror_info{
+                event = #event{location = Location},
+                report_unknown = true,
+                scheduler = Scheduler}) ->
+  ?crash({unknown_built_in, {Module, Name, Arity, Location}}, Scheduler);
 run_built_in(Module, Name, Arity, Args, Info) ->
   consistent_replay(Module, Name, Arity, Args, Info).
 
@@ -1626,15 +1629,23 @@ explain_error({unknown_protocol_for_system, System}) ->
     "A process tried to send a message to system process ~p. Concuerror does"
     " not currently support communication with this process. Please contact the"
     " developers for more information.",[System]);
-explain_error({unknown_built_in, {Module, Name, Arity}}) ->
+explain_error({unknown_built_in, {Module, Name, Arity, Location}}) ->
+  LocationString =
+    case Location of
+      [Line, {file, File}] -> location(File, Line);
+      _ -> ""
+    end,
   io_lib:format(
-    "No special handling found for built-in ~p:~p/~p. Run without"
+    "No special handling found for built-in ~p:~p/~p~s. Run without"
     " --report_unknown or contact the developers to add support for it.",
-    [Module, Name, Arity]);
+    [Module, Name, Arity, LocationString]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
-    "A process send a request of type '~p' to ~p. This type of"
-    " request has not been checked to ensure it always returns the same"
-    " result.~n"
+    "A process send a request of type '~p' to ~p. Concuerror does not yet support"
+    "this type of request to this process.~n"
     ?notify_us_msg,
     [Type, Name]).
+
+location(F, L) ->
+  Basename = filename:basename(F),
+  io_lib:format(" (in ~s line ~w)", [Basename, L]).
