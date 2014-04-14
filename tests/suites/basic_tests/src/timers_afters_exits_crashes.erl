@@ -9,12 +9,11 @@
          both_crash/0]).
 
 scenarios() ->
-    [{N,P,R} || {N,P} <- [{my_start_timer, inf},
+    [{N,P,dpor} || {N,P} <- [{my_start_timer, inf},
                           {my_exit_ok, inf},
                           {my_exit_bad, inf},
                           {child_crashes, inf},
-                          {both_crash, inf}],
-                R <- [dpor, full]].
+                          {both_crash, inf}]].
 
 my_start_timer() ->
     P1 = spawn(fun() -> receive _ -> ok end end),

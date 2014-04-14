@@ -103,6 +103,8 @@ pretty_info(#builtin_event{mfargs = {erlang, '!', [To, Msg]},
 pretty_info(#builtin_event{mfargs = {M, F, Args}, result = Result}, Depth) ->
   ArgString = pretty_arg(Args, Depth),
   io_lib:format("~W = ~p:~p(~s)",[Result, Depth, M, F, ArgString]);
+pretty_info(#exit_event{actor = Timer}, _Depth) when is_reference(Timer) ->
+  "cancelled";
 pretty_info(#exit_event{reason = Reason}, Depth) ->
   ReasonStr =
     case Reason =:= normal of

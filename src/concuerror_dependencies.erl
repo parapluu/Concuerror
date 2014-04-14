@@ -150,7 +150,12 @@ dependent_exit(_Exit, {erlang, put, _}) -> false;
 dependent_exit(_Exit, {erlang, spawn, _}) -> false;
 dependent_exit(_Exit, {erlang, spawn_opt, _}) -> false;
 dependent_exit(_Exit, {erlang, spawn_link, _}) -> false;
+dependent_exit(_Exit, {erlang, start_timer, _}) -> false;
 dependent_exit(_Exit, {erlang, group_leader, _}) -> false;
+dependent_exit(#exit_event{actor = Cancelled},
+               {erlang, ReadorCancelTimer, [Timer]})
+  when ReadorCancelTimer =:= read_timer; ReadorCancelTimer =:= cancel_timer ->
+  Cancelled =:= Timer;
 dependent_exit(#exit_event{actor = Exiting},
                {erlang, is_process_alive, [Pid]}) ->
   Exiting =:= Pid;
@@ -252,6 +257,7 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;A =:= spawn            %% Depends only with proc_info
     ;A =:= spawn_link       %% Depends only with proc_info
     ;A =:= spawn_opt        %% Depends only with proc_info
+    ;A =:= start_timer
     
     ;B =:= demonitor
     ;B =:= exit
@@ -265,6 +271,7 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;B =:= spawn
     ;B =:= spawn_link
     ;B =:= spawn_opt
+    ;B =:= start_timer
     ->
   false;
 
@@ -296,6 +303,29 @@ dependent_built_in(#builtin_event{mfargs = {erlang,UnRegisterOp,_}} = R,
        (SendOrWhereis =:= '!' orelse SendOrWhereis =:= send orelse
         SendOrWhereis =:= whereis) ->
   dependent_built_in(S, R);
+
+dependent_built_in(#builtin_event{mfargs = {erlang,send,_}, extra = Extra},
+                   #builtin_event{mfargs = {erlang,ReadorCancelTimer,[Timer]}})
+  when is_reference(Extra),
+       (ReadorCancelTimer =:= read_timer orelse
+        ReadorCancelTimer =:= cancel_timer) ->
+  Extra =:= Timer;
+dependent_built_in(#builtin_event{mfargs = {erlang,ReadorCancelTimer,_}} = Timer,
+                   #builtin_event{mfargs = {erlang,send,_}} = Deliver)
+  when ReadorCancelTimer =:= read_timer;
+       ReadorCancelTimer =:= cancel_timer ->
+  dependent_built_in(Deliver, Timer);
+
+dependent_built_in(#builtin_event{mfargs = {erlang,ReadorCancelTimer,_}},
+                   #builtin_event{})
+  when ReadorCancelTimer =:= read_timer;
+       ReadorCancelTimer =:= cancel_timer ->
+  false;
+dependent_built_in(#builtin_event{},
+                   #builtin_event{mfargs = {erlang,ReadorCancelTimer,_}})
+  when ReadorCancelTimer =:= read_timer;
+       ReadorCancelTimer =:= cancel_timer ->
+  false;
 
 dependent_built_in(#builtin_event{mfargs = {ets,delete,[Table1]}},
                    #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->

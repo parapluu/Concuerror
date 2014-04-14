@@ -1,0 +1,57 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{timers_afters_exits_crashes,child_crashes,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[normal]}]
+################################################################################
+Erroneous interleaving 1:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {child,
+          [{timers_afters_exits_crashes,'-child_crashes/0-fun-0-',0,
+               [{file,
+                    "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"},
+                {line,35}]}]}
+    Stacktrace:
+      [{timers_afters_exits_crashes,'-child_crashes/0-fun-0-',0,
+           [{file,
+                "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"},
+            {line,35}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<timers_afters_exits_crashes.8.33190745>,[]])
+    in erlang.erl line 2329
+   2: P: ok = P.1 ! ok
+    in timers_afters_exits_crashes.erl line 36
+   3: Message (ok) from P reaches P.1
+   4: P: ok = P.1 ! ok
+    in timers_afters_exits_crashes.erl line 36
+   5: Message (ok) from P reaches P.1
+   6: P: ok = P.1 ! ok
+    in timers_afters_exits_crashes.erl line 36
+   7: Message (ok) from P reaches P.1
+   8: P: ok = P.1 ! ok
+    in timers_afters_exits_crashes.erl line 36
+   9: Message (ok) from P reaches P.1
+  10: P: exits normally
+  11: P.1: exits abnormally ({child,[{timers_afters_exits_crashes,'-child_crashes/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,35}]}]})
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: timers_afters_exits_crashes
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

@@ -103,6 +103,7 @@
 -define(MINIMUM_TIMEOUT, 1000).
 %%------------------------------------------------------------------------------
 -type message_info() :: ets:tid().
+-type timers()       :: ets:tid().
 
 -define(new_message_info(Id), {Id, none, undefined, undefined}).
 -define(message_pattern, 2).
@@ -216,7 +217,7 @@
 -type receive_event() :: #receive_event{}.
 
 -record(exit_event, {
-          actor = self()            :: pid(),
+          actor = self()            :: pid() | reference(),
           links = []                :: [pid()],
           monitors = []             :: [{reference(), pid()}],
           name = ?process_name_none :: ?process_name_none | atom(),

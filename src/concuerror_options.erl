@@ -160,8 +160,7 @@ finalize(Options) ->
 finalize_aux(Options) ->
   Shared =
     [{modules, ets:new(modules, [public])},
-     {processes, ets:new(processes, [public])},
-     {timers, ets:new(timers, [public])}],
+     {processes, ets:new(processes, [public])}],
   case lists:keytake(file, 1, Options) of
     false -> finalize(Options, Shared);
     {value, Tuple, RestOptions} ->

@@ -1,0 +1,26 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{send_after,testB,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_after.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[normal]}]
+################################################################################
+  No errors found!
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: send_after
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 2/2 interleavings explored
