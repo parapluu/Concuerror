@@ -1,0 +1,36 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{send_after,test13,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_after.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[normal]}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in send_after.erl line 103
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: #Ref<0.0.0.179> = erlang:send_after(0, P, foo)
+    in send_after.erl line 77
+   2: P: false = erlang:cancel_timer(#Ref<0.0.0.179>)
+    in send_after.erl line 97
+   3: P: receives message (foo)
+    in send_after.erl line 98
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: send_after
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

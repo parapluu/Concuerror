@@ -61,6 +61,7 @@
           extra                      :: term(),
           flags = #process_flags{}   :: #process_flags{},
           instant_delivery = false   :: boolean(),
+          is_timer = false           :: 'false' | reference(),
           links                      :: links(),
           logger                     :: pid(),
           messages_new = queue:new() :: queue(),
@@ -74,7 +75,8 @@
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
           status = running           :: 'exited'| 'exiting' | 'running' | 'waiting',
-          timeout                    :: timeout()
+          timeout                    :: timeout(),
+          timers                     :: timers()
          }).
 
 -type concuerror_info() :: #concuerror_info{}.
@@ -98,7 +100,8 @@ spawn_first_process(Options) ->
        processes      = Processes = ?opt(processes, Options),
        report_unknown = ?opt(report_unknown, Options),
        scheduler      = self(),
-       timeout        = ?opt(timeout, Options)
+       timeout        = ?opt(timeout, Options),
+       timers         = ets:new(timers, [public])
       },
   system_processes_wrappers(Info),
   system_ets_entries(Info),
@@ -522,6 +525,90 @@ run_built_in(erlang, register, 2, [Name, Pid],
   catch
     _:_ -> error(badarg)
   end;
+
+run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
+  when
+    ReadorCancelTimer =:= read_timer;
+    ReadorCancelTimer =:= cancel_timer
+    ->
+  #concuerror_info{timers = Timers} = Info,
+  case ets:lookup(Timers, Ref) of
+    [] -> {false, Info};
+    [{Ref,Pid,_Dest}] ->
+      case ReadorCancelTimer of
+        read_timer -> ok;
+        cancel_timer ->
+          ?debug_flag(?loop, sending_kill_to_cancel),
+          ets:delete(Timers, Ref),
+          Pid ! {exit_signal, #message{data = kill}, self()},
+          receive {trapping, false} -> ok end
+      end,
+      {1, Info}
+  end;
+
+run_built_in(erlang, SendAfter, 3, [0, Dest, Msg], Info)
+  when
+    SendAfter =:= send_after;
+    SendAfter =:= start_timer ->
+  #concuerror_info{
+     event = #event{event_info = EventInfo}} = Info,
+  Ref =
+    case EventInfo of
+      %% Replaying...
+      #builtin_event{result = OldRef} -> OldRef;
+      %% New event...
+      undefined -> make_ref()
+    end,
+  ActualMessage =
+    case SendAfter of
+      send_after -> Msg;
+      start_timer -> {timeout, Ref, Msg}
+    end,
+  {_, NewInfo} = run_built_in(erlang, send, 2, [Dest, ActualMessage], Info),
+  {Ref, NewInfo};
+
+run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
+  when
+    SendAfter =:= send_after;
+    SendAfter =:= start_timer ->
+  ?badarg_if_not(
+    (is_pid(Dest) orelse is_atom(Dest)) andalso
+     is_integer(Timeout) andalso
+     Timeout >= 0),
+  #concuerror_info{
+     event = Event, processes = Processes, timeout = Wait, timers = Timers
+    } = Info,
+  #event{event_info = EventInfo} = Event,
+  %Parent = self(),
+  {Ref, Pid, NewInfo} =
+    case EventInfo of
+      %% Replaying...
+      #builtin_event{result = OldRef, extra = OldPid} ->
+        true = ets:update_element(Processes, OldPid, {?process_name, OldRef}),
+        {OldRef, OldPid, Info#concuerror_info{extra = OldPid}};
+      %% New event...
+      undefined ->
+        NewRef = make_ref(),
+        PassedInfo = reset_concuerror_info(Info),
+        P =
+          new_process(
+            PassedInfo#concuerror_info{
+              instant_delivery = true, is_timer = NewRef}),
+        Symbol = "Timer " ++ erlang:ref_to_list(NewRef),
+        true = ets:insert(Processes, ?new_process(P, Symbol)),
+        NewEvent = Event#event{special = [{new, P}]},
+        {NewRef, P, Info#concuerror_info{event = NewEvent, extra = P}}
+    end,
+  ActualMessage =
+    case SendAfter of
+      send_after -> Msg;
+      start_timer -> {timeout, Ref, Msg}
+    end,
+  ets:insert(Timers, {Ref, Pid, Dest}),
+  Pid ! {start, erlang, send, [Dest, ActualMessage]},
+  wait_process(Pid, Wait),
+  {Ref, NewInfo};
+
 run_built_in(erlang, spawn, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, []}], Info);
 run_built_in(erlang, spawn_link, 3, [M, F, Args], Info) ->
@@ -589,6 +676,13 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
         {P, Info} = run_built_in(erlang, whereis, 1, [Recipient], Info),
         P
     end,
+  Extra =
+    case Info#concuerror_info.is_timer of
+      false -> undefined;
+      Timer ->
+        ets:delete(Info#concuerror_info.timers, Timer),
+        Timer
+    end,
   ?badarg_if_not(is_pid(Pid)),
   case EventInfo of
     %% Replaying...
@@ -603,7 +697,7 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
            recipient = Pid},
       NewEvent = Event#event{special = [{message, MessageEvent}]},
       ?debug_flag(?send, {send, successful}),
-      {Message, Info#concuerror_info{event = NewEvent}}
+      {Message, Info#concuerror_info{event = NewEvent, extra = Extra}}
   end;
 
 run_built_in(erlang, process_flag, 2, [Flag, Value],
@@ -1200,6 +1294,24 @@ send_message_ack(Notify, Trapping) ->
 
 %%------------------------------------------------------------------------------
 
+exiting(Reason, _,
+        #concuerror_info{is_timer = Timer} = InfoIn) when Timer =/= false ->
+  Info =
+    case Reason of
+      killed ->
+        #concuerror_info{event = Event} = WaitInfo = process_loop(InfoIn),
+        EventInfo =
+          #exit_event{
+             actor = Timer,
+             reason = normal,
+             status = running
+            },
+        Notification = Event#event{event_info = EventInfo},
+        add_location_info(exit, notify(Notification, WaitInfo));
+      normal ->
+        InfoIn
+    end,
+  process_loop(set_status(Info, exited));
 exiting(Reason, Stacktrace, #concuerror_info{status = Status} = InfoIn) ->
   %% XXX: The ordering of the following events has to be verified (e.g. R16B03):
   %% XXX:  - process marked as exiting, new messages are not delivered, name is
@@ -1456,6 +1568,7 @@ reset_concuerror_info(Info) ->
      after_timeout = AfterTimeout,
      ets_tables = EtsTables,
      instant_delivery = InstantDelivery,
+     is_timer = IsTimer,
      links = Links,
      logger = Logger,
      modules = Modules,
@@ -1464,12 +1577,14 @@ reset_concuerror_info(Info) ->
      processes = Processes,
      report_unknown = ReportUnknown,
      scheduler = Scheduler,
-     timeout = Timeout
+     timeout = Timeout,
+     timers = Timers
     } = Info,
   #concuerror_info{
      after_timeout = AfterTimeout,
      ets_tables = EtsTables,
      instant_delivery = InstantDelivery,
+     is_timer = IsTimer,
      links = Links,
      logger = Logger,
      modules = Modules,
@@ -1478,7 +1593,8 @@ reset_concuerror_info(Info) ->
      processes = Processes,
      report_unknown = ReportUnknown,
      scheduler = Scheduler,
-     timeout = Timeout
+     timeout = Timeout,
+     timers = Timers
     }.
 
 %% reset_stack(#concuerror_info{stack = Stack} = Info) ->

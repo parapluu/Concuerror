@@ -1,0 +1,42 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{timers_afters_exits_crashes,my_exit_bad,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[normal]}]
+################################################################################
+Erroneous interleaving 1:
+* At step 4 process P.1 exited abnormally
+    Reason:
+      whatever
+    Stacktrace:
+      []
+* Blocked at a 'receive' (when all other processes have exited):
+    P in timers_afters_exits_crashes.erl line 32
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<timers_afters_exits_crashes.6.33190745>,[]])
+    in erlang.erl line 2329
+   2: P: true = erlang:exit(P.1, whatever)
+    in timers_afters_exits_crashes.erl line 31
+   3: Exit signal (whatever) from P reaches P.1
+   4: P.1: exits abnormally (whatever)
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: timers_afters_exits_crashes
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

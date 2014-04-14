@@ -1,0 +1,57 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{timers_afters_exits_crashes,both_crash,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[normal]}]
+################################################################################
+Erroneous interleaving 1:
+* At step 2 process P exited abnormally
+    Reason:
+      {parent,
+          [{timers_afters_exits_crashes,both_crash,0,
+               [{file,
+                    "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"},
+                {line,40}]}]}
+    Stacktrace:
+      [{timers_afters_exits_crashes,both_crash,0,
+           [{file,
+                "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"},
+            {line,40}]}]
+* At step 3 process P.1 exited abnormally
+    Reason:
+      {child,
+          [{timers_afters_exits_crashes,'-both_crash/0-fun-0-',0,
+               [{file,
+                    "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"},
+                {line,39}]}]}
+    Stacktrace:
+      [{timers_afters_exits_crashes,'-both_crash/0-fun-0-',0,
+           [{file,
+                "/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"},
+            {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<timers_afters_exits_crashes.9.33190745>,[]])
+    in erlang.erl line 2329
+   2: P: exits abnormally ({parent,[{timers_afters_exits_crashes,both_crash,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,40}]}]})
+   3: P.1: exits abnormally ({child,[{timers_afters_exits_crashes,'-both_crash/0-fun-0-',0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: timers_afters_exits_crashes
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored

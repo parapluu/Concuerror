@@ -1,0 +1,71 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{timers_afters_exits_crashes,my_start_timer,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/timers_afters_exits_crashes.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[normal]}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in timers_afters_exits_crashes.erl line 22
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<timers_afters_exits_crashes.0.33190745>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<timers_afters_exits_crashes.1.33190745>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<timers_afters_exits_crashes.2.33190745>,[]])
+    in erlang.erl line 2329
+   4: P.2: ok = P.1 ! ok
+    in timers_afters_exits_crashes.erl line 20
+   5: Message (ok) from P.2 reaches P.1
+   6: P.1: receives message (ok)
+    in timers_afters_exits_crashes.erl line 19
+   7: P.1: exits normally
+   8: P.2: exits normally
+   9: P.3: #Ref<0.0.0.152> = erlang:start_timer(50, P.1, ok)
+    in timers_afters_exits_crashes.erl line 21
+  10: P.3: exits normally
+  11: Timer #Ref<0.0.0.152>: {timeout,#Ref<0.0.0.152>,ok} = erlang:send(P.1, {timeout,#Ref<0.0.0.152>,ok})
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in timers_afters_exits_crashes.erl line 22
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<timers_afters_exits_crashes.0.33190745>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<timers_afters_exits_crashes.1.33190745>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<timers_afters_exits_crashes.2.33190745>,[]])
+    in erlang.erl line 2329
+   4: P.2: ok = P.1 ! ok
+    in timers_afters_exits_crashes.erl line 20
+   5: P.2: exits normally
+   6: P.3: #Ref<0.0.0.152> = erlang:start_timer(50, P.1, ok)
+    in timers_afters_exits_crashes.erl line 21
+   7: P.3: exits normally
+   8: Timer #Ref<0.0.0.152>: {timeout,#Ref<0.0.0.152>,ok} = erlang:send(P.1, {timeout,#Ref<0.0.0.152>,ok})
+   9: Message (ok) from P.2 reaches P.1
+  10: P.1: receives message ({timeout,#Ref<0.0.0.152>,ok})
+    in timers_afters_exits_crashes.erl line 19
+  11: P.1: exits normally
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: timers_afters_exits_crashes
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 2 errors, 2/2 interleavings explored
