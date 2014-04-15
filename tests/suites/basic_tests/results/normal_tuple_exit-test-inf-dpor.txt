@@ -1,0 +1,28 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{normal_tuple_exit,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/normal_tuple_exit.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[normal,undef]}]
+################################################################################
+  No errors found!
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: normal_tuple_exit
+Instrumenting: non
+Some abnormal exit reasons were treated as normal (--treat_as_normal).
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1/1 interleavings explored

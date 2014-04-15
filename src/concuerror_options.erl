@@ -101,9 +101,10 @@ options() ->
     " process crashes, see also next option for more refined control), 'deadlock'"
     " (processes waiting at a receive statement), 'depth_bound'."}
   ,{treat_as_normal, undefined, {atom, normal},
-    "Specify exit reasons that are considered 'normal' and not reported as"
-    " crashes. Useful e.g. when analyzing supervisors ('shutdown' is probably"
-    " also a normal exit reason in this case)."}
+    "A process that exits with reason the specified atom (or with a reason that"
+    " is a tuple with the specified atom as a first element) will not be"
+    " reported as exiting abnormally. Useful e.g. when analyzing supervisors"
+    " ('shutdown' is probably a normal exit reason in this case)."}
   ,{timeout, undefined, {integer, ?MINIMUM_TIMEOUT},
     "How many ms to wait before assuming a process to be stuck in an infinite"
     " loop between two operations with side-effects. Setting it to -1 makes"
