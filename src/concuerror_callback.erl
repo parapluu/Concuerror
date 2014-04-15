@@ -227,14 +227,17 @@ get_fun_info(Fun, Tag) ->
 
 %%------------------------------------------------------------------------------
 
-built_in(erlang, display, 1, [Term], _Location, Info) ->
+built_in(erlang, display, 1, [Term], Location, Info) ->
+  ?debug_flag(?builtin, {'built-in', erlang, display, 1, [Term], Location}),
   #concuerror_info{logger = Logger} = Info,
-  Chars = io_lib:format("~w",[Term]),
+  Chars = io_lib:format("~w~n",[Term]),
   concuerror_logger:print(Logger, standard_io, Chars),
   {{didit, true}, Info};
 %% Process dictionary has been restored here. No need to report such ops.
-built_in(erlang, get, _Arity, Args, _Location, Info) ->
-  {{didit, erlang:apply(erlang,get,Args)}, Info};
+built_in(erlang, get, Arity, Args, Location, Info) ->
+  ?debug_flag(?builtin, {'built-in', erlang, get, Arity, Args, Location}),
+  Res = erlang:apply(erlang,get,Args),
+  {{didit, Res}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
 %% for the logger)
 built_in(erlang, pid_to_list, _Arity, _Args, _Location, Info) ->
@@ -1189,7 +1192,7 @@ wait_process(Pid, Timeout) ->
     ready -> ok
   after
     Timeout ->
-      exit({concuerror_scheduler, {process_did_not_respond, Timeout, Pid}})
+      ?crash({process_did_not_respond, Timeout, Pid})
   end.
 
 process_loop(#concuerror_info{notify_when_ready = {Pid, true}} = Info) ->
