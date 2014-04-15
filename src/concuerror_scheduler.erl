@@ -888,7 +888,7 @@ msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
     " operation races with the arrival of the signal. If the test produces"
-    " too many interleavings consider refactoring your code.";
+    " too many interleavings consider refactoring your code.~n";
 msg(shutdown) ->
   "A process crashed with reason 'shutdown'. This may happen when a"
     " supervisor is terminating its children. You can use --treat_as_normal"
