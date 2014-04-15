@@ -698,7 +698,8 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
   ?badarg_if_not(is_pid(Pid)),
   case EventInfo of
     %% Replaying...
-    #builtin_event{result = OldResult} -> {OldResult, Info};
+    #builtin_event{result = OldResult} ->
+      {OldResult, Info#concuerror_info{extra = Extra}};
     %% New event...
     undefined ->
       ?debug_flag(?send, {send, Recipient, Message}),
