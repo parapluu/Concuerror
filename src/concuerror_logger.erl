@@ -284,6 +284,7 @@ print_log_msgs(Output, LogMsgs) ->
           case Type of
             ?lerror   -> "Errors";
             ?lwarning -> "Warnings";
+            ?ltip     -> "Tips";
             ?linfo    -> "Info"
           end,
         io:format(Output, "Concuerror ~s:~n", [Header]),

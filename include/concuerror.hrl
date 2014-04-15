@@ -53,11 +53,12 @@
 -define(lquiet,    0).
 -define(lerror,    1).
 -define(lwarning,  2).
--define(linfo,     3).
--define(lprogress, 4).
--define(ltiming,   5).
--define(ldebug,    6).
--define(ltrace,    7).
+-define(ltip,      3).
+-define(linfo,     4).
+-define(lprogress, 5).
+-define(ltiming,   6).
+-define(ldebug,    7).
+-define(ltrace,    8).
 
 -define(nonunique, none).
 
@@ -81,8 +82,8 @@
 -define(trace(Logger, Format, Data),
         ?log(Logger, ?ltrace, Format, Data)).
 
--define(unique_info(Logger, Format, Data),
-        ?log(Logger, ?linfo, {?MODULE, ?LINE}, Format, Data)).
+-define(unique(Logger, Type, Format, Data),
+        ?log(Logger, Type, {?MODULE, ?LINE}, Format, Data)).
 
 -define(time(Logger, Tag),
         concuerror_logger:time(Logger, Tag)).

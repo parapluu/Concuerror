@@ -137,8 +137,8 @@ log_trace(State) ->
   Warnings =  filter_warnings(UnfilteredWarnings, Ignored),
   case UnfilteredWarnings =/= Warnings of
     true ->
-      Message = "Some warnings were silenced (--ignore_error).~n",
-      ?unique_info(Logger, Message, []);
+      Message = "Some errors were silenced (--ignore_error).~n",
+      ?unique(Logger, ?linfo, Message, []);
     false ->
       ok
   end,
@@ -321,20 +321,24 @@ update_state(#event{actor = Actor, special = Special} = Event, State) ->
   {ok, update_special(Special, NewState)}.
 
 maybe_log_crash(Event, State, Index) ->
-  #scheduler_state{treat_as_normal = Normal} = State,
+  #scheduler_state{logger = Logger, treat_as_normal = Normal} = State,
   case Event#event.event_info of
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
-      Filter =
-        if is_tuple(Reason), size(Reason) > 0 -> element(1, Reason);
-           true -> Reason
+      {Tag, WasTimeout} =
+        if is_tuple(Reason), size(Reason) > 0 ->
+            T = element(1, Reason),
+            {T, T =:= timeout};
+           true -> {Reason, false}
         end,
-      case is_atom(Filter) andalso lists:member(Filter, Normal) of
+      case is_atom(Tag) andalso lists:member(Tag, Normal) of
         true ->
-          Message =
-            "Some exit reasons were treated as normal (--treat_as_normal).~n",
-          ?unique_info(State#scheduler_state.logger, Message, []),
+          ?unique(Logger, ?linfo, msg(treat_as_normal), []),
           State;
         false ->
+          if WasTimeout -> ?unique(Logger, ?ltip, msg(timeout), []);
+             Tag =:= shutdown -> ?unique(Logger, ?ltip, msg(shutdown), []);
+             true -> ok
+          end,
           #event{actor = Actor} = Event,
           Warnings = State#scheduler_state.current_warnings,
           Stacktrace = Exit#exit_event.stacktrace,
@@ -848,10 +852,14 @@ assert_no_messages() ->
 -spec explain_error(term()) -> string().
 
 explain_error(first_interleaving_crashed) ->
-  io_lib:format(
-    "The first interleaving of your test had some error. You may use"
-    " -i to let Concuerror continue or use some other option"
-    " to filter the reported error.",[]);
+  {
+    io_lib:format(
+      "The first interleaving of your test had errors. Check the output file."
+      " You may then use -i to tell Concuerror to continue or use other options"
+      " to filter out the reported errors, if you consider them acceptable"
+      " behaviours.",
+      []),
+    warning};
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   [EString, NEString] =
     [concuerror_printer:pretty_s(E, Depth) || E <- [Event, NewEvent]],
@@ -869,3 +877,17 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
     ?notify_us_msg,
     [I,Original,New]
    ).
+
+%%==============================================================================
+
+msg(treat_as_normal) ->
+  "Some exit reasons were treated as normal (--treat_as_normal).~n";
+msg(timeout) ->
+  "A process crashed with reason '{timeout, ...}'. This may happen when a"
+    " call to a gen_server (or similar) does not receive a reply within some"
+    " standard timeout. Use the --after_timeout option to treat after clauses"
+    " that exceed some threshold as 'impossible'.~n";
+msg(shutdown) ->
+  "A process crashed with reason shutdown. This may happen when a"
+    " supervisor is terminating its children. You can use --treat_as_normal"
+    " shutdown if this is expected behaviour.~n".

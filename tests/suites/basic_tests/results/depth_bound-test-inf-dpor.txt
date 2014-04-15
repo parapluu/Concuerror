@@ -1,20 +1,20 @@
 ################################################################################
 Concuerror started with options:
-  [{after_timeout,infinite},
-   {allow_first_crash,false},
-   {allow_first_crash,true},
+  [{after_timeout,infinity},
    {assume_racing,false},
    {depth_bound,10},
-   {depth_bound,5000},
+   {entry_point,{depth_bound,test,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/depth_bound.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,false},
+   {instant_delivery,false},
    {non_racing_system,[]},
    {print_depth,20},
+   {quiet,true},
    {report_unknown,true},
-   {symbolic,true},
-   {target,{depth_bound,test,[]}},
-   {timeout,2000},
-   {treat_as_normal,[normal]},
-   {verbosity,0}]
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
 Erroneous interleaving 1:
 * Reached the depth bound of 10 events
@@ -43,10 +43,13 @@ Interleaving info:
 ################################################################################
 Concuerror Errors:
 --------------------------------------------------------------------------------
-The first interleaving of your test had some error. You may pass --allow_first_crash to let Concuerror continue or use some other option to ignore the reported error.
-
-Get more info by running Concuerror with -vvvvvv
+The first interleaving of your test had errors. Check the output file. You may then use -i to tell Concuerror to continue or use other options to filter out the reported errors, if you consider them acceptable behaviours.
 
 ################################################################################
-Done! (Exit status: error)
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: depth_bound
+Instrumenting: io_lib
+################################################################################
+Done! (Exit status: warning)
   Summary: 1 errors, 1/1 interleavings explored

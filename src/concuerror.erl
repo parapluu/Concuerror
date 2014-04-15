@@ -22,11 +22,9 @@ run(RawOptions) ->
       case Reason =:= normal of
         true -> completed;
         false ->
-          ?error(Logger,
-                 "~s~n~n"
-                 "Get more info by running Concuerror with -v ~p~n~n",
-                 [explain(Reason), ?MAX_VERBOSITY]),
-          error
+          {Explain, Type} = explain(Reason),
+          ?error(Logger, "~s~n~n", [Explain]),
+          Type
       end,
     cleanup(Processes),
     ?trace(Logger, "Reached the end!~n",[]),
@@ -40,13 +38,15 @@ run(RawOptions) ->
 explain(Reason) ->
   Stacktrace = erlang:get_stacktrace(),
   try
-    case Reason of
-      {Module, Info} -> Module:explain_error(Info);
-      _ -> error(undef)
+    {Module, Info} = Reason,
+    case Module:explain_error(Info) of
+      {_,_} = ReasonType -> ReasonType;
+      Else -> {Else, error}
     end
   catch
     _:_ ->
-      io_lib:format("Reason: ~p~nTrace: ~p~n", [Reason, Stacktrace])
+      {io_lib:format("Reason: ~p~nTrace: ~p~n", [Reason, Stacktrace]),
+       error}
   end.
 
 cleanup(Processes) ->

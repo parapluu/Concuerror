@@ -1,18 +1,20 @@
 ################################################################################
 Concuerror started with options:
-  [{after_timeout,infinite},
-   {allow_first_crash,false},
-   {allow_first_crash,true},
+  [{after_timeout,infinity},
    {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{allow_first_crash,test,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/allow_first_crash.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,false},
+   {instant_delivery,false},
    {non_racing_system,[]},
    {print_depth,20},
+   {quiet,true},
    {report_unknown,true},
-   {symbolic,true},
-   {target,{allow_first_crash,test,[]}},
-   {timeout,2000},
-   {treat_as_normal,[normal]},
-   {verbosity,0}]
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
 Erroneous interleaving 1:
 * At step 3 process P exited abnormally
@@ -24,7 +26,7 @@ Erroneous interleaving 1:
                            {line,21}]}]
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<allow_first_crash.0.52293812>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<allow_first_crash.0.82603364>,[]])
     in erlang.erl line 2329
    2: P: receive timeout expired after 0 ms
     in allow_first_crash.erl line 16
@@ -36,14 +38,14 @@ Interleaving info:
 ################################################################################
 Concuerror Errors:
 --------------------------------------------------------------------------------
-The first interleaving of your test had some error. You may pass --allow_first_crash to let Concuerror continue or use some other option to ignore the reported error.
-
-Get more info by running Concuerror with -vvvvvv
+The first interleaving of your test had errors. Check the output file. You may then use -i to tell Concuerror to continue or use other options to filter out the reported errors, if you consider them acceptable behaviours.
 
 ################################################################################
 Concuerror Info:
 --------------------------------------------------------------------------------
+Instrumenting: allow_first_crash
+Instrumenting: io_lib
 Instrumenting: erlang
 ################################################################################
-Done! (Exit status: error)
+Done! (Exit status: warning)
   Summary: 1 errors, 1/2 interleavings explored
