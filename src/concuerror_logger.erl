@@ -40,8 +40,11 @@ run(Parent, Options) ->
     get_properties(
       [output,symbolic_names,processes,modules],
       Options),
+  Fun = fun({M}, _) -> ?log(self(), ?linfo, "Instrumenting: ~p~n", [M]) end,
+  ets:foldl(Fun, ok, Modules),
   ets:insert(Modules, {{logger}, self()}),
-  ok = setup_symbolic_names(SymbolicNames, Processes, Modules),
+  ok = setup_symbolic_names(SymbolicNames, Processes),
+  ok = concuerror_loader:load(io_lib, Modules),
   PrintableOptions =
     delete_many(
       [modules, output, processes, timers, verbosity],
@@ -346,10 +349,8 @@ interleavings_message(Errors, TracesExplored, TracesTotal) ->
 
 %%------------------------------------------------------------------------------
 
-setup_symbolic_names(SymbolicNames, Processes, Modules) ->
+setup_symbolic_names(SymbolicNames, Processes) ->
   case SymbolicNames of
     false -> ok;
-    true ->
-      put(concuerror_info, {logger, Processes, Modules}),
-      ok
+    true -> concuerror_callback:setup_logger(Processes)
   end.

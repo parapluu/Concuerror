@@ -9,6 +9,9 @@
 -export([spawn_first_process/1, start_first_process/3,
          deliver_message/3, wait_actor_reply/2, collect_deadlock_info/1]).
 
+%% Interface to logger:
+-export([setup_logger/1]).
+
 %% Interface for resetting:
 -export([process_top_loop/1]).
 
@@ -118,6 +121,12 @@ start_first_process(Pid, {Module, Name, Args}, Timeout) ->
   wait_process(Pid, Timeout),
   ok.
 
+-spec setup_logger(processes()) -> ok.
+
+setup_logger(Processes) ->
+  put(concuerror_info, {logger, Processes}),
+  ok.
+
 %%------------------------------------------------------------------------------
 
 -spec instrumented_top(Tag      :: instrumented_tag(),
@@ -138,7 +147,7 @@ instrumented_top(Tag, Args, Location, #concuerror_info{} = Info) ->
   FinalInfo = NewInfo#concuerror_info{escaped_pdict = NewEscaped},
   put(concuerror_info, FinalInfo),
   Result;
-instrumented_top(Tag, Args, Location, {logger, _, _} = Info) ->
+instrumented_top(Tag, Args, Location, {logger, _} = Info) ->
   {Result, _} = instrumented(Tag, Args, Location, Info),
   put(concuerror_info, Info),
   Result.
@@ -184,7 +193,7 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
       case Info of
         #concuerror_info{} ->
           built_in(Module, Name, Arity, Args, Location, Info);
-        {logger, Processes, _} ->
+        {logger, Processes} ->
           case {Module, Name, Arity} =:= {erlang, pid_to_list, 1} of
             true ->
               [Term] = Args,
@@ -199,12 +208,12 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
           end
       end;
     false ->
-      {Modules, Report} =
-        case Info of
-          #concuerror_info{modules = M} -> {M, true};
-          {logger, _, M} -> {M, false}
-        end,
-      ok = concuerror_loader:load(Module, Modules, Report),
+      case Info of
+        #concuerror_info{modules = M} ->
+          ?debug_flag(?non_builtin,{Module,Name,Arity,Location}),
+          concuerror_loader:load(Module, M);
+        _ -> ok
+      end,
       {doit, Info}
   end;
 instrumented_aux({Module, _} = Tuple, Name, Arity, Args, Location, Info) ->

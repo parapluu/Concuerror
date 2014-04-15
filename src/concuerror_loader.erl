@@ -2,7 +2,7 @@
 
 -module(concuerror_loader).
 
--export([load/3, load_binary/4]).
+-export([load/2, load_binary/4]).
 
 -define(flag(A), (1 bsl A)).
 
@@ -16,12 +16,14 @@
 %% -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 -include("concuerror.hrl").
 
--spec load(module(), ets:tid(), boolean()) -> 'ok'.
+-spec load(module(), ets:tid()) -> 'ok'.
 
-load(Module, Instrumented, Report) ->
-  case ets:lookup(Instrumented, Module) of
-    [] ->
+load(Module, Instrumented) ->
+  case ets:lookup(Instrumented, Module) =:= [] of
+    true ->
       ?debug_flag(?call, {load, Module}),
+      Logger = ets:lookup_element(Instrumented, {logger}, 2),
+      ?log(Logger, ?linfo, "Instrumenting: ~p~n", [Module]),
       {Beam, Filename} =
         case code:which(Module) of
           preloaded ->
@@ -30,38 +32,24 @@ load(Module, Instrumented, Report) ->
           F ->
             {F, F}
         end,
-      try_report(Report, Module, Instrumented),
       catch load_binary(Module, Filename, Beam, Instrumented),
-      maybe_instrumenting_myself(Module, Instrumented, Report);
-    [{Module, false}] when Report ->
-      try_report(Report, Module, Instrumented);
-    _ -> ok
-  end.
-
-try_report(Report, Module, Instrumented) ->
-  ets:insert(Instrumented, {Module, Report}),
-  case Report of
-    false -> ok;
-    true ->
-      case ets:lookup(Instrumented, {logger}) of
-        [{_,Logger}] ->
-          Format = "Instrumenting: ~p~n",
-          ?log(Logger, ?linfo, Format, [Module]),
-          ok;
-        [] -> ok
-      end
+      maybe_instrumenting_myself(Module, Instrumented);
+    false -> ok
   end.
 
 -spec load_binary(module(), string(), beam_lib:beam(), ets:tid()) -> 'ok'.
 
 load_binary(Module, Filename, Beam, Instrumented) ->
+  ets:insert(Instrumented, {Module}),
   Core = get_core(Beam),
   InstrumentedCore =
     case Module =:= concuerror_inspect of
       true -> Core;
       false ->
         true = ets:insert(Instrumented, {{current}, Module}),
-        concuerror_instrumenter:instrument(Core, Instrumented)
+        I = concuerror_instrumenter:instrument(Core, Instrumented),
+        true = ets:delete(Instrumented, {current}),
+        I
     end,
   {ok, _, NewBinary} =
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
@@ -94,10 +82,10 @@ get_core(Beam) ->
       Core
   end.
 
-maybe_instrumenting_myself(Module, Instrumented, Report) ->
+maybe_instrumenting_myself(Module, Instrumented) ->
   case Module =:= concuerror_inspect of
     false -> ok;
     true ->
       Additional = concuerror_callback,
-      load(Additional, Instrumented, Report)
+      load(Additional, Instrumented)
   end.

@@ -13,7 +13,6 @@ run(RawOptions) ->
     Options = concuerror_options:finalize(RawOptions),
     Modules = ?opt(modules, Options),
     Processes = ?opt(processes, Options),
-    ok = concuerror_loader:load(concuerror_logger, Modules, false),
     Logger = concuerror_logger:start(Options),
     SchedulerOptions = [{logger, Logger}|Options],
     {Pid, Ref} =
