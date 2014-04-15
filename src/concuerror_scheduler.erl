@@ -317,10 +317,10 @@ update_state(#event{actor = Actor, special = Special} = Event, State) ->
     Last#trace_state{done = NewLastDone, wakeup_tree = NewLastWakeupTree},
   InitNewState =
     State#scheduler_state{trace = [InitNextTrace, NewLastTrace|Prev]},
-  NewState = maybe_log_crash(Event, InitNewState, Index),
+  NewState = maybe_log(Event, InitNewState, Index),
   {ok, update_special(Special, NewState)}.
 
-maybe_log_crash(Event, State, Index) ->
+maybe_log(Event, State, Index) ->
   #scheduler_state{logger = Logger, treat_as_normal = Normal} = State,
   case Event#event.event_info of
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
@@ -332,7 +332,7 @@ maybe_log_crash(Event, State, Index) ->
         end,
       case is_atom(Tag) andalso lists:member(Tag, Normal) of
         true ->
-          ?unique(Logger, ?linfo, msg(treat_as_normal), []),
+          ?unique(Logger, ?lwarning, msg(treat_as_normal), []),
           State;
         false ->
           if WasTimeout -> ?unique(Logger, ?ltip, msg(timeout), []);
@@ -345,6 +345,10 @@ maybe_log_crash(Event, State, Index) ->
           NewWarnings = [{crash, {Index, Actor, Reason, Stacktrace}}|Warnings],
           State#scheduler_state{current_warnings = NewWarnings}
       end;
+    #builtin_event{mfargs = {erlang, exit, [_,Reason]}}
+      when Reason =/= normal ->
+      ?unique(Logger, ?ltip, msg(signal), []),
+      State;
     _ -> State
   end.
 
@@ -799,7 +803,7 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
       #scheduler_state{print_depth = PrintDepth} = State,
       ?crash({replay_mismatch, I, Event, NewEvent, PrintDepth})
   end,
-  replay_prefix_aux(Rest, maybe_log_crash(Event, State, I)).
+  replay_prefix_aux(Rest, maybe_log(Event, State, I)).
 
 %% =============================================================================
 %% INTERNAL INTERFACES
@@ -880,14 +884,19 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 
 %%==============================================================================
 
-msg(treat_as_normal) ->
-  "Some exit reasons were treated as normal (--treat_as_normal).~n";
+msg(signal) ->
+  "An abnormal exit signal was sent to a process. This is probably the worst"
+    " thing that can happen race-wise, as any other side-effecting"
+    " operation races with the arrival of the signal. If the test produces"
+    " too many interleavings consider refactoring your code.";
+msg(shutdown) ->
+  "A process crashed with reason 'shutdown'. This may happen when a"
+    " supervisor is terminating its children. You can use --treat_as_normal"
+    " shutdown if this is expected behaviour.~n";
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"
     " standard timeout. Use the --after_timeout option to treat after clauses"
     " that exceed some threshold as 'impossible'.~n";
-msg(shutdown) ->
-  "A process crashed with reason shutdown. This may happen when a"
-    " supervisor is terminating its children. You can use --treat_as_normal"
-    " shutdown if this is expected behaviour.~n".
+msg(treat_as_normal) ->
+  "Some exit reasons were treated as normal (--treat_as_normal).~n".
