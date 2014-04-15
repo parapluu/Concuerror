@@ -320,16 +320,18 @@ update_state(#event{actor = Actor, special = Special} = Event, State) ->
   NewState = maybe_log_crash(Event, InitNewState, Index),
   {ok, update_special(Special, NewState)}.
 
-maybe_log_crash(Event, #scheduler_state{treat_as_normal = Normal} = State, Index) ->
+maybe_log_crash(Event, State, Index) ->
+  #scheduler_state{treat_as_normal = Normal} = State,
   case Event#event.event_info of
-    #exit_event{reason = Reason} = Exit ->
+    #exit_event{reason = Reason} = Exit when Reason =/= normal ->
       Filter =
         if is_tuple(Reason), size(Reason) > 0 -> element(1, Reason);
            true -> Reason
         end,
       case is_atom(Filter) andalso lists:member(Filter, Normal) of
         true ->
-          Message = "Some exit reasons were treated as normal (--treat_as_normal).~n",
+          Message =
+            "Some exit reasons were treated as normal (--treat_as_normal).~n",
           ?unique_info(State#scheduler_state.logger, Message, []),
           State;
         false ->

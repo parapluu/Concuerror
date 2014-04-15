@@ -100,7 +100,7 @@ options() ->
     "Concuerror will not report errors of the specified kind: 'crash' (all"
     " process crashes, see also next option for more refined control), 'deadlock'"
     " (processes waiting at a receive statement), 'depth_bound'."}
-  ,{treat_as_normal, undefined, {atom, normal},
+  ,{treat_as_normal, undefined, atom,
     "A process that exits with reason the specified atom (or with a reason that"
     " is a tuple with the specified atom as a first element) will not be"
     " reported as exiting abnormally. Useful e.g. when analyzing supervisors"
@@ -150,6 +150,7 @@ finalize(Options) ->
             add_missing_defaults(
               [{verbosity, ?DEFAULT_VERBOSITY},
                {non_racing_system, []},
+               {treat_as_normal, []},
                {ignore_error, []}], Finalized),
           add_missing_getopt_defaults(MissingDefaults);
         _ ->
@@ -180,12 +181,7 @@ finalize([{Key, V}|Rest], Acc)
     Key =:= ignore_error;
     Key =:= non_racing_system;
     Key =:= treat_as_normal ->
-  AlwaysAdd =
-    case Key of
-      treat_as_normal -> [normal];
-      _ -> []
-    end,
-  Values = [V|AlwaysAdd] ++ proplists:get_all_values(Key, Rest),
+  Values = [V|proplists:get_all_values(Key, Rest)],
   NewRest = proplists:delete(Key, Rest),
   finalize(NewRest, [{Key, lists:usort(Values)}|Acc]);
 finalize([{verbosity, N}|Rest], Acc) ->
