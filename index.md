@@ -5,12 +5,12 @@ layout: page
 What is Concuerror
 ==================
 
-Concuerror is a tool for systematic testing of concurrent Erlang programs. You can read more in the [FAQ](/faq/) section.
+Concuerror is a tool for systematically testing concurrent Erlang programs. You can read more in the [FAQ](/faq/) section.
 
 Where can I get Concuerror
 ==========================
 
-Concuerror's source code is available on [Github](https://github.com/mariachris/Concuerror). You can read more on the [Downloads](/download/) page.
+Concuerror's source code is available on [Github](https://github.com/parapluu/Concuerror). You can read more on the [Downloads](/download/) page.
 
 Where to go from here?
 ======================
