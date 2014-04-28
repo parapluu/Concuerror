@@ -25,7 +25,7 @@
 -type event_tree() :: [{event(), event_tree()}].
 
 -record(trace_state, {
-          active_processes = ordsets:new() :: ordsets:ordset(pid()),
+          active_processes = []            :: [pid()],
           clock_map        = dict:new()    :: clock_map(),
           done             = []            :: [event()],
           index            = 1             :: index(),
@@ -47,10 +47,13 @@
           first_process            :: {pid(), mfargs()},
           ignore_error      = []   :: [atom()],
           logger                   :: pid(),
+          last_scheduled           :: pid(),
           message_info             :: message_info(),
           non_racing_system = []   :: [atom()],
           print_depth              :: pos_integer(),
           processes                :: processes(),
+          scheduling = oldest      :: scheduling(),
+          strict_scheduling = false :: boolean(),
           timeout                  :: timeout(),
           trace             = []   :: [trace_state()],
           treat_as_normal   = []   :: [atom()]
@@ -80,11 +83,14 @@ run(Options) ->
        depth_bound = ?opt(depth_bound, Options),
        first_process = {FirstProcess, EntryPoint = ?opt(entry_point, Options)},
        ignore_error = ?opt(ignore_error, Options),
+       last_scheduled = FirstProcess,
        logger = Logger = ?opt(logger, Options),
        message_info = ets:new(message_info, [private]),
        non_racing_system = ?opt(non_racing_system, Options),
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
+       scheduling = ?opt(scheduling, Options),
+       strict_scheduling = ?opt(strict_scheduling, Options),
        trace = [InitialTrace],
        treat_as_normal = ?opt(treat_as_normal, Options),
        timeout = Timeout = ?opt(timeout, Options)
@@ -190,8 +196,8 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
       Event = #event{label = make_ref()},
       {AvailablePendingMessages, AvailableActiveProcesses} =
         filter_sleeping(Sleeping, PendingMessages, ActiveProcesses),
-      get_next_event(Event, AvailablePendingMessages, AvailableActiveProcesses,
-                     State);
+      SortedProcesses = schedule_sort(AvailableActiveProcesses, State),
+      get_next_event(Event, AvailablePendingMessages, SortedProcesses, State);
     [{#event{label = Label} = Event, _}|_] ->
       {ok, UpdatedEvent} =
         case Label =/= undefined of
@@ -219,9 +225,33 @@ filter_sleeping([#event{actor = Channel}|Sleeping],
   filter_sleeping(Sleeping, NewPendingMessages, ActiveProcesses);
 filter_sleeping([#event{actor = Pid}|Sleeping],
                 PendingMessages, ActiveProcesses) ->
-  NewActiveProcesses = ordsets:del_element(Pid, ActiveProcesses),
+  NewActiveProcesses = lists:delete(Pid, ActiveProcesses),
   filter_sleeping(Sleeping, PendingMessages, NewActiveProcesses).
 
+schedule_sort(ActiveProcesses, State) ->
+  #scheduler_state{
+     last_scheduled = LastScheduled,
+     scheduling = Scheduling,
+     strict_scheduling = StrictScheduling
+    } = State,
+  Sorted =
+    case Scheduling of
+      oldest -> ActiveProcesses;
+      newest -> lists:reverse(ActiveProcesses);
+      round_robin ->
+        Split = fun(E) -> E =/= LastScheduled end,    
+        {Pre, Post} = lists:splitwith(Split, ActiveProcesses),
+        Post ++ Pre
+    end,
+  case StrictScheduling of
+    true when Scheduling =:= round_robin ->
+      [LastScheduled|Rest] = Sorted,
+      Rest ++ [LastScheduled];
+    false when Scheduling =/= round_robin ->
+      [LastScheduled|lists:delete(LastScheduled, Sorted)];
+    _ -> Sorted
+  end.        
+  
 get_next_event(Event, [{Channel, Queue}|_], _ActiveProcesses, State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
@@ -234,12 +264,13 @@ get_next_event(Event, [], [P|ActiveProcesses], State) ->
     exited ->
       #scheduler_state{trace = [Top|Rest]} = State,
       #trace_state{active_processes = Active} = Top,
-      NewActive = ordsets:del_element(P, Active),
+      NewActive = lists:delete(P, Active),
       NewTop = Top#trace_state{active_processes = NewActive},
       NewState = State#scheduler_state{trace = [NewTop|Rest]},
       get_next_event(Event, [], ActiveProcesses, NewState);
     retry -> get_next_event(Event, [], ActiveProcesses, State);
-    {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
+    {ok, UpdatedEvent} ->
+      update_state(UpdatedEvent, State#scheduler_state{last_scheduled = P})
   end;
 get_next_event(_Event, [], [], State) ->
   %% Nothing to do, trace is completely explored
@@ -394,9 +425,7 @@ update_special(Special, State) ->
     {new, SpawnedPid} ->
       #trace_state{active_processes = ActiveProcesses} = Next,
       NewNext =
-        Next#trace_state{
-          active_processes = ordsets:add_element(SpawnedPid, ActiveProcesses)
-         },
+        Next#trace_state{active_processes = ActiveProcesses ++ [SpawnedPid]},
       State#scheduler_state{trace = [NewNext|Trace]};
     {system_communication, _} ->
       State

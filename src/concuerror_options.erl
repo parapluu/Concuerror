@@ -93,13 +93,19 @@ options() ->
   ,{instant_delivery, undefined, {boolean, false},
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
+  ,{scheduling, undefined, {atom, oldest},
+    "How Concuerror picks the next process to run. Valid choices are 'oldest',"
+    " 'newest' and 'round_robin'."}
+  ,{strict_scheduling, undefined, {boolean, false},
+    "Whether Concuerror should enforce the scheduling strategy strictly or lets"
+    " a process run until blocked before reconsidering the scheduling policy."}
   ,{ignore_first_crash, $i, {boolean, false},
     "If not enabled, Concuerror will immediately exit if the first interleaving"
     " contains errors."}
   ,{ignore_error, undefined, atom,
     "Concuerror will not report errors of the specified kind: 'crash' (all"
-    " process crashes, see also next option for more refined control), 'deadlock'"
-    " (processes waiting at a receive statement), 'depth_bound'."}
+    " process crashes, see also next option for more refined control),"
+    " 'deadlock' (processes waiting at a receive statement), 'depth_bound'."}
   ,{treat_as_normal, undefined, atom,
     "A process that exits with reason the specified atom (or with a reason that"
     " is a tuple with the specified atom as a first element) will not be"
