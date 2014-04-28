@@ -1,15 +1,30 @@
 ################################################################################
 Concuerror started with options:
-  [{'after-timeout',infinite},
+  [{after_timeout,infinity},
    {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{simple_registry,simple_registry,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/simple_registry.erl"]},
-   {normal_exit,[normal]},
-   {symbolic,true},
-   {target,{simple_registry,simple_registry,[]}},
-   {verbose,0},
-   {wait,2000}]
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {scheduling,oldest},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
   No errors found!
 ################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: simple_registry
+Instrumenting: io_lib
+Instrumenting: erlang
+################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 89/89 interleavings explored
+  Summary: 0 errors, 103/103 interleavings explored

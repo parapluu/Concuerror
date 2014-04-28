@@ -228,6 +228,7 @@ filter_sleeping([#event{actor = Pid}|Sleeping],
   NewActiveProcesses = lists:delete(Pid, ActiveProcesses),
   filter_sleeping(Sleeping, PendingMessages, NewActiveProcesses).
 
+schedule_sort([], _State) -> [];
 schedule_sort(ActiveProcesses, State) ->
   #scheduler_state{
      last_scheduled = LastScheduled,
@@ -269,8 +270,7 @@ get_next_event(Event, [], [P|ActiveProcesses], State) ->
       NewState = State#scheduler_state{trace = [NewTop|Rest]},
       get_next_event(Event, [], ActiveProcesses, NewState);
     retry -> get_next_event(Event, [], ActiveProcesses, State);
-    {ok, UpdatedEvent} ->
-      update_state(UpdatedEvent, State#scheduler_state{last_scheduled = P})
+    {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
   end;
 get_next_event(_Event, [], [], State) ->
   %% Nothing to do, trace is completely explored
@@ -351,8 +351,13 @@ update_state(#event{actor = Actor, special = Special} = Event, State) ->
   NewState = maybe_log(Event, InitNewState, Index),
   {ok, update_special(Special, NewState)}.
 
-maybe_log(Event, State, Index) ->
-  #scheduler_state{logger = Logger, treat_as_normal = Normal} = State,
+maybe_log(Event, State0, Index) ->
+  #scheduler_state{logger = Logger, treat_as_normal = Normal} = State0,
+  State = 
+    case Event#event.actor of
+      P when is_pid(P) -> State0#scheduler_state{last_scheduled = P};
+      _ -> State0
+    end,
   case Event#event.event_info of
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
       {Tag, WasTimeout} =
