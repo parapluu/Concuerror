@@ -415,6 +415,7 @@ run_built_in(erlang, Name, 0, [], Info)
   when
     Name =:= date;
     Name =:= make_ref;
+    Name =:= now;
     Name =:= time
     ->
   #concuerror_info{event = #event{event_info = EventInfo}} = Info,
@@ -831,6 +832,7 @@ run_built_in(ets, F, N, [Name|Args], Info)
     ;{F,N} =:= {lookup, 2}
     ;{F,N} =:= {lookup_element, 3}
     ;{F,N} =:= {match, 2}
+    ;{F,N} =:= {match_object, 2}
     ;{F,N} =:= {member, 2}
     ;{F,N} =:= {next,   2}
     ;{F,N} =:= {select, 2}
@@ -1469,6 +1471,7 @@ ets_ops_access_rights_map(Op) ->
     {lookup        ,_} -> read;
     {lookup_element,_} -> read;
     {match         ,_} -> read;
+    {match_object  ,_} -> read;
     {member        ,_} -> read;
     {next          ,_} -> read;
     {select        ,_} -> read;
@@ -1649,7 +1652,9 @@ fix_stacktrace(#concuerror_info{stacktop = Top}) ->
 
 handle_io({io_request, From, ReplyAs, Req}, IOState) ->
   {Reply, NewIOState} = io_request(Req, IOState),
-  {From, {io_reply, ReplyAs, Reply}, NewIOState}.
+  {From, {io_reply, ReplyAs, Reply}, NewIOState};
+handle_io(_, _) ->
+  throw(no_reply).
 
 io_request({put_chars, Chars}, {Tag, Data} = IOState) ->
   case is_atom(Tag) of
@@ -1739,7 +1744,7 @@ explain_error({process_did_not_respond, Timeout, Actor}) ->
 explain_error({system_wrapper_error, Name, Type, Reason, Stacktrace}) ->
   io_lib:format(
     "Concuerror's wrapper for system process ~p crashed (~p):~n"
-    "  Reason:~p~n"
+    "  Reason: ~p~n"
     "Stacktrace:~n"
     " ~p~n"
     ?notify_us_msg,

@@ -38,6 +38,11 @@ dependent(#builtin_event{mfargs = {erlang, halt, _}}, _) ->
 dependent(_, #builtin_event{mfargs = {erlang, halt, _}}) ->
   true;
 
+dependent(#builtin_event{mfargs = MFArgs}, #exit_event{} = Exit) ->
+  dependent_exit(Exit, MFArgs);
+dependent(#exit_event{} = Exit, #builtin_event{} = Builtin) ->
+  dependent(Builtin, Exit);
+
 dependent(#builtin_event{mfargs = {erlang, process_info, _}} = PInfo, B) ->
   dependent_process_info(PInfo, B);
 dependent(B, #builtin_event{mfargs = {erlang, process_info, _}} = PInfo) ->
@@ -45,11 +50,6 @@ dependent(B, #builtin_event{mfargs = {erlang, process_info, _}} = PInfo) ->
 
 dependent(#builtin_event{} = BI1, #builtin_event{} = BI2) ->
   dependent_built_in(BI1, BI2);
-
-dependent(#builtin_event{mfargs = MFArgs}, #exit_event{} = Exit) ->
-  dependent_exit(Exit, MFArgs);
-dependent(#exit_event{} = Exit, #builtin_event{} = Builtin) ->
-  dependent(Builtin, Exit);
 
 dependent(#builtin_event{actor = Actor, exiting = false,
                          trapping = Trapping} = Builtin,
@@ -159,6 +159,9 @@ dependent_exit(#exit_event{actor = Cancelled},
 dependent_exit(#exit_event{actor = Exiting},
                {erlang, is_process_alive, [Pid]}) ->
   Exiting =:= Pid;
+dependent_exit(#exit_event{actor = Exiting},
+               {erlang, process_info, [Pid|_]}) ->
+  Exiting =:= Pid;
 dependent_exit(#exit_event{actor = Exiting}, {erlang, UnLink, [Linked]})
   when UnLink =:= link; UnLink =:= unlink ->
   Exiting =:= Linked;
@@ -221,6 +224,15 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, dictionary]}},
     #exit_event{actor = EPid} ->
       Pid =:= EPid;
     _ -> false
+  end;
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, messages]}},
+                       Other) ->
+  case Other of
+    #message_event{recipient = Recipient} ->
+      Recipient =:= Pid;
+    #receive_event{recipient = Recipient, message = M} ->
+      Recipient =:= Pid andalso M =/= 'after';
+    _ -> false
   end.
 
 %%------------------------------------------------------------------------------
@@ -245,6 +257,7 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
                    #builtin_event{mfargs = {erlang, B, _}})
   when
     false
+    ;A =:= date
     ;A =:= demonitor        %% Depends only with an exit event or proc_info
     ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
     ;A =:= get_stacktrace   %% Depends with nothing
@@ -252,13 +265,16 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;A =:= is_process_alive %% Depends only with an exit event
     ;A =:= make_ref         %% Depends with nothing
     ;A =:= monitor          %% Depends only with an exit event or proc_info
+    ;A =:= now
     ;A =:= process_flag     %% Depends only with delivery of a signal
     ;A =:= put              %% Depends only with proc_info
     ;A =:= spawn            %% Depends only with proc_info
     ;A =:= spawn_link       %% Depends only with proc_info
     ;A =:= spawn_opt        %% Depends only with proc_info
     ;A =:= start_timer
+    ;A =:= time
     
+    ;B =:= date
     ;B =:= demonitor
     ;B =:= exit
     ;B =:= get_stacktrace
@@ -266,12 +282,14 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;B =:= is_process_alive
     ;B =:= make_ref
     ;B =:= monitor
+    ;B =:= now
     ;B =:= process_flag
     ;B =:= put
     ;B =:= spawn
     ;B =:= spawn_link
     ;B =:= spawn_opt
     ;B =:= start_timer
+    ;B =:= time
     ->
   false;
 
