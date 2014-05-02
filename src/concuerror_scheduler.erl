@@ -393,8 +393,7 @@ update_sleeping(NewEvent, Sleeping, State) ->
   Pred =
     fun(OldEvent) ->
         V = concuerror_dependencies:dependent_safe(OldEvent, NewEvent),
-        ?trace(Logger, "AWAKE (~p):~n~s~nvs~n~s~n",
-               [V|[?pretty_s(E) || E <- [OldEvent, NewEvent]]]),
+        ?trace(Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
         V =:= false
     end,
   lists:filter(Pred, Sleeping).
@@ -726,9 +725,8 @@ not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
   not_dep(Rest, Actor, Index, Event, NewNotDep).
 
 trace_plan(Logger, Index, NotDep) ->
-  From = Index + 1,
-  To = Index + length(NotDep),
-  IndexedNotDep = lists:zip(lists:seq(From,To),NotDep),
+  Indices = lists:seq(Index, Index + length(NotDep) - 1),
+  IndexedNotDep = lists:zip(Indices, NotDep),
   ?trace(
      Logger, "     PLAN~n~s",
      [lists:append(

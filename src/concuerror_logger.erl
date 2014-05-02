@@ -156,7 +156,7 @@ loop(Message, State) ->
     {time, Tag} ->
       Now = erlang:now(),
       Diff = timer:now_diff(Now, Timestamp) / 1000000,
-      Msg = "Timer: +~5.2fs ~s~n",
+      Msg = "~nTimer: +~5.2fs ~s~n",
       loop(
         {log, ?ltiming, none, Msg, [Diff, Tag]},
         State#logger_state{timestamp = Now});
