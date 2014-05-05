@@ -101,10 +101,10 @@ dependent(#message_event{
              type = Type
             }) ->
   Patterns =
-    case is_integer(MaybePatterns) of
-      false -> MaybePatterns;
-      true ->
-        ets:lookup_element(MaybePatterns, Id, ?message_pattern)
+    case MaybePatterns of
+      {ref, Table} ->
+        ets:lookup_element(Table, Id, ?message_pattern);
+      _ -> MaybePatterns
     end,
   is_function(Patterns)
     andalso

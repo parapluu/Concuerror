@@ -202,7 +202,7 @@
           cause_label      :: label(),
           instant = true   :: boolean(),
           message          :: message(),
-          patterns = none  :: 'none' | receive_pattern_fun(),
+          patterns = none  :: 'none' | receive_pattern_fun() | {'ref', message_info()},
           recipient        :: pid(),
           sender = self()  :: pid(),
           trapping = false :: boolean(),

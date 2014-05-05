@@ -506,7 +506,8 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
         Delivery = {?message_delivered, HappenedBeforeClock},
         ets:update_element(MessageInfo, Id, Delivery),
         UpdatedMessageEvent =
-          {message_delivered, MessageEvent#message_event{patterns = MessageInfo}},
+          {message_delivered,
+           MessageEvent#message_event{patterns = {ref, MessageInfo}}},
         UpdatedSpecial =
           lists:keyreplace(message_delivered, 1, Special, UpdatedMessageEvent),
         Event#event{special = UpdatedSpecial}
@@ -710,7 +711,7 @@ not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
             {message_delivered, MessageEvent} ->
               #message_event{
                  message = #message{id = Id},
-                 patterns = MessageInfo
+                 patterns = {ref, MessageInfo}
                 } = MessageEvent,
               Patterns = ets:lookup_element(MessageInfo, Id, ?message_pattern),
               UpdatedMessageEvent =
