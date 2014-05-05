@@ -506,9 +506,8 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
         #message_event{message = #message{id = Id}} = MessageEvent,
         Delivery = {?message_delivered, HappenedBeforeClock},
         ets:update_element(MessageInfo, Id, Delivery),
-        Patterns = ets:lookup_element(MessageInfo, Id, ?message_pattern),
         UpdatedMessageEvent =
-          {message_delivered, MessageEvent#message_event{patterns = Patterns}},
+          {message_delivered, MessageEvent#message_event{patterns = MessageInfo}},
         UpdatedSpecial =
           lists:keyreplace(message_delivered, 1, Special, UpdatedMessageEvent),
         Event#event{special = UpdatedSpecial}
@@ -698,7 +697,7 @@ not_dep([], _Actor, _Index, Event, NotDep) ->
 not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
   #trace_state{
      clock_map = ClockMap,
-     done = [#event{actor = LaterActor} = LaterEvent|_]
+     done = [#event{actor = LaterActor, special = Special} = LaterEvent|_]
     } = TraceState,
   LaterClock = lookup_clock(LaterActor, ClockMap),
   ActorLaterClock = lookup_clock_value(Actor, LaterClock),
@@ -706,7 +705,23 @@ not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
     case Index > ActorLaterClock of
       false -> NotDep;
       true ->
-        [LaterEvent|NotDep]
+        UpdatedEvent =
+          case proplists:lookup(message_delivered, Special) of
+            none -> LaterEvent;
+            {message_delivered, MessageEvent} ->
+              #message_event{
+                 message = #message{id = Id},
+                 patterns = MessageInfo
+                } = MessageEvent,
+              Patterns = ets:lookup_element(MessageInfo, Id, ?message_pattern),
+              UpdatedMessageEvent =
+                {message_delivered,
+                 MessageEvent#message_event{patterns = Patterns}},
+              UpdatedSpecial =
+                lists:keyreplace(message_delivered, 1, Special, UpdatedMessageEvent),
+              LaterEvent#event{special = UpdatedSpecial}
+          end,
+        [UpdatedEvent|NotDep]
     end,
   not_dep(Rest, Actor, Index, Event, NewNotDep).
 

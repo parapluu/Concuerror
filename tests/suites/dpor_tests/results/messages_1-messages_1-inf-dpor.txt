@@ -1,15 +1,30 @@
 ################################################################################
 Concuerror started with options:
-  [{'after-timeout',infinite},
+  [{after_timeout,infinity},
    {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{messages_1,messages_1,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/messages_1.erl"]},
-   {normal_exit,[normal]},
-   {symbolic,true},
-   {target,{messages_1,messages_1,[]}},
-   {verbose,0},
-   {wait,2000}]
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {scheduling,oldest},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
   No errors found!
 ################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: messages_1
+Instrumenting: io_lib
+Instrumenting: erlang
+################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 3/3 interleavings explored
+  Summary: 0 errors, 5/5 interleavings explored

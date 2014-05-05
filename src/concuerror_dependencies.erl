@@ -91,7 +91,8 @@ dependent(#exit_event{}, #exit_event{}) ->
   false;
 
 dependent(#message_event{
-             patterns = Patterns,
+             message = #message{id = Id},
+             patterns = MaybePatterns,
              recipient = Recipient,
              trapping = Trapping},
           #message_event{
@@ -99,6 +100,12 @@ dependent(#message_event{
              recipient = Recipient,
              type = Type
             }) ->
+  Patterns =
+    case is_integer(MaybePatterns) of
+      false -> MaybePatterns;
+      true ->
+        ets:lookup_element(MaybePatterns, Id, ?message_pattern)
+    end,
   is_function(Patterns)
     andalso
     message_could_match(Patterns, Data, Trapping, Type);
