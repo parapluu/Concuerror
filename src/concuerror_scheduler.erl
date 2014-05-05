@@ -276,7 +276,7 @@ get_next_event(_Event, [], [], State) ->
   %% Nothing to do, trace is completely explored
   #scheduler_state{
      current_warnings = Warnings,
-     logger = Logger,
+     logger = _Logger,
      trace = [Last|Prev]
     } = State,
   #trace_state{
@@ -286,12 +286,12 @@ get_next_event(_Event, [], [], State) ->
   NewWarnings =
     case Sleeping =/= [] of
       true ->
-        ?debug(Logger, "Sleep set block:~n ~p~n", [Sleeping]),
+        ?debug(_Logger, "Sleep set block:~n ~p~n", [Sleeping]),
         [{sleep_set_block, Sleeping}|Warnings];
       false ->
         case ActiveProcesses =/= [] of
           true ->
-            ?debug(Logger, "Deadlock: ~p~n~n", [ActiveProcesses]),
+            ?debug(_Logger, "Deadlock: ~p~n~n", [ActiveProcesses]),
             Info = concuerror_callback:collect_deadlock_info(ActiveProcesses),
             [{deadlock, Info}|Warnings];
           false -> Warnings
@@ -314,7 +314,7 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 %%------------------------------------------------------------------------------
 
 update_state(#event{actor = Actor, special = Special} = Event, State) ->
-  #scheduler_state{logger = Logger, trace = [Last|Prev]} = State,
+  #scheduler_state{logger = _Logger, trace = [Last|Prev]} = State,
   #trace_state{
      active_processes = ActiveProcesses,
      done             = Done,
@@ -324,7 +324,7 @@ update_state(#event{actor = Actor, special = Special} = Event, State) ->
      sleeping         = Sleeping,
      wakeup_tree      = WakeupTree
     } = Last,
-  ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
+  ?trace(_Logger, "~s~n", [?pretty_s(Index, Event)]),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
   NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =
@@ -389,11 +389,11 @@ maybe_log(Event, State0, Index) ->
   end.
 
 update_sleeping(NewEvent, Sleeping, State) ->
-  #scheduler_state{logger = Logger} = State,
+  #scheduler_state{logger = _Logger} = State,
   Pred =
     fun(OldEvent) ->
         V = concuerror_dependencies:dependent_safe(OldEvent, NewEvent),
-        ?trace(Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
+        ?trace(_Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
         V =:= false
     end,
   lists:filter(Pred, Sleeping).
@@ -486,13 +486,13 @@ assign_happens_before(UntimedLate, RevEarly, State) ->
 assign_happens_before([], RevLate, _RevEarly, _State) ->
   lists:reverse(RevLate);
 assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
-  #scheduler_state{logger = Logger, message_info = MessageInfo} = State,
+  #scheduler_state{logger = _Logger, message_info = MessageInfo} = State,
   #trace_state{done = [Event|RestEvents], index = Index} = TraceState,
   #event{actor = Actor, special = Special} = Event,
   ClockMap = get_base_clock(RevLate, RevEarly),
   OldClock = lookup_clock(Actor, ClockMap),
   ActorClock = orddict:store(Actor, Index, OldClock),
-  ?trace(Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
+  ?trace(_Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
   BaseHappenedBeforeClock =
     add_pre_message_clocks(Special, MessageInfo, ActorClock),
   HappenedBeforeClock =
@@ -577,7 +577,10 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
           concuerror_dependencies:dependent(EarlyEvent, Event, AssumeRacing),
         ?trace(State#scheduler_state.logger,
                "    ~s ~s~n",
-               [star(Dependent), ?pretty_s(EarlyIndex,EarlyEvent)]),
+               begin
+                 Star = fun(false) -> " ";(_) -> "*" end,
+                 [Star(Dependent), ?pretty_s(EarlyIndex,EarlyEvent)]
+               end),
         case Dependent of
           false -> Clock;
           True when True =:= true; True =:= irreversible ->
@@ -587,9 +590,6 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
         end
     end,
   update_clock(Rest, Event, NewClock, State).
-
-star(false) -> " ";
-star(_) -> "*".  
 
 maybe_mark_sent_message(Special, Clock, MessageInfo) when is_list(Special)->
   Message = proplists:lookup(message, Special),
@@ -603,11 +603,11 @@ plan_more_interleavings([], OldTrace, _SchedulerState) ->
   OldTrace;
 plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
   #scheduler_state{
-     logger = Logger,
+     logger = _Logger,
      message_info = MessageInfo,
      non_racing_system = NonRacingSystem
     } = State,
-  #trace_state{done = [Event|_], index = Index} = TraceState,
+  #trace_state{done = [Event|_], index = _Index} = TraceState,
   #event{actor = Actor, event_info = EventInfo, special = Special} = Event,
   Skip =
     case proplists:lookup(system_communication, Special) of
@@ -627,7 +627,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
             message_clock(Id, MessageInfo, ActorClock);
           false -> ActorClock
         end,
-      ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
+      ?trace(_Logger, "~s~n", [?pretty_s(_Index, Event)]),
       BaseNewOldTrace =
         more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, State),
       NewOldTrace = [TraceState|BaseNewOldTrace],
@@ -724,14 +724,16 @@ not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
     end,
   not_dep(Rest, Actor, Index, Event, NewNotDep).
 
-trace_plan(Logger, Index, NotDep) ->
-  Indices = lists:seq(Index, Index + length(NotDep) - 1),
-  IndexedNotDep = lists:zip(Indices, NotDep),
+trace_plan(_Logger, _Index, _NotDep) ->
   ?trace(
-     Logger, "     PLAN~n~s",
-     [lists:append(
-        [io_lib:format("        ~s~n", [?pretty_s(I,S)])
-         || {I,S} <- IndexedNotDep])]).
+     _Logger, "     PLAN~n~s",
+     begin
+       Indices = lists:seq(_Index, _Index + length(_NotDep) - 1),
+       IndexedNotDep = lists:zip(Indices, _NotDep),
+       [lists:append(
+          [io_lib:format("        ~s~n", [?pretty_s(I,S)])
+           || {I,S} <- IndexedNotDep])]
+     end).
 
 insert_wakeup([Sleeping|Rest], Wakeup, NotDep) ->
   case check_initial(Sleeping, NotDep) =:= false of
@@ -806,8 +808,8 @@ reset_receive(Last, State) ->
   %% Reset receive info
   case Last of
     #message_event{message = #message{id = Id}} ->
-      #scheduler_state{logger = Logger, message_info = MessageInfo} = State,
-      ?trace(Logger, "Reset: ~p~n", [Id]),
+      #scheduler_state{logger = _Logger, message_info = MessageInfo} = State,
+      ?trace(_Logger, "Reset: ~p~n", [Id]),
       Update = {?message_pattern, undefined},
       true = ets:update_element(MessageInfo, Id, Update);
     _Other -> true
@@ -840,8 +842,8 @@ replay_prefix_aux([_], State) ->
   %% Last state has to be properly replayed.
   State;
 replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
-  #scheduler_state{logger = Logger, print_depth = PrintDepth} = State,
-  ?trace(Logger, "~s~n", [?pretty_s(I, Event)]),
+  #scheduler_state{logger = _Logger, print_depth = PrintDepth} = State,
+  ?trace(_Logger, "~s~n", [?pretty_s(I, Event)]),
   {ok, NewEvent} = get_next_event_backend(Event, State),
   try
     true = Event =:= NewEvent

@@ -63,8 +63,6 @@
 
 -define(nonunique, none).
 
--define(MAX_VERBOSITY, ?ltrace).
-
 -define(log(Logger, Level, Tag, Format, Data),
         concuerror_logger:log(Logger, Level, Tag, Format, Data)).
 
@@ -77,11 +75,17 @@
 -define(error(Logger, Format, Data),
         ?log(Logger, ?lerror, Format, Data)).
 
+-ifdef(DEV).
 -define(debug(Logger, Format, Data),
         ?ml_log(Logger, ?ldebug, Format, Data)).
-
 -define(trace(Logger, Format, Data),
         ?log(Logger, ?ltrace, Format, Data)).
+-define(MAX_VERBOSITY, ?ltrace).
+-else.
+-define(debug(Logger, Format, Data),ok).
+-define(trace(Logger, Format, Data),ok).
+-define(MAX_VERBOSITY, ?ltiming).
+-endif.
 
 -define(unique(Logger, Type, Format, Data),
         ?log(Logger, Type, {?MODULE, ?LINE}, Format, Data)).

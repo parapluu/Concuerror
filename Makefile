@@ -18,13 +18,13 @@ all: compile
 ### Application info
 ###----------------------------------------------------------------------
 
-VSN = 0.10
+VSN ?= 0.10
 
 ###----------------------------------------------------------------------
 ### Flags
 ###----------------------------------------------------------------------
 
-ERL_COMPILE_FLAGS = \
+ERL_COMPILE_FLAGS ?= \
 	+debug_info \
 	+warn_export_vars \
 	+warn_unused_import \
@@ -54,6 +54,9 @@ vpath %.erl src
 .PHONY: compile clean dialyze test submodules
 
 compile: $(MODULES:%=ebin/%.beam) getopt concuerror
+
+dev:
+	$(MAKE) ERL_COMPILE_FLAGS="$(ERL_COMPILE_FLAGS) -DDEV=true" VSN="$(VSN)d"
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(MODULES:%=ebin/%.Pbeam)
