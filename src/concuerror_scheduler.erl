@@ -371,12 +371,12 @@ update_state(#event{actor = Actor, special = Special} = Event, State) ->
   NewState = maybe_log(Event, InitNewState, Index),
   {ok, update_special(Special, NewState)}.
 
-maybe_log(Event, State0, Index) ->
+maybe_log(#event{actor = P} = Event, State0, Index) ->
   #scheduler_state{logger = Logger, treat_as_normal = Normal} = State0,
   State = 
-    case Event#event.actor of
-      P when is_pid(P) -> State0#scheduler_state{last_scheduled = P};
-      _ -> State0
+    case is_pid(P) of
+      true -> State0#scheduler_state{last_scheduled = P};
+      false -> State0
     end,
   case Event#event.event_info of
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
