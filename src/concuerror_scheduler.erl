@@ -682,29 +682,29 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
             NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             {update_clock, NC};
           true ->
-            NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             ?trace(Logger, "   races with ~s~n",
                    [?pretty_s(EarlyIndex, EarlyEvent)]),
+            NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             NotDep =
               not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event),
             #trace_state{wakeup_tree = WakeupTree} = TraceState,
             case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep) of
-              skip -> {update_clock, NC};
+              skip ->
+                ?trace(Logger, "     SKIP~n",[]),
+                {update_clock, NC};
               NewWakeupTree ->
                 concuerror_logger:plan(Logger),
                 trace_plan(Logger, EarlyIndex, NotDep),
                 NS = TraceState#trace_state{wakeup_tree = NewWakeupTree},
-                {update, NS, NC}
+                {update, [NS|NewOldTrace], NC}
             end
         end
     end,
   {NewTrace, NewClock} =
     case Action of
       none -> {[TraceState|NewOldTrace], Clock};
-      {update_clock, C} ->
-        ?trace(Logger, "     SKIP~n",[]),
-        {[TraceState|NewOldTrace], C};
-      {update, S, C} -> {[S|NewOldTrace], C}
+      {update_clock, C} -> {[TraceState|NewOldTrace], C};
+      {update, S, C} -> {S, C}
     end,
   more_interleavings_for_event(Rest, Event, Later, NewClock, State, NewTrace).
 
