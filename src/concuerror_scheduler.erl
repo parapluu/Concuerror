@@ -665,9 +665,8 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
   #scheduler_state{logger = Logger} = State,
   #trace_state{
      clock_map = EarlyClockMap,
-     done = [#event{actor = EarlyActor} = EarlyEvent|Done],
-     index = EarlyIndex,
-     sleeping = Sleeping
+     done = [#event{actor = EarlyActor} = EarlyEvent|_],
+     index = EarlyIndex
     } = TraceState,
   EarlyClock = lookup_clock_value(EarlyActor, Clock),
   Action =
@@ -685,18 +684,13 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
             ?trace(Logger, "   races with ~s~n",
                    [?pretty_s(EarlyIndex, EarlyEvent)]),
             NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
-            NotDep =
-              not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event),
-            #trace_state{wakeup_tree = WakeupTree} = TraceState,
-            case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep) of
-              skip ->
-                ?trace(Logger, "     SKIP~n",[]),
-                {update_clock, NC};
-              NewWakeupTree ->
+            case
+              update_trace(Event, TraceState, Later, NewOldTrace, State)
+            of
+              skip -> {update_clock, NC};
+              UpdatedNewOldTrace ->
                 concuerror_logger:plan(Logger),
-                trace_plan(Logger, EarlyIndex, NotDep),
-                NS = TraceState#trace_state{wakeup_tree = NewWakeupTree},
-                {update, [NS|NewOldTrace], NC}
+                {update, UpdatedNewOldTrace, NC}
             end
         end
     end,
@@ -707,6 +701,26 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
       {update, S, C} -> {S, C}
     end,
   more_interleavings_for_event(Rest, Event, Later, NewClock, State, NewTrace).
+
+update_trace(Event, TraceState, Later, NewOldTrace, State) ->
+  #scheduler_state{logger = Logger} = State,
+  #trace_state{
+     done = [#event{actor = EarlyActor}|Done],
+     index = EarlyIndex,
+     sleeping = Sleeping,
+     wakeup_tree = WakeupTree
+    } = TraceState,
+  NotDep =
+    not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event),
+  case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep) of
+    skip ->
+      ?trace(Logger, "     SKIP~n",[]),
+      skip;
+    NewWakeupTree ->
+      trace_plan(Logger, EarlyIndex, NotDep),
+      NS = TraceState#trace_state{wakeup_tree = NewWakeupTree},
+      [NS|NewOldTrace]
+  end.
 
 not_dep(Trace, Actor, Index, Event) ->
   not_dep(Trace, Actor, Index, Event, []).
