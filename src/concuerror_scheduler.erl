@@ -731,7 +731,7 @@ not_dep([], _Actor, _Index, Event, NotDep) ->
 not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
   #trace_state{
      clock_map = ClockMap,
-     done = [#event{actor = LaterActor, special = Special} = LaterEvent|_]
+     done = [#event{actor = LaterActor} = LaterEvent|_]
     } = TraceState,
   LaterClock = lookup_clock(LaterActor, ClockMap),
   ActorLaterClock = lookup_clock_value(Actor, LaterClock),
@@ -739,25 +739,26 @@ not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
     case Index > ActorLaterClock of
       false -> NotDep;
       true ->
-        UpdatedEvent =
-          case proplists:lookup(message_delivered, Special) of
-            none -> LaterEvent;
-            {message_delivered, MessageEvent} ->
-              #message_event{
-                 message = #message{id = Id},
-                 patterns = {ref, MessageInfo}
-                } = MessageEvent,
-              Patterns = ets:lookup_element(MessageInfo, Id, ?message_pattern),
-              UpdatedMessageEvent =
-                {message_delivered,
-                 MessageEvent#message_event{patterns = Patterns}},
-              UpdatedSpecial =
-                lists:keyreplace(message_delivered, 1, Special, UpdatedMessageEvent),
-              LaterEvent#event{special = UpdatedSpecial}
-          end,
+        UpdatedEvent = maybe_deref_message_delivery(LaterEvent),
         [UpdatedEvent|NotDep]
     end,
   not_dep(Rest, Actor, Index, Event, NewNotDep).
+
+maybe_deref_message_delivery(#event{special = Special} = Event) ->
+  case proplists:lookup(message_delivered, Special) of
+    none -> Event;
+    {message_delivered, MessageEvent} ->
+      #message_event{
+         message = #message{id = Id},
+         patterns = {ref, MessageInfo}
+        } = MessageEvent,
+      Patterns = ets:lookup_element(MessageInfo, Id, ?message_pattern),
+      UpdatedMessageEvent =
+        {message_delivered, MessageEvent#message_event{patterns = Patterns}},
+      UpdatedSpecial =
+        lists:keyreplace(message_delivered, 1, Special, UpdatedMessageEvent),
+      Event#event{special = UpdatedSpecial}
+  end.
 
 trace_plan(_Logger, _Index, _NotDep) ->
   ?trace(
