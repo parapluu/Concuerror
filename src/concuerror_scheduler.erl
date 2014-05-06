@@ -196,8 +196,11 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
       Event = #event{label = make_ref()},
       {AvailablePendingMessages, AvailableActiveProcesses} =
         filter_sleeping(Sleeping, PendingMessages, ActiveProcesses),
-      SortedProcesses = schedule_sort(AvailableActiveProcesses, State),
-      get_next_event(Event, AvailablePendingMessages, SortedProcesses, State);
+      {Prefer, SortedProcesses} =
+        schedule_sort(AvailableActiveProcesses, State),
+      get_next_event(
+        Event, Prefer, AvailablePendingMessages, SortedProcesses, State
+       );
     [{#event{label = Label} = Event, _}|_] ->
       {ok, UpdatedEvent} =
         case Label =/= undefined of
@@ -228,7 +231,7 @@ filter_sleeping([#event{actor = Pid}|Sleeping],
   NewActiveProcesses = lists:delete(Pid, ActiveProcesses),
   filter_sleeping(Sleeping, PendingMessages, NewActiveProcesses).
 
-schedule_sort([], _State) -> [];
+schedule_sort([], _State) -> {[], []};
 schedule_sort(ActiveProcesses, State) ->
   #scheduler_state{
      last_scheduled = LastScheduled,
@@ -247,12 +250,27 @@ schedule_sort(ActiveProcesses, State) ->
   case StrictScheduling of
     true when Scheduling =:= round_robin ->
       [LastScheduled|Rest] = Sorted,
-      Rest ++ [LastScheduled];
+      {[], Rest ++ [LastScheduled]};
     false when Scheduling =/= round_robin ->
-      [LastScheduled|lists:delete(LastScheduled, Sorted)];
-    _ -> Sorted
-  end.        
-  
+      {[LastScheduled], lists:delete(LastScheduled, Sorted)};
+    false when Scheduling =:= round_robin ->
+      [LastScheduled|Rest] = Sorted,
+      {[LastScheduled], Rest};
+    _ -> {[], Sorted}
+  end.
+
+get_next_event(Event, [], PendingMessages, ActiveProcesses, State) ->
+  get_next_event(Event, PendingMessages, ActiveProcesses, State);
+get_next_event(Event, [P|Rest], PendingMessages, ActiveProcesses, State) ->
+  case get_next_event_backend(Event#event{actor = P}, State) of
+    exited ->
+      NewState = remove_from_active(P,State),
+      get_next_event(Event, Rest, PendingMessages, ActiveProcesses, NewState);
+    retry ->
+      get_next_event(Event, Rest, PendingMessages, ActiveProcesses, State);
+    {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
+  end.
+
 get_next_event(Event, [{Channel, Queue}|_], _ActiveProcesses, State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
@@ -260,14 +278,9 @@ get_next_event(Event, [{Channel, Queue}|_], _ActiveProcesses, State) ->
   {ok, FinalEvent} = get_next_event_backend(UpdatedEvent, State),
   update_state(FinalEvent, State);
 get_next_event(Event, [], [P|ActiveProcesses], State) ->
-  Result = get_next_event_backend(Event#event{actor = P}, State),
-  case Result of
+  case get_next_event_backend(Event#event{actor = P}, State) of
     exited ->
-      #scheduler_state{trace = [Top|Rest]} = State,
-      #trace_state{active_processes = Active} = Top,
-      NewActive = lists:delete(P, Active),
-      NewTop = Top#trace_state{active_processes = NewActive},
-      NewState = State#scheduler_state{trace = [NewTop|Rest]},
+      NewState = remove_from_active(P,State),
       get_next_event(Event, [], ActiveProcesses, NewState);
     retry -> get_next_event(Event, [], ActiveProcesses, State);
     {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
@@ -310,6 +323,13 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
      event_info = ResetEventInfo,
      label = make_ref()
     }.
+
+remove_from_active(P, State) ->
+  #scheduler_state{trace = [Top|Rest]} = State,
+  #trace_state{active_processes = Active} = Top,
+  NewActive = lists:delete(P, Active),
+  NewTop = Top#trace_state{active_processes = NewActive},
+  State#scheduler_state{trace = [NewTop|Rest]}.
 
 %%------------------------------------------------------------------------------
 
