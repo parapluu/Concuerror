@@ -1,0 +1,216 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{'POPL_optimal_example',test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/POPL_optimal_example.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {scheduling,oldest},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in POPL_optimal_example.erl line 37
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in POPL_optimal_example.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in POPL_optimal_example.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in POPL_optimal_example.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in POPL_optimal_example.erl line 12
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.0.89491488>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.1.89491488>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.2.89491488>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.3.89491488>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {x,1})
+    in POPL_optimal_example.erl line 13
+  10: P.1: exits normally
+  11: P.2: true = ets:insert(table, {y,1})
+    in POPL_optimal_example.erl line 14
+  12: P.2: exits normally
+  13: P.3: [{y,1}] = ets:lookup(table, y)
+    in POPL_optimal_example.erl line 16
+  14: P.3: exits normally
+  15: P.4: [{z,0}] = ets:lookup(table, z)
+    in POPL_optimal_example.erl line 23
+  16: P.4: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in POPL_optimal_example.erl line 37
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in POPL_optimal_example.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in POPL_optimal_example.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in POPL_optimal_example.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in POPL_optimal_example.erl line 12
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.0.89491488>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.1.89491488>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.2.89491488>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.3.89491488>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {x,1})
+    in POPL_optimal_example.erl line 13
+  10: P.1: exits normally
+  11: P.4: [{z,0}] = ets:lookup(table, z)
+    in POPL_optimal_example.erl line 23
+  12: P.4: exits normally
+  13: P.3: [{y,0}] = ets:lookup(table, y)
+    in POPL_optimal_example.erl line 16
+  14: P.3: true = ets:insert(table, {z,1})
+    in POPL_optimal_example.erl line 19
+  15: P.3: exits normally
+  16: P.2: true = ets:insert(table, {y,1})
+    in POPL_optimal_example.erl line 14
+  17: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in POPL_optimal_example.erl line 37
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in POPL_optimal_example.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in POPL_optimal_example.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in POPL_optimal_example.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in POPL_optimal_example.erl line 12
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.0.89491488>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.1.89491488>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.2.89491488>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.3.89491488>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {x,1})
+    in POPL_optimal_example.erl line 13
+  10: P.1: exits normally
+  11: P.3: [{y,0}] = ets:lookup(table, y)
+    in POPL_optimal_example.erl line 16
+  12: P.2: true = ets:insert(table, {y,1})
+    in POPL_optimal_example.erl line 14
+  13: P.2: exits normally
+  14: P.3: true = ets:insert(table, {z,1})
+    in POPL_optimal_example.erl line 19
+  15: P.3: exits normally
+  16: P.4: [{z,1}] = ets:lookup(table, z)
+    in POPL_optimal_example.erl line 23
+  17: P.4: [{y,1}] = ets:lookup(table, y)
+    in POPL_optimal_example.erl line 27
+  18: P.4: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in POPL_optimal_example.erl line 37
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in POPL_optimal_example.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in POPL_optimal_example.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in POPL_optimal_example.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in POPL_optimal_example.erl line 12
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.0.89491488>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.1.89491488>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.2.89491488>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.3.89491488>,[]])
+    in erlang.erl line 2329
+   9: P.1: true = ets:insert(table, {x,1})
+    in POPL_optimal_example.erl line 13
+  10: P.1: exits normally
+  11: P.3: [{y,0}] = ets:lookup(table, y)
+    in POPL_optimal_example.erl line 16
+  12: P.3: true = ets:insert(table, {z,1})
+    in POPL_optimal_example.erl line 19
+  13: P.3: exits normally
+  14: P.4: [{z,1}] = ets:lookup(table, z)
+    in POPL_optimal_example.erl line 23
+  15: P.4: [{y,0}] = ets:lookup(table, y)
+    in POPL_optimal_example.erl line 27
+  16: P.4: true = ets:insert(table, {x,2})
+    in POPL_optimal_example.erl line 30
+  17: P.4: exits normally
+  18: P.2: true = ets:insert(table, {y,1})
+    in POPL_optimal_example.erl line 14
+  19: P.2: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in POPL_optimal_example.erl line 37
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in POPL_optimal_example.erl line 9
+   2: P: true = ets:insert(table, {x,0})
+    in POPL_optimal_example.erl line 10
+   3: P: true = ets:insert(table, {y,0})
+    in POPL_optimal_example.erl line 11
+   4: P: true = ets:insert(table, {z,0})
+    in POPL_optimal_example.erl line 12
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.0.89491488>,[]])
+    in erlang.erl line 2329
+   6: P: P.2 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.1.89491488>,[]])
+    in erlang.erl line 2329
+   7: P: P.3 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.2.89491488>,[]])
+    in erlang.erl line 2329
+   8: P: P.4 = erlang:spawn(erlang, apply, [#Fun<POPL_optimal_example.3.89491488>,[]])
+    in erlang.erl line 2329
+   9: P.3: [{y,0}] = ets:lookup(table, y)
+    in POPL_optimal_example.erl line 16
+  10: P.3: true = ets:insert(table, {z,1})
+    in POPL_optimal_example.erl line 19
+  11: P.3: exits normally
+  12: P.4: [{z,1}] = ets:lookup(table, z)
+    in POPL_optimal_example.erl line 23
+  13: P.4: [{y,0}] = ets:lookup(table, y)
+    in POPL_optimal_example.erl line 27
+  14: P.2: true = ets:insert(table, {y,1})
+    in POPL_optimal_example.erl line 14
+  15: P.2: exits normally
+  16: P.4: true = ets:insert(table, {x,2})
+    in POPL_optimal_example.erl line 30
+  17: P.4: exits normally
+  18: P.1: true = ets:insert(table, {x,1})
+    in POPL_optimal_example.erl line 13
+  19: P.1: exits normally
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: 'POPL_optimal_example'
+Instrumenting: io_lib
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 5 errors, 5/5 interleavings explored

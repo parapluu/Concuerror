@@ -120,8 +120,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
 
 
 def equalResults(orig, rslt):
-    return ((0 == subprocess.call("bash differ %s %s" % (orig, rslt), shell=True)) and
-            (0 != subprocess.call("bash sleep %s" % (rslt), shell=True)))
+    return 0 == subprocess.call("bash differ %s %s" % (orig, rslt), shell=True)
 
 #---------------------------------------------------------------------
 # Main program

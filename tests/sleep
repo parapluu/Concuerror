@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-grep -q "woke up" $1

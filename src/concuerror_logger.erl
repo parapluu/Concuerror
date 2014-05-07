@@ -149,6 +149,7 @@ loop(Message, State) ->
      ticker = Ticker,
      timestamp = Timestamp,
      traces_explored = TracesExplored,
+     traces_ssb = TracesSSB,
      traces_total = TracesTotal,
      verbosity = Verbosity
     } = State,
@@ -196,7 +197,7 @@ loop(Message, State) ->
       separator(Output, $#),
       print_log_msgs(Output, LogMsgs),
       Format = "Done! (Exit status: ~p)~n  Summary: ",
-      IntMsg = interleavings_message(Errors, TracesExplored, TracesTotal),
+      IntMsg = interleavings_message(State),
       io:format(Output, Format, [Status]),
       io:format(Output, "~s", [IntMsg]),
       ok = file:close(Output),
@@ -219,8 +220,7 @@ loop(Message, State) ->
     {complete, Warn} ->
       NewErrors =
         case Warn of
-          none -> Errors;
-          {Warnings, TraceInfo} ->
+          {Warnings, TraceInfo} when Warnings =/= [sleep_set_block] ->
             NE = Errors + 1,
             case NE > 1 of
               true -> separator(Output, $#);
@@ -234,12 +234,19 @@ loop(Message, State) ->
             print_streams(Streams, Output),
             io:format(Output, "Interleaving info:~n", []),
             concuerror_printer:pretty(Output, TraceInfo, PrintDepth),
-            NE
+            NE;
+          _ -> Errors
+        end,
+      NewSSB =
+        case Warn =:= {[sleep_set_block], []} of
+          true -> TracesSSB + 1;
+          false -> TracesSSB
         end,
       NewState =
         State#logger_state{
           streams = [],
           traces_explored = TracesExplored + 1,
+          traces_ssb = NewSSB,
           errors = NewErrors
          },
       update_on_ticker(NewState),
@@ -260,17 +267,12 @@ diagnostic(State, Format) ->
   diagnostic(State, Format, []).
 
 diagnostic(State, Format, Data) ->
-  #logger_state{
-     errors = Errors,
-     traces_explored = TracesExplored,
-     traces_total = TracesTotal,
-     verbosity = Verbosity
-    } = State,
+  #logger_state{verbosity = Verbosity} = State,
   case Verbosity =/= ?lprogress of
     true ->
       inner_diagnostic(Format, Data);
     false ->
-      IntMsg = interleavings_message(Errors, TracesExplored, TracesTotal),
+      IntMsg = interleavings_message(State),
       clear_progress(),
       inner_diagnostic(Format, Data),
       inner_diagnostic("~s", [IntMsg])
@@ -344,9 +346,20 @@ tag_to_filename(standard_io) -> "Standard Output";
 tag_to_filename(standard_error) -> "Standard Error";
 tag_to_filename(Filename) when is_list(Filename) -> Filename.
 
-interleavings_message(Errors, TracesExplored, TracesTotal) ->
-  io_lib:format("~p errors, ~p/~p interleavings explored~n",
-                [Errors, TracesExplored, TracesTotal]).
+interleavings_message(State) ->
+  #logger_state{
+     errors = Errors,
+     traces_explored = TracesExplored,
+     traces_ssb = TracesSSB,
+     traces_total = TracesTotal
+    } = State,
+  SSB =
+    case TracesSSB =:= 0 of
+      true -> "";
+      false -> io_lib:format(" (~p sleep-set blocked)",[TracesSSB])
+    end,
+  io_lib:format("~p errors, ~p/~p interleavings explored~s~n",
+                [Errors, TracesExplored, TracesTotal, SSB]).
 
 %%------------------------------------------------------------------------------
 

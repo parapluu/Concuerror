@@ -140,7 +140,7 @@ log_trace(State) ->
      current_warnings = UnfilteredWarnings,
      ignore_error = Ignored,
      logger = Logger} = State,
-  Warnings =  filter_warnings(UnfilteredWarnings, Ignored),
+  Warnings = filter_warnings(UnfilteredWarnings, Ignored),
   case UnfilteredWarnings =/= Warnings of
     true ->
       Message = "Some errors were silenced (--ignore_error).~n",
@@ -152,11 +152,17 @@ log_trace(State) ->
     case Warnings =:= [] of
       true -> none;
       false ->
-        #scheduler_state{trace = Trace} = State,
-        %%io:format("~p~n",[Trace]),
-        Fold =
-          fun(#trace_state{done = [A|_], index = I}, Acc) -> [{I, A}|Acc] end,
-        TraceInfo = lists:foldl(Fold, [], Trace),
+        TraceInfo =
+          case Warnings =:= [sleep_set_block] of
+            true -> [];
+            false ->
+              #scheduler_state{trace = Trace} = State,
+              Fold =
+                fun(#trace_state{done = [A|_], index = I}, Acc) ->
+                    [{I, A}|Acc]
+                end,
+              lists:foldl(Fold, [], Trace)
+          end,
         {lists:reverse(Warnings), TraceInfo}
     end,
   concuerror_logger:complete(Logger, Log),
@@ -300,7 +306,7 @@ get_next_event(_Event, [], [], State) ->
     case Sleeping =/= [] of
       true ->
         ?debug(_Logger, "Sleep set block:~n ~p~n", [Sleeping]),
-        [{sleep_set_block, Sleeping}|Warnings];
+        [sleep_set_block];
       false ->
         case ActiveProcesses =/= [] of
           true ->
