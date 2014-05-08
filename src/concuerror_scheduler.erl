@@ -549,9 +549,17 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
         dict:store(SpawnedPid, HappenedBeforeClock, BaseNewClockMap);
       none -> BaseNewClockMap
     end,
+  StateClock = lookup_clock(state, ClockMap),
+  OldActorClock = lookup_clock_value(Actor, StateClock),
+  FinalActorClock = orddict:store(Actor, OldActorClock, HappenedBeforeClock),
+  FinalStateClock = orddict:store(Actor, Index, StateClock),
+  FinalClockMap =
+    dict:store(
+      Actor, FinalActorClock,
+      dict:store(state, FinalStateClock, NewClockMap)),
   NewTraceState =
     TraceState#trace_state{
-      clock_map = NewClockMap,
+      clock_map = FinalClockMap,
       done = [UpdatedEvent|RestEvents]},
   assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State).
 
@@ -617,7 +625,8 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
           True when True =:= true; True =:= irreversible ->
             #trace_state{clock_map = ClockMap} = TraceState,
             EarlyActorClock = lookup_clock(EarlyActor, ClockMap),
-            max_cv(Clock, EarlyActorClock)
+            max_cv(
+              Clock, orddict:store(EarlyActor, EarlyIndex, EarlyActorClock))
         end
     end,
   update_clock(Rest, Event, NewClock, State).
@@ -650,7 +659,9 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
       plan_more_interleavings(Rest, [TraceState|OldTrace], State);
     false ->
       ClockMap = get_base_clock(OldTrace, []),
-      ActorClock = lookup_clock(Actor, ClockMap),
+      StateClock = lookup_clock(state, ClockMap),
+      ActorLast = lookup_clock_value(Actor, StateClock),
+      ActorClock = orddict:store(Actor, ActorLast, lookup_clock(Actor, ClockMap)),
       BaseClock =
         case ?is_channel(Actor) of
           true ->
