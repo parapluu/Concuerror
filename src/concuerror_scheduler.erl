@@ -25,7 +25,7 @@
 -type event_tree() :: [{event(), event_tree()}].
 
 -record(trace_state, {
-          actors      = []         :: [pid() | {channel(), queue:queue()}],
+          actors      = []         :: [pid() | {channel(), queue()}],
           clock_map   = dict:new() :: clock_map(),
           done        = []         :: [event()],
           index       = 1          :: index(),
