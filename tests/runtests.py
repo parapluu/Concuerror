@@ -69,9 +69,13 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     global total_tests
     global total_failed
     if "dpor" in flags:
-        dpor_flag = "--dpor"
+        dpor_flag = "--optimal=true"
         file_ext = "-dpor"
         dpor_output = "dpor"
+    elif "source" in flags:
+        dpor_flag = "--optimal=false"
+        file_ext = "-source"
+        dpor_output = "source"
     else:
         dpor_flag = ""
         file_ext = ""
@@ -80,11 +84,11 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     # Run concuerror
     status = os.system(
         ("%s -iq --timeout -1 --assume_racing false --report_unknown"
-         " -f %s"
+         " %s -f %s"
          " --output %s/%s/results/%s-%s-%s%s.txt"
          " -m %s -t %s"
          )
-        % (concuerror, " -f ".join(files),
+        % (concuerror, dpor_flag, " -f ".join(files),
            results, suite, name, funn, preb, file_ext,
            modn, funn))
     # Compare the results

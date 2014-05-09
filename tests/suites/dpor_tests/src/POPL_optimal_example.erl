@@ -3,7 +3,7 @@
 -export([test/0]).
 -export([scenarios/0]).
 
-scenarios() -> [{test, inf, dpor}].
+scenarios() -> [{test, inf, R} || R <- [dpor,source]].
 
 test() ->
     ets:new(table, [public, named_table]),

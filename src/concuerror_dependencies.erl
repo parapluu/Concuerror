@@ -17,6 +17,8 @@ dependent_safe(E1, E2) ->
 
 -spec dependent(event(), event(), boolean()) -> boolean() | irreversible.
 
+dependent(#event{actor = A}, #event{actor = A}, _) ->
+  irreversible;
 dependent(#event{event_info = Info1, special = Special1},
           #event{event_info = Info2, special = Special2},
           AssumeRacing) ->

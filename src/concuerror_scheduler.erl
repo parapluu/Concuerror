@@ -50,6 +50,7 @@
           last_scheduled           :: pid(),
           message_info             :: message_info(),
           non_racing_system = []   :: [atom()],
+          optimal           = true :: boolean(),
           print_depth              :: pos_integer(),
           processes                :: processes(),
           scheduling = oldest      :: scheduling(),
@@ -87,6 +88,7 @@ run(Options) ->
        logger = Logger = ?opt(logger, Options),
        message_info = ets:new(message_info, [private]),
        non_racing_system = ?opt(non_racing_system, Options),
+       optimal = ?opt(optimal, Options),
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
@@ -724,16 +726,15 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
   more_interleavings_for_event(Rest, Event, Later, NewClock, State, NewTrace).
 
 update_trace(Event, TraceState, Later, NewOldTrace, State) ->
-  #scheduler_state{logger = Logger} = State,
+  #scheduler_state{logger = Logger, optimal = Optimal} = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done],
      index = EarlyIndex,
      sleeping = Sleeping,
      wakeup_tree = WakeupTree
     } = TraceState,
-  NotDep =
-    not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event),
-  case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep) of
+  NotDep = not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event),
+  case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep, Optimal) of
     skip ->
       ?trace(Logger, "     SKIP~n",[]),
       skip;
@@ -792,6 +793,18 @@ trace_plan(_Logger, _Index, _NotDep) ->
            || {I,S} <- IndexedNotDep])]
      end).
 
+insert_wakeup(Sleeping, Wakeup, [E|_] = NotDep, Optimal) ->
+  case Optimal of
+    true -> insert_wakeup(Sleeping, Wakeup, NotDep);
+    false ->
+      Initials = get_initials(NotDep),
+      All = Sleeping ++ [W || {W, []} <- Wakeup],
+      case existing(All, Initials) of
+        true -> skip;
+        false -> Wakeup ++ [{E,[]}]
+      end
+  end.      
+
 insert_wakeup([Sleeping|Rest], Wakeup, NotDep) ->
   case check_initial(Sleeping, NotDep) =:= false of
     true  -> insert_wakeup(Rest, Wakeup, NotDep);
@@ -837,6 +850,31 @@ check_initial(Event, [E|NotDep], Acc) ->
         false -> check_initial(Event, NotDep, [E|Acc])
       end
   end.
+
+get_initials(NotDeps) ->
+  get_initials(NotDeps, [], []).
+
+get_initials([], Initials, _) -> lists:reverse(Initials);
+get_initials([Event|Rest], Initials, All) ->
+  Fold =
+    fun(Initial, Acc) ->
+        Acc andalso
+          concuerror_dependencies:dependent_safe(Initial, Event) =:= false
+    end,
+  NewInitials =
+    case lists:foldr(Fold, true, All) of
+      true -> [Event|Initials];
+      false -> Initials
+    end,
+  get_initials(Rest, NewInitials, [Event|All]).            
+
+existing([], _) -> false;
+existing([#event{actor = A}|Rest], Initials) ->
+  Pred = fun(#event{actor = B}) -> A =:= B end,
+  case lists:any(Pred, Initials) of
+    true -> true;
+    false -> existing(Rest, Initials)
+  end.  
 
 %%------------------------------------------------------------------------------
 

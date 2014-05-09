@@ -2,7 +2,7 @@
 
 -export([scenarios/0, test/0]).
 
-scenarios() -> [{test, inf, dpor}].
+scenarios() -> [{test, inf, R} || R <- [dpor,source]].
 
 test() ->
     last_zero(5).

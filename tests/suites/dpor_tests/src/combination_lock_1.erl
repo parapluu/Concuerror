@@ -3,7 +3,7 @@
 -export([combination_lock_1/0]).
 -export([scenarios/0]).
 
-scenarios() -> [{?MODULE, inf, dpor}].
+scenarios() -> [{?MODULE, inf, R} || R <- [dpor,source]].
 
 combination_lock_1() ->
     ets:new(table, [public, named_table]),

@@ -1,0 +1,343 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{combination_lock_1,combination_lock_1,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/combination_lock_1.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,false},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {scheduling,oldest},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in combination_lock_1.erl line 54
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in combination_lock_1.erl line 9
+   2: P: true = ets:insert(table, {v,0})
+    in combination_lock_1.erl line 10
+   3: P: true = ets:insert(table, {w,0})
+    in combination_lock_1.erl line 11
+   4: P: true = ets:insert(table, {x,0})
+    in combination_lock_1.erl line 12
+   5: P: true = ets:insert(table, {y,0})
+    in combination_lock_1.erl line 13
+   6: P: true = ets:insert(table, {z,0})
+    in combination_lock_1.erl line 14
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
+    in erlang.erl line 2329
+  11: P.1: true = ets:insert(table, {z,1})
+    in combination_lock_1.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {x,1})
+    in combination_lock_1.erl line 17
+  14: P.2: true = ets:insert(table, {a,1})
+    in combination_lock_1.erl line 18
+  15: P.2: [{y,0}] = ets:lookup(table, y)
+    in combination_lock_1.erl line 19
+  16: P.2: exits normally
+  17: P.3: [{x,1}] = ets:lookup(table, x)
+    in combination_lock_1.erl line 29
+  18: P.3: true = ets:insert(table, {y,1})
+    in combination_lock_1.erl line 32
+  19: P.3: true = ets:insert(table, {c,0})
+    in combination_lock_1.erl line 33
+  20: P.3: [{v,0}] = ets:lookup(table, v)
+    in combination_lock_1.erl line 34
+  21: P.3: exits normally
+  22: P.4: [{w,0}] = ets:lookup(table, w)
+    in combination_lock_1.erl line 43
+  23: P.4: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in combination_lock_1.erl line 54
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in combination_lock_1.erl line 9
+   2: P: true = ets:insert(table, {v,0})
+    in combination_lock_1.erl line 10
+   3: P: true = ets:insert(table, {w,0})
+    in combination_lock_1.erl line 11
+   4: P: true = ets:insert(table, {x,0})
+    in combination_lock_1.erl line 12
+   5: P: true = ets:insert(table, {y,0})
+    in combination_lock_1.erl line 13
+   6: P: true = ets:insert(table, {z,0})
+    in combination_lock_1.erl line 14
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
+    in erlang.erl line 2329
+  11: P.1: true = ets:insert(table, {z,1})
+    in combination_lock_1.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {x,1})
+    in combination_lock_1.erl line 17
+  14: P.2: true = ets:insert(table, {a,1})
+    in combination_lock_1.erl line 18
+  15: P.3: [{x,1}] = ets:lookup(table, x)
+    in combination_lock_1.erl line 29
+  16: P.3: true = ets:insert(table, {y,1})
+    in combination_lock_1.erl line 32
+  17: P.3: true = ets:insert(table, {c,0})
+    in combination_lock_1.erl line 33
+  18: P.3: [{v,0}] = ets:lookup(table, v)
+    in combination_lock_1.erl line 34
+  19: P.3: exits normally
+  20: P.2: [{y,1}] = ets:lookup(table, y)
+    in combination_lock_1.erl line 19
+  21: P.2: true = ets:insert(table, {w,1})
+    in combination_lock_1.erl line 22
+  22: P.2: true = ets:insert(table, {b,0})
+    in combination_lock_1.erl line 23
+  23: P.2: exits normally
+  24: P.4: [{w,1}] = ets:lookup(table, w)
+    in combination_lock_1.erl line 43
+  25: P.4: true = ets:insert(table, {v,1})
+    in combination_lock_1.erl line 46
+  26: P.4: true = ets:insert(table, {d,0})
+    in combination_lock_1.erl line 47
+  27: P.4: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in combination_lock_1.erl line 54
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in combination_lock_1.erl line 9
+   2: P: true = ets:insert(table, {v,0})
+    in combination_lock_1.erl line 10
+   3: P: true = ets:insert(table, {w,0})
+    in combination_lock_1.erl line 11
+   4: P: true = ets:insert(table, {x,0})
+    in combination_lock_1.erl line 12
+   5: P: true = ets:insert(table, {y,0})
+    in combination_lock_1.erl line 13
+   6: P: true = ets:insert(table, {z,0})
+    in combination_lock_1.erl line 14
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
+    in erlang.erl line 2329
+  11: P.1: true = ets:insert(table, {z,1})
+    in combination_lock_1.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {x,1})
+    in combination_lock_1.erl line 17
+  14: P.2: true = ets:insert(table, {a,1})
+    in combination_lock_1.erl line 18
+  15: P.3: [{x,1}] = ets:lookup(table, x)
+    in combination_lock_1.erl line 29
+  16: P.3: true = ets:insert(table, {y,1})
+    in combination_lock_1.erl line 32
+  17: P.3: true = ets:insert(table, {c,0})
+    in combination_lock_1.erl line 33
+  18: P.3: [{v,0}] = ets:lookup(table, v)
+    in combination_lock_1.erl line 34
+  19: P.3: exits normally
+  20: P.2: [{y,1}] = ets:lookup(table, y)
+    in combination_lock_1.erl line 19
+  21: P.4: [{w,0}] = ets:lookup(table, w)
+    in combination_lock_1.erl line 43
+  22: P.4: exits normally
+  23: P.2: true = ets:insert(table, {w,1})
+    in combination_lock_1.erl line 22
+  24: P.2: true = ets:insert(table, {b,0})
+    in combination_lock_1.erl line 23
+  25: P.2: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in combination_lock_1.erl line 54
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in combination_lock_1.erl line 9
+   2: P: true = ets:insert(table, {v,0})
+    in combination_lock_1.erl line 10
+   3: P: true = ets:insert(table, {w,0})
+    in combination_lock_1.erl line 11
+   4: P: true = ets:insert(table, {x,0})
+    in combination_lock_1.erl line 12
+   5: P: true = ets:insert(table, {y,0})
+    in combination_lock_1.erl line 13
+   6: P: true = ets:insert(table, {z,0})
+    in combination_lock_1.erl line 14
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
+    in erlang.erl line 2329
+  11: P.1: true = ets:insert(table, {z,1})
+    in combination_lock_1.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {x,1})
+    in combination_lock_1.erl line 17
+  14: P.2: true = ets:insert(table, {a,1})
+    in combination_lock_1.erl line 18
+  15: P.3: [{x,1}] = ets:lookup(table, x)
+    in combination_lock_1.erl line 29
+  16: P.3: true = ets:insert(table, {y,1})
+    in combination_lock_1.erl line 32
+  17: P.3: true = ets:insert(table, {c,0})
+    in combination_lock_1.erl line 33
+  18: P.2: [{y,1}] = ets:lookup(table, y)
+    in combination_lock_1.erl line 19
+  19: P.2: true = ets:insert(table, {w,1})
+    in combination_lock_1.erl line 22
+  20: P.2: true = ets:insert(table, {b,0})
+    in combination_lock_1.erl line 23
+  21: P.2: exits normally
+  22: P.4: [{w,1}] = ets:lookup(table, w)
+    in combination_lock_1.erl line 43
+  23: P.4: true = ets:insert(table, {v,1})
+    in combination_lock_1.erl line 46
+  24: P.4: true = ets:insert(table, {d,0})
+    in combination_lock_1.erl line 47
+  25: P.4: exits normally
+  26: P.3: [{v,1}] = ets:lookup(table, v)
+    in combination_lock_1.erl line 34
+  27: P.3: [{z,1}] = ets:lookup(table, z)
+    in combination_lock_1.erl line 36
+  28: P.3: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in combination_lock_1.erl line 54
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in combination_lock_1.erl line 9
+   2: P: true = ets:insert(table, {v,0})
+    in combination_lock_1.erl line 10
+   3: P: true = ets:insert(table, {w,0})
+    in combination_lock_1.erl line 11
+   4: P: true = ets:insert(table, {x,0})
+    in combination_lock_1.erl line 12
+   5: P: true = ets:insert(table, {y,0})
+    in combination_lock_1.erl line 13
+   6: P: true = ets:insert(table, {z,0})
+    in combination_lock_1.erl line 14
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
+    in erlang.erl line 2329
+  11: P.1: true = ets:insert(table, {z,1})
+    in combination_lock_1.erl line 15
+  12: P.1: exits normally
+  13: P.4: [{w,0}] = ets:lookup(table, w)
+    in combination_lock_1.erl line 43
+  14: P.4: exits normally
+  15: P.3: [{x,0}] = ets:lookup(table, x)
+    in combination_lock_1.erl line 29
+  16: P.3: exits normally
+  17: P.2: true = ets:insert(table, {x,1})
+    in combination_lock_1.erl line 17
+  18: P.2: true = ets:insert(table, {a,1})
+    in combination_lock_1.erl line 18
+  19: P.2: [{y,0}] = ets:lookup(table, y)
+    in combination_lock_1.erl line 19
+  20: P.2: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in combination_lock_1.erl line 54
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in combination_lock_1.erl line 9
+   2: P: true = ets:insert(table, {v,0})
+    in combination_lock_1.erl line 10
+   3: P: true = ets:insert(table, {w,0})
+    in combination_lock_1.erl line 11
+   4: P: true = ets:insert(table, {x,0})
+    in combination_lock_1.erl line 12
+   5: P: true = ets:insert(table, {y,0})
+    in combination_lock_1.erl line 13
+   6: P: true = ets:insert(table, {z,0})
+    in combination_lock_1.erl line 14
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
+    in erlang.erl line 2329
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
+    in erlang.erl line 2329
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
+    in erlang.erl line 2329
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
+    in erlang.erl line 2329
+  11: P.2: true = ets:insert(table, {x,1})
+    in combination_lock_1.erl line 17
+  12: P.2: true = ets:insert(table, {a,1})
+    in combination_lock_1.erl line 18
+  13: P.3: [{x,1}] = ets:lookup(table, x)
+    in combination_lock_1.erl line 29
+  14: P.3: true = ets:insert(table, {y,1})
+    in combination_lock_1.erl line 32
+  15: P.3: true = ets:insert(table, {c,0})
+    in combination_lock_1.erl line 33
+  16: P.2: [{y,1}] = ets:lookup(table, y)
+    in combination_lock_1.erl line 19
+  17: P.2: true = ets:insert(table, {w,1})
+    in combination_lock_1.erl line 22
+  18: P.2: true = ets:insert(table, {b,0})
+    in combination_lock_1.erl line 23
+  19: P.2: exits normally
+  20: P.4: [{w,1}] = ets:lookup(table, w)
+    in combination_lock_1.erl line 43
+  21: P.4: true = ets:insert(table, {v,1})
+    in combination_lock_1.erl line 46
+  22: P.4: true = ets:insert(table, {d,0})
+    in combination_lock_1.erl line 47
+  23: P.4: exits normally
+  24: P.3: [{v,1}] = ets:lookup(table, v)
+    in combination_lock_1.erl line 34
+  25: P.3: [{z,0}] = ets:lookup(table, z)
+    in combination_lock_1.erl line 36
+  26: P.3: exits normally
+  27: P.1: true = ets:insert(table, {z,1})
+    in combination_lock_1.erl line 15
+  28: P.1: exits normally
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumenting: combination_lock_1
+Instrumenting: io_lib
+Instrumenting: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 6 errors, 14/14 interleavings explored (8 sleep-set blocked)

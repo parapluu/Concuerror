@@ -87,6 +87,10 @@ options() ->
   ,{depth_bound, undefined, {integer, 5000},
     "The maximum number of events allowed in a trace. Concuerror will stop"
     " exploration beyond this limit."}
+  ,{optimal, undefined, {boolean, true},
+    "Setting this to false enables a more lightweight DPOR algorithm. Use this"
+    " if the rate of exploration is too slow. Don't use it if a lot of"
+    " interleavings are reported as sleep-set blocked."}
   ,{after_timeout, $a, {integer, infinity},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}
