@@ -1009,12 +1009,11 @@ find_system_reply(System, [_|Special]) ->
 
 %%------------------------------------------------------------------------------
 
--spec wait_actor_reply(event(), timeout()) ->
-                          'exited' | 'retry' | {'ok', event()}.
+-spec wait_actor_reply(event(), timeout()) -> 'retry' | {'ok', event()}.
 
 wait_actor_reply(Event, Timeout) ->
   receive
-    exited -> exited;
+    exited -> retry;
     {blocked, _} -> retry;
     #event{} = NewEvent -> {ok, NewEvent};
     {'ETS-TRANSFER', _, _, given_to_scheduler} ->
@@ -1029,15 +1028,16 @@ wait_actor_reply(Event, Timeout) ->
 
 -spec collect_deadlock_info([pid()]) -> [{pid(), location()}].
 
-collect_deadlock_info(ActiveProcesses) ->
-  Map =
-    fun(P) ->
+collect_deadlock_info(Actors) ->
+  Fold =
+    fun(P, Acc) ->
         P ! deadlock_poll,
         receive
-          {blocked, Location} -> {P, Location}
+          {blocked, Location} -> [{P, Location}|Acc];
+          exited -> Acc
         end
     end,
-  [Map(P) || P <- ActiveProcesses].
+  lists:foldr(Fold, [], Actors).
 
 %%------------------------------------------------------------------------------
 
@@ -1296,7 +1296,11 @@ process_loop(Info) ->
       erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo]);
     deadlock_poll ->
       ?debug_flag(?loop, deadlock_poll),
-      Info
+      Status = Info#concuerror_info.status,
+      case Status =:= exited of
+        true -> process_loop(notify(exited, Info));
+        false -> Info
+      end
   end.
 
 send_message_ack(Notify, Trapping) ->

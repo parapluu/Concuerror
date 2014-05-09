@@ -25,19 +25,15 @@
 -type event_tree() :: [{event(), event_tree()}].
 
 -record(trace_state, {
-          active_processes = []            :: [pid()],
-          clock_map        = dict:new()    :: clock_map(),
-          done             = []            :: [event()],
-          index            = 1             :: index(),
-          pending_messages = orddict:new() :: orddict:orddict(),
-          preemptions      = 0             :: non_neg_integer(),
-          sleeping         = []            :: [event()],
-          wakeup_tree      = []            :: event_tree()
+          actors      = []         :: [pid() | {channel(), queue:queue()}],
+          clock_map   = dict:new() :: clock_map(),
+          done        = []         :: [event()],
+          index       = 1          :: index(),
+          sleeping    = []         :: [event()],
+          wakeup_tree = []         :: event_tree()
          }).
 
 -type trace_state() :: #trace_state{}.
-%% -type dpor_algorithm() :: 'none' | 'classic' | 'source' | 'optimal'.
-%% -type preemption_bound() :: non_neg_integer() | 'inf'.
 
 -record(scheduler_state, {
           ignore_first_crash = true :: boolean(),
@@ -77,7 +73,7 @@ run(Options) ->
       ok
   end,
   FirstProcess = concuerror_callback:spawn_first_process(Options),
-  InitialTrace = #trace_state{active_processes = [FirstProcess]},
+  InitialTrace = #trace_state{actors = [FirstProcess]},
   InitialState =
     #scheduler_state{
        ignore_first_crash = ?opt(ignore_first_crash,Options),
@@ -195,22 +191,17 @@ get_next_event(
   {none, NewState};
 get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
   #trace_state{
-     active_processes = ActiveProcesses,
-     index            = I,
-     pending_messages = PendingMessages,
-     sleeping         = Sleeping,
-     wakeup_tree      = WakeupTree
+     actors      = Actors,
+     index       = I,
+     sleeping    = Sleeping,
+     wakeup_tree = WakeupTree
     } = Last,
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
-      {AvailablePendingMessages, AvailableActiveProcesses} =
-        filter_sleeping(Sleeping, PendingMessages, ActiveProcesses),
-      {Prefer, SortedProcesses} =
-        schedule_sort(AvailableActiveProcesses, State),
-      get_next_event(
-        Event, Prefer, AvailablePendingMessages, SortedProcesses, State
-       );
+      SortedActors = schedule_sort(Actors, State),
+      AvailableActors = filter_sleeping(Sleeping, SortedActors),
+      get_next_event(Event, AvailableActors, State);
     [{#event{label = Label} = Event, _}|_] ->
       {ok, UpdatedEvent} =
         case Label =/= undefined of
@@ -230,19 +221,17 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
       update_state(UpdatedEvent, State)
   end.
 
-filter_sleeping([], PendingMessages, ActiveProcesses) ->
-  {PendingMessages, ActiveProcesses};
-filter_sleeping([#event{actor = Channel}|Sleeping],
-                PendingMessages, ActiveProcesses) when ?is_channel(Channel) ->
-  NewPendingMessages = orddict:erase(Channel, PendingMessages),
-  filter_sleeping(Sleeping, NewPendingMessages, ActiveProcesses);
-filter_sleeping([#event{actor = Pid}|Sleeping],
-                PendingMessages, ActiveProcesses) ->
-  NewActiveProcesses = lists:delete(Pid, ActiveProcesses),
-  filter_sleeping(Sleeping, PendingMessages, NewActiveProcesses).
+filter_sleeping([], AvailableActors) -> AvailableActors;
+filter_sleeping([#event{actor = Actor}|Sleeping], AvailableActors) ->
+  NewAvailableActors =
+    case ?is_channel(Actor) of
+      true -> lists:keydelete(Actor, 1, AvailableActors);
+      false -> lists:delete(Actor, AvailableActors)
+    end,
+  filter_sleeping(Sleeping, NewAvailableActors).
 
-schedule_sort([], _State) -> {[], []};
-schedule_sort(ActiveProcesses, State) ->
+schedule_sort([], _State) -> [];
+schedule_sort(Actors, State) ->
   #scheduler_state{
      last_scheduled = LastScheduled,
      scheduling = Scheduling,
@@ -250,78 +239,52 @@ schedule_sort(ActiveProcesses, State) ->
     } = State,
   Sorted =
     case Scheduling of
-      oldest -> ActiveProcesses;
-      newest -> lists:reverse(ActiveProcesses);
+      oldest -> Actors;
+      newest -> lists:reverse(Actors);
       round_robin ->
         Split = fun(E) -> E =/= LastScheduled end,    
-        {Pre, Post} = lists:splitwith(Split, ActiveProcesses),
+        {Pre, Post} = lists:splitwith(Split, Actors),
         Post ++ Pre
     end,
-  case lists:member(LastScheduled, ActiveProcesses) of
-    true ->
-      case StrictScheduling of
-        true when Scheduling =:= round_robin ->
-          [LastScheduled|Rest] = Sorted,
-          {[], Rest ++ [LastScheduled]};
-        false when Scheduling =/= round_robin ->
-          {[LastScheduled], lists:delete(LastScheduled, Sorted)};
-        false when Scheduling =:= round_robin ->
-          [LastScheduled|Rest] = Sorted,
-          {[LastScheduled], Rest};
-        _ -> {[], Sorted}
-      end;
-    false -> {[], Sorted}
+  case StrictScheduling of
+    true when Scheduling =:= round_robin ->
+      [LastScheduled|Rest] = Sorted,
+      Rest ++ [LastScheduled];
+    false when Scheduling =/= round_robin ->
+      [LastScheduled|lists:delete(LastScheduled, Sorted)];
+    _ -> Sorted
   end.
 
-get_next_event(Event, [], PendingMessages, ActiveProcesses, State) ->
-  get_next_event(Event, PendingMessages, ActiveProcesses, State);
-get_next_event(Event, [P|Rest], PendingMessages, ActiveProcesses, State) ->
-  case get_next_event_backend(Event#event{actor = P}, State) of
-    exited ->
-      NewState = remove_from_active(P,State),
-      get_next_event(Event, Rest, PendingMessages, ActiveProcesses, NewState);
-    retry ->
-      get_next_event(Event, Rest, PendingMessages, ActiveProcesses, State);
-    {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
-  end.
-
-get_next_event(Event, [{Channel, Queue}|_], _ActiveProcesses, State) ->
+get_next_event(Event, [{Channel, Queue}|_], State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
   UpdatedEvent = Event#event{actor = Channel, event_info = MessageEvent},
   {ok, FinalEvent} = get_next_event_backend(UpdatedEvent, State),
   update_state(FinalEvent, State);
-get_next_event(Event, [], [P|ActiveProcesses], State) ->
+get_next_event(Event, [P|ActiveProcesses], State) ->
   case get_next_event_backend(Event#event{actor = P}, State) of
-    exited ->
-      NewState = remove_from_active(P,State),
-      get_next_event(Event, [], ActiveProcesses, NewState);
-    retry -> get_next_event(Event, [], ActiveProcesses, State);
+    retry -> get_next_event(Event, ActiveProcesses, State);
     {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
   end;
-get_next_event(_Event, [], [], State) ->
+get_next_event(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
   #scheduler_state{
      current_warnings = Warnings,
      logger = _Logger,
      trace = [Last|Prev]
     } = State,
-  #trace_state{
-     active_processes = ActiveProcesses,
-     sleeping         = Sleeping
-    } = Last,
+  #trace_state{actors = Actors, sleeping = Sleeping} = Last,
   NewWarnings =
     case Sleeping =/= [] of
       true ->
         ?debug(_Logger, "Sleep set block:~n ~p~n", [Sleeping]),
         [sleep_set_block];
       false ->
-        case ActiveProcesses =/= [] of
-          true ->
-            ?debug(_Logger, "Deadlock: ~p~n~n", [ActiveProcesses]),
-            Info = concuerror_callback:collect_deadlock_info(ActiveProcesses),
-            [{deadlock, Info}|Warnings];
-          false -> Warnings
+        case concuerror_callback:collect_deadlock_info(Actors) of
+          [] -> Warnings;
+          Info ->
+            ?debug(_Logger, "Deadlock: ~p~n~n", [P || {P,_} <- Info]),
+            [{deadlock, Info}|Warnings]
         end
     end,
   {none, State#scheduler_state{current_warnings = NewWarnings, trace = Prev}}.
@@ -338,25 +301,16 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
      label = make_ref()
     }.
 
-remove_from_active(P, State) ->
-  #scheduler_state{trace = [Top|Rest]} = State,
-  #trace_state{active_processes = Active} = Top,
-  NewActive = lists:delete(P, Active),
-  NewTop = Top#trace_state{active_processes = NewActive},
-  State#scheduler_state{trace = [NewTop|Rest]}.
-
 %%------------------------------------------------------------------------------
 
-update_state(#event{actor = Actor, special = Special} = Event, State) ->
+update_state(#event{special = Special} = Event, State) ->
   #scheduler_state{logger = _Logger, trace = [Last|Prev]} = State,
   #trace_state{
-     active_processes = ActiveProcesses,
-     done             = Done,
-     index            = Index,
-     pending_messages = PendingMessages,
-     preemptions      = Preemptions,
-     sleeping         = Sleeping,
-     wakeup_tree      = WakeupTree
+     actors      = Actors,
+     done        = Done,
+     index       = Index,
+     sleeping    = Sleeping,
+     wakeup_tree = WakeupTree
     } = Last,
   ?trace(_Logger, "~s~n", [?pretty_s(Index, Event)]),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
@@ -367,16 +321,12 @@ update_state(#event{actor = Actor, special = Special} = Event, State) ->
       [{_, NWT}|Rest] -> {Rest, NWT}
     end,
   NewLastDone = [Event|Done],
-  NextPreemptions =
-    update_preemptions(Actor, ActiveProcesses, Prev, Preemptions),
   InitNextTrace =
     #trace_state{
-       active_processes = ActiveProcesses,
-       index            = Index + 1,
-       pending_messages = PendingMessages,
-       preemptions      = NextPreemptions,
-       sleeping         = NextSleeping,
-       wakeup_tree      = NextWakeupTree
+       actors      = Actors,
+       index       = Index + 1,
+       sleeping    = NextSleeping,
+       wakeup_tree = NextWakeupTree
       },
   NewLastTrace =
     Last#trace_state{done = NewLastDone, wakeup_tree = NewLastWakeupTree},
@@ -432,64 +382,80 @@ update_sleeping(NewEvent, Sleeping, State) ->
     end,
   lists:filter(Pred, Sleeping).
 
-%% XXX: Stub.
-update_preemptions(_Pid, _ActiveProcesses, _Prev, Preemptions) ->
-  Preemptions.
-
 update_special(List, State) when is_list(List) ->
   lists:foldl(fun update_special/2, State, List);
 update_special(Special, State) ->
   #scheduler_state{message_info = MessageInfo, trace = [Next|Trace]} = State,
-  case Special of
-    halt ->
-      NewNext = Next#trace_state{active_processes = []},
-      State#scheduler_state{trace = [NewNext|Trace]};
-    {message, Message} ->
-      #trace_state{pending_messages = PendingMessages} = Next,
-      NewPendingMessages =
-        process_message(Message, PendingMessages, MessageInfo),
-      NewNext = Next#trace_state{pending_messages = NewPendingMessages},
-      State#scheduler_state{trace = [NewNext|Trace]};
-    {message_delivered, MessageEvent} ->
-      #trace_state{pending_messages = PendingMessages} = Next,
-      NewPendingMessages =
-        remove_pending_message(MessageEvent, PendingMessages),
-      NewNext = Next#trace_state{pending_messages = NewPendingMessages},
-      State#scheduler_state{trace = [NewNext|Trace]};
-    {message_received, Message, PatternFun} ->
-      Update = {?message_pattern, PatternFun},
-      true = ets:update_element(MessageInfo, Message, Update),
-      State;
-    {new, SpawnedPid} ->
-      #trace_state{active_processes = ActiveProcesses} = Next,
-      NewNext =
-        Next#trace_state{active_processes = ActiveProcesses ++ [SpawnedPid]},
-      State#scheduler_state{trace = [NewNext|Trace]};
-    {system_communication, _} ->
-      State
-  end.
+  #trace_state{actors = Actors} = Next,
+  NewActors =
+    case Special of
+      halt -> [];
+      {message, Message} ->
+        add_message(Message, Actors, MessageInfo);
+      {message_delivered, MessageEvent} ->
+        remove_message(MessageEvent, Actors);
+      {message_received, Message, PatternFun} ->
+        Update = {?message_pattern, PatternFun},
+        true = ets:update_element(MessageInfo, Message, Update),
+        Actors;
+      {new, SpawnedPid} ->
+        Actors ++ [SpawnedPid];
+      {system_communication, _} ->
+        Actors
+    end,
+  NewNext = Next#trace_state{actors = NewActors},
+  State#scheduler_state{trace = [NewNext|Trace]}.
 
-process_message(MessageEvent, PendingMessages, MessageInfo) ->
+add_message(MessageEvent, Actors, MessageInfo) ->
   #message_event{
      message = #message{id = Id},
      recipient = Recipient,
      sender = Sender
     } = MessageEvent,
-  Key = {Sender, Recipient},
+  Channel = {Sender, Recipient},
   Update = fun(Queue) -> queue:in(MessageEvent, Queue) end,
   Initial = queue:from_list([MessageEvent]),
   ets:insert(MessageInfo, ?new_message_info(Id)),
-  orddict:update(Key, Update, Initial, PendingMessages).
+  insert_message(Channel, Update, Initial, Actors).
 
-remove_pending_message(#message_event{recipient = Recipient, sender = Sender},
-                       PendingMessages) ->
-  Key = {Sender, Recipient},
-  Queue = orddict:fetch(Key, PendingMessages),
+insert_message(Channel, Update, Initial, Actors) ->
+  insert_message(Channel, Update, Initial, Actors, false, []).
+
+insert_message(Channel, _Update, Initial, [], Found, Acc) ->
+  case Found of
+    true -> lists:reverse(Acc, [{Channel, Initial}]);
+    false -> [{Channel, Initial}|lists:reverse(Acc)]
+  end;
+insert_message(Channel, Update, _Initial, [{Channel, Queue}|Rest], true, Acc) ->
+  NewQueue = Update(Queue),
+  lists:reverse(Acc, [{Channel, NewQueue}|Rest]);
+insert_message({From, _} = Channel, Update, Initial, [Other|Rest], Found, Acc) ->
+  case Other of
+    {{_,_},_} ->
+      insert_message(Channel, Update, Initial, Rest, Found, [Other|Acc]);
+    From ->
+      insert_message(Channel, Update, Initial, Rest,  true, [Other|Acc]);
+    _ ->
+      case Found of
+        false ->
+          insert_message(Channel, Update, Initial, Rest, Found, [Other|Acc]);
+        true ->
+          lists:reverse(Acc, [{Channel, Initial},Other|Rest])
+      end
+  end.
+
+remove_message(#message_event{recipient = Recipient, sender = Sender}, Actors) ->
+  Channel = {Sender, Recipient},
+  remove_message(Channel, Actors, []).
+
+remove_message(Channel, [{Channel, Queue}|Rest], Acc) ->
   NewQueue = queue:drop(Queue),
   case queue:is_empty(NewQueue) of
-    true  -> orddict:erase(Key, PendingMessages);
-    false -> orddict:store(Key, NewQueue, PendingMessages)
-  end.
+    true  -> lists:reverse(Acc, Rest);
+    false -> lists:reverse(Acc, [{Channel, NewQueue}|Rest])
+  end;
+remove_message(Channel, [Other|Rest], Acc) ->
+  remove_message(Channel, Rest, [Other|Acc]).
 
 %%------------------------------------------------------------------------------
 

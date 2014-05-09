@@ -241,7 +241,8 @@
         message_event() |
         receive_event().
 
--type actor() :: pid() | {pid(), pid()}.
+-type channel() :: {pid(), pid()}.
+-type actor() :: pid() | channel().
 
 -define(is_channel(A), is_tuple(A)).
 
