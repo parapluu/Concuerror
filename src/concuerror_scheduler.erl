@@ -253,16 +253,20 @@ schedule_sort(ActiveProcesses, State) ->
         {Pre, Post} = lists:splitwith(Split, ActiveProcesses),
         Post ++ Pre
     end,
-  case StrictScheduling of
-    true when Scheduling =:= round_robin ->
-      [LastScheduled|Rest] = Sorted,
-      {[], Rest ++ [LastScheduled]};
-    false when Scheduling =/= round_robin ->
-      {[LastScheduled], lists:delete(LastScheduled, Sorted)};
-    false when Scheduling =:= round_robin ->
-      [LastScheduled|Rest] = Sorted,
-      {[LastScheduled], Rest};
-    _ -> {[], Sorted}
+  case lists:member(LastScheduled, ActiveProcesses) of
+    true ->
+      case StrictScheduling of
+        true when Scheduling =:= round_robin ->
+          [LastScheduled|Rest] = Sorted,
+          {[], Rest ++ [LastScheduled]};
+        false when Scheduling =/= round_robin ->
+          {[LastScheduled], lists:delete(LastScheduled, Sorted)};
+        false when Scheduling =:= round_robin ->
+          [LastScheduled|Rest] = Sorted,
+          {[LastScheduled], Rest};
+        _ -> {[], Sorted}
+      end;
+    false -> {[], Sorted}
   end.
 
 get_next_event(Event, [], PendingMessages, ActiveProcesses, State) ->
