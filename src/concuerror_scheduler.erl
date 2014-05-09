@@ -44,7 +44,8 @@
           assume_racing     = true :: boolean(),
           current_warnings  = []   :: [concuerror_warning_info()],
           depth_bound              :: pos_integer(),
-          first_process            :: {pid(), mfargs()},
+          entry_point              :: mfargs(),
+          first_process            :: pid(),
           ignore_error      = []   :: [atom()],
           logger                   :: pid(),
           last_scheduled           :: pid(),
@@ -82,7 +83,8 @@ run(Options) ->
        ignore_first_crash = ?opt(ignore_first_crash,Options),
        assume_racing = ?opt(assume_racing,Options),
        depth_bound = ?opt(depth_bound, Options),
-       first_process = {FirstProcess, EntryPoint = ?opt(entry_point, Options)},
+       entry_point = EntryPoint = ?opt(entry_point, Options),
+       first_process = FirstProcess,
        ignore_error = ?opt(ignore_error, Options),
        last_scheduled = FirstProcess,
        logger = Logger = ?opt(logger, Options),
@@ -916,7 +918,8 @@ reset_receive(Last, State) ->
 
 replay_prefix(Trace, State) ->
   #scheduler_state{
-     first_process = {FirstProcess, EntryPoint},
+     entry_point = EntryPoint,
+     first_process = FirstProcess,
      processes = Processes,
      timeout = Timeout
     } = State,
