@@ -9,6 +9,7 @@ Concuerror started with options:
    {ignore_first_crash,true},
    {instant_delivery,false},
    {non_racing_system,[]},
+   {optimal,true},
    {print_depth,20},
    {quiet,true},
    {report_unknown,true},
@@ -27,4 +28,4 @@ Instrumenting: io_lib
 Instrumenting: erlang
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 3/3 interleavings explored
+  Summary: 0 errors, 2/2 interleavings explored
