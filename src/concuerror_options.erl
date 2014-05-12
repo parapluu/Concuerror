@@ -84,10 +84,10 @@ options() ->
     " and check the standard output section instead."}
   ,{symbolic_names, $s, {boolean, true},
     "Use symbolic names for process identifiers in the output traces."}
-  ,{depth_bound, undefined, {integer, 5000},
+  ,{depth_bound, $d, {integer, 5000},
     "The maximum number of events allowed in a trace. Concuerror will stop"
     " exploration beyond this limit."}
-  ,{optimal, undefined, {boolean, true},
+  ,{optimal, undefined, boolean,
     "Setting this to false enables a more lightweight DPOR algorithm. Use this"
     " if the rate of exploration is too slow. Don't use it if a lot of"
     " interleavings are reported as sleep-set blocked."}
@@ -97,7 +97,7 @@ options() ->
   ,{instant_delivery, undefined, {boolean, false},
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
-  ,{scheduling, undefined, {atom, oldest},
+  ,{scheduling, undefined, {atom, round_robin},
     "How Concuerror picks the next process to run. Valid choices are 'oldest',"
     " 'newest' and 'round_robin'."}
   ,{strict_scheduling, undefined, {boolean, false},
@@ -158,10 +158,12 @@ finalize(Options) ->
         {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
           MissingDefaults =
             add_missing_defaults(
-              [{verbosity, ?DEFAULT_VERBOSITY},
+              [{ignore_error, []},
                {non_racing_system, []},
+               {optimal, true},
                {treat_as_normal, []},
-               {ignore_error, []}], Finalized),
+               {verbosity, ?DEFAULT_VERBOSITY}
+              ], Finalized),
           add_missing_getopt_defaults(MissingDefaults);
         _ ->
           opt_error("The module containing the main test function has not been"
@@ -252,7 +254,7 @@ finalize([{Key, Value}|Rest], AccIn) ->
         N when is_integer(N), N >= ?MINIMUM_TIMEOUT ->
           finalize(Rest, [{Key, N}|Acc]);
         _Else ->
-          opt_error("--~s value must be -1 (infinite) or >= "
+          opt_error("--~s value must be -1 (infinity) or >= "
                     ++ integer_to_list(?MINIMUM_TIMEOUT), [Key])
       end;
     test ->

@@ -2,6 +2,10 @@
 
 -export([simple_registry/0]).
 -export([scenarios/0]).
+-export([concuerror_options/0]).
+
+concuerror_options() ->
+    [{scheduling, oldest}].
 
 scenarios() -> [{?MODULE, inf, dpor}].
 

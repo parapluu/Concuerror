@@ -2,6 +2,10 @@
 
 -export([scenarios/0]).
 -export([test_2workers/0, test_2workers_small/0]).
+-export([concuerror_options/0]).
+
+concuerror_options() ->
+    [{scheduling, oldest}].
 
 scenarios() ->
     [{test_2workers_small, inf, dpor}].

@@ -40,8 +40,9 @@ dependent(#builtin_event{mfargs = {erlang, halt, _}}, _) ->
 dependent(_, #builtin_event{mfargs = {erlang, halt, _}}) ->
   true;
 
-dependent(#builtin_event{mfargs = MFArgs}, #exit_event{} = Exit) ->
-  dependent_exit(Exit, MFArgs);
+dependent(#builtin_event{mfargs = MFArgs, extra = Extra},
+          #exit_event{} = Exit) ->
+  dependent_exit(Exit, MFArgs, Extra);
 dependent(#exit_event{} = Exit, #builtin_event{} = Builtin) ->
   dependent(Builtin, Exit);
 
@@ -155,6 +156,21 @@ dependent(_EventA, #receive_event{}) ->
 
 %%------------------------------------------------------------------------------
 
+dependent_exit(#exit_event{actor = Exiting, name = Name},
+               {erlang,UnRegisterOp,[RName|Rest]}, Extra)
+  when UnRegisterOp =:= register;
+       UnRegisterOp =:= unregister ->
+  RName =:= Name orelse
+    case UnRegisterOp of
+      unregister ->
+        Extra =:= Exiting;
+      register ->
+        [Pid] = Rest,
+        Exiting =:= Pid
+    end;
+dependent_exit(Exit, MFArgs, Extra) ->
+  dependent_exit(Exit, MFArgs).
+
 dependent_exit(_Exit, {erlang, exit, _}) -> false;
 dependent_exit(_Exit, {erlang, process_flag, _}) -> false;
 dependent_exit(_Exit, {erlang, put, _}) -> false;
@@ -187,17 +203,6 @@ dependent_exit(#exit_event{name = Name}, {erlang, NameRelated, [OName|_]})
     NameRelated =:= send;
     NameRelated =:= whereis ->
   OName =:= Name;
-dependent_exit(#exit_event{actor = Exiting, name = Name},
-               {erlang,UnRegisterOp,[RName|Rest]})
-  when UnRegisterOp =:= register;
-       UnRegisterOp =:= unregister ->
-  RName =:= Name orelse
-    case UnRegisterOp =:= register of
-      false -> false;
-      true ->
-        [Pid] = Rest,
-        Exiting =:= Pid
-    end;
 dependent_exit(#exit_event{actor = Exiting}, {ets, give_away, [_, Pid, _]}) ->
   Exiting =:= Pid;
 dependent_exit(_Exit, {ets, _, _}) ->

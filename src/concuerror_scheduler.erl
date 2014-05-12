@@ -283,7 +283,7 @@ get_next_event(_Event, [], State) ->
         case concuerror_callback:collect_deadlock_info(Actors) of
           [] -> Warnings;
           Info ->
-            ?debug(_Logger, "Deadlock: ~p~n~n", [P || {P,_} <- Info]),
+            ?debug(_Logger, "Deadlock: ~p~n~n", [[P || {P,_} <- Info]]),
             [{deadlock, Info}|Warnings]
         end
     end,

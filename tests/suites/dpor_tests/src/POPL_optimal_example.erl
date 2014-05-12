@@ -2,6 +2,10 @@
 
 -export([test/0]).
 -export([scenarios/0]).
+-export([concuerror_options/0]).
+
+concuerror_options() ->
+    [{scheduling, oldest}].
 
 scenarios() -> [{test, inf, R} || R <- [dpor,source]].
 
