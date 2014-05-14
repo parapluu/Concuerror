@@ -23,7 +23,6 @@ load(Module, Instrumented) ->
     true ->
       ?debug_flag(?call, {load, Module}),
       Logger = ets:lookup_element(Instrumented, {logger}, 2),
-      ?log(Logger, ?linfo, "Instrumenting: ~p~n", [Module]),
       {Beam, Filename} =
         case code:which(Module) of
           preloaded ->
@@ -33,6 +32,7 @@ load(Module, Instrumented) ->
             {F, F}
         end,
       catch load_binary(Module, Filename, Beam, Instrumented),
+      ?log(Logger, ?linfo, "Instrumented: ~p~n", [Module]),
       maybe_instrumenting_myself(Module, Instrumented);
     false -> ok
   end.

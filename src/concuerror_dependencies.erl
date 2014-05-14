@@ -168,7 +168,7 @@ dependent_exit(#exit_event{actor = Exiting, name = Name},
         [Pid] = Rest,
         Exiting =:= Pid
     end;
-dependent_exit(Exit, MFArgs, Extra) ->
+dependent_exit(Exit, MFArgs, _Extra) ->
   dependent_exit(Exit, MFArgs).
 
 dependent_exit(_Exit, {erlang, exit, _}) -> false;

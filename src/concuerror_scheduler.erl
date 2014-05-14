@@ -76,8 +76,8 @@ run(Options) ->
   InitialTrace = #trace_state{actors = [FirstProcess]},
   InitialState =
     #scheduler_state{
-       ignore_first_crash = ?opt(ignore_first_crash,Options),
-       assume_racing = ?opt(assume_racing,Options),
+       ignore_first_crash = ?opt(ignore_first_crash, Options),
+       assume_racing = ?opt(assume_racing, Options),
        depth_bound = ?opt(depth_bound, Options),
        entry_point = EntryPoint = ?opt(entry_point, Options),
        first_process = FirstProcess,
@@ -211,7 +211,9 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
             catch
               _:_ ->
                 #scheduler_state{print_depth = PrintDepth} = State,
-                ?crash({replay_mismatch, I, Event, element(2, NewEvent), PrintDepth})
+                Reason =
+                  {replay_mismatch, I, Event, element(2, NewEvent), PrintDepth},
+                ?crash(Reason)
             end;
           false ->
             %% Last event = Previously racing event = Result may differ.
@@ -270,20 +272,21 @@ get_next_event(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
   #scheduler_state{
      current_warnings = Warnings,
-     logger = _Logger,
+     logger = Logger,
      trace = [Last|Prev]
     } = State,
   #trace_state{actors = Actors, sleeping = Sleeping} = Last,
   NewWarnings =
     case Sleeping =/= [] of
       true ->
-        ?debug(_Logger, "Sleep set block:~n ~p~n", [Sleeping]),
+        ?debug(Logger, "Sleep set block:~n ~p~n", [Sleeping]),
+        ?unique(Logger, ?lwarning, msg(sleep_set_block), []),
         [sleep_set_block];
       false ->
         case concuerror_callback:collect_deadlock_info(Actors) of
           [] -> Warnings;
           Info ->
-            ?debug(_Logger, "Deadlock: ~p~n~n", [[P || {P,_} <- Info]]),
+            ?debug(Logger, "Deadlock: ~p~n~n", [[P || {P,_} <- Info]]),
             [{deadlock, Info}|Warnings]
         end
     end,
@@ -1023,10 +1026,13 @@ msg(shutdown) ->
   "A process crashed with reason 'shutdown'. This may happen when a"
     " supervisor is terminating its children. You can use --treat_as_normal"
     " shutdown if this is expected behaviour.~n";
+msg(sleep_set_block) ->
+  "Some interleavings were 'sleep-set blocked'. This is expected if you have"
+    " specified --optimal=false, but reveals wasted effort.~n";
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"
     " standard timeout. Use the --after_timeout option to treat after clauses"
     " that exceed some threshold as 'impossible'.~n";
 msg(treat_as_normal) ->
-  "Some exit reasons were treated as normal (--treat_as_normal).~n".
+  "Some abnormal exit reasons were treated as normal (--treat_as_normal).~n".

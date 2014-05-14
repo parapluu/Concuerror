@@ -56,7 +56,8 @@ vpath %.erl src
 compile: $(MODULES:%=ebin/%.beam) getopt concuerror
 
 dev:
-	$(MAKE) ERL_COMPILE_FLAGS="$(ERL_COMPILE_FLAGS) -DDEV=true" VSN="$(VSN)d"
+	$(MAKE) VSN="$(VSN)d" \
+	ERL_COMPILE_FLAGS="$(ERL_COMPILE_FLAGS) -DDEV=true +nowarn_deprecated_type +warnings_as_errors"
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(MODULES:%=ebin/%.Pbeam)

@@ -40,7 +40,7 @@ run(Parent, Options) ->
     get_properties(
       [output,symbolic_names,processes,modules],
       Options),
-  Fun = fun({M}, _) -> ?log(self(), ?linfo, "Instrumenting: ~p~n", [M]) end,
+  Fun = fun({M}, _) -> ?log(self(), ?linfo, "Instrumented: ~p~n", [M]) end,
   ets:foldl(Fun, ok, Modules),
   ets:insert(Modules, {{logger}, self()}),
   ok = setup_symbolic_names(SymbolicNames, Processes),
