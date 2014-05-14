@@ -1,1463 +1,263 @@
 ################################################################################
 Concuerror started with options:
-  [{'after-timeout',infinite},
+  [{after_timeout,infinity},
    {assume_racing,false},
-   {files,["/home/stavros/git/Concuerror/tests/suites/dpor/src/preemption.erl"]},
-   {normal_exit,[normal]},
-   {symbolic,true},
-   {target,{preemption,preemption,[]}},
-   {verbose,0},
-   {wait,2000}]
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{preemption,preemption,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/preemption.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {report_unknown,true},
+   {scheduling,oldest},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
+    P in preemption.erl line 21
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.101248340>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.101248340>,[]])
     in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.101248340>,[]])
     in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.101248340>,[]])
     in erlang.erl line 2329
    5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: Message (0) from P.3 reaches P.2
-   9: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-  10: Message ({sender,P.3}) from P.3 reaches P
-  11: P: receives message ({sender,P.3})
+    in preemption.erl line 45
+   6: P.3: 0 = P.2 ! 0
+    in preemption.erl line 45
+   7: P.3: {sender,P.3} = P ! {sender,P.3}
     in preemption.erl line 46
-  12: P.3: exits normally
+   8: P.3: exits normally
+   9: Message (0) from P.3 reaches P.1
+  10: Message (0) from P.3 reaches P.2
+  11: Message ({sender,P.3}) from P.3 reaches P
+  12: P: receives message ({sender,P.3})
+    in preemption.erl line 50
   13: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  14: Message (1) from P.4 reaches P.1
-  15: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  16: Message (1) from P.4 reaches P.2
-  17: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  18: Message ({sender,P.4}) from P.4 reaches P
-  19: P: receives message ({sender,P.4})
+    in preemption.erl line 45
+  14: P.4: 1 = P.2 ! 1
+    in preemption.erl line 45
+  15: P.4: {sender,P.4} = P ! {sender,P.4}
     in preemption.erl line 46
-  20: P: go = P.1 ! go
-    in preemption.erl line 52
-  21: Message (go) from P reaches P.1
+  16: P.4: exits normally
+  17: Message (1) from P.4 reaches P.1
+  18: Message (1) from P.4 reaches P.2
+  19: Message ({sender,P.4}) from P.4 reaches P
+  20: P: receives message ({sender,P.4})
+    in preemption.erl line 50
+  21: P: go = P.1 ! go
+    in preemption.erl line 56
   22: P: go = P.2 ! go
-    in preemption.erl line 52
-  23: Message (go) from P reaches P.2
-  24: P.1: receives message (go)
-    in preemption.erl line 25
-  25: P.1: receives message (0)
-    in preemption.erl line 32
-  26: P.1: receives message (1)
-    in preemption.erl line 32
-  27: P.1: exits normally
-  28: P.2: receives message (go)
-    in preemption.erl line 25
-  29: P.2: receives message (0)
-    in preemption.erl line 32
-  30: P.2: receives message (1)
-    in preemption.erl line 32
-  31: P.2: exits normally
-  32: P.4: exits normally
+    in preemption.erl line 56
+  23: Message (go) from P reaches P.1
+  24: Message (go) from P reaches P.2
+  25: P.1: receives message (go)
+    in preemption.erl line 29
+  26: P.1: receives message (0)
+    in preemption.erl line 36
+  27: P.1: receives message (1)
+    in preemption.erl line 36
+  28: P.1: exits normally
+  29: P.2: receives message (go)
+    in preemption.erl line 29
+  30: P.2: receives message (0)
+    in preemption.erl line 36
+  31: P.2: receives message (1)
+    in preemption.erl line 36
+  32: P.2: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
+    P in preemption.erl line 21
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.101248340>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.101248340>,[]])
     in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.101248340>,[]])
     in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.101248340>,[]])
     in erlang.erl line 2329
    5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: Message (0) from P.3 reaches P.2
-   9: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
+    in preemption.erl line 45
+   6: P.3: 0 = P.2 ! 0
+    in preemption.erl line 45
+   7: P.3: {sender,P.3} = P ! {sender,P.3}
+    in preemption.erl line 46
+   8: P.3: exits normally
+   9: Message (0) from P.3 reaches P.1
   10: Message ({sender,P.3}) from P.3 reaches P
   11: P: receives message ({sender,P.3})
+    in preemption.erl line 50
+  12: P.4: 1 = P.1 ! 1
+    in preemption.erl line 45
+  13: P.4: 1 = P.2 ! 1
+    in preemption.erl line 45
+  14: P.4: {sender,P.4} = P ! {sender,P.4}
     in preemption.erl line 46
-  12: P.3: exits normally
-  13: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  14: Message (1) from P.4 reaches P.1
-  15: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  16: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
+  15: P.4: exits normally
+  16: Message (1) from P.4 reaches P.1
   17: Message ({sender,P.4}) from P.4 reaches P
   18: P: receives message ({sender,P.4})
-    in preemption.erl line 46
+    in preemption.erl line 50
   19: P: go = P.1 ! go
-    in preemption.erl line 52
-  20: Message (go) from P reaches P.1
-  21: P: go = P.2 ! go
-    in preemption.erl line 52
+    in preemption.erl line 56
+  20: P: go = P.2 ! go
+    in preemption.erl line 56
+  21: Message (go) from P reaches P.1
   22: P.1: receives message (go)
-    in preemption.erl line 25
+    in preemption.erl line 29
   23: P.1: receives message (0)
-    in preemption.erl line 32
+    in preemption.erl line 36
   24: P.1: receives message (1)
-    in preemption.erl line 32
+    in preemption.erl line 36
   25: P.1: exits normally
-  26: P.4: exits normally
+  26: Message (1) from P.4 reaches P.2
   27: Message (go) from P reaches P.2
-  28: Message (1) from P.4 reaches P.2
-  29: P.2: receives message (go)
-    in preemption.erl line 25
-  30: P.2: receives message (0)
-    in preemption.erl line 32
-  31: P.2: receives message (1)
-    in preemption.erl line 32
+  28: P.2: receives message (go)
+    in preemption.erl line 29
+  29: P.2: receives message (1)
+    in preemption.erl line 36
+  30: Message (0) from P.3 reaches P.2
+  31: P.2: receives message (0)
+    in preemption.erl line 36
   32: P.2: exits normally
 ################################################################################
 Erroneous interleaving 3:
 * Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
+    P in preemption.erl line 21
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.101248340>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.101248340>,[]])
     in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.101248340>,[]])
     in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.101248340>,[]])
     in erlang.erl line 2329
    5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: Message (0) from P.3 reaches P.2
-   9: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
+    in preemption.erl line 45
+   6: P.3: 0 = P.2 ! 0
+    in preemption.erl line 45
+   7: P.3: {sender,P.3} = P ! {sender,P.3}
+    in preemption.erl line 46
+   8: P.3: exits normally
+   9: Message (0) from P.3 reaches P.2
   10: Message ({sender,P.3}) from P.3 reaches P
   11: P: receives message ({sender,P.3})
+    in preemption.erl line 50
+  12: P.4: 1 = P.1 ! 1
+    in preemption.erl line 45
+  13: P.4: 1 = P.2 ! 1
+    in preemption.erl line 45
+  14: P.4: {sender,P.4} = P ! {sender,P.4}
     in preemption.erl line 46
-  12: P.3: exits normally
-  13: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  14: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  15: Message (1) from P.4 reaches P.2
-  16: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
+  15: P.4: exits normally
+  16: Message (1) from P.4 reaches P.2
   17: Message ({sender,P.4}) from P.4 reaches P
   18: P: receives message ({sender,P.4})
-    in preemption.erl line 46
+    in preemption.erl line 50
   19: P: go = P.1 ! go
-    in preemption.erl line 52
+    in preemption.erl line 56
   20: P: go = P.2 ! go
-    in preemption.erl line 52
+    in preemption.erl line 56
   21: Message (go) from P reaches P.2
   22: P.2: receives message (go)
-    in preemption.erl line 25
+    in preemption.erl line 29
   23: P.2: receives message (0)
-    in preemption.erl line 32
+    in preemption.erl line 36
   24: P.2: receives message (1)
-    in preemption.erl line 32
+    in preemption.erl line 36
   25: P.2: exits normally
-  26: P.4: exits normally
+  26: Message (1) from P.4 reaches P.1
   27: Message (go) from P reaches P.1
-  28: Message (1) from P.4 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (0)
-    in preemption.erl line 32
-  31: P.1: receives message (1)
-    in preemption.erl line 32
+  28: P.1: receives message (go)
+    in preemption.erl line 29
+  29: P.1: receives message (1)
+    in preemption.erl line 36
+  30: Message (0) from P.3 reaches P.1
+  31: P.1: receives message (0)
+    in preemption.erl line 36
   32: P.1: exits normally
 ################################################################################
 Erroneous interleaving 4:
 * Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
+    P in preemption.erl line 21
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.101248340>,[]])
     in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.101248340>,[]])
     in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.101248340>,[]])
     in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: Message (0) from P.3 reaches P.2
-   9: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-  10: Message ({sender,P.3}) from P.3 reaches P
-  11: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  12: P.3: exits normally
-  13: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  14: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  15: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  16: Message ({sender,P.4}) from P.4 reaches P
-  17: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  18: P: go = P.1 ! go
-    in preemption.erl line 52
-  19: P: go = P.2 ! go
-    in preemption.erl line 52
-  20: P.4: exits normally
-  21: Message (go) from P reaches P.2
-  22: Message (1) from P.4 reaches P.2
-  23: P.2: receives message (go)
-    in preemption.erl line 25
-  24: P.2: receives message (0)
-    in preemption.erl line 32
-  25: P.2: receives message (1)
-    in preemption.erl line 32
-  26: P.2: exits normally
-  27: Message (go) from P reaches P.1
-  28: Message (1) from P.4 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (0)
-    in preemption.erl line 32
-  31: P.1: receives message (1)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 5:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.101248340>,[]])
     in erlang.erl line 2329
    5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: Message (1) from P.4 reaches P.1
-  14: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  15: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  16: Message ({sender,P.4}) from P.4 reaches P
-  17: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  18: P: go = P.1 ! go
-    in preemption.erl line 52
-  19: Message (go) from P reaches P.1
-  20: P: go = P.2 ! go
-    in preemption.erl line 52
-  21: P.1: receives message (go)
-    in preemption.erl line 25
-  22: P.1: receives message (0)
-    in preemption.erl line 32
-  23: P.1: receives message (1)
-    in preemption.erl line 32
-  24: P.1: exits normally
-  25: P.4: exits normally
-  26: Message (1) from P.4 reaches P.2
-  27: Message (go) from P reaches P.2
-  28: Message (0) from P.3 reaches P.2
-  29: P.2: receives message (go)
-    in preemption.erl line 25
-  30: P.2: receives message (1)
-    in preemption.erl line 32
-  31: P.2: receives message (0)
-    in preemption.erl line 32
-  32: P.2: exits normally
-################################################################################
-Erroneous interleaving 6:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: Message (1) from P.4 reaches P.1
-  14: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  15: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  16: Message ({sender,P.4}) from P.4 reaches P
-  17: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  18: P: go = P.1 ! go
-    in preemption.erl line 52
-  19: Message (go) from P reaches P.1
-  20: P: go = P.2 ! go
-    in preemption.erl line 52
-  21: P.1: receives message (go)
-    in preemption.erl line 25
-  22: P.1: receives message (0)
-    in preemption.erl line 32
-  23: P.1: receives message (1)
-    in preemption.erl line 32
-  24: P.1: exits normally
-  25: P.4: exits normally
-  26: Message (go) from P reaches P.2
-  27: Message (0) from P.3 reaches P.2
-  28: Message (1) from P.4 reaches P.2
-  29: P.2: receives message (go)
-    in preemption.erl line 25
-  30: P.2: receives message (0)
-    in preemption.erl line 32
-  31: P.2: receives message (1)
-    in preemption.erl line 32
-  32: P.2: exits normally
-################################################################################
-Erroneous interleaving 7:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: Message (1) from P.4 reaches P.1
-  14: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  15: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  16: Message ({sender,P.4}) from P.4 reaches P
-  17: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  18: P: go = P.1 ! go
-    in preemption.erl line 52
-  19: Message (go) from P reaches P.1
-  20: P: go = P.2 ! go
-    in preemption.erl line 52
-  21: P.1: receives message (go)
-    in preemption.erl line 25
-  22: P.1: receives message (0)
-    in preemption.erl line 32
-  23: P.1: receives message (1)
-    in preemption.erl line 32
-  24: P.1: exits normally
-  25: P.4: exits normally
-  26: Message (go) from P reaches P.2
-  27: P.2: receives message (go)
-    in preemption.erl line 25
-  28: Message (1) from P.4 reaches P.2
-  29: Message (0) from P.3 reaches P.2
-  30: P.2: receives message (1)
-    in preemption.erl line 32
-  31: P.2: receives message (0)
-    in preemption.erl line 32
-  32: P.2: exits normally
-################################################################################
-Erroneous interleaving 8:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  14: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  15: Message ({sender,P.4}) from P.4 reaches P
-  16: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  17: P: go = P.1 ! go
-    in preemption.erl line 52
-  18: P: go = P.2 ! go
-    in preemption.erl line 52
-  19: P.4: exits normally
-  20: Message (go) from P reaches P.1
-  21: Message (1) from P.4 reaches P.1
-  22: P.1: receives message (go)
-    in preemption.erl line 25
-  23: P.1: receives message (0)
-    in preemption.erl line 32
-  24: P.1: receives message (1)
-    in preemption.erl line 32
-  25: P.1: exits normally
-  26: Message (1) from P.4 reaches P.2
-  27: Message (go) from P reaches P.2
-  28: Message (0) from P.3 reaches P.2
-  29: P.2: receives message (go)
-    in preemption.erl line 25
-  30: P.2: receives message (1)
-    in preemption.erl line 32
-  31: P.2: receives message (0)
-    in preemption.erl line 32
-  32: P.2: exits normally
-################################################################################
-Erroneous interleaving 9:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  14: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  15: Message ({sender,P.4}) from P.4 reaches P
-  16: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  17: P: go = P.1 ! go
-    in preemption.erl line 52
-  18: P: go = P.2 ! go
-    in preemption.erl line 52
-  19: P.4: exits normally
-  20: Message (go) from P reaches P.1
-  21: Message (1) from P.4 reaches P.1
-  22: P.1: receives message (go)
-    in preemption.erl line 25
-  23: P.1: receives message (0)
-    in preemption.erl line 32
-  24: P.1: receives message (1)
-    in preemption.erl line 32
-  25: P.1: exits normally
-  26: Message (go) from P reaches P.2
-  27: Message (0) from P.3 reaches P.2
-  28: Message (1) from P.4 reaches P.2
-  29: P.2: receives message (go)
-    in preemption.erl line 25
-  30: P.2: receives message (0)
-    in preemption.erl line 32
-  31: P.2: receives message (1)
-    in preemption.erl line 32
-  32: P.2: exits normally
-################################################################################
-Erroneous interleaving 10:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: Message (0) from P.3 reaches P.1
-   7: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  14: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  15: Message ({sender,P.4}) from P.4 reaches P
-  16: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  17: P: go = P.1 ! go
-    in preemption.erl line 52
-  18: P: go = P.2 ! go
-    in preemption.erl line 52
-  19: P.4: exits normally
-  20: Message (go) from P reaches P.1
-  21: Message (1) from P.4 reaches P.1
-  22: P.1: receives message (go)
-    in preemption.erl line 25
-  23: P.1: receives message (0)
-    in preemption.erl line 32
-  24: P.1: receives message (1)
-    in preemption.erl line 32
-  25: P.1: exits normally
-  26: Message (go) from P reaches P.2
-  27: P.2: receives message (go)
-    in preemption.erl line 25
-  28: Message (1) from P.4 reaches P.2
-  29: Message (0) from P.3 reaches P.2
-  30: P.2: receives message (1)
-    in preemption.erl line 32
-  31: P.2: receives message (0)
-    in preemption.erl line 32
-  32: P.2: exits normally
-################################################################################
-Erroneous interleaving 11:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
+    in preemption.erl line 45
    6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: Message (0) from P.3 reaches P.2
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  14: Message (1) from P.4 reaches P.2
-  15: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  16: Message ({sender,P.4}) from P.4 reaches P
-  17: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  18: P: go = P.1 ! go
-    in preemption.erl line 52
-  19: P: go = P.2 ! go
-    in preemption.erl line 52
-  20: Message (go) from P reaches P.2
-  21: P.2: receives message (go)
-    in preemption.erl line 25
-  22: P.2: receives message (0)
-    in preemption.erl line 32
-  23: P.2: receives message (1)
-    in preemption.erl line 32
-  24: P.2: exits normally
-  25: P.4: exits normally
-  26: Message (1) from P.4 reaches P.1
-  27: Message (go) from P reaches P.1
-  28: Message (0) from P.3 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (1)
-    in preemption.erl line 32
-  31: P.1: receives message (0)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 12:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: Message (0) from P.3 reaches P.2
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  14: Message (1) from P.4 reaches P.2
-  15: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  16: Message ({sender,P.4}) from P.4 reaches P
-  17: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  18: P: go = P.1 ! go
-    in preemption.erl line 52
-  19: P: go = P.2 ! go
-    in preemption.erl line 52
-  20: Message (go) from P reaches P.2
-  21: P.2: receives message (go)
-    in preemption.erl line 25
-  22: P.2: receives message (0)
-    in preemption.erl line 32
-  23: P.2: receives message (1)
-    in preemption.erl line 32
-  24: P.2: exits normally
-  25: P.4: exits normally
-  26: Message (go) from P reaches P.1
-  27: Message (0) from P.3 reaches P.1
-  28: Message (1) from P.4 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (0)
-    in preemption.erl line 32
-  31: P.1: receives message (1)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 13:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: Message (0) from P.3 reaches P.2
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  14: Message (1) from P.4 reaches P.2
-  15: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  16: Message ({sender,P.4}) from P.4 reaches P
-  17: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  18: P: go = P.1 ! go
-    in preemption.erl line 52
-  19: P: go = P.2 ! go
-    in preemption.erl line 52
-  20: Message (go) from P reaches P.2
-  21: P.2: receives message (go)
-    in preemption.erl line 25
-  22: P.2: receives message (0)
-    in preemption.erl line 32
-  23: P.2: receives message (1)
-    in preemption.erl line 32
-  24: P.2: exits normally
-  25: P.4: exits normally
-  26: Message (go) from P reaches P.1
-  27: P.1: receives message (go)
-    in preemption.erl line 25
-  28: Message (1) from P.4 reaches P.1
-  29: Message (0) from P.3 reaches P.1
-  30: P.1: receives message (1)
-    in preemption.erl line 32
-  31: P.1: receives message (0)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 14:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: Message (0) from P.3 reaches P.2
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  14: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  15: Message ({sender,P.4}) from P.4 reaches P
-  16: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  17: P: go = P.1 ! go
-    in preemption.erl line 52
-  18: P: go = P.2 ! go
-    in preemption.erl line 52
-  19: P.4: exits normally
-  20: Message (go) from P reaches P.2
-  21: Message (1) from P.4 reaches P.2
-  22: P.2: receives message (go)
-    in preemption.erl line 25
-  23: P.2: receives message (0)
-    in preemption.erl line 32
-  24: P.2: receives message (1)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (1) from P.4 reaches P.1
-  27: Message (go) from P reaches P.1
-  28: Message (0) from P.3 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (1)
-    in preemption.erl line 32
-  31: P.1: receives message (0)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 15:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: Message (0) from P.3 reaches P.2
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  14: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  15: Message ({sender,P.4}) from P.4 reaches P
-  16: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  17: P: go = P.1 ! go
-    in preemption.erl line 52
-  18: P: go = P.2 ! go
-    in preemption.erl line 52
-  19: P.4: exits normally
-  20: Message (go) from P reaches P.2
-  21: Message (1) from P.4 reaches P.2
-  22: P.2: receives message (go)
-    in preemption.erl line 25
-  23: P.2: receives message (0)
-    in preemption.erl line 32
-  24: P.2: receives message (1)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (go) from P reaches P.1
-  27: Message (0) from P.3 reaches P.1
-  28: Message (1) from P.4 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (0)
-    in preemption.erl line 32
-  31: P.1: receives message (1)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 16:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: Message (0) from P.3 reaches P.2
-   8: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   9: Message ({sender,P.3}) from P.3 reaches P
-  10: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  11: P.3: exits normally
-  12: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  13: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  14: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  15: Message ({sender,P.4}) from P.4 reaches P
-  16: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  17: P: go = P.1 ! go
-    in preemption.erl line 52
-  18: P: go = P.2 ! go
-    in preemption.erl line 52
-  19: P.4: exits normally
-  20: Message (go) from P reaches P.2
-  21: Message (1) from P.4 reaches P.2
-  22: P.2: receives message (go)
-    in preemption.erl line 25
-  23: P.2: receives message (0)
-    in preemption.erl line 32
-  24: P.2: receives message (1)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (go) from P reaches P.1
-  27: P.1: receives message (go)
-    in preemption.erl line 25
-  28: Message (1) from P.4 reaches P.1
-  29: Message (0) from P.3 reaches P.1
-  30: P.1: receives message (1)
-    in preemption.erl line 32
-  31: P.1: receives message (0)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 17:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
+    in preemption.erl line 45
    7: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   8: Message ({sender,P.3}) from P.3 reaches P
-   9: P: receives message ({sender,P.3})
     in preemption.erl line 46
-  10: P.3: exits normally
+   8: P.3: exits normally
+   9: Message ({sender,P.3}) from P.3 reaches P
+  10: P: receives message ({sender,P.3})
+    in preemption.erl line 50
   11: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
+    in preemption.erl line 45
   12: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
+    in preemption.erl line 45
   13: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  14: Message ({sender,P.4}) from P.4 reaches P
-  15: P: receives message ({sender,P.4})
     in preemption.erl line 46
-  16: P: go = P.1 ! go
-    in preemption.erl line 52
-  17: P: go = P.2 ! go
-    in preemption.erl line 52
-  18: P.4: exits normally
+  14: P.4: exits normally
+  15: Message ({sender,P.4}) from P.4 reaches P
+  16: P: receives message ({sender,P.4})
+    in preemption.erl line 50
+  17: P: go = P.1 ! go
+    in preemption.erl line 56
+  18: P: go = P.2 ! go
+    in preemption.erl line 56
   19: Message (1) from P.4 reaches P.2
   20: Message (go) from P reaches P.2
-  21: Message (0) from P.3 reaches P.2
-  22: P.2: receives message (go)
-    in preemption.erl line 25
-  23: P.2: receives message (1)
-    in preemption.erl line 32
+  21: P.2: receives message (go)
+    in preemption.erl line 29
+  22: P.2: receives message (1)
+    in preemption.erl line 36
+  23: Message (0) from P.3 reaches P.2
   24: P.2: receives message (0)
-    in preemption.erl line 32
+    in preemption.erl line 36
   25: P.2: exits normally
   26: Message (1) from P.4 reaches P.1
   27: Message (go) from P reaches P.1
-  28: Message (0) from P.3 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (1)
-    in preemption.erl line 32
+  28: P.1: receives message (go)
+    in preemption.erl line 29
+  29: P.1: receives message (1)
+    in preemption.erl line 36
+  30: Message (0) from P.3 reaches P.1
   31: P.1: receives message (0)
-    in preemption.erl line 32
+    in preemption.erl line 36
   32: P.1: exits normally
 ################################################################################
-Erroneous interleaving 18:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
+Concuerror Info:
 --------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   8: Message ({sender,P.3}) from P.3 reaches P
-   9: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  10: P.3: exits normally
-  11: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  12: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  13: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  14: Message ({sender,P.4}) from P.4 reaches P
-  15: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  16: P: go = P.1 ! go
-    in preemption.erl line 52
-  17: P: go = P.2 ! go
-    in preemption.erl line 52
-  18: P.4: exits normally
-  19: Message (1) from P.4 reaches P.2
-  20: Message (go) from P reaches P.2
-  21: Message (0) from P.3 reaches P.2
-  22: P.2: receives message (go)
-    in preemption.erl line 25
-  23: P.2: receives message (1)
-    in preemption.erl line 32
-  24: P.2: receives message (0)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (go) from P reaches P.1
-  27: Message (0) from P.3 reaches P.1
-  28: Message (1) from P.4 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (0)
-    in preemption.erl line 32
-  31: P.1: receives message (1)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 19:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   8: Message ({sender,P.3}) from P.3 reaches P
-   9: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  10: P.3: exits normally
-  11: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  12: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  13: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  14: Message ({sender,P.4}) from P.4 reaches P
-  15: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  16: P: go = P.1 ! go
-    in preemption.erl line 52
-  17: P: go = P.2 ! go
-    in preemption.erl line 52
-  18: P.4: exits normally
-  19: Message (1) from P.4 reaches P.2
-  20: Message (go) from P reaches P.2
-  21: Message (0) from P.3 reaches P.2
-  22: P.2: receives message (go)
-    in preemption.erl line 25
-  23: P.2: receives message (1)
-    in preemption.erl line 32
-  24: P.2: receives message (0)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (go) from P reaches P.1
-  27: P.1: receives message (go)
-    in preemption.erl line 25
-  28: Message (1) from P.4 reaches P.1
-  29: Message (0) from P.3 reaches P.1
-  30: P.1: receives message (1)
-    in preemption.erl line 32
-  31: P.1: receives message (0)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 20:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   8: Message ({sender,P.3}) from P.3 reaches P
-   9: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  10: P.3: exits normally
-  11: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  12: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  13: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  14: Message ({sender,P.4}) from P.4 reaches P
-  15: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  16: P: go = P.1 ! go
-    in preemption.erl line 52
-  17: P: go = P.2 ! go
-    in preemption.erl line 52
-  18: P.4: exits normally
-  19: Message (go) from P reaches P.2
-  20: Message (0) from P.3 reaches P.2
-  21: Message (1) from P.4 reaches P.2
-  22: P.2: receives message (go)
-    in preemption.erl line 25
-  23: P.2: receives message (0)
-    in preemption.erl line 32
-  24: P.2: receives message (1)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (1) from P.4 reaches P.1
-  27: Message (go) from P reaches P.1
-  28: Message (0) from P.3 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (1)
-    in preemption.erl line 32
-  31: P.1: receives message (0)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 21:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   8: Message ({sender,P.3}) from P.3 reaches P
-   9: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  10: P.3: exits normally
-  11: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  12: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  13: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  14: Message ({sender,P.4}) from P.4 reaches P
-  15: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  16: P: go = P.1 ! go
-    in preemption.erl line 52
-  17: P: go = P.2 ! go
-    in preemption.erl line 52
-  18: P.4: exits normally
-  19: Message (go) from P reaches P.2
-  20: Message (0) from P.3 reaches P.2
-  21: Message (1) from P.4 reaches P.2
-  22: P.2: receives message (go)
-    in preemption.erl line 25
-  23: P.2: receives message (0)
-    in preemption.erl line 32
-  24: P.2: receives message (1)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (go) from P reaches P.1
-  27: Message (0) from P.3 reaches P.1
-  28: Message (1) from P.4 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (0)
-    in preemption.erl line 32
-  31: P.1: receives message (1)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 22:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   8: Message ({sender,P.3}) from P.3 reaches P
-   9: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  10: P.3: exits normally
-  11: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  12: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  13: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  14: Message ({sender,P.4}) from P.4 reaches P
-  15: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  16: P: go = P.1 ! go
-    in preemption.erl line 52
-  17: P: go = P.2 ! go
-    in preemption.erl line 52
-  18: P.4: exits normally
-  19: Message (go) from P reaches P.2
-  20: Message (0) from P.3 reaches P.2
-  21: Message (1) from P.4 reaches P.2
-  22: P.2: receives message (go)
-    in preemption.erl line 25
-  23: P.2: receives message (0)
-    in preemption.erl line 32
-  24: P.2: receives message (1)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (go) from P reaches P.1
-  27: P.1: receives message (go)
-    in preemption.erl line 25
-  28: Message (1) from P.4 reaches P.1
-  29: Message (0) from P.3 reaches P.1
-  30: P.1: receives message (1)
-    in preemption.erl line 32
-  31: P.1: receives message (0)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 23:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   8: Message ({sender,P.3}) from P.3 reaches P
-   9: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  10: P.3: exits normally
-  11: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  12: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  13: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  14: Message ({sender,P.4}) from P.4 reaches P
-  15: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  16: P: go = P.1 ! go
-    in preemption.erl line 52
-  17: P: go = P.2 ! go
-    in preemption.erl line 52
-  18: P.4: exits normally
-  19: Message (go) from P reaches P.2
-  20: P.2: receives message (go)
-    in preemption.erl line 25
-  21: Message (1) from P.4 reaches P.2
-  22: Message (0) from P.3 reaches P.2
-  23: P.2: receives message (1)
-    in preemption.erl line 32
-  24: P.2: receives message (0)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (1) from P.4 reaches P.1
-  27: Message (go) from P reaches P.1
-  28: Message (0) from P.3 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (1)
-    in preemption.erl line 32
-  31: P.1: receives message (0)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 24:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   8: Message ({sender,P.3}) from P.3 reaches P
-   9: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  10: P.3: exits normally
-  11: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  12: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  13: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  14: Message ({sender,P.4}) from P.4 reaches P
-  15: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  16: P: go = P.1 ! go
-    in preemption.erl line 52
-  17: P: go = P.2 ! go
-    in preemption.erl line 52
-  18: P.4: exits normally
-  19: Message (go) from P reaches P.2
-  20: P.2: receives message (go)
-    in preemption.erl line 25
-  21: Message (1) from P.4 reaches P.2
-  22: Message (0) from P.3 reaches P.2
-  23: P.2: receives message (1)
-    in preemption.erl line 32
-  24: P.2: receives message (0)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (go) from P reaches P.1
-  27: Message (0) from P.3 reaches P.1
-  28: Message (1) from P.4 reaches P.1
-  29: P.1: receives message (go)
-    in preemption.erl line 25
-  30: P.1: receives message (0)
-    in preemption.erl line 32
-  31: P.1: receives message (1)
-    in preemption.erl line 32
-  32: P.1: exits normally
-################################################################################
-Erroneous interleaving 25:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in preemption.erl line 17
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<preemption.5.71623003>,[]])
-    in erlang.erl line 2329
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<preemption.4.71623003>,[]])
-    in erlang.erl line 2329
-   5: P.3: 0 = P.1 ! 0
-    in preemption.erl line 41
-   6: P.3: 0 = P.2 ! 0
-    in preemption.erl line 41
-   7: P.3: {sender,P.3} = P ! {sender,P.3}
-    in preemption.erl line 42
-   8: Message ({sender,P.3}) from P.3 reaches P
-   9: P: receives message ({sender,P.3})
-    in preemption.erl line 46
-  10: P.3: exits normally
-  11: P.4: 1 = P.1 ! 1
-    in preemption.erl line 41
-  12: P.4: 1 = P.2 ! 1
-    in preemption.erl line 41
-  13: P.4: {sender,P.4} = P ! {sender,P.4}
-    in preemption.erl line 42
-  14: Message ({sender,P.4}) from P.4 reaches P
-  15: P: receives message ({sender,P.4})
-    in preemption.erl line 46
-  16: P: go = P.1 ! go
-    in preemption.erl line 52
-  17: P: go = P.2 ! go
-    in preemption.erl line 52
-  18: P.4: exits normally
-  19: Message (go) from P reaches P.2
-  20: P.2: receives message (go)
-    in preemption.erl line 25
-  21: Message (1) from P.4 reaches P.2
-  22: Message (0) from P.3 reaches P.2
-  23: P.2: receives message (1)
-    in preemption.erl line 32
-  24: P.2: receives message (0)
-    in preemption.erl line 32
-  25: P.2: exits normally
-  26: Message (go) from P reaches P.1
-  27: P.1: receives message (go)
-    in preemption.erl line 25
-  28: Message (1) from P.4 reaches P.1
-  29: Message (0) from P.3 reaches P.1
-  30: P.1: receives message (1)
-    in preemption.erl line 32
-  31: P.1: receives message (0)
-    in preemption.erl line 32
-  32: P.1: exits normally
+Instrumented: preemption
+Instrumented: io_lib
+Instrumented: lists
+Instrumented: erlang
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 25 errors, 25/25 interleavings explored
+  Summary: 4 errors, 4/4 interleavings explored

@@ -111,10 +111,11 @@
 -type message_info() :: ets:tid().
 -type timers()       :: ets:tid().
 
--define(new_message_info(Id), {Id, none, undefined, undefined}).
+-define(new_message_info(Id), {Id, none, undefined, undefined, undefined}).
 -define(message_pattern, 2).
 -define(message_sent, 3).
 -define(message_delivered, 4).
+-define(message_received, 5).
 
 -define(notify_none, 1).
 %%------------------------------------------------------------------------------

@@ -2,6 +2,7 @@
 Concuerror started with options:
   [{after_timeout,infinity},
    {assume_racing,false},
+   {delay_bound,infinity},
    {depth_bound,5000},
    {entry_point,{simple_registry,simple_registry,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/simple_registry.erl"]},
@@ -23,9 +24,9 @@ Concuerror started with options:
 ################################################################################
 Concuerror Info:
 --------------------------------------------------------------------------------
-Instrumenting: simple_registry
-Instrumenting: io_lib
-Instrumenting: erlang
+Instrumented: simple_registry
+Instrumented: io_lib
+Instrumented: erlang
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 90/90 interleavings explored
+  Summary: 0 errors, 64/64 interleavings explored

@@ -395,7 +395,9 @@ update_special(Special, State) ->
       {message_delivered, MessageEvent} ->
         remove_message(MessageEvent, Actors);
       {message_received, Message, PatternFun} ->
-        Update = {?message_pattern, PatternFun},
+        [#trace_state{done = [#event{actor = P}|_], index = Index}|_] = Trace,
+        Update =
+          [{?message_pattern, PatternFun}, {?message_received, {P,Index}}],
         true = ets:update_element(MessageInfo, Message, Update),
         Actors;
       {new, SpawnedPid} ->
@@ -661,7 +663,11 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
     } = TraceState,
   EarlyClock = lookup_clock_value(EarlyActor, Clock),
   Action =
-    case EarlyIndex > EarlyClock of
+    case
+      EarlyIndex > EarlyClock andalso
+      not ordered_receives(
+            EarlyEvent#event.event_info, Event#event.event_info, State)
+    of
       false -> none;
       true ->
         Dependent =
@@ -692,6 +698,17 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
       {update, S, C} -> {S, C}
     end,
   more_interleavings_for_event(Rest, Event, Later, NewClock, State, NewTrace).
+
+ordered_receives(#message_event{message = #message{id = EarlyId}},
+                 #message_event{message = #message{id = LateId}},
+                 #scheduler_state{message_info = MessageInfo}) ->
+  case [ets:lookup_element(MessageInfo, Id, ?message_received) ||
+         Id <- [EarlyId, LateId]] of
+    [{P, Early}, {P, Late}] when Late < Early -> true;
+    _ -> false
+  end;
+ordered_receives(_, _, _) ->
+  false.
 
 update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{logger = Logger, optimal = Optimal} = State,
