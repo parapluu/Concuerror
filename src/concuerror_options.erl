@@ -87,6 +87,10 @@ options() ->
   ,{depth_bound, $d, {integer, 5000},
     "The maximum number of events allowed in a trace. Concuerror will stop"
     " exploration beyond this limit."}
+  ,{delay_bound, $b, integer,
+    "The maximum number of times a round-robin scheduler is allowed to deviate"
+    " from the default scheduling order in order to reverse the order of racing"
+    " events. Implies --optimal=false."}
   ,{optimal, undefined, boolean,
     "Setting this to false enables a more lightweight DPOR algorithm. Use this"
     " if the rate of exploration is too slow. Don't use it if a lot of"
@@ -133,8 +137,6 @@ options() ->
     "Report built-ins that are not explicitly classified by Concuerror as"
     " racing or race-free. Otherwise, Concuerror expects such built-ins to"
     " always return the same result."}
-  %% ,{bound, [logger, scheduler], $b, "bound", {integer, -1},
-  %%   "Preemption bound (-1 for infinite)."}
   ].
 
 cl_usage() ->
@@ -158,13 +160,16 @@ finalize(Options) ->
         {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
           MissingDefaults =
             add_missing_defaults(
-              [{ignore_error, []},
+              [{delay_bound, infinity},
+               {ignore_error, []},
                {non_racing_system, []},
                {optimal, true},
                {treat_as_normal, []},
                {verbosity, ?DEFAULT_VERBOSITY}
               ], Finalized),
-          add_missing_getopt_defaults(MissingDefaults);
+          GetoptDefaults = add_missing_getopt_defaults(MissingDefaults),
+          consistent(GetoptDefaults),
+          GetoptDefaults;
         _ ->
           opt_error("The module containing the main test function has not been"
                     " specified.")
@@ -233,6 +238,8 @@ finalize([{Key, Value}|Rest], AccIn) ->
       false -> AccIn
     end,
   case Key of
+    delay_bound ->
+      finalize(Rest, [{Key, Value},{optimal, false}|Acc]);
     module ->
       case proplists:get_value(test, Rest, 1) of
         Name when is_atom(Name) ->
@@ -317,6 +324,32 @@ add_missing_getopt_defaults(Opts) ->
       Key =/= test
     ],
   MissingDefaults ++ Opts.
+
+consistent(Options) ->
+  consistent(Options, []).
+
+consistent([], _) -> ok;
+consistent([{delay_bound, N} = Bound|Rest], Acc) when is_integer(N) ->
+  check_values(
+    [{scheduling, round_robin},
+     {optimal, false},
+     {strict_scheduling, false}],
+    Rest ++ Acc, {delay_bound, "an integer"}),
+  consistent(Rest, [Bound|Acc]);
+consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
+
+check_values([], _, _) -> ok;
+check_values([{Key, Value}|Rest], Other, Reason) ->
+  Set = proplists:get_value(Key, Other),
+  case Set =:= Value of
+    true ->
+      check_values(Rest, Other, Reason);
+    false ->
+      {ReasonKey, ReasonValue} = Reason,
+      opt_error(
+        "Setting '~p' to '~p' is not allowed when '~p' is set to ~s. Remove '~p'.",
+        [Key, Set, ReasonKey, ReasonValue, Key])
+  end.
 
 -spec opt_error(string()) -> no_return().
 

@@ -27,6 +27,7 @@
 -record(trace_state, {
           actors      = []         :: [pid() | {channel(), queue()}],
           clock_map   = dict:new() :: clock_map(),
+          delay_bound = infinity   :: bound(),
           done        = []         :: [event()],
           index       = 1          :: index(),
           sleeping    = []         :: [event()],
@@ -39,6 +40,7 @@
           ignore_first_crash = true :: boolean(),
           assume_racing     = true :: boolean(),
           current_warnings  = []   :: [concuerror_warning_info()],
+          delay             = 0    :: non_neg_integer(),
           depth_bound              :: pos_integer(),
           entry_point              :: mfargs(),
           first_process            :: pid(),
@@ -73,7 +75,11 @@ run(Options) ->
       ok
   end,
   FirstProcess = concuerror_callback:spawn_first_process(Options),
-  InitialTrace = #trace_state{actors = [FirstProcess]},
+  InitialTrace =
+    #trace_state{
+       actors = [FirstProcess],
+       delay_bound = ?opt(delay_bound, Options)
+      },
   InitialState =
     #scheduler_state{
        ignore_first_crash = ?opt(ignore_first_crash, Options),
@@ -192,17 +198,24 @@ get_next_event(
 get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
   #trace_state{
      actors      = Actors,
+     delay_bound = DelayBound,
      index       = I,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
+  SortedActors = schedule_sort(Actors, State),
+  AvailableActors = filter_sleeping(Sleeping, SortedActors),
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
-      SortedActors = schedule_sort(Actors, State),
-      AvailableActors = filter_sleeping(Sleeping, SortedActors),
-      get_next_event(Event, AvailableActors, State);
-    [{#event{label = Label} = Event, _}|_] ->
+      get_next_event(Event, AvailableActors, State#scheduler_state{delay = 0});
+    [{#event{actor = Actor, label = Label} = Event, _}|_] ->
+      false = lists:member(Actor, Sleeping),
+      Delay =
+        case DelayBound =/= infinity of
+          true -> count_delay(SortedActors, Actor);
+          false -> 0
+        end,
       {ok, UpdatedEvent} =
         case Label =/= undefined of
           true ->
@@ -220,7 +233,7 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
             ResetEvent = reset_event(Event),
             get_next_event_backend(ResetEvent, State)
         end,
-      update_state(UpdatedEvent, State)
+      update_state(UpdatedEvent, State#scheduler_state{delay = Delay})
   end.
 
 filter_sleeping([], AvailableActors) -> AvailableActors;
@@ -256,6 +269,21 @@ schedule_sort(Actors, State) ->
       [LastScheduled|lists:delete(LastScheduled, Sorted)];
     _ -> Sorted
   end.
+
+count_delay(Actors, Actor) ->
+  count_delay(Actors, Actor, 0).
+
+count_delay([{Actor,_}|_], Actor, N) -> N;
+count_delay([Actor|_], Actor, N) -> N;
+count_delay([Channel|Rest], Actor, N) when ?is_channel(Channel) ->
+  count_delay(Rest, Actor, N+1);
+count_delay([Other|Rest], Actor, N) ->
+  NN =
+    case concuerror_callback:enabled(Other) of
+      true -> N+1;
+      false -> N
+    end,
+  count_delay(Rest, Actor, NN).
 
 get_next_event(Event, [{Channel, Queue}|_], State) ->
   %% Pending messages can always be sent
@@ -307,9 +335,14 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 %%------------------------------------------------------------------------------
 
 update_state(#event{special = Special} = Event, State) ->
-  #scheduler_state{logger = _Logger, trace = [Last|Prev]} = State,
+  #scheduler_state{
+     delay  = Delay,
+     logger = _Logger,
+     trace  = [Last|Prev]
+    } = State,
   #trace_state{
      actors      = Actors,
+     delay_bound = DelayBound,
      done        = Done,
      index       = Index,
      sleeping    = Sleeping,
@@ -324,9 +357,15 @@ update_state(#event{special = Special} = Event, State) ->
       [{_, NWT}|Rest] -> {Rest, NWT}
     end,
   NewLastDone = [Event|Done],
+  NewDelayBound =
+    case Delay =:= 0 of
+      true -> DelayBound;
+      false -> DelayBound - Delay
+    end,
   InitNextTrace =
     #trace_state{
        actors      = Actors,
+       delay_bound = NewDelayBound,
        index       = Index + 1,
        sleeping    = NextSleeping,
        wakeup_tree = NextWakeupTree
@@ -717,6 +756,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{logger = Logger, optimal = Optimal} = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done],
+     delay_bound = DelayBound,
      index = EarlyIndex,
      sleeping = Sleeping,
      wakeup_tree = WakeupTree
@@ -727,9 +767,21 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
       ?trace(Logger, "     SKIP~n",[]),
       skip;
     NewWakeupTree ->
-      trace_plan(Logger, EarlyIndex, NotDep),
-      NS = TraceState#trace_state{wakeup_tree = NewWakeupTree},
-      [NS|NewOldTrace]
+      case
+        (DelayBound =:= infinity) orelse
+        (DelayBound - length(Done ++ WakeupTree) > 0)
+      of
+        true ->
+          trace_plan(Logger, EarlyIndex, NotDep),
+          NS = TraceState#trace_state{wakeup_tree = NewWakeupTree},
+          [NS|NewOldTrace];
+        false ->
+          Message =
+            "Some interleavings were not considered due to delay bounding.~n",
+          ?unique(Logger, ?linfo, Message, []),
+          ?trace(Logger, "     OVER BOUND~n",[]),
+          skip
+      end
   end.
 
 not_dep(Trace, Actor, Index, Event) ->

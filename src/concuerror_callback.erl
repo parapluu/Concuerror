@@ -7,7 +7,8 @@
 
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/3,
-         deliver_message/3, wait_actor_reply/2, collect_deadlock_info/1]).
+         deliver_message/3, wait_actor_reply/2, collect_deadlock_info/1,
+         enabled/1]).
 
 %% Interface to logger:
 -export([setup_logger/1]).
@@ -1039,6 +1040,14 @@ collect_deadlock_info(Actors) ->
     end,
   lists:foldr(Fold, [], Actors).
 
+-spec enabled(pid()) -> boolean().
+
+enabled(P) ->
+  P ! enabled,
+  receive
+    {enabled, Answer} -> Answer
+  end.
+
 %%------------------------------------------------------------------------------
 
 handle_receive(PatternFun, Timeout, Location, Info) ->
@@ -1300,7 +1309,10 @@ process_loop(Info) ->
       case Status =:= exited of
         true -> process_loop(notify(exited, Info));
         false -> Info
-      end
+      end;
+    enabled ->
+      Status = Info#concuerror_info.status,
+      process_loop(notify({enabled, Status =:= running}, Info))
   end.
 
 send_message_ack(Notify, Trapping) ->
