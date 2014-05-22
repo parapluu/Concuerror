@@ -78,6 +78,7 @@
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
           status = running           :: 'exited'| 'exiting' | 'running' | 'waiting',
+          system_ets_entries         :: ets:tid(),
           timeout                    :: timeout(),
           timers                     :: timers()
          }).
@@ -102,6 +103,7 @@ spawn_first_process(Options) ->
        monitors       = ets:new(monitors, [bag, public]),
        processes      = Processes = ?opt(processes, Options),
        scheduler      = self(),
+       system_ets_entries = ets:new(system_ets_entries, [bag, public]),
        timeout        = ?opt(timeout, Options),
        timers         = ets:new(timers, [public])
       },
@@ -116,6 +118,7 @@ spawn_first_process(Options) ->
 -spec start_first_process(pid(), {atom(), atom(), [term()]}, timeout()) -> ok.
 
 start_first_process(Pid, {Module, Name, Args}, Timeout) ->
+  request_system_reset(Pid),
   Pid ! {start, Module, Name, Args},
   wait_process(Pid, Timeout),
   ok.
@@ -821,7 +824,7 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   {Ret, Info#concuerror_info{extra = Tid}};
 run_built_in(ets, info, _, [Name|Rest], Info) ->
   try
-    Tid = check_ets_access_rights(Name, info, Info),
+    {Tid, _} = check_ets_access_rights(Name, info, Info),
     {erlang:apply(ets, info, [Tid|Rest]), Info#concuerror_info{extra = Tid}}
   catch
     error:badarg -> {undefined, Info}
@@ -843,19 +846,24 @@ run_built_in(ets, F, N, [Name|Args], Info)
     ;{F,N} =:= {select, 3}
     ;{F,N} =:= {select_delete, 2}
     ->
-  Tid = check_ets_access_rights(Name, {F,N}, Info),
+  {Tid, System} = check_ets_access_rights(Name, {F,N}, Info),
+  case System of
+    true ->
+      #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
+      ets:insert(SystemEtsEntries, {Tid, Args});
+    false ->
+      true
+  end,
   {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Tid}};
 run_built_in(ets, delete, 1, [Name], Info) ->
-  Tid = check_ets_access_rights(Name, {delete,1}, Info),
+  {Tid, _} = check_ets_access_rights(Name, {delete,1}, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
   ets:update_element(EtsTables, Tid, [{?ets_alive, false}]),
   ets:delete_all_objects(Tid),
   {true, Info#concuerror_info{extra = Tid}};
-run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
-             #concuerror_info{
-                event = #event{event_info = EventInfo} = Event
-               } = Info) ->
-  Tid = check_ets_access_rights(Name, {give_away,3}, Info),
+run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
+  #concuerror_info{event = #event{event_info = EventInfo} = Event} = Info,
+  {Tid, _} = check_ets_access_rights(Name, {give_away,3}, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
   {Alive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   Self = self(),
@@ -1165,6 +1173,10 @@ process_top_loop(Info) ->
   ?debug_flag(?loop, top_waiting),
   receive
     reset -> process_top_loop(Info);
+    reset_system ->
+      reset_system(Info),
+      Info#concuerror_info.scheduler ! reset_system,
+      process_top_loop(Info);
     {start, Module, Name, Args} ->
       ?debug_flag(?loop, {start, Module, Name, Args}),
       put(concuerror_info, Info),
@@ -1190,6 +1202,22 @@ process_top_loop(Info) ->
           end
       end
   end.
+
+request_system_reset(Pid) ->
+  Pid ! reset_system,
+  receive
+    reset_system -> ok
+  end.
+
+reset_system(Info) ->
+  #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
+  ets:foldl(fun delete_system_entries/2, true, SystemEtsEntries),
+  ets:delete_all_objects(SystemEtsEntries).
+
+delete_system_entries({T, Objs}, true) when is_list(Objs) ->
+  lists:foldl(fun delete_system_entries/2, true, [{T, O} || O <- Objs]);
+delete_system_entries({T, O}, true) ->
+  ets:delete_object(T, O).
 
 new_process(ParentInfo) ->
   Info = ParentInfo#concuerror_info{notify_when_ready = {self(), true}},
@@ -1467,7 +1495,7 @@ link_monitor_handlers(Handler, LinksOrMonitors) ->
 %%------------------------------------------------------------------------------
 
 check_ets_access_rights(Name, Op, Info) ->
-  #concuerror_info{ets_tables = EtsTables} = Info,
+  #concuerror_info{ets_tables = EtsTables, scheduler = Scheduler} = Info,
   case ets:match(EtsTables, ?ets_match_name(Name)) of
     [] -> error(badarg);
     [[Tid,Owner,Protection]] ->
@@ -1481,7 +1509,14 @@ check_ets_access_rights(Name, Op, Info) ->
            write -> Protection =:= public
          end),
       ?badarg_if_not(Test),
-      Tid
+      System =
+        (Owner =:= Scheduler) andalso
+        case element(1, Op) of
+          insert -> true;
+          insert_new -> true;
+          _ -> false
+        end,
+      {Tid, System}
   end.
 
 ets_ops_access_rights_map(Op) ->
@@ -1617,6 +1652,7 @@ reset_concuerror_info(Info) ->
      notify_when_ready = {Pid, _},
      processes = Processes,
      scheduler = Scheduler,
+     system_ets_entries = SystemEtsEntries,
      timeout = Timeout,
      timers = Timers
     } = Info,
@@ -1632,6 +1668,7 @@ reset_concuerror_info(Info) ->
      notify_when_ready = {Pid, true},
      processes = Processes,
      scheduler = Scheduler,
+     system_ets_entries = SystemEtsEntries,
      timeout = Timeout,
      timers = Timers
     }.
