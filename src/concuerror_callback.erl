@@ -352,9 +352,8 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       {true, Info#concuerror_info{event = NewEvent}}
   end;
 
-run_built_in(erlang, group_leader, 0, [],
-             #concuerror_info{processes = Processes} = Info) ->
-  Leader = ets:lookup_element(Processes, self(), ?process_leader),
+run_built_in(erlang, group_leader, 0, [], Info) ->
+  Leader = get_leader(Info, self()),
   {Leader, Info};
 
 run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
@@ -480,50 +479,53 @@ run_built_in(erlang, monitor, 2, [Type, Target], Info) ->
     end,
   {Ref, NewInfo};
 run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
-  TheirInfo =
-    case Pid =:= self() of
-      true -> Info;
-      false ->
-        case process_info(Pid, dictionary) of
-          [] -> throw(inspecting_the_process_dictionary_of_a_system_process);
-          {dictionary, [{concuerror_info, Dict}]} -> Dict
-        end
-    end,
-  Res =
-    case Item of
-      dictionary ->
-        #concuerror_info{escaped_pdict = Escaped} = TheirInfo,
-        Escaped;
-      links ->
-        #concuerror_info{links = Links} = TheirInfo,
-        try ets:lookup_element(Links, Pid, 2)
-        catch error:badarg -> []
-        end;
-      messages ->
-        #concuerror_info{messages_new = Queue} = TheirInfo,
-        [M || #message{data = M} <- queue:to_list(Queue)];
-      registered_name ->
-        #concuerror_info{processes = Processes} = TheirInfo,
-        [?process_pat_pid_name(Pid, Name)] = ets:lookup(Processes, Pid),
-        case Name =:= ?process_name_none of
-          true -> [];
-          false -> {Item, Name}
-        end;
-      status ->
-        #concuerror_info{status = Status} = TheirInfo,
-        Status;
-      trap_exit ->
-        TheirInfo#concuerror_info.flags#process_flags.trap_exit;
-      ExpectsANumber when
-          ExpectsANumber =:= heap_size;
-          ExpectsANumber =:= reductions;
-          ExpectsANumber =:= stack_size;
-          false ->
-        42;
-      _ ->
-        throw({unsupported_process_info, Item})
-    end,
-  {Res, Info};
+  {Alive, _} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
+  case Alive of
+    false -> {undefined, Info};
+    true ->
+      TheirInfo =
+        case Pid =:= self() of
+          true -> Info;
+          false -> get_their_info(Pid)
+        end,
+      Res =
+        case Item of
+          dictionary ->
+            #concuerror_info{escaped_pdict = Escaped} = TheirInfo,
+            Escaped;
+          group_leader ->
+            get_leader(Info, Pid);
+          links ->
+            #concuerror_info{links = Links} = TheirInfo,
+            try ets:lookup_element(Links, Pid, 2)
+            catch error:badarg -> []
+            end;
+          messages ->
+            #concuerror_info{messages_new = Queue} = TheirInfo,
+            [M || #message{data = M} <- queue:to_list(Queue)];
+          registered_name ->
+            #concuerror_info{processes = Processes} = TheirInfo,
+            [?process_pat_pid_name(Pid, Name)] = ets:lookup(Processes, Pid),
+            case Name =:= ?process_name_none of
+              true -> [];
+              false -> {Item, Name}
+            end;
+          status ->
+            #concuerror_info{status = Status} = TheirInfo,
+            Status;
+          trap_exit ->
+            TheirInfo#concuerror_info.flags#process_flags.trap_exit;
+          ExpectsANumber when
+              ExpectsANumber =:= heap_size;
+              ExpectsANumber =:= reductions;
+              ExpectsANumber =:= stack_size;
+              false ->
+            42;
+          _ ->
+            throw({unsupported_process_info, Item})
+        end,
+      {Res, Info}
+  end;
 run_built_in(erlang, register, 2, [Name, Pid],
              #concuerror_info{processes = Processes} = Info) ->
   try
@@ -715,18 +717,16 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
 
 run_built_in(erlang, process_flag, 2, [Flag, Value],
              #concuerror_info{flags = Flags} = Info) ->
-  {Result, NewInfo} =
-    case Flag of
-      trap_exit ->
-        ?badarg_if_not(is_boolean(Value)),
-        {Flags#process_flags.trap_exit,
-         Info#concuerror_info{flags = Flags#process_flags{trap_exit = Value}}};
-      priority ->
-        ?badarg_if_not(lists:member(Value, [low,normal,high,max])),
-        {Flags#process_flags.priority,
-         Info#concuerror_info{flags = Flags#process_flags{priority = Value}}}
-    end,
-  {Result, NewInfo};
+  case Flag of
+    trap_exit ->
+      ?badarg_if_not(is_boolean(Value)),
+      {Flags#process_flags.trap_exit,
+       Info#concuerror_info{flags = Flags#process_flags{trap_exit = Value}}};
+    priority ->
+      ?badarg_if_not(lists:member(Value, [low,normal,high,max])),
+      {Flags#process_flags.priority,
+       Info#concuerror_info{flags = Flags#process_flags{priority = Value}}}
+  end;
 
 run_built_in(erlang, processes, 0, [], Info) ->
   #concuerror_info{processes = Processes} = Info,
@@ -1309,7 +1309,16 @@ process_loop(Info) ->
       end;
     enabled ->
       Status = Info#concuerror_info.status,
-      process_loop(notify({enabled, Status =:= running}, Info))
+      process_loop(notify({enabled, Status =:= running}, Info));
+    {get_info, To} ->
+      To ! {info, Info},
+      process_loop(Info)
+  end.
+
+get_their_info(Pid) ->
+  Pid ! {get_info, self()},
+  receive
+    {info, Info} -> Info
   end.
 
 send_message_ack(Notify, Trapping) ->
@@ -1319,6 +1328,9 @@ send_message_ack(Notify, Trapping) ->
       ok;
     false -> ok
   end.
+
+get_leader(#concuerror_info{processes = Processes}, P) ->
+  ets:lookup_element(Processes, P, ?process_leader).
 
 %%------------------------------------------------------------------------------
 

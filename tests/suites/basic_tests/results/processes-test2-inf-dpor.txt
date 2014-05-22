@@ -19,7 +19,265 @@ Concuerror started with options:
    {timeout,infinity},
    {treat_as_normal,[]}]
 ################################################################################
-  No errors found!
+Erroneous interleaving 1:
+* At step 4 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.60.0>,<0.61.0>] = erlang:processes()
+    in processes.erl line 23
+   4: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+   5: <0.60.0>: exits normally
+   6: <0.61.0>: <0.62.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   7: <0.61.0>: exits normally
+   8: <0.62.0>: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 8 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.60.0>: exits normally
+   4: <0.61.0>: <0.63.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   5: <0.61.0>: exits normally
+   6: <0.63.0>: exits normally
+   7: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.62.0>] = erlang:processes()
+    in processes.erl line 23
+   8: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+################################################################################
+Erroneous interleaving 3:
+* At step 7 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.60.0>: exits normally
+   4: <0.61.0>: <0.63.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   5: <0.61.0>: exits normally
+   6: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.62.0>,<0.63.0>] = erlang:processes()
+    in processes.erl line 23
+   7: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+   8: <0.63.0>: exits normally
+################################################################################
+Erroneous interleaving 4:
+* At step 7 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.60.0>: exits normally
+   4: <0.61.0>: <0.63.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   5: <0.63.0>: exits normally
+   6: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.61.0>,<0.62.0>] = erlang:processes()
+    in processes.erl line 23
+   7: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+   8: <0.61.0>: exits normally
+################################################################################
+Erroneous interleaving 5:
+* At step 6 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.60.0>: exits normally
+   4: <0.61.0>: <0.63.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   5: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.61.0>,<0.62.0>,<0.63.0>] = erlang:processes()
+    in processes.erl line 23
+   6: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+   7: <0.61.0>: exits normally
+   8: <0.63.0>: exits normally
+################################################################################
+Erroneous interleaving 6:
+* At step 5 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.60.0>: exits normally
+   4: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.61.0>,<0.62.0>,<0.63.0>] = erlang:processes()
+    in processes.erl line 23
+   5: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+   6: <0.61.0>: <0.64.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   7: <0.61.0>: exits normally
+   8: <0.64.0>: exits normally
+################################################################################
+Erroneous interleaving 7:
+* At step 7 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.61.0>: <0.63.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   4: <0.61.0>: exits normally
+   5: <0.63.0>: exits normally
+   6: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.60.0>,<0.62.0>,<0.64.0>] = erlang:processes()
+    in processes.erl line 23
+   7: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+   8: <0.60.0>: exits normally
+################################################################################
+Erroneous interleaving 8:
+* At step 6 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.61.0>: <0.63.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   4: <0.61.0>: exits normally
+   5: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.60.0>,<0.62.0>,<0.63.0>|...] = erlang:processes()
+    in processes.erl line 23
+   6: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+   7: <0.60.0>: exits normally
+   8: <0.63.0>: exits normally
+################################################################################
+Erroneous interleaving 9:
+* At step 6 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.61.0>: <0.63.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   4: <0.63.0>: exits normally
+   5: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.60.0>,<0.61.0>,<0.62.0>|...] = erlang:processes()
+    in processes.erl line 23
+   6: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+   7: <0.60.0>: exits normally
+   8: <0.61.0>: exits normally
+################################################################################
+Erroneous interleaving 10:
+* At step 5 process <0.57.0> exited abnormally
+    Reason:
+      {{nocatch,foo},
+       [{processes,test2,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                    {line,24}]}]}
+    Stacktrace:
+      [{processes,test2,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/processes.erl"},
+                   {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.57.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   2: <0.57.0>: <0.61.0> = erlang:spawn(erlang, apply, [#Fun<processes.2.38050903>,[]])
+    in erlang.erl line 2329
+   3: <0.61.0>: <0.63.0> = erlang:spawn(erlang, apply, [#Fun<processes.1.38050903>,[]])
+    in erlang.erl line 2329
+   4: <0.57.0>: [<0.7.0>,<0.41.0>,<0.44.0>,<0.45.0>,<0.46.0>,<0.47.0>,<0.48.0>,<0.49.0>,<0.50.0>,<0.51.0>,<0.52.0>,<0.53.0>,<0.54.0>,<0.55.0>,<0.56.0>,<0.57.0>,<0.60.0>,<0.61.0>,<0.62.0>|...] = erlang:processes()
+    in processes.erl line 23
+   5: <0.57.0>: exits abnormally ({{nocatch,foo},[{processes,test2,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+   6: <0.60.0>: exits normally
+   7: <0.61.0>: exits normally
+   8: <0.63.0>: exits normally
 ################################################################################
 Concuerror Info:
 --------------------------------------------------------------------------------
@@ -30,4 +288,4 @@ Hijacked application_controller
 Instrumented: erlang
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 8/8 interleavings explored
+  Summary: 10 errors, 10/10 interleavings explored

@@ -255,6 +255,12 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, messages]}},
     #receive_event{recipient = Recipient, message = M} ->
       Recipient =:= Pid andalso M =/= 'after';
     _ -> false
+  end;
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
+                       Other) ->
+  case Other of
+    #builtin_event{mfargs = {erlang,group_leader,[Pid,_]}} -> true;
+    _-> false
   end.
 
 %%------------------------------------------------------------------------------

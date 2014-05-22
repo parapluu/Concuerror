@@ -1,0 +1,88 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{process_info,test1,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/process_info.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* At step 3 process P exited abnormally
+    Reason:
+      []
+    Stacktrace:
+      [{process_info,test1,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/process_info.erl"},
+                      {line,11}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<process_info.0.85796008>,[]])
+    in erlang.erl line 2329
+   2: P: [] = erlang:process_info(P.1, registered_name)
+    in process_info.erl line 11
+   3: P: exits abnormally ([])
+   4: P.1: true = erlang:register(foo, P.1)
+    in process_info.erl line 9
+   5: P.1: exits normally
+################################################################################
+Erroneous interleaving 2:
+* At step 5 process P exited abnormally
+    Reason:
+      undefined
+    Stacktrace:
+      [{process_info,test1,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/process_info.erl"},
+                      {line,11}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<process_info.0.85796008>,[]])
+    in erlang.erl line 2329
+   2: P.1: true = erlang:register(foo, P.1)
+    in process_info.erl line 9
+   3: P.1: exits normally
+   4: P: undefined = erlang:process_info(P.1, registered_name)
+    in process_info.erl line 11
+   5: P: exits abnormally (undefined)
+################################################################################
+Erroneous interleaving 3:
+* At step 4 process P exited abnormally
+    Reason:
+      {registered_name,foo}
+    Stacktrace:
+      [{process_info,test1,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/process_info.erl"},
+                      {line,11}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<process_info.0.85796008>,[]])
+    in erlang.erl line 2329
+   2: P.1: true = erlang:register(foo, P.1)
+    in process_info.erl line 9
+   3: P: {registered_name,foo} = erlang:process_info(P.1, registered_name)
+    in process_info.erl line 11
+   4: P: exits abnormally ({registered_name,foo})
+   5: P.1: exits normally
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumented: process_info
+Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
+Instrumented: erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 3 errors, 3/3 interleavings explored

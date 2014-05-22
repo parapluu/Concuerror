@@ -20,4 +20,5 @@ test2() ->
     FFun = fun() -> spawn(Fun) end,
     spawn(Fun),
     spawn(FFun),
-    processes().
+    processes(),
+    throw(foo).
