@@ -8,6 +8,17 @@
 
 -include("concuerror.hrl").
 
+-define(is_lookup(V),
+        (V =:= lookup orelse V =:= lookup_element orelse V =:= member)).
+-define(is_insert(V),
+        (V =:= insert orelse V =:= insert_new)).
+-define(is_match(V),
+        (V =:= select) orelse (V =:= match)).
+-define(is_delete(V),
+        (V =:= delete)).
+-define(is_match_delete(V),
+        (V =:= select_delete orelse V =:= match_delete)).
+
 %%------------------------------------------------------------------------------
 
 -spec dependent_safe(event(), event()) -> boolean() | irreversible.
@@ -29,8 +40,8 @@ dependent(#event{event_info = Info1, special = Special1},
               [{I1,I2}|| I1 <- [Info1|M1], I2 <- [Info2|M2]])
   catch
     throw:irreversible -> irreversible;
-    _:_ ->
-      AssumeRacing orelse ?crash({undefined_dependency, Info1, Info2})
+    Class:Reason ->
+      AssumeRacing orelse ?crash({undefined_dependency, Info1, Info2, {Class,Reason,erlang:get_stacktrace()}})
   end.
 
 %% The first event happens before the second.
@@ -228,8 +239,6 @@ dependent_process_info(#builtin_event{mfargs = {_, _, [Pid, registered_name]}},
           E =:= Pid;
         _ -> false
       end;
-    #exit_event{actor = EPid} ->
-      Pid =:= EPid;
     _ -> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, dictionary]}},
@@ -243,8 +252,6 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, dictionary]}},
             true;
           _ -> false
         end;
-    #exit_event{actor = EPid} ->
-      Pid =:= EPid;
     _ -> false
   end;
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, messages]}},
@@ -390,6 +397,8 @@ dependent_built_in(#builtin_event{},
        ReadorCancelTimer =:= cancel_timer ->
   false;
 
+%%------------------------------------------------------------------------------
+
 dependent_built_in(#builtin_event{mfargs = {ets,delete,[Table1]}},
                    #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
   Table1 =:= Table2;
@@ -401,8 +410,8 @@ dependent_built_in(#builtin_event{mfargs = {ets,Insert1,[Table1,Tuples1]},
                                   result = Result1, extra = Tid},
                    #builtin_event{mfargs = {ets,Insert2,[Table2,Tuples2]},
                                   result = Result2})
-  when (Insert1 =:= insert orelse Insert1 =:= insert_new) andalso
-       (Insert2 =:= insert orelse Insert2 =:= insert_new)->
+  when
+    ?is_insert(Insert1), ?is_insert(Insert2) ->
   case Table1 =:= Table2 andalso (Result1 orelse Result2) of
     false -> false;
     true ->
@@ -422,16 +431,26 @@ dependent_built_in(#builtin_event{mfargs = {ets,Insert1,[Table1,Tuples1]},
 dependent_built_in(#builtin_event{mfargs = {ets,LookupA,_}},
                    #builtin_event{mfargs = {ets,LookupB,_}})
   when
-    (LookupA =:= lookup orelse LookupA =:= lookup_element),
-    (LookupB =:= lookup orelse LookupB =:= lookup_element) ->
+    (?is_lookup(LookupA) orelse ?is_match(LookupA)),
+    (?is_lookup(LookupB) orelse ?is_match(LookupB)) ->
   false;
+
+dependent_built_in(#builtin_event{mfargs = {ets,Delete,[Table1,Key1]}},
+                   #builtin_event{mfargs = {ets,Lookup,[Table2,Key2|_]}})
+  when
+    ?is_delete(Delete), ?is_lookup(Lookup) ->
+  Table1 =:= Table2 andalso Key1 =:= Key2;
+dependent_built_in(#builtin_event{mfargs = {ets,Lookup,_}} = EtsLookup,
+                   #builtin_event{mfargs = {ets,Delete,_}} = EtsDelete)
+  when
+    ?is_lookup(Lookup), ?is_delete(Delete) ->
+  dependent_built_in(EtsDelete, EtsLookup);
 
 dependent_built_in(#builtin_event{mfargs = {ets,Insert,[Table1,Tuples]},
                                   result = Result, extra = Tid},
                    #builtin_event{mfargs = {ets,Lookup,[Table2,Key|_]}})
   when
-    (Insert =:= insert orelse Insert =:= insert_new),
-    (Lookup =:= lookup orelse Lookup =:= lookup_element) ->
+    ?is_insert(Insert), (?is_lookup(Lookup) orelse ?is_delete(Lookup)) ->
   case Table1 =:= Table2 andalso Result of
     false -> false;
     true ->
@@ -442,9 +461,32 @@ dependent_built_in(#builtin_event{mfargs = {ets,Insert,[Table1,Tuples]},
 dependent_built_in(#builtin_event{mfargs = {ets,Lookup,_}} = EtsLookup,
                    #builtin_event{mfargs = {ets,Insert,_}} = EtsInsert)
   when
-    (Insert =:= insert orelse Insert =:= insert_new),
-    (Lookup =:= lookup orelse Lookup =:= lookup_element) ->
+    ?is_insert(Insert), (?is_lookup(Lookup) orelse ?is_delete(Lookup)) ->
   dependent_built_in(EtsInsert, EtsLookup);
+
+%% XXX: Refine
+dependent_built_in(#builtin_event{mfargs = {ets,Insert,[Table1|_]}},
+                   #builtin_event{mfargs = {ets,Match,[Table2|_]}})
+  when
+    ?is_insert(Insert), ?is_match(Match) ->
+  Table1 =:= Table2;
+dependent_built_in(#builtin_event{mfargs = {ets,Match,_}} = EtsMatch,
+                   #builtin_event{mfargs = {ets,Insert,_}} = EtsInsert)
+  when
+    ?is_match(Match), ?is_insert(Insert) ->
+  dependent_built_in(EtsInsert, EtsMatch);
+
+%% XXX: Refine
+dependent_built_in(#builtin_event{mfargs = {ets,MatchDelete,[Table1|_]}},
+                   #builtin_event{mfargs = {ets,_Any,[Table2|_]}})
+  when
+    ?is_match_delete(MatchDelete) ->
+  Table1 =:= Table2;
+dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
+                   #builtin_event{mfargs = {ets,MDelete,_}} = EtsMDelete)
+  when
+    ?is_match_delete(MDelete) ->
+  dependent_built_in(EtsMDelete, EtsAny);
 
 dependent_built_in(#builtin_event{mfargs = {ets,new,_}, result = Table1},
                    #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
@@ -453,7 +495,7 @@ dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
                    #builtin_event{mfargs = {ets,new,_}} = EtsNew) ->
   dependent_built_in(EtsNew, EtsAny);
 
-%% XXX: This can probably be refined.
+%% XXX: Refine
 dependent_built_in(#builtin_event{mfargs = {ets,give_away,[Table1|_]}},
                    #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
   Table1 =:= Table2;
@@ -503,12 +545,12 @@ try_one_tuple(IgnoreSame, Tuple, KeyPos, List) ->
 
 -spec explain_error(term()) -> string().
 
-explain_error({undefined_dependency, A, B}) ->
+explain_error({undefined_dependency, A, B, C}) ->
   io_lib:format(
     "There exists no race info about the following pair of instructions~n~n"
     "1) ~s~n2) ~s~n~n"
     "You can run without --assume_racing=false to treat them as racing.~n"
-    "Otherwise please ask the developers to add info about this pair.",
+    "Otherwise please ask the developers to add info about this pair.~n~p",
     [concuerror_printer:pretty_s(#event{event_info = I}, 10)
-     || I <- [A,B]]).
+     || I <- [A,B]] ++ [C]).
 
