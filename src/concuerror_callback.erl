@@ -75,7 +75,6 @@
           event = none               :: 'none' | event(),
           notify_when_ready          :: {pid(), boolean()},
           processes                  :: processes(),
-          report_unknown = false     :: boolean(),
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
           status = running           :: 'exited'| 'exiting' | 'running' | 'waiting',
@@ -102,7 +101,6 @@ spawn_first_process(Options) ->
        modules        = ?opt(modules, Options),
        monitors       = ets:new(monitors, [bag, public]),
        processes      = Processes = ?opt(processes, Options),
-       report_unknown = ?opt(report_unknown, Options),
        scheduler      = self(),
        timeout        = ?opt(timeout, Options),
        timers         = ets:new(timers, [public])
@@ -878,19 +876,6 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
 run_built_in(Module, Name, Arity, Args, Info)
   when
     {Module, Name, Arity} =:= {erlang, put, 2} ->
-  consistent_replay(Module, Name, Arity, Args, Info);
-
-%% For other built-ins check whether replaying has the same result:
-run_built_in(Module, Name, Arity, _Args,
-             #concuerror_info{
-                event = #event{location = Location},
-                report_unknown = true,
-                scheduler = Scheduler}) ->
-  ?crash({unknown_built_in, {Module, Name, Arity, Location}}, Scheduler);
-run_built_in(Module, Name, Arity, Args, Info) ->
-  consistent_replay(Module, Name, Arity, Args, Info).
-
-consistent_replay(Module, Name, Arity, Args, Info) ->
   #concuerror_info{event = Event} = Info,
   #event{event_info = EventInfo, location = Location} = Event,
   NewResult = erlang:apply(Module, Name, Args),
@@ -911,7 +896,14 @@ consistent_replay(Module, Name, Arity, Args, Info) ->
       end;
     undefined ->
       {NewResult, Info}
-  end.
+  end;
+
+%% For other built-ins check whether replaying has the same result:
+run_built_in(Module, Name, Arity, _Args,
+             #concuerror_info{
+                event = #event{location = Location},
+                scheduler = Scheduler}) ->
+  ?crash({unknown_built_in, {Module, Name, Arity, Location}}, Scheduler).
 
 %%------------------------------------------------------------------------------
 
@@ -1607,7 +1599,6 @@ reset_concuerror_info(Info) ->
      monitors = Monitors,
      notify_when_ready = {Pid, _},
      processes = Processes,
-     report_unknown = ReportUnknown,
      scheduler = Scheduler,
      timeout = Timeout,
      timers = Timers
@@ -1623,7 +1614,6 @@ reset_concuerror_info(Info) ->
      monitors = Monitors,
      notify_when_ready = {Pid, true},
      processes = Processes,
-     report_unknown = ReportUnknown,
      scheduler = Scheduler,
      timeout = Timeout,
      timers = Timers
@@ -1787,8 +1777,8 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location}}) ->
       _ -> ""
     end,
   io_lib:format(
-    "No special handling found for built-in ~p:~p/~p~s. Run without"
-    " --report_unknown or contact the developers to add support for it.",
+    "Concuerror does not currently support calls to built-in ~p:~p/~p~s."
+    " Please notify the developers.",
     [Module, Name, Arity, LocationString]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
@@ -1799,4 +1789,4 @@ explain_error({unsupported_request, Name, Type}) ->
 
 location(F, L) ->
   Basename = filename:basename(F),
-  io_lib:format(" (in ~s line ~w)", [Basename, L]).
+  io_lib:format(" (found in ~s line ~w)", [Basename, L]).
