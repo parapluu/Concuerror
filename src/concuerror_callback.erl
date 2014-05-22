@@ -727,6 +727,11 @@ run_built_in(erlang, process_flag, 2, [Flag, Value],
          Info#concuerror_info{flags = Flags#process_flags{priority = Value}}}
     end,
   {Result, NewInfo};
+
+run_built_in(erlang, processes, 0, [], Info) ->
+  #concuerror_info{processes = Processes} = Info,
+  {?active_processes(Processes), Info};
+
 run_built_in(erlang, unlink, 1, [Pid], #concuerror_info{links = Links} = Info) ->
   Self = self(),
   [true,true] = [ets:delete_object(Links, L) || L <- ?links(Self, Pid)],
