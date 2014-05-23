@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+bash tests/thediff
+bash tests-long/thediff
+rm -f tests/thediff
+rm -f tests-long/thediff

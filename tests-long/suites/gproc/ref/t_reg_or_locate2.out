@@ -1,0 +1,452 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,1000},
+   {assume_racing,true},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{test,t_reg_or_locate2,[]}},
+   {files,["../test.erl"]},
+   {ignore_error,[deadlock]},
+   {ignore_first_crash,false},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[shutdown]}]
+################################################################################
+Erroneous interleaving 1:
+* At step 199 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: application_controller = erlang:whereis(application_controller)
+    in gen.erl line 157
+   2: P: #Ref<0.0.0.301> = erlang:monitor(process, application_controller)
+    in gen.erl line 200
+   3: P: {'$gen_call',{P,#Ref<0.0.0.301>},{load_application,gproc}} = erlang:send(application_controller, {'$gen_call',{P,#Ref<0.0.0.301>},{load_application,gproc}}, [noconnect])
+    in gen.erl line 211
+   4: Message ({'$gen_call',{P,#Ref<0.0.0.301>},{load_application,gproc}}) from P reaches application_controller
+   5: application_controller: receives message ({'$gen_call',{P,#Ref<0.0.0.301>},{load_application,gproc}})
+    in gen_server.erl line 360
+   6: application_controller: [] = ets:lookup(ac_tab, {loaded,gproc})
+    in application_controller.erl line 1248
+   7: application_controller: {code_call,application_controller,{is_cached,[103,112,114,111,99,46,97,112,112]}} = code_server ! {code_call,application_controller,{is_cached,[103,112,114,111,99,46,97,112,112]}}
+    in code_server.erl line 142
+   8: Message ({code_call,application_controller,{is_cached,[103,112,114,111,99,46,97,112,112]}}) from application_controller reaches code_server
+   9: Message ({code_server,no}) from code_server reaches application_controller
+  10: application_controller: receives message ({code_server,no})
+    in code_server.erl line 143
+  11: application_controller: {code_call,application_controller,get_path} = code_server ! {code_call,application_controller,get_path}
+    in code_server.erl line 142
+  12: Message ({code_call,application_controller,get_path}) from application_controller reaches code_server
+  13: Message ({code_server,[[101,98,105,110],[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103|...],[47,104,111,109,101,47,115,116,97,118,114,111,115,47|...],[46],[47,104,111,109,101,47,115,116,97,118,114,111|...],[47,104,111,109,101,47,115,116,97,118,114|...],[47,104,111,109,101,47,115,116,97,118|...],[47,104,111,109,101,47,115,116,97|...],[47,104,111,109,101,47,115,116|...],[47,104,111,109,101,47,115|...],[47,104,111,109,101,47|...],[47,104,111,109,101|...],[47,104,111,109|...],[47,104,111|...],[47,104|...],[47|...],[...]|...]}) from code_server reaches application_controller
+  14: application_controller: receives message ({code_server,[[101,98,105,110],[47,104,111,109,101,47,115,116,97,118,114,111,115,47,103|...],[47,104,111,109,101,47,115,116,97,118,114,111,115,47|...],[46],[47,104,111,109,101,47,115,116,97,118,114,111|...],[47,104,111,109,101,47,115,116,97,118,114|...],[47,104,111,109,101,47,115,116,97,118|...],[47,104,111,109,101,47,115,116,97|...],[47,104,111,109,101,47,115,116|...],[47,104,111,109,101,47,115|...],[47,104,111,109,101,47|...],[47,104,111,109,101|...],[47,104,111,109|...],[47,104,111|...],[47,104|...],[47|...],[...]|...]})
+    in code_server.erl line 143
+  15: application_controller: erl_prim_loader = erlang:whereis(erl_prim_loader)
+    in erl_prim_loader.erl line 252
+  16: application_controller: {application_controller,{list_dir,[101,98,105,110]}} = erl_prim_loader ! {application_controller,{list_dir,[101,98,105,110]}}
+    in erl_prim_loader.erl line 253
+  17: Message ({application_controller,{list_dir,[101,98,105,110]}}) from application_controller reaches erl_prim_loader
+  18: Message ({erl_prim_loader,{ok,[[103,112,114,111,99,46,97,112,112],[103,112,114,111,99,95,108,105,98,46,98,101,97|...],[103,112,114,111,99,95,109,111,110,105,116,111|...],[103,112,114,111,99,95,105,110,102,111,46|...],[103,112,114,111,99,95,98,99,97,115|...],[103,112,114,111,99,95,112,115,46|...],[103,112,114,111,99,95,97,112|...],[103,112,114,111,99,95,100|...],[103,112,114,111,99,95|...],[103,112,114,111,99|...],[46,103,105,116|...],[103,112,114|...],[103,112|...],[103|...]]}}) from erl_prim_loader reaches application_controller
+  19: application_controller: receives message ({erl_prim_loader,{ok,[[103,112,114,111,99,46,97,112,112],[103,112,114,111,99,95,108,105,98,46,98,101,97|...],[103,112,114,111,99,95,109,111,110,105,116,111|...],[103,112,114,111,99,95,105,110,102,111,46|...],[103,112,114,111,99,95,98,99,97,115|...],[103,112,114,111,99,95,112,115,46|...],[103,112,114,111,99,95,97,112|...],[103,112,114,111,99,95,100|...],[103,112,114,111,99,95|...],[103,112,114,111,99|...],[46,103,105,116|...],[103,112,114|...],[103,112|...],[103|...]]}})
+    in erl_prim_loader.erl line 254
+  20: application_controller: erl_prim_loader = erlang:whereis(erl_prim_loader)
+    in erl_prim_loader.erl line 252
+  21: application_controller: {application_controller,{get_file,[101,98,105,110,47,103,112,114,111,99,46,97,112,112]}} = erl_prim_loader ! {application_controller,{get_file,[101,98,105,110,47,103,112,114,111,99,46,97,112,112]}}
+    in erl_prim_loader.erl line 253
+  22: Message ({application_controller,{get_file,[101,98,105,110,47,103,112,114,111,99,46,97,112,112]}}) from application_controller reaches erl_prim_loader
+  23: Message ({erl_prim_loader,{ok,<<123,97,112,112,108,105,99,97,116,105,111,110,44,103,112,...>>,[101,98,105,110,47,103,112,114,111,99,46,97,112,112]}}) from erl_prim_loader reaches application_controller
+  24: application_controller: receives message ({erl_prim_loader,{ok,<<123,97,112,112,108,105,99,97,116,105,111,110,44,103,112,...>>,[101,98,105,110,47,103,112,114,111,99,46,97,112,112]}})
+    in erl_prim_loader.erl line 254
+  25: application_controller: {application_controller,{get_argument,gproc}} = init ! {application_controller,{get_argument,gproc}}
+    in init.erl line 145
+  26: Message ({application_controller,{get_argument,gproc}}) from application_controller reaches init
+  27: Message ({init,error}) from init reaches application_controller
+  28: application_controller: receives message ({init,error})
+    in init.erl line 146
+  29: application_controller: true = ets:insert(ac_tab, {{env,gproc,included_applications},[]})
+    in application_controller.erl line 1690
+  30: application_controller: true = ets:insert(ac_tab, {{loaded,gproc},{appl,gproc,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib,gproc_monitor|...],[],infinity,infinity},[71,80,82,79,67],[71,80,82,79,67],[48,46,51],undefined,[],[kernel,stdlib]}})
+    in application_controller.erl line 1277
+  31: application_controller: {#Ref<0.0.0.301>,ok} = P ! {#Ref<0.0.0.301>,ok}
+    in gen_server.erl line 219
+  32: Message ({#Ref<0.0.0.301>,ok}) from application_controller reaches P
+  33: P: receives message ({#Ref<0.0.0.301>,ok})
+    in gen.erl line 213
+  34: P: true = erlang:demonitor(#Ref<0.0.0.301>, [flush])
+    in gen.erl line 215
+  35: P: application_controller = erlang:whereis(application_controller)
+    in gen.erl line 157
+  36: P: #Ref<0.0.0.378> = erlang:monitor(process, application_controller)
+    in gen.erl line 200
+  37: P: {'$gen_call',{P,#Ref<0.0.0.378>},{start_application,gproc,temporary}} = erlang:send(application_controller, {'$gen_call',{P,#Ref<0.0.0.378>},{start_application,gproc,temporary}}, [noconnect])
+    in gen.erl line 211
+  38: Message ({'$gen_call',{P,#Ref<0.0.0.378>},{start_application,gproc,temporary}}) from P reaches application_controller
+  39: application_controller: receives message ({'$gen_call',{P,#Ref<0.0.0.378>},{start_application,gproc,temporary}})
+    in gen_server.erl line 360
+  40: application_controller: [{{loaded,gproc},{appl,gproc,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib|...],[],infinity,infinity},[71,80,82,79,67],[71,80,82,79,67],[48,46,51],undefined,[],[kernel,stdlib]}}] = ets:lookup(ac_tab, {loaded,gproc})
+    in application_controller.erl line 1248
+  41: application_controller: [] = ets:lookup(ac_tab, {env,kernel,permissions})
+    in application_controller.erl line 331
+  42: application_controller: application_controller.1 = erlang:spawn_link(application_controller, init_starter, [{P,#Ref<0.0.0.378>},{appl,gproc,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib,gproc_monitor|...],[],infinity,infinity},[71,80,82,79,67],[71,80,82,79,67],[48,46,51],undefined,[],[kernel,stdlib]},{state,[],[],[],[{stdlib,undefined},{kernel,<0.9.0>}],[],[{stdlib,permanent},{kernel,permanent}],[],[]},normal])
+    in application_controller.erl line 1355
+  43: application_controller.1: false = erlang:process_flag(trap_exit, true)
+    in application_controller.erl line 1358
+  44: application_controller.1: application_controller = erlang:whereis(application_controller)
+    in application_master.erl line 41
+  45: application_controller.1: [] = erlang:process_info(application_controller.1, registered_name)
+    in proc_lib.erl line 677
+  46: application_controller.1: application_controller.1.1 = erlang:spawn_link(proc_lib, init_p, [application_controller.1,[],application_master,init,[application_controller,application_controller.1,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info|...],[],infinity,infinity},normal]])
+    in proc_lib.erl line 90
+  47: application_controller.1.1: undefined = erlang:put('$ancestors', [application_controller.1])
+    in proc_lib.erl line 233
+  48: application_controller.1.1: undefined = erlang:put('$initial_call', {application_master,init,4})
+    in proc_lib.erl line 234
+  49: application_controller.1.1: true = erlang:link(application_controller)
+    in application_master.erl line 117
+  50: application_controller.1.1: false = erlang:process_flag(trap_exit, true)
+    in application_master.erl line 118
+  51: application_controller.1.1: user = erlang:group_leader()
+    in application_master.erl line 119
+  52: application_controller.1.1: true = erlang:group_leader(application_controller.1.1, application_controller.1.1)
+    in application_master.erl line 120
+  53: application_controller.1.1: true = ets:insert(ac_tab, {{application_master,gproc},application_controller.1.1})
+    in application_master.erl line 124
+  54: application_controller.1.1: #Ref<0.0.0.404> = erlang:make_ref()
+    in application_master.erl line 144
+  55: application_controller.1.1: application_controller.1.1.1 = erlang:spawn_link(application_master, start_it, [#Ref<0.0.0.404>,{state,undefined,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib,gproc_monitor|...],[],infinity,infinity},[],0,user,[]},application_controller.1.1,normal])
+    in application_master.erl line 145
+  56: application_controller.1.1.1: false = erlang:process_flag(trap_exit, true)
+    in application_master.erl line 250
+  57: application_controller.1.1.1: undefined = erlang:whereis(gproc_sup)
+    in gen.erl line 284
+  58: application_controller.1.1.1: [] = erlang:process_info(application_controller.1.1.1, registered_name)
+    in proc_lib.erl line 677
+  59: application_controller.1.1.1: application_controller.1.1.1.1 = erlang:spawn_opt({proc_lib,init_p,[application_controller.1.1.1,[],gen,init_it,[gen_server,application_controller.1.1.1,application_controller.1.1.1,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
+    in erlang.erl line 2507
+  60: application_controller.1.1.1.1: undefined = erlang:put('$ancestors', [application_controller.1.1.1])
+    in proc_lib.erl line 233
+  61: application_controller.1.1.1.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
+    in proc_lib.erl line 234
+  62: application_controller.1.1.1.1: true = erlang:register(gproc_sup, application_controller.1.1.1.1)
+    in gen.erl line 287
+  63: application_controller.1.1.1.1: {application_controller.1.1.1.1,{get_argument,generic_debug}} = init ! {application_controller.1.1.1.1,{get_argument,generic_debug}}
+    in init.erl line 145
+  64: Message ({application_controller.1.1.1.1,{get_argument,generic_debug}}) from application_controller.1.1.1.1 reaches init
+  65: Message ({init,error}) from init reaches application_controller.1.1.1.1
+  66: application_controller.1.1.1.1: receives message ({init,error})
+    in init.erl line 146
+  67: application_controller.1.1.1.1: false = erlang:process_flag(trap_exit, true)
+    in supervisor.erl line 242
+  68: application_controller.1.1.1.1: application_controller.1.1 = erlang:group_leader()
+    in application.erl line 326
+  69: application_controller.1.1.1.1: [[gproc]] = ets:match(ac_tab, {{application_master,'$1'},application_controller.1.1})
+    in application_controller.erl line 325
+  70: application_controller.1.1.1.1: [] = ets:lookup(ac_tab, {env,gproc,gproc_dist})
+    in application_controller.erl line 331
+  71: application_controller.1.1.1.1: application_controller.1.1 = erlang:group_leader()
+    in application.erl line 326
+  72: application_controller.1.1.1.1: [[gproc]] = ets:match(ac_tab, {{application_master,'$1'},application_controller.1.1})
+    in application_controller.erl line 325
+  73: application_controller.1.1.1.1: [] = ets:lookup(ac_tab, {env,gproc,ets_options})
+    in application_controller.erl line 331
+  74: application_controller.1.1.1.1: undefined = ets:info(gproc, name)
+    in gproc.erl line 2488
+  75: application_controller.1.1.1.1: gproc = ets:new(gproc, [ordered_set,public,named_table,{write_concurrency,true},{read_concurrency,true}])
+    in gproc.erl line 2490
+  76: application_controller.1.1.1.1: application_controller.1.1 = erlang:group_leader()
+    in application.erl line 326
+  77: application_controller.1.1.1.1: [[gproc]] = ets:match(ac_tab, {{application_master,'$1'},application_controller.1.1})
+    in application_controller.erl line 325
+  78: application_controller.1.1.1.1: [] = ets:lookup(ac_tab, {env,gproc,server_options})
+    in application_controller.erl line 331
+  79: application_controller.1.1.1.1: undefined = erlang:whereis(gproc)
+    in gen.erl line 284
+  80: application_controller.1.1.1.1: {registered_name,gproc_sup} = erlang:process_info(application_controller.1.1.1.1, registered_name)
+    in proc_lib.erl line 677
+  81: application_controller.1.1.1.1: application_controller.1.1.1.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[application_controller.1.1.1],gen,init_it,[gen_server,application_controller.1.1.1.1,application_controller.1.1.1.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
+    in erlang.erl line 2507
+  82: application_controller.1.1.1.1.1: undefined = erlang:put('$ancestors', [gproc_sup,application_controller.1.1.1])
+    in proc_lib.erl line 233
+  83: application_controller.1.1.1.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
+    in proc_lib.erl line 234
+  84: application_controller.1.1.1.1.1: true = erlang:register(gproc, application_controller.1.1.1.1.1)
+    in gen.erl line 287
+  85: application_controller.1.1.1.1.1: {application_controller.1.1.1.1.1,{get_argument,generic_debug}} = init ! {application_controller.1.1.1.1.1,{get_argument,generic_debug}}
+    in init.erl line 145
+  86: Message ({application_controller.1.1.1.1.1,{get_argument,generic_debug}}) from application_controller.1.1.1.1.1 reaches init
+  87: Message ({init,error}) from init reaches application_controller.1.1.1.1.1
+  88: application_controller.1.1.1.1.1: receives message ({init,error})
+    in init.erl line 146
+  89: application_controller.1.1.1.1.1: '$end_of_table' = ets:select(gproc, [{{{'$1',l}},[],['$1']}], 100)
+    in gproc.erl line 2502
+  90: application_controller.1.1.1.1.1: {ack,application_controller.1.1.1.1.1,{ok,application_controller.1.1.1.1.1}} = application_controller.1.1.1.1 ! {ack,application_controller.1.1.1.1.1,{ok,application_controller.1.1.1.1.1}}
+    in proc_lib.erl line 377
+  91: Message ({ack,application_controller.1.1.1.1.1,{ok,application_controller.1.1.1.1.1}}) from application_controller.1.1.1.1.1 reaches application_controller.1.1.1.1
+  92: application_controller.1.1.1.1: receives message ({ack,application_controller.1.1.1.1.1,{ok,application_controller.1.1.1.1.1}})
+    in proc_lib.erl line 333
+  93: application_controller.1.1.1.1: application_controller.1.1 = erlang:group_leader()
+    in error_logger.erl line 210
+  94: application_controller.1.1.1.1: {notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.1},{name,gproc},{mfargs,{gproc,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}} = error_logger ! {notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.1},{name,gproc},{mfargs,{gproc,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}
+    in gen_event.erl line 221
+  95: application_controller.1.1.1.1: undefined = ets:info(gproc_monitor, owner)
+  96: application_controller.1.1.1.1: gproc_monitor = ets:new(gproc_monitor, [ordered_set,protected,named_table,{heir,application_controller.1.1.1.1,[]}])
+  97: application_controller.1.1.1.1: {registered_name,gproc_sup} = erlang:process_info(application_controller.1.1.1.1, registered_name)
+    in proc_lib.erl line 677
+  98: application_controller.1.1.1.1: application_controller.1.1.1.1.2 = erlang:spawn_link(proc_lib, init_p, [gproc_sup,[application_controller.1.1.1],gproc_monitor,init,[application_controller.1.1.1.1]])
+    in proc_lib.erl line 90
+  99: Message ({notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.1},{name,gproc},{mfargs,{gproc,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from application_controller.1.1.1.1 reaches error_logger
+ 100: application_controller.1.1.1.1.2: undefined = erlang:put('$ancestors', [gproc_sup,application_controller.1.1.1])
+    in proc_lib.erl line 233
+ 101: application_controller.1.1.1.1.2: undefined = erlang:put('$initial_call', {gproc_monitor,init,1})
+    in proc_lib.erl line 234
+ 102: application_controller.1.1.1.1.2: normal = erlang:process_flag(priority, high)
+    in gproc_monitor.erl line 123
+ 103: application_controller.1.1.1.1.2: true = erlang:register(gproc_monitor, application_controller.1.1.1.1.2)
+    in gproc_monitor.erl line 124
+ 104: application_controller.1.1.1.1.2: {ack,application_controller.1.1.1.1.2,{ok,application_controller.1.1.1.1.2}} = application_controller.1.1.1.1 ! {ack,application_controller.1.1.1.1.2,{ok,application_controller.1.1.1.1.2}}
+    in proc_lib.erl line 377
+ 105: Message ({ack,application_controller.1.1.1.1.2,{ok,application_controller.1.1.1.1.2}}) from application_controller.1.1.1.1.2 reaches application_controller.1.1.1.1
+ 106: application_controller.1.1.1.1: receives message ({ack,application_controller.1.1.1.1.2,{ok,application_controller.1.1.1.1.2}})
+    in proc_lib.erl line 333
+ 107: application_controller.1.1.1.1: true = ets:give_away(gproc_monitor, application_controller.1.1.1.1.2, [])
+    in gproc_monitor.erl line 104
+ 108: application_controller.1.1.1.1: application_controller.1.1 = erlang:group_leader()
+    in error_logger.erl line 210
+ 109: application_controller.1.1.1.1: {notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.2},{name,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}} = error_logger ! {notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.2},{name,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}
+    in gen_event.erl line 221
+ 110: application_controller.1.1.1.1: undefined = erlang:whereis(gproc_bcast)
+    in gen.erl line 284
+ 111: application_controller.1.1.1.1: {registered_name,gproc_sup} = erlang:process_info(application_controller.1.1.1.1, registered_name)
+    in proc_lib.erl line 677
+ 112: application_controller.1.1.1.1: application_controller.1.1.1.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[application_controller.1.1.1],gen,init_it,[gen_server,application_controller.1.1.1.1,application_controller.1.1.1.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
+    in erlang.erl line 2507
+ 113: Message ({'ETS-TRANSFER',290840,application_controller.1.1.1.1,[]}) from application_controller.1.1.1.1 reaches application_controller.1.1.1.1.2
+ 114: Message ({notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.2},{name,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from application_controller.1.1.1.1 reaches error_logger
+ 115: application_controller.1.1.1.1.3: undefined = erlang:put('$ancestors', [gproc_sup,application_controller.1.1.1])
+    in proc_lib.erl line 233
+ 116: application_controller.1.1.1.1.3: undefined = erlang:put('$initial_call', {gproc_bcast,init,1})
+    in proc_lib.erl line 234
+ 117: application_controller.1.1.1.1.3: true = erlang:register(gproc_bcast, application_controller.1.1.1.1.3)
+    in gen.erl line 287
+ 118: application_controller.1.1.1.1.3: {application_controller.1.1.1.1.3,{get_argument,generic_debug}} = init ! {application_controller.1.1.1.1.3,{get_argument,generic_debug}}
+    in init.erl line 145
+ 119: Message ({application_controller.1.1.1.1.3,{get_argument,generic_debug}}) from application_controller.1.1.1.1.3 reaches init
+ 120: Message ({init,error}) from init reaches application_controller.1.1.1.1.3
+ 121: application_controller.1.1.1.1.3: receives message ({init,error})
+    in init.erl line 146
+ 122: application_controller.1.1.1.1.3: {ack,application_controller.1.1.1.1.3,{ok,application_controller.1.1.1.1.3}} = application_controller.1.1.1.1 ! {ack,application_controller.1.1.1.1.3,{ok,application_controller.1.1.1.1.3}}
+    in proc_lib.erl line 377
+ 123: Message ({ack,application_controller.1.1.1.1.3,{ok,application_controller.1.1.1.1.3}}) from application_controller.1.1.1.1.3 reaches application_controller.1.1.1.1
+ 124: application_controller.1.1.1.1: receives message ({ack,application_controller.1.1.1.1.3,{ok,application_controller.1.1.1.1.3}})
+    in proc_lib.erl line 333
+ 125: application_controller.1.1.1.1: application_controller.1.1 = erlang:group_leader()
+    in error_logger.erl line 210
+ 126: application_controller.1.1.1.1: {notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.3},{name,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}} = error_logger ! {notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.3},{name,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}
+    in gen_event.erl line 221
+ 127: application_controller.1.1.1.1: undefined = erlang:whereis(gproc_pool)
+    in gen.erl line 284
+ 128: application_controller.1.1.1.1: {registered_name,gproc_sup} = erlang:process_info(application_controller.1.1.1.1, registered_name)
+    in proc_lib.erl line 677
+ 129: application_controller.1.1.1.1: application_controller.1.1.1.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[application_controller.1.1.1],gen,init_it,[gen_server,application_controller.1.1.1.1,application_controller.1.1.1.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
+    in erlang.erl line 2507
+ 130: Message ({notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.3},{name,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from application_controller.1.1.1.1 reaches error_logger
+ 131: application_controller.1.1.1.1.4: undefined = erlang:put('$ancestors', [gproc_sup,application_controller.1.1.1])
+    in proc_lib.erl line 233
+ 132: application_controller.1.1.1.1.4: undefined = erlang:put('$initial_call', {gproc_pool,init,1})
+    in proc_lib.erl line 234
+ 133: application_controller.1.1.1.1.4: true = erlang:register(gproc_pool, application_controller.1.1.1.1.4)
+    in gen.erl line 287
+ 134: application_controller.1.1.1.1.4: {application_controller.1.1.1.1.4,{get_argument,generic_debug}} = init ! {application_controller.1.1.1.1.4,{get_argument,generic_debug}}
+    in init.erl line 145
+ 135: Message ({application_controller.1.1.1.1.4,{get_argument,generic_debug}}) from application_controller.1.1.1.1.4 reaches init
+ 136: Message ({init,error}) from init reaches application_controller.1.1.1.1.4
+ 137: application_controller.1.1.1.1.4: receives message ({init,error})
+    in init.erl line 146
+ 138: application_controller.1.1.1.1.4: {ack,application_controller.1.1.1.1.4,{ok,application_controller.1.1.1.1.4}} = application_controller.1.1.1.1 ! {ack,application_controller.1.1.1.1.4,{ok,application_controller.1.1.1.1.4}}
+    in proc_lib.erl line 377
+ 139: Message ({ack,application_controller.1.1.1.1.4,{ok,application_controller.1.1.1.1.4}}) from application_controller.1.1.1.1.4 reaches application_controller.1.1.1.1
+ 140: application_controller.1.1.1.1: receives message ({ack,application_controller.1.1.1.1.4,{ok,application_controller.1.1.1.1.4}})
+    in proc_lib.erl line 333
+ 141: application_controller.1.1.1.1: application_controller.1.1 = erlang:group_leader()
+    in error_logger.erl line 210
+ 142: application_controller.1.1.1.1: {notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.4},{name,gproc_pool},{mfargs,{gproc_pool,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}} = error_logger ! {notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.4},{name,gproc_pool},{mfargs,{gproc_pool,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}
+    in gen_event.erl line 221
+ 143: application_controller.1.1.1.1: {ack,application_controller.1.1.1.1,{ok,application_controller.1.1.1.1}} = application_controller.1.1.1 ! {ack,application_controller.1.1.1.1,{ok,application_controller.1.1.1.1}}
+    in proc_lib.erl line 377
+ 144: Message ({notify,{info_report,application_controller.1.1,{application_controller.1.1.1.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,application_controller.1.1.1.1.4},{name,gproc_pool},{mfargs,{gproc_pool,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from application_controller.1.1.1.1 reaches error_logger
+ 145: Message ({ack,application_controller.1.1.1.1,{ok,application_controller.1.1.1.1}}) from application_controller.1.1.1.1 reaches application_controller.1.1.1
+ 146: application_controller.1.1.1: receives message ({ack,application_controller.1.1.1.1,{ok,application_controller.1.1.1.1}})
+    in proc_lib.erl line 333
+ 147: application_controller.1.1.1: true = erlang:link(application_controller.1.1.1.1)
+    in application_master.erl line 274
+ 148: application_controller.1.1.1: {#Ref<0.0.0.404>,{ok,application_controller.1.1.1}} = application_controller.1.1 ! {#Ref<0.0.0.404>,{ok,application_controller.1.1.1}}
+    in application_master.erl line 275
+ 149: Message ({#Ref<0.0.0.404>,{ok,application_controller.1.1.1}}) from application_controller.1.1.1 reaches application_controller.1.1
+ 150: application_controller.1.1: receives message ({#Ref<0.0.0.404>,{ok,application_controller.1.1.1}})
+    in application_master.erl line 154
+ 151: application_controller.1.1: true = erlang:unlink(application_controller.1)
+    in application_master.erl line 129
+ 152: application_controller.1.1: {ack,application_controller.1.1,{ok,application_controller.1.1}} = application_controller.1 ! {ack,application_controller.1.1,{ok,application_controller.1.1}}
+    in proc_lib.erl line 377
+ 153: Message ({ack,application_controller.1.1,{ok,application_controller.1.1}}) from application_controller.1.1 reaches application_controller.1
+ 154: application_controller.1: receives message ({ack,application_controller.1.1,{ok,application_controller.1.1}})
+    in proc_lib.erl line 333
+ 155: application_controller.1: {'$gen_cast',{application_started,gproc,{ok,application_controller.1.1}}} = erlang:send(application_controller, {'$gen_cast',{application_started,gproc,{ok,application_controller.1.1}}}, [noconnect])
+    in gen_server.erl line 394
+ 156: application_controller.1: exits normally
+ 157: application_controller.1: true = erlang:exit(application_controller, normal)
+    (while exiting)
+ 158: Message ({'$gen_cast',{application_started,gproc,{ok,application_controller.1.1}}}) from application_controller.1 reaches application_controller
+ 159: application_controller: receives message ({'$gen_cast',{application_started,gproc,{ok,application_controller.1.1}}})
+    in gen_server.erl line 360
+ 160: application_controller: {#Ref<0.0.0.378>,ok} = P ! {#Ref<0.0.0.378>,ok}
+    in gen_server.erl line 219
+ 161: application_controller: user = erlang:group_leader()
+    in error_logger.erl line 210
+ 162: application_controller: {notify,{info_report,user,{application_controller,progress,[{application,gproc},{started_at,nonode@nohost}]}}} = error_logger ! {notify,{info_report,user,{application_controller,progress,[{application,gproc},{started_at,nonode@nohost}]}}}
+    in gen_event.erl line 221
+ 163: application_controller: [] = ets:lookup(ac_tab, {env,kernel,permissions})
+    in application_controller.erl line 331
+ 164: Message ({notify,{info_report,user,{application_controller,progress,[{application,gproc},{started_at,nonode@nohost}]}}}) from application_controller reaches error_logger
+ 165: Message ({#Ref<0.0.0.378>,ok}) from application_controller reaches P
+ 166: P: receives message ({#Ref<0.0.0.378>,ok})
+    in gen.erl line 213
+ 167: P: true = erlang:demonitor(#Ref<0.0.0.378>, [flush])
+    in gen.erl line 215
+ 168: P: {P.1,#Ref<0.0.0.579>} = erlang:spawn_opt({erlang,apply,[#Fun<test.8.6191720>,[]],[monitor]})
+    in erlang.erl line 2373
+ 169: Exit signal (normal) from application_controller.1 reaches application_controller
+ 170: P.1: #Ref<0.0.0.582> = erlang:monitor(process, P)
+    in test.erl line 35
+ 171: P.1: application_controller.1.1.1.1.1 = erlang:whereis(gproc)
+    in gen.erl line 157
+ 172: P.1: #Ref<0.0.0.585> = erlang:monitor(process, application_controller.1.1.1.1.1)
+    in gen.erl line 200
+ 173: P.1: {'$gen_call',{P.1,#Ref<0.0.0.585>},{reg,{n,l,foo},the_value}} = erlang:send(application_controller.1.1.1.1.1, {'$gen_call',{P.1,#Ref<0.0.0.585>},{reg,{n,l,foo},the_value}}, [noconnect])
+    in gen.erl line 211
+ 174: Message ({'$gen_call',{P.1,#Ref<0.0.0.585>},{reg,{n,l,foo},the_value}}) from P.1 reaches application_controller.1.1.1.1.1
+ 175: application_controller.1.1.1.1.1: receives message ({'$gen_call',{P.1,#Ref<0.0.0.585>},{reg,{n,l,foo},the_value}})
+    in gen_server.erl line 360
+ 176: application_controller.1.1.1.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.1,the_value})
+    in gproc_lib.erl line 78
+ 177: application_controller.1.1.1.1.1: true = ets:insert_new(gproc, {{P.1,{n,l,foo}},[]})
+ 178: application_controller.1.1.1.1.1: true = ets:insert_new(gproc, {{P.1,l}})
+    in gproc_lib.erl line 300
+ 179: application_controller.1.1.1.1.1: #Ref<0.0.0.594> = erlang:monitor(process, P.1)
+    in gproc_lib.erl line 302
+ 180: application_controller.1.1.1.1.1: {#Ref<0.0.0.585>,true} = P.1 ! {#Ref<0.0.0.585>,true}
+    in gen_server.erl line 219
+ 181: Message ({#Ref<0.0.0.585>,true}) from application_controller.1.1.1.1.1 reaches P.1
+ 182: P.1: receives message ({#Ref<0.0.0.585>,true})
+    in gen.erl line 213
+ 183: P.1: true = erlang:demonitor(#Ref<0.0.0.585>, [flush])
+    in gen.erl line 215
+ 184: P.1: {P.1,ok} = P ! {P.1,ok}
+    in test.erl line 37
+ 185: Message ({P.1,ok}) from P.1 reaches P
+ 186: P: receives message ({P.1,ok})
+    in test.erl line 42
+ 187: P: application_controller.1.1.1.1.1 = erlang:whereis(gproc)
+    in gen.erl line 157
+ 188: P: #Ref<0.0.0.606> = erlang:monitor(process, application_controller.1.1.1.1.1)
+    in gen.erl line 200
+ 189: P: {'$gen_call',{P,#Ref<0.0.0.606>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(application_controller.1.1.1.1.1, {'$gen_call',{P,#Ref<0.0.0.606>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+    in gen.erl line 211
+ 190: Message ({'$gen_call',{P,#Ref<0.0.0.606>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches application_controller.1.1.1.1.1
+ 191: application_controller.1.1.1.1.1: receives message ({'$gen_call',{P,#Ref<0.0.0.606>},{reg_or_locate,{n,l,foo},undefined,P}})
+    in gen_server.erl line 360
+ 192: application_controller.1.1.1.1.1: [{{{n,l,foo},n},P.1,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
+    in gproc.erl line 2072
+ 193: application_controller.1.1.1.1.1: {#Ref<0.0.0.606>,{P.1,the_value}} = P ! {#Ref<0.0.0.606>,{P.1,the_value}}
+    in gen_server.erl line 219
+ 194: Message ({#Ref<0.0.0.606>,{P.1,the_value}}) from application_controller.1.1.1.1.1 reaches P
+ 195: P: receives message ({#Ref<0.0.0.606>,{P.1,the_value}})
+    in gen.erl line 213
+ 196: P: true = erlang:demonitor(#Ref<0.0.0.606>, [flush])
+    in gen.erl line 215
+ 197: P: true = erlang:exit(P.1, kill)
+    in test.erl line 44
+ 198: Exit signal (kill) from P reaches P.1
+ 199: P.1: exits abnormally (killed)
+ 200: P.1: {'DOWN',#Ref<0.0.0.579>,process,P.1,killed} = erlang:send(P, {'DOWN',#Ref<0.0.0.579>,process,P.1,killed})
+    (while exiting)
+ 201: P.1: {'DOWN',#Ref<0.0.0.594>,process,P.1,killed} = erlang:send(application_controller.1.1.1.1.1, {'DOWN',#Ref<0.0.0.594>,process,P.1,killed})
+    (while exiting)
+ 202: Message ({'DOWN',#Ref<0.0.0.579>,process,P.1,killed}) from P.1 reaches P
+ 203: Message ({'DOWN',#Ref<0.0.0.594>,process,P.1,killed}) from P.1 reaches application_controller.1.1.1.1.1
+ 204: P: receives message ({'DOWN',#Ref<0.0.0.579>,process,P.1,killed})
+    in test.erl line 45
+ 205: P: exits normally
+ 206: P: {'DOWN',#Ref<0.0.0.582>,process,P,normal} = erlang:send(P.1, {'DOWN',#Ref<0.0.0.582>,process,P,normal})
+    (while exiting)
+ 207: Message ({'DOWN',#Ref<0.0.0.582>,process,P,normal}) from P reaches P.1
+ 208: application_controller.1.1.1.1.1: receives message ({'DOWN',#Ref<0.0.0.594>,process,P.1,killed})
+    in gen_server.erl line 360
+ 209: application_controller.1.1.1.1.1: true = ets:member(gproc, {P.1,l})
+    in gproc.erl line 2313
+ 210: application_controller.1.1.1.1.1: [{{n,l,foo},[]}] = ets:select(gproc, [{{{P.1,'$1'},'$2'},[{'==',{element,2,'$1'},l}],[{{'$1','$2'}}]}])
+    in gproc.erl line 2317
+ 211: application_controller.1.1.1.1.1: [{{{n,l,foo},n},P.1,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
+    in gproc.erl line 2323
+ 212: application_controller.1.1.1.1.1: true = ets:delete(gproc, {{n,l,foo},n})
+    in gproc.erl line 2325
+ 213: application_controller.1.1.1.1.1: 1 = ets:select_delete(gproc, [{{{P.1,{'_',l,'_'}},'_'},[],[true]}])
+    in gproc.erl line 2372
+ 214: application_controller.1.1.1.1.1: true = ets:delete(gproc, {P.1,l})
+    in gproc.erl line 2373
+################################################################################
+Concuerror Errors:
+--------------------------------------------------------------------------------
+The first interleaving of your test had errors. Check the output file. You may then use -i to tell Concuerror to continue or use other options to filter out the reported errors, if you consider them acceptable behaviours.
+
+################################################################################
+Concuerror Tips:
+--------------------------------------------------------------------------------
+An abnormal exit signal was sent to a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumented: test
+Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
+Instrumented: application
+Instrumented: application_controller
+Instrumented: gen
+Instrumented: code
+Instrumented: code_server
+Instrumented: erl_prim_loader
+Instrumented: filename
+Instrumented: epp
+Instrumented: proplists
+Instrumented: erl_scan
+Instrumented: lists
+Instrumented: erl_parse
+Instrumented: init
+Instrumented: application_master
+Instrumented: proc_lib
+Instrumented: gproc_app
+Instrumented: gproc_sup
+Instrumented: supervisor
+Instrumented: erlang
+Instrumented: sys
+Instrumented: gproc
+Instrumented: gproc_lib
+Instrumented: error_logger
+Instrumented: gen_event
+Instrumented: gproc_monitor
+Instrumented: gproc_bcast
+Instrumented: gproc_pool
+Some errors were silenced (--ignore_error).
+################################################################################
+Done! (Exit status: warning)
+  Summary: 1 errors, 1/1 interleavings explored

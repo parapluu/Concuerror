@@ -133,10 +133,6 @@ options() ->
     " by registered name) are not racing with each-other. Useful for reducing"
     " the number of interleavings when processes have calls to io:format/1,2 or"
     " similar."}
-  ,{report_unknown, undefined, {boolean, false},
-    "Report built-ins that are not explicitly classified by Concuerror as"
-    " racing or race-free. Otherwise, Concuerror expects such built-ins to"
-    " always return the same result."}
   ].
 
 cl_usage() ->

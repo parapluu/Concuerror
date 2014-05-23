@@ -3,7 +3,7 @@
 -module(concuerror_callback).
 
 %% Interface to concuerror_inspect:
--export([instrumented_top/4]).
+-export([instrumented_top/4, hijack_backend/1]).
 
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/3,
@@ -41,10 +41,10 @@
 -define(heir, ?flag(15)).
 -define(notify, ?flag(16)).
 
--define(ACTIVE_FLAGS, [?undefined]).
+-define(ACTIVE_FLAGS, [?undefined,?short_builtin,?loop,?notify, ?non_builtin]).
 
-%% -define(DEBUG, true).
--define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
+%%-define(DEBUG, true).
+%%-define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 
 -define(badarg_if_not(A), case A of true -> ok; false -> error(badarg) end).
 %%------------------------------------------------------------------------------
@@ -75,10 +75,10 @@
           event = none               :: 'none' | event(),
           notify_when_ready          :: {pid(), boolean()},
           processes                  :: processes(),
-          report_unknown = false     :: boolean(),
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
           status = running           :: 'exited'| 'exiting' | 'running' | 'waiting',
+          system_ets_entries         :: ets:tid(),
           timeout                    :: timeout(),
           timers                     :: timers()
          }).
@@ -87,7 +87,7 @@
 
 %%------------------------------------------------------------------------------
 
--spec spawn_first_process(options()) -> pid().
+-spec spawn_first_process(options()) -> {pid(), [pid()]}.
 
 spawn_first_process(Options) ->
   EtsTables = ets:new(ets_tables, [public]),
@@ -102,22 +102,23 @@ spawn_first_process(Options) ->
        modules        = ?opt(modules, Options),
        monitors       = ets:new(monitors, [bag, public]),
        processes      = Processes = ?opt(processes, Options),
-       report_unknown = ?opt(report_unknown, Options),
        scheduler      = self(),
+       system_ets_entries = ets:new(system_ets_entries, [bag, public]),
        timeout        = ?opt(timeout, Options),
        timers         = ets:new(timers, [public])
       },
-  system_processes_wrappers(Info),
+  System = system_processes_wrappers(Info),
   system_ets_entries(Info),
   P = new_process(Info),
   true = ets:insert(Processes, ?new_process(P, "P")),
   {DefLeader, _} = run_built_in(erlang,whereis,1,[user],Info),
   true = ets:update_element(Processes, P, {?process_leader, DefLeader}),
-  P.
+  {P, System}.
 
 -spec start_first_process(pid(), {atom(), atom(), [term()]}, timeout()) -> ok.
 
 start_first_process(Pid, {Module, Name, Args}, Timeout) ->
+  request_system_reset(Pid),
   Pid ! {start, Module, Name, Args},
   wait_process(Pid, Timeout),
   ok.
@@ -126,6 +127,20 @@ start_first_process(Pid, {Module, Name, Args}, Timeout) ->
 
 setup_logger(Processes) ->
   put(concuerror_info, {logger, Processes}),
+  ok.
+
+-spec hijack_backend(concuerror_info()) -> ok.
+
+hijack_backend(#concuerror_info{processes = Processes} = Info) ->
+  Escaped = erase(),
+  true = group_leader() =:= whereis(user),
+  {GroupLeader, _} = run_built_in(erlang,whereis,1,[user], Info),
+  {registered_name, Name} = process_info(self(), registered_name),
+  true = ets:insert(Processes, ?new_system_process(self(), Name, hijacked)),
+  {true, Info} =
+    run_built_in(erlang, group_leader, 2, [GroupLeader, self()], Info),
+  NewInfo = Info#concuerror_info{escaped_pdict = Escaped},
+  put(concuerror_info, NewInfo),
   ok.
 
 %%------------------------------------------------------------------------------
@@ -228,15 +243,15 @@ get_fun_info(Fun, Tag) ->
 
 %%------------------------------------------------------------------------------
 
-built_in(erlang, display, 1, [Term], Location, Info) ->
-  ?debug_flag(?builtin, {'built-in', erlang, display, 1, [Term], Location}),
+built_in(erlang, display, 1, [Term], _Location, Info) ->
+  ?debug_flag(?builtin, {'built-in', erlang, display, 1, [Term], _Location}),
   #concuerror_info{logger = Logger} = Info,
   Chars = io_lib:format("~w~n",[Term]),
   concuerror_logger:print(Logger, standard_io, Chars),
   {{didit, true}, Info};
 %% Process dictionary has been restored here. No need to report such ops.
-built_in(erlang, get, Arity, Args, Location, Info) ->
-  ?debug_flag(?builtin, {'built-in', erlang, get, Arity, Args, Location}),
+built_in(erlang, get, _Arity, Args, _Location, Info) ->
+  ?debug_flag(?builtin, {'built-in', erlang, get, _Arity, Args, _Location}),
   Res = erlang:apply(erlang,get,Args),
   {{didit, Res}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
@@ -354,9 +369,8 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       {true, Info#concuerror_info{event = NewEvent}}
   end;
 
-run_built_in(erlang, group_leader, 0, [],
-             #concuerror_info{processes = Processes} = Info) ->
-  Leader = ets:lookup_element(Processes, self(), ?process_leader),
+run_built_in(erlang, group_leader, 0, [], Info) ->
+  Leader = get_leader(Info, self()),
   {Leader, Info};
 
 run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
@@ -482,50 +496,53 @@ run_built_in(erlang, monitor, 2, [Type, Target], Info) ->
     end,
   {Ref, NewInfo};
 run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
-  TheirInfo =
-    case Pid =:= self() of
-      true -> Info;
-      false ->
-        case process_info(Pid, dictionary) of
-          [] -> throw(inspecting_the_process_dictionary_of_a_system_process);
-          {dictionary, [{concuerror_info, Dict}]} -> Dict
-        end
-    end,
-  Res =
-    case Item of
-      dictionary ->
-        #concuerror_info{escaped_pdict = Escaped} = TheirInfo,
-        Escaped;
-      links ->
-        #concuerror_info{links = Links} = TheirInfo,
-        try ets:lookup_element(Links, Pid, 2)
-        catch error:badarg -> []
-        end;
-      messages ->
-        #concuerror_info{messages_new = Queue} = TheirInfo,
-        [M || #message{data = M} <- queue:to_list(Queue)];
-      registered_name ->
-        #concuerror_info{processes = Processes} = TheirInfo,
-        [?process_pat_pid_name(Pid, Name)] = ets:lookup(Processes, Pid),
-        case Name =:= ?process_name_none of
-          true -> [];
-          false -> {Item, Name}
-        end;
-      status ->
-        #concuerror_info{status = Status} = TheirInfo,
-        Status;
-      trap_exit ->
-        TheirInfo#concuerror_info.flags#process_flags.trap_exit;
-      ExpectsANumber when
-          ExpectsANumber =:= heap_size;
-          ExpectsANumber =:= reductions;
-          ExpectsANumber =:= stack_size;
-          false ->
-        42;
-      _ ->
-        throw({unsupported_process_info, Item})
-    end,
-  {Res, Info};
+  {Alive, _} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
+  case Alive of
+    false -> {undefined, Info};
+    true ->
+      TheirInfo =
+        case Pid =:= self() of
+          true -> Info;
+          false -> get_their_info(Pid)
+        end,
+      Res =
+        case Item of
+          dictionary ->
+            #concuerror_info{escaped_pdict = Escaped} = TheirInfo,
+            Escaped;
+          group_leader ->
+            get_leader(Info, Pid);
+          links ->
+            #concuerror_info{links = Links} = TheirInfo,
+            try ets:lookup_element(Links, Pid, 2)
+            catch error:badarg -> []
+            end;
+          messages ->
+            #concuerror_info{messages_new = Queue} = TheirInfo,
+            [M || #message{data = M} <- queue:to_list(Queue)];
+          registered_name ->
+            #concuerror_info{processes = Processes} = TheirInfo,
+            [?process_pat_pid_name(Pid, Name)] = ets:lookup(Processes, Pid),
+            case Name =:= ?process_name_none of
+              true -> [];
+              false -> {Item, Name}
+            end;
+          status ->
+            #concuerror_info{status = Status} = TheirInfo,
+            Status;
+          trap_exit ->
+            TheirInfo#concuerror_info.flags#process_flags.trap_exit;
+          ExpectsANumber when
+              ExpectsANumber =:= heap_size;
+              ExpectsANumber =:= reductions;
+              ExpectsANumber =:= stack_size;
+              false ->
+            42;
+          _ ->
+            throw({unsupported_process_info, Item})
+        end,
+      {Res, Info}
+  end;
 run_built_in(erlang, register, 2, [Name, Pid],
              #concuerror_info{processes = Processes} = Info) ->
   try
@@ -717,18 +734,21 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
 
 run_built_in(erlang, process_flag, 2, [Flag, Value],
              #concuerror_info{flags = Flags} = Info) ->
-  {Result, NewInfo} =
-    case Flag of
-      trap_exit ->
-        ?badarg_if_not(is_boolean(Value)),
-        {Flags#process_flags.trap_exit,
-         Info#concuerror_info{flags = Flags#process_flags{trap_exit = Value}}};
-      priority ->
-        ?badarg_if_not(lists:member(Value, [low,normal,high,max])),
-        {Flags#process_flags.priority,
-         Info#concuerror_info{flags = Flags#process_flags{priority = Value}}}
-    end,
-  {Result, NewInfo};
+  case Flag of
+    trap_exit ->
+      ?badarg_if_not(is_boolean(Value)),
+      {Flags#process_flags.trap_exit,
+       Info#concuerror_info{flags = Flags#process_flags{trap_exit = Value}}};
+    priority ->
+      ?badarg_if_not(lists:member(Value, [low,normal,high,max])),
+      {Flags#process_flags.priority,
+       Info#concuerror_info{flags = Flags#process_flags{priority = Value}}}
+  end;
+
+run_built_in(erlang, processes, 0, [], Info) ->
+  #concuerror_info{processes = Processes} = Info,
+  {?active_processes(Processes), Info};
+
 run_built_in(erlang, unlink, 1, [Pid], #concuerror_info{links = Links} = Info) ->
   Self = self(),
   [true,true] = [ets:delete_object(Links, L) || L <- ?links(Self, Pid)],
@@ -818,7 +838,7 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   {Ret, Info#concuerror_info{extra = Tid}};
 run_built_in(ets, info, _, [Name|Rest], Info) ->
   try
-    Tid = check_ets_access_rights(Name, info, Info),
+    {Tid, _} = check_ets_access_rights(Name, info, Info),
     {erlang:apply(ets, info, [Tid|Rest]), Info#concuerror_info{extra = Tid}}
   catch
     error:badarg -> {undefined, Info}
@@ -840,19 +860,24 @@ run_built_in(ets, F, N, [Name|Args], Info)
     ;{F,N} =:= {select, 3}
     ;{F,N} =:= {select_delete, 2}
     ->
-  Tid = check_ets_access_rights(Name, {F,N}, Info),
+  {Tid, System} = check_ets_access_rights(Name, {F,N}, Info),
+  case System of
+    true ->
+      #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
+      ets:insert(SystemEtsEntries, {Tid, Args});
+    false ->
+      true
+  end,
   {erlang:apply(ets, F, [Tid|Args]), Info#concuerror_info{extra = Tid}};
 run_built_in(ets, delete, 1, [Name], Info) ->
-  Tid = check_ets_access_rights(Name, {delete,1}, Info),
+  {Tid, _} = check_ets_access_rights(Name, {delete,1}, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
   ets:update_element(EtsTables, Tid, [{?ets_alive, false}]),
   ets:delete_all_objects(Tid),
   {true, Info#concuerror_info{extra = Tid}};
-run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
-             #concuerror_info{
-                event = #event{event_info = EventInfo} = Event
-               } = Info) ->
-  Tid = check_ets_access_rights(Name, {give_away,3}, Info),
+run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
+  #concuerror_info{event = #event{event_info = EventInfo} = Event} = Info,
+  {Tid, _} = check_ets_access_rights(Name, {give_away,3}, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
   {Alive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   Self = self(),
@@ -878,19 +903,6 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData],
 run_built_in(Module, Name, Arity, Args, Info)
   when
     {Module, Name, Arity} =:= {erlang, put, 2} ->
-  consistent_replay(Module, Name, Arity, Args, Info);
-
-%% For other built-ins check whether replaying has the same result:
-run_built_in(Module, Name, Arity, _Args,
-             #concuerror_info{
-                event = #event{location = Location},
-                report_unknown = true,
-                scheduler = Scheduler}) ->
-  ?crash({unknown_built_in, {Module, Name, Arity, Location}}, Scheduler);
-run_built_in(Module, Name, Arity, Args, Info) ->
-  consistent_replay(Module, Name, Arity, Args, Info).
-
-consistent_replay(Module, Name, Arity, Args, Info) ->
   #concuerror_info{event = Event} = Info,
   #event{event_info = EventInfo, location = Location} = Event,
   NewResult = erlang:apply(Module, Name, Args),
@@ -911,7 +923,14 @@ consistent_replay(Module, Name, Arity, Args, Info) ->
       end;
     undefined ->
       {NewResult, Info}
-  end.
+  end;
+
+%% For other built-ins check whether replaying has the same result:
+run_built_in(Module, Name, Arity, _Args,
+             #concuerror_info{
+                event = #event{location = Location},
+                scheduler = Scheduler}) ->
+  ?crash({unknown_built_in, {Module, Name, Arity, Location}}, Scheduler).
 
 %%------------------------------------------------------------------------------
 
@@ -1168,6 +1187,10 @@ process_top_loop(Info) ->
   ?debug_flag(?loop, top_waiting),
   receive
     reset -> process_top_loop(Info);
+    reset_system ->
+      reset_system(Info),
+      Info#concuerror_info.scheduler ! reset_system,
+      process_top_loop(Info);
     {start, Module, Name, Args} ->
       ?debug_flag(?loop, {start, Module, Name, Args}),
       put(concuerror_info, Info),
@@ -1193,6 +1216,22 @@ process_top_loop(Info) ->
           end
       end
   end.
+
+request_system_reset(Pid) ->
+  Pid ! reset_system,
+  receive
+    reset_system -> ok
+  end.
+
+reset_system(Info) ->
+  #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
+  ets:foldl(fun delete_system_entries/2, true, SystemEtsEntries),
+  ets:delete_all_objects(SystemEtsEntries).
+
+delete_system_entries({T, Objs}, true) when is_list(Objs) ->
+  lists:foldl(fun delete_system_entries/2, true, [{T, O} || O <- Objs]);
+delete_system_entries({T, O}, true) ->
+  ets:delete_object(T, O).
 
 new_process(ParentInfo) ->
   Info = ParentInfo#concuerror_info{notify_when_ready = {self(), true}},
@@ -1312,7 +1351,16 @@ process_loop(Info) ->
       end;
     enabled ->
       Status = Info#concuerror_info.status,
-      process_loop(notify({enabled, Status =:= running}, Info))
+      process_loop(notify({enabled, Status =:= running}, Info));
+    {get_info, To} ->
+      To ! {info, Info},
+      process_loop(Info)
+  end.
+
+get_their_info(Pid) ->
+  Pid ! {get_info, self()},
+  receive
+    {info, Info} -> Info
   end.
 
 send_message_ack(Notify, Trapping) ->
@@ -1322,6 +1370,9 @@ send_message_ack(Notify, Trapping) ->
       ok;
     false -> ok
   end.
+
+get_leader(#concuerror_info{processes = Processes}, P) ->
+  ets:lookup_element(Processes, P, ?process_leader).
 
 %%------------------------------------------------------------------------------
 
@@ -1458,7 +1509,7 @@ link_monitor_handlers(Handler, LinksOrMonitors) ->
 %%------------------------------------------------------------------------------
 
 check_ets_access_rights(Name, Op, Info) ->
-  #concuerror_info{ets_tables = EtsTables} = Info,
+  #concuerror_info{ets_tables = EtsTables, scheduler = Scheduler} = Info,
   case ets:match(EtsTables, ?ets_match_name(Name)) of
     [] -> error(badarg);
     [[Tid,Owner,Protection]] ->
@@ -1472,7 +1523,14 @@ check_ets_access_rights(Name, Op, Info) ->
            write -> Protection =:= public
          end),
       ?badarg_if_not(Test),
-      Tid
+      System =
+        (Owner =:= Scheduler) andalso
+        case element(1, Op) of
+          insert -> true;
+          insert_new -> true;
+          _ -> false
+        end,
+      {Tid, System}
   end.
 
 ets_ops_access_rights_map(Op) ->
@@ -1501,14 +1559,37 @@ system_ets_entries(#concuerror_info{ets_tables = EtsTables}) ->
   ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
 
 system_processes_wrappers(Info) ->
+  Ordered = [user],
+  Registered =
+    Ordered ++ (lists:sort(registered() -- Ordered)),
+  [whereis(Name) ||
+    Name <- Registered,
+    hijacked =:= hijack_or_wrap_system(Name, Info)].
+
+hijack_or_wrap_system(Name, Info)
+  when Name =:= application_controller ->
+  #concuerror_info{
+     logger = Logger,
+     modules = Modules,
+     timeout = Timeout} = Info,
+  Pid = whereis(Name),
+  link(Pid),
+  ok = concuerror_loader:load(gen_server, Modules),
+  ok = sys:suspend(Name),
+  Notify =
+    reset_concuerror_info(
+      Info#concuerror_info{notify_when_ready = {self(), true}}),
+  concuerror_inspect:hijack(Name, Notify),
+  ok = sys:resume(Name),
+  wait_process(Name, Timeout),
+  ?log(Logger, ?linfo, "Hijacked ~p~n", [Name]),
+  hijacked;  
+hijack_or_wrap_system(Name, Info) ->
   #concuerror_info{processes = Processes} = Info,
-  Map =
-    fun(Name) ->
-        Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Info) end,
-        Pid = spawn_link(Fun),
-        ?new_system_process(Pid, Name)
-    end,
-  ets:insert(Processes, [Map(Name) || Name <- registered()]).
+  Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Info) end,
+  Pid = spawn_link(Fun),
+  ets:insert(Processes, ?new_system_process(Pid, Name, wrapper)),
+  wrapped.
 
 system_wrapper_loop(Name, Wrapped, Info) ->
   receive
@@ -1607,8 +1688,8 @@ reset_concuerror_info(Info) ->
      monitors = Monitors,
      notify_when_ready = {Pid, _},
      processes = Processes,
-     report_unknown = ReportUnknown,
      scheduler = Scheduler,
+     system_ets_entries = SystemEtsEntries,
      timeout = Timeout,
      timers = Timers
     } = Info,
@@ -1623,8 +1704,8 @@ reset_concuerror_info(Info) ->
      monitors = Monitors,
      notify_when_ready = {Pid, true},
      processes = Processes,
-     report_unknown = ReportUnknown,
      scheduler = Scheduler,
+     system_ets_entries = SystemEtsEntries,
      timeout = Timeout,
      timers = Timers
     }.
@@ -1787,8 +1868,8 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location}}) ->
       _ -> ""
     end,
   io_lib:format(
-    "No special handling found for built-in ~p:~p/~p~s. Run without"
-    " --report_unknown or contact the developers to add support for it.",
+    "Concuerror does not currently support calls to built-in ~p:~p/~p~s."
+    " Please notify the developers.",
     [Module, Name, Arity, LocationString]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
@@ -1799,4 +1880,4 @@ explain_error({unsupported_request, Name, Type}) ->
 
 location(F, L) ->
   Basename = filename:basename(F),
-  io_lib:format(" (in ~s line ~w)", [Basename, L]).
+  io_lib:format(" (found in ~s line ~w)", [Basename, L]).

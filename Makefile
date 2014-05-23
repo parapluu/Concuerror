@@ -51,7 +51,7 @@ MODULES = \
 
 vpath %.erl src
 
-.PHONY: compile clean dialyze test submodules
+.PHONY: clean compile dialyze submodules tests tests-all tests-long
 
 compile: $(MODULES:%=ebin/%.beam) getopt concuerror
 
@@ -76,7 +76,7 @@ concuerror:
 	ln -s src/concuerror $@
 
 getopt: submodules
-	make -C deps/getopt
+	$(MAKE) -C deps/getopt
 
 submodules:
 	git submodule update --init
@@ -84,6 +84,7 @@ submodules:
 clean:
 	rm -f concuerror
 	rm -rf ebin
+	rm -f tests*/scenarios.beam
 
 dialyze: all .concuerror_plt
 	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) ebin/*.beam
@@ -96,7 +97,17 @@ dialyze: all .concuerror_plt
 ### Testing
 ###----------------------------------------------------------------------
 
-SUITES = advanced_tests,dpor_tests,basic_tests
+%/scenarios.beam: %/scenarios.erl
+	erlc -o $(@D) $<
 
-test: all
-	@(cd tests; bash -c "./runtests.py suites/{$(SUITES)}/src/*")
+SUITES = {advanced_tests,dpor_tests,basic_tests}
+
+tests: all tests/scenarios.beam
+	@(cd tests; bash -c "./runtests.py suites/$(SUITES)/src/*")
+
+###----------------------------------------------------------------------
+
+tests-long:
+	$(MAKE) -C tests-long CONCUERROR=$(abspath concuerror) DIFFER=$(abspath tests/differ)
+
+tests-all: tests tests-long

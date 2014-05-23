@@ -56,6 +56,8 @@ def runTest(test):
     # Wait
     for p in procS:
         p.join()
+    # Cleanup temp files
+    os.remove("%s/%s.beam" % (dirn, modn))
 
 
 #---------------------------------------------------------------------
@@ -83,7 +85,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     sema.acquire()
     # Run concuerror
     status = os.system(
-        ("%s -iq --timeout -1 --assume_racing false --report_unknown"
+        ("%s -iq --timeout -1 --assume_racing false"
          " %s -f %s"
          " --output %s/%s/results/%s-%s-%s%s.txt"
          " -m %s -t %s"
@@ -135,13 +137,7 @@ concuerror = os.path.abspath(dirname + "/../concuerror")
 results = os.path.abspath(dirname + "/results")
 
 # Cleanup temp files
-# TODO: make it os independent
-os.system("find %s \( -name '*.beam' -o -name '*.dump' \) -exec rm {} \;"
-          % dirname)
 os.system("rm -rf %s/*" % results)
-
-# Compile scenarios.erl
-os.system("erlc %s/scenarios.erl" % dirname)
 
 # If we have arguments we should use them as tests,
 # otherwise check them all
@@ -190,10 +186,5 @@ print "  %d total tests, which gave rise to" % len(tests)
 print "  %d test cases, of which" % total_tests.value
 print "  %d caused unexpected failures!" % total_failed.value
 
-# Cleanup temp files
-os.system("find %s -name '*.beam' -exec rm {} \;" % dirname)
-
 if total_failed.value != 0:
-    subprocess.call("bash thediff", shell=True)
-    os.remove("thediff")
     exit(1)

@@ -1,0 +1,60 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,1000},
+   {assume_racing,true},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{test,t_simple_reg,[]}},
+   {files,["../test.erl"]},
+   {ignore_error,[deadlock]},
+   {ignore_first_crash,false},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[shutdown]}]
+################################################################################
+  No errors found!
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumented: test
+Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
+Instrumented: application
+Instrumented: application_controller
+Instrumented: gen
+Instrumented: code
+Instrumented: code_server
+Instrumented: erl_prim_loader
+Instrumented: filename
+Instrumented: epp
+Instrumented: proplists
+Instrumented: erl_scan
+Instrumented: lists
+Instrumented: erl_parse
+Instrumented: init
+Instrumented: application_master
+Instrumented: proc_lib
+Instrumented: gproc_app
+Instrumented: gproc_sup
+Instrumented: supervisor
+Instrumented: erlang
+Instrumented: sys
+Instrumented: gproc
+Instrumented: gproc_lib
+Instrumented: error_logger
+Instrumented: gen_event
+Instrumented: gproc_monitor
+Instrumented: gproc_bcast
+Instrumented: gproc_pool
+Some errors were silenced (--ignore_error).
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1/1 interleavings explored

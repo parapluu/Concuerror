@@ -50,7 +50,13 @@ explain(Reason) ->
   end.
 
 cleanup(Processes) ->
-  Fold = fun(?process_pat_pid(P), true) -> exit(P, kill) end,
+  Fold =
+    fun(?process_pat_pid_kind(P,Kind), true) ->
+        case Kind =:= hijacked of
+          true -> true;
+          false -> exit(P, kill)
+        end
+    end,
   true = ets:foldl(Fold, true, Processes),
   ok.
 
