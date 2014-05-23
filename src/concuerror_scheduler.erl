@@ -54,6 +54,7 @@
           processes                :: processes(),
           scheduling = oldest      :: scheduling(),
           strict_scheduling = false :: boolean(),
+          system            = []   :: [pid()],
           timeout                  :: timeout(),
           trace             = []   :: [trace_state()],
           treat_as_normal   = []   :: [atom()]
@@ -74,7 +75,8 @@ run(Options) ->
     false ->
       ok
   end,
-  FirstProcess = concuerror_callback:spawn_first_process(Options),
+  {FirstProcess, System} =
+    concuerror_callback:spawn_first_process(Options),
   InitialTrace =
     #trace_state{
        actors = [FirstProcess],
@@ -97,6 +99,7 @@ run(Options) ->
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
        strict_scheduling = ?opt(strict_scheduling, Options),
+       system = System,
        trace = [InitialTrace],
        treat_as_normal = ?opt(treat_as_normal, Options),
        timeout = Timeout = ?opt(timeout, Options)
@@ -195,7 +198,7 @@ get_next_event(
       current_warnings = [{depth_bound, Bound}|Warnings],
       trace = Old},
   {none, NewState};
-get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
+get_next_event(#scheduler_state{system = System, trace = [Last|_]} = State) ->
   #trace_state{
      actors      = Actors,
      delay_bound = DelayBound,
@@ -208,7 +211,7 @@ get_next_event(#scheduler_state{trace = [Last|_]} = State) ->
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
-      get_next_event(Event, AvailableActors, State#scheduler_state{delay = 0});
+      get_next_event(Event, System ++ AvailableActors, State#scheduler_state{delay = 0});
     [{#event{actor = Actor, label = Label} = Event, _}|_] ->
       false = lists:member(Actor, Sleeping),
       Delay =

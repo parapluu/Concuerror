@@ -51,7 +51,7 @@ MODULES = \
 
 vpath %.erl src
 
-.PHONY: compile clean dialyze test submodules
+.PHONY: clean compile dialyze submodules tests tests-all tests-long
 
 compile: $(MODULES:%=ebin/%.beam) getopt concuerror
 
@@ -104,3 +104,10 @@ SUITES = {advanced_tests,dpor_tests,basic_tests}
 
 tests: all tests/scenarios.beam
 	@(cd tests; bash -c "./runtests.py suites/$(SUITES)/src/*")
+
+###----------------------------------------------------------------------
+
+tests-long:
+	$(MAKE) -C tests-long CONCUERROR=$(abspath concuerror) DIFFER=$(abspath tests/differ)
+
+tests-all: tests tests-long

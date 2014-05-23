@@ -3,7 +3,7 @@
 -module(concuerror_callback).
 
 %% Interface to concuerror_inspect:
--export([instrumented_top/4]).
+-export([instrumented_top/4, hijack_backend/1]).
 
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/3,
@@ -41,10 +41,10 @@
 -define(heir, ?flag(15)).
 -define(notify, ?flag(16)).
 
--define(ACTIVE_FLAGS, [?undefined]).
+-define(ACTIVE_FLAGS, [?undefined,?short_builtin,?loop,?notify, ?non_builtin]).
 
-%% -define(DEBUG, true).
--define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
+%%-define(DEBUG, true).
+%%-define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 
 -define(badarg_if_not(A), case A of true -> ok; false -> error(badarg) end).
 %%------------------------------------------------------------------------------
@@ -87,7 +87,7 @@
 
 %%------------------------------------------------------------------------------
 
--spec spawn_first_process(options()) -> pid().
+-spec spawn_first_process(options()) -> {pid(), [pid()]}.
 
 spawn_first_process(Options) ->
   EtsTables = ets:new(ets_tables, [public]),
@@ -107,13 +107,13 @@ spawn_first_process(Options) ->
        timeout        = ?opt(timeout, Options),
        timers         = ets:new(timers, [public])
       },
-  system_processes_wrappers(Info),
+  System = system_processes_wrappers(Info),
   system_ets_entries(Info),
   P = new_process(Info),
   true = ets:insert(Processes, ?new_process(P, "P")),
   {DefLeader, _} = run_built_in(erlang,whereis,1,[user],Info),
   true = ets:update_element(Processes, P, {?process_leader, DefLeader}),
-  P.
+  {P, System}.
 
 -spec start_first_process(pid(), {atom(), atom(), [term()]}, timeout()) -> ok.
 
@@ -127,6 +127,20 @@ start_first_process(Pid, {Module, Name, Args}, Timeout) ->
 
 setup_logger(Processes) ->
   put(concuerror_info, {logger, Processes}),
+  ok.
+
+-spec hijack_backend(concuerror_info()) -> ok.
+
+hijack_backend(#concuerror_info{processes = Processes} = Info) ->
+  Escaped = erase(),
+  true = group_leader() =:= whereis(user),
+  {GroupLeader, _} = run_built_in(erlang,whereis,1,[user], Info),
+  {registered_name, Name} = process_info(self(), registered_name),
+  true = ets:insert(Processes, ?new_system_process(self(), Name, hijacked)),
+  {true, Info} =
+    run_built_in(erlang, group_leader, 2, [GroupLeader, self()], Info),
+  NewInfo = Info#concuerror_info{escaped_pdict = Escaped},
+  put(concuerror_info, NewInfo),
   ok.
 
 %%------------------------------------------------------------------------------
@@ -229,15 +243,15 @@ get_fun_info(Fun, Tag) ->
 
 %%------------------------------------------------------------------------------
 
-built_in(erlang, display, 1, [Term], Location, Info) ->
-  ?debug_flag(?builtin, {'built-in', erlang, display, 1, [Term], Location}),
+built_in(erlang, display, 1, [Term], _Location, Info) ->
+  ?debug_flag(?builtin, {'built-in', erlang, display, 1, [Term], _Location}),
   #concuerror_info{logger = Logger} = Info,
   Chars = io_lib:format("~w~n",[Term]),
   concuerror_logger:print(Logger, standard_io, Chars),
   {{didit, true}, Info};
 %% Process dictionary has been restored here. No need to report such ops.
-built_in(erlang, get, Arity, Args, Location, Info) ->
-  ?debug_flag(?builtin, {'built-in', erlang, get, Arity, Args, Location}),
+built_in(erlang, get, _Arity, Args, _Location, Info) ->
+  ?debug_flag(?builtin, {'built-in', erlang, get, _Arity, Args, _Location}),
   Res = erlang:apply(erlang,get,Args),
   {{didit, Res}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
@@ -1545,14 +1559,37 @@ system_ets_entries(#concuerror_info{ets_tables = EtsTables}) ->
   ets:insert(EtsTables, [Map(Tid) || Tid <- ets:all(), is_atom(Tid)]).
 
 system_processes_wrappers(Info) ->
+  Ordered = [user],
+  Registered =
+    Ordered ++ (lists:sort(registered() -- Ordered)),
+  [whereis(Name) ||
+    Name <- Registered,
+    hijacked =:= hijack_or_wrap_system(Name, Info)].
+
+hijack_or_wrap_system(Name, Info)
+  when Name =:= application_controller ->
+  #concuerror_info{
+     logger = Logger,
+     modules = Modules,
+     timeout = Timeout} = Info,
+  Pid = whereis(Name),
+  link(Pid),
+  ok = concuerror_loader:load(gen_server, Modules),
+  ok = sys:suspend(Name),
+  Notify =
+    reset_concuerror_info(
+      Info#concuerror_info{notify_when_ready = {self(), true}}),
+  concuerror_inspect:hijack(Name, Notify),
+  ok = sys:resume(Name),
+  wait_process(Name, Timeout),
+  ?log(Logger, ?linfo, "Hijacked ~p~n", [Name]),
+  hijacked;  
+hijack_or_wrap_system(Name, Info) ->
   #concuerror_info{processes = Processes} = Info,
-  Map =
-    fun(Name) ->
-        Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Info) end,
-        Pid = spawn_link(Fun),
-        ?new_system_process(Pid, Name)
-    end,
-  ets:insert(Processes, [Map(Name) || Name <- registered()]).
+  Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Info) end,
+  Pid = spawn_link(Fun),
+  ets:insert(Processes, ?new_system_process(Pid, Name, wrapper)),
+  wrapped.
 
 system_wrapper_loop(Name, Wrapped, Info) ->
   receive

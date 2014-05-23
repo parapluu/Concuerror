@@ -7,7 +7,7 @@
 -module(concuerror_inspect).
 
 %% Interface to instrumented code:
--export([instrumented/3]).
+-export([instrumented/3, hijack/2]).
 
 -include("concuerror.hrl").
 
@@ -20,7 +20,14 @@
 instrumented(Tag, Args, Location) ->
   Ret =
     case erase(concuerror_info) of
-      undefined -> doit;
+      undefined ->
+        receive
+          {hijack, I} ->
+            concuerror_callback:hijack_backend(I),
+            retry
+        after
+          0 -> doit
+        end;
       Info -> concuerror_callback:instrumented_top(Tag, Args, Location, Info)
     end,
   case Ret of
@@ -33,7 +40,14 @@ instrumented(Tag, Args, Location) ->
         {'receive', [_, Timeout]} ->
           Timeout
       end;
+    retry -> instrumented(Tag, Args, Location);
     skip_timeout -> 0;
     {didit, Res} -> Res;
     {error, Reason} -> error(Reason)
   end.
+
+-spec hijack(atom(), term()) -> ok.
+
+hijack(Name, Info) ->
+  Name ! {hijack, Info},
+  ok.
