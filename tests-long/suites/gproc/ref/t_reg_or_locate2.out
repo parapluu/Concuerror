@@ -1,13 +1,13 @@
 ################################################################################
 Concuerror started with options:
   [{after_timeout,1000},
-   {assume_racing,true},
+   {assume_racing,false},
    {delay_bound,infinity},
    {depth_bound,5000},
    {entry_point,{test,t_reg_or_locate2,[]}},
    {files,["../test.erl"]},
    {ignore_error,[deadlock]},
-   {ignore_first_crash,false},
+   {ignore_first_crash,true},
    {instant_delivery,false},
    {non_racing_system,[]},
    {optimal,true},
@@ -29,12 +29,12 @@ Erroneous interleaving 1:
 Interleaving info:
    1: P: application_controller = erlang:whereis(application_controller)
     in gen.erl line 157
-   2: P: #Ref<0.0.0.301> = erlang:monitor(process, application_controller)
+   2: P: #Ref<0.0.0.327> = erlang:monitor(process, application_controller)
     in gen.erl line 200
-   3: P: {'$gen_call',{P,#Ref<0.0.0.301>},{load_application,gproc}} = erlang:send(application_controller, {'$gen_call',{P,#Ref<0.0.0.301>},{load_application,gproc}}, [noconnect])
+   3: P: {'$gen_call',{P,#Ref<0.0.0.327>},{load_application,gproc}} = erlang:send(application_controller, {'$gen_call',{P,#Ref<0.0.0.327>},{load_application,gproc}}, [noconnect])
     in gen.erl line 211
-   4: Message ({'$gen_call',{P,#Ref<0.0.0.301>},{load_application,gproc}}) from P reaches application_controller
-   5: application_controller: receives message ({'$gen_call',{P,#Ref<0.0.0.301>},{load_application,gproc}})
+   4: Message ({'$gen_call',{P,#Ref<0.0.0.327>},{load_application,gproc}}) from P reaches application_controller
+   5: application_controller: receives message ({'$gen_call',{P,#Ref<0.0.0.327>},{load_application,gproc}})
     in gen_server.erl line 360
    6: application_controller: [] = ets:lookup(ac_tab, {loaded,gproc})
     in application_controller.erl line 1248
@@ -76,27 +76,27 @@ Interleaving info:
     in application_controller.erl line 1690
   30: application_controller: true = ets:insert(ac_tab, {{loaded,gproc},{appl,gproc,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib,gproc_monitor|...],[],infinity,infinity},[71,80,82,79,67],[71,80,82,79,67],[48,46,51],undefined,[],[kernel,stdlib]}})
     in application_controller.erl line 1277
-  31: application_controller: {#Ref<0.0.0.301>,ok} = P ! {#Ref<0.0.0.301>,ok}
+  31: application_controller: {#Ref<0.0.0.327>,ok} = P ! {#Ref<0.0.0.327>,ok}
     in gen_server.erl line 219
-  32: Message ({#Ref<0.0.0.301>,ok}) from application_controller reaches P
-  33: P: receives message ({#Ref<0.0.0.301>,ok})
+  32: Message ({#Ref<0.0.0.327>,ok}) from application_controller reaches P
+  33: P: receives message ({#Ref<0.0.0.327>,ok})
     in gen.erl line 213
-  34: P: true = erlang:demonitor(#Ref<0.0.0.301>, [flush])
+  34: P: true = erlang:demonitor(#Ref<0.0.0.327>, [flush])
     in gen.erl line 215
   35: P: application_controller = erlang:whereis(application_controller)
     in gen.erl line 157
-  36: P: #Ref<0.0.0.378> = erlang:monitor(process, application_controller)
+  36: P: #Ref<0.0.0.404> = erlang:monitor(process, application_controller)
     in gen.erl line 200
-  37: P: {'$gen_call',{P,#Ref<0.0.0.378>},{start_application,gproc,temporary}} = erlang:send(application_controller, {'$gen_call',{P,#Ref<0.0.0.378>},{start_application,gproc,temporary}}, [noconnect])
+  37: P: {'$gen_call',{P,#Ref<0.0.0.404>},{start_application,gproc,temporary}} = erlang:send(application_controller, {'$gen_call',{P,#Ref<0.0.0.404>},{start_application,gproc,temporary}}, [noconnect])
     in gen.erl line 211
-  38: Message ({'$gen_call',{P,#Ref<0.0.0.378>},{start_application,gproc,temporary}}) from P reaches application_controller
-  39: application_controller: receives message ({'$gen_call',{P,#Ref<0.0.0.378>},{start_application,gproc,temporary}})
+  38: Message ({'$gen_call',{P,#Ref<0.0.0.404>},{start_application,gproc,temporary}}) from P reaches application_controller
+  39: application_controller: receives message ({'$gen_call',{P,#Ref<0.0.0.404>},{start_application,gproc,temporary}})
     in gen_server.erl line 360
   40: application_controller: [{{loaded,gproc},{appl,gproc,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib|...],[],infinity,infinity},[71,80,82,79,67],[71,80,82,79,67],[48,46,51],undefined,[],[kernel,stdlib]}}] = ets:lookup(ac_tab, {loaded,gproc})
     in application_controller.erl line 1248
   41: application_controller: [] = ets:lookup(ac_tab, {env,kernel,permissions})
     in application_controller.erl line 331
-  42: application_controller: application_controller.1 = erlang:spawn_link(application_controller, init_starter, [{P,#Ref<0.0.0.378>},{appl,gproc,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib,gproc_monitor|...],[],infinity,infinity},[71,80,82,79,67],[71,80,82,79,67],[48,46,51],undefined,[],[kernel,stdlib]},{state,[],[],[],[{stdlib,undefined},{kernel,<0.9.0>}],[],[{stdlib,permanent},{kernel,permanent}],[],[]},normal])
+  42: application_controller: application_controller.1 = erlang:spawn_link(application_controller, init_starter, [{P,#Ref<0.0.0.404>},{appl,gproc,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib,gproc_monitor|...],[],infinity,infinity},[71,80,82,79,67],[71,80,82,79,67],[48,46,51],undefined,[],[kernel,stdlib]},{state,[],[],[],[{stdlib,undefined},{kernel,<0.9.0>}],[],[{stdlib,permanent},{kernel,permanent}],[],[]},normal])
     in application_controller.erl line 1355
   43: application_controller.1: false = erlang:process_flag(trap_exit, true)
     in application_controller.erl line 1358
@@ -120,9 +120,9 @@ Interleaving info:
     in application_master.erl line 120
   53: application_controller.1.1: true = ets:insert(ac_tab, {{application_master,gproc},application_controller.1.1})
     in application_master.erl line 124
-  54: application_controller.1.1: #Ref<0.0.0.404> = erlang:make_ref()
+  54: application_controller.1.1: #Ref<0.0.0.430> = erlang:make_ref()
     in application_master.erl line 144
-  55: application_controller.1.1: application_controller.1.1.1 = erlang:spawn_link(application_master, start_it, [#Ref<0.0.0.404>,{state,undefined,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib,gproc_monitor|...],[],infinity,infinity},[],0,user,[]},application_controller.1.1,normal])
+  55: application_controller.1.1: application_controller.1.1.1 = erlang:spawn_link(application_master, start_it, [#Ref<0.0.0.430>,{state,undefined,{appl_data,gproc,[],undefined,{gproc_app,[]},[gproc,gproc_app,gproc_bcast,gproc_dist,gproc_info,gproc_init,gproc_lib,gproc_monitor|...],[],infinity,infinity},[],0,user,[]},application_controller.1.1,normal])
     in application_master.erl line 145
   56: application_controller.1.1.1: false = erlang:process_flag(trap_exit, true)
     in application_master.erl line 250
@@ -288,10 +288,10 @@ Interleaving info:
     in proc_lib.erl line 333
  147: application_controller.1.1.1: true = erlang:link(application_controller.1.1.1.1)
     in application_master.erl line 274
- 148: application_controller.1.1.1: {#Ref<0.0.0.404>,{ok,application_controller.1.1.1}} = application_controller.1.1 ! {#Ref<0.0.0.404>,{ok,application_controller.1.1.1}}
+ 148: application_controller.1.1.1: {#Ref<0.0.0.430>,{ok,application_controller.1.1.1}} = application_controller.1.1 ! {#Ref<0.0.0.430>,{ok,application_controller.1.1.1}}
     in application_master.erl line 275
- 149: Message ({#Ref<0.0.0.404>,{ok,application_controller.1.1.1}}) from application_controller.1.1.1 reaches application_controller.1.1
- 150: application_controller.1.1: receives message ({#Ref<0.0.0.404>,{ok,application_controller.1.1.1}})
+ 149: Message ({#Ref<0.0.0.430>,{ok,application_controller.1.1.1}}) from application_controller.1.1.1 reaches application_controller.1.1
+ 150: application_controller.1.1: receives message ({#Ref<0.0.0.430>,{ok,application_controller.1.1.1}})
     in application_master.erl line 154
  151: application_controller.1.1: true = erlang:unlink(application_controller.1)
     in application_master.erl line 129
@@ -308,7 +308,7 @@ Interleaving info:
  158: Message ({'$gen_cast',{application_started,gproc,{ok,application_controller.1.1}}}) from application_controller.1 reaches application_controller
  159: application_controller: receives message ({'$gen_cast',{application_started,gproc,{ok,application_controller.1.1}}})
     in gen_server.erl line 360
- 160: application_controller: {#Ref<0.0.0.378>,ok} = P ! {#Ref<0.0.0.378>,ok}
+ 160: application_controller: {#Ref<0.0.0.404>,ok} = P ! {#Ref<0.0.0.404>,ok}
     in gen_server.erl line 219
  161: application_controller: user = erlang:group_leader()
     in error_logger.erl line 210
@@ -317,79 +317,79 @@ Interleaving info:
  163: application_controller: [] = ets:lookup(ac_tab, {env,kernel,permissions})
     in application_controller.erl line 331
  164: Message ({notify,{info_report,user,{application_controller,progress,[{application,gproc},{started_at,nonode@nohost}]}}}) from application_controller reaches error_logger
- 165: Message ({#Ref<0.0.0.378>,ok}) from application_controller reaches P
- 166: P: receives message ({#Ref<0.0.0.378>,ok})
+ 165: Message ({#Ref<0.0.0.404>,ok}) from application_controller reaches P
+ 166: P: receives message ({#Ref<0.0.0.404>,ok})
     in gen.erl line 213
- 167: P: true = erlang:demonitor(#Ref<0.0.0.378>, [flush])
+ 167: P: true = erlang:demonitor(#Ref<0.0.0.404>, [flush])
     in gen.erl line 215
- 168: P: {P.1,#Ref<0.0.0.579>} = erlang:spawn_opt({erlang,apply,[#Fun<test.8.6191720>,[]],[monitor]})
+ 168: P: {P.1,#Ref<0.0.0.605>} = erlang:spawn_opt({erlang,apply,[#Fun<test.8.119586325>,[]],[monitor]})
     in erlang.erl line 2373
  169: Exit signal (normal) from application_controller.1 reaches application_controller
- 170: P.1: #Ref<0.0.0.582> = erlang:monitor(process, P)
-    in test.erl line 35
+ 170: P.1: #Ref<0.0.0.608> = erlang:monitor(process, P)
+    in test.erl line 36
  171: P.1: application_controller.1.1.1.1.1 = erlang:whereis(gproc)
     in gen.erl line 157
- 172: P.1: #Ref<0.0.0.585> = erlang:monitor(process, application_controller.1.1.1.1.1)
+ 172: P.1: #Ref<0.0.0.611> = erlang:monitor(process, application_controller.1.1.1.1.1)
     in gen.erl line 200
- 173: P.1: {'$gen_call',{P.1,#Ref<0.0.0.585>},{reg,{n,l,foo},the_value}} = erlang:send(application_controller.1.1.1.1.1, {'$gen_call',{P.1,#Ref<0.0.0.585>},{reg,{n,l,foo},the_value}}, [noconnect])
+ 173: P.1: {'$gen_call',{P.1,#Ref<0.0.0.611>},{reg,{n,l,foo},the_value}} = erlang:send(application_controller.1.1.1.1.1, {'$gen_call',{P.1,#Ref<0.0.0.611>},{reg,{n,l,foo},the_value}}, [noconnect])
     in gen.erl line 211
- 174: Message ({'$gen_call',{P.1,#Ref<0.0.0.585>},{reg,{n,l,foo},the_value}}) from P.1 reaches application_controller.1.1.1.1.1
- 175: application_controller.1.1.1.1.1: receives message ({'$gen_call',{P.1,#Ref<0.0.0.585>},{reg,{n,l,foo},the_value}})
+ 174: Message ({'$gen_call',{P.1,#Ref<0.0.0.611>},{reg,{n,l,foo},the_value}}) from P.1 reaches application_controller.1.1.1.1.1
+ 175: application_controller.1.1.1.1.1: receives message ({'$gen_call',{P.1,#Ref<0.0.0.611>},{reg,{n,l,foo},the_value}})
     in gen_server.erl line 360
  176: application_controller.1.1.1.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.1,the_value})
     in gproc_lib.erl line 78
  177: application_controller.1.1.1.1.1: true = ets:insert_new(gproc, {{P.1,{n,l,foo}},[]})
  178: application_controller.1.1.1.1.1: true = ets:insert_new(gproc, {{P.1,l}})
     in gproc_lib.erl line 300
- 179: application_controller.1.1.1.1.1: #Ref<0.0.0.594> = erlang:monitor(process, P.1)
+ 179: application_controller.1.1.1.1.1: #Ref<0.0.0.620> = erlang:monitor(process, P.1)
     in gproc_lib.erl line 302
- 180: application_controller.1.1.1.1.1: {#Ref<0.0.0.585>,true} = P.1 ! {#Ref<0.0.0.585>,true}
+ 180: application_controller.1.1.1.1.1: {#Ref<0.0.0.611>,true} = P.1 ! {#Ref<0.0.0.611>,true}
     in gen_server.erl line 219
- 181: Message ({#Ref<0.0.0.585>,true}) from application_controller.1.1.1.1.1 reaches P.1
- 182: P.1: receives message ({#Ref<0.0.0.585>,true})
+ 181: Message ({#Ref<0.0.0.611>,true}) from application_controller.1.1.1.1.1 reaches P.1
+ 182: P.1: receives message ({#Ref<0.0.0.611>,true})
     in gen.erl line 213
- 183: P.1: true = erlang:demonitor(#Ref<0.0.0.585>, [flush])
+ 183: P.1: true = erlang:demonitor(#Ref<0.0.0.611>, [flush])
     in gen.erl line 215
  184: P.1: {P.1,ok} = P ! {P.1,ok}
-    in test.erl line 37
+    in test.erl line 38
  185: Message ({P.1,ok}) from P.1 reaches P
  186: P: receives message ({P.1,ok})
-    in test.erl line 42
+    in test.erl line 43
  187: P: application_controller.1.1.1.1.1 = erlang:whereis(gproc)
     in gen.erl line 157
- 188: P: #Ref<0.0.0.606> = erlang:monitor(process, application_controller.1.1.1.1.1)
+ 188: P: #Ref<0.0.0.632> = erlang:monitor(process, application_controller.1.1.1.1.1)
     in gen.erl line 200
- 189: P: {'$gen_call',{P,#Ref<0.0.0.606>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(application_controller.1.1.1.1.1, {'$gen_call',{P,#Ref<0.0.0.606>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+ 189: P: {'$gen_call',{P,#Ref<0.0.0.632>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(application_controller.1.1.1.1.1, {'$gen_call',{P,#Ref<0.0.0.632>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
     in gen.erl line 211
- 190: Message ({'$gen_call',{P,#Ref<0.0.0.606>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches application_controller.1.1.1.1.1
- 191: application_controller.1.1.1.1.1: receives message ({'$gen_call',{P,#Ref<0.0.0.606>},{reg_or_locate,{n,l,foo},undefined,P}})
+ 190: Message ({'$gen_call',{P,#Ref<0.0.0.632>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches application_controller.1.1.1.1.1
+ 191: application_controller.1.1.1.1.1: receives message ({'$gen_call',{P,#Ref<0.0.0.632>},{reg_or_locate,{n,l,foo},undefined,P}})
     in gen_server.erl line 360
  192: application_controller.1.1.1.1.1: [{{{n,l,foo},n},P.1,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2072
- 193: application_controller.1.1.1.1.1: {#Ref<0.0.0.606>,{P.1,the_value}} = P ! {#Ref<0.0.0.606>,{P.1,the_value}}
+ 193: application_controller.1.1.1.1.1: {#Ref<0.0.0.632>,{P.1,the_value}} = P ! {#Ref<0.0.0.632>,{P.1,the_value}}
     in gen_server.erl line 219
- 194: Message ({#Ref<0.0.0.606>,{P.1,the_value}}) from application_controller.1.1.1.1.1 reaches P
- 195: P: receives message ({#Ref<0.0.0.606>,{P.1,the_value}})
+ 194: Message ({#Ref<0.0.0.632>,{P.1,the_value}}) from application_controller.1.1.1.1.1 reaches P
+ 195: P: receives message ({#Ref<0.0.0.632>,{P.1,the_value}})
     in gen.erl line 213
- 196: P: true = erlang:demonitor(#Ref<0.0.0.606>, [flush])
+ 196: P: true = erlang:demonitor(#Ref<0.0.0.632>, [flush])
     in gen.erl line 215
  197: P: true = erlang:exit(P.1, kill)
-    in test.erl line 44
+    in test.erl line 45
  198: Exit signal (kill) from P reaches P.1
  199: P.1: exits abnormally (killed)
- 200: P.1: {'DOWN',#Ref<0.0.0.579>,process,P.1,killed} = erlang:send(P, {'DOWN',#Ref<0.0.0.579>,process,P.1,killed})
+ 200: P.1: {'DOWN',#Ref<0.0.0.605>,process,P.1,killed} = erlang:send(P, {'DOWN',#Ref<0.0.0.605>,process,P.1,killed})
     (while exiting)
- 201: P.1: {'DOWN',#Ref<0.0.0.594>,process,P.1,killed} = erlang:send(application_controller.1.1.1.1.1, {'DOWN',#Ref<0.0.0.594>,process,P.1,killed})
+ 201: P.1: {'DOWN',#Ref<0.0.0.620>,process,P.1,killed} = erlang:send(application_controller.1.1.1.1.1, {'DOWN',#Ref<0.0.0.620>,process,P.1,killed})
     (while exiting)
- 202: Message ({'DOWN',#Ref<0.0.0.579>,process,P.1,killed}) from P.1 reaches P
- 203: Message ({'DOWN',#Ref<0.0.0.594>,process,P.1,killed}) from P.1 reaches application_controller.1.1.1.1.1
- 204: P: receives message ({'DOWN',#Ref<0.0.0.579>,process,P.1,killed})
-    in test.erl line 45
+ 202: Message ({'DOWN',#Ref<0.0.0.605>,process,P.1,killed}) from P.1 reaches P
+ 203: Message ({'DOWN',#Ref<0.0.0.620>,process,P.1,killed}) from P.1 reaches application_controller.1.1.1.1.1
+ 204: P: receives message ({'DOWN',#Ref<0.0.0.605>,process,P.1,killed})
+    in test.erl line 46
  205: P: exits normally
- 206: P: {'DOWN',#Ref<0.0.0.582>,process,P,normal} = erlang:send(P.1, {'DOWN',#Ref<0.0.0.582>,process,P,normal})
+ 206: P: {'DOWN',#Ref<0.0.0.608>,process,P,normal} = erlang:send(P.1, {'DOWN',#Ref<0.0.0.608>,process,P,normal})
     (while exiting)
- 207: Message ({'DOWN',#Ref<0.0.0.582>,process,P,normal}) from P reaches P.1
- 208: application_controller.1.1.1.1.1: receives message ({'DOWN',#Ref<0.0.0.594>,process,P.1,killed})
+ 207: Message ({'DOWN',#Ref<0.0.0.608>,process,P,normal}) from P reaches P.1
+ 208: application_controller.1.1.1.1.1: receives message ({'DOWN',#Ref<0.0.0.620>,process,P.1,killed})
     in gen_server.erl line 360
  209: application_controller.1.1.1.1.1: true = ets:member(gproc, {P.1,l})
     in gproc.erl line 2313
@@ -403,11 +403,6 @@ Interleaving info:
     in gproc.erl line 2372
  214: application_controller.1.1.1.1.1: true = ets:delete(gproc, {P.1,l})
     in gproc.erl line 2373
-################################################################################
-Concuerror Errors:
---------------------------------------------------------------------------------
-The first interleaving of your test had errors. Check the output file. You may then use -i to tell Concuerror to continue or use other options to filter out the reported errors, if you consider them acceptable behaviours.
-
 ################################################################################
 Concuerror Tips:
 --------------------------------------------------------------------------------
@@ -448,5 +443,5 @@ Instrumented: gproc_bcast
 Instrumented: gproc_pool
 Some errors were silenced (--ignore_error).
 ################################################################################
-Done! (Exit status: warning)
+Done! (Exit status: completed)
   Summary: 1 errors, 1/1 interleavings explored

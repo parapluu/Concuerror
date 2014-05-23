@@ -1,13 +1,13 @@
 ################################################################################
 Concuerror started with options:
   [{after_timeout,1000},
-   {assume_racing,true},
+   {assume_racing,false},
    {delay_bound,infinity},
    {depth_bound,5000},
    {entry_point,{test,t_simple_reg_or_locate,[]}},
    {files,["../test.erl"]},
    {ignore_error,[deadlock]},
-   {ignore_first_crash,false},
+   {ignore_first_crash,true},
    {instant_delivery,false},
    {non_racing_system,[]},
    {optimal,true},
