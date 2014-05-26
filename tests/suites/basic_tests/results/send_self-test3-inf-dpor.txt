@@ -1,20 +1,24 @@
 ################################################################################
 Concuerror started with options:
   [{after_timeout,infinity},
-   {allow_first_crash,true},
    {assume_racing,false},
+   {delay_bound,infinity},
    {depth_bound,5000},
+   {entry_point,{send_self,test3,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"]},
    {ignore_error,[]},
+   {ignore_first_crash,true},
    {instant_delivery,false},
    {non_racing_system,[]},
+   {optimal,true},
    {print_depth,20},
-   {report_unknown,true},
-   {symbolic,true},
-   {target,{send_self,test3,[]}},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[normal]},
-   {verbosity,0}]
+   {treat_as_normal,[]}]
 ################################################################################
 Erroneous interleaving 1:
 * At step 4 process P exited abnormally
@@ -38,13 +42,41 @@ Interleaving info:
    4: P: exits abnormally ({{nocatch,one},[{send_self,test3,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,30}]}]})
    5: P.1: two = P ! two
     in send_self.erl line 27
-   6: Message (two) from P.1 reaches P
-   7: P.1: exits normally
+   6: P.1: exits normally
+   7: Message (two) from P.1 reaches P
+################################################################################
+Erroneous interleaving 2:
+* At step 7 process P exited abnormally
+    Reason:
+      {{nocatch,one},
+       [{send_self,test3,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"},
+                    {line,30}]}]}
+    Stacktrace:
+      [{send_self,test3,0,
+                  [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_self.erl"},
+                   {line,30}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<send_self.3.78488577>,[]])
+    in erlang.erl line 2329
+   2: P.1: two = P ! two
+    in send_self.erl line 27
+   3: P.1: exits normally
+   4: Message (two) from P.1 reaches P
+   5: P: one = P ! one
+    in send_self.erl line 28
+   6: P: receives message (one)
+    in send_self.erl line 29
+   7: P: exits abnormally ({{nocatch,one},[{send_self,test3,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,30}]}]})
 ################################################################################
 Concuerror Info:
 --------------------------------------------------------------------------------
-Instrumenting: send_self
-Instrumenting: erlang
+Instrumented: send_self
+Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
+Instrumented: erlang
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 1 errors, 1/1 interleavings explored
+  Summary: 2 errors, 2/2 interleavings explored

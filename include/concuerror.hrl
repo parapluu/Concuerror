@@ -113,11 +113,9 @@
 -type message_info() :: ets:tid().
 -type timers()       :: ets:tid().
 
--define(new_message_info(Id), {Id, none, undefined, undefined, undefined}).
--define(message_pattern, 2).
--define(message_sent, 3).
--define(message_delivered, 4).
--define(message_received, 5).
+-define(new_message_info(Id), {Id, undefined, undefined}).
+-define(message_sent, 2).
+-define(message_delivered, 3).
 
 -define(notify_none, 1).
 %%------------------------------------------------------------------------------
@@ -211,7 +209,6 @@
           cause_label      :: label(),
           instant = true   :: boolean(),
           message          :: message(),
-          patterns = none  :: 'none' | receive_pattern_fun() | {'ref', message_info()},
           recipient        :: pid(),
           sender = self()  :: pid(),
           trapping = false :: boolean(),

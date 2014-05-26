@@ -13,8 +13,8 @@ Concuerror started with options:
    {optimal,true},
    {print_depth,20},
    {quiet,true},
-   {report_unknown,true},
    {scheduling,round_robin},
+   {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
@@ -26,7 +26,9 @@ Concuerror Info:
 --------------------------------------------------------------------------------
 Instrumented: receive_order
 Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
 Instrumented: erlang
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 1/1 interleavings explored
+  Summary: 0 errors, 2/2 interleavings explored

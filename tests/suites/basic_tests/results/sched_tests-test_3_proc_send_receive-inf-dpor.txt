@@ -1,16 +1,34 @@
 ################################################################################
 Concuerror started with options:
-  [{'after-timeout',infinite},
-   {bound,-1},
-   {distributed,true},
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{sched_tests,test_3_proc_send_receive,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/sched_tests.erl"]},
-   {'light-dpor',false},
-   {symbolic,true},
-   {target,{sched_tests,test_3_proc_send_receive,[]}},
-   {verbose,0},
-   {wait,5000}]
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
   No errors found!
 ################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumented: sched_tests
+Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
+Instrumented: erlang
+################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 1/1 interleavings explored
+  Summary: 0 errors, 2/2 interleavings explored

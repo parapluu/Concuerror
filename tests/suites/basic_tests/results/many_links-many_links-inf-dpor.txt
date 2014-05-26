@@ -1,13 +1,24 @@
 ################################################################################
 Concuerror started with options:
-  [{'after-timeout',infinite},
+  [{after_timeout,infinity},
    {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{many_links,many_links,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/many_links.erl"]},
-   {normal_exit,[normal]},
-   {symbolic,true},
-   {target,{many_links,many_links,[]}},
-   {verbose,0},
-   {wait,2000}]
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -46,14 +57,16 @@ Interleaving info:
     in erlang.erl line 2329
    4: P: true = erlang:link(P.1)
     in many_links.erl line 12
-   5: P.1: exits normally
-   6: P.1: true = erlang:exit(P, normal)
-    (while exiting)
-   7: Exit signal (normal) from P.1 reaches P
-   8: P.2: exits normally
-   9: P: true = erlang:link(P.2)
+   5: P: true = erlang:link(P.2)
     in many_links.erl line 13
-  10: Message ({'EXIT',P.2,noproc}) from P reaches P
+   6: P.1: exits normally
+   7: P.1: true = erlang:exit(P, normal)
+    (while exiting)
+   8: P.2: exits normally
+   9: P.2: true = erlang:exit(P, normal)
+    (while exiting)
+  10: Exit signal (normal) from P.2 reaches P
+  11: Exit signal (normal) from P.1 reaches P
 ################################################################################
 Erroneous interleaving 3:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -66,18 +79,56 @@ Interleaving info:
     in erlang.erl line 2329
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.1.39968107>,[]])
     in erlang.erl line 2329
-   4: P.1: exits normally
-   5: P: true = erlang:link(P.1)
+   4: P: true = erlang:link(P.1)
     in many_links.erl line 12
-   6: Message ({'EXIT',P.1,noproc}) from P reaches P
-   7: P: true = erlang:link(P.2)
-    in many_links.erl line 13
-   8: P.2: exits normally
-   9: P.2: true = erlang:exit(P, normal)
+   5: P.1: exits normally
+   6: P.1: true = erlang:exit(P, normal)
     (while exiting)
-  10: Exit signal (normal) from P.2 reaches P
+   7: Exit signal (normal) from P.1 reaches P
+   8: P.2: exits normally
+   9: P: true = erlang:link(P.2)
+    in many_links.erl line 13
 ################################################################################
 Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in many_links.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: false = erlang:process_flag(trap_exit, true)
+    in many_links.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.0.39968107>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.1.39968107>,[]])
+    in erlang.erl line 2329
+   4: P: true = erlang:link(P.1)
+    in many_links.erl line 12
+   5: P.1: exits normally
+   6: P.1: true = erlang:exit(P, normal)
+    (while exiting)
+   7: P.2: exits normally
+   8: P: true = erlang:link(P.2)
+    in many_links.erl line 13
+   9: Exit signal (normal) from P.1 reaches P
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in many_links.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: false = erlang:process_flag(trap_exit, true)
+    in many_links.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_links.0.39968107>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_links.1.39968107>,[]])
+    in erlang.erl line 2329
+   4: P.1: exits normally
+   5: P.2: exits normally
+   6: P: true = erlang:link(P.1)
+    in many_links.erl line 12
+   7: P: true = erlang:link(P.2)
+    in many_links.erl line 13
+################################################################################
+Erroneous interleaving 6:
 * Blocked at a 'receive' (when all other processes have exited):
     P in many_links.erl line 14
 --------------------------------------------------------------------------------
@@ -91,11 +142,20 @@ Interleaving info:
    4: P.1: exits normally
    5: P: true = erlang:link(P.1)
     in many_links.erl line 12
-   6: Message ({'EXIT',P.1,noproc}) from P reaches P
-   7: P.2: exits normally
-   8: P: true = erlang:link(P.2)
+   6: P: true = erlang:link(P.2)
     in many_links.erl line 13
-   9: Message ({'EXIT',P.2,noproc}) from P reaches P
+   7: P.2: exits normally
+   8: P.2: true = erlang:exit(P, normal)
+    (while exiting)
+   9: Exit signal (normal) from P.2 reaches P
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumented: many_links
+Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
+Instrumented: erlang
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 4 errors, 4/4 interleavings explored
+  Summary: 6 errors, 6/6 interleavings explored

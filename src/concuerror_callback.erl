@@ -992,7 +992,7 @@ deliver_message(Event, MessageEvent, Timeout, Instant) ->
                recipient = From},
           SystemSpecials =
             [{message_delivered, MessageEvent},
-             {message_received, Id, fun(_) -> true end},
+             {message_received, Id},
              {system_communication, System},
              {message, SystemReply}],
           NewEvent = Event#event{special = Special ++ SystemSpecials},
@@ -1088,7 +1088,7 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   {Special, CreateMessage} =
     case MessageOrAfter of
       #message{data = Data, id = Id} ->
-        {[{message_received, Id, PatternFun}], {ok, Data}};
+        {[{message_received, Id}], {ok, Data}};
       'after' -> {[], false}
     end,
   Notification =
