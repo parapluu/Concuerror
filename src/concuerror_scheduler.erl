@@ -53,6 +53,7 @@
           print_depth              :: pos_integer(),
           processes                :: processes(),
           scheduling = oldest      :: scheduling(),
+          show_races = true        :: boolean(),
           strict_scheduling = false :: boolean(),
           system            = []   :: [pid()],
           timeout                  :: timeout(),
@@ -98,6 +99,7 @@ run(Options) ->
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
+       show_races = ?opt(show_races, Options),
        strict_scheduling = ?opt(strict_scheduling, Options),
        system = System,
        trace = [InitialTrace],
@@ -740,7 +742,18 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
     case Action of
       none -> {[TraceState|NewOldTrace], Clock};
       {update_clock, C} -> {[TraceState|NewOldTrace], C};
-      {update, S, C} -> {S, C}
+      {update, S, C} ->
+        if State#scheduler_state.show_races ->
+            ?unique(
+               Logger, ?linfo,
+               "You can disable race pair messages with --show_races false~n",
+               []),
+            ?log(
+               Logger, ?lrace, "* ~s~n   is in race with~n  ~s~n",
+               [?pretty_r(EarlyEvent),?pretty_r(Event)]);
+           true -> ok
+        end,
+        {S, C}
     end,
   more_interleavings_for_event(Rest, Event, Later, NewClock, State, NewTrace).
 

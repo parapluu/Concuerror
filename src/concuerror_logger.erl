@@ -17,7 +17,7 @@
           print_depth                  :: pos_integer(),
           streams = []                 :: [{stream(), [string()]}],
           timestamp = erlang:now()     :: erlang:timestamp(),
-          ticker = none                :: pid() | 'none',
+          ticker = none                :: pid() | 'none' | 'show',
           traces_explored = 0          :: non_neg_integer(),
           traces_ssb = 0               :: non_neg_integer(),
           traces_total = 0             :: non_neg_integer(),
@@ -121,7 +121,7 @@ time(Logger, Tag) ->
 loop_entry(State) ->
   #logger_state{output_name = OutputName, verbosity = Verbosity} = State,
   Ticker =
-    case Verbosity < ?lprogress of
+    case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ldebug) of
       true -> none;
       false ->
         Timestamp = format_utc_timestamp(),
@@ -171,7 +171,7 @@ loop(Message, State) ->
               false -> diagnostic(State, Format, Data)
             end,
             NLM =
-              case Level =< ?linfo of
+              case Level < ?ltiming of
                 true  -> orddict:append(Level, {Format,Data}, LogMsgs);
                 false -> LogMsgs
               end,
@@ -201,11 +201,9 @@ loop(Message, State) ->
       io:format(Output, Format, [Status]),
       io:format(Output, "~s", [IntMsg]),
       ok = file:close(Output),
-      case Verbosity < ?lprogress of
+      case Verbosity =:= ?lquiet of
         true -> ok;
-        false ->
-          ForcePrintState = State#logger_state{verbosity = ?lprogress},
-          diagnostic(ForcePrintState, Format, [Status])
+        false -> diagnostic(State#logger_state{ticker = show}, Format, [Status])
       end,
       Scheduler ! closed,
       ok;
@@ -266,17 +264,14 @@ format_utc_timestamp() ->
 diagnostic(State, Format) ->
   diagnostic(State, Format, []).
 
-diagnostic(State, Format, Data) ->
-  #logger_state{verbosity = Verbosity} = State,
-  case Verbosity =/= ?lprogress of
-    true ->
-      inner_diagnostic(Format, Data);
-    false ->
-      IntMsg = interleavings_message(State),
-      clear_progress(),
-      inner_diagnostic(Format, Data),
-      inner_diagnostic("~s", [IntMsg])
-  end.
+diagnostic(#logger_state{ticker = Ticker} = State, Format, Data)
+  when Ticker =/= none ->
+  IntMsg = interleavings_message(State),
+  clear_progress(),
+  inner_diagnostic(Format, Data),
+  inner_diagnostic("~s", [IntMsg]);
+diagnostic(_, Format, Data) ->
+  inner_diagnostic(Format, Data).
 
 print_log_msgs(Output, LogMsgs) ->
   ForeachInner = fun({Format, Data}) -> io:format(Output,Format,Data) end,
@@ -287,6 +282,7 @@ print_log_msgs(Output, LogMsgs) ->
             ?lerror   -> "Errors";
             ?lwarning -> "Warnings";
             ?ltip     -> "Tips";
+            ?lrace    -> "Race Pairs (turn off with: --show_races false)";
             ?linfo    -> "Info"
           end,
         io:format(Output, "Concuerror ~s:~n", [Header]),

@@ -6,7 +6,7 @@
 
 -include("concuerror.hrl").
 
--define(DEFAULT_VERBOSITY, ?lprogress).
+-define(DEFAULT_VERBOSITY, ?linfo).
 -define(DEFAULT_PRINT_DEPTH, 20).
 
 -spec parse_cl([string()]) -> options().
@@ -95,6 +95,9 @@ options() ->
     "Setting this to false enables a more lightweight DPOR algorithm. Use this"
     " if the rate of exploration is too slow. Don't use it if a lot of"
     " interleavings are reported as sleep-set blocked."}
+  ,{show_races, undefined, {boolean, true},
+    "Determines whether pairs of racing instructions will be included in the"
+    " logs."}
   ,{after_timeout, $a, {integer, infinity},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}
