@@ -30,6 +30,7 @@
           delay_bound = infinity   :: bound(),
           done        = []         :: [event()],
           index       = 1          :: index(),
+          graph_ref   = make_ref() :: reference(),
           sleeping    = []         :: [event()],
           wakeup_tree = []         :: event_tree()
          }).
@@ -342,7 +343,7 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 update_state(#event{special = Special} = Event, State) ->
   #scheduler_state{
      delay  = Delay,
-     logger = _Logger,
+     logger = Logger,
      trace  = [Last|Prev]
     } = State,
   #trace_state{
@@ -350,10 +351,12 @@ update_state(#event{special = Special} = Event, State) ->
      delay_bound = DelayBound,
      done        = Done,
      index       = Index,
+     graph_ref   = Ref,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
-  ?trace(_Logger, "~s~n", [?pretty_s(Index, Event)]),
+  ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
+  concuerror_logger:graph_new_node(Logger, Ref, Index, Event),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
   NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =
@@ -907,8 +910,11 @@ has_more_to_explore(State) ->
 find_prefix([], _State) -> [];
 find_prefix([#trace_state{wakeup_tree = []}|Rest], State) ->
   find_prefix(Rest, State);
-find_prefix([#trace_state{} = Other|Rest], _State) ->
-  [Other#trace_state{clock_map = dict:new()}|Rest].
+find_prefix([#trace_state{graph_ref = Sibling} = Other|Rest], State) ->
+  #scheduler_state{logger = Logger} = State,
+  [#trace_state{graph_ref = Parent}|_] = Rest,
+  concuerror_logger:graph_set_node(Logger, Parent, Sibling),
+  [Other#trace_state{graph_ref = make_ref(), clock_map = dict:new()}|Rest].
 
 
 %% =============================================================================
