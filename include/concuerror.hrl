@@ -70,15 +70,12 @@
 -define(log(Logger, Level, Format, Data),
         ?log(Logger, Level, ?nonunique, Format, Data)).
 
--define(ml_log(Logger, Level, Format, Data),
-        ?log(Logger, Level, "~p:~p " ++ Format, [?MODULE, ?LINE|Data])).
-
 -define(error(Logger, Format, Data),
         ?log(Logger, ?lerror, Format, Data)).
 
 -ifdef(DEV).
 -define(debug(Logger, Format, Data),
-        ?ml_log(Logger, ?ldebug, Format, Data)).
+        ?log(Logger, ?ldebug, Format, Data)).
 -define(trace(Logger, Format, Data),
         ?log(Logger, ?ltrace, Format, Data)).
 -define(MAX_VERBOSITY, ?ltrace).

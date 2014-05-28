@@ -320,7 +320,7 @@ get_next_event(_Event, [], State) ->
         case concuerror_callback:collect_deadlock_info(Actors) of
           [] -> Warnings;
           Info ->
-            ?debug(Logger, "Deadlock: ~p~n~n", [[P || {P,_} <- Info]]),
+            ?debug(Logger, "Deadlock: ~p~n", [[P || {P,_} <- Info]]),
             [{deadlock, Info}|Warnings]
         end
     end,
@@ -680,7 +680,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
             message_clock(Id, MessageInfo, ActorClock);
           false -> ActorClock
         end,
-      ?trace(_Logger, "~s~n", [?pretty_s(_Index, Event)]),
+      ?debug(_Logger, "~s~n", [?pretty_s(_Index, Event)]),
       BaseNewOldTrace =
         more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, State),
       NewOldTrace = [TraceState|BaseNewOldTrace],
@@ -713,7 +713,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
             NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             {update_clock, NC};
           true ->
-            ?trace(Logger, "   races with ~s~n",
+            ?debug(Logger, "   races with ~s~n",
                    [?pretty_s(EarlyIndex, EarlyEvent)]),
             NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             case
@@ -733,7 +733,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
       {update, S, C} ->
         if State#scheduler_state.show_races ->
             ?unique(
-               Logger, ?linfo,
+               Logger, ?lrace,
                "You can disable race pair messages with --show_races false~n",
                []),
             ?log(
@@ -757,7 +757,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   NotDep = not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event),
   case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep, Optimal) of
     skip ->
-      ?trace(Logger, "     SKIP~n",[]),
+      ?debug(Logger, "     SKIP~n",[]),
       skip;
     NewWakeupTree ->
       case
@@ -772,7 +772,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
           Message =
             "Some interleavings were not considered due to delay bounding.~n",
           ?unique(Logger, ?linfo, Message, []),
-          ?trace(Logger, "     OVER BOUND~n",[]),
+          ?debug(Logger, "     OVER BOUND~n",[]),
           skip
       end
   end.
@@ -799,7 +799,7 @@ not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
 
 
 trace_plan(_Logger, _Index, _NotDep) ->
-  ?trace(
+  ?debug(
      _Logger, "     PLAN~n~s",
      begin
        Indices = lists:seq(_Index, _Index + length(_NotDep) - 1),
