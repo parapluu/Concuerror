@@ -651,6 +651,8 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
      timeout = Timeout} = Info,
   #event{event_info = EventInfo} = Event,
   Parent = self(),
+  ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
+  ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
   {Result, NewInfo} =
     case EventInfo of
       %% Replaying...
@@ -659,8 +661,6 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
       undefined ->
         PassedInfo = reset_concuerror_info(Info),
         ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
-        ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
-        ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
         ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, ChildId]),
         P = new_process(PassedInfo),
         true = ets:insert(Processes, ?new_process(P, ChildSymbol)),
