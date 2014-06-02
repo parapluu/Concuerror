@@ -30,6 +30,7 @@
           delay_bound = infinity   :: bound(),
           done        = []         :: [event()],
           index       = 1          :: index(),
+          graph_ref   = make_ref() :: reference(),
           sleeping    = []         :: [event()],
           wakeup_tree = []         :: event_tree()
          }).
@@ -319,7 +320,7 @@ get_next_event(_Event, [], State) ->
         case concuerror_callback:collect_deadlock_info(Actors) of
           [] -> Warnings;
           Info ->
-            ?debug(Logger, "Deadlock: ~p~n~n", [[P || {P,_} <- Info]]),
+            ?debug(Logger, "Deadlock: ~p~n", [[P || {P,_} <- Info]]),
             [{deadlock, Info}|Warnings]
         end
     end,
@@ -328,7 +329,7 @@ get_next_event(_Event, [], State) ->
 reset_event(#event{actor = Actor, event_info = EventInfo}) ->
   ResetEventInfo =
     case ?is_channel(Actor) of
-      true -> EventInfo#message_event{patterns = none};
+      true -> EventInfo;
       false -> undefined
     end,
   #event{
@@ -342,7 +343,7 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 update_state(#event{special = Special} = Event, State) ->
   #scheduler_state{
      delay  = Delay,
-     logger = _Logger,
+     logger = Logger,
      trace  = [Last|Prev]
     } = State,
   #trace_state{
@@ -350,10 +351,12 @@ update_state(#event{special = Special} = Event, State) ->
      delay_bound = DelayBound,
      done        = Done,
      index       = Index,
+     graph_ref   = Ref,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
-  ?trace(_Logger, "~s~n", [?pretty_s(Index, Event)]),
+  ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
+  concuerror_logger:graph_new_node(Logger, Ref, Index, Event),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
   NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =
@@ -441,11 +444,7 @@ update_special(Special, State) ->
         add_message(Message, Actors, MessageInfo);
       {message_delivered, MessageEvent} ->
         remove_message(MessageEvent, Actors);
-      {message_received, Message, PatternFun} ->
-        [#trace_state{done = [#event{actor = P}|_], index = Index}|_] = Trace,
-        Update =
-          [{?message_pattern, PatternFun}, {?message_received, {P,Index}}],
-        true = ets:update_element(MessageInfo, Message, Update),
+      {message_received, _Message} ->
         Actors;
       {new, SpawnedPid} ->
         Actors ++ [SpawnedPid];
@@ -547,20 +546,13 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   HappenedBeforeClock =
     update_clock(RevLate++RevEarly, Event, BaseHappenedBeforeClock, State),
   maybe_mark_sent_message(Special, HappenedBeforeClock, MessageInfo),
-  UpdatedEvent =
-    case proplists:lookup(message_delivered, Special) of
-      none -> Event;
-      {message_delivered, MessageEvent} ->
-        #message_event{message = #message{id = Id}} = MessageEvent,
-        Delivery = {?message_delivered, HappenedBeforeClock},
-        ets:update_element(MessageInfo, Id, Delivery),
-        UpdatedMessageEvent =
-          {message_delivered,
-           MessageEvent#message_event{patterns = {ref, MessageInfo}}},
-        UpdatedSpecial =
-          lists:keyreplace(message_delivered, 1, Special, UpdatedMessageEvent),
-        Event#event{special = UpdatedSpecial}
-    end,
+  case proplists:lookup(message_delivered, Special) of
+    none -> true;
+    {message_delivered, MessageEvent} ->
+      #message_event{message = #message{id = Id}} = MessageEvent,
+      Delivery = {?message_delivered, HappenedBeforeClock},
+      ets:update_element(MessageInfo, Id, Delivery)
+  end,
   BaseNewClockMap = dict:store(Actor, HappenedBeforeClock, ClockMap),
   NewClockMap =
     case proplists:lookup(new, Special) of
@@ -579,7 +571,7 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   NewTraceState =
     TraceState#trace_state{
       clock_map = FinalClockMap,
-      done = [UpdatedEvent|RestEvents]},
+      done = [Event|RestEvents]},
   assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State).
 
 get_base_clock(RevLate, RevEarly) ->
@@ -601,7 +593,7 @@ add_pre_message_clocks([], _, Clock) -> Clock;
 add_pre_message_clocks([Special|Specials], MessageInfo, Clock) ->
   NewClock =
     case Special of
-      {message_received, Id, _} ->
+      {message_received, Id} ->
         case ets:lookup_element(MessageInfo, Id, ?message_delivered) of
           undefined -> Clock;
           RMessageClock -> max_cv(Clock, RMessageClock)
@@ -688,7 +680,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
             message_clock(Id, MessageInfo, ActorClock);
           false -> ActorClock
         end,
-      ?trace(_Logger, "~s~n", [?pretty_s(_Index, Event)]),
+      ?debug(_Logger, "~s~n", [?pretty_s(_Index, Event)]),
       BaseNewOldTrace =
         more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, State),
       NewOldTrace = [TraceState|BaseNewOldTrace],
@@ -710,11 +702,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
     } = TraceState,
   EarlyClock = lookup_clock_value(EarlyActor, Clock),
   Action =
-    case
-      EarlyIndex > EarlyClock andalso
-      not ordered_receives(
-            EarlyEvent#event.event_info, Event#event.event_info, State)
-    of
+    case EarlyIndex > EarlyClock of
       false -> none;
       true ->
         Dependent =
@@ -725,7 +713,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
             NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             {update_clock, NC};
           true ->
-            ?trace(Logger, "   races with ~s~n",
+            ?debug(Logger, "   races with ~s~n",
                    [?pretty_s(EarlyIndex, EarlyEvent)]),
             NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             case
@@ -745,7 +733,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
       {update, S, C} ->
         if State#scheduler_state.show_races ->
             ?unique(
-               Logger, ?linfo,
+               Logger, ?lrace,
                "You can disable race pair messages with --show_races false~n",
                []),
             ?log(
@@ -756,17 +744,6 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
         {S, C}
     end,
   more_interleavings_for_event(Rest, Event, Later, NewClock, State, NewTrace).
-
-ordered_receives(#message_event{message = #message{id = EarlyId}},
-                 #message_event{message = #message{id = LateId}},
-                 #scheduler_state{message_info = MessageInfo}) ->
-  case [ets:lookup_element(MessageInfo, Id, ?message_received) ||
-         Id <- [EarlyId, LateId]] of
-    [{P, Early}, {P, Late}] when Late < Early -> true;
-    _ -> false
-  end;
-ordered_receives(_, _, _) ->
-  false.
 
 update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{logger = Logger, optimal = Optimal} = State,
@@ -780,7 +757,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   NotDep = not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event),
   case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep, Optimal) of
     skip ->
-      ?trace(Logger, "     SKIP~n",[]),
+      ?debug(Logger, "     SKIP~n",[]),
       skip;
     NewWakeupTree ->
       case
@@ -795,7 +772,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
           Message =
             "Some interleavings were not considered due to delay bounding.~n",
           ?unique(Logger, ?linfo, Message, []),
-          ?trace(Logger, "     OVER BOUND~n",[]),
+          ?debug(Logger, "     OVER BOUND~n",[]),
           skip
       end
   end.
@@ -816,30 +793,13 @@ not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
   NewNotDep =
     case Index > ActorLaterClock of
       false -> NotDep;
-      true ->
-        UpdatedEvent = maybe_deref_message_delivery(LaterEvent),
-        [UpdatedEvent|NotDep]
+      true -> [LaterEvent|NotDep]
     end,
   not_dep(Rest, Actor, Index, Event, NewNotDep).
 
-maybe_deref_message_delivery(#event{special = Special} = Event) ->
-  case proplists:lookup(message_delivered, Special) of
-    none -> Event;
-    {message_delivered, MessageEvent} ->
-      #message_event{
-         message = #message{id = Id},
-         patterns = {ref, MessageInfo}
-        } = MessageEvent,
-      Patterns = ets:lookup_element(MessageInfo, Id, ?message_pattern),
-      UpdatedMessageEvent =
-        {message_delivered, MessageEvent#message_event{patterns = Patterns}},
-      UpdatedSpecial =
-        lists:keyreplace(message_delivered, 1, Special, UpdatedMessageEvent),
-      Event#event{special = UpdatedSpecial}
-  end.
 
 trace_plan(_Logger, _Index, _NotDep) ->
-  ?trace(
+  ?debug(
      _Logger, "     PLAN~n~s",
      begin
        Indices = lists:seq(_Index, _Index + length(_NotDep) - 1),
@@ -948,23 +908,14 @@ has_more_to_explore(State) ->
   end.
 
 find_prefix([], _State) -> [];
-find_prefix([#trace_state{done = Done, wakeup_tree = []}|Rest],
-            State) ->
-  lists:foreach(fun(E) -> reset_receive(E, State) end, Done),
+find_prefix([#trace_state{wakeup_tree = []}|Rest], State) ->
   find_prefix(Rest, State);
-find_prefix([#trace_state{} = Other|Rest], _State) ->
-  [Other#trace_state{clock_map = dict:new()}|Rest].
+find_prefix([#trace_state{graph_ref = Sibling} = Other|Rest], State) ->
+  #scheduler_state{logger = Logger} = State,
+  [#trace_state{graph_ref = Parent}|_] = Rest,
+  concuerror_logger:graph_set_node(Logger, Parent, Sibling),
+  [Other#trace_state{graph_ref = make_ref(), clock_map = dict:new()}|Rest].
 
-reset_receive(Last, State) ->
-  %% Reset receive info
-  case Last of
-    #message_event{message = #message{id = Id}} ->
-      #scheduler_state{logger = _Logger, message_info = MessageInfo} = State,
-      ?trace(_Logger, "Reset: ~p~n", [Id]),
-      Update = {?message_pattern, undefined},
-      true = ets:update_element(MessageInfo, Id, Update);
-    _Other -> true
-  end.
 
 %% =============================================================================
 %% ENGINE (manipulation of the Erlang processes under the scheduler)

@@ -98,6 +98,8 @@ options() ->
   ,{show_races, undefined, {boolean, true},
     "Determines whether pairs of racing instructions will be included in the"
     " logs."}
+  ,{graph, undefined, string,
+    "Graph file where Concuerror will store interleaving info using the DOT language."}
   ,{after_timeout, $a, {integer, infinity},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}
@@ -239,6 +241,11 @@ finalize([{Key, Value}|Rest], AccIn) ->
   case Key of
     delay_bound ->
       finalize(Rest, [{Key, Value},{optimal, false}|Acc]);
+    graph ->
+      case file:open(Value, [write]) of
+        {ok, IoDevice} -> finalize(Rest, [{Key, IoDevice}|Acc]);
+        {error, _} -> file_error(Key, Value)
+      end;
     module ->
       case proplists:get_value(test, Rest, 1) of
         Name when is_atom(Name) ->
@@ -248,10 +255,8 @@ finalize([{Key, Value}|Rest], AccIn) ->
       end;
     output ->
       case file:open(Value, [write]) of
-        {ok, IoDevice} ->
-          finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
-        {error, _} ->
-          opt_error("could not open file ~s for writing", [Value])
+        {ok, IoDevice} -> finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
+        {error, _} -> file_error(Key, Value)
       end;
     timeout ->
       case Value of
@@ -260,8 +265,9 @@ finalize([{Key, Value}|Rest], AccIn) ->
         N when is_integer(N), N >= ?MINIMUM_TIMEOUT ->
           finalize(Rest, [{Key, N}|Acc]);
         _Else ->
-          opt_error("--~s value must be -1 (infinity) or >= "
-                    ++ integer_to_list(?MINIMUM_TIMEOUT), [Key])
+          opt_error(
+            "--~s value must be -1 (infinity) or >= ~p",
+            [Key, ?MINIMUM_TIMEOUT])
       end;
     test ->
       case Rest =:= [] of
@@ -271,6 +277,11 @@ finalize([{Key, Value}|Rest], AccIn) ->
     _ ->
       finalize(Rest, [{Key, Value}|Acc])
   end.
+
+-spec file_error(atom(), term()) -> no_return().
+
+file_error(Key, Value) ->
+  opt_error("could not open --~p file ~s for writing", [Key, Value]).
 
 compile_and_load(Files, Modules) ->
   compile_and_load(Files, Modules, {[],[]}).

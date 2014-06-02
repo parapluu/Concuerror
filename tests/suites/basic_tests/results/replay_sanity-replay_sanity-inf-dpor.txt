@@ -1,13 +1,24 @@
 ################################################################################
 Concuerror started with options:
-  [{'after-timeout',infinite},
+  [{after_timeout,infinity},
    {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{replay_sanity,replay_sanity,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/replay_sanity.erl"]},
-   {normal_exit,[normal]},
-   {symbolic,true},
-   {target,{replay_sanity,replay_sanity,[]}},
-   {verbose,0},
-   {wait,2000}]
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -22,38 +33,38 @@ Interleaving info:
     in erlang.erl line 2329
    4: P: {ok,P} = P.1 ! {ok,P}
     in replay_sanity.erl line 16
-   5: Message ({ok,P}) from P reaches P.1
-   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.94199190>,[]])
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.94199190>,[]])
     in erlang.erl line 2329
-   7: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.94199190>,[]])
+   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.94199190>,[]])
     in erlang.erl line 2329
+   7: Message ({ok,P}) from P reaches P.1
    8: P.4: {p,P.2} = P.1 ! {p,P.2}
     in replay_sanity.erl line 17
-   9: Message ({p,P.2}) from P.4 reaches P.1
-  10: P.1: receives message ({p,P.2})
-    in replay_sanity.erl line 10
-  11: P.1: ok = P.2 ! ok
-    in replay_sanity.erl line 10
-  12: Message (ok) from P.1 reaches P.2
-  13: P.2: receives message (ok)
-    in replay_sanity.erl line 14
-  14: P.2: exits normally
-  15: P.4: exits normally
-  16: P.5: {p,P.3} = P.1 ! {p,P.3}
+   9: P.4: exits normally
+  10: Message ({p,P.2}) from P.4 reaches P.1
+  11: P.5: {p,P.3} = P.1 ! {p,P.3}
     in replay_sanity.erl line 18
-  17: Message ({p,P.3}) from P.5 reaches P.1
-  18: P.1: receives message ({p,P.3})
+  12: P.5: exits normally
+  13: Message ({p,P.3}) from P.5 reaches P.1
+  14: P.1: receives message ({p,P.2})
+    in replay_sanity.erl line 10
+  15: P.1: ok = P.2 ! ok
+    in replay_sanity.erl line 10
+  16: P.1: receives message ({p,P.3})
     in replay_sanity.erl line 11
-  19: P.1: ok = P.3 ! ok
+  17: P.1: ok = P.3 ! ok
     in replay_sanity.erl line 11
-  20: Message (ok) from P.1 reaches P.3
-  21: P.1: receives message ({ok,P})
+  18: P.1: receives message ({ok,P})
     in replay_sanity.erl line 12
-  22: P.1: exits normally
-  23: P.3: receives message (ok)
+  19: P.1: exits normally
+  20: Message (ok) from P.1 reaches P.2
+  21: Message (ok) from P.1 reaches P.3
+  22: P.2: receives message (ok)
+    in replay_sanity.erl line 14
+  23: P.2: exits normally
+  24: P.3: receives message (ok)
     in replay_sanity.erl line 15
-  24: P.3: exits normally
-  25: P.5: exits normally
+  25: P.3: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
@@ -68,11 +79,11 @@ Interleaving info:
     in erlang.erl line 2329
    4: P: {ok,P} = P.1 ! {ok,P}
     in replay_sanity.erl line 16
-   5: Message ({ok,P}) from P reaches P.1
-   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.94199190>,[]])
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.94199190>,[]])
     in erlang.erl line 2329
-   7: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.94199190>,[]])
+   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.94199190>,[]])
     in erlang.erl line 2329
+   7: Message ({ok,P}) from P reaches P.1
    8: P.4: {p,P.2} = P.1 ! {p,P.2}
     in replay_sanity.erl line 17
    9: P.4: exits normally
@@ -80,20 +91,66 @@ Interleaving info:
     in replay_sanity.erl line 18
   11: P.5: exits normally
   12: Message ({p,P.3}) from P.5 reaches P.1
-  13: Message ({p,P.2}) from P.4 reaches P.1
-  14: P.1: receives message ({p,P.3})
+  13: P.1: receives message ({p,P.3})
     in replay_sanity.erl line 10
-  15: P.1: ok = P.3 ! ok
+  14: P.1: ok = P.3 ! ok
     in replay_sanity.erl line 10
-  16: Message (ok) from P.1 reaches P.3
-  17: P.1: receives message ({p,P.2})
+  15: Message (ok) from P.1 reaches P.3
+  16: P.3: receives message (ok)
+    in replay_sanity.erl line 15
+  17: P.3: exits normally
+  18: Message ({p,P.2}) from P.4 reaches P.1
+  19: P.1: receives message ({p,P.2})
     in replay_sanity.erl line 11
-  18: P.1: ok = P.2 ! ok
+  20: P.1: ok = P.2 ! ok
     in replay_sanity.erl line 11
-  19: Message (ok) from P.1 reaches P.2
-  20: P.1: receives message ({ok,P})
+  21: P.1: receives message ({ok,P})
     in replay_sanity.erl line 12
-  21: P.1: exits normally
+  22: P.1: exits normally
+  23: Message (ok) from P.1 reaches P.2
+  24: P.2: receives message (ok)
+    in replay_sanity.erl line 14
+  25: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in replay_sanity.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.0.94199190>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.1.94199190>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.2.94199190>,[]])
+    in erlang.erl line 2329
+   4: P: {ok,P} = P.1 ! {ok,P}
+    in replay_sanity.erl line 16
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.94199190>,[]])
+    in erlang.erl line 2329
+   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.94199190>,[]])
+    in erlang.erl line 2329
+   7: P.4: {p,P.2} = P.1 ! {p,P.2}
+    in replay_sanity.erl line 17
+   8: P.4: exits normally
+   9: P.5: {p,P.3} = P.1 ! {p,P.3}
+    in replay_sanity.erl line 18
+  10: P.5: exits normally
+  11: Message ({p,P.2}) from P.4 reaches P.1
+  12: Message ({p,P.3}) from P.5 reaches P.1
+  13: Message ({ok,P}) from P reaches P.1
+  14: P.1: receives message ({p,P.2})
+    in replay_sanity.erl line 10
+  15: P.1: ok = P.2 ! ok
+    in replay_sanity.erl line 10
+  16: P.1: receives message ({p,P.3})
+    in replay_sanity.erl line 11
+  17: P.1: ok = P.3 ! ok
+    in replay_sanity.erl line 11
+  18: P.1: receives message ({ok,P})
+    in replay_sanity.erl line 12
+  19: P.1: exits normally
+  20: Message (ok) from P.1 reaches P.2
+  21: Message (ok) from P.1 reaches P.3
   22: P.2: receives message (ok)
     in replay_sanity.erl line 14
   23: P.2: exits normally
@@ -101,5 +158,151 @@ Interleaving info:
     in replay_sanity.erl line 15
   25: P.3: exits normally
 ################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in replay_sanity.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.0.94199190>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.1.94199190>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.2.94199190>,[]])
+    in erlang.erl line 2329
+   4: P: {ok,P} = P.1 ! {ok,P}
+    in replay_sanity.erl line 16
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.94199190>,[]])
+    in erlang.erl line 2329
+   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.94199190>,[]])
+    in erlang.erl line 2329
+   7: P.4: {p,P.2} = P.1 ! {p,P.2}
+    in replay_sanity.erl line 17
+   8: P.4: exits normally
+   9: P.5: {p,P.3} = P.1 ! {p,P.3}
+    in replay_sanity.erl line 18
+  10: P.5: exits normally
+  11: Message ({p,P.2}) from P.4 reaches P.1
+  12: P.1: receives message ({p,P.2})
+    in replay_sanity.erl line 10
+  13: P.1: ok = P.2 ! ok
+    in replay_sanity.erl line 10
+  14: Message (ok) from P.1 reaches P.2
+  15: P.2: receives message (ok)
+    in replay_sanity.erl line 14
+  16: P.2: exits normally
+  17: Message ({ok,P}) from P reaches P.1
+  18: Message ({p,P.3}) from P.5 reaches P.1
+  19: P.1: receives message ({p,P.3})
+    in replay_sanity.erl line 11
+  20: P.1: ok = P.3 ! ok
+    in replay_sanity.erl line 11
+  21: P.1: receives message ({ok,P})
+    in replay_sanity.erl line 12
+  22: P.1: exits normally
+  23: Message (ok) from P.1 reaches P.3
+  24: P.3: receives message (ok)
+    in replay_sanity.erl line 15
+  25: P.3: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in replay_sanity.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.0.94199190>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.1.94199190>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.2.94199190>,[]])
+    in erlang.erl line 2329
+   4: P: {ok,P} = P.1 ! {ok,P}
+    in replay_sanity.erl line 16
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.94199190>,[]])
+    in erlang.erl line 2329
+   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.94199190>,[]])
+    in erlang.erl line 2329
+   7: P.4: {p,P.2} = P.1 ! {p,P.2}
+    in replay_sanity.erl line 17
+   8: P.4: exits normally
+   9: P.5: {p,P.3} = P.1 ! {p,P.3}
+    in replay_sanity.erl line 18
+  10: P.5: exits normally
+  11: Message ({p,P.3}) from P.5 reaches P.1
+  12: Message ({ok,P}) from P reaches P.1
+  13: P.1: receives message ({p,P.3})
+    in replay_sanity.erl line 10
+  14: P.1: ok = P.3 ! ok
+    in replay_sanity.erl line 10
+  15: Message (ok) from P.1 reaches P.3
+  16: P.3: receives message (ok)
+    in replay_sanity.erl line 15
+  17: P.3: exits normally
+  18: Message ({p,P.2}) from P.4 reaches P.1
+  19: P.1: receives message ({p,P.2})
+    in replay_sanity.erl line 11
+  20: P.1: ok = P.2 ! ok
+    in replay_sanity.erl line 11
+  21: P.1: receives message ({ok,P})
+    in replay_sanity.erl line 12
+  22: P.1: exits normally
+  23: Message (ok) from P.1 reaches P.2
+  24: P.2: receives message (ok)
+    in replay_sanity.erl line 14
+  25: P.2: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in replay_sanity.erl line 19
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.0.94199190>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.1.94199190>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.2.94199190>,[]])
+    in erlang.erl line 2329
+   4: P: {ok,P} = P.1 ! {ok,P}
+    in replay_sanity.erl line 16
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.3.94199190>,[]])
+    in erlang.erl line 2329
+   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<replay_sanity.4.94199190>,[]])
+    in erlang.erl line 2329
+   7: P.4: {p,P.2} = P.1 ! {p,P.2}
+    in replay_sanity.erl line 17
+   8: P.4: exits normally
+   9: P.5: {p,P.3} = P.1 ! {p,P.3}
+    in replay_sanity.erl line 18
+  10: P.5: exits normally
+  11: Message ({p,P.3}) from P.5 reaches P.1
+  12: P.1: receives message ({p,P.3})
+    in replay_sanity.erl line 10
+  13: P.1: ok = P.3 ! ok
+    in replay_sanity.erl line 10
+  14: Message (ok) from P.1 reaches P.3
+  15: P.3: receives message (ok)
+    in replay_sanity.erl line 15
+  16: P.3: exits normally
+  17: Message ({p,P.2}) from P.4 reaches P.1
+  18: Message ({ok,P}) from P reaches P.1
+  19: P.1: receives message ({p,P.2})
+    in replay_sanity.erl line 11
+  20: P.1: ok = P.2 ! ok
+    in replay_sanity.erl line 11
+  21: P.1: receives message ({ok,P})
+    in replay_sanity.erl line 12
+  22: P.1: exits normally
+  23: Message (ok) from P.1 reaches P.2
+  24: P.2: receives message (ok)
+    in replay_sanity.erl line 14
+  25: P.2: exits normally
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumented: replay_sanity
+Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
+Instrumented: erlang
+################################################################################
 Done! (Exit status: completed)
-  Summary: 2 errors, 2/2 interleavings explored
+  Summary: 6 errors, 6/6 interleavings explored

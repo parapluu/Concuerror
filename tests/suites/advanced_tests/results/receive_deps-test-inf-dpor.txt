@@ -1,0 +1,2145 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{receive_deps,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"]},
+   {ignore_error,[deadlock]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 24 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,insert,
+                    [table,{k,2}],
+                    [21,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]}
+    Stacktrace:
+      [{ets,insert,
+            [table,{k,2}],
+            [21,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: Message (2) from P.2 reaches P
+  12: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (1)
+    in receive_deps.erl line 29
+  15: P: receives message (2)
+    in receive_deps.erl line 31
+  16: P: receives message (3)
+    in receive_deps.erl line 33
+  17: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  18: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  19: P.3: exits normally
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P: true = ets:delete(table)
+    (while exiting)
+  23: P.2: Exception badarg raised by: ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  24: P.2: exits abnormally ({badarg,[{ets,insert,[table,{k,2}],[21,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+################################################################################
+Erroneous interleaving 2:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: Message (2) from P.2 reaches P
+  12: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (1)
+    in receive_deps.erl line 29
+  15: P: receives message (2)
+    in receive_deps.erl line 31
+  16: P: receives message (3)
+    in receive_deps.erl line 33
+  17: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  18: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  19: P.3: exits normally
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  23: P.2: exits normally
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 3:
+* At step 23 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: Message (2) from P.2 reaches P
+  12: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (1)
+    in receive_deps.erl line 29
+  15: P: receives message (2)
+    in receive_deps.erl line 31
+  16: P: receives message (3)
+    in receive_deps.erl line 33
+  17: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  18: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  19: P.2: exits normally
+  20: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  21: P.3: exits normally
+  22: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  23: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 4:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 24 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,insert,
+                    [table,{k,2}],
+                    [21,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]}
+    Stacktrace:
+      [{ets,insert,
+            [table,{k,2}],
+            [21,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  12: P: receives message (1)
+    in receive_deps.erl line 29
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (3)
+    in receive_deps.erl line 31
+  15: Message (2) from P.2 reaches P
+  16: P: receives message (2)
+    in receive_deps.erl line 33
+  17: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  18: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  19: P.3: exits normally
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P: true = ets:delete(table)
+    (while exiting)
+  23: P.2: Exception badarg raised by: ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  24: P.2: exits abnormally ({badarg,[{ets,insert,[table,{k,2}],[21,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+################################################################################
+Erroneous interleaving 5:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  12: P: receives message (1)
+    in receive_deps.erl line 29
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (3)
+    in receive_deps.erl line 31
+  15: Message (2) from P.2 reaches P
+  16: P: receives message (2)
+    in receive_deps.erl line 33
+  17: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  18: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  19: P.3: exits normally
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  23: P.2: exits normally
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 6:
+* At step 23 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  12: P: receives message (1)
+    in receive_deps.erl line 29
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (3)
+    in receive_deps.erl line 31
+  15: Message (2) from P.2 reaches P
+  16: P: receives message (2)
+    in receive_deps.erl line 33
+  17: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  18: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  19: P.2: exits normally
+  20: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  21: P.3: exits normally
+  22: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  23: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 7:
+* At step 20 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 23 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,lookup,
+                    [table,k],
+                    [20,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+               {receive_deps,'-test/0-fun-0-',2,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                              {line,20}]}]}
+    Stacktrace:
+      [{ets,lookup,
+            [table,k],
+            [20,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+       {receive_deps,'-test/0-fun-0-',2,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,20}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: Message (2) from P.2 reaches P
+  11: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  12: Message (3) from P.3 reaches P
+  13: P: receives message (1)
+    in receive_deps.erl line 29
+  14: P: receives message (2)
+    in receive_deps.erl line 31
+  15: P: receives message (3)
+    in receive_deps.erl line 33
+  16: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  17: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  18: P.3: exits normally
+  19: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  20: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  21: P: true = ets:delete(table)
+    (while exiting)
+  22: P.2: Exception badarg raised by: ets:lookup(table, k)
+    in receive_deps.erl line 20
+  23: P.2: exits abnormally ({badarg,[{ets,lookup,[table,k],[20,{file,[47,104,111,109,101,47,115,116|...]}]},{receive_deps,'-test/0-fun-0-',2,[{file,[47,104,111,109,101,47,115,116|...]},{line,20}]}]})
+################################################################################
+Erroneous interleaving 8:
+* At step 20 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: Message (2) from P.2 reaches P
+  11: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  12: Message (3) from P.3 reaches P
+  13: P: receives message (1)
+    in receive_deps.erl line 29
+  14: P: receives message (2)
+    in receive_deps.erl line 31
+  15: P: receives message (3)
+    in receive_deps.erl line 33
+  16: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  17: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  18: P.3: exits normally
+  19: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  20: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  21: P.2: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  22: P.2: exits normally
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 9:
+* At step 20 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 23 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,lookup,
+                    [table,k],
+                    [20,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+               {receive_deps,'-test/0-fun-0-',2,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                              {line,20}]}]}
+    Stacktrace:
+      [{ets,lookup,
+            [table,k],
+            [20,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+       {receive_deps,'-test/0-fun-0-',2,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,20}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P: receives message (1)
+    in receive_deps.erl line 29
+  12: Message (3) from P.3 reaches P
+  13: P: receives message (3)
+    in receive_deps.erl line 31
+  14: Message (2) from P.2 reaches P
+  15: P: receives message (2)
+    in receive_deps.erl line 33
+  16: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  17: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  18: P.3: exits normally
+  19: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  20: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  21: P: true = ets:delete(table)
+    (while exiting)
+  22: P.2: Exception badarg raised by: ets:lookup(table, k)
+    in receive_deps.erl line 20
+  23: P.2: exits abnormally ({badarg,[{ets,lookup,[table,k],[20,{file,[47,104,111,109,101,47,115,116|...]}]},{receive_deps,'-test/0-fun-0-',2,[{file,[47,104,111,109,101,47,115,116|...]},{line,20}]}]})
+################################################################################
+Erroneous interleaving 10:
+* At step 20 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: Message (1) from P.1 reaches P
+   9: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P: receives message (1)
+    in receive_deps.erl line 29
+  12: Message (3) from P.3 reaches P
+  13: P: receives message (3)
+    in receive_deps.erl line 31
+  14: Message (2) from P.2 reaches P
+  15: P: receives message (2)
+    in receive_deps.erl line 33
+  16: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  17: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  18: P.3: exits normally
+  19: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  20: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  21: P.2: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  22: P.2: exits normally
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 11:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 24 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,insert,
+                    [table,{k,2}],
+                    [21,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]}
+    Stacktrace:
+      [{ets,insert,
+            [table,{k,2}],
+            [21,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  13: P.3: exits normally
+  14: Message (2) from P.2 reaches P
+  15: Message (3) from P.3 reaches P
+  16: P: receives message (2)
+    in receive_deps.erl line 29
+  17: P: receives message (3)
+    in receive_deps.erl line 31
+  18: Message (1) from P.1 reaches P
+  19: P: receives message (1)
+    in receive_deps.erl line 33
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P: true = ets:delete(table)
+    (while exiting)
+  23: P.2: Exception badarg raised by: ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  24: P.2: exits abnormally ({badarg,[{ets,insert,[table,{k,2}],[21,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+################################################################################
+Erroneous interleaving 12:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  13: P.3: exits normally
+  14: Message (2) from P.2 reaches P
+  15: Message (3) from P.3 reaches P
+  16: P: receives message (2)
+    in receive_deps.erl line 29
+  17: P: receives message (3)
+    in receive_deps.erl line 31
+  18: Message (1) from P.1 reaches P
+  19: P: receives message (1)
+    in receive_deps.erl line 33
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  23: P.2: exits normally
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 13:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 24 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,insert,
+                    [table,{k,2}],
+                    [21,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]}
+    Stacktrace:
+      [{ets,insert,
+            [table,{k,2}],
+            [21,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  13: P.3: exits normally
+  14: Message (2) from P.2 reaches P
+  15: P: receives message (2)
+    in receive_deps.erl line 29
+  16: Message (1) from P.1 reaches P
+  17: P: receives message (1)
+    in receive_deps.erl line 31
+  18: Message (3) from P.3 reaches P
+  19: P: receives message (3)
+    in receive_deps.erl line 33
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P: true = ets:delete(table)
+    (while exiting)
+  23: P.2: Exception badarg raised by: ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  24: P.2: exits abnormally ({badarg,[{ets,insert,[table,{k,2}],[21,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+################################################################################
+Erroneous interleaving 14:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  13: P.3: exits normally
+  14: Message (2) from P.2 reaches P
+  15: P: receives message (2)
+    in receive_deps.erl line 29
+  16: Message (1) from P.1 reaches P
+  17: P: receives message (1)
+    in receive_deps.erl line 31
+  18: Message (3) from P.3 reaches P
+  19: P: receives message (3)
+    in receive_deps.erl line 33
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  23: P.2: exits normally
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 15:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 24 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,insert,
+                    [table,{k,2}],
+                    [21,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]}
+    Stacktrace:
+      [{ets,insert,
+            [table,{k,2}],
+            [21,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  13: P.3: exits normally
+  14: Message (3) from P.3 reaches P
+  15: P: receives message (3)
+    in receive_deps.erl line 29
+  16: Message (1) from P.1 reaches P
+  17: P: receives message (1)
+    in receive_deps.erl line 31
+  18: Message (2) from P.2 reaches P
+  19: P: receives message (2)
+    in receive_deps.erl line 33
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P: true = ets:delete(table)
+    (while exiting)
+  23: P.2: Exception badarg raised by: ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  24: P.2: exits abnormally ({badarg,[{ets,insert,[table,{k,2}],[21,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+################################################################################
+Erroneous interleaving 16:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  13: P.3: exits normally
+  14: Message (3) from P.3 reaches P
+  15: P: receives message (3)
+    in receive_deps.erl line 29
+  16: Message (1) from P.1 reaches P
+  17: P: receives message (1)
+    in receive_deps.erl line 31
+  18: Message (2) from P.2 reaches P
+  19: P: receives message (2)
+    in receive_deps.erl line 33
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  23: P.2: exits normally
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 17:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 24 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,insert,
+                    [table,{k,2}],
+                    [21,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]}
+    Stacktrace:
+      [{ets,insert,
+            [table,{k,2}],
+            [21,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  13: P.3: exits normally
+  14: Message (3) from P.3 reaches P
+  15: P: receives message (3)
+    in receive_deps.erl line 29
+  16: Message (2) from P.2 reaches P
+  17: P: receives message (2)
+    in receive_deps.erl line 31
+  18: Message (1) from P.1 reaches P
+  19: P: receives message (1)
+    in receive_deps.erl line 33
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P: true = ets:delete(table)
+    (while exiting)
+  23: P.2: Exception badarg raised by: ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  24: P.2: exits abnormally ({badarg,[{ets,insert,[table,{k,2}],[21,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+################################################################################
+Erroneous interleaving 18:
+* At step 21 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  13: P.3: exits normally
+  14: Message (3) from P.3 reaches P
+  15: P: receives message (3)
+    in receive_deps.erl line 29
+  16: Message (2) from P.2 reaches P
+  17: P: receives message (2)
+    in receive_deps.erl line 31
+  18: Message (1) from P.1 reaches P
+  19: P: receives message (1)
+    in receive_deps.erl line 33
+  20: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  21: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  22: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  23: P.2: exits normally
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 19:
+* At step 23 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  13: P.2: exits normally
+  14: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  15: P.3: exits normally
+  16: Message (2) from P.2 reaches P
+  17: Message (3) from P.3 reaches P
+  18: P: receives message (2)
+    in receive_deps.erl line 29
+  19: P: receives message (3)
+    in receive_deps.erl line 31
+  20: Message (1) from P.1 reaches P
+  21: P: receives message (1)
+    in receive_deps.erl line 33
+  22: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  23: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 20:
+* At step 23 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  13: P.2: exits normally
+  14: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  15: P.3: exits normally
+  16: Message (2) from P.2 reaches P
+  17: P: receives message (2)
+    in receive_deps.erl line 29
+  18: Message (1) from P.1 reaches P
+  19: P: receives message (1)
+    in receive_deps.erl line 31
+  20: Message (3) from P.3 reaches P
+  21: P: receives message (3)
+    in receive_deps.erl line 33
+  22: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  23: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 21:
+* At step 23 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  13: P.2: exits normally
+  14: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  15: P.3: exits normally
+  16: Message (3) from P.3 reaches P
+  17: P: receives message (3)
+    in receive_deps.erl line 29
+  18: Message (1) from P.1 reaches P
+  19: P: receives message (1)
+    in receive_deps.erl line 31
+  20: Message (2) from P.2 reaches P
+  21: P: receives message (2)
+    in receive_deps.erl line 33
+  22: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  23: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 22:
+* At step 23 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.2: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  10: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  11: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  12: P.2: true = ets:insert(table, {k,2})
+    in receive_deps.erl line 21
+  13: P.2: exits normally
+  14: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  15: P.3: exits normally
+  16: Message (3) from P.3 reaches P
+  17: P: receives message (3)
+    in receive_deps.erl line 29
+  18: Message (2) from P.2 reaches P
+  19: P: receives message (2)
+    in receive_deps.erl line 31
+  20: Message (1) from P.1 reaches P
+  21: P: receives message (1)
+    in receive_deps.erl line 33
+  22: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  23: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  24: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 23:
+* At step 20 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 23 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,lookup,
+                    [table,k],
+                    [20,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+               {receive_deps,'-test/0-fun-0-',2,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                              {line,20}]}]}
+    Stacktrace:
+      [{ets,lookup,
+            [table,k],
+            [20,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+       {receive_deps,'-test/0-fun-0-',2,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,20}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  10: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  12: P.3: exits normally
+  13: Message (2) from P.2 reaches P
+  14: Message (3) from P.3 reaches P
+  15: P: receives message (2)
+    in receive_deps.erl line 29
+  16: P: receives message (3)
+    in receive_deps.erl line 31
+  17: Message (1) from P.1 reaches P
+  18: P: receives message (1)
+    in receive_deps.erl line 33
+  19: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  20: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  21: P: true = ets:delete(table)
+    (while exiting)
+  22: P.2: Exception badarg raised by: ets:lookup(table, k)
+    in receive_deps.erl line 20
+  23: P.2: exits abnormally ({badarg,[{ets,lookup,[table,k],[20,{file,[47,104,111,109,101,47,115,116|...]}]},{receive_deps,'-test/0-fun-0-',2,[{file,[47,104,111,109,101,47,115,116|...]},{line,20}]}]})
+################################################################################
+Erroneous interleaving 24:
+* At step 20 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  10: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  12: P.3: exits normally
+  13: Message (2) from P.2 reaches P
+  14: Message (3) from P.3 reaches P
+  15: P: receives message (2)
+    in receive_deps.erl line 29
+  16: P: receives message (3)
+    in receive_deps.erl line 31
+  17: Message (1) from P.1 reaches P
+  18: P: receives message (1)
+    in receive_deps.erl line 33
+  19: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  20: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  21: P.2: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  22: P.2: exits normally
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 25:
+* At step 22 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  10: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  12: P.3: exits normally
+  13: Message (2) from P.2 reaches P
+  14: P: receives message (2)
+    in receive_deps.erl line 29
+  15: Message (1) from P.1 reaches P
+  16: P: receives message (1)
+    in receive_deps.erl line 31
+  17: P.2: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  18: P.2: exits normally
+  19: Message (3) from P.3 reaches P
+  20: P: receives message (3)
+    in receive_deps.erl line 33
+  21: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  22: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 26:
+* At step 20 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 23 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,lookup,
+                    [table,k],
+                    [20,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+               {receive_deps,'-test/0-fun-0-',2,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                              {line,20}]}]}
+    Stacktrace:
+      [{ets,lookup,
+            [table,k],
+            [20,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+       {receive_deps,'-test/0-fun-0-',2,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,20}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  10: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  12: P.3: exits normally
+  13: Message (2) from P.2 reaches P
+  14: P: receives message (2)
+    in receive_deps.erl line 29
+  15: Message (1) from P.1 reaches P
+  16: P: receives message (1)
+    in receive_deps.erl line 31
+  17: Message (3) from P.3 reaches P
+  18: P: receives message (3)
+    in receive_deps.erl line 33
+  19: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  20: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  21: P: true = ets:delete(table)
+    (while exiting)
+  22: P.2: Exception badarg raised by: ets:lookup(table, k)
+    in receive_deps.erl line 20
+  23: P.2: exits abnormally ({badarg,[{ets,lookup,[table,k],[20,{file,[47,104,111,109,101,47,115,116|...]}]},{receive_deps,'-test/0-fun-0-',2,[{file,[47,104,111,109,101,47,115,116|...]},{line,20}]}]})
+################################################################################
+Erroneous interleaving 27:
+* At step 22 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  10: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  12: P.3: exits normally
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (3)
+    in receive_deps.erl line 29
+  15: Message (1) from P.1 reaches P
+  16: P: receives message (1)
+    in receive_deps.erl line 31
+  17: P.2: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  18: P.2: exits normally
+  19: Message (2) from P.2 reaches P
+  20: P: receives message (2)
+    in receive_deps.erl line 33
+  21: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  22: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 28:
+* At step 20 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 23 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,lookup,
+                    [table,k],
+                    [20,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+               {receive_deps,'-test/0-fun-0-',2,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                              {line,20}]}]}
+    Stacktrace:
+      [{ets,lookup,
+            [table,k],
+            [20,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+       {receive_deps,'-test/0-fun-0-',2,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,20}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  10: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  12: P.3: exits normally
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (3)
+    in receive_deps.erl line 29
+  15: Message (1) from P.1 reaches P
+  16: P: receives message (1)
+    in receive_deps.erl line 31
+  17: Message (2) from P.2 reaches P
+  18: P: receives message (2)
+    in receive_deps.erl line 33
+  19: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  20: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  21: P: true = ets:delete(table)
+    (while exiting)
+  22: P.2: Exception badarg raised by: ets:lookup(table, k)
+    in receive_deps.erl line 20
+  23: P.2: exits abnormally ({badarg,[{ets,lookup,[table,k],[20,{file,[47,104,111,109,101,47,115,116|...]}]},{receive_deps,'-test/0-fun-0-',2,[{file,[47,104,111,109,101,47,115,116|...]},{line,20}]}]})
+################################################################################
+Erroneous interleaving 29:
+* At step 22 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  10: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  12: P.3: exits normally
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (3)
+    in receive_deps.erl line 29
+  15: P.2: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  16: P.2: exits normally
+  17: Message (2) from P.2 reaches P
+  18: P: receives message (2)
+    in receive_deps.erl line 31
+  19: Message (1) from P.1 reaches P
+  20: P: receives message (1)
+    in receive_deps.erl line 33
+  21: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  22: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 30:
+* At step 20 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+* At step 23 process P.2 exited abnormally
+    Reason:
+      {badarg,[{ets,lookup,
+                    [table,k],
+                    [20,
+                     {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+               {receive_deps,'-test/0-fun-0-',2,
+                             [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                              {line,20}]}]}
+    Stacktrace:
+      [{ets,lookup,
+            [table,k],
+            [20,
+             {file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"}]},
+       {receive_deps,'-test/0-fun-0-',2,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,20}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+   7: P.1: exits normally
+   8: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   9: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  10: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  11: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  12: P.3: exits normally
+  13: Message (3) from P.3 reaches P
+  14: P: receives message (3)
+    in receive_deps.erl line 29
+  15: Message (2) from P.2 reaches P
+  16: P: receives message (2)
+    in receive_deps.erl line 31
+  17: Message (1) from P.1 reaches P
+  18: P: receives message (1)
+    in receive_deps.erl line 33
+  19: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  20: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  21: P: true = ets:delete(table)
+    (while exiting)
+  22: P.2: Exception badarg raised by: ets:lookup(table, k)
+    in receive_deps.erl line 20
+  23: P.2: exits abnormally ({badarg,[{ets,lookup,[table,k],[20,{file,[47,104,111,109,101,47,115,116|...]}]},{receive_deps,'-test/0-fun-0-',2,[{file,[47,104,111,109,101,47,115,116|...]},{line,20}]}]})
+################################################################################
+Erroneous interleaving 31:
+* At step 22 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: Message (1) from P.1 reaches P
+   7: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   8: Message (2) from P.2 reaches P
+   9: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+  10: Message (3) from P.3 reaches P
+  11: P: receives message (1)
+    in receive_deps.erl line 29
+  12: P: receives message (2)
+    in receive_deps.erl line 31
+  13: P: receives message (3)
+    in receive_deps.erl line 33
+  14: P.2: [] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  15: P.2: exits normally
+  16: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+  17: P.1: exits normally
+  18: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  19: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  20: P.3: exits normally
+  21: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  22: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 32:
+* At step 22 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: Message (1) from P.1 reaches P
+   7: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   8: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+   9: P: receives message (1)
+    in receive_deps.erl line 29
+  10: Message (3) from P.3 reaches P
+  11: P: receives message (3)
+    in receive_deps.erl line 31
+  12: Message (2) from P.2 reaches P
+  13: P: receives message (2)
+    in receive_deps.erl line 33
+  14: P.2: [] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  15: P.2: exits normally
+  16: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+  17: P.1: exits normally
+  18: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  19: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  20: P.3: exits normally
+  21: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  22: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 33:
+* At step 22 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   7: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+   8: Message (2) from P.2 reaches P
+   9: Message (3) from P.3 reaches P
+  10: P: receives message (2)
+    in receive_deps.erl line 29
+  11: P: receives message (3)
+    in receive_deps.erl line 31
+  12: Message (1) from P.1 reaches P
+  13: P: receives message (1)
+    in receive_deps.erl line 33
+  14: P.2: [] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  15: P.2: exits normally
+  16: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+  17: P.1: exits normally
+  18: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  19: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  20: P.3: exits normally
+  21: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  22: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 34:
+* At step 22 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   7: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+   8: Message (2) from P.2 reaches P
+   9: P: receives message (2)
+    in receive_deps.erl line 29
+  10: Message (1) from P.1 reaches P
+  11: P: receives message (1)
+    in receive_deps.erl line 31
+  12: Message (3) from P.3 reaches P
+  13: P: receives message (3)
+    in receive_deps.erl line 33
+  14: P.2: [] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  15: P.2: exits normally
+  16: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+  17: P.1: exits normally
+  18: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  19: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  20: P.3: exits normally
+  21: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  22: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 35:
+* At step 22 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   7: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+   8: Message (3) from P.3 reaches P
+   9: P: receives message (3)
+    in receive_deps.erl line 29
+  10: Message (1) from P.1 reaches P
+  11: P: receives message (1)
+    in receive_deps.erl line 31
+  12: Message (2) from P.2 reaches P
+  13: P: receives message (2)
+    in receive_deps.erl line 33
+  14: P.2: [] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  15: P.2: exits normally
+  16: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+  17: P.1: exits normally
+  18: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  19: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  20: P.3: exits normally
+  21: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  22: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Erroneous interleaving 36:
+* At step 22 process P exited abnormally
+    Reason:
+      {{badmatch,false},
+       [{receive_deps,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                       {line,39}]}]}
+    Stacktrace:
+      [{receive_deps,test,0,
+                     [{file,"/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_deps.erl"},
+                      {line,39}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in receive_deps.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_deps.5.122881345>,[]])
+    in erlang.erl line 2329
+   5: P.1: 1 = P ! 1
+    in receive_deps.erl line 19
+   6: P.2: 2 = P ! 2
+    in receive_deps.erl line 19
+   7: P.3: 3 = P ! 3
+    in receive_deps.erl line 19
+   8: Message (3) from P.3 reaches P
+   9: P: receives message (3)
+    in receive_deps.erl line 29
+  10: Message (2) from P.2 reaches P
+  11: P: receives message (2)
+    in receive_deps.erl line 31
+  12: Message (1) from P.1 reaches P
+  13: P: receives message (1)
+    in receive_deps.erl line 33
+  14: P.2: [] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  15: P.2: exits normally
+  16: P.1: true = ets:insert(table, {k,1})
+    in receive_deps.erl line 21
+  17: P.1: exits normally
+  18: P.3: [{k,1}] = ets:lookup(table, k)
+    in receive_deps.erl line 20
+  19: P.3: true = ets:insert(table, {k,3})
+    in receive_deps.erl line 21
+  20: P.3: exits normally
+  21: P: [{k,3}] = ets:lookup(table, k)
+    in receive_deps.erl line 39
+  22: P: exits abnormally ({{badmatch,false},[{receive_deps,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,39}]}]})
+  23: P: true = ets:delete(table)
+    (while exiting)
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumented: receive_deps
+Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
+Instrumented: erlang
+Some errors were silenced (--ignore_error).
+################################################################################
+Done! (Exit status: completed)
+  Summary: 36 errors, 144/144 interleavings explored

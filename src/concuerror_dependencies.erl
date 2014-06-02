@@ -105,24 +105,13 @@ dependent(#exit_event{}, #exit_event{}) ->
   false;
 
 dependent(#message_event{
-             message = #message{id = Id},
-             patterns = MaybePatterns,
              recipient = Recipient,
              trapping = Trapping},
           #message_event{
-             message = #message{data = Data},
              recipient = Recipient,
              type = Type
             }) ->
-  Patterns =
-    case MaybePatterns of
-      {ref, Table} ->
-        ets:lookup_element(Table, Id, ?message_pattern);
-      _ -> MaybePatterns
-    end,
-  is_function(Patterns)
-    andalso
-    message_could_match(Patterns, Data, Trapping, Type);
+  message_could_match(fun(_) -> true end, ok, Trapping, Type);
 
 dependent(#message_event{
              message = #message{data = Data, id = Id},

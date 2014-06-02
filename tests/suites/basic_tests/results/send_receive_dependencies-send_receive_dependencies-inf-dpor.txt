@@ -1,15 +1,34 @@
 ################################################################################
 Concuerror started with options:
-  [{'after-timeout',infinite},
+  [{after_timeout,infinity},
    {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{send_receive_dependencies,send_receive_dependencies,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_receive_dependencies.erl"]},
-   {normal_exit,[normal]},
-   {symbolic,true},
-   {target,{send_receive_dependencies,send_receive_dependencies,[]}},
-   {verbose,0},
-   {wait,2000}]
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
   No errors found!
 ################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumented: send_receive_dependencies
+Instrumented: io_lib
+Instrumented: gen_server
+Hijacked application_controller
+Instrumented: erlang
+################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 1/1 interleavings explored
+  Summary: 0 errors, 6/6 interleavings explored

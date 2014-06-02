@@ -651,6 +651,8 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
      timeout = Timeout} = Info,
   #event{event_info = EventInfo} = Event,
   Parent = self(),
+  ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
+  ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
   {Result, NewInfo} =
     case EventInfo of
       %% Replaying...
@@ -659,8 +661,6 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
       undefined ->
         PassedInfo = reset_concuerror_info(Info),
         ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
-        ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
-        ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
         ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, ChildId]),
         P = new_process(PassedInfo),
         true = ets:insert(Processes, ?new_process(P, ChildSymbol)),
@@ -992,7 +992,7 @@ deliver_message(Event, MessageEvent, Timeout, Instant) ->
                recipient = From},
           SystemSpecials =
             [{message_delivered, MessageEvent},
-             {message_received, Id, fun(_) -> true end},
+             {message_received, Id},
              {system_communication, System},
              {message, SystemReply}],
           NewEvent = Event#event{special = Special ++ SystemSpecials},
@@ -1088,7 +1088,7 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   {Special, CreateMessage} =
     case MessageOrAfter of
       #message{data = Data, id = Id} ->
-        {[{message_received, Id, PatternFun}], {ok, Data}};
+        {[{message_received, Id}], {ok, Data}};
       'after' -> {[], false}
     end,
   Notification =
@@ -1566,8 +1566,9 @@ system_processes_wrappers(Info) ->
     Name <- Registered,
     hijacked =:= hijack_or_wrap_system(Name, Info)].
 
+%% XXX: Application controller support needs to be checked
 hijack_or_wrap_system(Name, Info)
-  when Name =:= application_controller ->
+  when Name =:= application_controller_disabled ->
   #concuerror_info{
      logger = Logger,
      modules = Modules,

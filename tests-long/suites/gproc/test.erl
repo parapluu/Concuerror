@@ -15,7 +15,7 @@ scenarios() ->
         T <- [t_simple_reg, t_simple_reg_or_locate, t_reg_or_locate2]].
 
 t_simple_reg() ->
-    application:start(gproc),
+    gproc_sup:start_link([]),
     ?assert(gproc:reg({n,l,name}) =:= true),
     ?assert(gproc:where({n,l,name}) =:= self()),
     ?assert(gproc:unreg({n,l,name}) =:= true),
@@ -23,7 +23,7 @@ t_simple_reg() ->
 
 t_simple_reg_or_locate() ->
     P = self(),
-    application:start(gproc),
+    gproc_sup:start_link([]),
     ?assertMatch({P, undefined}, gproc:reg_or_locate({n,l,name})),
     ?assertMatch(P, gproc:where({n,l,name})),
     ?assertMatch({P, my_val}, gproc:reg_or_locate({n,l,name2}, my_val)),
@@ -31,7 +31,7 @@ t_simple_reg_or_locate() ->
 
 t_reg_or_locate2() ->
     P = self(),
-    application:start(gproc),
+    gproc_sup:start_link([]),
     {P1,R1} = spawn_monitor(fun() ->
 				    Ref = erlang:monitor(process, P),
 				    gproc:reg({n,l,foo}, the_value),

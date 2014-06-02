@@ -1,0 +1,240 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{source_killer,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/source_killer.erl"]},
+   {ignore_error,[deadlock]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,false},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* At step 13 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in source_killer.erl line 13
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<source_killer.0.111899813>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<source_killer.1.111899813>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<source_killer.2.111899813>,[]])
+    in erlang.erl line 2329
+   5: P.1: [] = ets:lookup(table, v)
+    in source_killer.erl line 14
+   6: P.1: [] = ets:lookup(table, k)
+    in source_killer.erl line 14
+   7: P.2: true = ets:insert(table, {k,1})
+    in source_killer.erl line 15
+   8: P.2: exits normally
+   9: P.3: [{k,1}] = ets:lookup(table, k)
+    in source_killer.erl line 16
+  10: P.3: true = erlang:exit(P.1, kill)
+    in source_killer.erl line 16
+  11: P.3: exits normally
+  12: Exit signal (kill) from P.3 reaches P.1
+  13: P.1: exits abnormally (killed)
+################################################################################
+Erroneous interleaving 2:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in source_killer.erl line 13
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<source_killer.0.111899813>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<source_killer.1.111899813>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<source_killer.2.111899813>,[]])
+    in erlang.erl line 2329
+   5: P.1: [] = ets:lookup(table, v)
+    in source_killer.erl line 14
+   6: P.1: [] = ets:lookup(table, k)
+    in source_killer.erl line 14
+   7: P.3: [] = ets:lookup(table, k)
+    in source_killer.erl line 16
+   8: P.3: true = erlang:exit(P.1, kill)
+    in source_killer.erl line 16
+   9: P.3: exits normally
+  10: Exit signal (kill) from P.3 reaches P.1
+  11: P.1: exits abnormally (killed)
+  12: P.2: true = ets:insert(table, {k,1})
+    in source_killer.erl line 15
+  13: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in source_killer.erl line 13
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<source_killer.0.111899813>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<source_killer.1.111899813>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<source_killer.2.111899813>,[]])
+    in erlang.erl line 2329
+   5: P.1: [] = ets:lookup(table, v)
+    in source_killer.erl line 14
+   6: P.2: true = ets:insert(table, {k,1})
+    in source_killer.erl line 15
+   7: P.2: exits normally
+   8: P.3: [{k,1}] = ets:lookup(table, k)
+    in source_killer.erl line 16
+   9: P.3: true = erlang:exit(P.1, kill)
+    in source_killer.erl line 16
+  10: P.3: exits normally
+  11: Exit signal (kill) from P.3 reaches P.1
+  12: P.1: exits abnormally (killed)
+################################################################################
+Erroneous interleaving 4:
+* At step 13 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in source_killer.erl line 13
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<source_killer.0.111899813>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<source_killer.1.111899813>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<source_killer.2.111899813>,[]])
+    in erlang.erl line 2329
+   5: P.1: [] = ets:lookup(table, v)
+    in source_killer.erl line 14
+   6: P.2: true = ets:insert(table, {k,1})
+    in source_killer.erl line 15
+   7: P.2: exits normally
+   8: P.3: [{k,1}] = ets:lookup(table, k)
+    in source_killer.erl line 16
+   9: P.3: true = erlang:exit(P.1, kill)
+    in source_killer.erl line 16
+  10: P.3: exits normally
+  11: P.1: [{k,1}] = ets:lookup(table, k)
+    in source_killer.erl line 14
+  12: Exit signal (kill) from P.3 reaches P.1
+  13: P.1: exits abnormally (killed)
+################################################################################
+Erroneous interleaving 5:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in source_killer.erl line 13
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<source_killer.0.111899813>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<source_killer.1.111899813>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<source_killer.2.111899813>,[]])
+    in erlang.erl line 2329
+   5: P.1: [] = ets:lookup(table, v)
+    in source_killer.erl line 14
+   6: P.3: [] = ets:lookup(table, k)
+    in source_killer.erl line 16
+   7: P.3: true = erlang:exit(P.1, kill)
+    in source_killer.erl line 16
+   8: P.3: exits normally
+   9: Exit signal (kill) from P.3 reaches P.1
+  10: P.1: exits abnormally (killed)
+  11: P.2: true = ets:insert(table, {k,1})
+    in source_killer.erl line 15
+  12: P.2: exits normally
+################################################################################
+Erroneous interleaving 6:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in source_killer.erl line 13
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<source_killer.0.111899813>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<source_killer.1.111899813>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<source_killer.2.111899813>,[]])
+    in erlang.erl line 2329
+   5: P.2: true = ets:insert(table, {k,1})
+    in source_killer.erl line 15
+   6: P.2: exits normally
+   7: P.3: [{k,1}] = ets:lookup(table, k)
+    in source_killer.erl line 16
+   8: P.3: true = erlang:exit(P.1, kill)
+    in source_killer.erl line 16
+   9: P.3: exits normally
+  10: Exit signal (kill) from P.3 reaches P.1
+  11: P.1: exits abnormally (killed)
+################################################################################
+Erroneous interleaving 7:
+* At step 9 process P.1 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in source_killer.erl line 13
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<source_killer.0.111899813>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<source_killer.1.111899813>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<source_killer.2.111899813>,[]])
+    in erlang.erl line 2329
+   5: P.3: [] = ets:lookup(table, k)
+    in source_killer.erl line 16
+   6: P.3: true = erlang:exit(P.1, kill)
+    in source_killer.erl line 16
+   7: P.3: exits normally
+   8: Exit signal (kill) from P.3 reaches P.1
+   9: P.1: exits abnormally (killed)
+  10: P.2: true = ets:insert(table, {k,1})
+    in source_killer.erl line 15
+  11: P.2: exits normally
+################################################################################
+Concuerror Tips:
+--------------------------------------------------------------------------------
+An abnormal exit signal was sent to a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
+################################################################################
+Concuerror Info:
+--------------------------------------------------------------------------------
+Instrumented: source_killer
+Instrumented: io_lib
+Instrumented: erlang
+Some errors were silenced (--ignore_error).
+################################################################################
+Done! (Exit status: completed)
+  Summary: 7 errors, 10/10 interleavings explored

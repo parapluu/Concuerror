@@ -1,22 +1,27 @@
 ################################################################################
 Concuerror started with options:
   [{after_timeout,infinity},
-   {allow_first_crash,true},
    {assume_racing,false},
+   {delay_bound,infinity},
    {depth_bound,5000},
+   {entry_point,{group_leader2,test,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/group_leader2.erl"]},
    {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
    {non_racing_system,[]},
+   {optimal,true},
    {print_depth,20},
-   {report_unknown,true},
-   {symbolic,true},
-   {target,{group_leader2,test,[]}},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[normal]},
-   {verbosity,0}]
+   {treat_as_normal,[]}]
 ################################################################################
 Erroneous interleaving 1:
-* At step 34 process P.2 exited abnormally
+* At step 32 process P.2 exited abnormally
     Reason:
       {terminated,[{io,format,[P,"Block",[]],[]}]}
     Stacktrace:
@@ -40,50 +45,49 @@ Interleaving info:
     in group_leader2.erl line 30
    7: P.1: ok = P ! ok
     in group_leader2.erl line 29
-   8: Message (ok) from P.1 reaches P
-   9: P: receives message (ok)
+   8: P.1: exits normally
+   9: Message (ok) from P.1 reaches P
+  10: P: receives message (ok)
     in group_leader2.erl line 33
-  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<group_leader2.0.46172422>,[]])
+  11: P: P.2 = erlang:spawn(erlang, apply, [#Fun<group_leader2.0.46172422>,[]])
     in erlang.erl line 2329
-  11: P: true = erlang:group_leader(user, P)
+  12: P: true = erlang:group_leader(user, P)
     in group_leader2.erl line 23
-  12: P: user = erlang:group_leader()
-    in group_leader2.erl line 24
   13: P: user = erlang:group_leader()
+    in group_leader2.erl line 24
+  14: P: user = erlang:group_leader()
     in io.erl line 598
-  14: P: #Ref<0.0.0.157> = erlang:monitor(process, user)
+  15: P: #Ref<0.0.0.143> = erlang:monitor(process, user)
     in io.erl line 568
-  15: P: {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}} = user ! {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}
+  16: P: {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}} = user ! {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}
     in io.erl line 569
-  16: Message ({io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}) from P reaches user
-  17: Message ({io_reply,user,ok}) from user reaches P
-  18: P: receives message ({io_reply,user,ok})
-    in io.erl line 601
-  19: P: true = erlang:demonitor(#Ref<0.0.0.157>, [flush])
-    in io.erl line 603
-  20: P: exits normally
-  21: P.1: exits normally
-  22: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<group_leader2.1.46172422>,[]])
+  17: Message ({io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}) from P reaches user
+  18: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<group_leader2.1.46172422>,[]])
     in erlang.erl line 2329
-  23: P.2.1: ok = P.2 ! ok
+  19: P.2.1: ok = P.2 ! ok
     in group_leader2.erl line 29
-  24: P.2.1: exits normally
+  20: P.2.1: exits normally
+  21: Message ({io_reply,user,ok}) from user reaches P
+  22: P: receives message ({io_reply,user,ok})
+    in io.erl line 601
+  23: P: true = erlang:demonitor(#Ref<0.0.0.143>, [flush])
+    in io.erl line 603
+  24: P: exits normally
   25: Message (ok) from P.2.1 reaches P.2
   26: P.2: receives message (ok)
     in group_leader2.erl line 30
   27: P.2: P = erlang:group_leader()
     in io.erl line 598
-  28: P.2: #Ref<0.0.0.180> = erlang:monitor(process, P)
+  28: P.2: #Ref<0.0.0.165> = erlang:monitor(process, P)
     in io.erl line 568
-  29: Message ({'DOWN',#Ref<0.0.0.180>,process,P,noproc}) from P.2 reaches P.2
-  30: P.2: {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}} = P ! {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}
+  29: P.2: {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}} = P ! {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}
     in io.erl line 569
-  31: Message ({io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}) from P.2 reaches P
-  32: P.2: receives message ({'DOWN',#Ref<0.0.0.180>,process,P,noproc})
+  30: P.2: receives message ({'DOWN',#Ref<0.0.0.165>,process,P,noproc})
     in io.erl line 601
-  33: P.2: receive timeout expired after 0 ms
+  31: P.2: receive timeout expired after 0 ms
     in io.erl line 612
-  34: P.2: exits abnormally ({terminated,[{io,format,[P,[66,108,111,99,107],[]],[]}]})
+  32: P.2: exits abnormally ({terminated,[{io,format,[P,[66,108,111,99,107],[]],[]}]})
+  33: Message ({io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}) from P.2 reaches P
 ################################################################################
 Erroneous interleaving 2:
 * At step 35 process P.2 exited abnormally
@@ -110,54 +114,126 @@ Interleaving info:
     in group_leader2.erl line 30
    7: P.1: ok = P ! ok
     in group_leader2.erl line 29
-   8: Message (ok) from P.1 reaches P
-   9: P: receives message (ok)
+   8: P.1: exits normally
+   9: Message (ok) from P.1 reaches P
+  10: P: receives message (ok)
     in group_leader2.erl line 33
-  10: P: P.2 = erlang:spawn(erlang, apply, [#Fun<group_leader2.0.46172422>,[]])
+  11: P: P.2 = erlang:spawn(erlang, apply, [#Fun<group_leader2.0.46172422>,[]])
     in erlang.erl line 2329
-  11: P: true = erlang:group_leader(user, P)
+  12: P: true = erlang:group_leader(user, P)
     in group_leader2.erl line 23
-  12: P: user = erlang:group_leader()
-    in group_leader2.erl line 24
   13: P: user = erlang:group_leader()
+    in group_leader2.erl line 24
+  14: P: user = erlang:group_leader()
     in io.erl line 598
-  14: P: #Ref<0.0.0.157> = erlang:monitor(process, user)
+  15: P: #Ref<0.0.0.143> = erlang:monitor(process, user)
     in io.erl line 568
-  15: P: {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}} = user ! {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}
+  16: P: {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}} = user ! {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}
     in io.erl line 569
-  16: Message ({io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}) from P reaches user
-  17: Message ({io_reply,user,ok}) from user reaches P
-  18: P: receives message ({io_reply,user,ok})
-    in io.erl line 601
-  19: P: true = erlang:demonitor(#Ref<0.0.0.157>, [flush])
-    in io.erl line 603
-  20: P.1: exits normally
-  21: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<group_leader2.1.46172422>,[]])
+  17: Message ({io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}) from P reaches user
+  18: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<group_leader2.1.46172422>,[]])
     in erlang.erl line 2329
-  22: P.2.1: ok = P.2 ! ok
+  19: P.2.1: ok = P.2 ! ok
     in group_leader2.erl line 29
-  23: P.2.1: exits normally
+  20: P.2.1: exits normally
+  21: Message ({io_reply,user,ok}) from user reaches P
+  22: P: receives message ({io_reply,user,ok})
+    in io.erl line 601
+  23: P: true = erlang:demonitor(#Ref<0.0.0.143>, [flush])
+    in io.erl line 603
   24: Message (ok) from P.2.1 reaches P.2
   25: P.2: receives message (ok)
     in group_leader2.erl line 30
   26: P.2: P = erlang:group_leader()
     in io.erl line 598
-  27: P.2: #Ref<0.0.0.193> = erlang:monitor(process, P)
+  27: P.2: #Ref<0.0.0.204> = erlang:monitor(process, P)
     in io.erl line 568
-  28: P: exits normally
-  29: P: {'DOWN',#Ref<0.0.0.193>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.0.193>,process,P,normal})
-    (while exiting)
-  30: Message ({'DOWN',#Ref<0.0.0.193>,process,P,normal}) from P reaches P.2
-  31: P.2: {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}} = P ! {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}
+  28: P.2: {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}} = P ! {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}
     in io.erl line 569
-  32: Message ({io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}) from P.2 reaches P
-  33: P.2: receives message ({'DOWN',#Ref<0.0.0.193>,process,P,normal})
+  29: Message ({io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}) from P.2 reaches P
+  30: P: exits normally
+  31: P: {'DOWN',#Ref<0.0.0.204>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.0.204>,process,P,normal})
+    (while exiting)
+  32: Message ({'DOWN',#Ref<0.0.0.204>,process,P,normal}) from P reaches P.2
+  33: P.2: receives message ({'DOWN',#Ref<0.0.0.204>,process,P,normal})
     in io.erl line 601
   34: P.2: receive timeout expired after 0 ms
     in io.erl line 612
   35: P.2: exits abnormally ({terminated,[{io,format,[P,[66,108,111,99,107],[]],[]}]})
 ################################################################################
 Erroneous interleaving 3:
+* At step 35 process P.2 exited abnormally
+    Reason:
+      {terminated,[{io,format,[P,"Block",[]],[]}]}
+    Stacktrace:
+      [{io,format,[P,"Block",[]],[]}]
+--------------------------------------------------------------------------------
+Text printed to Standard Output:
+All fine
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: user = erlang:whereis(user)
+    in group_leader2.erl line 10
+   2: P: user = erlang:group_leader()
+    in group_leader2.erl line 11
+   3: P: true = erlang:group_leader(P, P)
+    in group_leader2.erl line 12
+   4: P: P = erlang:group_leader()
+    in group_leader2.erl line 13
+   5: P: P.1 = erlang:spawn(erlang, apply, [#Fun<group_leader2.1.46172422>,[]])
+    in erlang.erl line 2329
+   6: P: receive timeout expired after 0 ms
+    in group_leader2.erl line 30
+   7: P.1: ok = P ! ok
+    in group_leader2.erl line 29
+   8: P.1: exits normally
+   9: Message (ok) from P.1 reaches P
+  10: P: receives message (ok)
+    in group_leader2.erl line 33
+  11: P: P.2 = erlang:spawn(erlang, apply, [#Fun<group_leader2.0.46172422>,[]])
+    in erlang.erl line 2329
+  12: P: true = erlang:group_leader(user, P)
+    in group_leader2.erl line 23
+  13: P: user = erlang:group_leader()
+    in group_leader2.erl line 24
+  14: P: user = erlang:group_leader()
+    in io.erl line 598
+  15: P: #Ref<0.0.0.143> = erlang:monitor(process, user)
+    in io.erl line 568
+  16: P: {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}} = user ! {io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}
+    in io.erl line 569
+  17: Message ({io_request,P,user,{put_chars,unicode,io_lib,format,[[65,108,108,32,102,105,110,101],[]]}}) from P reaches user
+  18: P.2: P.2.1 = erlang:spawn(erlang, apply, [#Fun<group_leader2.1.46172422>,[]])
+    in erlang.erl line 2329
+  19: P.2.1: ok = P.2 ! ok
+    in group_leader2.erl line 29
+  20: P.2.1: exits normally
+  21: Message (ok) from P.2.1 reaches P.2
+  22: P.2: receives message (ok)
+    in group_leader2.erl line 30
+  23: P.2: P = erlang:group_leader()
+    in io.erl line 598
+  24: P.2: #Ref<0.0.0.204> = erlang:monitor(process, P)
+    in io.erl line 568
+  25: P.2: {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}} = P ! {io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}
+    in io.erl line 569
+  26: Message ({io_request,P.2,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}) from P.2 reaches P
+  27: Message ({io_reply,user,ok}) from user reaches P
+  28: P: receives message ({io_reply,user,ok})
+    in io.erl line 601
+  29: P: true = erlang:demonitor(#Ref<0.0.0.143>, [flush])
+    in io.erl line 603
+  30: P: exits normally
+  31: P: {'DOWN',#Ref<0.0.0.204>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.0.204>,process,P,normal})
+    (while exiting)
+  32: Message ({'DOWN',#Ref<0.0.0.204>,process,P,normal}) from P reaches P.2
+  33: P.2: receives message ({'DOWN',#Ref<0.0.0.204>,process,P,normal})
+    in io.erl line 601
+  34: P.2: receive timeout expired after 0 ms
+    in io.erl line 612
+  35: P.2: exits abnormally ({terminated,[{io,format,[P,[66,108,111,99,107],[]],[]}]})
+################################################################################
+Erroneous interleaving 4:
 * Blocked at a 'receive' (when all other processes have exited):
     P in io.erl line 601
 --------------------------------------------------------------------------------
@@ -180,17 +256,19 @@ Interleaving info:
     in group_leader2.erl line 30
   10: P: P = erlang:group_leader()
     in io.erl line 598
-  11: P: #Ref<0.0.0.210> = erlang:monitor(process, P)
+  11: P: #Ref<0.0.0.301> = erlang:monitor(process, P)
     in io.erl line 568
   12: P: {io_request,P,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}} = P ! {io_request,P,P,{put_chars,unicode,io_lib,format,[[66,108,111,99,107],[]]}}
     in io.erl line 569
 ################################################################################
 Concuerror Info:
 --------------------------------------------------------------------------------
+Instrumented: group_leader2
+Instrumented: io_lib
+Instrumented: gen_server
 Hijacked application_controller
-Instrumenting: group_leader2
-Instrumenting: erlang
-Instrumenting: io
+Instrumented: erlang
+Instrumented: io
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 3 errors, 4/4 interleavings explored
+  Summary: 4 errors, 5/5 interleavings explored

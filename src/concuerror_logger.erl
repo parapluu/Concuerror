@@ -3,14 +3,19 @@
 -module(concuerror_logger).
 
 -export([start/1, complete/2, plan/1, log/5, stop/2, print/3, time/2]).
+-export([graph_set_node/3, graph_new_node/4]).
 
 -include("concuerror.hrl").
 
 %%------------------------------------------------------------------------------
 
+-type graph_data() ::
+        {file:io_device(), reference() | 'init', reference() | 'none'}.
+
 -record(logger_state, {
           already_emitted = sets:new() :: set(),
           errors = 0                   :: non_neg_integer(),
+          graph_data                   :: graph_data() | 'undefined',
           log_msgs = []                :: [string()],
           output                       :: file:io_device(),
           output_name                  :: string(),
@@ -47,7 +52,7 @@ run(Parent, Options) ->
   ok = concuerror_loader:load(io_lib, Modules),
   PrintableOptions =
     delete_many(
-      [modules, output, processes, timers, verbosity],
+      [graph, modules, output, processes, timers, verbosity],
       Options),
   separator(Output, $#),
   io:format(Output,
@@ -55,8 +60,10 @@ run(Parent, Options) ->
             "  ~p~n",
             [lists:sort(PrintableOptions)]),
   separator(Output, $#),
+  GraphData = graph_preamble(?opt(graph, Options)),
   State =
     #logger_state{
+       graph_data = GraphData,
        output = Output,
        output_name = OutputName,
        print_depth = ?opt(print_depth, Options),
@@ -185,6 +192,8 @@ loop(Message, State) ->
       loop(State#logger_state{
              already_emitted = NewAlreadyEmitted,
              log_msgs = NewLogMsgs});
+    {graph, Command} ->
+      loop(graph_command(Command, State));
     {close, Status, Scheduler} ->
       case is_pid(Ticker) of
         true -> Ticker ! stop;
@@ -201,6 +210,7 @@ loop(Message, State) ->
       io:format(Output, Format, [Status]),
       io:format(Output, "~s", [IntMsg]),
       ok = file:close(Output),
+      ok = graph_close(State),
       case Verbosity =:= ?lquiet of
         true -> ok;
         false -> diagnostic(State#logger_state{ticker = show}, Format, [Status])
@@ -240,6 +250,12 @@ loop(Message, State) ->
           true -> TracesSSB + 1;
           false -> TracesSSB
         end,
+      {GraphMark, Color} =
+        if NewSSB =/= TracesSSB -> {"Wasted","yellow"};
+           NewErrors =/= Errors -> {"Error","red"};
+           true -> {"Ok","lime"}
+        end,
+      _ = graph_command({status, TracesExplored, GraphMark, Color}, State),
       NewState =
         State#logger_state{
           streams = [],
@@ -356,6 +372,82 @@ interleavings_message(State) ->
     end,
   io_lib:format("~p errors, ~p/~p interleavings explored~s~n",
                 [Errors, TracesExplored, TracesTotal, SSB]).
+
+%%------------------------------------------------------------------------------
+
+-spec graph_set_node(logger(), reference(), reference()) -> ok.
+
+graph_set_node(Logger, Parent, Sibling) ->
+  Logger ! {graph, {set_node, Parent, Sibling}},
+  ok.
+
+-spec graph_new_node(logger(), reference(), index(), event()) -> ok.
+
+graph_new_node(Logger, Ref, Index, Event) ->
+  Logger ! {graph, {new_node, Ref, Index, Event}},
+  ok.
+
+graph_preamble(undefined) -> undefined;
+graph_preamble(GraphFile) ->
+  io:format(
+    GraphFile,
+    "digraph {~n"
+    "  graph [ranksep=0.3]~n"
+    "  node [shape=box,width=6,fontname=Monospace]~n"
+    "  init [label=\"Initial\"];~n"
+    "  subgraph {~n", []),
+  {GraphFile, init, none}.
+
+graph_command(_Command, #logger_state{graph_data = undefined} = State) -> State;
+graph_command(Command, State) ->
+  #logger_state{graph_data = {GraphFile, Parent, Sibling}} = State,
+  NewGraph =
+    case Command of
+      {new_node, Ref, I, Event} ->
+        Label = concuerror_printer:pretty_s({I,Event#event{location=[]}}, 1),
+        io:format(
+          GraphFile,
+          "    \"~p\" [label=\"~s\\l\"];~n",
+          [Ref, Label]),
+        case Sibling =:= none of
+          true ->
+            io:format(GraphFile,"~s[weight=1000];~n",[ref_edge(Parent, Ref)]);
+          false ->
+            io:format(
+              GraphFile,
+              "~s[style=invis,weight=1];~n"
+              "~s[constraint=false];~n",
+              [ref_edge(Parent, Ref), ref_edge(Sibling, Ref)])
+        end,
+        {GraphFile, Ref, none};
+      {set_node, NewParent, NewSibling} ->
+        io:format(
+          GraphFile,
+          "  }~n"
+          "  subgraph{~n",
+          []),
+        {GraphFile, NewParent, NewSibling};
+      {status, Count, String, Color} ->
+        Ref = make_ref(),
+        io:format(
+          GraphFile,
+          "    \"~p\" [label=\"~p: ~s\",style=filled,fillcolor=~s];~n"
+          "~s[weight=1000];~n",
+          [Ref, Count+1, String, Color, ref_edge(Parent, Ref)]),
+        ok      
+    end,
+  State#logger_state{graph_data = NewGraph}.
+
+ref_edge(RefA, RefB) ->
+  io_lib:format("    \"~p\" -> \"~p\"",[RefA,RefB]).
+
+graph_close(#logger_state{graph_data = undefined}) -> ok;
+graph_close(#logger_state{graph_data = {GraphFile, _, _}}) ->
+  io:format(
+    GraphFile,
+    "  }~n"
+    "}~n", []),
+  file:close(GraphFile).
 
 %%------------------------------------------------------------------------------
 
