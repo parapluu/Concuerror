@@ -1,7 +1,5 @@
 title:            Concuerror
-description:      Systematic testing of Erlang programs.
-                  Detect concurrency errors.
-                  Verify their absence.
+description:      Systematic concurrency testing of Erlang programs.
 logo:             site-logo.png
 disqus_shortname: 
 #Comment out url when working locally to resolve base urls correctly
@@ -37,10 +35,10 @@ links:
     url: /
   - title: Download
     url: /download
-  - title: FAQ
-    url: /faq
   - title: News
     url: /news
+  - title: FAQ
+    url: /faq
   - title: Tutorials
     url: /tutorials
   - title: Publications    

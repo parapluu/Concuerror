@@ -31,7 +31,7 @@ report any operation that affects shared state.
 ### What subset of Erlang does Concuerror support?
 
 Concuerror supports the complete Erlang language and can instrument programs of
-any size. There are however certain limitations regarding
+any size. There are however certain limitations regarding e.g.
 [timeouts](#how-does-concuerror-handle-timeouts-and-other-time-related-functions)
 and [non-deterministic
 functions](#how-does-concuerror-handle-non-deterministic-functions)
