@@ -59,7 +59,7 @@ options() ->
     "The module containing the main test function."}
   ,{test, $t, {atom, test},
     "The name of the 0-arity function that starts the test."}
-  ,{output, $o, {string, "results.txt"},
+  ,{output, $o, {string, "concuerror_report.txt"},
     "Output file where Concuerror shall write the results of the analysis."}
   ,{help, $h, undefined,
     "Display this information."}

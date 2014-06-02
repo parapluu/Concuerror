@@ -45,7 +45,7 @@ run(Parent, Options) ->
     get_properties(
       [output,symbolic_names,processes,modules],
       Options),
-  Fun = fun({M}, _) -> ?log(self(), ?linfo, "Instrumented: ~p~n", [M]) end,
+  Fun = fun({M}, _) -> ?log(self(), ?linfo, "Instrumented ~p~n", [M]) end,
   ets:foldl(Fun, ok, Modules),
   ets:insert(Modules, {{logger}, self()}),
   ok = setup_symbolic_names(SymbolicNames, Processes),
@@ -133,8 +133,7 @@ loop_entry(State) ->
       false ->
         Timestamp = format_utc_timestamp(),
         inner_diagnostic("Concuerror started at ~s~n", [Timestamp]),
-        inner_diagnostic("Writing results in ~s~n", [OutputName]),
-        inner_diagnostic("Verbosity is set to ~p~n~n~n", [Verbosity]),
+        inner_diagnostic("Writing results in ~s~n~n~n", [OutputName]),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
@@ -175,7 +174,7 @@ loop(Message, State) ->
           false ->
             case Verbosity < Level of
               true  -> ok;
-              false -> diagnostic(State, Format, Data)
+              false -> diagnostic(State, Level, Format, Data)
             end,
             NLM =
               case Level < ?ltiming of
@@ -289,24 +288,37 @@ diagnostic(#logger_state{ticker = Ticker} = State, Format, Data)
 diagnostic(_, Format, Data) ->
   inner_diagnostic(Format, Data).
 
+diagnostic(State, Level, Format, Data) ->
+  Tag = verbosity_to_string(Level),
+  NewFormat = Tag ++ ": " ++ Format,
+  diagnostic(State, NewFormat, Data).
+
 print_log_msgs(Output, LogMsgs) ->
   ForeachInner = fun({Format, Data}) -> io:format(Output,Format,Data) end,
   Foreach =
     fun({Type, Messages}) ->
-        Header =
+        Header = verbosity_to_string(Type),
+        Suffix =
           case Type of
-            ?lerror   -> "Errors";
-            ?lwarning -> "Warnings";
-            ?ltip     -> "Tips";
-            ?lrace    -> "Race Pairs (turn off with: --show_races false)";
-            ?linfo    -> "Info"
+            ?lrace    -> "s (turn off with: --show_races false)";
+            ?linfo    -> "";
+            _         -> "s"
           end,
-        io:format(Output, "Concuerror ~s:~n", [Header]),
+        io:format(Output, "~s~s:~n", [Header, Suffix]),
         separator(Output, $-),
         lists:foreach(ForeachInner, Messages),
         separator(Output, $#)
     end,
   lists:foreach(Foreach, LogMsgs).
+
+verbosity_to_string(Level) ->
+  case Level of
+    ?lerror   -> "Error";
+    ?lwarning -> "Warning";
+    ?ltip     -> "Tip";
+    ?lrace    -> "Race Pair";
+    ?linfo    -> "Info"
+  end.
 
 clear_progress() ->
   inner_diagnostic("~c[1A~c[2K\r", [27, 27]).

@@ -370,6 +370,16 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       {true, Info#concuerror_info{event = NewEvent}}
   end;
 
+%% XXX: Temporary
+run_built_in(erlang, get_stacktrace, 0, [], Info) ->
+  #concuerror_info{logger = Logger} = Info,
+  Msg =
+    "Concuerror does not fully support erlang:get_stacktrace/0, returning an"
+    " empty list instead. If you need proper support, notify the developers to"
+    " add this feature.~n",
+  ?unique(Logger, ?lwarning, Msg, []),
+  {[], Info};
+
 run_built_in(erlang, group_leader, 0, [], Info) ->
   Leader = get_leader(Info, self()),
   {Leader, Info};

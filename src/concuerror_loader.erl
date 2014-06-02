@@ -32,7 +32,7 @@ load(Module, Instrumented) ->
             {F, F}
         end,
       catch load_binary(Module, Filename, Beam, Instrumented),
-      ?log(Logger, ?linfo, "Instrumented: ~p~n", [Module]),
+      ?log(Logger, ?linfo, "Instrumented ~p~n", [Module]),
       maybe_instrumenting_myself(Module, Instrumented);
     false -> ok
   end.
