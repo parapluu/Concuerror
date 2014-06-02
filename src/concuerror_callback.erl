@@ -284,7 +284,8 @@ built_in(Module, Name, Arity, Args, Location, InfoIn) ->
          exiting = Location =:= exit,
          extra = Extra,
          mfargs = {Module, Name, Args},
-         result = Value
+         result = Value,
+         trapping = Trapping
         },
     Notification = Event#event{event_info = EventInfo},
     NewInfo = notify(Notification, UpdatedInfo),
