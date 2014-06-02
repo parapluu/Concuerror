@@ -1566,8 +1566,9 @@ system_processes_wrappers(Info) ->
     Name <- Registered,
     hijacked =:= hijack_or_wrap_system(Name, Info)].
 
+%% XXX: Application controller support needs to be checked
 hijack_or_wrap_system(Name, Info)
-  when Name =:= application_controller ->
+  when Name =:= application_controller_disabled ->
   #concuerror_info{
      logger = Logger,
      modules = Modules,

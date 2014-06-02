@@ -14,6 +14,7 @@ Concuerror started with options:
    {print_depth,20},
    {quiet,true},
    {scheduling,round_robin},
+   {show_races,true},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
@@ -33,10 +34,9 @@ Concuerror Info:
 --------------------------------------------------------------------------------
 Instrumented: test
 Instrumented: io_lib
-Instrumented: gen_server
-Hijacked application_controller
 Instrumented: gproc_sup
 Instrumented: supervisor
+Instrumented: gen_server
 Instrumented: gen
 Instrumented: proc_lib
 Instrumented: erlang
@@ -53,5 +53,60 @@ Instrumented: gproc_monitor
 Instrumented: gproc_bcast
 Instrumented: gproc_pool
 ################################################################################
+Concuerror Race Pairs (turn off with: --show_races false):
+--------------------------------------------------------------------------------
+You can disable race pair messages with --show_races false
+* Message ({token,[]}) from <0.60.0> reaches <0.102.0>
+   is in race with
+  Message ({#Ref<0.0.0.568>,true}) from <0.88.0> reaches <0.102.0>
+* <0.88.0>: true = ets:delete(gproc, {<0.102.0>,l})
+    in gproc.erl line 2373
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: 1 = ets:select_delete(gproc, [{{{<0.102.0>,...},'_'},[],[...]}])
+    in gproc.erl line 2372
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: true = ets:delete(gproc, {{n,l,name},n})
+    in gproc.erl line 2325
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: [{{{n,...},n},<0.102.0>,undefined}] = ets:lookup(gproc, {{n,l,name},n})
+    in gproc.erl line 2323
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: [{{n,l,...},[]}] = ets:select(gproc, [{{{<0.102.0>,...},'$2'},[{...}],[...]}])
+    in gproc.erl line 2317
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: true = ets:member(gproc, {<0.102.0>,l})
+    in gproc.erl line 2313
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: true = ets:delete(gproc, {<0.102.0>,l})
+    in gproc.erl line 2373
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: 1 = ets:select_delete(gproc, [{{{<0.102.0>,...},'_'},[],[...]}])
+    in gproc.erl line 2372
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: true = ets:delete(gproc, {{n,l,name},n})
+    in gproc.erl line 2325
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: [{{{n,...},n},<0.102.0>,undefined}] = ets:lookup(gproc, {{n,l,name},n})
+    in gproc.erl line 2323
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: [{{n,l,...},[]}] = ets:select(gproc, [{{{<0.102.0>,...},'$2'},[{...}],[...]}])
+    in gproc.erl line 2317
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+* <0.88.0>: true = ets:member(gproc, {<0.102.0>,l})
+    in gproc.erl line 2313
+   is in race with
+  Exit signal (shutdown) from <0.73.0> reaches <0.88.0>
+################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 7/7 interleavings explored
+  Summary: 0 errors, 14/14 interleavings explored
