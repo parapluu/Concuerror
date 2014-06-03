@@ -59,13 +59,13 @@ poolboy $ make test
 We don't care about the actual result of the tests, but we now have a
 `.eunit` directory with `poolboy_test_worker.beam`.
 
-#### No special compilation is needed!
+#### No special compilation needed
 
-Notice that we don't need to compile anything in a special way! Concuerror will
+Notice that we don't need to compile anything in a special way. Concuerror will
 intercept calls to any module that is in Erlang's code path and instrument the
 code before our test reaches it.
 
-### Setting up our first test
+### Our first test
 
 Concuerror explores all the interleavings of an arbitrary execution scenario of
 a program with a single entry point. We will be extracting tests from [Poolboy's
@@ -77,10 +77,10 @@ Let's begin with an adapted version of the start/stop test, which we save as
 
 {% gist aronisstav/b67df16361cd9a2fa87e %}
 
-#### Also works for `.erl` files
+#### Using `.erl` files
 
-We don't need to compile our test, as Concuerror can also include `.erl`
-modules, which it compiles using the Erlang compiler.
+We don't have to compile our test, as Concuerror can also analyze `.erl` files,
+which are instrumented and compiled before the test starts.
 
 We are now ready to...
 
@@ -116,9 +116,9 @@ filename with the `-o` option.
 Info: Instrumented poolboy_tests_1
 {% endhighlight %}
 
-Log messages tagged as `Info` are standard, normal operation messages.
+Log messages tagged as *Info* are standard, normal operation messages.
 Here, Concuerror reports that it compiled and instrumented our test file and
-started to run the test!
+started to run the test.
 
 {% highlight text %}
 Info: Instrumented io_lib
@@ -138,7 +138,7 @@ included, for reasons that are not important to explain right now.
 Warning: Concuerror does not fully support erlang:get_stacktrace/0 ...
 {% endhighlight %}
 
-Log messages tagged as `Warnings` are non-critical, notifying about weak
+Log messages tagged as *Warnings* are non-critical, notifying about weak
 support for some feature or the use of an option that alters the output
 
 ### Tip messages
@@ -147,12 +147,12 @@ support for some feature or the use of an option that alters the output
 Tip: An abnormal exit signal was sent to a process...
 {% endhighlight %}
 
-Log messages tagged as `Tips` are also non-critical, notifying of a
+Log messages tagged as *Tips* are also non-critical, notifying of a
 suggested refactoring or option that can be used to make testing more efficient.
 
 ### Error messages
 
-Log messages tagged as `Errors` are critical and lead to the interruption of
+Log messages tagged as *Errors* are critical and lead to the interruption of
 the exploration. Our first test should crash here, with the following error:
 
 {% highlight text %}
@@ -193,13 +193,14 @@ we will see something like the following:
 
 ### Using `-pa` to add directories in Erlang's code path
 
-Whoops! We forgot to add `poolboy_test_worker` to Erlang's code path. Concuerror uses the
-`--pa` option for this (notice the double dashes!)
+Whoops! We forgot to add the `poolboy_test_worker` module to Erlang's code
+path. Concuerror uses the `--pa` option for this (notice the *two* dashes).
 
 Running it again...
 
 {% highlight bash %}
-poolboy $ concuerror -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup --pa .eunit
+poolboy $ concuerror -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup \
+ --pa .eunit
 {% endhighlight %}
 
 ... yields:
@@ -208,7 +209,7 @@ poolboy $ concuerror -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup -
 [...]
 Tip: A process crashed with reason '{timeout, ...}'. This may happen when a call
   to a gen_server (or similar) does not receive a reply within some standard
-  timeout. Use the --after_timeout option to treat after clauses that exceed some
+  timeout. Use the '--after_timeout' option to treat after clauses that exceed some
   threshold as 'impossible'.  
 
 Tip: An abnormal exit signal was sent to a process. This is probably the worst
@@ -217,7 +218,7 @@ Tip: An abnormal exit signal was sent to a process. This is probably the worst
   consider refactoring your code.
 
 Tip: A process crashed with reason 'shutdown'. This may happen when a supervisor
-  is terminating its children. You can use --treat_as_normal shutdown if this is
+  is terminating its children. You can use '--treat_as_normal shutdown' if this is
   expected behavior.
 
 Error: The first interleaving of your test had errors. Check the output
@@ -226,7 +227,7 @@ Error: The first interleaving of your test had errors. Check the output
 [...]
 {% endhighlight %}
 
-Three tips and the same error! This time however, `concuerror_report.txt`
+Three tips and the same error. This time however, `concuerror_report.txt`
 contains something like:
 
 {% highlight text %}
@@ -253,8 +254,7 @@ Erroneous interleaving 1:
 {% endhighlight %}
 
 This behavior seems to be expected within the context of the test. Find out why
-Concuerror reports it in the next part of this tutorial.
+Concuerror reports it as problematic in the next part of this tutorial.
 
 {:.no_toc}
-[<center><font color='green'>Continue to the next part!</font></center>]({% post_url 2014-06-03-poolboy-example-errors %})
-----------------------
+# [<center><font color='green'>Continue to the next part!</font></center>]({% post_url 2014-06-03-poolboy-example-errors %})
