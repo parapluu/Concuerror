@@ -673,8 +673,16 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
         PassedInfo = reset_concuerror_info(Info),
         ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
         ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, ChildId]),
-        P = new_process(PassedInfo),
-        true = ets:insert(Processes, ?new_process(P, ChildSymbol)),
+        P =
+          case
+            ets:match(Processes, ?process_match_symbol_to_pid(ChildSymbol))
+          of
+            [] ->
+              NewP = new_process(PassedInfo),
+              true = ets:insert(Processes, ?new_process(NewP, ChildSymbol)),
+              NewP;
+            [[OldP]] -> OldP
+          end,
         NewResult =
           case lists:member(monitor, SpawnOpts) of
             true -> {P, make_ref()};

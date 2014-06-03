@@ -155,6 +155,9 @@
 -define(process_kind, 7).
 -define(process_match_name_to_pid(Name),
         {'$1',   '_', Name, '_', '_', '_', '_'}).
+-define(process_match_symbol_to_pid(Symbol),
+        {'$1',   '_', '_', '_', Symbol, '_', '_'}).
+
 -define(active_processes(P),
         lists:sort(
           ets:select(

@@ -1,0 +1,123 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{reuse_raw_pid,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/reuse_raw_pid.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,false},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* At step 11 process <0.56.0> exited abnormally
+    Reason:
+      {{nocatch,ok},
+       [{reuse_raw_pid,test,0,
+                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/reuse_raw_pid.erl"},
+                        {line,24}]}]}
+    Stacktrace:
+      [{reuse_raw_pid,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/reuse_raw_pid.erl"},
+                       {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.56.0>: <0.59.0> = erlang:spawn(erlang, apply, [#Fun<reuse_raw_pid.0.46150358>,[]])
+    in erlang.erl line 2329
+   2: <0.56.0>: receive timeout expired after 0 ms
+    in reuse_raw_pid.erl line 17
+   3: <0.56.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<reuse_raw_pid.2.46150358>,[]])
+    in erlang.erl line 2329
+   4: <0.59.0>: ok = <0.56.0> ! ok
+    in reuse_raw_pid.erl line 15
+   5: <0.59.0>: exits normally
+   6: Message (ok) from <0.59.0> reaches <0.56.0>
+   7: <0.60.0>: expired = <0.56.0> ! expired
+    in reuse_raw_pid.erl line 22
+   8: <0.60.0>: exits normally
+   9: Message (expired) from <0.60.0> reaches <0.56.0>
+  10: <0.56.0>: receives message (ok)
+    in reuse_raw_pid.erl line 23
+  11: <0.56.0>: exits abnormally ({{nocatch,ok},[{reuse_raw_pid,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+################################################################################
+Erroneous interleaving 2:
+* At step 10 process <0.56.0> exited abnormally
+    Reason:
+      {{nocatch,expired},
+       [{reuse_raw_pid,test,0,
+                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/reuse_raw_pid.erl"},
+                        {line,24}]}]}
+    Stacktrace:
+      [{reuse_raw_pid,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/reuse_raw_pid.erl"},
+                       {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.56.0>: <0.59.0> = erlang:spawn(erlang, apply, [#Fun<reuse_raw_pid.0.46150358>,[]])
+    in erlang.erl line 2329
+   2: <0.56.0>: receive timeout expired after 0 ms
+    in reuse_raw_pid.erl line 17
+   3: <0.56.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<reuse_raw_pid.2.46150358>,[]])
+    in erlang.erl line 2329
+   4: <0.59.0>: ok = <0.56.0> ! ok
+    in reuse_raw_pid.erl line 15
+   5: <0.59.0>: exits normally
+   6: <0.60.0>: expired = <0.56.0> ! expired
+    in reuse_raw_pid.erl line 22
+   7: <0.60.0>: exits normally
+   8: Message (expired) from <0.60.0> reaches <0.56.0>
+   9: <0.56.0>: receives message (expired)
+    in reuse_raw_pid.erl line 23
+  10: <0.56.0>: exits abnormally ({{nocatch,expired},[{reuse_raw_pid,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+  11: Message (ok) from <0.59.0> reaches <0.56.0>
+################################################################################
+Erroneous interleaving 3:
+* At step 11 process <0.56.0> exited abnormally
+    Reason:
+      {{nocatch,received},
+       [{reuse_raw_pid,test,0,
+                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/reuse_raw_pid.erl"},
+                        {line,24}]}]}
+    Stacktrace:
+      [{reuse_raw_pid,test,0,
+                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/reuse_raw_pid.erl"},
+                       {line,24}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: <0.56.0>: <0.59.0> = erlang:spawn(erlang, apply, [#Fun<reuse_raw_pid.0.46150358>,[]])
+    in erlang.erl line 2329
+   2: <0.59.0>: ok = <0.56.0> ! ok
+    in reuse_raw_pid.erl line 15
+   3: <0.59.0>: exits normally
+   4: Message (ok) from <0.59.0> reaches <0.56.0>
+   5: <0.56.0>: receives message (ok)
+    in reuse_raw_pid.erl line 17
+   6: <0.56.0>: <0.60.0> = erlang:spawn(erlang, apply, [#Fun<reuse_raw_pid.2.46150358>,[]])
+    in erlang.erl line 2329
+   7: <0.60.0>: received = <0.56.0> ! received
+    in reuse_raw_pid.erl line 22
+   8: <0.60.0>: exits normally
+   9: Message (received) from <0.60.0> reaches <0.56.0>
+  10: <0.56.0>: receives message (received)
+    in reuse_raw_pid.erl line 23
+  11: <0.56.0>: exits abnormally ({{nocatch,received},[{reuse_raw_pid,test,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,24}]}]})
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented reuse_raw_pid
+Instrumented io_lib
+Instrumented erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 3 errors, 3/3 interleavings explored
