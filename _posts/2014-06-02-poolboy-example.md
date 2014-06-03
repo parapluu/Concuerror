@@ -167,8 +167,8 @@ following:
 
 *Under progress!*
 
-<!---
+<!--
 {% highlight text %}
 Tralala
 {% endhighlight %}
---->
+-->
