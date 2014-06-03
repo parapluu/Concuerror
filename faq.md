@@ -9,6 +9,11 @@ permalink: /faq/index.html
 1. This text will be replaced by the ToC, excluding the previous header (WOW!)
 {:toc}
 
+## How to report a bug?
+
+The preferred way is the official repository's [Issues
+page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/people).
+
 ## General
 
 ### How does Concuerror work?

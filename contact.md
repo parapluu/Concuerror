@@ -1,7 +1,7 @@
 ---
 layout: page
-permalink: /people/index.html
-title: People
+permalink: /contact/index.html
+title: Contact
 description: "People that have contributed to Concuerror"
 ---
 
