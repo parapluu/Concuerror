@@ -206,6 +206,9 @@ finalize([{verbosity, N}|Rest], Acc) ->
   Sum = lists:sum([N|proplists:get_all_values(verbosity, Rest)]),
   Verbosity = min(Sum, ?MAX_VERBOSITY),
   NewRest = proplists:delete(verbosity, Rest),
+  if Verbosity < ?ltiming; ?has_dev -> ok;
+     true -> opt_error("To use this verbosity, run 'make clean; make dev' first")
+  end,
   finalize(NewRest, [{verbosity, Verbosity}|Acc]);
 finalize([{Key, Value}|Rest], Acc)
   when Key =:= file; Key =:= pa; Key =:=pz ->

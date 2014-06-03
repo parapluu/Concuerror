@@ -313,7 +313,6 @@ print_log_msgs(Output, LogMsgs) ->
         Header = verbosity_to_string(Type),
         Suffix =
           case Type of
-            ?lrace    -> "s (turn off with: --show_races false)";
             ?linfo    -> "";
             _         -> "s"
           end,
@@ -330,7 +329,8 @@ verbosity_to_string(Level) ->
     ?lwarning -> "Warning";
     ?ltip     -> "Tip";
     ?lrace    -> "Race Pair";
-    ?linfo    -> "Info"
+    ?linfo    -> "Info";
+    _ -> ""
   end.
 
 clear_progress() ->

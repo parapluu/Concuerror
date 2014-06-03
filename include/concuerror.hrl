@@ -81,12 +81,13 @@
         ?log(Logger, ?ldebug, Format, Data)).
 -define(trace(Logger, Format, Data),
         ?log(Logger, ?ltrace, Format, Data)).
--define(MAX_VERBOSITY, ?ltrace).
+-define(has_dev, true).
 -else.
 -define(debug(Logger, Format, Data),ok).
 -define(trace(Logger, Format, Data),ok).
--define(MAX_VERBOSITY, ?ltiming).
+-define(has_dev, false).
 -endif.
+-define(MAX_VERBOSITY, ?ltrace).
 
 -define(unique(Logger, Type, Format, Data),
         ?log(Logger, Type, {?MODULE, ?LINE}, Format, Data)).
