@@ -156,7 +156,7 @@ log_trace(State) ->
   case UnfilteredWarnings =/= Warnings of
     true ->
       Message = "Some errors were silenced (--ignore_error).~n",
-      ?unique(Logger, ?linfo, Message, []);
+      ?unique(Logger, ?lwarning, Message, []);
     false ->
       ok
   end,
@@ -734,7 +734,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
         if State#scheduler_state.show_races ->
             ?unique(
                Logger, ?lrace,
-               "You can disable race pair messages with --show_races false~n",
+               "You can disable race pair messages with '--show_races false'~n",
                []),
             concuerror_logger:race(Logger, EarlyEvent, Event);
            true -> ok
@@ -769,7 +769,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
         false ->
           Message =
             "Some interleavings were not considered due to delay bounding.~n",
-          ?unique(Logger, ?linfo, Message, []),
+          ?unique(Logger, ?lwarning, Message, []),
           ?debug(Logger, "     OVER BOUND~n",[]),
           skip
       end
@@ -1041,15 +1041,15 @@ msg(signal) ->
     " too many interleavings consider refactoring your code.~n";
 msg(shutdown) ->
   "A process crashed with reason 'shutdown'. This may happen when a"
-    " supervisor is terminating its children. You can use --treat_as_normal"
-    " shutdown if this is expected behaviour.~n";
+    " supervisor is terminating its children. You can use '--treat_as_normal"
+    " shutdown' if this is expected behaviour.~n";
 msg(sleep_set_block) ->
   "Some interleavings were 'sleep-set blocked'. This is expected if you have"
-    " specified --optimal=false, but reveals wasted effort.~n";
+    " specified '--optimal false', but reveals wasted effort.~n";
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"
-    " standard timeout. Use the --after_timeout option to treat after clauses"
+    " standard timeout. Use the '--after_timeout' option to treat after clauses"
     " that exceed some threshold as 'impossible'.~n";
 msg(treat_as_normal) ->
   "Some abnormal exit reasons were treated as normal (--treat_as_normal).~n".
