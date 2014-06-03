@@ -2,7 +2,7 @@
 
 -module(concuerror_logger).
 
--export([start/1, complete/2, plan/1, log/5, stop/2, print/3, time/2]).
+-export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
 -export([graph_set_node/3, graph_new_node/4]).
 
 -include("concuerror.hrl").
@@ -123,6 +123,12 @@ time(Logger, Tag) ->
   Logger ! {time, Tag},
   ok.
 
+-spec race(logger(), event(), event()) -> ok.
+
+race(Logger, EarlyEvent, Event) ->
+  Logger ! {race, EarlyEvent, Event},
+  ok.
+
 %%------------------------------------------------------------------------------
 
 loop_entry(State) ->
@@ -167,6 +173,13 @@ loop(Message, State) ->
       loop(
         {log, ?ltiming, none, Msg, [Diff, Tag]},
         State#logger_state{timestamp = Now});
+    {race, EarlyEvent, Event} ->
+      Msg =
+        io_lib:format(
+          "* ~s~n   is in race with~n  ~s~n",
+          [concuerror_printer:pretty_s({0,E}, PrintDepth)
+           || E <- [EarlyEvent,Event]]),
+      loop({log, ?lrace, none, Msg, []}, State);
     {log, Level, Tag, Format, Data} ->
       {NewLogMsgs, NewAlreadyEmitted} =
         case Tag =/= ?nonunique andalso sets:is_element(Tag, AlreadyEmitted) of

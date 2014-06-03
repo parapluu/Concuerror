@@ -98,7 +98,6 @@
 
 -define(pretty_s(I,E), concuerror_printer:pretty_s({I,E#event{location = []}},5)).
 -define(pretty_s(E), ?pretty_s(0,E)).
--define(pretty_r(E),concuerror_printer:pretty_s({0,E},5)).
 
 -define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------

@@ -736,9 +736,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
                Logger, ?lrace,
                "You can disable race pair messages with --show_races false~n",
                []),
-            ?log(
-               Logger, ?lrace, "* ~s~n   is in race with~n  ~s~n",
-               [?pretty_r(EarlyEvent),?pretty_r(Event)]);
+            concuerror_logger:race(Logger, EarlyEvent, Event);
            true -> ok
         end,
         {S, C}
