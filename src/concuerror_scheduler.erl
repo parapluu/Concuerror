@@ -155,7 +155,7 @@ log_trace(State) ->
   Warnings = filter_warnings(UnfilteredWarnings, Ignored),
   case UnfilteredWarnings =/= Warnings of
     true ->
-      Message = "Some errors were silenced (--ignore_error).~n",
+      Message = "Some errors were ignored ('--ignore_error').~n",
       ?unique(Logger, ?lwarning, Message, []);
     false ->
       ok

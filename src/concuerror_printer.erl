@@ -88,6 +88,9 @@ pretty_aux(List, FAcc, Depth) when is_list(List) ->
   Fun = fun(Event, Acc) -> pretty_aux(Event, Acc, Depth) end,
   lists:foldl(Fun, FAcc, List).
 
+pretty_info(#builtin_event{mfargs = {erlang, send, [To, Msg]},
+                           extra = Ref}, Depth) when is_reference(Ref) ->
+  io_lib:format("expires, delivering ~W to ~W", [Msg, Depth, To, Depth]);
 pretty_info(#builtin_event{mfargs = {erlang, '!', [To, Msg]},
                            status = {crashed, Reason}}, Depth) ->
   io_lib:format("Exception ~W raised by: ~W ! ~W",
