@@ -7,6 +7,7 @@
 
 -include("concuerror.hrl").
 
+-define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------
 
 -type graph_data() ::
@@ -20,6 +21,8 @@
           output                       :: file:io_device(),
           output_name                  :: string(),
           print_depth                  :: pos_integer(),
+          rate_timestamp = erlang:now():: erlang:timestamp(),
+          rate_prev = 0                :: non_neg_integer(),
           streams = []                 :: [{stream(), [string()]}],
           timestamp = erlang:now()     :: erlang:timestamp(),
           ticker = none                :: pid() | 'none' | 'show',
@@ -51,7 +54,7 @@ run(Parent, Options) ->
   ok = setup_symbolic_names(SymbolicNames, Processes),
   ok = concuerror_loader:load(io_lib, Modules),
   PrintableOptions =
-    delete_many(
+    delete_props(
       [graph, modules, output, processes, timers, verbosity],
       Options),
   separator(Output, $#),
@@ -80,10 +83,10 @@ get_properties([Prop|Props], PropList, Acc) ->
   PropVal = proplists:get_value(Prop, PropList),
   get_properties(Props, PropList, [PropVal|Acc]).
 
-delete_many([], Proplist) ->
+delete_props([], Proplist) ->
   Proplist;
-delete_many([Key|Rest], Proplist) ->
-  delete_many(Rest, proplists:delete(Key, Proplist)).
+delete_props([Key|Rest], Proplist) ->
+  delete_props(Rest, proplists:delete(Key, Proplist)).
 
 -spec plan(logger()) -> ok.
 
@@ -138,8 +141,8 @@ loop_entry(State) ->
       true -> none;
       false ->
         Timestamp = format_utc_timestamp(),
-        inner_diagnostic("Concuerror started at ~s~n", [Timestamp]),
-        inner_diagnostic("Writing results in ~s~n~n~n", [OutputName]),
+        to_stderr("Concuerror started at ~s~n", [Timestamp]),
+        to_stderr("Writing results in ~s~n~n~n", [OutputName]),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
@@ -176,7 +179,7 @@ loop(Message, State) ->
     {race, EarlyEvent, Event} ->
       Msg =
         io_lib:format(
-          "* ~s~n   is in race with~n  ~s~n",
+          "* A) ~s~n  vs B) ~s~n",
           [concuerror_printer:pretty_s({0,E}, PrintDepth)
            || E <- [EarlyEvent,Event]]),
       loop({log, ?lrace, none, Msg, []}, State);
@@ -187,7 +190,7 @@ loop(Message, State) ->
           false ->
             case Verbosity < Level of
               true  -> ok;
-              false -> diagnostic(State, Level, Format, Data)
+              false -> printout(State, Level, Format, Data)
             end,
             NLM =
               case Level < ?ltiming of
@@ -225,14 +228,14 @@ loop(Message, State) ->
       ok = graph_close(State),
       case Verbosity =:= ?lquiet of
         true -> ok;
-        false -> diagnostic(State#logger_state{ticker = show}, Format, [Status])
+        false -> printout(State#logger_state{ticker = show}, Format, [Status])
       end,
       Scheduler ! closed,
       ok;
     plan ->
       NewState = State#logger_state{traces_total = TracesTotal + 1},
-      update_on_ticker(NewState),
-      loop(NewState);
+      FinalState = update_on_ticker(NewState),
+      loop(FinalState);
     {print, Type, String} ->
       NewStreams = orddict:append(Type, String, Streams),
       NewState = State#logger_state{streams = NewStreams},
@@ -275,8 +278,8 @@ loop(Message, State) ->
           traces_ssb = NewSSB,
           errors = NewErrors
          },
-      update_on_ticker(NewState),
-      loop(NewState)
+      FinalState = update_on_ticker(NewState),
+      loop(FinalState)
   end.
 
 format_utc_timestamp() ->
@@ -289,22 +292,19 @@ format_utc_timestamp() ->
   io_lib:format("~2..0w ~s ~4w ~2..0w:~2..0w:~2..0w",
                 [Day, Mstr, Year, Hour, Minute, Second]).
 
-diagnostic(State, Format) ->
-  diagnostic(State, Format, []).
-
-diagnostic(#logger_state{ticker = Ticker} = State, Format, Data)
+printout(#logger_state{ticker = Ticker} = State, Format, Data)
   when Ticker =/= none ->
   IntMsg = interleavings_message(State),
   clear_progress(),
-  inner_diagnostic(Format, Data),
-  inner_diagnostic("~s", [IntMsg]);
-diagnostic(_, Format, Data) ->
-  inner_diagnostic(Format, Data).
+  to_stderr(Format, Data),
+  to_stderr("~s", [IntMsg]);
+printout(_, Format, Data) ->
+  to_stderr(Format, Data).
 
-diagnostic(State, Level, Format, Data) ->
+printout(State, Level, Format, Data) ->
   Tag = verbosity_to_string(Level),
   NewFormat = Tag ++ ": " ++ Format,
-  diagnostic(State, NewFormat, Data).
+  printout(State, NewFormat, Data).
 
 print_log_msgs(Output, LogMsgs) ->
   ForeachInner = fun({Format, Data}) -> io:format(Output,Format,Data) end,
@@ -334,9 +334,9 @@ verbosity_to_string(Level) ->
   end.
 
 clear_progress() ->
-  inner_diagnostic("~c[1A~c[2K\r", [27, 27]).
+  to_stderr("~c[1A~c[2K\r", [27, 27]).
 
-inner_diagnostic(Format, Data) ->
+to_stderr(Format, Data) ->
   io:format(standard_error, Format, Data).
 
 ticker(Logger) ->
@@ -349,9 +349,24 @@ ticker(Logger) ->
 
 update_on_ticker(State) ->
   case has_tick() of
-    true  -> diagnostic(State, "");
-    false -> ok
+    true  ->
+      {Rate, NewState} = update_rate(State),
+      printout(State, "~s", [Rate]),
+      NewState;
+    false -> State
   end.
+
+update_rate(State) ->
+  #logger_state{
+     rate_timestamp = Old,
+     rate_prev = Prev,
+     traces_explored = Current} = State,
+  New = erlang:now(),
+  Time = timer:now_diff(New, Old) / 1000000,
+  Diff = Current - Prev,
+  Rate = (Diff / Time),
+  RateStr = io_lib:format("(~5.1f interleavings/s) ",[Rate]),
+  {RateStr, State#logger_state{rate_timestamp = New, rate_prev = Current}}.
 
 has_tick() ->
   has_tick(false).
