@@ -159,6 +159,14 @@ finalize(Options) ->
         finalize_aux(proplists:unfold(Options)),
       case proplists:get_value(entry_point, Finalized, undefined) of
         {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
+          try
+            true = lists:member({F,length(B)}, M:module_info(exports))
+          catch
+            _:_ ->
+              opt_error("The entry point ~p:~p/~p is not valid. Make sure you"
+                        " have specified the correct module ('-m') and test"
+                        " function ('-t')", [M,F,length(B)])
+          end,
           MissingDefaults =
             add_missing_defaults(
               [{delay_bound, infinity},
@@ -173,7 +181,7 @@ finalize(Options) ->
           GetoptDefaults;
         _ ->
           opt_error("The module containing the main test function has not been"
-                    " specified.")
+                    " specified. Use '-m <module>' to provide this info.")
       end
   end.
 
