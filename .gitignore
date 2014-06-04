@@ -9,7 +9,8 @@ ebin/*.beam
 ebin/*.Pbeam
 /concuerror
 .concuerror_plt
-results.txt
+concuerror_report.txt
 erl_crash.dump
 scenarios.beam
 tests/thediff
+*.dot
