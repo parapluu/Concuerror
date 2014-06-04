@@ -3,7 +3,7 @@
 -module(concuerror_logger).
 
 -export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
--export([graph_set_node/3, graph_new_node/4]).
+-export([graph_set_node/3, graph_new_node/4, graph_race/3]).
 
 -include("concuerror.hrl").
 
@@ -266,8 +266,15 @@ loop(Message, State) ->
           false -> TracesSSB
         end,
       {GraphMark, Color} =
-        if NewSSB =/= TracesSSB -> {"Wasted","yellow"};
-           NewErrors =/= Errors -> {"Error","red"};
+        if NewSSB =/= TracesSSB -> {"SSB","yellow"};
+           NewErrors =/= Errors ->
+            DeadlockS =
+              case Warn of
+                {[{deadlock, Ps}|_], _} ->
+                  io_lib:format("(~p blocked)", [[P || {P,_} <- Ps]]);
+                _ -> ""
+              end,
+            {"Error" ++ DeadlockS,"red"};
            true -> {"Ok","lime"}
         end,
       _ = graph_command({status, TracesExplored, GraphMark, Color}, State),
@@ -427,28 +434,41 @@ graph_new_node(Logger, Ref, Index, Event) ->
   Logger ! {graph, {new_node, Ref, Index, Event}},
   ok.
 
+-spec graph_race(logger(), reference(), reference()) -> ok.
+graph_race(Logger, EarlyRef, Ref) ->
+  Logger ! {graph, {race, EarlyRef, Ref}},
+  ok.
+
 graph_preamble(undefined) -> undefined;
 graph_preamble(GraphFile) ->
   io:format(
     GraphFile,
     "digraph {~n"
     "  graph [ranksep=0.3]~n"
-    "  node [shape=box,width=6,fontname=Monospace]~n"
+    "  node [shape=box,width=7,fontname=Monospace]~n"
     "  init [label=\"Initial\"];~n"
     "  subgraph {~n", []),
   {GraphFile, init, none}.
 
 graph_command(_Command, #logger_state{graph_data = undefined} = State) -> State;
 graph_command(Command, State) ->
-  #logger_state{graph_data = {GraphFile, Parent, Sibling}} = State,
+  #logger_state{graph_data = {GraphFile, Parent, Sibling} = Graph} = State,
   NewGraph =
     case Command of
       {new_node, Ref, I, Event} ->
+        ErrorS =
+          case Event#event.event_info of
+            #exit_event{reason = Reason} when Reason =/= normal ->
+              ",color=red,penwidth=5";
+            #builtin_event{status = {crashed, _}} ->
+              ",color=orange,penwidth=5";
+            _ -> ""
+          end,
         Label = concuerror_printer:pretty_s({I,Event#event{location=[]}}, 1),
         io:format(
           GraphFile,
-          "    \"~p\" [label=\"~s\\l\"];~n",
-          [Ref, Label]),
+          "    \"~p\" [label=\"~s\\l\"~s];~n",
+          [Ref, Label, ErrorS]),
         case Sibling =:= none of
           true ->
             io:format(GraphFile,"~s[weight=1000];~n",[ref_edge(Parent, Ref)]);
@@ -460,6 +480,12 @@ graph_command(Command, State) ->
               [ref_edge(Parent, Ref), ref_edge(Sibling, Ref)])
         end,
         {GraphFile, Ref, none};
+      {race, EarlyRef, Ref} ->
+        io:format(
+          GraphFile,
+          "~s[constraint=false, color=red, penwidth=3, style=dashed];~n",
+          [ref_edge(Ref, EarlyRef)]),
+        Graph;
       {set_node, NewParent, NewSibling} ->
         io:format(
           GraphFile,
@@ -474,7 +500,7 @@ graph_command(Command, State) ->
           "    \"~p\" [label=\"~p: ~s\",style=filled,fillcolor=~s];~n"
           "~s[weight=1000];~n",
           [Ref, Count+1, String, Color, ref_edge(Parent, Ref)]),
-        ok      
+        Graph
     end,
   State#logger_state{graph_data = NewGraph}.
 

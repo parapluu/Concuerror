@@ -40,6 +40,7 @@
 -record(scheduler_state, {
           ignore_first_crash = true :: boolean(),
           assume_racing     = true :: boolean(),
+          current_graph_ref        :: reference(),
           current_warnings  = []   :: [concuerror_warning_info()],
           delay             = 0    :: non_neg_integer(),
           depth_bound              :: pos_integer(),
@@ -658,7 +659,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
      message_info = MessageInfo,
      non_racing_system = NonRacingSystem
     } = State,
-  #trace_state{done = [Event|_], index = _Index} = TraceState,
+  #trace_state{done = [Event|_], index = _Index, graph_ref = Ref} = TraceState,
   #event{actor = Actor, event_info = EventInfo, special = Special} = Event,
   Skip =
     case proplists:lookup(system_communication, Special) of
@@ -681,8 +682,9 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
           false -> ActorClock
         end,
       ?debug(_Logger, "~s~n", [?pretty_s(_Index, Event)]),
+      GState = State#scheduler_state{current_graph_ref = Ref},
       BaseNewOldTrace =
-        more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, State),
+        more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, GState),
       NewOldTrace = [TraceState|BaseNewOldTrace],
       plan_more_interleavings(Rest, NewOldTrace, State)
   end.
@@ -736,6 +738,9 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
                Logger, ?lrace,
                "You can disable race pair messages with '--show_races false'~n",
                []),
+            EarlyRef = TraceState#trace_state.graph_ref,
+            Ref = State#scheduler_state.current_graph_ref,
+            concuerror_logger:graph_race(Logger, EarlyRef, Ref),
             concuerror_logger:race(Logger, EarlyEvent, Event);
            true -> ok
         end,
