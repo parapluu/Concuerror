@@ -458,7 +458,9 @@ graph_command(Command, State) ->
       {new_node, Ref, I, Event} ->
         ErrorS =
           case Event#event.event_info of
-            #exit_event{reason = Reason} when Reason =/= normal ->
+            #exit_event{reason = normal} ->
+              ",color=lime,penwidth=5";
+            #exit_event{} ->
               ",color=red,penwidth=5";
             #builtin_event{status = {crashed, _}} ->
               ",color=orange,penwidth=5";
