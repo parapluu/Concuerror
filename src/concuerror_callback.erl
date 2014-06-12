@@ -453,15 +453,15 @@ run_built_in(erlang, Name, 0, [], Info)
       undefined -> erlang:apply(erlang,Name,[])
     end,
   {Ref, Info};
-run_built_in(erlang, monitor, 2, [Type, Target], Info) ->
+run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
   #concuerror_info{
      monitors = Monitors,
      event = #event{event_info = EventInfo} = Event} = Info,
   ?badarg_if_not(Type =:= process),
   {Target, As} =
-    case Target of
-      P when is_pid(P) -> {Target, Target};
-      A when is_atom(A) -> {Target, {Target, node()}};
+    case InTarget of
+      P when is_pid(P) -> {InTarget, InTarget};
+      A when is_atom(A) -> {InTarget, {InTarget, node()}};
       {Name, Node} = Local when is_atom(Name), Node =:= node() ->
         {Name, Local};
       {Name, Node} when is_atom(Name) -> ?crash({not_local_node, Node});
@@ -723,7 +723,12 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
     case is_pid(Recipient) of
       true -> Recipient;
       false ->
-        {P, Info} = run_built_in(erlang, whereis, 1, [Recipient], Info),
+        T =
+          case Recipient of
+            A when is_atom(A) -> Recipient;
+            {A, N} when is_atom(A), N =:= node() -> A
+          end,            
+        {P, Info} = run_built_in(erlang, whereis, 1, [T], Info),
         P
     end,
   Extra =
@@ -921,7 +926,9 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
 
 run_built_in(Module, Name, Arity, Args, Info)
   when
-    {Module, Name, Arity} =:= {erlang, put, 2} ->
+    {Module, Name, Arity} =:= {erlang, put, 2};
+    {Module, Name, Arity} =:= {os, getenv, 1}
+    ->
   #concuerror_info{event = Event} = Info,
   #event{event_info = EventInfo, location = Location} = Event,
   NewResult = erlang:apply(Module, Name, Args),
@@ -1894,7 +1901,7 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location}}) ->
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
     "A process send a request of type '~p' to ~p. Concuerror does not yet support"
-    "this type of request to this process.~n"
+    " this type of request to this process.~n"
     ?notify_us_msg,
     [Type, Name]).
 
