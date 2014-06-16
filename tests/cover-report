@@ -1,0 +1,13 @@
+#!/usr/bin/env escript
+%% -*- erlang-indent-level: 2 -*-
+%%! +S1 -nostick -noshell
+
+main(_Args) ->
+  ScriptDir = filename:dirname(escript:script_name()),
+  CoverDir = filename:join([ScriptDir, "..", "cover-data"]),
+  {ok, Files} = file:list_dir(CoverDir),
+  Full = [filename:join([CoverDir,F]) || F <- Files],
+  Foreach = fun(F) -> cover:import(F) end,
+  lists:foreach(Foreach, Full),
+  Foreach2 = fun(M) -> cover:analyse_to_file(M, [html]) end,
+  lists:foreach(Foreach2, cover:imported_modules()).

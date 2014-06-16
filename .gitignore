@@ -1,9 +1,6 @@
-#
 # NOTE! Please use 'git ls-files -i --exclude-standard'
 # command after changing this file, to see if there are
 # any tracked files which get ignored after the change.
-#
-#
 
 ebin/*.beam
 ebin/*.Pbeam
@@ -14,3 +11,5 @@ erl_crash.dump
 scenarios.beam
 tests/thediff
 *.dot
+*.COVER.html
+cover-data

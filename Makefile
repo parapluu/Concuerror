@@ -51,7 +51,7 @@ MODULES = \
 
 vpath %.erl src
 
-.PHONY: clean compile dialyze submodules tests tests-all tests-long
+.PHONY: clean compile cover dialyze submodules tests tests-all tests-long
 
 compile: $(MODULES:%=ebin/%.beam) getopt concuerror
 
@@ -69,9 +69,6 @@ ebin/%.Pbeam: %.erl | ebin
 ebin/%.beam: %.erl Makefile | ebin
 	erlc $(ERL_COMPILE_FLAGS) -I include -DVSN="\"$(VSN)\"" -o ebin $<
 
-ebin:
-	mkdir ebin
-
 concuerror:
 	ln -s src/concuerror $@
 
@@ -83,7 +80,7 @@ submodules:
 
 clean:
 	rm -f concuerror
-	rm -rf ebin
+	rm -rf ebin cover-data
 	rm -f tests*/scenarios.beam
 
 dialyze: all .concuerror_plt
@@ -105,9 +102,19 @@ SUITES = {advanced_tests,dpor_tests,basic_tests}
 tests: all tests/scenarios.beam
 	@(cd tests; bash -c "./runtests.py suites/$(SUITES)/src/*")
 
-###----------------------------------------------------------------------
-
 tests-long:
 	$(MAKE) -C tests-long CONCUERROR=$(abspath concuerror) DIFFER=$(abspath tests/differ)
 
 tests-all: tests tests-long
+
+###----------------------------------------------------------------------
+
+cover: cover-data
+	export COVER=true; $(MAKE) tests-all
+	tests/cover-report
+
+###----------------------------------------------------------------------
+
+ebin cover-data:
+	mkdir $@
+
