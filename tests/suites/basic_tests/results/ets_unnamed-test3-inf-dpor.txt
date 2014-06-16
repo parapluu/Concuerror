@@ -1,0 +1,1086 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{ets_unnamed,test3,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* At step 19 process P.3 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.3],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.3],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+   9: P.1: exits normally
+  10: P.1: true = ets:delete(2)
+    (while exiting)
+  11: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  15: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  16: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  17: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  18: P.3: Exception badarg raised by: erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  19: P.3: exits abnormally ({badarg,[{erlang,register,[tabler,P.3],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.3: true = ets:delete(4)
+    (while exiting)
+  21: P.2: exits normally
+  22: P.2: true = ets:delete(3)
+    (while exiting)
+################################################################################
+Erroneous interleaving 2:
+* At step 19 process P.2 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.2],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.2],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+   9: P.1: exits normally
+  10: P.1: true = ets:delete(2)
+    (while exiting)
+  11: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  15: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  16: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  17: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  18: P.2: Exception badarg raised by: erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  19: P.2: exits abnormally ({badarg,[{erlang,register,[tabler,P.2],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.2: true = ets:delete(3)
+    (while exiting)
+  21: P.3: exits normally
+  22: P.3: true = ets:delete(4)
+    (while exiting)
+################################################################################
+Erroneous interleaving 3:
+* At step 16 process P.2 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.2],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.2],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+* At step 19 process P.3 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.3],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.3],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+   9: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  10: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  11: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  12: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  13: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  14: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  15: P.2: Exception badarg raised by: erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  16: P.2: exits abnormally ({badarg,[{erlang,register,[tabler,P.2],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.2: true = ets:delete(3)
+    (while exiting)
+  18: P.3: Exception badarg raised by: erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  19: P.3: exits abnormally ({badarg,[{erlang,register,[tabler,P.3],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.3: true = ets:delete(4)
+    (while exiting)
+  21: P.1: exits normally
+  22: P.1: true = ets:delete(2)
+    (while exiting)
+################################################################################
+Erroneous interleaving 4:
+* At step 16 process P.2 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.2],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.2],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+   9: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  10: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  11: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  12: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  13: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  14: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  15: P.2: Exception badarg raised by: erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  16: P.2: exits abnormally ({badarg,[{erlang,register,[tabler,P.2],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.2: true = ets:delete(3)
+    (while exiting)
+  18: P.1: exits normally
+  19: P.1: true = ets:delete(2)
+    (while exiting)
+  20: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  21: P.3: exits normally
+  22: P.3: true = ets:delete(4)
+    (while exiting)
+################################################################################
+Erroneous interleaving 5:
+* At step 16 process P.3 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.3],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.3],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+   9: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  10: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  11: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  12: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  13: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  14: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  15: P.3: Exception badarg raised by: erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  16: P.3: exits abnormally ({badarg,[{erlang,register,[tabler,P.3],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.3: true = ets:delete(4)
+    (while exiting)
+  18: P.1: exits normally
+  19: P.1: true = ets:delete(2)
+    (while exiting)
+  20: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  21: P.2: exits normally
+  22: P.2: true = ets:delete(3)
+    (while exiting)
+################################################################################
+Erroneous interleaving 6:
+* At step 16 process P.3 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.3],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.3],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+* At step 19 process P.2 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.2],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.2],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+   9: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  10: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  11: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  12: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  13: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  14: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  15: P.3: Exception badarg raised by: erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  16: P.3: exits abnormally ({badarg,[{erlang,register,[tabler,P.3],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.3: true = ets:delete(4)
+    (while exiting)
+  18: P.2: Exception badarg raised by: erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  19: P.2: exits abnormally ({badarg,[{erlang,register,[tabler,P.2],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.2: true = ets:delete(3)
+    (while exiting)
+  21: P.1: exits normally
+  22: P.1: true = ets:delete(2)
+    (while exiting)
+################################################################################
+Erroneous interleaving 7:
+* At step 19 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.1],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.1],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  15: P.2: exits normally
+  16: P.2: true = ets:delete(3)
+    (while exiting)
+  17: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  18: P.1: Exception badarg raised by: erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  19: P.1: exits abnormally ({badarg,[{erlang,register,[tabler,P.1],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.1: true = ets:delete(2)
+    (while exiting)
+  21: P.3: exits normally
+  22: P.3: true = ets:delete(4)
+    (while exiting)
+################################################################################
+Erroneous interleaving 8:
+* At step 19 process P.3 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.3],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.3],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  15: P.2: exits normally
+  16: P.2: true = ets:delete(3)
+    (while exiting)
+  17: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  18: P.3: Exception badarg raised by: erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  19: P.3: exits abnormally ({badarg,[{erlang,register,[tabler,P.3],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.3: true = ets:delete(4)
+    (while exiting)
+  21: P.1: exits normally
+  22: P.1: true = ets:delete(2)
+    (while exiting)
+################################################################################
+Erroneous interleaving 9:
+* At step 16 process P.3 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.3],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.3],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+* At step 19 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.1],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.1],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  15: P.3: Exception badarg raised by: erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  16: P.3: exits abnormally ({badarg,[{erlang,register,[tabler,P.3],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.3: true = ets:delete(4)
+    (while exiting)
+  18: P.1: Exception badarg raised by: erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  19: P.1: exits abnormally ({badarg,[{erlang,register,[tabler,P.1],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.1: true = ets:delete(2)
+    (while exiting)
+  21: P.2: exits normally
+  22: P.2: true = ets:delete(3)
+    (while exiting)
+################################################################################
+Erroneous interleaving 10:
+* At step 16 process P.3 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.3],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.3],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  15: P.3: Exception badarg raised by: erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  16: P.3: exits abnormally ({badarg,[{erlang,register,[tabler,P.3],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.3: true = ets:delete(4)
+    (while exiting)
+  18: P.2: exits normally
+  19: P.2: true = ets:delete(3)
+    (while exiting)
+  20: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  21: P.1: exits normally
+  22: P.1: true = ets:delete(2)
+    (while exiting)
+################################################################################
+Erroneous interleaving 11:
+* At step 16 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.1],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.1],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  15: P.1: Exception badarg raised by: erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  16: P.1: exits abnormally ({badarg,[{erlang,register,[tabler,P.1],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.1: true = ets:delete(2)
+    (while exiting)
+  18: P.2: exits normally
+  19: P.2: true = ets:delete(3)
+    (while exiting)
+  20: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  21: P.3: exits normally
+  22: P.3: true = ets:delete(4)
+    (while exiting)
+################################################################################
+Erroneous interleaving 12:
+* At step 16 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.1],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.1],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+* At step 19 process P.3 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.3],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.3],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  15: P.1: Exception badarg raised by: erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  16: P.1: exits abnormally ({badarg,[{erlang,register,[tabler,P.1],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.1: true = ets:delete(2)
+    (while exiting)
+  18: P.3: Exception badarg raised by: erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  19: P.3: exits abnormally ({badarg,[{erlang,register,[tabler,P.3],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.3: true = ets:delete(4)
+    (while exiting)
+  21: P.2: exits normally
+  22: P.2: true = ets:delete(3)
+    (while exiting)
+################################################################################
+Erroneous interleaving 13:
+* At step 19 process P.2 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.2],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.2],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  15: P.3: exits normally
+  16: P.3: true = ets:delete(4)
+    (while exiting)
+  17: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  18: P.2: Exception badarg raised by: erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  19: P.2: exits abnormally ({badarg,[{erlang,register,[tabler,P.2],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.2: true = ets:delete(3)
+    (while exiting)
+  21: P.1: exits normally
+  22: P.1: true = ets:delete(2)
+    (while exiting)
+################################################################################
+Erroneous interleaving 14:
+* At step 19 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.1],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.1],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  15: P.3: exits normally
+  16: P.3: true = ets:delete(4)
+    (while exiting)
+  17: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  18: P.1: Exception badarg raised by: erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  19: P.1: exits abnormally ({badarg,[{erlang,register,[tabler,P.1],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.1: true = ets:delete(2)
+    (while exiting)
+  21: P.2: exits normally
+  22: P.2: true = ets:delete(3)
+    (while exiting)
+################################################################################
+Erroneous interleaving 15:
+* At step 16 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.1],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.1],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+* At step 19 process P.2 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.2],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.2],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  15: P.1: Exception badarg raised by: erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  16: P.1: exits abnormally ({badarg,[{erlang,register,[tabler,P.1],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.1: true = ets:delete(2)
+    (while exiting)
+  18: P.2: Exception badarg raised by: erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  19: P.2: exits abnormally ({badarg,[{erlang,register,[tabler,P.2],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.2: true = ets:delete(3)
+    (while exiting)
+  21: P.3: exits normally
+  22: P.3: true = ets:delete(4)
+    (while exiting)
+################################################################################
+Erroneous interleaving 16:
+* At step 16 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.1],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.1],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  15: P.1: Exception badarg raised by: erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  16: P.1: exits abnormally ({badarg,[{erlang,register,[tabler,P.1],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.1: true = ets:delete(2)
+    (while exiting)
+  18: P.3: exits normally
+  19: P.3: true = ets:delete(4)
+    (while exiting)
+  20: P.2: true = erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  21: P.2: exits normally
+  22: P.2: true = ets:delete(3)
+    (while exiting)
+################################################################################
+Erroneous interleaving 17:
+* At step 16 process P.2 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.2],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.2],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  15: P.2: Exception badarg raised by: erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  16: P.2: exits abnormally ({badarg,[{erlang,register,[tabler,P.2],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.2: true = ets:delete(3)
+    (while exiting)
+  18: P.3: exits normally
+  19: P.3: true = ets:delete(4)
+    (while exiting)
+  20: P.1: true = erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  21: P.1: exits normally
+  22: P.1: true = ets:delete(2)
+    (while exiting)
+################################################################################
+Erroneous interleaving 18:
+* At step 16 process P.2 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.2],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.2],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+* At step 19 process P.1 exited abnormally
+    Reason:
+      {badarg,[{erlang,register,
+                       [tabler,P.1],
+                       [32,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]}
+    Stacktrace:
+      [{erlang,register,
+               [tabler,P.1],
+               [32,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_unnamed.erl"}]}]
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_unnamed.2.69402130>,[]])
+    in erlang.erl line 2329
+   4: P: exits normally
+   5: P.1: 2 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   6: P.1: true = ets:insert(2, {1,2})
+    in ets_unnamed.erl line 30
+   7: P.1: true = ets:insert(2, {1,3})
+    in ets_unnamed.erl line 31
+   8: P.2: 3 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+   9: P.2: true = ets:insert(3, {1,2})
+    in ets_unnamed.erl line 30
+  10: P.2: true = ets:insert(3, {1,3})
+    in ets_unnamed.erl line 31
+  11: P.3: 4 = ets:new(table, [private])
+    in ets_unnamed.erl line 29
+  12: P.3: true = ets:insert(4, {1,2})
+    in ets_unnamed.erl line 30
+  13: P.3: true = ets:insert(4, {1,3})
+    in ets_unnamed.erl line 31
+  14: P.3: true = erlang:register(tabler, P.3)
+    in ets_unnamed.erl line 32
+  15: P.2: Exception badarg raised by: erlang:register(tabler, P.2)
+    in ets_unnamed.erl line 32
+  16: P.2: exits abnormally ({badarg,[{erlang,register,[tabler,P.2],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  17: P.2: true = ets:delete(3)
+    (while exiting)
+  18: P.1: Exception badarg raised by: erlang:register(tabler, P.1)
+    in ets_unnamed.erl line 32
+  19: P.1: exits abnormally ({badarg,[{erlang,register,[tabler,P.1],[32,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+  20: P.1: true = ets:delete(2)
+    (while exiting)
+  21: P.3: exits normally
+  22: P.3: true = ets:delete(4)
+    (while exiting)
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented ets_unnamed
+Instrumented io_lib
+Instrumented erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 18 errors, 24/24 interleavings explored

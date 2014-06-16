@@ -65,39 +65,41 @@ dependent(B, #builtin_event{mfargs = {erlang, process_info, _}} = PInfo) ->
 dependent(#builtin_event{} = BI1, #builtin_event{} = BI2) ->
   dependent_built_in(BI1, BI2);
 
-dependent(#builtin_event{actor = Actor, exiting = false,
+dependent(#builtin_event{actor = Recipient, exiting = false,
                          trapping = Trapping} = Builtin,
           #message_event{message = #message{data = Signal},
                          recipient = Recipient, type = exit_signal}) ->
   #builtin_event{mfargs = MFArgs, result = Old} = Builtin,
-  Actor =:= Recipient
-    andalso
-      (Signal =:= kill
-       orelse
-       case MFArgs of
-         {erlang,process_flag,[trap_exit,New]} when New =/= Old -> true;
-         _ ->
-           {'EXIT', _, Reason} = Signal,
-           not Trapping andalso Reason =/= normal
-       end);
-dependent(#message_event{type = exit_signal} = Message,
+  Signal =:= kill
+    orelse
+    case MFArgs of
+      {erlang,process_flag,[trap_exit,New]} when New =/= Old -> true;
+      _ ->
+        {'EXIT', _, Reason} = Signal,
+        not Trapping andalso Reason =/= normal
+    end;
+dependent(#builtin_event{actor = Recipient, mfargs = {erlang, demonitor, [R,O]}},
+          #message_event{message = #message{data = {_, R, _, _, _}},
+                         recipient = Recipient, type = message}) ->
+  lists:member(flush, O);
+dependent(#builtin_event{}, #message_event{}) ->
+  false;
+dependent(#message_event{} = Message,
           #builtin_event{} = Builtin) ->
   dependent(Builtin, Message);
 
-dependent(#exit_event{actor = Exiting, status = Status, trapping = Trapping},
+dependent(#exit_event{actor = Recipient, status = Status, trapping = Trapping},
           #message_event{message = #message{data = Signal},
                          recipient = Recipient, type = exit_signal}) ->
-  Exiting =:= Recipient
-    andalso
-    case Status =:= running of
-      false -> throw(irreversible);
-      true ->
-        case Signal of
-          kill -> true;
-          {'EXIT', _, Reason} ->
-            not Trapping andalso Reason =/= normal
-        end
-    end;
+  case Status =:= running of
+    false -> throw(irreversible);
+    true ->
+      case Signal of
+        kill -> true;
+        {'EXIT', _, Reason} ->
+          not Trapping andalso Reason =/= normal
+      end
+  end;
 dependent(#message_event{} = Message, #exit_event{} = Exit) ->
   dependent(Exit, Message);
 

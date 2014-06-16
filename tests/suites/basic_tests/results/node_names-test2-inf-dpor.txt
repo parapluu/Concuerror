@@ -1,0 +1,32 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{node_names,test2,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/node_names.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+  No errors found!
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented node_names
+Instrumented io_lib
+Instrumented erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 1/1 interleavings explored

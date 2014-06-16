@@ -474,14 +474,20 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
       %% New event...
       undefined -> make_ref()
     end,
-  Pid =
+  {IsActive, Pid} =
     case is_pid(Target) of
-      true -> Target;
+      true ->
+        {IA, _} = run_built_in(erlang, is_process_alive, 1, [Target], Info),
+        {IA, Target};
       false ->
-        {P1, Info} = run_built_in(erlang, whereis, 1, [Target], Info),
-        P1
+        {P1, _} = run_built_in(erlang, whereis, 1, [Target], Info),
+        case P1 =:= undefined of
+          true -> {false, foo};
+          false ->
+            {IA, _} = run_built_in(erlang, is_process_alive, 1, [P1], Info),
+            {IA, P1}
+        end
     end,
-  {IsActive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   case IsActive of
     true -> true = ets:insert(Monitors, ?monitor(Ref, Pid, As, active));
     false -> ok
