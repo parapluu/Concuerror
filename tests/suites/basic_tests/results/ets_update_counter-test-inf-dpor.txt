@@ -1,0 +1,150 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{ets_update_counter,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_update_counter.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_update_counter.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_update_counter.erl line 10
+   2: P: true = ets:insert(table, [{a,0},{b,0}])
+    in ets_update_counter.erl line 11
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.1.38533576>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.2.38533576>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.3.38533576>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.3.38533576>,[]])
+    in erlang.erl line 2329
+   7: P.1: [{a,0}] = ets:lookup(table, a)
+    in ets_update_counter.erl line 19
+   8: P.1: exits normally
+   9: P.2: true = ets:insert(table, {b,5})
+    in ets_update_counter.erl line 22
+  10: P.2: exits normally
+  11: P.3: 1 = ets:update_counter(table, a, 1)
+    in ets_update_counter.erl line 25
+  12: P.3: exits normally
+  13: P.4: 6 = ets:update_counter(table, b, 1)
+    in ets_update_counter.erl line 25
+  14: P.4: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_update_counter.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_update_counter.erl line 10
+   2: P: true = ets:insert(table, [{a,0},{b,0}])
+    in ets_update_counter.erl line 11
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.1.38533576>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.2.38533576>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.3.38533576>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.3.38533576>,[]])
+    in erlang.erl line 2329
+   7: P.1: [{a,0}] = ets:lookup(table, a)
+    in ets_update_counter.erl line 19
+   8: P.1: exits normally
+   9: P.3: 1 = ets:update_counter(table, a, 1)
+    in ets_update_counter.erl line 25
+  10: P.3: exits normally
+  11: P.4: 1 = ets:update_counter(table, b, 1)
+    in ets_update_counter.erl line 25
+  12: P.4: exits normally
+  13: P.2: true = ets:insert(table, {b,5})
+    in ets_update_counter.erl line 22
+  14: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_update_counter.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_update_counter.erl line 10
+   2: P: true = ets:insert(table, [{a,0},{b,0}])
+    in ets_update_counter.erl line 11
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.1.38533576>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.2.38533576>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.3.38533576>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.3.38533576>,[]])
+    in erlang.erl line 2329
+   7: P.2: true = ets:insert(table, {b,5})
+    in ets_update_counter.erl line 22
+   8: P.2: exits normally
+   9: P.4: 6 = ets:update_counter(table, b, 1)
+    in ets_update_counter.erl line 25
+  10: P.4: exits normally
+  11: P.3: 1 = ets:update_counter(table, a, 1)
+    in ets_update_counter.erl line 25
+  12: P.3: exits normally
+  13: P.1: [{a,1}] = ets:lookup(table, a)
+    in ets_update_counter.erl line 19
+  14: P.1: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_update_counter.erl line 16
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_update_counter.erl line 10
+   2: P: true = ets:insert(table, [{a,0},{b,0}])
+    in ets_update_counter.erl line 11
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.1.38533576>,[]])
+    in erlang.erl line 2329
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.2.38533576>,[]])
+    in erlang.erl line 2329
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.3.38533576>,[]])
+    in erlang.erl line 2329
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<ets_update_counter.3.38533576>,[]])
+    in erlang.erl line 2329
+   7: P.4: 1 = ets:update_counter(table, b, 1)
+    in ets_update_counter.erl line 25
+   8: P.4: exits normally
+   9: P.2: true = ets:insert(table, {b,5})
+    in ets_update_counter.erl line 22
+  10: P.2: exits normally
+  11: P.3: 1 = ets:update_counter(table, a, 1)
+    in ets_update_counter.erl line 25
+  12: P.3: exits normally
+  13: P.1: [{a,1}] = ets:lookup(table, a)
+    in ets_update_counter.erl line 19
+  14: P.1: exits normally
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented ets_update_counter
+Instrumented io_lib
+Instrumented erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 4 errors, 4/4 interleavings explored

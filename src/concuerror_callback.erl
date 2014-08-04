@@ -889,6 +889,7 @@ run_built_in(ets, F, N, [Name|Args], Info)
     ;{F,N} =:= {select, 2}
     ;{F,N} =:= {select, 3}
     ;{F,N} =:= {select_delete, 2}
+    ;{F,N} =:= {update_counter, 3}
     ->
   {Tid, System} = check_ets_access_rights(Name, {F,N}, Info),
   case System of
@@ -1581,7 +1582,8 @@ ets_ops_access_rights_map(Op) ->
     {member        ,_} -> read;
     {next          ,_} -> read;
     {select        ,_} -> read;
-    {select_delete ,_} -> write
+    {select_delete ,_} -> write;
+    {update_counter,3} -> write                            
   end.
 
 %%------------------------------------------------------------------------------

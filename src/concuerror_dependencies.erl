@@ -397,88 +397,6 @@ dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
                    #builtin_event{mfargs = {ets,delete,[_]}} = EtsDelete) ->
   dependent_built_in(EtsDelete, EtsAny);
 
-dependent_built_in(#builtin_event{mfargs = {ets,Insert1,[Table1,Tuples1]},
-                                  result = Result1, extra = Tid},
-                   #builtin_event{mfargs = {ets,Insert2,[Table2,Tuples2]},
-                                  result = Result2})
-  when
-    ?is_insert(Insert1), ?is_insert(Insert2) ->
-  case Table1 =:= Table2 andalso (Result1 orelse Result2) of
-    false -> false;
-    true ->
-      KeyPos = ets:info(Tid, keypos),
-      List1 = case is_list(Tuples1) of true -> Tuples1; false -> [Tuples1] end,
-      List2 = case is_list(Tuples2) of true -> Tuples2; false -> [Tuples2] end,
-      %% At least one has succeeded. If both succeeded, none is a dangerous
-      %% insert_new so ignore insertions of the same tuple. If one has failed it
-      %% is an insert_new, and if they insert the same tuple they are dependent.
-      OneFailed = Result1 andalso Result2,
-      case length(List1) =< length(List2) of
-        true -> ets_insert_dep(OneFailed, KeyPos, List1, List2);
-        false -> ets_insert_dep(OneFailed, KeyPos, List2, List1)
-      end
-  end;
-
-dependent_built_in(#builtin_event{mfargs = {ets,LookupA,_}},
-                   #builtin_event{mfargs = {ets,LookupB,_}})
-  when
-    (?is_lookup(LookupA) orelse ?is_match(LookupA)),
-    (?is_lookup(LookupB) orelse ?is_match(LookupB)) ->
-  false;
-
-dependent_built_in(#builtin_event{mfargs = {ets,Delete,[Table1,Key1]}},
-                   #builtin_event{mfargs = {ets,Lookup,[Table2,Key2|_]}})
-  when
-    ?is_delete(Delete), ?is_lookup(Lookup) ->
-  Table1 =:= Table2 andalso Key1 =:= Key2;
-dependent_built_in(#builtin_event{mfargs = {ets,Lookup,_}} = EtsLookup,
-                   #builtin_event{mfargs = {ets,Delete,_}} = EtsDelete)
-  when
-    ?is_lookup(Lookup), ?is_delete(Delete) ->
-  dependent_built_in(EtsDelete, EtsLookup);
-
-dependent_built_in(#builtin_event{mfargs = {ets,Insert,[Table1,Tuples]},
-                                  result = Result, extra = Tid},
-                   #builtin_event{mfargs = {ets,Lookup,[Table2,Key|_]}})
-  when
-    ?is_insert(Insert), (?is_lookup(Lookup) orelse ?is_delete(Lookup)) ->
-  case Table1 =:= Table2 andalso Result of
-    false -> false;
-    true ->
-      KeyPos = ets:info(Tid, keypos),
-      List = case is_list(Tuples) of true -> Tuples; false -> [Tuples] end,
-      lists:keyfind(Key, KeyPos, List) =/= false
-  end;
-dependent_built_in(#builtin_event{mfargs = {ets,Lookup,_}} = EtsLookup,
-                   #builtin_event{mfargs = {ets,Insert,_}} = EtsInsert)
-  when
-    ?is_insert(Insert), (?is_lookup(Lookup) orelse ?is_delete(Lookup)) ->
-  dependent_built_in(EtsInsert, EtsLookup);
-
-%% XXX: Refine
-dependent_built_in(#builtin_event{mfargs = {ets,Insert,[Table1|_]}},
-                   #builtin_event{mfargs = {ets,Match,[Table2|_]}})
-  when
-    ?is_insert(Insert), ?is_match(Match) ->
-  Table1 =:= Table2;
-dependent_built_in(#builtin_event{mfargs = {ets,Match,_}} = EtsMatch,
-                   #builtin_event{mfargs = {ets,Insert,_}} = EtsInsert)
-  when
-    ?is_match(Match), ?is_insert(Insert) ->
-  dependent_built_in(EtsInsert, EtsMatch);
-
-%% XXX: Refine
-dependent_built_in(#builtin_event{mfargs = {ets,MatchDelete,[Table1|_]}},
-                   #builtin_event{mfargs = {ets,_Any,[Table2|_]}})
-  when
-    ?is_match_delete(MatchDelete) ->
-  Table1 =:= Table2;
-dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
-                   #builtin_event{mfargs = {ets,MDelete,_}} = EtsMDelete)
-  when
-    ?is_match_delete(MDelete) ->
-  dependent_built_in(EtsMDelete, EtsAny);
-
 dependent_built_in(#builtin_event{mfargs = {ets,new,_}, result = Table1},
                    #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
   Table1 =:= Table2;
@@ -486,13 +404,20 @@ dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
                    #builtin_event{mfargs = {ets,new,_}} = EtsNew) ->
   dependent_built_in(EtsNew, EtsAny);
 
-%% XXX: Refine
-dependent_built_in(#builtin_event{mfargs = {ets,give_away,[Table1|_]}},
-                   #builtin_event{mfargs = {ets,_Any,[Table2|_]}}) ->
-  Table1 =:= Table2;
-dependent_built_in(#builtin_event{mfargs = {ets,_Any,_}} = EtsAny,
-                   #builtin_event{mfargs = {ets,give_away,_}} = EtsGiveAway) ->
-  dependent_built_in(EtsGiveAway, EtsAny);
+dependent_built_in(#builtin_event{mfargs = {ets,_,[Table|_]}} = EventA,
+                   #builtin_event{mfargs = {ets,_,[Table|_]}} = EventB) ->
+  case ets_is_mutating(EventA) of
+    false ->
+      case ets_is_mutating(EventB) of
+        false -> false;
+        Pred -> Pred(EventA)
+      end;
+    Pred -> Pred(EventB)
+  end;
+
+dependent_built_in(#builtin_event{mfargs = {ets,_,_}},
+                   #builtin_event{mfargs = {ets,_,_}}) ->
+  false;
 
 dependent_built_in(#builtin_event{mfargs = {erlang,_,_}},
                    #builtin_event{mfargs = {ets,_,_}}) ->
@@ -508,29 +433,92 @@ message_could_match(Patterns, Data, Trapping, Type) ->
     andalso
       (Trapping orelse (Type =:= message)).
 
-ets_insert_dep(_IgnoreSame, _KeyPos, [], _List) -> false;
-ets_insert_dep(IgnoreSame, KeyPos, [Tuple|Rest], List) ->
-  case try_one_tuple(IgnoreSame, Tuple, KeyPos, List) of
-    false -> ets_insert_dep(IgnoreSame, KeyPos, Rest, List);
-    true -> true
+%%------------------------------------------------------------------------------
+
+-define(deps_with_any,fun(_) -> true end).
+
+ets_is_mutating(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}} = Event) ->
+  case {Op, length(Args)} of
+    {delete        ,2} -> with_key(hd(Rest));
+    {first         ,_} -> false;
+    {give_away     ,_} -> ?deps_with_any;
+    {info          ,_} -> false;
+    {insert        ,_} -> from_insert(Event#builtin_event.extra, hd(Rest));
+    {insert_new    ,_}
+      when Event#builtin_event.result ->
+      from_insert(Event#builtin_event.extra, hd(Rest));
+    {insert_new    ,_} -> false;
+    {lookup        ,_} -> false;
+    {lookup_element,_} -> false;
+    {match         ,_} -> false;
+    {match_object  ,_} -> false;
+    {member        ,_} -> false;
+    {next          ,_} -> false;
+    {select        ,_} -> false;
+    {select_delete ,_} -> ?deps_with_any;
+    {update_counter,3} -> with_key(hd(Rest))                   
   end.
 
-try_one_tuple(IgnoreSame, Tuple, KeyPos, List) ->
-  Key = element(KeyPos, Tuple),
-  case lists:keyfind(Key, KeyPos, List) of
-    false -> false;
-    Tuple2 ->
-      case Tuple =/= Tuple2 of
-        true -> true;
-        false ->
-          case IgnoreSame of
-            true ->
-              NewList = lists:delete(Tuple2, List),
-              try_one_tuple(IgnoreSame, Tuple, KeyPos, NewList);
-            false -> true
-          end
+with_key(Key) ->
+  fun(Event) ->
+      Keys = ets_reads_keys(Event),
+      if Keys =:= any -> true;
+         true -> lists:any(fun(K) -> K =:= Key end, Keys)
       end
   end.
+
+ets_reads_keys(Event) ->
+  case keys_or_tuples(Event) of
+    any -> any;
+    {keys, Keys} -> Keys;
+    {tuples, Tuples} ->
+      KeyPos = ets:info(Event#builtin_event.extra, keypos),
+      [element(KeyPos, Tuple) || Tuple <- Tuples]
+  end.      
+
+keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
+  case {Op, length(Args)} of
+    {delete        ,2} -> {keys, [hd(Rest)]};
+    {first         ,_} -> any;
+    {give_away     ,_} -> any;
+    {info          ,_} -> any;
+    {Insert        ,_} when Insert =:= insert; Insert =:= insert_new ->
+      Inserted = hd(Rest),
+      {tuples,
+       case is_list(Inserted) of true -> Inserted; false -> [Inserted] end};
+    {lookup        ,_} -> {keys, [hd(Rest)]};
+    {lookup_element,_} -> {keys, [hd(Rest)]};
+    {match         ,_} -> any;
+    {match_object  ,_} -> any;
+    {member        ,_} -> {keys, [hd(Rest)]};
+    {next          ,_} -> any;
+    {select        ,_} -> any;
+    {select_delete ,_} -> any;
+    {update_counter,3} -> {keys, [hd(Rest)]}
+  end.
+
+from_insert(Table, Insert) ->
+  KeyPos = ets:info(Table, keypos),
+  InsertList = case is_list(Insert) of true -> Insert; false -> [Insert] end,
+  fun(Event) ->
+      case keys_or_tuples(Event) of
+        any -> true;
+        {keys, Keys} ->
+          InsertKeys =
+            ordsets:from_list([element(KeyPos, T) || T <- InsertList]),
+          lists:any(fun(K) -> ordsets:is_element(K, InsertKeys) end, Keys);
+        {tuples, Tuples} ->
+          Pred =
+            fun(Tuple) ->
+                case lists:keyfind(element(KeyPos, Tuple), KeyPos, InsertList) of
+                  false -> false;
+                  InsertTuple -> Tuple =/= InsertTuple
+                end
+            end,
+          lists:any(Pred, Tuples)
+      end
+  end.
+
 
 %%------------------------------------------------------------------------------
 
