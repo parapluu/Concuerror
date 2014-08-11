@@ -15,6 +15,7 @@
 
 -record(logger_state, {
           already_emitted = sets:new() :: set(),
+          emit_logger_tips = initial   :: 'initial' | 'false',
           errors = 0                   :: non_neg_integer(),
           graph_data                   :: graph_data() | 'undefined',
           log_msgs = []                :: [string()],
@@ -152,6 +153,34 @@ loop(State) ->
   receive
     Message when Message =/= tick -> loop(Message, State)
   end.
+
+loop(Message,
+     #logger_state{
+        emit_logger_tips = initial,
+        errors = Errors,
+        traces_explored = 10,
+        traces_total = TracesTotal
+       } = State) ->
+  case TracesTotal > 250 of
+    true ->
+      ManyMsg =
+        "A lot of events in this test are racing. You can see such pairs 'live'"
+        " by using -v~p. You may want to consider reducing some parameters in"
+        " your test (e.g. number of processes or events).~n",
+      ?log(self(), ?ltip, ManyMsg, [?lrace]);
+    false -> ok
+  end,
+  case Errors =:= 10 of
+    true ->
+      ErrorsMsg =
+        "Every interleaving explored so far had some error. This can make later"
+        " debugging difficult, as the generated report will include too much"
+        " info. You may want to consider refactoring your code, or using the"
+        " appropriate options to filter out irrelevant errors.~n",
+      ?log(self(), ?ltip, ErrorsMsg, []);
+    false -> ok
+  end,
+  loop(Message, State#logger_state{emit_logger_tips = false});
 
 loop(Message, State) ->
   #logger_state{
