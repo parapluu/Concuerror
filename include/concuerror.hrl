@@ -312,6 +312,11 @@
                  {throw, 1},
                  {tuple_to_list, 1}
                 ]]
+        ++ [{error_logger, N, A} ||
+               {N, A} <-
+                   [
+                    {warning_map, 0}
+                   ]]
         ++ [{file, N, A} ||
                {N, A} <-
                    [
