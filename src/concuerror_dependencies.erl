@@ -440,6 +440,7 @@ message_could_match(Patterns, Data, Trapping, Type) ->
 ets_is_mutating(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}} = Event) ->
   case {Op, length(Args)} of
     {delete        ,2} -> with_key(hd(Rest));
+    {delete_object ,2} -> from_insert(Event#builtin_event.extra, hd(Rest));
     {first         ,_} -> false;
     {give_away     ,_} -> ?deps_with_any;
     {info          ,_} -> false;
@@ -479,6 +480,7 @@ ets_reads_keys(Event) ->
 keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
   case {Op, length(Args)} of
     {delete        ,2} -> {keys, [hd(Rest)]};
+    {delete_object ,2} -> {tuples, [hd(Rest)]};
     {first         ,_} -> any;
     {give_away     ,_} -> any;
     {info          ,_} -> any;

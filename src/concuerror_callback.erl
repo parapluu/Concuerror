@@ -877,6 +877,7 @@ run_built_in(ets, F, N, [Name|Args], Info)
   when
     false
     ;{F,N} =:= {delete, 2}
+    ;{F,N} =:= {delete_object,2}
     ;{F,N} =:= {first, 1}
     ;{F,N} =:= {insert, 2}
     ;{F,N} =:= {insert_new, 2}
@@ -1570,6 +1571,7 @@ ets_ops_access_rights_map(Op) ->
   case Op of
     {delete        ,1} -> own;
     {delete        ,2} -> write;
+    {delete_object ,2} -> write;
     {first         ,_} -> read;
     {give_away     ,_} -> own;
     {info          ,_} -> none;
