@@ -11,3 +11,6 @@ description: "People that have contributed to Concuerror"
 
 # People
 
+[Stavros Aronis](https://github.com/aronisstav)
+
+[Kostis Sagonas](https://github.com/kostis)

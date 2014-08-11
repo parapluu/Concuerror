@@ -197,7 +197,7 @@ Done! (Exit status: warning)
   Summary: 1 errors, 1/1 interleavings explored
 {% endhighlight %}
 
-The output file now contains the following:
+The output file now contains the following description:
 
 {% highlight text %}
 Erroneous interleaving 1:
@@ -207,8 +207,11 @@ Erroneous interleaving 1:
     P.1.1.1 in gen_server.erl line 360
 {% endhighlight %}
 
-Concuerror also reports any processes that have not exited, when no other
-processes are available to run. Such processes are blocked at a *receive*
-statement and are considered "deadlocked". These warnings can be turned off by
-`--ignore_error deadlock`.
+Concuerror reports any processes that have not exited, when no other processes
+are available to run. Such processes are blocked at a *receive* statement and
+are considered "deadlocked". These warnings can be turned off by `--ignore_error
+deadlock`.
 
+Concuerror will always reset the test to the initial state, so leaving some
+processes running may be a better alternative to suffering from all the races
+between exit signals that appear at termination.
