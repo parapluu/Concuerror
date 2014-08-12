@@ -107,13 +107,16 @@ dependent(#exit_event{}, #exit_event{}) ->
   false;
 
 dependent(#message_event{
+             message = #message{data = Data},
              recipient = Recipient,
-             trapping = Trapping},
+             trapping = Trapping,
+             type = EarlyType},
           #message_event{
              recipient = Recipient,
              type = Type
             }) ->
-  message_could_match(fun(_) -> true end, ok, Trapping, Type);
+  (EarlyType =:= message orelse Trapping orelse not_normal(Data)) andalso
+    message_could_match(fun(_) -> true end, ok, Trapping, Type);
 
 dependent(#message_event{
              message = #message{data = Data, id = Id},
@@ -432,6 +435,9 @@ message_could_match(Patterns, Data, Trapping, Type) ->
   Patterns(Data)
     andalso
       (Trapping orelse (Type =:= message)).
+
+not_normal({'EXIT', _, normal}) -> false;
+not_normal(_) -> true.
 
 %%------------------------------------------------------------------------------
 
