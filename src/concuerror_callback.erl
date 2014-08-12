@@ -1677,10 +1677,22 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                 standard_error ->
                   #concuerror_info{logger = Logger} = Info,
                   {From, Reply, _} = handle_io(Data, {standard_error, Logger}),
+                  Msg =
+                    "Your test sends messages to the 'standard_error' process to"
+                    " write output. Such messages from different processes may"
+                    " race, producing spurious interleavings. Consider using"
+                    " '--non_racing_system standard_error' to avoid them.~n",
+                  ?unique(Logger, ?ltip, Msg, []),
                   {From, Reply};
                 user ->
                   #concuerror_info{logger = Logger} = Info,
                   {From, Reply, _} = handle_io(Data, {standard_io, Logger}),
+                  Msg =
+                    "Your test sends messages to the 'user' process to write"
+                    " output. Such messages from different processes may race,"
+                    " producing spurious interleavings. Consider using"
+                    " '--non_racing_system user' to avoid them.~n",
+                  ?unique(Logger, ?ltip, Msg, []),
                   {From, Reply};
                 Else ->
                   ?crash({unknown_protocol_for_system, Else})
