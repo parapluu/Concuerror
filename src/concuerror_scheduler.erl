@@ -757,7 +757,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
      sleeping = Sleeping,
      wakeup_tree = WakeupTree
     } = TraceState,
-  NotDep = not_dep(NewOldTrace ++ Later, EarlyActor, EarlyIndex, Event),
+  NotDep = not_dep(NewOldTrace, Later, EarlyActor, EarlyIndex, Event),
   case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep, Optimal) of
     skip ->
       ?debug(Logger, "     SKIP~n",[]),
@@ -780,13 +780,22 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
       end
   end.
 
-not_dep(Trace, Actor, Index, Event) ->
-  not_dep(Trace, Actor, Index, Event, []).
+not_dep(Trace, Later, Actor, Index, Event) ->
+  not_dep(Trace, Later, Actor, Index, Event, []).
 
-not_dep([], _Actor, _Index, Event, NotDep) ->
+not_dep([], [], _Actor, _Index, Event, NotDep) ->
   %% The racing event's effect may differ, so new label.
   lists:reverse([Event#event{label = undefined}|NotDep]);
-not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
+not_dep([], T, Actor, Index, Event, NotDep) ->
+  not_dep(T,  [], Actor, Index, Event, NotDep);
+%% %% This is a reasonable (but unproven) optimisation for filtering the wakeup
+%% %% sequence...
+%% not_dep([], [#trace_state{sleeping=S} = H|T], Actor, Index, Event, NotDep) ->
+%%   case S =:= [] of
+%%     true  -> not_dep( [], [], Actor, Index, Event, NotDep);
+%%     false -> not_dep([H],  T, Actor, Index, Event, NotDep)
+%%   end;
+not_dep([TraceState|Rest], Later, Actor, Index, Event, NotDep) ->
   #trace_state{
      clock_map = ClockMap,
      done = [#event{actor = LaterActor} = LaterEvent|_]
@@ -798,7 +807,7 @@ not_dep([TraceState|Rest], Actor, Index, Event, NotDep) ->
       false -> NotDep;
       true -> [LaterEvent|NotDep]
     end,
-  not_dep(Rest, Actor, Index, Event, NewNotDep).
+  not_dep(Rest, Later, Actor, Index, Event, NewNotDep).
 
 
 trace_plan(_Logger, _Index, _NotDep) ->
