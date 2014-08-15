@@ -1,0 +1,1354 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{ets_insert_new,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/ets_insert_new.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   7: P.1: exits normally
+   8: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   9: P.2: exits normally
+  10: P.3: 3 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  11: P.3: exits normally
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   7: P.1: exits normally
+   8: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   9: P.3: exits normally
+  10: P.2: 3 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  11: P.2: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.2: exits normally
+   9: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.3: exits normally
+  11: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.2: exits normally
+   9: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.1: exits normally
+  11: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.3: exits normally
+  10: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.1: exits normally
+  12: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.2: exits normally
+################################################################################
+Erroneous interleaving 6:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.1: exits normally
+  10: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.2: exits normally
+  12: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.3: exits normally
+################################################################################
+Erroneous interleaving 7:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.3: exits normally
+  12: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.1: exits normally
+################################################################################
+Erroneous interleaving 8:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.1: exits normally
+   9: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.2: exits normally
+  11: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 9:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.1: exits normally
+   9: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.3: exits normally
+  11: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.2: exits normally
+################################################################################
+Erroneous interleaving 10:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.3: exits normally
+   9: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.1: exits normally
+  11: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.2: exits normally
+################################################################################
+Erroneous interleaving 11:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.3: exits normally
+   9: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.2: exits normally
+  11: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 12:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.1: exits normally
+   9: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.2: exits normally
+  11: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 13:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.1: exits normally
+   9: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.3: exits normally
+  11: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.2: exits normally
+################################################################################
+Erroneous interleaving 14:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.3: exits normally
+  12: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.1: exits normally
+################################################################################
+Erroneous interleaving 15:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.3: exits normally
+  10: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.1: exits normally
+  12: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.2: exits normally
+################################################################################
+Erroneous interleaving 16:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.1: exits normally
+  10: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.2: exits normally
+  12: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.3: exits normally
+################################################################################
+Erroneous interleaving 17:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   7: P.2: exits normally
+   8: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   9: P.3: exits normally
+  10: P.1: 3 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  11: P.1: exits normally
+################################################################################
+Erroneous interleaving 18:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   7: P.2: exits normally
+   8: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   9: P.1: exits normally
+  10: P.3: 3 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  11: P.3: exits normally
+################################################################################
+Erroneous interleaving 19:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.3: exits normally
+   9: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.1: exits normally
+  11: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.2: exits normally
+################################################################################
+Erroneous interleaving 20:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.3: exits normally
+   9: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.2: exits normally
+  11: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 21:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.1: exits normally
+  10: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.2: exits normally
+  12: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.3: exits normally
+################################################################################
+Erroneous interleaving 22:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.3: exits normally
+  12: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.1: exits normally
+################################################################################
+Erroneous interleaving 23:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.3: exits normally
+  10: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.1: exits normally
+  12: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.2: exits normally
+################################################################################
+Erroneous interleaving 24:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.2: exits normally
+   9: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.3: exits normally
+  11: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 25:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.2: exits normally
+   9: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.1: exits normally
+  11: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 26:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.1: exits normally
+   9: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.2: exits normally
+  11: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 27:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.1: exits normally
+   9: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.3: exits normally
+  11: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.2: exits normally
+################################################################################
+Erroneous interleaving 28:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.2: exits normally
+   9: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.3: exits normally
+  11: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 29:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.2: exits normally
+   9: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.1: exits normally
+  11: P.3: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 30:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.3: exits normally
+  10: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.1: exits normally
+  12: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.2: exits normally
+################################################################################
+Erroneous interleaving 31:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.1: exits normally
+  10: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.2: exits normally
+  12: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.3: exits normally
+################################################################################
+Erroneous interleaving 32:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.3: exits normally
+  12: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.1: exits normally
+################################################################################
+Erroneous interleaving 33:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   7: P.3: exits normally
+   8: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   9: P.1: exits normally
+  10: P.2: 3 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  11: P.2: exits normally
+################################################################################
+Erroneous interleaving 34:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   7: P.3: exits normally
+   8: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   9: P.2: exits normally
+  10: P.1: 3 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  11: P.1: exits normally
+################################################################################
+Erroneous interleaving 35:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.1: exits normally
+   9: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.2: exits normally
+  11: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 36:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.1: exits normally
+   9: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.3: exits normally
+  11: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.2: exits normally
+################################################################################
+Erroneous interleaving 37:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.3: exits normally
+  12: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.1: exits normally
+################################################################################
+Erroneous interleaving 38:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.3: exits normally
+  10: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.1: exits normally
+  12: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.2: exits normally
+################################################################################
+Erroneous interleaving 39:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.1: exits normally
+  10: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.2: exits normally
+  12: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.3: exits normally
+################################################################################
+Erroneous interleaving 40:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.3: exits normally
+   9: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.1: exits normally
+  11: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.2: exits normally
+################################################################################
+Erroneous interleaving 41:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.3: exits normally
+   9: P.2: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.2: exits normally
+  11: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 42:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.2: exits normally
+   9: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.3: exits normally
+  11: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 43:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.2: exits normally
+   9: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.1: exits normally
+  11: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.3: exits normally
+################################################################################
+Erroneous interleaving 44:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.3: exits normally
+   9: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  10: P.1: exits normally
+  11: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  12: P.2: exits normally
+################################################################################
+Erroneous interleaving 45:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   8: P.3: exits normally
+   9: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  10: P.2: exits normally
+  11: P.1: 2 = ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 46:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.1: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.1: exits normally
+  10: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.2: exits normally
+  12: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.3: exits normally
+################################################################################
+Erroneous interleaving 47:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.2: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.2: exits normally
+  10: P.3: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.3: exits normally
+  12: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.1: exits normally
+################################################################################
+Erroneous interleaving 48:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in ets_insert_new.erl line 14
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in ets_insert_new.erl line 10
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<ets_insert_new.1.64812548>,[]])
+    in erlang.erl line 2329
+   5: P.3: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   6: P.2: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   7: P.1: Exception badarg raised by: ets:update_counter(table, c, 1)
+    in ets_insert_new.erl line 19
+   8: P.3: true = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+   9: P.3: exits normally
+  10: P.1: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  11: P.1: exits normally
+  12: P.2: false = ets:insert_new(table, {c,1})
+    in ets_insert_new.erl line 22
+  13: P.2: exits normally
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+Every interleaving explored so far had some error. This can make later debugging difficult, as the generated report will include too much info. You may want to consider refactoring your code, or using the appropriate options to filter out irrelevant errors.
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented ets_insert_new
+Instrumented io_lib
+Instrumented erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 48 errors, 48/48 interleavings explored

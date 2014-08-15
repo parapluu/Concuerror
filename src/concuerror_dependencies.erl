@@ -446,14 +446,16 @@ not_normal(_) -> true.
 ets_is_mutating(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}} = Event) ->
   case {Op, length(Args)} of
     {delete        ,2} -> with_key(hd(Rest));
-    {delete_object ,2} -> from_insert(Event#builtin_event.extra, hd(Rest));
+    {delete_object ,2} ->
+      from_insert(Event#builtin_event.extra, hd(Rest), true);
     {first         ,_} -> false;
     {give_away     ,_} -> ?deps_with_any;
     {info          ,_} -> false;
-    {insert        ,_} -> from_insert(Event#builtin_event.extra, hd(Rest));
+    {insert        ,_} ->
+      from_insert(Event#builtin_event.extra, hd(Rest), false);
     {insert_new    ,_}
       when Event#builtin_event.result ->
-      from_insert(Event#builtin_event.extra, hd(Rest));
+      from_insert(Event#builtin_event.extra, hd(Rest), true);
     {insert_new    ,_} -> false;
     {lookup        ,_} -> false;
     {lookup_element,_} -> false;
@@ -505,7 +507,7 @@ keys_or_tuples(#builtin_event{mfargs = {_,Op,[_|Rest] = Args}}) ->
     {update_counter,3} -> {keys, [hd(Rest)]}
   end.
 
-from_insert(Table, Insert) ->
+from_insert(Table, Insert, InsertNewOrDelete) ->
   KeyPos = ets:info(Table, keypos),
   InsertList = case is_list(Insert) of true -> Insert; false -> [Insert] end,
   fun(Event) ->
@@ -520,7 +522,7 @@ from_insert(Table, Insert) ->
             fun(Tuple) ->
                 case lists:keyfind(element(KeyPos, Tuple), KeyPos, InsertList) of
                   false -> false;
-                  InsertTuple -> Tuple =/= InsertTuple
+                  InsertTuple -> InsertNewOrDelete orelse Tuple =/= InsertTuple
                 end
             end,
           lists:any(Pred, Tuples)
