@@ -150,39 +150,32 @@ cl_version() ->
 -spec finalize(options()) -> options().
 
 finalize(Options) ->
-  case code:is_sticky(ets) of
-    true ->
-      opt_error("Concuerror must be able to reload sticky modules."
-                " Use the command-line script or start Erlang with -nostick.");
-    false ->
-      Finalized =
-        finalize_aux(proplists:unfold(Options)),
-      case proplists:get_value(entry_point, Finalized, undefined) of
-        {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
-          try
-            true = lists:member({F,length(B)}, M:module_info(exports))
-          catch
-            _:_ ->
-              opt_error("The entry point ~p:~p/~p is not valid. Make sure you"
-                        " have specified the correct module ('-m') and test"
-                        " function ('-t')", [M,F,length(B)])
-          end,
-          MissingDefaults =
-            add_missing_defaults(
-              [{delay_bound, infinity},
-               {ignore_error, []},
-               {non_racing_system, []},
-               {optimal, true},
-               {treat_as_normal, []},
-               {verbosity, ?DEFAULT_VERBOSITY}
-              ], Finalized),
-          GetoptDefaults = add_missing_getopt_defaults(MissingDefaults),
-          consistent(GetoptDefaults),
-          GetoptDefaults;
-        _ ->
-          opt_error("The module containing the main test function has not been"
-                    " specified. Use '-m <module>' to provide this info.")
-      end
+  Finalized = finalize_aux(proplists:unfold(Options)),
+  case proplists:get_value(entry_point, Finalized, undefined) of
+    {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
+      try
+        true = lists:member({F,length(B)}, M:module_info(exports))
+      catch
+        _:_ ->
+          opt_error("The entry point ~p:~p/~p is not valid. Make sure you"
+                    " have specified the correct module ('-m') and test"
+                    " function ('-t')", [M,F,length(B)])
+      end,
+      MissingDefaults =
+        add_missing_defaults(
+          [{delay_bound, infinity},
+           {ignore_error, []},
+           {non_racing_system, []},
+           {optimal, true},
+           {treat_as_normal, []},
+           {verbosity, ?DEFAULT_VERBOSITY}
+          ], Finalized),
+      GetoptDefaults = add_missing_getopt_defaults(MissingDefaults),
+      consistent(GetoptDefaults),
+      GetoptDefaults;
+    _ ->
+      opt_error("The module containing the main test function has not been"
+                " specified. Use '-m <module>' to provide this info.")
   end.
 
 finalize_aux(Options) ->

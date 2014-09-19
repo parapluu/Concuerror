@@ -71,13 +71,6 @@
 
 run(Options) ->
   process_flag(trap_exit, true),
-  case code:get_object_code(erlang) =:= error of
-    true ->
-      true =
-        code:add_pathz(filename:join(code:root_dir(), "erts/preloaded/ebin"));
-    false ->
-      ok
-  end,
   {FirstProcess, System} =
     concuerror_callback:spawn_first_process(Options),
   InitialTrace =

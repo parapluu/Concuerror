@@ -10,6 +10,15 @@
 
 run(RawOptions) ->
   try
+    [] = [M || {M, preloaded} <- code:all_loaded(), true =/= code:unstick_mod(M)],
+    [] = [D || D <- code:get_path(), ok =/= code:unstick_dir(D)],
+    case code:get_object_code(erlang) =:= error of
+      true ->
+        true =
+          code:add_pathz(filename:join(code:root_dir(), "erts/preloaded/ebin"));
+      false ->
+        ok
+    end,
     Options = concuerror_options:finalize(RawOptions),
     Modules = ?opt(modules, Options),
     Processes = ?opt(processes, Options),
@@ -59,4 +68,3 @@ cleanup(Processes) ->
     end,
   true = ets:foldl(Fold, true, Processes),
   ok.
-
