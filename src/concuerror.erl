@@ -10,7 +10,7 @@
 
 run(RawOptions) ->
   try
-    [] = [M || {M, preloaded} <- code:all_loaded(), true =/= code:unstick_mod(M)],
+    _ = [true = code:unstick_mod(M) || {M, preloaded} <- code:all_loaded()],
     [] = [D || D <- code:get_path(), ok =/= code:unstick_dir(D)],
     case code:get_object_code(erlang) =:= error of
       true ->
