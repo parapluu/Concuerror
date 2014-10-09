@@ -1,0 +1,105 @@
+#!/bin/bash
+
+Out=concuerror_report.txt
+
+
+function abort {
+    echo " FAILED"
+}
+
+function testing {
+    echo -n "$1"
+}
+
+function good {
+    echo " ok"
+}
+
+function mygrep {
+    grep -q "$1" $Out
+}
+
+function has {
+    testing "Output has $1"
+    mygrep "$1"
+    good
+}
+
+set -e
+trap 'abort' 0
+
+echo "Part 1"
+
+testing "Concuerror has help option"
+$CONCUERROR -h 2> /dev/null
+good
+
+cd poolboy
+
+testing "Running Concuerror"
+! $CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup
+good
+
+testing "Output filename is correct"
+[ -e $Out ]
+good
+
+has Info
+has Warning
+has Tip
+has Error
+
+testing "Abnormal exit found"
+mygrep "* At step 49 process P.1 exited abnormally"
+good
+
+testing "Rerun"
+! $CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup --pa .eunit
+good
+
+testing "Tips and errors are there"
+mygrep "A process crashed with reason"
+mygrep "An abnormal exit signal was sent to a process."
+mygrep "A process crashed with reason 'shutdown'."
+mygrep "The first interleaving of your test had errors."
+good
+
+testing "Correct error"
+mygrep "* At step 52 process P exited abnormally"
+good
+
+echo "Part 2"
+
+testing "Turn off symbolic"
+! $CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup  \
+    --pa .eunit --symbolic_names false
+mygrep "* At step 52 process <0."
+good
+
+testing "Use an after timeout"
+! $CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup \
+     --pa .eunit --after_timeout 1000
+mygrep "{after_timeout,1000}"
+good
+
+testing "Treat shutdown as normal"
+$CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup \
+    --pa .eunit --after_timeout 1000 --treat_as_normal shutdown
+mygrep "Summary: 0 errors, 144/144 interleavings explored"
+good
+
+testing "Find a deadlock"
+! $CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 --pa .eunit \
+ -t pool_startup_no_stop
+mygrep "* Blocked at a 'receive' (when all other processes have exited):"
+good
+
+testing "Ignore a deadlock"
+$CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 --pa .eunit \
+    -t pool_startup_no_stop --ignore_error deadlock
+mygrep "Summary: 0 errors, 1/1 interleavings explored"
+good
+
+trap - 0
+
+echo "SUCCESS!"

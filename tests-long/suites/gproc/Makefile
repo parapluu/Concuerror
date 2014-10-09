@@ -9,6 +9,5 @@ gproc/ebin/gproc.beam: gproc
 gproc:
 	git clone https://github.com/uwiger/gproc.git -b 0.3
 
-
 run:
 	mkdir $@

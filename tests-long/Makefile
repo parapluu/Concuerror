@@ -4,5 +4,5 @@ SUBDIRS=$(patsubst %Makefile,%,$(wildcard suites/*/Makefile))
 
 all: $(SUBDIRS)
 
-$(SUBDIRS): 
+$(SUBDIRS):
 	$(MAKE) -C $@

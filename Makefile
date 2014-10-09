@@ -51,7 +51,7 @@ MODULES = \
 
 vpath %.erl src
 
-.PHONY: clean compile cover dialyze submodules tests tests-all tests-long
+.PHONY: clean compile cover dialyze submodules tests tests-long
 
 compile: $(MODULES:%=ebin/%.beam) getopt concuerror
 
@@ -103,9 +103,7 @@ tests: all tests/scenarios.beam
 	@(cd tests; bash -c "./runtests.py suites/$(SUITES)/src/*")
 
 tests-long:
-	$(MAKE) -C tests-long CONCUERROR=$(abspath concuerror) DIFFER=$(abspath tests/differ)
-
-tests-all: tests tests-long
+	$(MAKE) -C $@ CONCUERROR=$(abspath concuerror) DIFFER=$(abspath tests/differ)
 
 ###----------------------------------------------------------------------
 
@@ -117,4 +115,3 @@ cover: cover-data
 
 ebin cover-data:
 	mkdir $@
-

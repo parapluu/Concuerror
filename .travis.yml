@@ -4,7 +4,8 @@ otp_release:
    - 17.0
    - R16B03-1
 env:
-   - TEST=tests-all
+   - TEST=tests
+   - TEST=tests-long
    - TEST=dialyze
 script: "make $TEST"
 after_failure: "./tests/travis_report"
