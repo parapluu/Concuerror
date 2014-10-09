@@ -1,6 +1,6 @@
 #!/usr/bin/env escript
 %% -*- erlang-indent-level: 2 -*-
-%%! +S1 -noshell
+%%! +S1 -noshell -pa . -pa ebin
 
 main(Args) ->
   ScriptDir = filename:dirname(escript:script_name()),
