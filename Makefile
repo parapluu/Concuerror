@@ -102,7 +102,7 @@ SUITES = {advanced_tests,dpor_tests,basic_tests}
 tests: all tests/scenarios.beam
 	@(cd tests; bash -c "./runtests.py suites/$(SUITES)/src/*")
 
-tests-long:
+tests-long: all
 	$(MAKE) -C $@ CONCUERROR=$(abspath concuerror) DIFFER=$(abspath tests/differ)
 
 ###----------------------------------------------------------------------
