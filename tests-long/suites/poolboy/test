@@ -5,6 +5,9 @@ Out=concuerror_report.txt
 
 function abort {
     echo " FAILED"
+    echo cat $Out
+    cat $Out
+    echo " FAILED"
 }
 
 function testing {
