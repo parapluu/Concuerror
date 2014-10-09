@@ -103,12 +103,12 @@ Several lines should be printed on our screen. Let's focus on a few of them:
 
 {% highlight text %}
 Concuerror started at 02 Jun 2014 09:00:00
-Writing results in results.txt
+Writing results in concuerror_report.txt
 {% endhighlight %}
 
-As of the writing of this tutorial, Concuerror mainly produces a textual log,
-saved by default as `concuerror_report.txt`. You can specify a different
-filename with the `-o` option.
+Concuerror mainly produces a textual log, saved by default as
+`concuerror_report.txt`.  You can specify a different filename with the `-o`
+option.
 
 ### Info messages
 

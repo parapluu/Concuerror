@@ -120,7 +120,7 @@ This time the output finishes in:
 [...]
 Warning: Some abnormal exit reasons were treated as normal ('--treat_as_normal').
 Done! (Exit status: completed)
-  Summary: 0 errors, 96/96 interleavings explored
+  Summary: 0 errors, 144/144 interleavings explored
 {% endhighlight %}
 
 Concuerror explored 96 interleavings, finding all the different states that the
