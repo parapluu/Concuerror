@@ -208,7 +208,7 @@ loop(Message, State) ->
     {race, EarlyEvent, Event} ->
       Msg =
         io_lib:format(
-          "* A) ~s~n  vs B) ~s~n",
+          "* A) ~s~n  B) ~s~n",
           [concuerror_printer:pretty_s({0,E}, PrintDepth)
            || E <- [EarlyEvent,Event]]),
       loop({log, ?lrace, none, Msg, []}, State);
@@ -427,7 +427,7 @@ print_streams(Streams, Output) ->
 
 print_stream(Tag, Buffer, Output) ->
   io:format(Output, "Text printed to ~s:~n", [tag_to_filename(Tag)]),
-  io:format(Output, "~s~n", [lists:reverse(Buffer)]),
+  io:format(Output, "~s~n", [Buffer]),
   separator(Output, $-).
 
 tag_to_filename(standard_io) -> "Standard Output";
