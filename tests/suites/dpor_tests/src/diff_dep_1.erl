@@ -15,16 +15,22 @@ diff_dep_1() ->
     spawn(fun() -> ets:insert(table, {z, 1}) end),
     spawn(fun() ->
                   [{z, Z}] = ets:lookup(table, z),
+                  erlang:display({z,Z}),
                   case Z of
                       0 -> ok;
-                      1 -> ets:lookup(table, x)
+                      1 ->
+                          [{x, X}] = ets:lookup(table, x),
+                          erlang:display({x1,X})
                   end
           end),
     spawn(fun() ->
                   [{y, Y}] = ets:lookup(table, y),
+                  erlang:display({y,Y}),
                   case Y of
                       0 -> ok;
-                      1 -> ets:lookup(table, x)
+                      1 ->
+                          [{x, X}] = ets:lookup(table, x),
+                          erlang:display({x2,X})
                   end
           end),
     block().
