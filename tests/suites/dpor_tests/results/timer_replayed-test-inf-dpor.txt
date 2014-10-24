@@ -1,0 +1,134 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{timer_replayed,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/timer_replayed.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in timer_replayed.erl line 15
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in timer_replayed.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.0.23566431>,[]])
+    in erlang.erl line 2316
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.1.23566431>,[]])
+    in erlang.erl line 2316
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.2.23566431>,[]])
+    in erlang.erl line 2316
+   5: P: receive timeout expired after 100 ms
+    in timer_replayed.erl line 14
+   6: P.1: true = ets:insert(table, {x,1})
+    in timer_replayed.erl line 10
+   7: P.1: exits normally
+   8: P.2: [{x,1}] = ets:lookup(table, x)
+    in timer_replayed.erl line 11
+   9: P.2: exits normally
+  10: P.3: #Ref<0.0.0.138> = erlang:send_after(100, P, ok)
+    in timer_replayed.erl line 13
+  11: P.3: exits normally
+  12: Timer #Ref<0.0.0.138>: expires, delivering ok to P
+################################################################################
+Erroneous interleaving 2:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in timer_replayed.erl line 15
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in timer_replayed.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.0.23566431>,[]])
+    in erlang.erl line 2316
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.1.23566431>,[]])
+    in erlang.erl line 2316
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.2.23566431>,[]])
+    in erlang.erl line 2316
+   5: P: receive timeout expired after 100 ms
+    in timer_replayed.erl line 14
+   6: P.3: #Ref<0.0.0.138> = erlang:send_after(100, P, ok)
+    in timer_replayed.erl line 13
+   7: P.3: exits normally
+   8: Timer #Ref<0.0.0.138>: expires, delivering ok to P
+   9: P.2: [] = ets:lookup(table, x)
+    in timer_replayed.erl line 11
+  10: P.2: exits normally
+  11: P.1: true = ets:insert(table, {x,1})
+    in timer_replayed.erl line 10
+  12: P.1: exits normally
+################################################################################
+Erroneous interleaving 3:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in timer_replayed.erl line 15
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in timer_replayed.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.0.23566431>,[]])
+    in erlang.erl line 2316
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.1.23566431>,[]])
+    in erlang.erl line 2316
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.2.23566431>,[]])
+    in erlang.erl line 2316
+   5: P.1: true = ets:insert(table, {x,1})
+    in timer_replayed.erl line 10
+   6: P.1: exits normally
+   7: P.2: [{x,1}] = ets:lookup(table, x)
+    in timer_replayed.erl line 11
+   8: P.2: exits normally
+   9: P.3: #Ref<0.0.0.138> = erlang:send_after(100, P, ok)
+    in timer_replayed.erl line 13
+  10: P.3: exits normally
+  11: Timer #Ref<0.0.0.138>: expires, delivering ok to P
+  12: P: receives message (ok)
+    in timer_replayed.erl line 14
+################################################################################
+Erroneous interleaving 4:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in timer_replayed.erl line 15
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: table = ets:new(table, [named_table,public])
+    in timer_replayed.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.0.23566431>,[]])
+    in erlang.erl line 2316
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.1.23566431>,[]])
+    in erlang.erl line 2316
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<timer_replayed.2.23566431>,[]])
+    in erlang.erl line 2316
+   5: P.3: #Ref<0.0.0.138> = erlang:send_after(100, P, ok)
+    in timer_replayed.erl line 13
+   6: P.3: exits normally
+   7: P.2: [] = ets:lookup(table, x)
+    in timer_replayed.erl line 11
+   8: P.2: exits normally
+   9: P.1: true = ets:insert(table, {x,1})
+    in timer_replayed.erl line 10
+  10: P.1: exits normally
+  11: Timer #Ref<0.0.0.138>: expires, delivering ok to P
+  12: P: receives message (ok)
+    in timer_replayed.erl line 14
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented timer_replayed
+Instrumented io_lib
+Instrumented erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 4 errors, 4/4 interleavings explored

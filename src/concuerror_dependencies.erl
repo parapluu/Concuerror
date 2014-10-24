@@ -182,6 +182,7 @@ dependent_exit(_Exit, {erlang, A, _})
     A =:= make_ref;
     A =:= process_flag;
     A =:= put;
+    A =:= send_after;
     A =:= spawn;
     A =:= spawn_opt;
     A =:= spawn_link;
@@ -313,6 +314,7 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;A =:= process_flag     %% Depends only with delivery of a signal
     ;A =:= processes        %% Depends only with spawn and exit
     ;A =:= put              %% Depends only with proc_info
+    ;A =:= send_after
     ;A =:= spawn            %% Depends only with processes/0
     ;A =:= spawn_link       %% Depends only with processes/0
     ;A =:= spawn_opt        %% Depends only with processes/0
@@ -331,6 +333,7 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     ;B =:= process_flag
     ;B =:= processes
     ;B =:= put
+    ;B =:= send_after
     ;B =:= spawn
     ;B =:= spawn_link
     ;B =:= spawn_opt
