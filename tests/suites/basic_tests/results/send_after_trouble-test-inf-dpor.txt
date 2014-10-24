@@ -4,8 +4,8 @@ Concuerror started with options:
    {assume_racing,false},
    {delay_bound,infinity},
    {depth_bound,5000},
-   {entry_point,{workers,workers,[]}},
-   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/workers.erl"]},
+   {entry_point,{send_after_trouble,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_after_trouble.erl"]},
    {ignore_error,[]},
    {ignore_first_crash,true},
    {instant_delivery,false},
@@ -24,10 +24,9 @@ Concuerror started with options:
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
-Instrumented workers
+Instrumented send_after_trouble
 Instrumented io_lib
 Instrumented erlang
-Instrumented lists
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 0 errors, 414/414 interleavings explored
+  Summary: 0 errors, 5/5 interleavings explored

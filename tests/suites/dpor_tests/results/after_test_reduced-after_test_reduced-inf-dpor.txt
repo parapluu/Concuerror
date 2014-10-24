@@ -1,50 +1,60 @@
 ################################################################################
 Concuerror started with options:
-  [{'after-timeout',infinite},
-   {bound,-1},
-   {distributed,true},
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{after_test_reduced,after_test_reduced,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/after_test_reduced.erl"]},
-   {'light-dpor',false},
-   {symbolic,true},
-   {target,{after_test_reduced,after_test_reduced,[]}},
-   {verbose,0},
-   {wait,5000}]
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
 ################################################################################
 Erroneous interleaving 1:
 * Blocked at a 'receive' (when all other processes have exited):
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2188
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2188
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.59140454>,[]])
+    in erlang.erl line 2316
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.59140454>,[]])
+    in erlang.erl line 2316
    3: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 23
    4: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
-   5: Message (ok2) from P.1 reaches P
-   6: P: receives message (ok2)
-    in after_test_reduced.erl line 19
-   7: P.1: exits normally
-   8: P.2: ok2 = P ! ok2
+   5: P.1: exits normally
+   6: Message (ok2) from P.1 reaches P
+   7: P.2: ok2 = P ! ok2
     in after_test_reduced.erl line 11
+   8: P.2: exits normally
    9: Message (ok2) from P.2 reaches P
   10: P: receives message (ok2)
     in after_test_reduced.erl line 19
-  11: P: receive timeout expired after 0 ms
+  11: P: receives message (ok2)
+    in after_test_reduced.erl line 19
+  12: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 30
-  12: P.2: exits normally
 ################################################################################
 Erroneous interleaving 2:
 * Blocked at a 'receive' (when all other processes have exited):
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2188
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2188
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.59140454>,[]])
+    in erlang.erl line 2316
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.59140454>,[]])
+    in erlang.erl line 2316
    3: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 23
    4: P.1: ok2 = P ! ok2
@@ -54,9 +64,9 @@ Interleaving info:
     in after_test_reduced.erl line 11
    7: P.2: exits normally
    8: Message (ok2) from P.2 reaches P
-   9: Message (ok2) from P.1 reaches P
-  10: P: receives message (ok2)
+   9: P: receives message (ok2)
     in after_test_reduced.erl line 19
+  10: Message (ok2) from P.1 reaches P
   11: P: receives message (ok2)
     in after_test_reduced.erl line 19
   12: P: receive timeout expired after 0 ms
@@ -67,10 +77,10 @@ Erroneous interleaving 3:
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2188
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2188
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.59140454>,[]])
+    in erlang.erl line 2316
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.59140454>,[]])
+    in erlang.erl line 2316
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
    4: P.1: exits normally
@@ -91,10 +101,10 @@ Erroneous interleaving 4:
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2188
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2188
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.59140454>,[]])
+    in erlang.erl line 2316
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.59140454>,[]])
+    in erlang.erl line 2316
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
    4: P.1: exits normally
@@ -117,20 +127,20 @@ Erroneous interleaving 5:
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2188
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2188
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.59140454>,[]])
+    in erlang.erl line 2316
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.59140454>,[]])
+    in erlang.erl line 2316
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
    4: P.1: exits normally
    5: P.2: ok2 = P ! ok2
     in after_test_reduced.erl line 11
    6: P.2: exits normally
-   7: Message (ok2) from P.2 reaches P
-   8: Message (ok2) from P.1 reaches P
-   9: P: receives message (ok2)
+   7: Message (ok2) from P.1 reaches P
+   8: P: receives message (ok2)
     in after_test_reduced.erl line 23
+   9: Message (ok2) from P.2 reaches P
   10: P: receives message (ok2)
     in after_test_reduced.erl line 23
   11: P: receive timeout expired after 0 ms
@@ -141,10 +151,10 @@ Erroneous interleaving 6:
     P in after_test_reduced.erl line 13
 --------------------------------------------------------------------------------
 Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.66118124>,[]])
-    in erlang.erl line 2188
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.66118124>,[]])
-    in erlang.erl line 2188
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.59140454>,[]])
+    in erlang.erl line 2316
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.59140454>,[]])
+    in erlang.erl line 2316
    3: P.1: ok2 = P ! ok2
     in after_test_reduced.erl line 10
    4: P.1: exits normally
@@ -162,5 +172,35 @@ Interleaving info:
   12: P: receive timeout expired after 0 ms
     in after_test_reduced.erl line 30
 ################################################################################
+Erroneous interleaving 7:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in after_test_reduced.erl line 13
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.0.59140454>,[]])
+    in erlang.erl line 2316
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<after_test_reduced.1.59140454>,[]])
+    in erlang.erl line 2316
+   3: P.1: ok2 = P ! ok2
+    in after_test_reduced.erl line 10
+   4: P.1: exits normally
+   5: P.2: ok2 = P ! ok2
+    in after_test_reduced.erl line 11
+   6: P.2: exits normally
+   7: Message (ok2) from P.2 reaches P
+   8: P: receives message (ok2)
+    in after_test_reduced.erl line 23
+   9: Message (ok2) from P.1 reaches P
+  10: P: receives message (ok2)
+    in after_test_reduced.erl line 23
+  11: P: receive timeout expired after 0 ms
+    in after_test_reduced.erl line 30
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented after_test_reduced
+Instrumented io_lib
+Instrumented erlang
+################################################################################
 Done! (Exit status: completed)
-  Summary: 6 errors, 6/6 interleavings explored
+  Summary: 7 errors, 7/7 interleavings explored

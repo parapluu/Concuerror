@@ -119,12 +119,11 @@ dependent(#message_event{
     message_could_match(fun(_) -> true end, ok, Trapping, Type);
 
 dependent(#message_event{
-             message = #message{data = Data, id = Id},
+             message = #message{data = Data},
              recipient = Recipient,
              type = Type
             },
           #receive_event{
-             message = Message,
              patterns = Patterns,
              recipient = Recipient,
              timeout = Timeout,
@@ -132,11 +131,7 @@ dependent(#message_event{
             }) ->
   Timeout =/= infinity
     andalso
-    case Message of
-      'after' -> message_could_match(Patterns, Data, Trapping, Type);
-      #message{id = Id} -> true;
-      _ -> false
-    end;
+    message_could_match(Patterns, Data, Trapping, Type);
 dependent(#receive_event{
              message = 'after',
              patterns = Patterns,

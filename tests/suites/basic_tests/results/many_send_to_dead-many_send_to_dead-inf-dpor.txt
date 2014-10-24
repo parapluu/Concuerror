@@ -26,11 +26,11 @@ Erroneous interleaving 1:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.0.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.1.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.2.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    4: P.1: receive timeout expired after 0 ms
     in many_send_to_dead.erl line 9
    5: P.1: exits normally
@@ -49,11 +49,11 @@ Erroneous interleaving 2:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.0.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.1.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.2.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    4: P.1: receive timeout expired after 0 ms
     in many_send_to_dead.erl line 9
    5: P.1: exits normally
@@ -72,11 +72,11 @@ Erroneous interleaving 3:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.0.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.1.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.2.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    4: P.2: msg1 = P.1 ! msg1
     in many_send_to_dead.erl line 10
    5: P.2: exits normally
@@ -95,11 +95,34 @@ Erroneous interleaving 4:
 --------------------------------------------------------------------------------
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.0.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.1.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.2.108360653>,[]])
-    in erlang.erl line 2329
+    in erlang.erl line 2316
+   4: P.2: msg1 = P.1 ! msg1
+    in many_send_to_dead.erl line 10
+   5: P.2: exits normally
+   6: P.3: msg2 = P.1 ! msg2
+    in many_send_to_dead.erl line 11
+   7: P.3: exits normally
+   8: Message (msg1) from P.2 reaches P.1
+   9: P.1: receives message (msg1)
+    in many_send_to_dead.erl line 9
+  10: P.1: exits normally
+  11: Message (msg2) from P.3 reaches P.1
+################################################################################
+Erroneous interleaving 5:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in many_send_to_dead.erl line 12
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.0.108360653>,[]])
+    in erlang.erl line 2316
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.1.108360653>,[]])
+    in erlang.erl line 2316
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<many_send_to_dead.2.108360653>,[]])
+    in erlang.erl line 2316
    4: P.2: msg1 = P.1 ! msg1
     in many_send_to_dead.erl line 10
    5: P.2: exits normally
@@ -112,13 +135,11 @@ Interleaving info:
   10: P.1: exits normally
   11: Message (msg1) from P.2 reaches P.1
 ################################################################################
-Concuerror Info:
+Info:
 --------------------------------------------------------------------------------
-Instrumented: many_send_to_dead
-Instrumented: io_lib
-Instrumented: gen_server
-Hijacked application_controller
-Instrumented: erlang
+Instrumented many_send_to_dead
+Instrumented io_lib
+Instrumented erlang
 ################################################################################
 Done! (Exit status: completed)
-  Summary: 4 errors, 4/4 interleavings explored
+  Summary: 5 errors, 5/5 interleavings explored
