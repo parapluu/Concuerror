@@ -51,6 +51,8 @@
 
 -include("concuerror.hrl").
 
+-type ref_queue() :: {queue(), queue()}.
+
 -record(process_flags, {
           trap_exit = false  :: boolean(),
           priority  = normal :: 'low' | 'normal' | 'high' | 'max'
@@ -75,6 +77,7 @@
           event = none               :: 'none' | event(),
           notify_when_ready          :: {pid(), boolean()},
           processes                  :: processes(),
+          ref_queue = new_ref_queue():: ref_queue(),
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
           status = running           :: 'exited'| 'exiting' | 'running' | 'waiting',
@@ -437,10 +440,19 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
       end
   end;
 
+run_built_in(erlang, make_ref, 0, [], Info) ->
+  #concuerror_info{event = #event{event_info = EventInfo}} = Info,
+  {MaybeRef, NewInfo} = get_ref(Info),
+  case EventInfo of
+    %% Replaying...
+    #builtin_event{result = MaybeRef} -> ok;
+    %% New event...
+    undefined -> ok
+  end,
+  {MaybeRef, NewInfo};
 run_built_in(erlang, Name, 0, [], Info)
   when
     Name =:= date;
-    Name =:= make_ref;
     Name =:= now;
     Name =:= time
     ->
@@ -467,13 +479,13 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
       {Name, Node} when is_atom(Name) -> ?crash({not_local_node, Node});
       _ -> error(badarg)
     end,
-  Ref =
-    case EventInfo of
-      %% Replaying...
-      #builtin_event{result = OldResult} -> OldResult;
-      %% New event...
-      undefined -> make_ref()
-    end,
+  {Ref, NewInfo} = get_ref(Info),
+  case EventInfo of
+    %% Replaying...
+    #builtin_event{result = Ref} -> ok;
+    %% New event...
+    undefined -> ok
+  end,
   {IsActive, Pid} =
     case is_pid(Target) of
       true ->
@@ -492,10 +504,10 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
     true -> true = ets:insert(Monitors, ?monitor(Ref, Pid, As, active));
     false -> ok
   end,
-  NewInfo =
+  FinalInfo =
     case EventInfo of
       %% Replaying...
-      #builtin_event{} -> Info;
+      #builtin_event{} -> NewInfo;
       %% New event...
       undefined ->
         case IsActive of
@@ -507,11 +519,11 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
                  message = Message,
                  recipient = self()},
             NewEvent = Event#event{special = [{message, MessageEvent}]},
-            Info#concuerror_info{event = NewEvent};
-          true -> Info
+            NewInfo#concuerror_info{event = NewEvent};
+          true -> NewInfo
         end
     end,
-  {Ref, NewInfo};
+  {Ref, FinalInfo};
 run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
   {Alive, _} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
   case Alive of
@@ -600,20 +612,20 @@ run_built_in(erlang, SendAfter, 3, [0, Dest, Msg], Info)
     SendAfter =:= start_timer ->
   #concuerror_info{
      event = #event{event_info = EventInfo}} = Info,
-  Ref =
-    case EventInfo of
-      %% Replaying...
-      #builtin_event{result = OldRef} -> OldRef;
-      %% New event...
-      undefined -> make_ref()
-    end,
+  {Ref, NewInfo} = get_ref(Info),
+  case EventInfo of
+    %% Replaying...
+    #builtin_event{result = Ref} -> ok;
+    %% New event...
+    undefined -> ok
+  end,
   ActualMessage =
     case SendAfter of
       send_after -> Msg;
       start_timer -> {timeout, Ref, Msg}
     end,
-  {_, NewInfo} = run_built_in(erlang, send, 2, [Dest, ActualMessage], Info),
-  {Ref, NewInfo};
+  {_, FinalInfo} = run_built_in(erlang, send, 2, [Dest, ActualMessage], NewInfo),
+  {Ref, FinalInfo};
 
 run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
   when
@@ -627,25 +639,31 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
      event = Event, processes = Processes, timeout = Wait, timers = Timers
     } = Info,
   #event{event_info = EventInfo} = Event,
-  %Parent = self(),
-  {Ref, Pid, NewInfo} =
+  {Ref, NewInfo} = get_ref(Info),
+  {Pid, FinalInfo} =
     case EventInfo of
       %% Replaying...
-      #builtin_event{result = OldRef, extra = OldPid} ->
-        true = ets:update_element(Processes, OldPid, {?process_name, OldRef}),
-        {OldRef, OldPid, Info#concuerror_info{extra = OldPid}};
+      #builtin_event{result = Ref, extra = OldPid} ->
+        {OldPid, NewInfo#concuerror_info{extra = OldPid}};
       %% New event...
       undefined ->
-        NewRef = make_ref(),
-        PassedInfo = reset_concuerror_info(Info),
+        Symbol = "Timer " ++ erlang:ref_to_list(Ref),
         P =
-          new_process(
-            PassedInfo#concuerror_info{
-              instant_delivery = true, is_timer = NewRef}),
-        Symbol = "Timer " ++ erlang:ref_to_list(NewRef),
-        true = ets:insert(Processes, ?new_process(P, Symbol)),
+          case
+            ets:match(Processes, ?process_match_symbol_to_pid(Symbol))
+          of
+            [] ->
+              PassedInfo = reset_concuerror_info(NewInfo),
+              NewP =
+                new_process(
+                  PassedInfo#concuerror_info{
+                    instant_delivery = true, is_timer = Ref}),
+              true = ets:insert(Processes, ?new_process(NewP, Symbol)),
+              NewP;
+            [[OldP]] -> OldP
+          end,
         NewEvent = Event#event{special = [{new, P}]},
-        {NewRef, P, Info#concuerror_info{event = NewEvent, extra = P}}
+        {P, NewInfo#concuerror_info{event = NewEvent, extra = P}}
     end,
   ActualMessage =
     case SendAfter of
@@ -655,7 +673,7 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
   ets:insert(Timers, {Ref, Pid, Dest}),
   Pid ! {start, erlang, send, [Dest, ActualMessage]},
   wait_process(Pid, Wait),
-  {Ref, NewInfo};
+  {Ref, FinalInfo};
 
 run_built_in(erlang, spawn, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, []}], Info);
@@ -670,13 +688,25 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
   Parent = self(),
   ParentSymbol = ets:lookup_element(Processes, Parent, ?process_symbolic),
   ChildId = ets:update_counter(Processes, Parent, {?process_children, 1}),
-  {Result, NewInfo} =
+  {HasMonitor, NewInfo} =
+    case lists:member(monitor, SpawnOpts) of
+      false -> {false, Info};
+      true -> get_ref(Info)
+    end,
+  {Result, FinalInfo} =
     case EventInfo of
       %% Replaying...
-      #builtin_event{result = OldResult} -> {OldResult, Info};
+      #builtin_event{result = OldResult} ->
+        case HasMonitor of
+          false -> ok;
+          Mon ->
+            {_, Mon} = OldResult,
+            ok
+        end,
+        {OldResult, NewInfo};
       %% New event...
       undefined ->
-        PassedInfo = reset_concuerror_info(Info),
+        PassedInfo = reset_concuerror_info(NewInfo),
         ?debug_flag(?spawn, {Parent, spawning_new, PassedInfo}),
         ChildSymbol = io_lib:format("~s.~w",[ParentSymbol, ChildId]),
         P =
@@ -690,34 +720,34 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
             [[OldP]] -> OldP
           end,
         NewResult =
-          case lists:member(monitor, SpawnOpts) of
-            true -> {P, make_ref()};
-            false -> P
+          case HasMonitor of
+            false -> P;
+            Mon -> {P, Mon}
           end,
         NewEvent = Event#event{special = [{new, P}]},
-        {NewResult, Info#concuerror_info{event = NewEvent}}
+        {NewResult, NewInfo#concuerror_info{event = NewEvent}}
     end,
   Pid =
-    case lists:member(monitor, SpawnOpts) of
-      true ->
-        {P1, Ref} = Result,
-        #concuerror_info{monitors = Monitors} = Info,
-        true = ets:insert(Monitors, ?monitor(Ref, P1, P1, active)),
-        P1;
+    case HasMonitor of
       false ->
-        Result
+        Result;
+      Ref ->
+        {P1, Ref} = Result,
+        #concuerror_info{monitors = Monitors} = FinalInfo,
+        true = ets:insert(Monitors, ?monitor(Ref, P1, P1, active)),
+        P1
     end,
   case lists:member(link, SpawnOpts) of
     true ->
-      #concuerror_info{links = Links} = Info,
+      #concuerror_info{links = Links} = FinalInfo,
       true = ets:insert(Links, ?links(Parent, Pid));
     false -> ok
   end,
-  {GroupLeader, _} = run_built_in(erlang, group_leader, 0, [], Info),
+  {GroupLeader, _} = run_built_in(erlang, group_leader, 0, [], FinalInfo),
   true = ets:update_element(Processes, Pid, {?process_leader, GroupLeader}),
   Pid ! {start, Module, Name, Args},
   wait_process(Pid, Timeout),
-  {Result, NewInfo};
+  {Result, FinalInfo};
 run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   when Send =:= '!'; Send =:= 'send' ->
   run_built_in(erlang, send, 3, [Recipient, Message, []], Info);
@@ -1375,7 +1405,8 @@ process_loop(Info) ->
       ets:match_delete(EtsTables, ?ets_match_mine()),
       ets:match_delete(Links, ?links_match_mine()),
       ets:match_delete(Monitors, ?monitors_match_mine()),
-      erlang:hibernate(concuerror_callback, process_top_loop, [NewInfo]);
+      FinalInfo = NewInfo#concuerror_info{ref_queue = reset_ref_queue(Info)},
+      erlang:hibernate(concuerror_callback, process_top_loop, [FinalInfo]);
     deadlock_poll ->
       ?debug_flag(?loop, deadlock_poll),
       Status = Info#concuerror_info.status,
@@ -1764,6 +1795,25 @@ reset_concuerror_info(Info) ->
 
 %% append_stack(Value, #concuerror_info{stack = Stack} = Info) ->
 %%   Info#concuerror_info{stack = [Value|Stack]}.
+
+%%------------------------------------------------------------------------------
+
+new_ref_queue() ->
+  {queue:new(), queue:new()}.
+
+reset_ref_queue(#concuerror_info{ref_queue = {_, Stored}}) ->
+  {Stored, Stored}.
+
+get_ref(#concuerror_info{ref_queue = {Active, Stored}} = Info) ->
+  {Result, NewActive} = queue:out(Active),
+  case Result of
+    {value, Ref} ->
+      {Ref, Info#concuerror_info{ref_queue = {NewActive, Stored}}};
+    empty ->
+      Ref = make_ref(),
+      NewStored = queue:in(Ref, Stored),
+      {Ref, Info#concuerror_info{ref_queue = {NewActive, NewStored}}}
+  end.
 
 %%------------------------------------------------------------------------------
 

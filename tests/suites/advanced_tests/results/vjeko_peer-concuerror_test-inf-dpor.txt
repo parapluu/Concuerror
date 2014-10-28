@@ -1,0 +1,38 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,100000},
+   {entry_point,{vjeko_peer,concuerror_test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/vjeko_peer.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {interleaving_bound,500},
+   {non_racing_system,[[user]]},
+   {optimal,true},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+  No errors found!
+################################################################################
+Warnings:
+--------------------------------------------------------------------------------
+Reached interleaving bound (500)
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented vjeko_peer
+Instrumented io_lib
+Instrumented lists
+Instrumented erlang
+################################################################################
+Done! (Exit status: completed)
+  Summary: 0 errors, 500/2801 interleavings explored
