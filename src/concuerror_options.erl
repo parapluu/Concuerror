@@ -83,10 +83,13 @@ options() ->
     " info about a particular piece of data consider using erlang:display/1"
     " and check the standard output section instead."}
   ,{symbolic_names, $s, {boolean, true},
-    "Use symbolic names for process identifiers in the output traces."}
+    "Use symbolic names for process identifiers in the output interleavings."}
   ,{depth_bound, $d, {integer, 5000},
-    "The maximum number of events allowed in a trace. Concuerror will stop"
-    " exploration beyond this limit."}
+    "The maximum number of events allowed in an interleaving. Concuerror will"
+    " stop exploration beyond this limit."}
+  ,{interleaving_bound, undefined, {integer, infinity},
+    "The maximum number of interleavings that will be explored. Concuerror will"
+    " stop exploration beyond this limit."}
   ,{delay_bound, $b, integer,
     "The maximum number of times a round-robin scheduler is allowed to deviate"
     " from the default scheduling order in order to reverse the order of racing"

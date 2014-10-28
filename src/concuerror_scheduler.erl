@@ -48,6 +48,7 @@
           exploring         = 1    :: integer(),
           first_process            :: pid(),
           ignore_error      = []   :: [atom()],
+          interleaving_bound       :: pos_integer(),
           logger                   :: pid(),
           last_scheduled           :: pid(),
           message_info             :: message_info(),
@@ -87,6 +88,7 @@ run(Options) ->
        entry_point = EntryPoint = ?opt(entry_point, Options),
        first_process = FirstProcess,
        ignore_error = ?opt(ignore_error, Options),
+       interleaving_bound = ?opt(interleaving_bound, Options),
        last_scheduled = FirstProcess,
        logger = Logger = ?opt(logger, Options),
        message_info = ets:new(message_info, [private]),
@@ -177,7 +179,19 @@ log_trace(State) ->
   case (not State#scheduler_state.ignore_first_crash) andalso (Log =/= none) of
     true -> ?crash(first_interleaving_crashed);
     false ->
-      State#scheduler_state{ignore_first_crash = true, current_warnings = []}
+      NextExploring = N + 1,
+      NextState =
+        State#scheduler_state{
+          exploring = N+1,
+          ignore_first_crash = true,
+          current_warnings = []},
+      case NextExploring =< State#scheduler_state.interleaving_bound of
+        true -> NextState;
+        false ->
+          Bound = "Reached interleaving bound (~p)~n",
+          ?unique(Logger, ?lwarning, Bound, [N]),
+          NextState#scheduler_state{trace = []}
+      end
   end.
 
 filter_warnings(Warnings, []) -> Warnings;
