@@ -22,7 +22,7 @@
 %% DATA STRUCTURES
 %% =============================================================================
 
--type event_tree() :: [{event(), event_tree()}].
+-type event_tree() :: [{event(), integer(), event_tree()}].
 
 -record(trace_state, {
           actors      = []         :: [pid() | {channel(), queue()}],
@@ -45,6 +45,7 @@
           delay             = 0    :: non_neg_integer(),
           depth_bound              :: pos_integer(),
           entry_point              :: mfargs(),
+          exploring         = 1    :: integer(),
           first_process            :: pid(),
           ignore_error      = []   :: [atom()],
           logger                   :: pid(),
@@ -144,6 +145,7 @@ explore(State) ->
 log_trace(State) ->
   #scheduler_state{
      current_warnings = UnfilteredWarnings,
+     exploring = N,
      ignore_error = Ignored,
      logger = Logger} = State,
   Warnings = filter_warnings(UnfilteredWarnings, Ignored),
@@ -195,7 +197,7 @@ get_next_event(
       current_warnings = [{depth_bound, Bound}|Warnings],
       trace = Old},
   {none, NewState};
-get_next_event(#scheduler_state{system = System, trace = [Last|_]} = State) ->
+get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|_]} = State) ->
   #trace_state{
      actors      = Actors,
      delay_bound = DelayBound,
@@ -209,7 +211,8 @@ get_next_event(#scheduler_state{system = System, trace = [Last|_]} = State) ->
     [] ->
       Event = #event{label = make_ref()},
       get_next_event(Event, System ++ AvailableActors, State#scheduler_state{delay = 0});
-    [{#event{actor = Actor, label = Label} = Event, _}|_] ->
+    [{#event{actor = Actor, label = Label} = Event, N, _}|_] ->
+      ?log(Logger, ?ldebug,"By: ~p~n", [N]),
       false = lists:member(Actor, Sleeping),
       Delay =
         case DelayBound =/= infinity of
@@ -356,7 +359,7 @@ update_state(#event{special = Special} = Event, State) ->
   {NewLastWakeupTree, NextWakeupTree} =
     case WakeupTree of
       [] -> {[], []};
-      [{_, NWT}|Rest] -> {Rest, NWT}
+      [{_, _, NWT}|Rest] -> {Rest, NWT}
     end,
   NewLastDone = [Event|Done],
   NewDelayBound =
@@ -742,7 +745,10 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
   more_interleavings_for_event(Rest, Event, Later, NewClock, State, NewTrace).
 
 update_trace(Event, TraceState, Later, NewOldTrace, State) ->
-  #scheduler_state{logger = Logger, optimal = Optimal} = State,
+  #scheduler_state{
+     exploring = Exploring,
+     logger = Logger,
+     optimal = Optimal} = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done],
      delay_bound = DelayBound,
@@ -751,7 +757,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
      wakeup_tree = WakeupTree
     } = TraceState,
   NotDep = not_dep(NewOldTrace, Later, EarlyActor, EarlyIndex, Event),
-  case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep, Optimal) of
+  case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep, Optimal, Exploring) of
     skip ->
       ?debug(Logger, "     SKIP~n",[]),
       skip;
@@ -814,33 +820,33 @@ trace_plan(_Logger, _Index, _NotDep) ->
            || {I,S} <- IndexedNotDep])]
      end).
 
-insert_wakeup(Sleeping, Wakeup, [E|_] = NotDep, Optimal) ->
+insert_wakeup(Sleeping, Wakeup, [E|_] = NotDep, Optimal, Exploring) ->
   case Optimal of
-    true -> insert_wakeup(Sleeping, Wakeup, NotDep);
+    true -> insert_wakeup(Sleeping, Wakeup, NotDep, Exploring);
     false ->
       Initials = get_initials(NotDep),
-      All = Sleeping ++ [W || {W, []} <- Wakeup],
+      All = Sleeping ++ [W || {W, _, []} <- Wakeup],
       case existing(All, Initials) of
         true -> skip;
-        false -> Wakeup ++ [{E,[]}]
+        false -> Wakeup ++ [{E, Exploring, []}]
       end
   end.      
 
-insert_wakeup([Sleeping|Rest], Wakeup, NotDep) ->
+insert_wakeup([Sleeping|Rest], Wakeup, NotDep, Exploring) ->
   case check_initial(Sleeping, NotDep) =:= false of
-    true  -> insert_wakeup(Rest, Wakeup, NotDep);
+    true  -> insert_wakeup(Rest, Wakeup, NotDep, Exploring);
     false -> skip
   end;
-insert_wakeup([], Wakeup, NotDep) ->
-  insert_wakeup(Wakeup, NotDep).
+insert_wakeup([], Wakeup, NotDep, Exploring) ->
+  insert_wakeup(Wakeup, NotDep, Exploring).
 
-insert_wakeup([], NotDep) ->
-  Fold = fun(Event, Acc) -> [{Event, Acc}] end,
+insert_wakeup([], NotDep, Exploring) ->
+  Fold = fun(Event, Acc) -> [{Event, Exploring, Acc}] end,
   lists:foldr(Fold, [], NotDep);
-insert_wakeup([{Event, Deeper} = Node|Rest], NotDep) ->
+insert_wakeup([{Event, M, Deeper} = Node|Rest], NotDep, Exploring) ->
   case check_initial(Event, NotDep) of
     false ->
-      case insert_wakeup(Rest, NotDep) of
+      case insert_wakeup(Rest, NotDep, Exploring) of
         skip -> skip;
         NewTree -> [Node|NewTree]
       end;
@@ -848,9 +854,9 @@ insert_wakeup([{Event, Deeper} = Node|Rest], NotDep) ->
       case Deeper =:= [] of
         true  -> skip;
         false ->
-          case insert_wakeup(Deeper, NewNotDep) of
+          case insert_wakeup(Deeper, NewNotDep, Exploring) of
             skip -> skip;
-            NewTree -> [{Event, NewTree}|Rest]
+            NewTree -> [{Event, M, NewTree}|Rest]
           end
       end
   end.
@@ -900,12 +906,13 @@ existing([#event{actor = A}|Rest], Initials) ->
 %%------------------------------------------------------------------------------
 
 has_more_to_explore(State) ->
-  #scheduler_state{logger = Logger, trace = Trace} = State,
+  #scheduler_state{exploring = N, logger = Logger, trace = Trace} = State,
   TracePrefix = find_prefix(Trace, State),
   case TracePrefix =:= [] of
     true -> {false, State#scheduler_state{trace = []}};
     false ->
-      ?time(Logger, "New interleaving. Replaying..."),
+      S = io_lib:format("New interleaving ~p. Replaying...", [N]),
+      ?time(Logger, S),
       NewState = replay_prefix(TracePrefix, State),
       ?debug(Logger, "~s~n",["Replay done."]),
       FinalState = NewState#scheduler_state{trace = TracePrefix},
