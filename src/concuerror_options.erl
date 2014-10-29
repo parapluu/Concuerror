@@ -47,8 +47,6 @@ parse_cl_aux(CommandLineArgs) ->
   end.
 
 getopt_spec() ->
-  %% We are storing additional info in the options spec. Filter these before
-  %% running getopt.
   %% Options long name is the same as the inner representation atom for
   %% consistency.
   [{Key, Short, atom_to_list(Key), Type, Help} ||
@@ -90,11 +88,11 @@ options() ->
   ,{interleaving_bound, undefined, {integer, infinity},
     "The maximum number of interleavings that will be explored. Concuerror will"
     " stop exploration beyond this limit."}
-  ,{delay_bound, $b, integer,
+  ,{delay_bound, $b, {integer, infinity},
     "The maximum number of times a round-robin scheduler is allowed to deviate"
     " from the default scheduling order in order to reverse the order of racing"
     " events. Implies --optimal=false."}
-  ,{optimal, undefined, boolean,
+  ,{optimal, undefined, {boolean, true},
     "Setting this to false enables a more lightweight DPOR algorithm. Use this"
     " if the rate of exploration is too slow. Don't use it if a lot of"
     " interleavings are reported as sleep-set blocked."}
@@ -153,51 +151,67 @@ cl_version() ->
 -spec finalize(options()) -> options().
 
 finalize(Options) ->
-  Finalized = finalize_aux(proplists:unfold(Options)),
-  case proplists:get_value(entry_point, Finalized, undefined) of
+  FinalOptions =
+    try
+      Options1 = rename_equivalent(Options),
+      Options2 = add_missing_getopt_defaults(Options1),
+      Options3 =
+        add_missing_defaults(
+          [{modules, ets:new(modules, [public])},
+           {processes, ets:new(processes, [public])},
+           {verbosity, ?DEFAULT_VERBOSITY}
+          ], Options2),
+      Options4 = finalize_aux(proplists:unfold(Options3)),
+      add_missing_defaults(
+        [{ignore_error, []},
+         {non_racing_system, []},
+         {treat_as_normal, []}
+        ], Options4)
+    catch
+      throw:{file_defined, FileOptions} ->
+        NewOptions = proplists:delete(file, Options),
+        Fold = fun({K,_}, Override) -> lists:keydelete(K, 1, Override) end,
+        OverridenOptions = lists:foldl(Fold, NewOptions, FileOptions),
+        finalize(FileOptions ++ OverridenOptions)
+    end,
+  consistent(FinalOptions),
+  case proplists:get_value(entry_point, FinalOptions, undefined) of
     {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
       try
-        true = lists:member({F,length(B)}, M:module_info(exports))
+        true = lists:member({F,length(B)}, M:module_info(exports)),
+        FinalOptions
       catch
         _:_ ->
-          opt_error("The entry point ~p:~p/~p is not valid. Make sure you"
-                    " have specified the correct module ('-m') and test"
-                    " function ('-t')", [M,F,length(B)])
-      end,
-      MissingDefaults =
-        add_missing_defaults(
-          [{delay_bound, infinity},
-           {ignore_error, []},
-           {non_racing_system, []},
-           {optimal, true},
-           {treat_as_normal, []},
-           {verbosity, ?DEFAULT_VERBOSITY}
-          ], Finalized),
-      GetoptDefaults = add_missing_getopt_defaults(MissingDefaults),
-      consistent(GetoptDefaults),
-      GetoptDefaults;
+          InvalidEntryPoint =
+            "The entry point ~p:~p/~p is not valid. Make sure you have"
+            " specified the correct module ('-m') and test function ('-t')",
+          opt_error(InvalidEntryPoint, [M,F,length(B)])
+      end;
     _ ->
-      opt_error("The module containing the main test function has not been"
-                " specified. Use '-m <module>' to provide this info.")
+      UndefinedEntryPoint =
+        "The module containing the main test function has not been specified."
+        " Use '-m <module>' to provide this info.",
+      opt_error(UndefinedEntryPoint)
   end.
+
+rename_equivalent(Options) ->
+  rename_equivalent(Options, []).
+
+rename_equivalent([quiet|Rest], Acc) ->
+  case proplists:is_defined(verbosity, Rest ++ Acc) of
+    true -> opt_error("--verbosity specified together with --quiet");
+    false ->
+      rename_equivalent(Rest, [{verbosity, ?lquiet}|Acc])
+  end;
+rename_equivalent([Other|Rest], Acc) ->
+  rename_equivalent(Rest, [Other|Acc]);
+rename_equivalent([], Acc) -> lists:reverse(Acc).
 
 finalize_aux(Options) ->
-  Shared =
-    [{modules, ets:new(modules, [public])},
-     {processes, ets:new(processes, [public])}],
-  case lists:keytake(file, 1, Options) of
-    false -> finalize(Options, Shared);
-    {value, Tuple, RestOptions} ->
-      finalize([Tuple|RestOptions], Shared)
-  end.
+  {value, Verbosity, RestOptions} = lists:keytake(verbosity, 1, Options),
+  finalize([Verbosity|RestOptions], []).
 
 finalize([], Acc) -> Acc;
-finalize([{quiet, true}|Rest], Acc) ->
-  case proplists:is_defined(verbosity, Rest) of
-    true -> opt_error("--verbosity defined after --quiet");
-    false -> ok
-  end,
-  finalize(Rest, [{verbosity, 0},{quiet,true}|Acc]);
 finalize([{Key, V}|Rest], Acc)
   when
     Key =:= ignore_error;
@@ -214,28 +228,22 @@ finalize([{verbosity, N}|Rest], Acc) ->
      true -> opt_error("To use this verbosity, run 'make clean; make dev' first")
   end,
   finalize(NewRest, [{verbosity, Verbosity}|Acc]);
-finalize([{Key, Value}|Rest], Acc)
-  when Key =:= file; Key =:= pa; Key =:=pz ->
-  case Key of
-    file ->
-      Modules = proplists:get_value(modules, Acc),
-      Files = [Value|proplists:get_all_values(file, Rest)],
-      {LoadedFiles, MoreOptions} = compile_and_load(Files, Modules),
-      NewRest = proplists:delete(file, Rest),
-      finalize(NewRest ++ MoreOptions, [{files, LoadedFiles}|Acc]);
-    Else ->
-      PathAdd =
-        case Else of
-          pa -> fun code:add_patha/1;
-          pz -> fun code:add_pathz/1
-        end,
-      case PathAdd(Value) of
-        true -> ok;
-        {error, bad_directory} ->
-          opt_error("could not add ~s to code path", [Value])
-      end,
-      finalize(Rest, Acc)
-  end;
+finalize([{file, Value}|Rest], Acc) ->
+  %% This will force rechecking defaults, so no need to recurse.
+  Files = [Value|proplists:get_all_values(file, Rest)],
+  compile_and_load(Files, Acc);
+finalize([{Key, Value}|Rest], Acc) when Key =:= pa; Key =:=pz ->
+  PathAdd =
+    case Key of
+      pa -> fun code:add_patha/1;
+      pz -> fun code:add_pathz/1
+    end,
+  case PathAdd(Value) of
+    true -> ok;
+    {error, bad_directory} ->
+      opt_error("could not add ~s to code path", [Value])
+  end,
+  finalize(Rest, Acc);
 finalize([{Key, Value}|Rest], AccIn) ->
   Acc =
     case proplists:is_defined(Key, AccIn) of
@@ -247,7 +255,12 @@ finalize([{Key, Value}|Rest], AccIn) ->
     end,
   case Key of
     delay_bound ->
-      finalize(Rest, [{Key, Value},{optimal, false}|Acc]);
+      NewRest =
+        case Value =:= infinity of
+          true -> Rest;
+          false -> [{optimal, false}|Rest]
+        end,
+      finalize(NewRest, [{Key, Value}|Acc]);
     graph ->
       case file:open(Value, [write]) of
         {ok, IoDevice} -> finalize(Rest, [{Key, IoDevice}|Acc]);
@@ -290,40 +303,38 @@ finalize([{Key, Value}|Rest], AccIn) ->
 file_error(Key, Value) ->
   opt_error("could not open --~p file ~s for writing", [Key, Value]).
 
-compile_and_load(Files, Modules) ->
-  compile_and_load(Files, Modules, {[],[]}).
+compile_and_load(Files, Options) ->
+  Modules = proplists:get_value(modules, Options),
+  Processes = proplists:get_value(processes, Options),
+  {LoadedFiles, MoreOptions} =
+    compile_and_load(Files, Modules, {[], {none, []}}, Options),
+  Preserved =
+    [{modules, Modules},
+     {processes, Processes},
+     {files, LoadedFiles}
+     |MoreOptions],
+  throw({file_defined, Preserved}).
 
-compile_and_load([], _Modules, {Acc, MoreOpts}) ->
+compile_and_load([], _Modules, {Acc, {_, MoreOpts}}, _Options) ->
   {lists:sort(Acc), MoreOpts};
-compile_and_load([File|Rest], Modules, {Acc, MoreOpts}) ->
-  case filename:extension(File) of
-    ".erl" ->
-      case compile:file(File, [binary, debug_info, report_errors]) of
-        {ok, Module, Binary} ->
-          Default = code:which(Module),
-          case Default =:= non_existing of
-            true -> ok;
-            false ->
-              opt_warn("file ~s shadows the default ~s", [File, Default], [])
-          end,
-          ok = concuerror_loader:load_binary(Module, File, Binary, Modules),
-          NewMoreOpts = try Module:concuerror_options() catch _:_ -> [] end,
-          compile_and_load(Rest, Modules, {[File|Acc], NewMoreOpts++MoreOpts});
-        error ->
-          Format = "could not compile ~s (try to add the .beam file instead)",
-          opt_error(Format, [File])
-      end;
-    ".beam" ->
-      case beam_lib:chunks(File, []) of
-        {ok, {Module, []}} ->
-          ok = concuerror_loader:load_binary(Module, File, File, Modules),
-          NewMoreOpts = try Module:concuerror_options() catch _:_ -> [] end,
-          compile_and_load(Rest, Modules, {[File|Acc], NewMoreOpts++MoreOpts});
-        Else ->
-          opt_error(beam_lib:format_error(Else))
-      end;
-    _Other ->
-      opt_error("~s is not a .erl or .beam file", [File])
+compile_and_load([File|Rest], Modules, {Acc, MoreOpts}, Options) ->
+  case concuerror_loader:load_initially(File, Modules) of
+    {ok, Module, Warnings} ->
+      lists:foreach(fun(W) -> opt_warn(W, [], Options) end, Warnings),
+      NewMoreOpts =
+        case try Module:concuerror_options() catch _:_ -> [] end of
+          [] -> MoreOpts;
+          More when MoreOpts =:= {none, []} -> {File, More};
+          _ ->
+            {Other, _} = MoreOpts,
+            Error =
+              "Both ~s and ~s export concuerror_options/0. Please remove one of"
+              " them.",
+            opt_error(Error, [Other, File])
+        end,
+      compile_and_load(Rest, Modules, {[File|Acc], NewMoreOpts}, Options);
+    {error, Error} ->
+      opt_error(Error)
   end.
 
 add_missing_defaults([], Options) -> Options;
@@ -378,8 +389,8 @@ opt_error(Format, Data) ->
   io:format(standard_error, "concuerror: Use --help for more information.\n", []),
   throw(opt_error).
 
-opt_warn(Format, Data, MaybeQuiet) ->
-  case proplists:is_defined(quiet, MaybeQuiet) of
+opt_warn(Format, Data, Options) ->
+  case proplists:get_value(verbosity, Options) =:= ?lquiet of
     true -> ok;
     false ->
       io:format(standard_error, "concuerror: WARNING: " ++ Format ++ "~n", Data)

@@ -230,7 +230,7 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
       case Info of
         #concuerror_info{modules = M} ->
           ?debug_flag(?non_builtin,{Module,Name,Arity,Location}),
-          concuerror_loader:load(Module, M);
+          Module = concuerror_loader:load(Module, M);
         _ -> ok
       end,
       {doit, Info}

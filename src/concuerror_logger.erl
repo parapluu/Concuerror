@@ -53,7 +53,7 @@ run(Parent, Options) ->
   ets:foldl(Fun, ok, Modules),
   ets:insert(Modules, {{logger}, self()}),
   ok = setup_symbolic_names(SymbolicNames, Processes),
-  ok = concuerror_loader:load(io_lib, Modules),
+  io_lib = concuerror_loader:load(io_lib, Modules),
   PrintableOptions =
     delete_props(
       [graph, modules, output, processes, timers, verbosity],

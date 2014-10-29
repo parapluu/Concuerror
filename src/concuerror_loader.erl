@@ -2,7 +2,7 @@
 
 -module(concuerror_loader).
 
--export([load/2, load_binary/4]).
+-export([load/2, load_initially/2]).
 
 -define(flag(A), (1 bsl A)).
 
@@ -16,7 +16,7 @@
 %% -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 -include("concuerror.hrl").
 
--spec load(module(), ets:tid()) -> 'ok'.
+-spec load(module(), modules()) -> module().
 
 load(Module, Instrumented) ->
   case ets:lookup(Instrumented, Module) =:= [] of
@@ -34,10 +34,47 @@ load(Module, Instrumented) ->
       catch load_binary(Module, Filename, Beam, Instrumented),
       ?log(Logger, ?linfo, "Instrumented ~p~n", [Module]),
       maybe_instrumenting_myself(Module, Instrumented);
-    false -> ok
+    false -> Module
   end.
 
--spec load_binary(module(), string(), beam_lib:beam(), ets:tid()) -> 'ok'.
+-spec load_initially(module(), modules()) ->
+                        {ok, module(), [string()]} | {error, string()}.
+
+load_initially(File, Modules) ->
+  MaybeModule =
+    case filename:extension(File) of
+      ".erl" ->
+        case compile:file(File, [binary, debug_info, report_errors]) of
+          error ->
+            Format = "could not compile ~s (try to add the .beam file instead)",
+            {error, io_lib:format(Format, [File])};
+          Else -> Else
+        end;
+      ".beam" ->
+        case beam_lib:chunks(File, []) of
+          {ok, {M, []}} ->
+            {ok, M, File};
+          Else ->
+            {error, beam_lib:format_error(Else)}
+        end;
+      _Other ->
+        {error, io_lib:format("~s is not a .erl or .beam file", [File])}
+    end,
+  case MaybeModule of
+    {ok, Module, Binary} ->
+      Warnings = check_shadow(File, Module),
+      Module = load_binary(Module, File, Binary, Modules),
+      {ok, Module, Warnings};
+    Error -> Error
+  end.
+
+check_shadow(File, Module) ->
+  Default = code:which(Module),
+  case Default =:= non_existing of
+    true -> [];
+    false ->
+      [io_lib:format("file ~s shadows the default ~s", [File, Default])]
+  end.
 
 load_binary(Module, Filename, Beam, Instrumented) ->
   ets:insert(Instrumented, {Module}),
@@ -54,7 +91,7 @@ load_binary(Module, Filename, Beam, Instrumented) ->
   {ok, _, NewBinary} =
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
   {module, Module} = code:load_binary(Module, Filename, NewBinary),
-  ok.
+  Module.
 
 get_core(Beam) ->
   {ok, {Module, [{abstract_code, ChunkInfo}]}} =
@@ -84,8 +121,9 @@ get_core(Beam) ->
 
 maybe_instrumenting_myself(Module, Instrumented) ->
   case Module =:= concuerror_inspect of
-    false -> ok;
+    false -> Module;
     true ->
       Additional = concuerror_callback,
-      load(Additional, Instrumented)
+      Additional = load(Additional, Instrumented),
+      Module
   end.
