@@ -10,6 +10,7 @@
 -define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------
 
+-type stream() :: 'standard_io' | 'standard_error' | 'race' | file:filename().
 -type graph_data() ::
         {file:io_device(), reference() | 'init', reference() | 'none'}.
 
@@ -127,7 +128,7 @@ time(Logger, Tag) ->
   Logger ! {time, Tag},
   ok.
 
--spec race(logger(), event(), event()) -> ok.
+-spec race(logger(), {index(), event()}, {index(), event()}) -> ok.
 
 race(Logger, EarlyEvent, Event) ->
   Logger ! {race, EarlyEvent, Event},
@@ -164,10 +165,10 @@ loop(Message,
   case TracesTotal > 250 of
     true ->
       ManyMsg =
-        "A lot of events in this test are racing. You can see such pairs 'live'"
-        " by using -v~p. You may want to consider reducing some parameters in"
-        " your test (e.g. number of processes or events).~n",
-      ?log(self(), ?ltip, ManyMsg, [?lrace]);
+        "A lot of events in this test are racing. You can see such pairs"
+        " by using --show_races true. You may want to consider reducing some"
+        " parameters in your test (e.g. number of processes or events).~n",
+      ?log(self(), ?ltip, ManyMsg, []);
     false -> ok
   end,
   case Errors =:= 10 of
@@ -208,10 +209,10 @@ loop(Message, State) ->
     {race, EarlyEvent, Event} ->
       Msg =
         io_lib:format(
-          "* A) ~s~n  B) ~s~n",
-          [concuerror_printer:pretty_s({0,E}, PrintDepth)
+          "* ~s~n  ~s~n",
+          [concuerror_printer:pretty_s(E, PrintDepth)
            || E <- [EarlyEvent,Event]]),
-      loop({log, ?lrace, none, Msg, []}, State);
+      loop({print, race, Msg}, State);
     {log, Level, Tag, Format, Data} ->
       {NewLogMsgs, NewAlreadyEmitted} =
         case Tag =/= ?nonunique andalso sets:is_element(Tag, AlreadyEmitted) of
@@ -283,9 +284,10 @@ loop(Message, State) ->
               [concuerror_printer:error_s(W, PrintDepth) || W <-Warnings],
             io:format(Output, "~s", [WarnStr]),
             separator(Output, $-),
-            print_streams(Streams, Output),
+            print_streams([S || S = {T, _} <- Streams, T =/= race], Output),
             io:format(Output, "Interleaving info:~n", []),
             concuerror_printer:pretty(Output, TraceInfo, PrintDepth),
+            print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
             NE;
           _ -> Errors
         end,
@@ -364,7 +366,6 @@ verbosity_to_string(Level) ->
     ?lerror   -> "Error";
     ?lwarning -> "Warning";
     ?ltip     -> "Tip";
-    ?lrace    -> "Race Pair";
     ?linfo    -> "Info";
     _ -> ""
   end.
@@ -414,8 +415,11 @@ has_tick(Result) ->
     0 -> Result
   end.
 
+separator_string(Char) ->
+  lists:duplicate(80, Char).
+
 separator(Output, Char) ->
-  io:format(Output, "~s~n", [lists:duplicate(80, Char)]).
+  io:format(Output, "~s~n", [separator_string(Char)]).
 
 print_streams(Streams, Output) ->
   Fold =
@@ -426,13 +430,22 @@ print_streams(Streams, Output) ->
   orddict:fold(Fold, ok, Streams).
 
 print_stream(Tag, Buffer, Output) ->
-  io:format(Output, "Text printed to ~s:~n", [tag_to_filename(Tag)]),
-  io:format(Output, "~s~n", [Buffer]),
-  separator(Output, $-).
+  io:format(Output, "~s:~n", [tag_to_filename(Tag)]),
+  io:format(Output, "~s", [Buffer]),
+  case Tag =/= race of
+    true ->
+      io:format(Output, "~n", []),
+      separator(Output, $-);
+    false -> ok
+  end.
 
 tag_to_filename(standard_io) -> "Standard Output";
 tag_to_filename(standard_error) -> "Standard Error";
-tag_to_filename(Filename) when is_list(Filename) -> Filename.
+tag_to_filename(race) ->
+  separator_string($-) ++
+    "\nPairs of racing instructions";
+tag_to_filename(Filename) when is_list(Filename) ->
+  io_lib:format("Text printed to ~s", [Filename]).
 
 interleavings_message(State) ->
   #logger_state{

@@ -45,7 +45,6 @@
 %%------------------------------------------------------------------------------
 -type scheduler() :: pid().
 -type logger()    :: pid().
--type stream()    :: 'standard_io' | 'standard_error' | file:filename().
 -type options()   :: proplists:proplist().
 -type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
 -type bound()     :: 'infinity' | non_neg_integer().
@@ -60,11 +59,12 @@
 -define(ltip,      3). %% Exceptional messages, notifying of a suggested
                        %%   refactoring or option to make testing more efficient
 -define(linfo,     4). %% Normal messages that can be ignored
--define(lrace,     5). %% Info about pairs of instructions that are racing
--define(ltiming,   6). %% Timing messages
--define(ldebug,    7). %% Reserved for use focusing debugging
--define(ltrace,    8). %% Debugging logs should use this when not debugging
-
+-define(ltiming,   5). %% Timing messages
+-define(ldebug,    6). %% Reserved for use focusing debugging
+-define(ltrace,    7). %% Debugging logs should use this when not debugging
+-define(MAX_VERBOSITY, ?ltrace).
+-type log_level() :: ?lquiet..?MAX_VERBOSITY.
+%%------------------------------------------------------------------------------
 -define(nonunique, none).
 
 -define(log(Logger, Level, Tag, Format, Data),
@@ -87,15 +87,12 @@
 -define(trace(Logger, Format, Data),ok).
 -define(has_dev, false).
 -endif.
--define(MAX_VERBOSITY, ?ltrace).
 
 -define(unique(Logger, Type, Format, Data),
         ?log(Logger, Type, {?MODULE, ?LINE}, Format, Data)).
 
 -define(time(Logger, Tag),
         concuerror_logger:time(Logger, Tag)).
-
--type log_level() :: ?lquiet..?MAX_VERBOSITY.
 
 -define(pretty_s(I,E), concuerror_printer:pretty_s({I,E#event{location = []}},5)).
 -define(pretty_s(E), ?pretty_s(0,E)).
@@ -104,9 +101,6 @@
 -define(crash(Reason, Scheduler), exit(Scheduler, {?MODULE, Reason})).
 -define(notify_us_msg,
         "~nPlease notify the developers, as this is a bug of Concuerror.").
-%%------------------------------------------------------------------------------
-%% Scheduler's timeout
--define(MINIMUM_TIMEOUT, 1000).
 %%------------------------------------------------------------------------------
 -type message_info() :: ets:tid().
 -type timers()       :: ets:tid().

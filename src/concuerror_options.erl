@@ -6,6 +6,7 @@
 
 -include("concuerror.hrl").
 
+-define(MINIMUM_TIMEOUT, 1000).
 -define(DEFAULT_VERBOSITY, ?linfo).
 -define(DEFAULT_PRINT_DEPTH, 20).
 
@@ -96,11 +97,12 @@ options() ->
     "Setting this to false enables a more lightweight DPOR algorithm. Use this"
     " if the rate of exploration is too slow. Don't use it if a lot of"
     " interleavings are reported as sleep-set blocked."}
-  ,{show_races, undefined, {boolean, true},
-    "Determines whether pairs of racing instructions will be included in the"
-    " logs."}
+  ,{show_races, undefined, {boolean, false},
+    "Determines whether information about pairs of racing instructions will be"
+    " included in the graph and the logs of erroneous interleavings."}
   ,{graph, undefined, string,
-    "Graph file where Concuerror will store interleaving info using the DOT language."}
+    "Graph file where Concuerror will store interleaving info using the DOT"
+    " language."}
   ,{after_timeout, $a, {integer, infinity},
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " will never be triggered."}

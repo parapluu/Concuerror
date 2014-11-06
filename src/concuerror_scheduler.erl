@@ -669,7 +669,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
      message_info = MessageInfo,
      non_racing_system = NonRacingSystem
     } = State,
-  #trace_state{done = [Event|_], index = _Index, graph_ref = Ref} = TraceState,
+  #trace_state{done = [Event|_], index = Index, graph_ref = Ref} = TraceState,
   #event{actor = Actor, event_info = EventInfo, special = Special} = Event,
   Skip =
     case proplists:lookup(system_communication, Special) of
@@ -691,21 +691,22 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
             message_clock(Id, MessageInfo, ActorClock);
           false -> ActorClock
         end,
-      ?debug(_Logger, "~s~n", [?pretty_s(_Index, Event)]),
+      ?debug(_Logger, "~s~n", [?pretty_s(Index, Event)]),
       GState = State#scheduler_state{current_graph_ref = Ref},
       BaseNewOldTrace =
-        more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, GState),
+        more_interleavings_for_event(OldTrace, Event, Rest, BaseClock, GState, Index),
       NewOldTrace = [TraceState|BaseNewOldTrace],
       plan_more_interleavings(Rest, NewOldTrace, State)
   end.
 
-more_interleavings_for_event(OldTrace, Event, Later, Clock, State) ->
-  more_interleavings_for_event(OldTrace, Event, Later, Clock, State, []).
+more_interleavings_for_event(OldTrace, Event, Later, Clock, State, Index) ->
+  more_interleavings_for_event(OldTrace, Event, Later, Clock, State, Index, []).
 
-more_interleavings_for_event([], _Event, _Later, _Clock, _State, NewOldTrace) ->
+more_interleavings_for_event([], _Event, _Later, _Clock, _State, _Index,
+                             NewOldTrace) ->
   lists:reverse(NewOldTrace);
 more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
-                             NewOldTrace) ->
+                             Index, NewOldTrace) ->
   #scheduler_state{logger = Logger} = State,
   #trace_state{
      clock_map = EarlyClockMap,
@@ -744,19 +745,22 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
       {update_clock, C} -> {[TraceState|NewOldTrace], C};
       {update, S, C} ->
         if State#scheduler_state.show_races ->
-            ?unique(
-               Logger, ?lrace,
-               "You can disable race pair messages with '--show_races false'~n",
-               []),
             EarlyRef = TraceState#trace_state.graph_ref,
             Ref = State#scheduler_state.current_graph_ref,
             concuerror_logger:graph_race(Logger, EarlyRef, Ref),
-            concuerror_logger:race(Logger, EarlyEvent, Event);
-           true -> ok
+            IndexedEarly = {EarlyIndex, EarlyEvent#event{location = []}},
+            IndexedLate ={Index, Event#event{location = []}},
+            concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
+           true ->
+            ?unique(
+               Logger, ?linfo,
+               "You can see pairs of racing instructions (in the report and"
+               " --graph) with '--show_races true'~n",
+               [])
         end,
         {S, C}
     end,
-  more_interleavings_for_event(Rest, Event, Later, NewClock, State, NewTrace).
+  more_interleavings_for_event(Rest, Event, Later, NewClock, State, Index, NewTrace).
 
 update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{
