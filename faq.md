@@ -12,7 +12,7 @@ permalink: /faq/index.html
 ## How to report a bug?
 
 The preferred way is the official repository's [Issues
-page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/people).
+page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/contact).
 
 ## General
 
