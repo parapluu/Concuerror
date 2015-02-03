@@ -22,7 +22,13 @@
 %% DATA STRUCTURES
 %% =============================================================================
 
--type event_tree() :: [{event(), integer(), event_tree()}].
+-record(backtrack_entry, {
+          event                   :: event(),
+          origin = 1              :: integer(),
+          wakeup_tree = []        :: event_tree()
+         }).
+
+-type event_tree() :: [#backtrack_entry{}].
 
 -record(trace_state, {
           actors           = []         :: [pid() | {channel(), queue()}],
@@ -230,7 +236,9 @@ get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|
       Event = #event{label = make_ref()},
       NewState = State#scheduler_state{bound_consumed = 0},
       get_next_event(Event, System ++ AvailableActors, NewState);
-    [{#event{actor = Actor, label = Label} = Event, N, _}|_] ->
+    [#backtrack_entry{
+        event = #event{actor = Actor, label = Label} = Event,
+        origin = N}|_] ->
       ?log(Logger, ?ldebug,"By: ~p~n", [N]),
       false = lists:member(Actor, Sleeping),
       BoundConsumed =
@@ -388,7 +396,7 @@ update_state(#event{special = Special} = Event, State) ->
   {NewLastWakeupTree, NextWakeupTree} =
     case WakeupTree of
       [] -> {[], []};
-      [{_, _, NWT}|Rest] -> {Rest, NWT}
+      [#backtrack_entry{wakeup_tree = NWT}|Rest] -> {Rest, NWT}
     end,
   NewLastDone = [Event|Done],
   NewSchedulingBound =
@@ -858,10 +866,15 @@ insert_wakeup(Sleeping, Wakeup, [E|_] = NotDep, Optimal, Exploring) ->
     true -> insert_wakeup(Sleeping, Wakeup, NotDep, Exploring);
     false ->
       Initials = get_initials(NotDep),
-      All = Sleeping ++ [W || {W, _, []} <- Wakeup],
+      All =
+        Sleeping ++
+        [W || #backtrack_entry{event = W, wakeup_tree = []} <- Wakeup],
       case existing(All, Initials) of
         true -> skip;
-        false -> Wakeup ++ [{E, Exploring, []}]
+        false ->
+          Entry =
+            #backtrack_entry{event = E, origin = Exploring, wakeup_tree = []},
+          Wakeup ++ [Entry]
       end
   end.      
 
@@ -874,9 +887,13 @@ insert_wakeup([], Wakeup, NotDep, Exploring) ->
   insert_wakeup(Wakeup, NotDep, Exploring).
 
 insert_wakeup([], NotDep, Exploring) ->
-  Fold = fun(Event, Acc) -> [{Event, Exploring, Acc}] end,
+  Fold =
+    fun(Event, Acc) ->
+        [#backtrack_entry{event = Event, origin = Exploring, wakeup_tree = Acc}]
+    end,
   lists:foldr(Fold, [], NotDep);
-insert_wakeup([{Event, M, Deeper} = Node|Rest], NotDep, Exploring) ->
+insert_wakeup([Node|Rest], NotDep, Exploring) ->
+  #backtrack_entry{event = Event, origin = M, wakeup_tree = Deeper} = Node,
   case check_initial(Event, NotDep) of
     false ->
       case insert_wakeup(Rest, NotDep, Exploring) of
@@ -889,7 +906,13 @@ insert_wakeup([{Event, M, Deeper} = Node|Rest], NotDep, Exploring) ->
         false ->
           case insert_wakeup(Deeper, NewNotDep, Exploring) of
             skip -> skip;
-            NewTree -> [{Event, M, NewTree}|Rest]
+            NewTree ->
+              Entry =
+                #backtrack_entry{
+                   event = Event,
+                   origin = M,
+                   wakeup_tree = NewTree},
+              [Entry|Rest]
           end
       end
   end.
