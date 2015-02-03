@@ -89,14 +89,19 @@ options() ->
   ,{interleaving_bound, undefined, {integer, infinity},
     "The maximum number of interleavings that will be explored. Concuerror will"
     " stop exploration beyond this limit."}
-  ,{delay_bound, $b, {integer, infinity},
-    "The maximum number of times a round-robin scheduler is allowed to deviate"
-    " from the default scheduling order in order to reverse the order of racing"
-    " events. Implies --optimal=false."}
-  ,{optimal, undefined, {boolean, true},
+  ,{scheduling_bound_type, $c, {atom, none},
+    "Enables scheduling rules that prevent particular interleavings from being"
+    " explored. The available options are: 'delay' - limits the number of times"
+    " a round-robin scheduler is allowed to deviate from the default scheduling"
+    " order in order to reverse the order of racing events. 'preemption' -"
+    " limits the number of times the scheduler is allowed to preempt a process."}
+  ,{scheduling_bound, $b, {integer, infinity},
+    "The maximum number of times the rule specified in -scheduling_bound_type"
+    " can be violated."}
+  ,{optimal, undefined, boolean,
     "Setting this to false enables a more lightweight DPOR algorithm. Use this"
     " if the rate of exploration is too slow. Don't use it if a lot of"
-    " interleavings are reported as sleep-set blocked."}
+    " interleavings are reported as sleep-set blocked. [default: true]"}
   ,{show_races, undefined, {boolean, false},
     "Determines whether information about pairs of racing instructions will be"
     " included in the graph and the logs of erroneous interleavings."}
@@ -113,7 +118,7 @@ options() ->
     "How Concuerror picks the next process to run. Valid choices are 'oldest',"
     " 'newest' and 'round_robin'."}
   ,{strict_scheduling, undefined, {boolean, false},
-    "Whether Concuerror should enforce the scheduling strategy strictly or lets"
+    "Whether Concuerror should enforce the scheduling strategy strictly or let"
     " a process run until blocked before reconsidering the scheduling policy."}
   ,{ignore_first_crash, $i, {boolean, false},
     "If not enabled, Concuerror will immediately exit if the first interleaving"
@@ -121,7 +126,8 @@ options() ->
   ,{ignore_error, undefined, atom,
     "Concuerror will not report errors of the specified kind: 'crash' (all"
     " process crashes, see also next option for more refined control),"
-    " 'deadlock' (processes waiting at a receive statement), 'depth_bound'."}
+    " 'deadlock' (processes waiting at a receive statement),"
+    " 'depth_bound' (the depth bound was reached)."}
   ,{treat_as_normal, undefined, atom,
     "A process that exits with reason the specified atom (or with a reason that"
     " is a tuple with the specified atom as a first element) will not be"
@@ -167,6 +173,7 @@ finalize(Options) ->
       add_missing_defaults(
         [{ignore_error, []},
          {non_racing_system, []},
+         {optimal, true},
          {treat_as_normal, []}
         ], Options4)
     catch
@@ -256,13 +263,6 @@ finalize([{Key, Value}|Rest], AccIn) ->
       false -> AccIn
     end,
   case Key of
-    delay_bound ->
-      NewRest =
-        case Value =:= infinity of
-          true -> Rest;
-          false -> [{optimal, false}|Rest]
-        end,
-      finalize(NewRest, [{Key, Value}|Acc]);
     graph ->
       case file:open(Value, [write]) of
         {ok, IoDevice} -> finalize(Rest, [{Key, IoDevice}|Acc]);
@@ -280,6 +280,13 @@ finalize([{Key, Value}|Rest], AccIn) ->
         {ok, IoDevice} -> finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
         {error, _} -> file_error(Key, Value)
       end;
+    scheduling_bound_type ->
+      NewRest =
+        case Value =:= none of
+          true -> Rest;
+          false -> [{optimal, false}|Rest]
+        end,
+      finalize(NewRest, [{Key, Value}|Acc]);
     timeout ->
       case Value of
         -1 ->
@@ -359,26 +366,32 @@ consistent(Options) ->
   consistent(Options, []).
 
 consistent([], _) -> ok;
-consistent([{delay_bound, N} = Bound|Rest], Acc) when is_integer(N) ->
+consistent([{scheduling_bound, N} = Bound|Rest], Acc) when is_integer(N) ->
   check_values(
-    [{scheduling, round_robin},
-     {optimal, false},
-     {strict_scheduling, false}],
-    Rest ++ Acc, {delay_bound, "an integer"}),
+    [{scheduling_bound_type, fun(X) -> lists:member(X,[delay, preemption]) end},
+     {optimal,               fun(X) -> not X end},
+     {strict_scheduling,     fun(X) -> not X end}],
+    Rest ++ Acc, {scheduling_bound, "an integer"}),
   consistent(Rest, [Bound|Acc]);
+consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc)
+  when T =:= 'delay' ->
+  check_values(
+    [{scheduling, fun(X) -> X =:= round_robin end}],
+    Rest ++ Acc, {scheduling_bound, T}),
+  consistent(Rest, [BoundType|Acc]);
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
 
 check_values([], _, _) -> ok;
-check_values([{Key, Value}|Rest], Other, Reason) ->
+check_values([{Key, Validate}|Rest], Other, Reason) ->
   Set = proplists:get_value(Key, Other),
-  case Set =:= Value of
+  case Validate(Set) of
     true ->
       check_values(Rest, Other, Reason);
     false ->
       {ReasonKey, ReasonValue} = Reason,
       opt_error(
-        "Setting '~p' to '~p' is not allowed when '~p' is set to ~s. Remove '~p'.",
-        [Key, Set, ReasonKey, ReasonValue, Key])
+        "Setting '~p' to '~p' is not allowed when '~p' is set to ~s.",
+        [Key, Set, ReasonKey, ReasonValue])
   end.
 
 -spec opt_error(string()) -> no_return().

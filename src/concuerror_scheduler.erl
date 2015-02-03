@@ -25,44 +25,45 @@
 -type event_tree() :: [{event(), integer(), event_tree()}].
 
 -record(trace_state, {
-          actors      = []         :: [pid() | {channel(), queue()}],
-          clock_map   = dict:new() :: clock_map(),
-          delay_bound = infinity   :: bound(),
-          done        = []         :: [event()],
-          index       = 1          :: index(),
-          graph_ref   = make_ref() :: reference(),
-          sleeping    = []         :: [event()],
-          wakeup_tree = []         :: event_tree()
+          actors           = []         :: [pid() | {channel(), queue()}],
+          clock_map        = dict:new() :: clock_map(),
+          done             = []         :: [event()],
+          index            = 1          :: index(),
+          graph_ref        = make_ref() :: reference(),
+          scheduling_bound = infinity   :: bound(),
+          sleeping         = []         :: [event()],
+          wakeup_tree      = []         :: event_tree()
          }).
 
 -type trace_state() :: #trace_state{}.
 
 -record(scheduler_state, {
-          ignore_first_crash = true :: boolean(),
-          assume_racing     = true :: boolean(),
-          current_graph_ref        :: reference(),
-          current_warnings  = []   :: [concuerror_warning_info()],
-          delay             = 0    :: non_neg_integer(),
-          depth_bound              :: pos_integer(),
-          entry_point              :: mfargs(),
-          exploring         = 1    :: integer(),
-          first_process            :: pid(),
-          ignore_error      = []   :: [atom()],
-          interleaving_bound       :: pos_integer(),
-          logger                   :: pid(),
-          last_scheduled           :: pid(),
-          message_info             :: message_info(),
-          non_racing_system = []   :: [atom()],
-          optimal           = true :: boolean(),
-          print_depth              :: pos_integer(),
-          processes                :: processes(),
-          scheduling = oldest      :: scheduling(),
-          show_races = true        :: boolean(),
-          strict_scheduling = false :: boolean(),
-          system            = []   :: [pid()],
-          timeout                  :: timeout(),
-          trace             = []   :: [trace_state()],
-          treat_as_normal   = []   :: [atom()]
+          ignore_first_crash = true    :: boolean(),
+          assume_racing      = true    :: boolean(),
+          bound_consumed     = 0       :: non_neg_integer(),
+          current_graph_ref            :: reference(),
+          current_warnings   = []      :: [concuerror_warning_info()],
+          depth_bound                  :: pos_integer(),
+          entry_point                  :: mfargs(),
+          exploring          = 1       :: integer(),
+          first_process                :: pid(),
+          ignore_error       = []      :: [atom()],
+          interleaving_bound           :: pos_integer(),
+          logger                       :: pid(),
+          last_scheduled               :: pid(),
+          message_info                 :: message_info(),
+          non_racing_system  = []      :: [atom()],
+          optimal            = true    :: boolean(),
+          print_depth                  :: pos_integer(),
+          processes                    :: processes(),
+          scheduling         = oldest  :: scheduling(),
+          scheduling_bound_type = none :: scheduling_bound_type(),
+          show_races         = true    :: boolean(),
+          strict_scheduling  = false   :: boolean(),
+          system             = []      :: [pid()],
+          timeout                      :: timeout(),
+          trace              = []      :: [trace_state()],
+          treat_as_normal    = []      :: [atom()]
          }).
 
 %% =============================================================================
@@ -78,7 +79,7 @@ run(Options) ->
   InitialTrace =
     #trace_state{
        actors = [FirstProcess],
-       delay_bound = ?opt(delay_bound, Options)
+       scheduling_bound = ?opt(scheduling_bound, Options)
       },
   InitialState =
     #scheduler_state{
@@ -97,6 +98,7 @@ run(Options) ->
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
+       scheduling_bound_type = ?opt(scheduling_bound_type, Options),
        show_races = ?opt(show_races, Options),
        strict_scheduling = ?opt(strict_scheduling, Options),
        system = System,
@@ -201,6 +203,8 @@ filter_warnings(Warnings, [Ignore|Rest] = Ignored) ->
     {value, _, NewWarnings} -> filter_warnings(NewWarnings, Ignored)
   end.
 
+%%------------------------------------------------------------------------------
+
 get_next_event(
   #scheduler_state{
      current_warnings = Warnings,
@@ -214,7 +218,7 @@ get_next_event(
 get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|_]} = State) ->
   #trace_state{
      actors      = Actors,
-     delay_bound = DelayBound,
+     scheduling_bound = SchedulingBound,
      index       = I,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
@@ -224,13 +228,23 @@ get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
-      get_next_event(Event, System ++ AvailableActors, State#scheduler_state{delay = 0});
+      NewState = State#scheduler_state{bound_consumed = 0},
+      get_next_event(Event, System ++ AvailableActors, NewState);
     [{#event{actor = Actor, label = Label} = Event, N, _}|_] ->
       ?log(Logger, ?ldebug,"By: ~p~n", [N]),
       false = lists:member(Actor, Sleeping),
-      Delay =
-        case DelayBound =/= infinity of
-          true -> count_delay(SortedActors, Actor);
+      BoundConsumed =
+        case SchedulingBound =/= infinity of
+          true ->
+            Delay = count_delay(SortedActors, Actor),
+            case Delay =:= 0 of
+              true -> 0;
+              false ->
+                case State#scheduler_state.scheduling_bound_type of
+                  delay -> Delay;
+                  preemption -> 1
+                end
+            end;
           false -> 0
         end,
       {ok, UpdatedEvent} =
@@ -250,7 +264,8 @@ get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|
             ResetEvent = reset_event(Event),
             get_next_event_backend(ResetEvent, State)
         end,
-      update_state(UpdatedEvent, State#scheduler_state{delay = Delay})
+      NewState = State#scheduler_state{bound_consumed = BoundConsumed},
+      update_state(UpdatedEvent, NewState)
   end.
 
 filter_sleeping([], AvailableActors) -> AvailableActors;
@@ -353,13 +368,13 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 
 update_state(#event{special = Special} = Event, State) ->
   #scheduler_state{
-     delay  = Delay,
+     bound_consumed = BoundConsumed,
      logger = Logger,
      trace  = [Last|Prev]
     } = State,
   #trace_state{
      actors      = Actors,
-     delay_bound = DelayBound,
+     scheduling_bound = SchedulingBound,
      done        = Done,
      index       = Index,
      graph_ref   = Ref,
@@ -376,15 +391,15 @@ update_state(#event{special = Special} = Event, State) ->
       [{_, _, NWT}|Rest] -> {Rest, NWT}
     end,
   NewLastDone = [Event|Done],
-  NewDelayBound =
-    case Delay =:= 0 of
-      true -> DelayBound;
-      false -> DelayBound - Delay
+  NewSchedulingBound =
+    case BoundConsumed =:= 0 of
+      true -> SchedulingBound;
+      false -> SchedulingBound - BoundConsumed
     end,
   InitNextTrace =
     #trace_state{
        actors      = Actors,
-       delay_bound = NewDelayBound,
+       scheduling_bound = NewSchedulingBound,
        index       = Index + 1,
        sleeping    = NextSleeping,
        wakeup_tree = NextWakeupTree
@@ -769,7 +784,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
      optimal = Optimal} = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done],
-     delay_bound = DelayBound,
+     scheduling_bound = SchedulingBound,
      index = EarlyIndex,
      sleeping = Sleeping,
      wakeup_tree = WakeupTree
@@ -781,8 +796,8 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
       skip;
     NewWakeupTree ->
       case
-        (DelayBound =:= infinity) orelse
-        (DelayBound - length(Done ++ WakeupTree) > 0)
+        (SchedulingBound =:= infinity) orelse
+        (SchedulingBound - length(Done ++ WakeupTree) > 0)
       of
         true ->
           trace_plan(Logger, EarlyIndex, NotDep),
@@ -790,7 +805,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
           [NS|NewOldTrace];
         false ->
           Message =
-            "Some interleavings were not considered due to delay bounding.~n",
+            "Some interleavings were not considered due to schedule bounding.~n",
           ?unique(Logger, ?lwarning, Message, []),
           ?debug(Logger, "     OVER BOUND~n",[]),
           skip
