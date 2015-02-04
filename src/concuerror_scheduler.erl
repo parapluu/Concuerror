@@ -417,7 +417,7 @@ update_state(#event{special = Special} = Event, State) ->
       [P|_] -> P#trace_state.scheduling_bound
     end,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
-  concuerror_logger:graph_new_node(Logger, Ref, Index, Event),
+  concuerror_logger:graph_new_node(Logger, Ref, Index, Event, BoundConsumed),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
   NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =

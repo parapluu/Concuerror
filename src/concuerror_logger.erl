@@ -3,7 +3,7 @@
 -module(concuerror_logger).
 
 -export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
--export([graph_set_node/3, graph_new_node/4, graph_race/3]).
+-export([graph_set_node/3, graph_new_node/5, graph_race/3]).
 
 -include("concuerror.hrl").
 
@@ -471,10 +471,10 @@ graph_set_node(Logger, Parent, Sibling) ->
   Logger ! {graph, {set_node, Parent, Sibling}},
   ok.
 
--spec graph_new_node(logger(), reference(), index(), event()) -> ok.
+-spec graph_new_node(logger(), reference(), index(), event(), integer()) -> ok.
 
-graph_new_node(Logger, Ref, Index, Event) ->
-  Logger ! {graph, {new_node, Ref, Index, Event}},
+graph_new_node(Logger, Ref, Index, Event, BoundConsumed) ->
+  Logger ! {graph, {new_node, Ref, Index, Event, BoundConsumed}},
   ok.
 
 -spec graph_race(logger(), reference(), reference()) -> ok.
@@ -498,7 +498,7 @@ graph_command(Command, State) ->
   #logger_state{graph_data = {GraphFile, Parent, Sibling} = Graph} = State,
   NewGraph =
     case Command of
-      {new_node, Ref, I, Event} ->
+      {new_node, Ref, I, Event, BoundConsumed} ->
         ErrorS =
           case Event#event.event_info of
             #exit_event{reason = normal} ->
@@ -510,10 +510,15 @@ graph_command(Command, State) ->
             _ -> ""
           end,
         Label = concuerror_printer:pretty_s({I,Event#event{location=[]}}, 1),
+        EnabledLabel =
+          case BoundConsumed =:= 0 of
+            true -> "    ";
+            false -> io_lib:format("!~2w",[BoundConsumed])
+          end,
         io:format(
           GraphFile,
-          "    \"~p\" [label=\"~s\\l\"~s];~n",
-          [Ref, Label, ErrorS]),
+          "    \"~p\" [label=\"~s ~s\\l\"~s];~n",
+          [Ref, EnabledLabel, Label, ErrorS]),
         case Sibling =:= none of
           true ->
             io:format(GraphFile,"~s[weight=1000];~n",[ref_edge(Parent, Ref)]);
