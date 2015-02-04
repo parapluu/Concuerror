@@ -745,28 +745,26 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
           concuerror_dependencies:dependent_safe(EarlyEvent, Event),
         case Dependent of
           false -> none;
-          irreversible ->
-            NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
-            {update_clock, NC};
+          irreversible -> update_clock;
           true ->
             ?debug(Logger, "   races with ~s~n",
                    [?pretty_s(EarlyIndex, EarlyEvent)]),
-            NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             case
               update_trace(Event, TraceState, Later, NewOldTrace, State)
             of
-              skip -> {update_clock, NC};
+              skip -> update_clock;
               UpdatedNewOldTrace ->
                 concuerror_logger:plan(Logger),
-                {update, UpdatedNewOldTrace, NC}
+                {update, UpdatedNewOldTrace}
             end
         end
     end,
-  {NewTrace, NewClock} =
+  NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
+  {NewRest, NewClock, NewTrace} =
     case Action of
-      none -> {[TraceState|NewOldTrace], Clock};
-      {update_clock, C} -> {[TraceState|NewOldTrace], C};
-      {update, S, C} ->
+      none -> {Rest, Clock, [TraceState|NewOldTrace]};
+      update_clock -> {Rest, NC, [TraceState|NewOldTrace]};
+      {update, S} ->
         if State#scheduler_state.show_races ->
             EarlyRef = TraceState#trace_state.graph_ref,
             Ref = State#scheduler_state.current_graph_ref,
@@ -781,9 +779,9 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
                " --graph) with '--show_races true'~n",
                [])
         end,
-        {S, C}
+        {Rest, NC, S}
     end,
-  more_interleavings_for_event(Rest, Event, Later, NewClock, State, Index, NewTrace).
+  more_interleavings_for_event(NewRest, Event, Later, NewClock, State, Index, NewTrace).
 
 update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{
