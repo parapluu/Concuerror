@@ -36,6 +36,7 @@
           done             = []         :: [event()],
           index            = 1          :: index(),
           graph_ref        = make_ref() :: reference(),
+          previous_was_enabled = true   :: boolean(),
           scheduling_bound = infinity   :: bound(),
           sleeping         = []         :: [event()],
           wakeup_tree      = []         :: event_tree()
@@ -60,6 +61,7 @@
           message_info                 :: message_info(),
           non_racing_system  = []      :: [atom()],
           optimal            = true    :: boolean(),
+          previous_was_enabled = true   :: boolean(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
           scheduling         = oldest  :: scheduling(),
@@ -221,7 +223,12 @@ get_next_event(
       current_warnings = [{depth_bound, Bound}|Warnings],
       trace = Old},
   {none, NewState};
-get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|_]} = State) ->
+get_next_event(State) ->
+  #scheduler_state{
+     last_scheduled = LastScheduled,
+     logger = Logger,
+     system = System,
+     trace = [Last|_]} = State,
   #trace_state{
      actors      = Actors,
      scheduling_bound = SchedulingBound,
@@ -229,12 +236,17 @@ get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
+  PreviousWasEnabled = concuerror_callback:enabled(LastScheduled),
   SortedActors = schedule_sort(Actors, State),
   AvailableActors = filter_sleeping(Sleeping, SortedActors),
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
-      NewState = State#scheduler_state{bound_consumed = 0},
+      NewState =
+        State#scheduler_state{
+          bound_consumed = 0,
+          previous_was_enabled = PreviousWasEnabled
+         },
       get_next_event(Event, System ++ AvailableActors, NewState);
     [#backtrack_entry{
         event = #event{actor = Actor, label = Label} = Event,
@@ -272,7 +284,11 @@ get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|
             ResetEvent = reset_event(Event),
             get_next_event_backend(ResetEvent, State)
         end,
-      NewState = State#scheduler_state{bound_consumed = BoundConsumed},
+      NewState =
+        State#scheduler_state{
+          bound_consumed = BoundConsumed,
+          previous_was_enabled = PreviousWasEnabled
+         },
       update_state(UpdatedEvent, NewState)
   end.
 
@@ -378,14 +394,15 @@ update_state(#event{special = Special} = Event, State) ->
   #scheduler_state{
      bound_consumed = BoundConsumed,
      logger = Logger,
+     previous_was_enabled = PreviousWasEnabled,
      trace  = [Last|Prev]
     } = State,
   #trace_state{
      actors      = Actors,
-     scheduling_bound = SchedulingBound,
      done        = Done,
      index       = Index,
      graph_ref   = Ref,
+     scheduling_bound = SchedulingBound,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
@@ -407,8 +424,9 @@ update_state(#event{special = Special} = Event, State) ->
   InitNextTrace =
     #trace_state{
        actors      = Actors,
-       scheduling_bound = NewSchedulingBound,
        index       = Index + 1,
+       previous_was_enabled = PreviousWasEnabled,
+       scheduling_bound = NewSchedulingBound,
        sleeping    = NextSleeping,
        wakeup_tree = NextWakeupTree
       },
