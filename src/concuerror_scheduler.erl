@@ -791,11 +791,7 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
             IndexedLate ={Index, Event#event{location = []}},
             concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
            true ->
-            ?unique(
-               Logger, ?linfo,
-               "You can see pairs of racing instructions (in the report and"
-               " --graph) with '--show_races true'~n",
-               [])
+            ?unique(Logger, ?linfo, msg(show_races), [])
         end,
         {Rest, NC, S}
     end,
@@ -1092,14 +1088,7 @@ assert_no_messages() ->
 -spec explain_error(term()) -> string().
 
 explain_error(first_interleaving_crashed) ->
-  {
-    io_lib:format(
-      "The first interleaving of your test had errors. Check the output file."
-      " You may then use -i to tell Concuerror to continue or use other options"
-      " to filter out the reported errors, if you consider them acceptable"
-      " behaviours.",
-      []),
-    warning};
+  {msg(first_interleaving_crashed), warning};
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   [EString, NEString] =
     [concuerror_printer:pretty_s(E, Depth) || E <- [Event, NewEvent]],
@@ -1120,11 +1109,19 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 
 %%==============================================================================
 
+msg(first_interleaving_crashed) ->
+  "The first interleaving of your test had errors. Check the output file."
+    " You may then use -i to tell Concuerror to continue or use other options"
+    " to filter out the reported errors, if you consider them acceptable"
+    " behaviours.";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
     " operation races with the arrival of the signal. If the test produces"
     " too many interleavings consider refactoring your code.~n";
+msg(show_races) ->
+  "You can see pairs of racing instructions (in the report and"
+    " --graph) with '--show_races true'~n";
 msg(shutdown) ->
   "A process crashed with reason 'shutdown'. This may happen when a"
     " supervisor is terminating its children. You can use '--treat_as_normal"
