@@ -1418,7 +1418,8 @@ process_loop(Info) ->
       end;
     enabled ->
       Status = Info#concuerror_info.status,
-      process_loop(notify({enabled, Status =:= running}, Info));
+      Reply = Status =:= running orelse Status =:= exiting,
+      process_loop(notify({enabled, Reply}, Info));
     {get_info, To} ->
       To ! {info, Info},
       process_loop(Info)
