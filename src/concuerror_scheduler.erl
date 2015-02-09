@@ -256,13 +256,12 @@ get_next_event(State) ->
       BoundConsumed =
         case SchedulingBound =/= infinity of
           true ->
-            Delay = count_delay(SortedActors, Actor),
-            case Delay =:= 0 of
-              true -> 0;
-              false ->
-                case State#scheduler_state.scheduling_bound_type of
-                  delay -> Delay;
-                  preemption -> 1
+            case State#scheduler_state.scheduling_bound_type of
+              delay -> count_delay(SortedActors, Actor);
+              preemption ->
+                case PreviousWasEnabled of
+                  true -> 1;
+                  false -> 0
                 end
             end;
           false -> 0
@@ -402,10 +401,14 @@ update_state(#event{special = Special} = Event, State) ->
      done        = Done,
      index       = Index,
      graph_ref   = Ref,
-     scheduling_bound = SchedulingBound,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
+  SchedulingBound =
+    case Prev of
+      [] -> Last#trace_state.scheduling_bound;
+      [P|_] -> P#trace_state.scheduling_bound
+    end,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
   concuerror_logger:graph_new_node(Logger, Ref, Index, Event),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
@@ -421,17 +424,21 @@ update_state(#event{special = Special} = Event, State) ->
       true -> SchedulingBound;
       false -> SchedulingBound - BoundConsumed
     end,
+  ?debug(Logger, " PWE:~p BOUND:~p~n", [PreviousWasEnabled, NewSchedulingBound]),
   InitNextTrace =
     #trace_state{
        actors      = Actors,
        index       = Index + 1,
-       previous_was_enabled = PreviousWasEnabled,
-       scheduling_bound = NewSchedulingBound,
        sleeping    = NextSleeping,
        wakeup_tree = NextWakeupTree
       },
   NewLastTrace =
-    Last#trace_state{done = NewLastDone, wakeup_tree = NewLastWakeupTree},
+    Last#trace_state{
+      done = NewLastDone,
+      previous_was_enabled = PreviousWasEnabled,
+      scheduling_bound = NewSchedulingBound,
+      wakeup_tree = NewLastWakeupTree
+     },
   InitNewState =
     State#scheduler_state{trace = [InitNextTrace, NewLastTrace|Prev]},
   NewState = maybe_log(Event, InitNewState, Index),
