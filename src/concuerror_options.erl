@@ -373,12 +373,29 @@ consistent([{scheduling_bound, N} = Bound|Rest], Acc) when is_integer(N) ->
      {strict_scheduling,     fun(X) -> not X end}],
     Rest ++ Acc, {scheduling_bound, "an integer"}),
   consistent(Rest, [Bound|Acc]);
-consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc)
-  when T =:= 'delay' ->
-  check_values(
-    [{scheduling, fun(X) -> X =:= round_robin end}],
-    Rest ++ Acc, {scheduling_bound, T}),
-  consistent(Rest, [BoundType|Acc]);
+consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc) ->
+  case T =:= none of
+    true -> consistent(Rest, [BoundType|Acc]);
+    false ->
+      case is_integer(proplists:get_value(scheduling_bound, Rest ++ Acc)) of
+        false ->
+          Warn =
+            "No bound value set for ~p bound. Use --scheduling_bound to specify"
+            " an integer value as a bound, or remove the bound type"
+            " specification.",
+          opt_error(Warn, [T]);
+        true ->
+          case T =:= 'delay' of
+            true ->
+              check_values(
+                [{scheduling, fun(X) -> X =:= round_robin end}],
+                Rest ++ Acc, {scheduling_bound, T}),
+              consistent(Rest, [BoundType|Acc]);
+            false ->
+              consistent(Rest, [BoundType|Acc])
+          end
+      end
+  end;
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
 
 check_values([], _, _) -> ok;
