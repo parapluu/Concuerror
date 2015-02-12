@@ -357,6 +357,7 @@ print_log_msgs(Output, LogMsgs) ->
         io:format(Output, "~s~s:~n", [Header, Suffix]),
         separator(Output, $-),
         lists:foreach(ForeachInner, Messages),
+        io:format(Output, "~n", []),
         separator(Output, $#)
     end,
   lists:foreach(Foreach, LogMsgs).
@@ -419,7 +420,7 @@ separator_string(Char) ->
   lists:duplicate(80, Char).
 
 separator(Output, Char) ->
-  io:format(Output, "~s~n", [separator_string(Char)]).
+  io:format(Output, "~s~n~n", [separator_string(Char)]).
 
 print_streams(Streams, Output) ->
   Fold =
@@ -430,8 +431,8 @@ print_streams(Streams, Output) ->
   orddict:fold(Fold, ok, Streams).
 
 print_stream(Tag, Buffer, Output) ->
-  io:format(Output, "~s:~n", [tag_to_filename(Tag)]),
-  io:format(Output, "~s", [Buffer]),
+  io:format(Output, tag_to_filename(Tag) ++ "~n", []),
+  io:format(Output, "~s~n", [Buffer]),
   case Tag =/= race of
     true ->
       io:format(Output, "~n", []),
@@ -443,7 +444,7 @@ tag_to_filename(standard_io) -> "Standard Output";
 tag_to_filename(standard_error) -> "Standard Error";
 tag_to_filename(race) ->
   separator_string($-) ++
-    "\nPairs of racing instructions";
+    "~n~nPairs of racing instructions";
 tag_to_filename(Filename) when is_list(Filename) ->
   io_lib:format("Text printed to ~s", [Filename]).
 
