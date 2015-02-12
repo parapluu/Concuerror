@@ -59,6 +59,7 @@
           logger                       :: pid(),
           last_scheduled               :: pid(),
           message_info                 :: message_info(),
+          need_to_replay     = false   :: boolean(),
           non_racing_system  = []      :: [atom()],
           optimal            = true    :: boolean(),
           previous_was_enabled = true   :: boolean(),
@@ -217,41 +218,45 @@ get_next_event(
   #scheduler_state{
      current_warnings = Warnings,
      depth_bound = Bound,
-     trace = [#trace_state{index = I}|Old]} = State) when I =:= Bound + 1->
+     trace = [#trace_state{index = I}|Old]} = State) when I =:= Bound + 1 ->
   NewState =
     State#scheduler_state{
       current_warnings = [{depth_bound, Bound}|Warnings],
       trace = Old},
   {none, NewState};
-get_next_event(State) ->
-  #scheduler_state{
-     last_scheduled = LastScheduled,
-     logger = Logger,
-     system = System,
-     trace = [Last|_]} = State,
-  #trace_state{
-     actors      = Actors,
-     scheduling_bound = SchedulingBound,
-     index       = I,
-     sleeping    = Sleeping,
-     wakeup_tree = WakeupTree
-    } = Last,
-  PreviousWasEnabled = concuerror_callback:enabled(LastScheduled),
-  SortedActors = schedule_sort(Actors, State),
-  AvailableActors = filter_sleeping(Sleeping, SortedActors),
+get_next_event(#scheduler_state{logger = Logger, trace = [Last|_]} = State) ->
+  #trace_state{wakeup_tree = WakeupTree} = Last,
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
+      get_next_event(Event, State);
+    [#backtrack_entry{event = Event, origin = N}|_] ->
+      ?log(Logger, ?ldebug,"By: ~p~n", [N]),
+      get_next_event(Event, State)
+  end.
+
+get_next_event(Event, MaybeNeedsReplayState) ->
+  State = replay(MaybeNeedsReplayState),
+  #scheduler_state{system = System, trace = [Last|_]} = State,
+  #trace_state{
+     actors           = Actors,
+     scheduling_bound = SchedulingBound,
+     sleeping         = Sleeping
+    } = Last,
+  LastScheduled = State#scheduler_state.last_scheduled,
+  PreviousWasEnabled = concuerror_callback:enabled(LastScheduled),
+  SortedActors = schedule_sort(Actors, State),
+  #event{actor = Actor, label = Label} = Event,
+  case Actor =:= undefined of
+    true ->
+      AvailableActors = filter_sleeping(Sleeping, SortedActors),
       NewState =
         State#scheduler_state{
           bound_consumed = 0,
           previous_was_enabled = PreviousWasEnabled
          },
-      get_next_event(Event, System ++ AvailableActors, NewState);
-    [#backtrack_entry{
-        event = #event{actor = Actor, label = Label} = Event,
-        origin = N}|_] ->
-      ?log(Logger, ?ldebug,"By: ~p~n", [N]),
+      free_schedule(Event, System ++ AvailableActors, NewState);
+    false ->
       false = lists:member(Actor, Sleeping),
       BoundConsumed =
         case SchedulingBound =/= infinity of
@@ -274,6 +279,7 @@ get_next_event(State) ->
             catch
               _:_ ->
                 #scheduler_state{print_depth = PrintDepth} = State,
+                #trace_state{index = I} = Last,
                 Reason =
                   {replay_mismatch, I, Event, element(2, NewEvent), PrintDepth},
                 ?crash(Reason)
@@ -340,18 +346,18 @@ count_delay([Other|Rest], Actor, N) ->
     end,
   count_delay(Rest, Actor, NN).
 
-get_next_event(Event, [{Channel, Queue}|_], State) ->
+free_schedule(Event, [{Channel, Queue}|_], State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
   UpdatedEvent = Event#event{actor = Channel, event_info = MessageEvent},
   {ok, FinalEvent} = get_next_event_backend(UpdatedEvent, State),
   update_state(FinalEvent, State);
-get_next_event(Event, [P|ActiveProcesses], State) ->
+free_schedule(Event, [P|ActiveProcesses], State) ->
   case get_next_event_backend(Event#event{actor = P}, State) of
-    retry -> get_next_event(Event, ActiveProcesses, State);
+    retry -> free_schedule(Event, ActiveProcesses, State);
     {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
   end;
-get_next_event(_Event, [], State) ->
+free_schedule(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
   #scheduler_state{
      current_warnings = Warnings,
@@ -980,29 +986,34 @@ existing([#event{actor = A}|Rest], Initials) ->
 
 %%------------------------------------------------------------------------------
 
-has_more_to_explore(State) ->
-  #scheduler_state{exploring = N, logger = Logger, trace = Trace} = State,
+has_more_to_explore(#scheduler_state{trace = Trace} = State) ->
   TracePrefix = find_prefix(Trace, State),
   case TracePrefix =:= [] of
     true -> {false, State#scheduler_state{trace = []}};
     false ->
-      S = io_lib:format("New interleaving ~p. Replaying...", [N]),
-      ?time(Logger, S),
-      NewState = replay_prefix(TracePrefix, State),
-      ?debug(Logger, "~s~n",["Replay done."]),
-      FinalState = NewState#scheduler_state{trace = TracePrefix},
-      {true, FinalState}
+      NewState =
+        State#scheduler_state{need_to_replay = true, trace = TracePrefix},
+      {true, NewState}
   end.
 
-find_prefix([], _State) -> [];
 find_prefix([#trace_state{wakeup_tree = []}|Rest], State) ->
   find_prefix(Rest, State);
-find_prefix([#trace_state{graph_ref = Sibling} = Other|Rest], State) ->
-  #scheduler_state{logger = Logger} = State,
-  [#trace_state{graph_ref = Parent}|_] = Rest,
-  concuerror_logger:graph_set_node(Logger, Parent, Sibling),
-  [Other#trace_state{graph_ref = make_ref(), clock_map = dict:new()}|Rest].
+find_prefix(Trace, _State) -> Trace.
 
+replay(#scheduler_state{need_to_replay = false} = State) ->
+  State;
+replay(State) ->
+  #scheduler_state{exploring = N, logger = Logger, trace = Trace} = State,
+  [#trace_state{graph_ref = Sibling} = Last|
+   [#trace_state{graph_ref = Parent}|_] = Rest] = Trace,
+  concuerror_logger:graph_set_node(Logger, Parent, Sibling),
+  NewTrace =
+    [Last#trace_state{graph_ref = make_ref(), clock_map = dict:new()}|Rest],
+  S = io_lib:format("New interleaving ~p. Replaying...", [N]),
+  ?time(Logger, S),
+  NewState = replay_prefix(NewTrace, State#scheduler_state{trace = NewTrace}),
+  ?debug(Logger, "~s~n",["Replay done."]),
+  NewState#scheduler_state{need_to_replay = false}.
 
 %% =============================================================================
 %% ENGINE (manipulation of the Erlang processes under the scheduler)
@@ -1026,7 +1037,8 @@ replay_prefix(Trace, State) ->
   ok = ets:foldl(Fold, ok, Processes),
   ok =
     concuerror_callback:start_first_process(FirstProcess, EntryPoint, Timeout),
-  replay_prefix_aux(lists:reverse(Trace), State).
+  NewState = State#scheduler_state{last_scheduled = FirstProcess},
+  replay_prefix_aux(lists:reverse(Trace), NewState).
 
 replay_prefix_aux([_], State) ->
   %% Last state has to be properly replayed.
@@ -1034,7 +1046,7 @@ replay_prefix_aux([_], State) ->
 replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   #scheduler_state{logger = _Logger, print_depth = PrintDepth} = State,
   ?trace(_Logger, "~s~n", [?pretty_s(I, Event)]),
-  {ok, NewEvent} = get_next_event_backend(Event, State),
+  {ok, #event{actor = Actor} = NewEvent} = get_next_event_backend(Event, State),
   try
     true = Event =:= NewEvent
   catch
@@ -1042,7 +1054,13 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
       #scheduler_state{print_depth = PrintDepth} = State,
       ?crash({replay_mismatch, I, Event, NewEvent, PrintDepth})
   end,
-  replay_prefix_aux(Rest, maybe_log(Event, State, I)).
+  NewLastScheduled =
+    case is_pid(Actor) of
+      true -> Actor;
+      false -> State#scheduler_state.last_scheduled
+    end,
+  NewState = State#scheduler_state{last_scheduled = NewLastScheduled},
+  replay_prefix_aux(Rest, maybe_log(Event, NewState, I)).
 
 %% =============================================================================
 %% INTERNAL INTERFACES
