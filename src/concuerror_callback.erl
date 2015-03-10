@@ -1740,7 +1740,8 @@ system_wrapper_loop(Name, Wrapped, Info) ->
               ?crash({system_wrapper_error, Name, Type, Reason, Stacktrace})
           end;
         {get_info, To} ->
-          To ! {info, Info}
+          To ! {info, Info},
+          ok
       end
   end,
   system_wrapper_loop(Name, Wrapped, Info).
