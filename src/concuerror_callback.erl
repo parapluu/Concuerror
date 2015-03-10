@@ -1738,7 +1738,9 @@ system_wrapper_loop(Name, Wrapped, Info) ->
             Type:Reason ->
               Stacktrace = erlang:get_stacktrace(),
               ?crash({system_wrapper_error, Name, Type, Reason, Stacktrace})
-          end
+          end;
+        {get_info, To} ->
+          To ! {info, Info}
       end
   end,
   system_wrapper_loop(Name, Wrapped, Info).
