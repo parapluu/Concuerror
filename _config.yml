@@ -3,7 +3,7 @@ description:      Systematic concurrency testing of Erlang programs.
 logo:             site-logo.png
 disqus_shortname: 
 #Comment out url when working locally to resolve base urls correctly
-url:             http://concuerror.com
+url:             http://www.concuerror.com
 
 # Owner/author information
 owner:
