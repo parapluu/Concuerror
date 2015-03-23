@@ -1,0 +1,41 @@
+################################################################################
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {delay_bound,infinity},
+   {depth_bound,5000},
+   {entry_point,{inspect_system,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/inspect_system.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {interleaving_bound,infinity},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {scheduling,round_robin},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Erroneous interleaving 1:
+* Concuerror crashed
+--------------------------------------------------------------------------------
+Interleaving info:
+   1: P: kernel_sup = erlang:whereis(kernel_sup)
+    in inspect_system.erl line 10
+################################################################################
+Errors:
+--------------------------------------------------------------------------------
+A process attempted to request process_info for a system process (kernel_sup). Concuerror cannot track and restore the state of system processes, so this information may change between interleavings, leading to errors in the exploration. It should be possible to refactor your test to avoid this problem.
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented inspect_system
+Instrumented io_lib
+################################################################################
+Done! (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored

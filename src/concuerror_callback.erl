@@ -1738,7 +1738,9 @@ system_wrapper_loop(Name, Wrapped, Info) ->
             Type:Reason ->
               Stacktrace = erlang:get_stacktrace(),
               ?crash({system_wrapper_error, Name, Type, Reason, Stacktrace})
-          end
+          end;
+        {get_info, _} ->
+          ?crash({wrapper_asked_for_status, Name})
       end
   end,
   system_wrapper_loop(Name, Wrapped, Info).
@@ -1975,7 +1977,15 @@ explain_error({unsupported_request, Name, Type}) ->
     "A process send a request of type '~p' to ~p. Concuerror does not yet support"
     " this type of request to this process.~n"
     ?notify_us_msg,
-    [Type, Name]).
+    [Type, Name]);
+explain_error({wrapper_asked_for_status, Name}) ->
+  io_lib:format(
+    "A process attempted to request process_info for a system process (~p)."
+    " Concuerror cannot track and restore the state of system processes, so"
+    " this information may change between interleavings, leading to errors in"
+    " the exploration. It should be possible to refactor your test to avoid"
+    " this problem.",
+    [Name]).
 
 location(F, L) ->
   Basename = filename:basename(F),
