@@ -161,14 +161,7 @@ log_trace(State) ->
      exploring = N,
      ignore_error = Ignored,
      logger = Logger} = State,
-  Warnings = filter_warnings(UnfilteredWarnings, Ignored),
-  case UnfilteredWarnings =/= Warnings of
-    true ->
-      Message = "Some errors were ignored ('--ignore_error').~n",
-      ?unique(Logger, ?lwarning, Message, []);
-    false ->
-      ok
-  end,
+  Warnings = filter_warnings(UnfilteredWarnings, Ignored, Logger),
   Log =
     case Warnings =:= [] of
       true -> none;
@@ -199,17 +192,20 @@ log_trace(State) ->
       case NextExploring =< State#scheduler_state.interleaving_bound of
         true -> NextState;
         false ->
-          Bound = "Reached interleaving bound (~p)~n",
-          ?unique(Logger, ?lwarning, Bound, [N]),
+          UniqueMsg = "Reached interleaving bound (~p)~n",
+          ?unique(Logger, ?lwarning, UniqueMsg, [N]),
           NextState#scheduler_state{trace = []}
       end
   end.
 
-filter_warnings(Warnings, []) -> Warnings;
-filter_warnings(Warnings, [Ignore|Rest] = Ignored) ->
+filter_warnings(Warnings, [], _) -> Warnings;
+filter_warnings(Warnings, [Ignore|Rest] = Ignored, Logger) ->
   case lists:keytake(Ignore, 1, Warnings) of
-    false -> filter_warnings(Warnings, Rest);
-    {value, _, NewWarnings} -> filter_warnings(NewWarnings, Ignored)
+    false -> filter_warnings(Warnings, Rest, Logger);
+    {value, _, NewWarnings} ->
+      UniqueMsg = "Some errors were ignored ('--ignore_error').~n",
+      ?unique(Logger, ?lwarning, UniqueMsg, []),
+      filter_warnings(NewWarnings, Ignored, Logger)
   end.
 
 %%------------------------------------------------------------------------------
@@ -218,7 +214,12 @@ get_next_event(
   #scheduler_state{
      current_warnings = Warnings,
      depth_bound = Bound,
+     logger = Logger,
      trace = [#trace_state{index = I}|Old]} = State) when I =:= Bound + 1 ->
+  UniqueMsg =
+    "Some interleaving reached the depth bound (~p). Consider limiting the size"
+    " of the test or increasing the bound.~n",
+  ?unique(Logger, ?lwarning, UniqueMsg, [Bound]),
   NewState =
     State#scheduler_state{
       current_warnings = [{depth_bound, Bound}|Warnings],
