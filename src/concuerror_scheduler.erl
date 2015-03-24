@@ -140,15 +140,8 @@ explore(State) ->
         false -> ok
       end;
     {crash, Why} ->
-      #scheduler_state{
-         current_warnings = Warnings,
-         trace = [_|Trace]
-        } = UpdatedState,
-      FatalCrashState =
-        UpdatedState#scheduler_state{
-          current_warnings = [fatal|Warnings],
-          trace = Trace
-         },
+      #scheduler_state{trace = [_|Trace]} = UpdatedState,
+      FatalCrashState = add_warning(fatal, Trace, UpdatedState),
       catch log_trace(FatalCrashState),
       exit(Why)
   end.
@@ -208,11 +201,23 @@ filter_warnings(Warnings, [Ignore|Rest] = Ignored, Logger) ->
       filter_warnings(NewWarnings, Ignored, Logger)
   end.
 
+add_warning(Warning, #scheduler_state{trace = Trace} = State) ->
+  add_warning(Warning, Trace, State).
+
+add_warning(Warning, Trace, State) ->
+  add_warnings([Warning], Trace, State).
+
+add_warnings(Warnings, Trace, State) ->
+  #scheduler_state{current_warnings = OldWarnings} = State,
+  State#scheduler_state{
+    current_warnings = Warnings ++ OldWarnings,
+    trace = Trace
+   }.
+
 %%------------------------------------------------------------------------------
 
 get_next_event(
   #scheduler_state{
-     current_warnings = Warnings,
      depth_bound = Bound,
      logger = Logger,
      trace = [#trace_state{index = I}|Old]} = State) when I =:= Bound + 1 ->
@@ -220,10 +225,7 @@ get_next_event(
     "Some interleaving reached the depth bound (~p). Consider limiting the size"
     " of the test or increasing the bound.~n",
   ?unique(Logger, ?lwarning, UniqueMsg, [Bound]),
-  NewState =
-    State#scheduler_state{
-      current_warnings = [{depth_bound, Bound}|Warnings],
-      trace = Old},
+  NewState = add_warning({depth_bound, Bound}, Old, State),
   {none, NewState};
 get_next_event(#scheduler_state{logger = Logger, trace = [Last|_]} = State) ->
   #trace_state{wakeup_tree = WakeupTree} = Last,
@@ -360,11 +362,7 @@ free_schedule(Event, [P|ActiveProcesses], State) ->
   end;
 free_schedule(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
-  #scheduler_state{
-     current_warnings = Warnings,
-     logger = Logger,
-     trace = [Last|Prev]
-    } = State,
+  #scheduler_state{logger = Logger, trace = [Last|Prev]} = State,
   #trace_state{actors = Actors, sleeping = Sleeping} = Last,
   NewWarnings =
     case Sleeping =/= [] of
@@ -374,13 +372,13 @@ free_schedule(_Event, [], State) ->
         [sleep_set_block];
       false ->
         case concuerror_callback:collect_deadlock_info(Actors) of
-          [] -> Warnings;
+          [] -> [];
           Info ->
             ?debug(Logger, "Deadlock: ~p~n", [[P || {P,_} <- Info]]),
-            [{deadlock, Info}|Warnings]
+            [{deadlock, Info}]
         end
     end,
-  {none, State#scheduler_state{current_warnings = NewWarnings, trace = Prev}}.
+  {none, add_warnings(NewWarnings, Prev, State)}.
 
 reset_event(#event{actor = Actor, event_info = EventInfo}) ->
   ResetEventInfo =
@@ -476,10 +474,8 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
              true -> ok
           end,
           #event{actor = Actor} = Event,
-          Warnings = State#scheduler_state.current_warnings,
           Stacktrace = Exit#exit_event.stacktrace,
-          NewWarnings = [{crash, {Index, Actor, Reason, Stacktrace}}|Warnings],
-          State#scheduler_state{current_warnings = NewWarnings}
+          add_warning({crash, {Index, Actor, Reason, Stacktrace}}, State)
       end;
     #builtin_event{mfargs = {erlang, exit, [_,Reason]}}
       when Reason =/= normal ->
