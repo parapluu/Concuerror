@@ -3,7 +3,7 @@
 -module(concuerror_logger).
 
 -export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
--export([graph_set_node/3, graph_new_node/4, graph_race/3]).
+-export([graph_set_node/3, graph_new_node/5, graph_race/3]).
 
 -include("concuerror.hrl").
 
@@ -357,6 +357,7 @@ print_log_msgs(Output, LogMsgs) ->
         io:format(Output, "~s~s:~n", [Header, Suffix]),
         separator(Output, $-),
         lists:foreach(ForeachInner, Messages),
+        io:format(Output, "~n", []),
         separator(Output, $#)
     end,
   lists:foreach(Foreach, LogMsgs).
@@ -419,7 +420,7 @@ separator_string(Char) ->
   lists:duplicate(80, Char).
 
 separator(Output, Char) ->
-  io:format(Output, "~s~n", [separator_string(Char)]).
+  io:format(Output, "~s~n~n", [separator_string(Char)]).
 
 print_streams(Streams, Output) ->
   Fold =
@@ -430,8 +431,8 @@ print_streams(Streams, Output) ->
   orddict:fold(Fold, ok, Streams).
 
 print_stream(Tag, Buffer, Output) ->
-  io:format(Output, "~s:~n", [tag_to_filename(Tag)]),
-  io:format(Output, "~s", [Buffer]),
+  io:format(Output, tag_to_filename(Tag) ++ "~n", []),
+  io:format(Output, "~s~n", [Buffer]),
   case Tag =/= race of
     true ->
       io:format(Output, "~n", []),
@@ -443,7 +444,7 @@ tag_to_filename(standard_io) -> "Standard Output";
 tag_to_filename(standard_error) -> "Standard Error";
 tag_to_filename(race) ->
   separator_string($-) ++
-    "\nPairs of racing instructions";
+    "~n~nPairs of racing instructions";
 tag_to_filename(Filename) when is_list(Filename) ->
   io_lib:format("Text printed to ~s", [Filename]).
 
@@ -470,10 +471,10 @@ graph_set_node(Logger, Parent, Sibling) ->
   Logger ! {graph, {set_node, Parent, Sibling}},
   ok.
 
--spec graph_new_node(logger(), reference(), index(), event()) -> ok.
+-spec graph_new_node(logger(), reference(), index(), event(), integer()) -> ok.
 
-graph_new_node(Logger, Ref, Index, Event) ->
-  Logger ! {graph, {new_node, Ref, Index, Event}},
+graph_new_node(Logger, Ref, Index, Event, BoundConsumed) ->
+  Logger ! {graph, {new_node, Ref, Index, Event, BoundConsumed}},
   ok.
 
 -spec graph_race(logger(), reference(), reference()) -> ok.
@@ -497,7 +498,7 @@ graph_command(Command, State) ->
   #logger_state{graph_data = {GraphFile, Parent, Sibling} = Graph} = State,
   NewGraph =
     case Command of
-      {new_node, Ref, I, Event} ->
+      {new_node, Ref, I, Event, BoundConsumed} ->
         ErrorS =
           case Event#event.event_info of
             #exit_event{reason = normal} ->
@@ -509,10 +510,15 @@ graph_command(Command, State) ->
             _ -> ""
           end,
         Label = concuerror_printer:pretty_s({I,Event#event{location=[]}}, 1),
+        EnabledLabel =
+          case BoundConsumed =:= 0 of
+            true -> "    ";
+            false -> io_lib:format("!~2w",[BoundConsumed])
+          end,
         io:format(
           GraphFile,
-          "    \"~p\" [label=\"~s\\l\"~s];~n",
-          [Ref, Label, ErrorS]),
+          "    \"~p\" [label=\"~s ~s\\l\"~s];~n",
+          [Ref, EnabledLabel, Label, ErrorS]),
         case Sibling =:= none of
           true ->
             io:format(GraphFile,"~s[weight=1000];~n",[ref_edge(Parent, Ref)]);

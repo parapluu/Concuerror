@@ -22,47 +22,57 @@
 %% DATA STRUCTURES
 %% =============================================================================
 
--type event_tree() :: [{event(), integer(), event_tree()}].
+-record(backtrack_entry, {
+          event                   :: event(),
+          origin = 1              :: integer(),
+          wakeup_tree = []        :: event_tree()
+         }).
+
+-type event_tree() :: [#backtrack_entry{}].
 
 -record(trace_state, {
-          actors      = []         :: [pid() | {channel(), queue()}],
-          clock_map   = dict:new() :: clock_map(),
-          delay_bound = infinity   :: bound(),
-          done        = []         :: [event()],
-          index       = 1          :: index(),
-          graph_ref   = make_ref() :: reference(),
-          sleeping    = []         :: [event()],
-          wakeup_tree = []         :: event_tree()
+          actors           = []         :: [pid() | {channel(), queue()}],
+          clock_map        = dict:new() :: clock_map(),
+          done             = []         :: [event()],
+          index            = 1          :: index(),
+          graph_ref        = make_ref() :: reference(),
+          previous_was_enabled = true   :: boolean(),
+          scheduling_bound = infinity   :: bound(),
+          sleeping         = []         :: [event()],
+          wakeup_tree      = []         :: event_tree()
          }).
 
 -type trace_state() :: #trace_state{}.
 
 -record(scheduler_state, {
-          ignore_first_crash = true :: boolean(),
-          assume_racing     = true :: boolean(),
-          current_graph_ref        :: reference(),
-          current_warnings  = []   :: [concuerror_warning_info()],
-          delay             = 0    :: non_neg_integer(),
-          depth_bound              :: pos_integer(),
-          entry_point              :: mfargs(),
-          exploring         = 1    :: integer(),
-          first_process            :: pid(),
-          ignore_error      = []   :: [atom()],
-          interleaving_bound       :: pos_integer(),
-          logger                   :: pid(),
-          last_scheduled           :: pid(),
-          message_info             :: message_info(),
-          non_racing_system = []   :: [atom()],
-          optimal           = true :: boolean(),
-          print_depth              :: pos_integer(),
-          processes                :: processes(),
-          scheduling = oldest      :: scheduling(),
-          show_races = true        :: boolean(),
-          strict_scheduling = false :: boolean(),
-          system            = []   :: [pid()],
-          timeout                  :: timeout(),
-          trace             = []   :: [trace_state()],
-          treat_as_normal   = []   :: [atom()]
+          ignore_first_crash = true    :: boolean(),
+          assume_racing      = true    :: boolean(),
+          bound_consumed     = 0       :: non_neg_integer(),
+          current_graph_ref            :: reference(),
+          current_warnings   = []      :: [concuerror_warning_info()],
+          depth_bound                  :: pos_integer(),
+          entry_point                  :: mfargs(),
+          exploring          = 1       :: integer(),
+          first_process                :: pid(),
+          ignore_error       = []      :: [atom()],
+          interleaving_bound           :: pos_integer(),
+          logger                       :: pid(),
+          last_scheduled               :: pid(),
+          message_info                 :: message_info(),
+          need_to_replay     = false   :: boolean(),
+          non_racing_system  = []      :: [atom()],
+          optimal            = true    :: boolean(),
+          previous_was_enabled = true   :: boolean(),
+          print_depth                  :: pos_integer(),
+          processes                    :: processes(),
+          scheduling         = oldest  :: scheduling(),
+          scheduling_bound_type = none :: scheduling_bound_type(),
+          show_races         = true    :: boolean(),
+          strict_scheduling  = false   :: boolean(),
+          system             = []      :: [pid()],
+          timeout                      :: timeout(),
+          trace              = []      :: [trace_state()],
+          treat_as_normal    = []      :: [atom()]
          }).
 
 %% =============================================================================
@@ -78,7 +88,7 @@ run(Options) ->
   InitialTrace =
     #trace_state{
        actors = [FirstProcess],
-       delay_bound = ?opt(delay_bound, Options)
+       scheduling_bound = ?opt(scheduling_bound, Options)
       },
   InitialState =
     #scheduler_state{
@@ -97,6 +107,7 @@ run(Options) ->
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
+       scheduling_bound_type = ?opt(scheduling_bound_type, Options),
        show_races = ?opt(show_races, Options),
        strict_scheduling = ?opt(strict_scheduling, Options),
        system = System,
@@ -129,15 +140,8 @@ explore(State) ->
         false -> ok
       end;
     {crash, Why} ->
-      #scheduler_state{
-         current_warnings = Warnings,
-         trace = [_|Trace]
-        } = UpdatedState,
-      FatalCrashState =
-        UpdatedState#scheduler_state{
-          current_warnings = [fatal|Warnings],
-          trace = Trace
-         },
+      #scheduler_state{trace = [_|Trace]} = UpdatedState,
+      FatalCrashState = add_warning(fatal, Trace, UpdatedState),
       catch log_trace(FatalCrashState),
       exit(Why)
   end.
@@ -150,14 +154,7 @@ log_trace(State) ->
      exploring = N,
      ignore_error = Ignored,
      logger = Logger} = State,
-  Warnings = filter_warnings(UnfilteredWarnings, Ignored),
-  case UnfilteredWarnings =/= Warnings of
-    true ->
-      Message = "Some errors were ignored ('--ignore_error').~n",
-      ?unique(Logger, ?lwarning, Message, []);
-    false ->
-      ok
-  end,
+  Warnings = filter_warnings(UnfilteredWarnings, Ignored, Logger),
   Log =
     case Warnings =:= [] of
       true -> none;
@@ -188,49 +185,93 @@ log_trace(State) ->
       case NextExploring =< State#scheduler_state.interleaving_bound of
         true -> NextState;
         false ->
-          Bound = "Reached interleaving bound (~p)~n",
-          ?unique(Logger, ?lwarning, Bound, [N]),
+          UniqueMsg = "Reached interleaving bound (~p)~n",
+          ?unique(Logger, ?lwarning, UniqueMsg, [N]),
           NextState#scheduler_state{trace = []}
       end
   end.
 
-filter_warnings(Warnings, []) -> Warnings;
-filter_warnings(Warnings, [Ignore|Rest] = Ignored) ->
+filter_warnings(Warnings, [], _) -> Warnings;
+filter_warnings(Warnings, [Ignore|Rest] = Ignored, Logger) ->
   case lists:keytake(Ignore, 1, Warnings) of
-    false -> filter_warnings(Warnings, Rest);
-    {value, _, NewWarnings} -> filter_warnings(NewWarnings, Ignored)
+    false -> filter_warnings(Warnings, Rest, Logger);
+    {value, _, NewWarnings} ->
+      UniqueMsg = "Some errors were ignored ('--ignore_error').~n",
+      ?unique(Logger, ?lwarning, UniqueMsg, []),
+      filter_warnings(NewWarnings, Ignored, Logger)
   end.
+
+add_warning(Warning, #scheduler_state{trace = Trace} = State) ->
+  add_warning(Warning, Trace, State).
+
+add_warning(Warning, Trace, State) ->
+  add_warnings([Warning], Trace, State).
+
+add_warnings(Warnings, Trace, State) ->
+  #scheduler_state{current_warnings = OldWarnings} = State,
+  State#scheduler_state{
+    current_warnings = Warnings ++ OldWarnings,
+    trace = Trace
+   }.
+
+%%------------------------------------------------------------------------------
 
 get_next_event(
   #scheduler_state{
-     current_warnings = Warnings,
      depth_bound = Bound,
-     trace = [#trace_state{index = I}|Old]} = State) when I =:= Bound + 1->
-  NewState =
-    State#scheduler_state{
-      current_warnings = [{depth_bound, Bound}|Warnings],
-      trace = Old},
+     logger = Logger,
+     trace = [#trace_state{index = I}|Old]} = State) when I =:= Bound + 1 ->
+  UniqueMsg =
+    "Some interleaving reached the depth bound (~p). Consider limiting the size"
+    " of the test or increasing the bound.~n",
+  ?unique(Logger, ?lwarning, UniqueMsg, [Bound]),
+  NewState = add_warning({depth_bound, Bound}, Old, State),
   {none, NewState};
-get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|_]} = State) ->
-  #trace_state{
-     actors      = Actors,
-     delay_bound = DelayBound,
-     index       = I,
-     sleeping    = Sleeping,
-     wakeup_tree = WakeupTree
-    } = Last,
-  SortedActors = schedule_sort(Actors, State),
-  AvailableActors = filter_sleeping(Sleeping, SortedActors),
+get_next_event(#scheduler_state{logger = Logger, trace = [Last|_]} = State) ->
+  #trace_state{wakeup_tree = WakeupTree} = Last,
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
-      get_next_event(Event, System ++ AvailableActors, State#scheduler_state{delay = 0});
-    [{#event{actor = Actor, label = Label} = Event, N, _}|_] ->
+      get_next_event(Event, State);
+    [#backtrack_entry{event = Event, origin = N}|_] ->
       ?log(Logger, ?ldebug,"By: ~p~n", [N]),
+      get_next_event(Event, State)
+  end.
+
+get_next_event(Event, MaybeNeedsReplayState) ->
+  State = replay(MaybeNeedsReplayState),
+  #scheduler_state{system = System, trace = [Last|_]} = State,
+  #trace_state{
+     actors           = Actors,
+     scheduling_bound = SchedulingBound,
+     sleeping         = Sleeping
+    } = Last,
+  LastScheduled = State#scheduler_state.last_scheduled,
+  PreviousWasEnabled = concuerror_callback:enabled(LastScheduled),
+  SortedActors = schedule_sort(Actors, State),
+  #event{actor = Actor, label = Label} = Event,
+  case Actor =:= undefined of
+    true ->
+      AvailableActors = filter_sleeping(Sleeping, SortedActors),
+      NewState =
+        State#scheduler_state{
+          bound_consumed = 0,
+          previous_was_enabled = PreviousWasEnabled
+         },
+      free_schedule(Event, System ++ AvailableActors, NewState);
+    false ->
       false = lists:member(Actor, Sleeping),
-      Delay =
-        case DelayBound =/= infinity of
-          true -> count_delay(SortedActors, Actor);
+      BoundConsumed =
+        case SchedulingBound =/= infinity of
+          true ->
+            case State#scheduler_state.scheduling_bound_type of
+              delay -> count_delay(SortedActors, Actor);
+              preemption ->
+                case PreviousWasEnabled of
+                  true -> 1;
+                  false -> 0
+                end
+            end;
           false -> 0
         end,
       {ok, UpdatedEvent} =
@@ -241,6 +282,7 @@ get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|
             catch
               _:_ ->
                 #scheduler_state{print_depth = PrintDepth} = State,
+                #trace_state{index = I} = Last,
                 Reason =
                   {replay_mismatch, I, Event, element(2, NewEvent), PrintDepth},
                 ?crash(Reason)
@@ -250,7 +292,12 @@ get_next_event(#scheduler_state{logger = Logger, system = System, trace = [Last|
             ResetEvent = reset_event(Event),
             get_next_event_backend(ResetEvent, State)
         end,
-      update_state(UpdatedEvent, State#scheduler_state{delay = Delay})
+      NewState =
+        State#scheduler_state{
+          bound_consumed = BoundConsumed,
+          previous_was_enabled = PreviousWasEnabled
+         },
+      update_state(UpdatedEvent, NewState)
   end.
 
 filter_sleeping([], AvailableActors) -> AvailableActors;
@@ -302,24 +349,20 @@ count_delay([Other|Rest], Actor, N) ->
     end,
   count_delay(Rest, Actor, NN).
 
-get_next_event(Event, [{Channel, Queue}|_], State) ->
+free_schedule(Event, [{Channel, Queue}|_], State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
   UpdatedEvent = Event#event{actor = Channel, event_info = MessageEvent},
   {ok, FinalEvent} = get_next_event_backend(UpdatedEvent, State),
   update_state(FinalEvent, State);
-get_next_event(Event, [P|ActiveProcesses], State) ->
+free_schedule(Event, [P|ActiveProcesses], State) ->
   case get_next_event_backend(Event#event{actor = P}, State) of
-    retry -> get_next_event(Event, ActiveProcesses, State);
+    retry -> free_schedule(Event, ActiveProcesses, State);
     {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
   end;
-get_next_event(_Event, [], State) ->
+free_schedule(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
-  #scheduler_state{
-     current_warnings = Warnings,
-     logger = Logger,
-     trace = [Last|Prev]
-    } = State,
+  #scheduler_state{logger = Logger, trace = [Last|Prev]} = State,
   #trace_state{actors = Actors, sleeping = Sleeping} = Last,
   NewWarnings =
     case Sleeping =/= [] of
@@ -329,13 +372,13 @@ get_next_event(_Event, [], State) ->
         [sleep_set_block];
       false ->
         case concuerror_callback:collect_deadlock_info(Actors) of
-          [] -> Warnings;
+          [] -> [];
           Info ->
             ?debug(Logger, "Deadlock: ~p~n", [[P || {P,_} <- Info]]),
-            [{deadlock, Info}|Warnings]
+            [{deadlock, Info}]
         end
     end,
-  {none, State#scheduler_state{current_warnings = NewWarnings, trace = Prev}}.
+  {none, add_warnings(NewWarnings, Prev, State)}.
 
 reset_event(#event{actor = Actor, event_info = EventInfo}) ->
   ResetEventInfo =
@@ -353,44 +396,54 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 
 update_state(#event{special = Special} = Event, State) ->
   #scheduler_state{
-     delay  = Delay,
+     bound_consumed = BoundConsumed,
      logger = Logger,
+     previous_was_enabled = PreviousWasEnabled,
      trace  = [Last|Prev]
     } = State,
   #trace_state{
      actors      = Actors,
-     delay_bound = DelayBound,
      done        = Done,
      index       = Index,
      graph_ref   = Ref,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
+  SchedulingBound =
+    case Prev of
+      [] -> Last#trace_state.scheduling_bound;
+      [P|_] -> P#trace_state.scheduling_bound
+    end,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
-  concuerror_logger:graph_new_node(Logger, Ref, Index, Event),
+  concuerror_logger:graph_new_node(Logger, Ref, Index, Event, BoundConsumed),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
   NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =
     case WakeupTree of
       [] -> {[], []};
-      [{_, _, NWT}|Rest] -> {Rest, NWT}
+      [#backtrack_entry{wakeup_tree = NWT}|Rest] -> {Rest, NWT}
     end,
   NewLastDone = [Event|Done],
-  NewDelayBound =
-    case Delay =:= 0 of
-      true -> DelayBound;
-      false -> DelayBound - Delay
+  NewSchedulingBound =
+    case BoundConsumed =:= 0 of
+      true -> SchedulingBound;
+      false -> SchedulingBound - BoundConsumed
     end,
+  ?debug(Logger, " PWE:~p BOUND:~p~n", [PreviousWasEnabled, NewSchedulingBound]),
   InitNextTrace =
     #trace_state{
        actors      = Actors,
-       delay_bound = NewDelayBound,
        index       = Index + 1,
        sleeping    = NextSleeping,
        wakeup_tree = NextWakeupTree
       },
   NewLastTrace =
-    Last#trace_state{done = NewLastDone, wakeup_tree = NewLastWakeupTree},
+    Last#trace_state{
+      done = NewLastDone,
+      previous_was_enabled = PreviousWasEnabled,
+      scheduling_bound = NewSchedulingBound,
+      wakeup_tree = NewLastWakeupTree
+     },
   InitNewState =
     State#scheduler_state{trace = [InitNextTrace, NewLastTrace|Prev]},
   NewState = maybe_log(Event, InitNewState, Index),
@@ -421,10 +474,8 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
              true -> ok
           end,
           #event{actor = Actor} = Event,
-          Warnings = State#scheduler_state.current_warnings,
           Stacktrace = Exit#exit_event.stacktrace,
-          NewWarnings = [{crash, {Index, Actor, Reason, Stacktrace}}|Warnings],
-          State#scheduler_state{current_warnings = NewWarnings}
+          add_warning({crash, {Index, Actor, Reason, Stacktrace}}, State)
       end;
     #builtin_event{mfargs = {erlang, exit, [_,Reason]}}
       when Reason =/= normal ->
@@ -722,28 +773,26 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
           concuerror_dependencies:dependent_safe(EarlyEvent, Event),
         case Dependent of
           false -> none;
-          irreversible ->
-            NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
-            {update_clock, NC};
+          irreversible -> update_clock;
           true ->
             ?debug(Logger, "   races with ~s~n",
                    [?pretty_s(EarlyIndex, EarlyEvent)]),
-            NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
             case
               update_trace(Event, TraceState, Later, NewOldTrace, State)
             of
-              skip -> {update_clock, NC};
+              skip -> update_clock;
               UpdatedNewOldTrace ->
                 concuerror_logger:plan(Logger),
-                {update, UpdatedNewOldTrace, NC}
+                {update, UpdatedNewOldTrace}
             end
         end
     end,
-  {NewTrace, NewClock} =
+  NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
+  {NewRest, NewClock, NewTrace} =
     case Action of
-      none -> {[TraceState|NewOldTrace], Clock};
-      {update_clock, C} -> {[TraceState|NewOldTrace], C};
-      {update, S, C} ->
+      none -> {Rest, Clock, [TraceState|NewOldTrace]};
+      update_clock -> {Rest, NC, [TraceState|NewOldTrace]};
+      {update, S} ->
         if State#scheduler_state.show_races ->
             EarlyRef = TraceState#trace_state.graph_ref,
             Ref = State#scheduler_state.current_graph_ref,
@@ -752,15 +801,11 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
             IndexedLate ={Index, Event#event{location = []}},
             concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
            true ->
-            ?unique(
-               Logger, ?linfo,
-               "You can see pairs of racing instructions (in the report and"
-               " --graph) with '--show_races true'~n",
-               [])
+            ?unique(Logger, ?linfo, msg(show_races), [])
         end,
-        {S, C}
+        {Rest, NC, S}
     end,
-  more_interleavings_for_event(Rest, Event, Later, NewClock, State, Index, NewTrace).
+  more_interleavings_for_event(NewRest, Event, Later, NewClock, State, Index, NewTrace).
 
 update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{
@@ -769,7 +814,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
      optimal = Optimal} = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done],
-     delay_bound = DelayBound,
+     scheduling_bound = SchedulingBound,
      index = EarlyIndex,
      sleeping = Sleeping,
      wakeup_tree = WakeupTree
@@ -781,8 +826,8 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
       skip;
     NewWakeupTree ->
       case
-        (DelayBound =:= infinity) orelse
-        (DelayBound - length(Done ++ WakeupTree) > 0)
+        (SchedulingBound =:= infinity) orelse
+        (SchedulingBound - length(Done ++ WakeupTree) > 0)
       of
         true ->
           trace_plan(Logger, EarlyIndex, NotDep),
@@ -790,7 +835,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
           [NS|NewOldTrace];
         false ->
           Message =
-            "Some interleavings were not considered due to delay bounding.~n",
+            "Some interleavings were not considered due to schedule bounding.~n",
           ?unique(Logger, ?lwarning, Message, []),
           ?debug(Logger, "     OVER BOUND~n",[]),
           skip
@@ -843,10 +888,15 @@ insert_wakeup(Sleeping, Wakeup, [E|_] = NotDep, Optimal, Exploring) ->
     true -> insert_wakeup(Sleeping, Wakeup, NotDep, Exploring);
     false ->
       Initials = get_initials(NotDep),
-      All = Sleeping ++ [W || {W, _, []} <- Wakeup],
+      All =
+        Sleeping ++
+        [W || #backtrack_entry{event = W, wakeup_tree = []} <- Wakeup],
       case existing(All, Initials) of
         true -> skip;
-        false -> Wakeup ++ [{E, Exploring, []}]
+        false ->
+          Entry =
+            #backtrack_entry{event = E, origin = Exploring, wakeup_tree = []},
+          Wakeup ++ [Entry]
       end
   end.      
 
@@ -859,9 +909,13 @@ insert_wakeup([], Wakeup, NotDep, Exploring) ->
   insert_wakeup(Wakeup, NotDep, Exploring).
 
 insert_wakeup([], NotDep, Exploring) ->
-  Fold = fun(Event, Acc) -> [{Event, Exploring, Acc}] end,
+  Fold =
+    fun(Event, Acc) ->
+        [#backtrack_entry{event = Event, origin = Exploring, wakeup_tree = Acc}]
+    end,
   lists:foldr(Fold, [], NotDep);
-insert_wakeup([{Event, M, Deeper} = Node|Rest], NotDep, Exploring) ->
+insert_wakeup([Node|Rest], NotDep, Exploring) ->
+  #backtrack_entry{event = Event, origin = M, wakeup_tree = Deeper} = Node,
   case check_initial(Event, NotDep) of
     false ->
       case insert_wakeup(Rest, NotDep, Exploring) of
@@ -874,7 +928,13 @@ insert_wakeup([{Event, M, Deeper} = Node|Rest], NotDep, Exploring) ->
         false ->
           case insert_wakeup(Deeper, NewNotDep, Exploring) of
             skip -> skip;
-            NewTree -> [{Event, M, NewTree}|Rest]
+            NewTree ->
+              Entry =
+                #backtrack_entry{
+                   event = Event,
+                   origin = M,
+                   wakeup_tree = NewTree},
+              [Entry|Rest]
           end
       end
   end.
@@ -923,29 +983,34 @@ existing([#event{actor = A}|Rest], Initials) ->
 
 %%------------------------------------------------------------------------------
 
-has_more_to_explore(State) ->
-  #scheduler_state{exploring = N, logger = Logger, trace = Trace} = State,
+has_more_to_explore(#scheduler_state{trace = Trace} = State) ->
   TracePrefix = find_prefix(Trace, State),
   case TracePrefix =:= [] of
     true -> {false, State#scheduler_state{trace = []}};
     false ->
-      S = io_lib:format("New interleaving ~p. Replaying...", [N]),
-      ?time(Logger, S),
-      NewState = replay_prefix(TracePrefix, State),
-      ?debug(Logger, "~s~n",["Replay done."]),
-      FinalState = NewState#scheduler_state{trace = TracePrefix},
-      {true, FinalState}
+      NewState =
+        State#scheduler_state{need_to_replay = true, trace = TracePrefix},
+      {true, NewState}
   end.
 
-find_prefix([], _State) -> [];
 find_prefix([#trace_state{wakeup_tree = []}|Rest], State) ->
   find_prefix(Rest, State);
-find_prefix([#trace_state{graph_ref = Sibling} = Other|Rest], State) ->
-  #scheduler_state{logger = Logger} = State,
-  [#trace_state{graph_ref = Parent}|_] = Rest,
-  concuerror_logger:graph_set_node(Logger, Parent, Sibling),
-  [Other#trace_state{graph_ref = make_ref(), clock_map = dict:new()}|Rest].
+find_prefix(Trace, _State) -> Trace.
 
+replay(#scheduler_state{need_to_replay = false} = State) ->
+  State;
+replay(State) ->
+  #scheduler_state{exploring = N, logger = Logger, trace = Trace} = State,
+  [#trace_state{graph_ref = Sibling} = Last|
+   [#trace_state{graph_ref = Parent}|_] = Rest] = Trace,
+  concuerror_logger:graph_set_node(Logger, Parent, Sibling),
+  NewTrace =
+    [Last#trace_state{graph_ref = make_ref(), clock_map = dict:new()}|Rest],
+  S = io_lib:format("New interleaving ~p. Replaying...", [N]),
+  ?time(Logger, S),
+  NewState = replay_prefix(NewTrace, State#scheduler_state{trace = NewTrace}),
+  ?debug(Logger, "~s~n",["Replay done."]),
+  NewState#scheduler_state{need_to_replay = false}.
 
 %% =============================================================================
 %% ENGINE (manipulation of the Erlang processes under the scheduler)
@@ -969,7 +1034,8 @@ replay_prefix(Trace, State) ->
   ok = ets:foldl(Fold, ok, Processes),
   ok =
     concuerror_callback:start_first_process(FirstProcess, EntryPoint, Timeout),
-  replay_prefix_aux(lists:reverse(Trace), State).
+  NewState = State#scheduler_state{last_scheduled = FirstProcess},
+  replay_prefix_aux(lists:reverse(Trace), NewState).
 
 replay_prefix_aux([_], State) ->
   %% Last state has to be properly replayed.
@@ -977,7 +1043,7 @@ replay_prefix_aux([_], State) ->
 replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   #scheduler_state{logger = _Logger, print_depth = PrintDepth} = State,
   ?trace(_Logger, "~s~n", [?pretty_s(I, Event)]),
-  {ok, NewEvent} = get_next_event_backend(Event, State),
+  {ok, #event{actor = Actor} = NewEvent} = get_next_event_backend(Event, State),
   try
     true = Event =:= NewEvent
   catch
@@ -985,7 +1051,13 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
       #scheduler_state{print_depth = PrintDepth} = State,
       ?crash({replay_mismatch, I, Event, NewEvent, PrintDepth})
   end,
-  replay_prefix_aux(Rest, maybe_log(Event, State, I)).
+  NewLastScheduled =
+    case is_pid(Actor) of
+      true -> Actor;
+      false -> State#scheduler_state.last_scheduled
+    end,
+  NewState = State#scheduler_state{last_scheduled = NewLastScheduled},
+  replay_prefix_aux(Rest, maybe_log(Event, NewState, I)).
 
 %% =============================================================================
 %% INTERNAL INTERFACES
@@ -1038,14 +1110,7 @@ assert_no_messages() ->
 -spec explain_error(term()) -> string().
 
 explain_error(first_interleaving_crashed) ->
-  {
-    io_lib:format(
-      "The first interleaving of your test had errors. Check the output file."
-      " You may then use -i to tell Concuerror to continue or use other options"
-      " to filter out the reported errors, if you consider them acceptable"
-      " behaviours.",
-      []),
-    warning};
+  {msg(first_interleaving_crashed), warning};
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   [EString, NEString] =
     [concuerror_printer:pretty_s(E, Depth) || E <- [Event, NewEvent]],
@@ -1066,11 +1131,19 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 
 %%==============================================================================
 
+msg(first_interleaving_crashed) ->
+  "The first interleaving of your test had errors. Check the output file."
+    " You may then use -i to tell Concuerror to continue or use other options"
+    " to filter out the reported errors, if you consider them acceptable"
+    " behaviours.";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
     " operation races with the arrival of the signal. If the test produces"
     " too many interleavings consider refactoring your code.~n";
+msg(show_races) ->
+  "You can see pairs of racing instructions (in the report and"
+    " --graph) with '--show_races true'~n";
 msg(shutdown) ->
   "A process crashed with reason 'shutdown'. This may happen when a"
     " supervisor is terminating its children. You can use '--treat_as_normal"

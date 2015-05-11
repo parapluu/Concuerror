@@ -18,7 +18,7 @@ all: compile
 ### Application info
 ###----------------------------------------------------------------------
 
-VSN ?= 0.10
+VSN ?= 0.11
 
 ###----------------------------------------------------------------------
 ### Flags
@@ -64,10 +64,10 @@ ifneq ($(MAKECMDGOALS),clean)
 endif
 
 ebin/%.Pbeam: %.erl | ebin
-	erlc -o ebin -I include -MD $<
+	erlc -o ebin -MD $<
 
 ebin/%.beam: %.erl Makefile | ebin
-	erlc $(ERL_COMPILE_FLAGS) -I include -DVSN="\"$(VSN)\"" -o ebin $<
+	erlc $(ERL_COMPILE_FLAGS) -DVSN="\"$(VSN)\"" -o ebin $<
 
 concuerror:
 	ln -s src/concuerror $@

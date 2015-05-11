@@ -48,6 +48,7 @@
 -type options()   :: proplists:proplist().
 -type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
 -type bound()     :: 'infinity' | non_neg_integer().
+-type scheduling_bound_type() :: 'preemption' | 'delay' | 'none'.
 -define(opt(A,O),proplists:get_value(A,O)).
 %%------------------------------------------------------------------------------
 %% Logger verbosity
