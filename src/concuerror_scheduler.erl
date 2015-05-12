@@ -804,24 +804,15 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
         end
     end,
   NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
-  {NewRest, NewClock, NewTrace} =
+  {NewClock, NewTrace} =
     case Action of
-      none -> {Rest, Clock, [TraceState|NewOldTrace]};
-      update_clock -> {Rest, NC, [TraceState|NewOldTrace]};
+      none -> {Clock, [TraceState|NewOldTrace]};
+      update_clock -> {NC, [TraceState|NewOldTrace]};
       {update, S} ->
-        if State#scheduler_state.show_races ->
-            EarlyRef = TraceState#trace_state.graph_ref,
-            Ref = State#scheduler_state.current_graph_ref,
-            concuerror_logger:graph_race(Logger, EarlyRef, Ref),
-            IndexedEarly = {EarlyIndex, EarlyEvent#event{location = []}},
-            IndexedLate ={Index, Event#event{location = []}},
-            concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
-           true ->
-            ?unique(Logger, ?linfo, msg(show_races), [])
-        end,
-        {Rest, NC, S}
+        maybe_log_race(TraceState, Index, Event, State),
+        {NC, S}
     end,
-  more_interleavings_for_event(NewRest, Event, Later, NewClock, State, Index, NewTrace).
+  more_interleavings_for_event(Rest, Event, Later, NewClock, State, Index, NewTrace).
 
 update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{
@@ -833,21 +824,22 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
      scheduling_bound = SchedulingBound,
      index = EarlyIndex,
      sleeping = Sleeping,
-     wakeup_tree = WakeupTree
+     wakeup_tree = Wakeup
     } = TraceState,
   NotDep = not_dep(NewOldTrace, Later, EarlyActor, EarlyIndex, Event),
-  case insert_wakeup(Sleeping ++ Done, WakeupTree, NotDep, Optimal, Exploring) of
+  AllSleeping = Sleeping ++ Done,
+  case insert_wakeup(AllSleeping, Wakeup, NotDep, Optimal, Exploring) of
     skip ->
       ?debug(Logger, "     SKIP~n",[]),
       skip;
-    NewWakeupTree ->
+    NewWakeup ->
       case
         (SchedulingBound =:= infinity) orelse
-        (SchedulingBound - length(Done ++ WakeupTree) > 0)
+        (SchedulingBound - length(Done ++ Wakeup) > 0)
       of
         true ->
           trace_plan(Logger, EarlyIndex, NotDep),
-          NS = TraceState#trace_state{wakeup_tree = NewWakeupTree},
+          NS = TraceState#trace_state{wakeup_tree = NewWakeup},
           [NS|NewOldTrace];
         false ->
           Message =
@@ -899,7 +891,21 @@ trace_plan(_Logger, _Index, _NotDep) ->
            || {I,S} <- IndexedNotDep])]
      end).
 
-insert_wakeup(Sleeping, Wakeup, [E|_] = NotDep, Optimal, Exploring) ->
+maybe_log_race(TraceState, Index, Event, State) ->
+  #scheduler_state{logger = Logger} = State,
+  if State#scheduler_state.show_races ->
+      #trace_state{done = [EarlyEvent|_], index = EarlyIndex} = TraceState,
+      EarlyRef = TraceState#trace_state.graph_ref,
+      Ref = State#scheduler_state.current_graph_ref,
+      concuerror_logger:graph_race(Logger, EarlyRef, Ref),
+      IndexedEarly = {EarlyIndex, EarlyEvent#event{location = []}},
+      IndexedLate ={Index, Event#event{location = []}},
+      concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
+     true ->
+      ?unique(Logger, ?linfo, msg(show_races), [])
+  end.
+
+insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Exploring) ->
   case Optimal of
     true -> insert_wakeup(Sleeping, Wakeup, NotDep, Exploring);
     false ->
@@ -910,6 +916,7 @@ insert_wakeup(Sleeping, Wakeup, [E|_] = NotDep, Optimal, Exploring) ->
       case existing(All, Initials) of
         true -> skip;
         false ->
+          [E|_] = NotDep,
           Entry =
             #backtrack_entry{event = E, origin = Exploring, wakeup_tree = []},
           Wakeup ++ [Entry]
