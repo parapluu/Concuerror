@@ -803,7 +803,10 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
             end
         end
     end,
-  NC = max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock),
+  NC =
+    orddict:store(
+      EarlyActor, EarlyIndex,
+      max_cv(lookup_clock(EarlyActor, EarlyClockMap), Clock)),
   {NewClock, NewTrace} =
     case Action of
       none -> {Clock, [TraceState|NewOldTrace]};
