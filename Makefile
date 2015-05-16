@@ -108,7 +108,7 @@ tests-long: all
 ###----------------------------------------------------------------------
 
 cover: cover-data
-	export COVER=true; $(MAKE) tests-all
+	export CONCUERROR_COVER=true; $(MAKE) tests-all
 	tests/cover-report
 
 ###----------------------------------------------------------------------
