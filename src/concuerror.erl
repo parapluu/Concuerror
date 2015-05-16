@@ -19,6 +19,7 @@ run(RawOptions) ->
       false ->
         ok
     end,
+    {module, concuerror_inspect} = code:load_file(concuerror_inspect),
     Options = concuerror_options:finalize(RawOptions),
     Modules = ?opt(modules, Options),
     Processes = ?opt(processes, Options),

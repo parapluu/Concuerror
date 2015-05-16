@@ -7,7 +7,6 @@ main(Args) ->
   EbinDir = filename:join([ScriptDir,"ebin"]),
   GetoptDir = filename:join([ScriptDir,"deps","getopt","ebin"]),
   ok = code:add_pathsa([EbinDir, GetoptDir]),
-  {module, concuerror_inspect} = code:load_file(concuerror_inspect),
   Cover = os:getenv("CONCUERROR_COVER") =/= false,
   if Cover ->
       cover:start(),
