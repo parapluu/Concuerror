@@ -166,7 +166,6 @@ finalize(Options) ->
       Options3 =
         add_missing_defaults(
           [{modules, ets:new(modules, [public])},
-           {processes, ets:new(processes, [public])},
            {verbosity, ?DEFAULT_VERBOSITY}
           ], Options2),
       Options4 = finalize_aux(proplists:unfold(Options3)),

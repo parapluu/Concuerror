@@ -8,7 +8,7 @@
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/3,
          deliver_message/3, wait_actor_reply/2, collect_deadlock_info/1,
-         enabled/1]).
+         enabled/1, cleanup_processes/1]).
 
 %% Interface to logger:
 -export([setup_logger/1]).
@@ -1621,6 +1621,21 @@ ets_ops_access_rights_map(Op) ->
     {select_delete ,_} -> write;
     {update_counter,3} -> write                            
   end.
+
+%%------------------------------------------------------------------------------
+
+-spec cleanup_processes(processes()) -> ok.
+
+cleanup_processes(Processes) ->
+  Fold =
+    fun(?process_pat_pid_kind(P,Kind), true) ->
+        case Kind =:= hijacked of
+          true -> true;
+          false -> exit(P, kill)
+        end
+    end,
+  true = ets:foldl(Fold, true, Processes),
+  ok.
 
 %%------------------------------------------------------------------------------
 

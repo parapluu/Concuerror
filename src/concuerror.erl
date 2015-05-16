@@ -20,9 +20,8 @@ run(RawOptions) ->
         ok
     end,
     {module, concuerror_inspect} = code:load_file(concuerror_inspect),
-    Options = concuerror_options:finalize(RawOptions),
-    Modules = ?opt(modules, Options),
-    Processes = ?opt(processes, Options),
+    Processes = ets:new(processes, [public]),
+    Options = concuerror_options:finalize([{processes, Processes}|RawOptions]),
     Logger = concuerror_logger:start(Options),
     SchedulerOptions = [{logger, Logger}|Options],
     {Pid, Ref} =
@@ -36,7 +35,7 @@ run(RawOptions) ->
           ?error(Logger, "~s~n~n", [Explain]),
           Type
       end,
-    cleanup(Processes),
+    concuerror_callback:cleanup_processes(Processes),
     ?trace(Logger, "Reached the end!~n",[]),
     concuerror_logger:stop(Logger, Status),
     ets:delete(Processes),
@@ -58,14 +57,3 @@ explain(Reason) ->
       {io_lib:format("Reason: ~p~nTrace: ~p~n", [Reason, Stacktrace]),
        error}
   end.
-
-cleanup(Processes) ->
-  Fold =
-    fun(?process_pat_pid_kind(P,Kind), true) ->
-        case Kind =:= hijacked of
-          true -> true;
-          false -> exit(P, kill)
-        end
-    end,
-  true = ets:foldl(Fold, true, Processes),
-  ok.
