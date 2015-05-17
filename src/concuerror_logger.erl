@@ -431,7 +431,7 @@ print_streams(Streams, Output) ->
   orddict:fold(Fold, ok, Streams).
 
 print_stream(Tag, Buffer, Output) ->
-  io:format(Output, tag_to_filename(Tag) ++ "~n", []),
+  io:format(Output, tag_to_filename(Tag) ++ ":~n", []),
   io:format(Output, "~s~n", [Buffer]),
   case Tag =/= race of
     true ->
@@ -495,7 +495,10 @@ graph_preamble(GraphFile) ->
 
 graph_command(_Command, #logger_state{graph_data = undefined} = State) -> State;
 graph_command(Command, State) ->
-  #logger_state{graph_data = {GraphFile, Parent, Sibling} = Graph} = State,
+  #logger_state{
+     graph_data = {GraphFile, Parent, Sibling} = Graph,
+     print_depth = PrintDepth
+    } = State,
   NewGraph =
     case Command of
       {new_node, Ref, I, Event, BoundConsumed} ->
@@ -509,7 +512,7 @@ graph_command(Command, State) ->
               ",color=orange,penwidth=5";
             _ -> ""
           end,
-        Label = concuerror_printer:pretty_s({I,Event#event{location=[]}}, 1),
+        Label = concuerror_printer:pretty_s({I,Event#event{location=[]}}, PrintDepth - 19),
         EnabledLabel =
           case BoundConsumed =:= 0 of
             true -> "    ";
@@ -533,8 +536,8 @@ graph_command(Command, State) ->
       {race, EarlyRef, Ref} ->
         io:format(
           GraphFile,
-          "~s[constraint=false, color=red, penwidth=3, style=dashed];~n",
-          [ref_edge(Ref, EarlyRef)]),
+          "~s[constraint=false, color=red, dir=back, penwidth=3, style=dashed];~n",
+          [dref_edge(EarlyRef, Ref)]),
         Graph;
       {set_node, NewParent, NewSibling} ->
         io:format(
@@ -556,6 +559,9 @@ graph_command(Command, State) ->
 
 ref_edge(RefA, RefB) ->
   io_lib:format("    \"~p\" -> \"~p\"",[RefA,RefB]).
+
+dref_edge(RefA, RefB) ->
+  io_lib:format("    \"~p\":e -> \"~p\":e",[RefA,RefB]).
 
 graph_close(#logger_state{graph_data = undefined}) -> ok;
 graph_close(#logger_state{graph_data = {GraphFile, _, _}}) ->
