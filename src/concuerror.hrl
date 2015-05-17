@@ -52,17 +52,14 @@
 -define(opt(A,O),proplists:get_value(A,O)).
 %%------------------------------------------------------------------------------
 %% Logger verbosity
--define(lquiet,    0). %% Nothing is printed on stderr
--define(lerror,    1). %% Critical, resulting in early termination
--define(lwarning,  2). %% Non-critical, notifying about weak support for some
-                       %%   feature or the use of an option that alters the
-                       %%   output
--define(ltip,      3). %% Exceptional messages, notifying of a suggested
-                       %%   refactoring or option to make testing more efficient
--define(linfo,     4). %% Normal messages that can be ignored
--define(ltiming,   5). %% Timing messages
--define(ldebug,    6). %% Reserved for use focusing debugging
--define(ltrace,    7). %% Debugging logs should use this when not debugging
+-define(lquiet,    0).
+-define(lerror,    1).
+-define(lwarning,  2).
+-define(ltip,      3).
+-define(linfo,     4).
+-define(ltiming,   5).
+-define(ldebug,    6).
+-define(ltrace,    7).
 -define(MAX_VERBOSITY, ?ltrace).
 -type log_level() :: ?lquiet..?MAX_VERBOSITY.
 %%------------------------------------------------------------------------------

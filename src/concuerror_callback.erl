@@ -8,7 +8,7 @@
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/3,
          deliver_message/3, wait_actor_reply/2, collect_deadlock_info/1,
-         enabled/1]).
+         enabled/1, cleanup_processes/1]).
 
 %% Interface to logger:
 -export([setup_logger/1]).
@@ -213,8 +213,8 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
         #concuerror_info{} ->
           built_in(Module, Name, Arity, Args, Location, Info);
         {logger, Processes} ->
-          case {Module, Name, Arity} =:= {erlang, pid_to_list, 1} of
-            true ->
+          case {Module, Name, Arity} of
+            {erlang, pid_to_list, 1} ->
               [Term] = Args,
               try
                 Symbol = ets:lookup_element(Processes, Term, ?process_symbolic),
@@ -222,7 +222,16 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
               catch
                 _:_ -> {doit, Info}
               end;
-            false ->
+            {erlang, fun_to_list, 1} ->
+              %% Slightly prettier printer than the default...
+              [Fun] = Args,
+              [M, F, A] =
+                [I ||
+                  {_, I} <-
+                    [erlang:fun_info(Fun, T) || T <- [module, name, arity]]],
+              String = lists:flatten(io_lib:format("#Fun<~p.~p.~p>", [M, F, A])),
+              {{didit, String}, Info};
+            _ ->
               {doit, Info}
           end
       end;
@@ -1621,6 +1630,21 @@ ets_ops_access_rights_map(Op) ->
     {select_delete ,_} -> write;
     {update_counter,3} -> write                            
   end.
+
+%%------------------------------------------------------------------------------
+
+-spec cleanup_processes(processes()) -> ok.
+
+cleanup_processes(Processes) ->
+  Fold =
+    fun(?process_pat_pid_kind(P,Kind), true) ->
+        case Kind =:= hijacked of
+          true -> true;
+          false -> exit(P, kill)
+        end
+    end,
+  true = ets:foldl(Fold, true, Processes),
+  ok.
 
 %%------------------------------------------------------------------------------
 
