@@ -262,9 +262,10 @@ built_in(erlang, display, 1, [Term], _Location, Info) ->
   concuerror_logger:print(Logger, standard_io, Chars),
   {{didit, true}, Info};
 %% Process dictionary has been restored here. No need to report such ops.
-built_in(erlang, get, _Arity, Args, _Location, Info) ->
-  ?debug_flag(?builtin, {'built-in', erlang, get, _Arity, Args, _Location}),
-  Res = erlang:apply(erlang,get,Args),
+built_in(erlang, PDict, _Arity, Args, _Location, Info)
+  when PDict =:= get; PDict =:= get_keys ->
+  ?debug_flag(?builtin, {'built-in', erlang, PDict, _Arity, Args, _Location}),
+  Res = erlang:apply(erlang,PDict,Args),
   {{didit, Res}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
 %% for the logger)
@@ -973,6 +974,8 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
 
 run_built_in(Module, Name, Arity, Args, Info)
   when
+    {Module, Name, Arity} =:= {erlang, erase, 0};
+    {Module, Name, Arity} =:= {erlang, erase, 1};
     {Module, Name, Arity} =:= {erlang, put, 2};
     {Module, Name, Arity} =:= {os, getenv, 1}
     ->
