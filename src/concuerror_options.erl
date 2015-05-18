@@ -171,16 +171,22 @@ options() ->
     "Whether Concuerror should enforce the scheduling strategy strictly or let"
     " a process run until blocked before reconsidering the scheduling policy."}
   ,{ignore_first_crash, $i, {boolean, false},
-    "Keep going if 1st interleaving has errors",
+    "Keep going even if 1st interleaving has errors",
     "If not enabled, Concuerror will immediately exit if the first interleaving"
-    " contains errors."}
+    " contains errors. This is to prevent testing code that has errors that are"
+    " not related to concurrency. Also check --keep_going flag."}
+  ,{keep_going, $k, {boolean, false},
+    "Continue running after an error is found",
+    "Concuerror stops by default when the first error is found. Enable this"
+    " flag to keep looking for more errors. Preferably, modify the test, or"
+    " use the --ignore_error / --treat_as_normal options."}
   ,{ignore_error, undefined, atom,
     "Ignore 'crash', 'deadlock' or 'depth_bound' errors",
     "Concuerror will not report errors of the specified kind:~n"
-    "'crash' (all process crashes, see also option 'treat_as_normal' for more"
-    " refined control)~n"
+    "'crash' (any process crash - check '-h treat_as_normal' for more refined"
+    " control)~n"
     "'deadlock' (processes waiting at a receive statement)~n"
-    "'depth_bound' (the depth bound was reached)."}
+    "'depth_bound' (the depth bound was reached - check '-h depth_bound')."}
   ,{treat_as_normal, undefined, atom,
     "Exit reasons considered 'normal'",
     "A process that exits with the specified atom as reason (or with a reason"

@@ -61,6 +61,7 @@
           first_process                :: pid(),
           ignore_error       = []      :: [atom()],
           interleaving_bound           :: pos_integer(),
+          keep_going         = false   :: boolean(),
           logger                       :: pid(),
           last_scheduled               :: pid(),
           message_info                 :: message_info(),
@@ -104,6 +105,7 @@ run(Options) ->
        first_process = FirstProcess,
        ignore_error = ?opt(ignore_error, Options),
        interleaving_bound = ?opt(interleaving_bound, Options),
+       keep_going = ?opt(keep_going, Options),
        last_scheduled = FirstProcess,
        logger = Logger = ?opt(logger, Options),
        message_info = ets:new(message_info, [private]),
@@ -178,9 +180,18 @@ log_trace(State) ->
         {lists:reverse(Warnings), TraceInfo}
     end,
   concuerror_logger:complete(Logger, Log),
-  case (not State#scheduler_state.ignore_first_crash) andalso (Log =/= none) of
-    true -> ?crash(first_interleaving_crashed);
-    false ->
+  case Log =/= none of
+    true when not State#scheduler_state.ignore_first_crash ->
+      ?crash(first_interleaving_crashed);
+    true when not State#scheduler_state.keep_going ->
+      ?crash(stop_first_error);
+    Other ->
+      case Other of
+        true ->
+          ?unique(Logger, ?lwarning, "Continuing after error~n", []);
+        false ->
+          ok
+      end,
       NextExploring = N + 1,
       NextState =
         State#scheduler_state{
@@ -1114,8 +1125,10 @@ assert_no_messages() ->
 
 -spec explain_error(term()) -> string().
 
-explain_error(first_interleaving_crashed) ->
-  {msg(first_interleaving_crashed), warning};
+explain_error(EarlyTermination)
+  when EarlyTermination =:= first_interleaving_crashed;
+       EarlyTermination =:= stop_first_error ->
+  {msg(EarlyTermination), warning};
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   [EString, NEString] =
     [concuerror_printer:pretty_s(E, Depth) || E <- [Event, NewEvent]],
@@ -1158,6 +1171,8 @@ msg(shutdown) ->
 msg(sleep_set_block) ->
   "Some interleavings were 'sleep-set blocked'. This is expected if you have"
     " specified '--optimal false', but reveals wasted effort.~n";
+msg(stop_first_error) ->
+  "Stop testing on first error. (Check '-h keep_going').";
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"

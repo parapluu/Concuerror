@@ -53,7 +53,7 @@ has Tip
 has Error
 
 testing "Abnormal exit found"
-mygrep "* At step 49 process P.1 exited abnormally"
+mygrep "\* At step .* process P\.1 exited abnormally"
 good
 
 testing "Rerun"
@@ -68,7 +68,7 @@ mygrep "The first interleaving of your test had errors."
 good
 
 testing "Correct error"
-mygrep "* At step 52 process P exited abnormally"
+mygrep "\* At step .* process P exited abnormally"
 good
 
 echo "Part 2"
@@ -76,7 +76,7 @@ echo "Part 2"
 testing "Turn off symbolic"
 ! $CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup  \
     --pa .eunit --symbolic_names false
-mygrep "* At step 52 process <0."
+mygrep "\* At step .* process <0."
 good
 
 testing "Use an after timeout"
