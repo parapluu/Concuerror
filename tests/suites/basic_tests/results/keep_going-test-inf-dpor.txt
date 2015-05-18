@@ -1,0 +1,82 @@
+################################################################################
+
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{keep_going,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/keep_going.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {interleaving_bound,infinity},
+   {keep_going,false},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {scheduling,round_robin},
+   {scheduling_bound,infinity},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+
+Erroneous interleaving 1:
+* At step 14 process P exited abnormally
+    Reason:
+      error
+    Stacktrace:
+      [{keep_going,test,0,
+                   [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/keep_going.erl"},
+                    {line,23}]}]
+--------------------------------------------------------------------------------
+
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<keep_going.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2494
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<keep_going.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2494
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<keep_going.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2494
+   4: P: receive timeout expired after 0 ms
+    in keep_going.erl line 18
+   5: P.1: ok = P ! ok
+    in keep_going.erl line 15
+   6: P.1: exits normally
+   7: P.2: ok = P ! ok
+    in keep_going.erl line 16
+   8: P.2: exits normally
+   9: P.3: ok = P ! ok
+    in keep_going.erl line 17
+  10: P.3: exits normally
+  11: Message (ok) from P.1 reaches P
+  12: Message (ok) from P.3 reaches P
+  13: P: receives message (ok)
+    in keep_going.erl line 22
+  14: P: exits abnormally (error)
+  15: Message (ok) from P.2 reaches P
+################################################################################
+
+Errors:
+--------------------------------------------------------------------------------
+
+Testing stopped on the first error. (Disable by -k).
+
+
+################################################################################
+
+Info:
+--------------------------------------------------------------------------------
+
+Instrumented keep_going
+Instrumented io_lib
+Instrumented erlang
+You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
+
+################################################################################
+
+Done! (Exit status: warning)
+  Summary: 1 errors, 15/19 interleavings explored
