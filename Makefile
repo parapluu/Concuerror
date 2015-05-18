@@ -29,7 +29,8 @@ ERL_COMPILE_FLAGS ?= \
 	+warn_export_vars \
 	+warn_unused_import \
 	+warn_missing_spec \
-	+warn_untyped_record
+	+warn_untyped_record \
+	+warnings_as_errors
 
 DIALYZER_FLAGS = -Wunmatched_returns
 
@@ -49,25 +50,31 @@ MODULES = \
 	concuerror_scheduler \
 	concuerror
 
-vpath %.erl src
-
-.PHONY: clean compile cover dialyze submodules tests tests-long
+.PHONY: clean compile cover dialyze otp_version submodules tests tests-long
 
 compile: $(MODULES:%=ebin/%.beam) getopt concuerror
 
 dev:
 	$(MAKE) VSN="$(VSN)d" \
-	ERL_COMPILE_FLAGS="$(ERL_COMPILE_FLAGS) -DDEV=true +nowarn_deprecated_type +warnings_as_errors"
+	ERL_COMPILE_FLAGS="$(ERL_COMPILE_FLAGS) -DDEV=true"
 
 ifneq ($(MAKECMDGOALS),clean)
 -include $(MODULES:%=ebin/%.Pbeam)
 endif
 
-ebin/%.Pbeam: %.erl | ebin
-	erlc -o ebin -MD $<
+ebin/%.Pbeam: src/%.erl src/*.hrl Makefile | ebin
+	@echo " ERLC -MD $<"
+	@erlc -o ebin -MD -MG $<
 
-ebin/%.beam: %.erl Makefile | ebin
-	erlc $(ERL_COMPILE_FLAGS) -DVSN="\"$(VSN)\"" -o ebin $<
+ebin/%.beam: src/%.erl Makefile | ebin otp_version
+	@echo " ERLC $<"
+	@erlc $(ERL_COMPILE_FLAGS) -DVSN="\"$(VSN)\"" -o ebin $<
+
+otp_version:
+	@echo "Checking OTP Version..."
+	@src/otp_version > $@.tmp
+	@cmp -s $@.tmp src/$@.hrl > /dev/null || cp $@.tmp src/$@.hrl
+	@rm $@.tmp
 
 concuerror:
 	ln -s src/concuerror $@

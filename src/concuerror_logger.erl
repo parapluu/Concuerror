@@ -14,8 +14,38 @@
 -type graph_data() ::
         {file:io_device(), reference() | 'init', reference() | 'none'}.
 
+%%------------------------------------------------------------------------------
+
+-ifdef(BEFORE_OTP_17).
+-type unique_ids() :: set().
+-else.
+-type unique_ids() :: sets:set(integer()).
+-endif.
+
+%%------------------------------------------------------------------------------
+
+-ifdef(BEFORE_OTP_18).
+
+-type timestamp() :: erlang:timestamp().
+timestamp() ->
+  erlang:now().
+timediff(After, Before) ->
+  timer:now_diff(After, Before) / 1000000.
+
+-else.
+
+-type timestamp() :: integer().
+timestamp() ->
+  erlang:monotonic_time(milli_seconds).
+timediff(After, Before) ->
+  (After - Before) / 1000.
+
+-endif.
+
+%%------------------------------------------------------------------------------
+
 -record(logger_state, {
-          already_emitted = sets:new() :: set(),
+          already_emitted = sets:new() :: unique_ids(),
           emit_logger_tips = initial   :: 'initial' | 'false',
           errors = 0                   :: non_neg_integer(),
           graph_data                   :: graph_data() | 'undefined',
@@ -23,10 +53,10 @@
           output                       :: file:io_device(),
           output_name                  :: string(),
           print_depth                  :: pos_integer(),
-          rate_timestamp = erlang:now():: erlang:timestamp(),
+          rate_timestamp = timestamp() :: timestamp(),
           rate_prev = 0                :: non_neg_integer(),
           streams = []                 :: [{stream(), [string()]}],
-          timestamp = erlang:now()     :: erlang:timestamp(),
+          timestamp = timestamp()      :: timestamp(),
           ticker = none                :: pid() | 'none' | 'show',
           traces_explored = 0          :: non_neg_integer(),
           traces_ssb = 0               :: non_neg_integer(),
@@ -200,8 +230,8 @@ loop(Message, State) ->
     } = State,
   case Message of
     {time, Tag} ->
-      Now = erlang:now(),
-      Diff = timer:now_diff(Now, Timestamp) / 1000000,
+      Now = timestamp(),
+      Diff = timediff(Now, Timestamp),
       Msg = "~nTimer: +~5.2fs ~s~n",
       loop(
         {log, ?ltiming, none, Msg, [Diff, Tag]},
@@ -399,8 +429,8 @@ update_rate(State) ->
      rate_timestamp = Old,
      rate_prev = Prev,
      traces_explored = Current} = State,
-  New = erlang:now(),
-  Time = timer:now_diff(New, Old) / 1000000,
+  New = timestamp(),
+  Time = timediff(New, Old),
   Diff = Current - Prev,
   Rate = (Diff / Time),
   RateStr = io_lib:format("(~5.1f interleavings/s) ",[Rate]),
