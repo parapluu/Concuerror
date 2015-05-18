@@ -51,7 +51,15 @@
 
 -include("concuerror.hrl").
 
--type ref_queue() :: {queue(), queue()}.
+-ifdef(BEFORE_OTP_17).
+-type ref_queue() :: queue().
+-type message_queue() :: queue().
+-else.
+-type ref_queue() :: queue:queue(reference()).
+-type message_queue() :: queue:queue(#message{}).
+-endif.
+
+-type ref_queue_2() :: {ref_queue(), ref_queue()}.
 
 -record(process_flags, {
           trap_exit = false  :: boolean(),
@@ -70,14 +78,14 @@
           is_timer = false           :: 'false' | reference(),
           links                      :: links(),
           logger                     :: pid(),
-          messages_new = queue:new() :: queue(),
-          messages_old = queue:new() :: queue(),
+          messages_new = queue:new() :: message_queue(),
+          messages_old = queue:new() :: message_queue(),
           modules                    :: modules(),
           monitors                   :: monitors(),
           event = none               :: 'none' | event(),
           notify_when_ready          :: {pid(), boolean()},
           processes                  :: processes(),
-          ref_queue = new_ref_queue():: ref_queue(),
+          ref_queue = new_ref_queue():: ref_queue_2(),
           scheduler                  :: pid(),
           stacktop = 'none'          :: 'none' | tuple(),
           status = running           :: 'exited'| 'exiting' | 'running' | 'waiting',

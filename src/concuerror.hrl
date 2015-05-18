@@ -1,4 +1,4 @@
-%% -define(DEBUG, true).
+-include("src/otp_version.hrl").
 
 %%------------------------------------------------------------------------------
 -ifdef(SENSITIVE_DEBUG).

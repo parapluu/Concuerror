@@ -13,10 +13,14 @@
 
 %%------------------------------------------------------------------------------
 
-%% -type clock_vector() :: orddict:orddict(). %% orddict(pid(), index()).
--type clock_map()    :: dict(). %% dict(pid(), clock_vector()).
-
-%%------------------------------------------------------------------------------
+-ifdef(BEFORE_OTP_17).
+-type clock_map()           :: dict().
+-type message_event_queue() :: queue().
+-else.
+-type clock_vector()        :: orddict:orddict(). %% orddict(pid(), index()).
+-type clock_map()           :: dict:dict(pid(), clock_vector()).
+-type message_event_queue() :: queue:queue(#message_event{}).
+-endif.
 
 %% =============================================================================
 %% DATA STRUCTURES
@@ -28,10 +32,11 @@
           wakeup_tree = []        :: event_tree()
          }).
 
--type event_tree() :: [#backtrack_entry{}].
+-type channel_actor() :: {channel(), message_event_queue()}.
+-type event_tree()    :: [#backtrack_entry{}].
 
 -record(trace_state, {
-          actors           = []         :: [pid() | {channel(), queue()}],
+          actors           = []         :: [pid() | channel_actor()],
           clock_map        = dict:new() :: clock_map(),
           done             = []         :: [event()],
           index            = 1          :: index(),
@@ -62,7 +67,7 @@
           need_to_replay     = false   :: boolean(),
           non_racing_system  = []      :: [atom()],
           optimal            = true    :: boolean(),
-          previous_was_enabled = true   :: boolean(),
+          previous_was_enabled = true  :: boolean(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
           scheduling         = oldest  :: scheduling(),
@@ -1123,8 +1128,10 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   io_lib:format(
     "On step ~p, replaying a built-in returned a different result than"
     " expected:~n"
-    "  original: ~s~n"
-    "  new     : ~s~n"
+    "  original:~n"
+    "    ~s~n"
+    "  new:~n"
+    "    ~s~n"
     ?notify_us_msg,
     [I,Original,New]
    ).
