@@ -173,6 +173,7 @@ dependent_exit(Exit, MFArgs, _Extra) ->
 
 dependent_exit(_Exit, {erlang, A, _})
   when
+    A =:= erase;
     A =:= exit;
     A =:= make_ref;
     A =:= process_flag;
@@ -299,6 +300,7 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     false
     ;A =:= date
     ;A =:= demonitor        %% Depends only with an exit event or proc_info
+    ;A =:= erase            %% Depends only with proc_info
     ;A =:= exit             %% Sending an exit signal (dependencies are on delivery)
     ;A =:= get_stacktrace   %% Depends with nothing
     ;A =:= group_leader     %% Depends only with another group_leader get/set
@@ -318,6 +320,7 @@ dependent_built_in(#builtin_event{mfargs = {erlang, A, _}},
     
     ;B =:= date
     ;B =:= demonitor
+    ;B =:= erase
     ;B =:= exit
     ;B =:= get_stacktrace
     ;B =:= group_leader

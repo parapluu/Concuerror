@@ -262,9 +262,10 @@ built_in(erlang, display, 1, [Term], _Location, Info) ->
   concuerror_logger:print(Logger, standard_io, Chars),
   {{didit, true}, Info};
 %% Process dictionary has been restored here. No need to report such ops.
-built_in(erlang, get, _Arity, Args, _Location, Info) ->
-  ?debug_flag(?builtin, {'built-in', erlang, get, _Arity, Args, _Location}),
-  Res = erlang:apply(erlang,get,Args),
+built_in(erlang, PDict, _Arity, Args, _Location, Info)
+  when PDict =:= get; PDict =:= get_keys ->
+  ?debug_flag(?builtin, {'built-in', erlang, PDict, _Arity, Args, _Location}),
+  Res = erlang:apply(erlang,PDict,Args),
   {{didit, Res}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
 %% for the logger)
@@ -973,6 +974,8 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
 
 run_built_in(Module, Name, Arity, Args, Info)
   when
+    {Module, Name, Arity} =:= {erlang, erase, 0};
+    {Module, Name, Arity} =:= {erlang, erase, 1};
     {Module, Name, Arity} =:= {erlang, put, 2};
     {Module, Name, Arity} =:= {os, getenv, 1}
     ->
@@ -1003,7 +1006,19 @@ run_built_in(Module, Name, Arity, _Args,
              #concuerror_info{
                 event = #event{location = Location},
                 scheduler = Scheduler}) ->
-  ?crash({unknown_built_in, {Module, Name, Arity, Location}}, Scheduler).
+  Clean = clean_stacktrace(),
+  ?crash({unknown_built_in, {Module, Name, Arity, Location, Clean}}, Scheduler).
+
+clean_stacktrace() ->
+  catch throw(foo),
+  Trace = erlang:get_stacktrace(),
+  [T || {M,_,_,_} = T <- Trace, not_concuerror_module(M)].
+
+not_concuerror_module(Atom) ->
+  case atom_to_list(Atom) of
+    "concuerror" ++ _ -> false;
+    _ -> true
+  end.
 
 %%------------------------------------------------------------------------------
 
@@ -1995,16 +2010,16 @@ explain_error({unknown_protocol_for_system, System}) ->
     "A process tried to send a message to system process ~p. Concuerror does"
     " not currently support communication with this process. Please contact the"
     " developers for more information.",[System]);
-explain_error({unknown_built_in, {Module, Name, Arity, Location}}) ->
+explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
   LocationString =
     case Location of
       [Line, {file, File}] -> location(File, Line);
       _ -> ""
     end,
   io_lib:format(
-    "Concuerror does not currently support calls to built-in ~p:~p/~p~s."
-    " Please notify the developers.",
-    [Module, Name, Arity, LocationString]);
+    "Concuerror does not support calls to built-in ~p:~p/~p~s.~n  If you cannot"
+    " avoid its use, please contact the developers.~n  Stacktrace:~n    ~p",
+    [Module, Name, Arity, LocationString, Stack]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
     "A process send a request of type '~p' to ~p. Concuerror does not yet support"
