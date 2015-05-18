@@ -1128,8 +1128,10 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   io_lib:format(
     "On step ~p, replaying a built-in returned a different result than"
     " expected:~n"
-    "  original: ~s~n"
-    "  new     : ~s~n"
+    "  original:~n"
+    "    ~s~n"
+    "  new:~n"
+    "    ~s~n"
     ?notify_us_msg,
     [I,Original,New]
    ).
