@@ -32,7 +32,8 @@ ERL_COMPILE_FLAGS ?= \
 	+warn_untyped_record \
 	+warnings_as_errors
 
-DIALYZER_FLAGS = -Wunmatched_returns
+DIALYZER_APPS = erts kernel stdlib compiler crypto
+DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
 
 ###----------------------------------------------------------------------
 ### Targets
@@ -94,7 +95,7 @@ dialyze: all .concuerror_plt
 	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) ebin/*.beam
 
 .concuerror_plt: | getopt
-	dialyzer --build_plt --output_plt $@ --apps erts kernel stdlib compiler \
+	dialyzer --build_plt --output_plt $@ --apps $(DIALYZER_APPS) \
 	deps/*/ebin/*.beam
 
 ###----------------------------------------------------------------------
