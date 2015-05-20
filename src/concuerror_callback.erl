@@ -263,11 +263,17 @@ get_fun_info(Fun, Tag) ->
 
 %%------------------------------------------------------------------------------
 
-built_in(erlang, display, 1, [Term], _Location, Info) ->
-  ?debug_flag(?builtin, {'built-in', erlang, display, 1, [Term], _Location}),
-  #concuerror_info{logger = Logger} = Info,
-  Chars = io_lib:format("~w~n",[Term]),
-  concuerror_logger:print(Logger, standard_io, Chars),
+built_in(erlang, Display, 1, [Term], _Location, Info)
+  when Display =:= display; Display =:= display_string ->
+  ?debug_flag(?builtin, {'built-in', erlang, Display, 1, [Term], _Location}),
+  Chars =
+    case Display of
+      display -> io_lib:format("~w~n",[Term]);
+      display_string ->
+        _ = erlang:list_to_atom(Term), % Will throw badarg if not string.
+        Term
+    end,
+  concuerror_logger:print(Info#concuerror_info.logger, standard_io, Chars),
   {{didit, true}, Info};
 %% Process dictionary has been restored here. No need to report such ops.
 built_in(erlang, PDict, _Arity, Args, _Location, Info)

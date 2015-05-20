@@ -1,0 +1,56 @@
+################################################################################
+
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{erlang_display_string,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/erlang_display_string.erl"]},
+   {ignore_error,[]},
+   {ignore_first_crash,true},
+   {instant_delivery,false},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {scheduling,round_robin},
+   {scheduling_bound,infinity},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in erlang_display_string.erl line 11
+--------------------------------------------------------------------------------
+
+Standard Output:
+Foo
+
+--------------------------------------------------------------------------------
+
+Interleaving info:
+################################################################################
+
+Warnings:
+--------------------------------------------------------------------------------
+
+Continuing after error
+
+################################################################################
+
+Info:
+--------------------------------------------------------------------------------
+
+Instrumented erlang_display_string
+Instrumented io_lib
+
+################################################################################
+
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored
