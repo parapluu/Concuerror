@@ -160,7 +160,8 @@ log_trace(State) ->
      current_warnings = UnfilteredWarnings,
      exploring = N,
      ignore_error = Ignored,
-     logger = Logger} = State,
+     logger = Logger
+    } = State,
   Warnings = filter_warnings(UnfilteredWarnings, Ignored, Logger),
   Log =
     case Warnings =:= [] of
@@ -236,10 +237,12 @@ get_next_event(
   #scheduler_state{
      depth_bound = Bound,
      logger = Logger,
-     trace = [#trace_state{index = I}|Old]} = State) when I =:= Bound + 1 ->
+     trace = [#trace_state{index = I}|Old]} = State)
+  when
+    I =:= Bound + 1 ->
   UniqueMsg =
-    "Some interleaving reached the depth bound (~p). Consider limiting the size"
-    " of the test or increasing the bound.~n",
+    "An interleaving reached the depth bound (~p). Consider limiting the size"
+    " of the test or increasing the bound ('-d').~n",
   ?unique(Logger, ?lwarning, UniqueMsg, [Bound]),
   NewState = add_warning({depth_bound, Bound}, Old, State),
   {none, NewState};
@@ -613,7 +616,7 @@ assign_happens_before([], RevLate, _RevEarly, _State) ->
   lists:reverse(RevLate);
 assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   #scheduler_state{logger = _Logger, message_info = MessageInfo} = State,
-  #trace_state{done = [Event|RestEvents], index = Index} = TraceState,
+  #trace_state{done = [Event|_], index = Index} = TraceState,
   #event{actor = Actor, special = Special} = Event,
   ClockMap = get_base_clock(RevLate, RevEarly),
   OldClock = lookup_clock(Actor, ClockMap),
@@ -646,10 +649,7 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
     dict:store(
       Actor, FinalActorClock,
       dict:store(state, FinalStateClock, NewClockMap)),
-  NewTraceState =
-    TraceState#trace_state{
-      clock_map = FinalClockMap,
-      done = [Event|RestEvents]},
+  NewTraceState = TraceState#trace_state{clock_map = FinalClockMap},
   assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State).
 
 get_base_clock(RevLate, RevEarly) ->
@@ -821,7 +821,8 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{
      exploring = Exploring,
      logger = Logger,
-     optimal = Optimal} = State,
+     optimal = Optimal
+    } = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done],
      scheduling_bound = SchedulingBound,
@@ -845,8 +846,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
           NS = TraceState#trace_state{wakeup_tree = NewWakeup},
           [NS|NewOldTrace];
         false ->
-          Message =
-            "Some interleavings were not considered due to schedule bounding.~n",
+          Message = msg(reached_scheduling_bound),
           ?unique(Logger, ?lwarning, Message, []),
           ?debug(Logger, "     OVER BOUND~n",[]),
           skip
@@ -935,11 +935,7 @@ insert_wakeup([], Wakeup, NotDep, Exploring) ->
   insert_wakeup(Wakeup, NotDep, Exploring).
 
 insert_wakeup([], NotDep, Exploring) ->
-  Fold =
-    fun(Event, Acc) ->
-        [#backtrack_entry{event = Event, origin = Exploring, wakeup_tree = Acc}]
-    end,
-  lists:foldr(Fold, [], NotDep);
+  backtrackify(NotDep, Exploring);
 insert_wakeup([Node|Rest], NotDep, Exploring) ->
   #backtrack_entry{event = Event, origin = M, wakeup_tree = Deeper} = Node,
   case check_initial(Event, NotDep) of
@@ -964,6 +960,13 @@ insert_wakeup([Node|Rest], NotDep, Exploring) ->
           end
       end
   end.
+
+backtrackify(Seq, Cause) ->
+  Fold =
+    fun(Event, Acc) ->
+        [#backtrack_entry{event = Event, origin = Cause, wakeup_tree = Acc}]
+    end,
+  lists:foldr(Fold, [], Seq).
 
 check_initial(Event, NotDep) ->
   check_initial(Event, NotDep, []).
@@ -1166,6 +1169,8 @@ msg(first_interleaving_crashed) ->
     " You may then use -i to tell Concuerror to continue or use other options"
     " to filter out the reported errors, if you consider them acceptable"
     " behaviours.";
+msg(reached_scheduling_bound) ->
+  "Some interleavings were not considered due to schedule bounding.~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
