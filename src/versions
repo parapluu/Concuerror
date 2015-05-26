@@ -1,0 +1,14 @@
+#!/usr/bin/env escript
+%% -*- erlang-indent-level: 2 -*-
+%%! -noshell
+
+main([Vsn]) ->
+  io:format("-define(VSN, ~p).~n",[Vsn]),
+  case erlang:system_info(otp_release) of
+    "R" ++ _ ->
+      io:format("-define(BEFORE_OTP_17, true).~n"),
+      io:format("-define(BEFORE_OTP_18, true).~n");
+    "17" ++ _ ->
+      io:format("-define(BEFORE_OTP_18, true).~n");
+    _ -> ok
+  end.

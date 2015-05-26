@@ -8,7 +8,7 @@ Concuerror is a systematic testing tool for concurrent Erlang programs.
 
 Copyright and License
 ----------------------
-Copyright (c) 2014,
+Copyright (c) 2014-2015,
 Stavros Aronis (<aronisstav@gmail.com>) and
 Kostis Sagonas (<kostis@cs.ntua.gr>).
 All rights reserved
