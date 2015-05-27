@@ -36,6 +36,10 @@ Concuerror on a Windows machine.
 
 You can build the application using 'make'
 
+CAUTION: This file's information refer to a version of the code that has been
+         tagged under git as 'POPL_submission'. Check out that version before
+         continuing.
+
 3. Quick intro
 --------------
 
