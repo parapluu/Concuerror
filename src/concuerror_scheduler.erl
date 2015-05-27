@@ -475,7 +475,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
   case Event#event.event_info of
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
       {Tag, WasTimeout} =
-        if is_tuple(Reason), size(Reason) > 0 ->
+        if tuple_size(Reason) > 0 ->
             T = element(1, Reason),
             {T, T =:= timeout};
            true -> {Reason, false}
