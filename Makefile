@@ -1,43 +1,14 @@
-###----------------------------------------------------------------------
-### Copyright (c) 2011-2013, Alkis Gotovos <el3ctrologos@hotmail.com>,
-###                          Maria Christakis <mchrista@softlab.ntua.gr>
-###                      and Kostis Sagonas <kostis@cs.ntua.gr>.
-### All rights reserved.
-###
-### This file is distributed under the Simplified BSD License.
-### Details can be found in the LICENSE file.
-###----------------------------------------------------------------------
-### Authors     : Alkis Gotovos <el3ctrologos@hotmail.com>
-###               Maria Christakis <mchrista@softlab.ntua.gr>
-### Description : Main Makefile
-###----------------------------------------------------------------------
-
-all: compile
-
-###----------------------------------------------------------------------
+###-----------------------------------------------------------------------------
 ### Application info
-###----------------------------------------------------------------------
+###-----------------------------------------------------------------------------
 
-VSN ?= 0.11
+VERSION := 0.11
 
-###----------------------------------------------------------------------
-### Flags
-###----------------------------------------------------------------------
+###-----------------------------------------------------------------------------
+### Modules
+###-----------------------------------------------------------------------------
 
-ERL_COMPILE_FLAGS ?= \
-	+debug_info \
-	+warn_export_vars \
-	+warn_unused_import \
-	+warn_missing_spec \
-	+warn_untyped_record \
-	+warnings_as_errors
-
-DIALYZER_APPS = erts kernel stdlib compiler crypto
-DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
-
-###----------------------------------------------------------------------
-### Targets
-###----------------------------------------------------------------------
+DEPS = getopt/ebin/getopt
 
 MODULES = \
 	concuerror_callback \
@@ -51,75 +22,109 @@ MODULES = \
 	concuerror_scheduler \
 	concuerror
 
-.PHONY: clean compile cover dialyze otp_version submodules tests tests-long
+###-----------------------------------------------------------------------------
+### Flags
+###-----------------------------------------------------------------------------
 
-compile: $(MODULES:%=ebin/%.beam) getopt concuerror
+ERL_COMPILE_FLAGS := \
+	+debug_info \
+	+warn_export_vars \
+	+warn_unused_import \
+	+warn_missing_spec \
+	+warn_untyped_record \
+	+warnings_as_errors
 
-dev:
-	$(MAKE) VSN="$(VSN)d" \
-	ERL_COMPILE_FLAGS="$(ERL_COMPILE_FLAGS) -DDEV=true"
+DIALYZER_APPS = erts kernel stdlib compiler crypto
+DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
 
-ifneq ($(MAKECMDGOALS),clean)
+###-----------------------------------------------------------------------------
+### Targets
+###-----------------------------------------------------------------------------
+
+VERSION_HRL=src/concuerror_version.hrl
+
+.PHONY: clean cover dev default dialyze distclean tests tests-long version
+
+###-----------------------------------------------------------------------------
+
+default dev: concuerror
+
+default: ERL_COMPILE_FLAGS += +native
+
+dev: ERL_COMPILE_FLAGS += -DDEV=true
+dev: VERSION := $(VERSION)-dev
+
+concuerror: $(DEPS:%=deps/%.beam) $(MODULES:%=ebin/%.beam)
+	@echo " GEN  $@"
+	@ln -s src/concuerror $@
+
+###-----------------------------------------------------------------------------
+
 -include $(MODULES:%=ebin/%.Pbeam)
-endif
 
-ebin/%.Pbeam: src/%.erl src/*.hrl Makefile | ebin
-	@echo " ERLC -MD $<"
+ebin/%.beam: src/%.erl Makefile | ebin $(VERSION_HRL)
+	@echo " DEPS $<"
 	@erlc -o ebin -MD -MG $<
-
-ebin/%.beam: src/%.erl Makefile | ebin otp_version
 	@echo " ERLC $<"
-	@erlc $(ERL_COMPILE_FLAGS) -DVSN="\"$(VSN)\"" -o ebin $<
+	@erlc $(ERL_COMPILE_FLAGS) -o ebin $<
 
-otp_version:
-	@echo "Checking OTP Version..."
-	@src/otp_version > $@.tmp
-	@cmp -s $@.tmp src/$@.hrl > /dev/null || cp $@.tmp src/$@.hrl
+$(VERSION_HRL): version
+	@rm -f concuerror
+	@echo " GEN  $@"
+	@src/versions $(VERSION) > $@.tmp
+	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
 	@rm $@.tmp
 
-concuerror:
-	ln -s src/concuerror $@
+ebin cover-data:
+	@echo " MKDIR $@"
+	@mkdir $@
 
-getopt: submodules
-	$(MAKE) -C deps/getopt
+###-----------------------------------------------------------------------------
 
-submodules:
+%/ebin/getopt.beam: %/.git
+	$(MAKE) -C $(dir $<)
+	rm -rf $(dir $<).rebar
+
+deps/%/.git:
 	git submodule update --init
+
+###-----------------------------------------------------------------------------
 
 clean:
 	rm -f concuerror
+	rm -f tests/scenarios.beam
 	rm -rf ebin cover-data
-	rm -f tests*/scenarios.beam
 
-dialyze: all .concuerror_plt
+distclean: clean
+	rm -f $(VERSION_HRL) .concuerror_plt concuerror_report.txt
+	rm -rf deps/*
+	git checkout -- deps
+
+###-----------------------------------------------------------------------------
+
+dialyze: default .concuerror_plt
 	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) ebin/*.beam
 
-.concuerror_plt: | getopt
-	dialyzer --build_plt --output_plt $@ --apps $(DIALYZER_APPS) \
-	deps/*/ebin/*.beam
+.concuerror_plt: $(DEPS:%=deps/%.beam)
+	dialyzer --build_plt --output_plt $@ --apps $(DIALYZER_APPS) $^
 
-###----------------------------------------------------------------------
+###-----------------------------------------------------------------------------
 ### Testing
-###----------------------------------------------------------------------
+###-----------------------------------------------------------------------------
 
 %/scenarios.beam: %/scenarios.erl
 	erlc -o $(@D) $<
 
 SUITES = {advanced_tests,dpor_tests,basic_tests}
 
-tests: all tests/scenarios.beam
+tests: default tests/scenarios.beam
 	@(cd tests; bash -c "./runtests.py suites/$(SUITES)/src/*")
 
-tests-long: all
+tests-long: default
 	$(MAKE) -C $@ CONCUERROR=$(abspath concuerror) DIFFER=$(abspath tests/differ)
 
-###----------------------------------------------------------------------
+###-----------------------------------------------------------------------------
 
 cover: cover-data
-	export CONCUERROR_COVER=true; $(MAKE) tests-all
+	export CONCUERROR_COVER=true; $(MAKE) tests tests-long
 	tests/cover-report
-
-###----------------------------------------------------------------------
-
-ebin cover-data:
-	mkdir $@

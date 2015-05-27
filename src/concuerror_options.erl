@@ -357,6 +357,10 @@ finalize([{Key, Value}|Rest], AccIn) ->
         {error, _} -> file_error(Key, Value)
       end;
     module ->
+      case proplists:is_defined(module, Rest) of
+        true -> opt_error("Multiple instances of --module.");
+        false -> ok
+      end,
       case proplists:get_value(test, Rest, 1) of
         Name when is_atom(Name) ->
           NewRest = proplists:delete(test, Rest),

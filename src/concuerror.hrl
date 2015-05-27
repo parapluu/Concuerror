@@ -1,4 +1,4 @@
--include("src/otp_version.hrl").
+-include("src/concuerror_version.hrl").
 
 %%------------------------------------------------------------------------------
 -ifdef(SENSITIVE_DEBUG).
