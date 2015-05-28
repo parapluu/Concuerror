@@ -372,8 +372,8 @@ printout(_, Format, Data) ->
   to_stderr(Format, Data).
 
 printout(State, Level, Format, Data) ->
-  Tag = verbosity_to_string(Level),
-  NewFormat = Tag ++ ": " ++ Format,
+  Tag = verbosity_to_tag(Level),
+  NewFormat = Tag ++ Format,
   printout(State, NewFormat, Data).
 
 print_log_msgs(Output, LogMsgs) ->
@@ -393,6 +393,14 @@ print_log_msgs(Output, LogMsgs) ->
         separator(Output, $#)
     end,
   lists:foreach(Foreach, LogMsgs).
+
+verbosity_to_tag(Level) ->
+  Suffix =
+    case Level > ?linfo of
+      true -> "";
+      false -> ": "
+    end,
+  verbosity_to_string(Level) ++ Suffix.
 
 verbosity_to_string(Level) ->
   case Level of

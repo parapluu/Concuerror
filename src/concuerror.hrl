@@ -75,10 +75,10 @@
         ?log(Logger, ?lerror, Format, Data)).
 
 -ifdef(DEV).
--define(debug(Logger, Format, Data),
-        ?log(Logger, ?ldebug, Format, Data)).
--define(trace(Logger, Format, Data),
-        ?log(Logger, ?ltrace, Format, Data)).
+-define(dev_log(Logger, Level, Format, Data),
+        ?log(Logger, Level, "(~p@~p) " ++ Format, [?MODULE, ?LINE| Data])).
+-define(debug(Logger, Format, Data), ?dev_log(Logger, ?ldebug, Format, Data)).
+-define(trace(Logger, Format, Data), ?dev_log(Logger, ?ltrace, Format, Data)).
 -define(has_dev, true).
 -else.
 -define(debug(Logger, Format, Data),ok).
