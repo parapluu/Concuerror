@@ -329,13 +329,15 @@ loop(Message, State) ->
       {GraphMark, Color} =
         if NewSSB =/= TracesSSB -> {"SSB","yellow"};
            NewErrors =/= Errors ->
-            DeadlockS =
+            ErrorString =
               case Warn of
+                {[fatal|_], _} ->
+                  " (Concuerror crashed)";
                 {[{deadlock, Ps}|_], _} ->
-                  io_lib:format("(~p blocked)", [[P || {P,_} <- Ps]]);
+                  io_lib:format(" (~p blocked)", [[P || {P,_} <- Ps]]);
                 _ -> ""
               end,
-            {"Error" ++ DeadlockS,"red"};
+            {"Error" ++ ErrorString,"red"};
            true -> {"Ok","lime"}
         end,
       _ = graph_command({status, TracesExplored, GraphMark, Color}, State),
