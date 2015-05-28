@@ -3,6 +3,7 @@
 -module(concuerror_logger).
 
 -export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
+-export([bound_reached/1]).
 -export([graph_set_node/3, graph_new_node/5, graph_race/3]).
 
 -include("concuerror.hrl").
@@ -46,6 +47,7 @@ timediff(After, Before) ->
 
 -record(logger_state, {
           already_emitted = sets:new() :: unique_ids(),
+          bound_reached = false        :: boolean(),
           emit_logger_tips = initial   :: 'initial' | 'false',
           errors = 0                   :: non_neg_integer(),
           graph_data                   :: graph_data() | 'undefined',
@@ -119,6 +121,15 @@ delete_props([], Proplist) ->
   Proplist;
 delete_props([Key|Rest], Proplist) ->
   delete_props(Rest, proplists:delete(Key, Proplist)).
+
+-spec bound_reached(logger()) -> ok.
+
+bound_reached(Logger) ->
+  Msg = "Some interleavings were not considered due to schedule bounding.~n",
+  ?unique(Logger, ?lwarning, Msg, []),
+  ?debug(Logger, "OVER BOUND~n",[]),
+  Logger ! bound_reached,
+  ok.
 
 -spec plan(logger()) -> ok.
 
@@ -294,6 +305,10 @@ loop(Message, State) ->
       ok;
     plan ->
       NewState = State#logger_state{traces_total = TracesTotal + 1},
+      FinalState = update_on_ticker(NewState),
+      loop(FinalState);
+    bound_reached ->
+      NewState = State#logger_state{bound_reached = true},
       FinalState = update_on_ticker(NewState),
       loop(FinalState);
     {print, Type, String} ->
@@ -490,6 +505,7 @@ tag_to_filename(Filename) when is_list(Filename) ->
 
 interleavings_message(State) ->
   #logger_state{
+     bound_reached = BoundReached,
      errors = Errors,
      traces_explored = TracesExplored,
      traces_ssb = TracesSSB,
@@ -500,8 +516,13 @@ interleavings_message(State) ->
       true -> "";
       false -> io_lib:format(" (~p sleep-set blocked)",[TracesSSB])
     end,
-  io_lib:format("~p errors, ~p/~p interleavings explored~s~n",
-                [Errors, TracesExplored, TracesTotal, SSB]).
+  BR =
+    case BoundReached of
+      true -> " (the scheduling bound was reached)";
+      false -> ""
+    end,
+  io_lib:format("~p errors, ~p/~p interleavings explored~s~s~n",
+                [Errors, TracesExplored, TracesTotal, SSB, BR]).
 
 %%------------------------------------------------------------------------------
 

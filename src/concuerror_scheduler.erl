@@ -846,9 +846,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
           NS = TraceState#trace_state{wakeup_tree = NewWakeup},
           [NS|NewOldTrace];
         false ->
-          Message = msg(reached_scheduling_bound),
-          ?unique(Logger, ?lwarning, Message, []),
-          ?debug(Logger, "     OVER BOUND~n",[]),
+          concuerror_logger:bound_reached(Logger),
           skip
       end
   end.
@@ -1169,8 +1167,6 @@ msg(first_interleaving_crashed) ->
     " You may then use -i to tell Concuerror to continue or use other options"
     " to filter out the reported errors, if you consider them acceptable"
     " behaviours.";
-msg(reached_scheduling_bound) ->
-  "Some interleavings were not considered due to schedule bounding.~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
