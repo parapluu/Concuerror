@@ -64,7 +64,7 @@ testing "Tips and errors are there"
 mygrep "A process crashed with reason"
 mygrep "An abnormal exit signal was sent to a process."
 mygrep "A process crashed with reason 'shutdown'."
-mygrep "The first interleaving of your test had errors."
+mygrep "Stop testing on first error."
 good
 
 testing "Correct error"

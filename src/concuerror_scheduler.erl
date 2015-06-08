@@ -50,7 +50,6 @@
 -type trace_state() :: #trace_state{}.
 
 -record(scheduler_state, {
-          ignore_first_crash = true    :: boolean(),
           assume_racing      = true    :: boolean(),
           bound_consumed     = 0       :: non_neg_integer(),
           current_graph_ref            :: reference(),
@@ -98,7 +97,6 @@ run(Options) ->
       },
   InitialState =
     #scheduler_state{
-       ignore_first_crash = ?opt(ignore_first_crash, Options),
        assume_racing = ?opt(assume_racing, Options),
        depth_bound = ?opt(depth_bound, Options),
        entry_point = EntryPoint = ?opt(entry_point, Options),
@@ -182,8 +180,6 @@ log_trace(State) ->
     end,
   concuerror_logger:complete(Logger, Log),
   case Log =/= none of
-    true when not State#scheduler_state.ignore_first_crash ->
-      ?crash(first_interleaving_crashed);
     true when not State#scheduler_state.keep_going ->
       ?crash(stop_first_error);
     Other ->
@@ -197,7 +193,6 @@ log_trace(State) ->
       NextState =
         State#scheduler_state{
           exploring = N+1,
-          ignore_first_crash = true,
           current_warnings = []},
       case NextExploring =< State#scheduler_state.interleaving_bound of
         true -> NextState;
@@ -1162,11 +1157,6 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 
 %%==============================================================================
 
-msg(first_interleaving_crashed) ->
-  "The first interleaving of your test had errors. Check the output file."
-    " You may then use -i to tell Concuerror to continue or use other options"
-    " to filter out the reported errors, if you consider them acceptable"
-    " behaviours.";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
