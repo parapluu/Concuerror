@@ -7,7 +7,7 @@ for i in t_simple_reg t_simple_reg_or_locate t_reg_or_locate2 test1 test2 test3 
     RES=$i.out
     REF=../ref/$RES
     RUN=../run/$RES
-    $CONCUERROR --assume_racing=false -q --timeout -1 -ki --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
+    $CONCUERROR --assume_racing=false -q --timeout -1 -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
     bash $DIFFER $REF $RUN
     echo ok
 done

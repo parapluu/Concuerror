@@ -170,11 +170,8 @@ options() ->
     "Forces preemptions",
     "Whether Concuerror should enforce the scheduling strategy strictly or let"
     " a process run until blocked before reconsidering the scheduling policy."}
-  ,{ignore_first_crash, $i, {boolean, false},
-    "Keep going even if 1st interleaving has errors",
-    "If not enabled, Concuerror will immediately exit if the first interleaving"
-    " contains errors. This is to prevent testing code that has errors that are"
-    " not related to concurrency. Also check --keep_going flag."}
+  ,{ignore_first_crash, $i, boolean,
+    "Deprecated. Use --keep_going option instead"}
   ,{keep_going, $k, {boolean, false},
     "Continue running after an error is found",
     "Concuerror stops by default when the first error is found. Enable this"
@@ -356,6 +353,13 @@ finalize([{Key, Value}|Rest], AccIn) ->
         {ok, IoDevice} -> finalize(Rest, [{Key, IoDevice}|Acc]);
         {error, _} -> file_error(Key, Value)
       end;
+    ignore_first_crash ->
+      "0.11" = ?VSN,
+      Warn =
+        "The ignore_first_crash flag has been deprecated. Use --keep_going"
+        " instead.",
+      opt_warn(Warn, [], AccIn ++ Rest),
+      finalize(Rest, Acc);
     module ->
       case proplists:is_defined(module, Rest) of
         true -> opt_error("Multiple instances of --module.");
