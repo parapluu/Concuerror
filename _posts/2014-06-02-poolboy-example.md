@@ -35,7 +35,9 @@ Usage: ./concuerror [-m <module>] [-t [<test>]] [-o [<output>]] [-h]
 ### Setting up Poolboy
 
 We will be using version
-[`1.2.1`](https://github.com/devinus/poolboy/releases/tag/1.2.1) of Poolboy:
+[`1.2.1`](https://github.com/devinus/poolboy/releases/tag/1.2.1) of Poolboy.
+(*This version does not work with Erlang 18 or later. The following instructions
+should still be applicable, but the results may vary.*)
 
 {% highlight bash %}
 $ git clone https://github.com/devinus/poolboy.git --branch 1.2.1
@@ -156,15 +158,14 @@ Log messages tagged as *Errors* are critical and lead to the interruption of
 the exploration. Our first test should crash here, with the following error:
 
 {% highlight text %}
-Error: The first interleaving of your test had errors. Check the output
-file. You may then use -i to tell Concuerror to continue or use other options to
-filter out the reported errors, if you consider them acceptable behaviors.
+Error: Stop testing on first error. (Check '-h keep_going').
 {% endhighlight %}
 
-Concuerror is a tool for detecting *concurrency errors*. It seems that in the
-first interleaving we managed to trigger some behavior that the tool considers
-problematic. If we take a look at the output file `concuerror_report.txt`,
-we will see something like the following:
+By default, Concuerror will stop exploration on the first error it encounters.
+In this particular case, it seems that in the very first interleaving we managed
+to trigger some behavior that the tool considers problematic.  If we take a look
+at the output file `concuerror_report.txt`, we will see something like the
+following:
 
 {% highlight text %}
 {% raw %}
@@ -221,9 +222,7 @@ Tip: A process crashed with reason 'shutdown'. This may happen when a supervisor
   is terminating its children. You can use '--treat_as_normal shutdown' if this is
   expected behavior.
 
-Error: The first interleaving of your test had errors. Check the output
-  file. You may then use -i to tell Concuerror to continue or use other options to
-  filter out the reported errors, if you consider them acceptable behaviors.
+Error: Stop testing on first error. (Check '-h keep_going').
 [...]
 {% endhighlight %}
 
