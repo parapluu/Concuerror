@@ -49,8 +49,6 @@ VERSION_HRL=src/concuerror_version.hrl
 
 default dev: concuerror
 
-default: ERL_COMPILE_FLAGS += +native
-
 dev: ERL_COMPILE_FLAGS += -DDEV=true
 dev: VERSION := $(VERSION)-dev
 

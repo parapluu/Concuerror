@@ -24,6 +24,7 @@ run(RawOptions) ->
     Options = concuerror_options:finalize([{processes, Processes}|RawOptions]),
     Logger = concuerror_logger:start(Options),
     SchedulerOptions = [{logger, Logger}|Options],
+    error_logger:tty(false),
     {Pid, Ref} =
       spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
     Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
@@ -54,6 +55,6 @@ explain(Reason) ->
     end
   catch
     _:_ ->
-      {io_lib:format("Reason: ~p~nTrace: ~p~n", [Reason, Stacktrace]),
+      {io_lib:format("~n  Reason: ~p~nTrace:~n  ~p~n", [Reason, Stacktrace]),
        error}
   end.

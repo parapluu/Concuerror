@@ -134,7 +134,7 @@ explore(State) ->
     try
       get_next_event(State)
     catch
-      exit:Reason -> {{crash, Reason}, State}
+      C:R -> {{crash, C, R}, State}
     end,
   case Status of
     ok -> explore(UpdatedState);
@@ -146,11 +146,11 @@ explore(State) ->
         true -> explore(NewState);
         false -> ok
       end;
-    {crash, Why} ->
+    {crash, Class, Reason} ->
       #scheduler_state{trace = [_|Trace]} = UpdatedState,
       FatalCrashState = add_warning(fatal, Trace, UpdatedState),
       catch log_trace(FatalCrashState),
-      exit(Why)
+      erlang:raise(Class, Reason, erlang:get_stacktrace())
   end.
 
 %%------------------------------------------------------------------------------
@@ -246,14 +246,14 @@ get_next_event(
   ?unique(Logger, ?lwarning, UniqueMsg, [Bound]),
   NewState = add_warning({depth_bound, Bound}, Old, State),
   {none, NewState};
-get_next_event(#scheduler_state{logger = Logger, trace = [Last|_]} = State) ->
+get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
   #trace_state{wakeup_tree = WakeupTree} = Last,
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
       get_next_event(Event, State);
-    [#backtrack_entry{event = Event, origin = N}|_] ->
-      ?log(Logger, ?ldebug,"By: ~p~n", [N]),
+    [#backtrack_entry{event = Event, origin = _N}|_] ->
+      ?debug(_Logger, "New interleaving detected in ~p~n", [_N]),
       get_next_event(Event, State)
   end.
 
@@ -846,9 +846,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
           NS = TraceState#trace_state{wakeup_tree = NewWakeup},
           [NS|NewOldTrace];
         false ->
-          Message = msg(reached_scheduling_bound),
-          ?unique(Logger, ?lwarning, Message, []),
-          ?debug(Logger, "     OVER BOUND~n",[]),
+          concuerror_logger:bound_reached(Logger),
           skip
       end
   end.
@@ -1169,8 +1167,6 @@ msg(first_interleaving_crashed) ->
     " You may then use -i to tell Concuerror to continue or use other options"
     " to filter out the reported errors, if you consider them acceptable"
     " behaviours.";
-msg(reached_scheduling_bound) ->
-  "Some interleavings were not considered due to schedule bounding.~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
