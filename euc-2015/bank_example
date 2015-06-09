@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+../concuerror -m bank_example #\
+##  --instant_delivery true \
+##  --graph bank.dot --show_races;
+## dot -Tsvg -o bank.svg bank.dot
+
+## Things to notice:
+
+## * Entry point is the only thing we need to specify
+## * Exploration stops at first error
+## * Only 'interesting' events are logged
+## * Current default semantics of ! are 'distributed'
+## * Timeout concrete values are irrelevant (if < limit)
+## * Different ways to specify how to continue
