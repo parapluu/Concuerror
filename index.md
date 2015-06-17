@@ -2,7 +2,7 @@
 layout: page
 ---
 
-<h1 class="download-link"><a href="./download">Get Concuerror!</a></h1>
+<h1 class="download-link"><a href="./download"><img src="./images/button.png" alt="Get Concuerror!"></a></h1>
 
 What is Concuerror?
 -------------------
