@@ -7,7 +7,7 @@ description: "Publications regarding Concuerror."
 
 #Publications
 
-You can find more info about the people behind Concuerror [here](/people/).
+You can find more info about the people behind Concuerror [here](../contact/).
 
 ## Papers
 
@@ -17,7 +17,7 @@ You can find more info about the people behind Concuerror [here](/people/).
 
 ## Dissertations
 
-* A. Gotovos. **"Dynamic Systematic Testing of Concurrent Erlang Programs"**. Diploma Thesis. National Technical University of Athens. 2011. (available on author's [homepage](http://n.ethz.ch/~alkisg/bio.html))
+* A. Gotovos. **"Dynamic Systematic Testing of Concurrent Erlang Programs"**. Diploma Thesis. National Technical University of Athens. 2011. (available on author's [homepage](http://people.inf.ethz.ch/alkisg))
 
 ## Presentations
 
