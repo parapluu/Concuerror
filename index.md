@@ -12,15 +12,15 @@ Concuerror is a tool for systematically testing concurrent Erlang programs. You 
 Resources
 ---------
 
-* [FAQ](/faq/)
-* [Tutorials](/tutorials/)
-* [Publications](/publications/)
+* [FAQ](faq/)
+* [Tutorials](tutorials/)
+* [Publications](publications/)
 
 Latest News
 -----------
 
 <ul class="post-list">
 {% for post in site.posts limit:10 %} 
-  <li><article><a href="{{ site.url }}{{ post.url }}">{{ post.title }}<span class="entry-date"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B, %Y" }}</time></span></a></article></li>
+  <li><article><a href="{{ post.url }}">{{ post.title }}<span class="entry-date"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B, %Y" }}</time></span></a></article></li>
 {% endfor %}
 </ul>
