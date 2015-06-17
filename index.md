@@ -2,7 +2,7 @@
 layout: page
 ---
 
-<h1 class="download-link"><a href="/download">Get Concuerror!</a></h1>
+<h1 class="download-link"><a href="./download">Get Concuerror!</a></h1>
 
 What is Concuerror?
 -------------------
@@ -12,9 +12,9 @@ Concuerror is a tool for systematically testing concurrent Erlang programs. You 
 Resources
 ---------
 
-* [FAQ](faq/)
-* [Tutorials](tutorials/)
-* [Publications](publications/)
+* [FAQ](./faq)
+* [Tutorials](./tutorials)
+* [Publications](./publications)
 
 Latest News
 -----------
