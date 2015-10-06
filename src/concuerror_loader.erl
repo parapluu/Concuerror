@@ -77,16 +77,11 @@ check_shadow(File, Module) ->
   end.
 
 load_binary(Module, Filename, Beam, Instrumented) ->
-  ets:insert(Instrumented, {Module}),
   Core = get_core(Beam),
   InstrumentedCore =
     case Module =:= concuerror_inspect of
       true -> Core;
-      false ->
-        true = ets:insert(Instrumented, {{current}, Module}),
-        I = concuerror_instrumenter:instrument(Core, Instrumented),
-        true = ets:delete(Instrumented, {current}),
-        I
+      false -> concuerror_instrumenter:instrument(Module, Core, Instrumented)
     end,
   {ok, _, NewBinary} =
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
