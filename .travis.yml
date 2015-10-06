@@ -9,3 +9,4 @@ env:
    - TEST=dialyze
 script: "make $TEST"
 after_failure: "./tests/travis_report"
+sudo: false
