@@ -1131,10 +1131,8 @@ assert_no_messages() ->
 
 -spec explain_error(term()) -> string().
 
-explain_error(EarlyTermination)
-  when EarlyTermination =:= first_interleaving_crashed;
-       EarlyTermination =:= stop_first_error ->
-  {msg(EarlyTermination), warning};
+explain_error(stop_first_error) ->
+  {msg(stop_first_error), warning};
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   [EString, NEString] =
     [concuerror_printer:pretty_s(E, Depth) || E <- [Event, NewEvent]],

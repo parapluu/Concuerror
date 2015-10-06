@@ -2,7 +2,7 @@
 
 -module(concuerror_instrumenter).
 
--export([instrument/2]).
+-export([instrument/3]).
 
 -define(inspect, concuerror_inspect).
 
@@ -16,14 +16,17 @@
 %% -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 -include("concuerror.hrl").
 
--spec instrument(cerl:cerl(), ets:tid()) -> cerl:cerl().
+-spec instrument(module(), cerl:cerl(), ets:tid()) -> cerl:cerl().
 
-instrument(CoreCode, Instrumented) ->
+instrument(Module, CoreCode, Instrumented) ->
+  ets:insert(Instrumented, {Module}),
   ?if_debug(Stripper = fun(Tree) -> cerl:set_ann(Tree, []) end),
   ?debug_flag(?input, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, CoreCode))]),
+  true = ets:insert(Instrumented, {{current}, Module}),
   {R, {Instrumented, _}} =
     cerl_trees:mapfold(fun mapfold/2, {Instrumented, 1}, CoreCode),
+  true = ets:delete(Instrumented, {current}),
   ?debug_flag(?output, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, R))]),
   R.
