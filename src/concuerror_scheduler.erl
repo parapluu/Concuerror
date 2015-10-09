@@ -52,7 +52,7 @@
 -record(scheduler_state, {
           assume_racing      = true    :: boolean(),
           bound_consumed     = 0       :: non_neg_integer(),
-          current_graph_ref            :: reference(),
+          current_graph_ref            :: 'undefined' | reference(),
           current_warnings   = []      :: [concuerror_warning_info()],
           depth_bound                  :: pos_integer(),
           entry_point                  :: mfargs(),
@@ -895,7 +895,7 @@ maybe_log_race(TraceState, Index, Event, State) ->
       Ref = State#scheduler_state.current_graph_ref,
       concuerror_logger:graph_race(Logger, EarlyRef, Ref),
       IndexedEarly = {EarlyIndex, EarlyEvent#event{location = []}},
-      IndexedLate ={Index, Event#event{location = []}},
+      IndexedLate = {Index, Event#event{location = []}},
       concuerror_logger:race(Logger, IndexedEarly, IndexedLate);
      true ->
       ?unique(Logger, ?linfo, msg(show_races), [])

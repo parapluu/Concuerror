@@ -67,7 +67,7 @@
          }).
 
 -record(concuerror_info, {
-          after_timeout              :: infinite | integer(),
+          after_timeout              :: 'infinite' | integer(),
           caught_signal = false      :: boolean(),
           escaped_pdict = []         :: term(),
           ets_tables                 :: ets_tables(),
@@ -112,6 +112,7 @@ spawn_first_process(Options) ->
        logger         = ?opt(logger, Options),
        modules        = ?opt(modules, Options),
        monitors       = ets:new(monitors, [bag, public]),
+       notify_when_ready = {self(), true},
        processes      = Processes = ?opt(processes, Options),
        scheduler      = self(),
        system_ets_entries = ets:new(system_ets_entries, [bag, public]),
@@ -122,7 +123,7 @@ spawn_first_process(Options) ->
   system_ets_entries(Info),
   P = new_process(Info),
   true = ets:insert(Processes, ?new_process(P, "P")),
-  {DefLeader, _} = run_built_in(erlang,whereis,1,[user],Info),
+  {DefLeader, _} = run_built_in(erlang, whereis, 1, [user], Info),
   true = ets:update_element(Processes, P, {?process_leader, DefLeader}),
   {P, System}.
 
