@@ -15,4 +15,4 @@ poolboy/poolboy_tests_1.erl: poolboy
 	rm -rf tmp
 
 poolboy:
-	git clone -q https://github.com/devinus/poolboy.git --branch 1.2.1
+	git clone -q https://github.com/devinus/poolboy.git --branch 1.2.2
