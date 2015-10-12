@@ -246,11 +246,11 @@
 -define(is_channel(A), is_tuple(A)).
 
 -record(event, {
-          actor        :: actor(),
-          event_info   :: event_info(),
-          label        :: label(),
-          location     :: location(),
-          special = [] :: [term()] %% XXX: Specify
+          actor         :: 'undefined' | actor(),
+          event_info    :: 'undefined' | event_info(),
+          label         :: 'undefined' | label(),
+          location = [] :: location(),
+          special = []  :: [term()] %% XXX: Specify
          }).
 
 -type event() :: #event{}.
