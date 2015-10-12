@@ -35,12 +35,10 @@ Usage: ./concuerror [-m <module>] [-t [<test>]] [-o [<output>]] [-h]
 ### Setting up Poolboy
 
 We will be using version
-[`1.2.1`](https://github.com/devinus/poolboy/releases/tag/1.2.1) of Poolboy.
-(*This version does not work with Erlang 18 or later. The following instructions
-should still be applicable, but the results may vary.*)
+[`1.2.2`](https://github.com/devinus/poolboy/releases/tag/1.2.2) of Poolboy.
 
 {% highlight bash %}
-$ git clone https://github.com/devinus/poolboy.git --branch 1.2.1
+$ git clone https://github.com/devinus/poolboy.git --branch 1.2.2
 [...]
 $ cd poolboy
 poolboy $ make
@@ -72,7 +70,7 @@ code before our test reaches it.
 Concuerror explores all the interleavings of an arbitrary execution scenario of
 a program with a single entry point. We will be extracting tests from [Poolboy's
 own test
-suite](https://github.com/devinus/poolboy/blob/1.2.1/test/poolboy_tests.erl).
+suite](https://github.com/devinus/poolboy/blob/1.2.2/test/poolboy_tests.erl).
 
 Let's begin with an adapted version of the start/stop test, which we save as
 [`poolboy_tests_1.erl`](https://gist.github.com/aronisstav/b67df16361cd9a2fa87e#file-poolboy_tests_1-erl):
