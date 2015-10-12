@@ -998,10 +998,7 @@ get_initials([Event|Rest], Initials, All) ->
 existing([], _) -> false;
 existing([#event{actor = A}|Rest], Initials) ->
   Pred = fun(#event{actor = B}) -> A =:= B end,
-  case lists:any(Pred, Initials) of
-    true -> true;
-    false -> existing(Rest, Initials)
-  end.  
+  lists:any(Pred, Initials) orelse existing(Rest, Initials).
 
 %%------------------------------------------------------------------------------
 

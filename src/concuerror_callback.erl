@@ -1726,34 +1726,28 @@ system_wrapper_loop(Name, Wrapped, Info) ->
             {F, R} =
               case Name of
                 code_server ->
-                  case Data of
-                    {Call, From, Request} ->
-                      check_request(Name, Request),
-                      erlang:send(Wrapped, {Call, self(), Request}),
-                      receive
-                        Msg -> {From, Msg}
-                      end
-                  end;
+		  {Call, From, Request} = Data,
+		  check_request(Name, Request),
+		  erlang:send(Wrapped, {Call, self(), Request}),
+		  receive
+		    Msg -> {From, Msg}
+		  end;
                 erl_prim_loader ->
-                  case Data of
-                    {From, Request} ->
-                      check_request(Name, Request),
-                      erlang:send(Wrapped, {self(), Request}),
-                      receive
-                        {_, Msg} -> {From, {self(), Msg}}
-                      end
+		  {From, Request} = Data,
+		  check_request(Name, Request),
+		  erlang:send(Wrapped, {self(), Request}),
+		  receive
+		    {_, Msg} -> {From, {self(), Msg}}
                   end;
                 error_logger ->
                   %% erlang:send(Wrapped, Data),
                   throw(no_reply);
                 file_server_2 ->
-                  case Data of
-                    {Call, {From, Ref}, Request} ->
-                      check_request(Name, Request),
-                      erlang:send(Wrapped, {Call, {self(), Ref}, Request}),
-                      receive
-                        Msg -> {From, Msg}
-                      end
+		  {Call, {From, Ref}, Request} = Data,
+		  check_request(Name, Request),
+		  erlang:send(Wrapped, {Call, {self(), Ref}, Request}),
+		  receive
+		    Msg -> {From, Msg}
                   end;
                 init ->
                   {From, Request} = Data,
@@ -1912,12 +1906,10 @@ handle_io(_, _) ->
   throw(no_reply).
 
 io_request({put_chars, Chars}, {Tag, Data} = IOState) ->
-  case is_atom(Tag) of
-    true ->
-      Logger = Data,
-      concuerror_logger:print(Logger, Tag, Chars),
-      {ok, IOState}
-  end;
+  true = is_atom(Tag),
+  Logger = Data,
+  concuerror_logger:print(Logger, Tag, Chars),
+  {ok, IOState};
 io_request({put_chars, M, F, As}, IOState) ->
   try apply(M, F, As) of
       Chars -> io_request({put_chars, Chars}, IOState)
@@ -1925,9 +1917,9 @@ io_request({put_chars, M, F, As}, IOState) ->
     _:_ -> {{error, request}, IOState}
   end;
 io_request({put_chars, _Enc, Chars}, IOState) ->
-    io_request({put_chars, Chars}, IOState);
+  io_request({put_chars, Chars}, IOState);
 io_request({put_chars, _Enc, Mod, Func, Args}, IOState) ->
-    io_request({put_chars, Mod, Func, Args}, IOState);
+  io_request({put_chars, Mod, Func, Args}, IOState);
 %% io_request({get_chars, _Enc, _Prompt, _N}, IOState) ->
 %%     {eof, IOState};
 %% io_request({get_chars, _Prompt, _N}, IOState) ->
@@ -1949,7 +1941,7 @@ io_request({put_chars, _Enc, Mod, Func, Args}, IOState) ->
 %% io_request({requests, Reqs}, IOState) ->
 %%     io_requests(Reqs, {ok, IOState});
 io_request(_, IOState) ->
-    {{error, request}, IOState}.
+  {{error, request}, IOState}.
 
 %% io_requests([R | Rs], {ok, IOState}) ->
 %%     io_requests(Rs, io_request(R, IOState));
