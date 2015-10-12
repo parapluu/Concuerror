@@ -1,3 +1,4 @@
+sudo: false
 language: erlang
 otp_release:
    - 18.1
@@ -8,6 +9,5 @@ env:
    - TEST=tests
    - TEST=tests-long
    - TEST=dialyze
-script: "make $TEST"
+script: "make -j 4 $TEST"
 after_failure: "./tests/travis_report"
-sudo: false
