@@ -117,33 +117,31 @@ is_safe(Module, Name, Arity, Instrumented) ->
     true ->
       NameLit = cerl:concrete(Name),
       ModuleLit = cerl:concrete(Module),
-      case erlang:is_builtin(ModuleLit, NameLit, Arity) of
+      %% erlang:apply/3 is safe only when called inside of erlang.erl
+      case {ModuleLit, NameLit, Arity} =:= {erlang, apply, 3} of
         true ->
-          (ModuleLit =:= erlang
-           andalso
-             (erl_internal:guard_bif(NameLit, Arity)
-              orelse erl_internal:arith_op(NameLit, Arity)
-              orelse erl_internal:bool_op(NameLit, Arity)
-              orelse erl_internal:comp_op(NameLit, Arity)
-              orelse erl_internal:list_op(NameLit, Arity)
-             )
-          ) orelse
-            ModuleLit =:= binary
-            orelse
-            ModuleLit =:= maps
-            orelse
-            ModuleLit =:= unicode
-            orelse %% The rest are defined in concuerror.hrl
-            lists:member({ModuleLit, NameLit, Arity}, ?RACE_FREE_BIFS);
+          ets:lookup_element(Instrumented, {current}, 2) =:= erlang;
         false ->
-          %% This special test is needed as long as erlang:apply/3 is not
-          %% classified as a builtin in case we instrument erlang before we find
-          %% a call to it. We need to not instrument it in erlang.erl itself,
-          %% though.
-          (ets:lookup_element(Instrumented, {current}, 2) =:= erlang
-           orelse
-           {ModuleLit, NameLit, Arity} =/= {erlang, apply, 3})
-            andalso
-            ets:lookup(Instrumented, ModuleLit) =/= []
+          case erlang:is_builtin(ModuleLit, NameLit, Arity) of
+            true ->
+              (ModuleLit =:= erlang
+               andalso
+                 (erl_internal:guard_bif(NameLit, Arity)
+                  orelse erl_internal:arith_op(NameLit, Arity)
+                  orelse erl_internal:bool_op(NameLit, Arity)
+                  orelse erl_internal:comp_op(NameLit, Arity)
+                  orelse erl_internal:list_op(NameLit, Arity)
+                 )
+              ) orelse
+                ModuleLit =:= binary
+                orelse
+                ModuleLit =:= maps
+                orelse
+                ModuleLit =:= unicode
+                orelse %% The rest are defined in concuerror.hrl
+                lists:member({ModuleLit, NameLit, Arity}, ?RACE_FREE_BIFS);
+            false ->
+              ets:lookup(Instrumented, ModuleLit) =/= []
+          end
       end
   end.
