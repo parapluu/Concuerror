@@ -107,16 +107,30 @@ dependent(#exit_event{}, #exit_event{}) ->
   false;
 
 dependent(#message_event{
-             message = #message{data = Data},
+             message = #message{data = EarlyData},
              recipient = Recipient,
              trapping = Trapping,
              type = EarlyType},
           #message_event{
+             message = #message{data = Data},
              recipient = Recipient,
              type = Type
             }) ->
-  (EarlyType =:= message orelse Trapping orelse not_normal(Data)) andalso
-    message_could_match(fun(_) -> true end, ok, Trapping, Type);
+  KindFun =
+    fun(    message,                   _) ->       message;
+       (exit_signal,                kill) ->     kill_exit;
+       (exit_signal, {'EXIT', _, normal}) ->   normal_exit;
+       (exit_signal,                   _) -> abnormal_exit
+    end,
+  case {KindFun(EarlyType, EarlyData), KindFun(Type, Data)} of
+    {message, message} -> true; %% more accurately, if it could be received
+    {message, normal_exit} -> Trapping;
+    {message, _} -> true;
+    {normal_exit, kill_exit} -> true;
+    {normal_exit, _} -> Trapping;
+    {_, normal_exit} -> Trapping;
+    {_, _} -> true %% more accurately, if first causes an exit
+  end;
 
 dependent(#message_event{
              message = #message{data = Data},
@@ -436,9 +450,6 @@ message_could_match(Patterns, Data, Trapping, Type) ->
   Patterns(Data)
     andalso
       (Trapping orelse (Type =:= message)).
-
-not_normal({'EXIT', _, normal}) -> false;
-not_normal(_) -> true.
 
 %%------------------------------------------------------------------------------
 
