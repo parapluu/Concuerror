@@ -10,4 +10,4 @@ env:
    - TEST=tests-long
    - TEST=dialyze
 script: "make -j 4 $TEST"
-after_failure: "./tests/travis_report"
+after_failure: "./travis/after_failure"
