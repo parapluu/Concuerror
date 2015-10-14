@@ -2,7 +2,7 @@
 ### Application info
 ###-----------------------------------------------------------------------------
 
-VERSION := 0.11
+VERSION := 0.12
 
 ###-----------------------------------------------------------------------------
 ### Modules
@@ -116,10 +116,15 @@ dialyze: default .concuerror_plt
 SUITES = {advanced_tests,dpor_tests,basic_tests}
 
 tests: default tests/scenarios.beam
-	@(cd tests; bash -c "./runtests.py suites/$(SUITES)/src/*")
+	@rm -f $@/thediff
+	@(cd $@; bash -c "./runtests.py suites/$(SUITES)/src/*")
 
 tests-long: default
-	$(MAKE) -C $@ CONCUERROR=$(abspath concuerror) DIFFER=$(abspath tests/differ)
+	@rm -f $@/thediff
+	$(MAKE) -C $@ \
+		CONCUERROR=$(abspath concuerror) \
+		DIFFER=$(abspath tests/differ) \
+		DIFFPRINTER=$(abspath $@/thediff)
 
 ###-----------------------------------------------------------------------------
 

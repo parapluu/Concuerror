@@ -34,7 +34,7 @@ parse_cl_aux(CommandLineArgs) ->
           case OtherArgs =:= [] of
             true -> ok;
             false ->
-              opt_warn("Ignoring: ~s", [string:join(OtherArgs, " ")], Options)
+              opt_error("Unknown options: ~s", [string:join(OtherArgs, " ")])
           end,
           Options
       end;
@@ -170,8 +170,6 @@ options() ->
     "Forces preemptions",
     "Whether Concuerror should enforce the scheduling strategy strictly or let"
     " a process run until blocked before reconsidering the scheduling policy."}
-  ,{ignore_first_crash, $i, boolean,
-    "Deprecated. Use --keep_going option instead"}
   ,{keep_going, $k, {boolean, false},
     "Continue running after an error is found",
     "Concuerror stops by default when the first error is found. Enable this"
@@ -353,13 +351,6 @@ finalize([{Key, Value}|Rest], AccIn) ->
         {ok, IoDevice} -> finalize(Rest, [{Key, IoDevice}|Acc]);
         {error, _} -> file_error(Key, Value)
       end;
-    ignore_first_crash ->
-      "0.11" = ?VSN,
-      Warn =
-        "The ignore_first_crash flag has been deprecated. Use --keep_going"
-        " instead.",
-      opt_warn(Warn, [], AccIn ++ Rest),
-      finalize(Rest, Acc);
     module ->
       case proplists:is_defined(module, Rest) of
         true -> opt_error("Multiple instances of --module.");
