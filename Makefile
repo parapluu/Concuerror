@@ -43,10 +43,9 @@ DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
 
 VERSION_HRL=src/concuerror_version.hrl
 
-.PHONY: clean cover dev default dialyze distclean tests tests-long version
-
 ###-----------------------------------------------------------------------------
 
+.PHONY: default dev
 default dev: concuerror
 
 dev: ERL_COMPILE_FLAGS += -DDEV=true
@@ -73,6 +72,9 @@ $(VERSION_HRL): version
 	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
 	@rm $@.tmp
 
+.PHONY: version
+version:
+
 ebin cover-data:
 	@echo " MKDIR $@"
 	@mkdir $@
@@ -88,11 +90,13 @@ deps/%/.git:
 
 ###-----------------------------------------------------------------------------
 
+.PHONY: clean
 clean:
 	rm -f concuerror
 	rm -f tests/scenarios.beam
 	rm -rf ebin cover-data
 
+.PHONY: distclean
 distclean: clean
 	rm -f $(VERSION_HRL) .concuerror_plt concuerror_report.txt
 	rm -rf deps/*
@@ -100,6 +104,7 @@ distclean: clean
 
 ###-----------------------------------------------------------------------------
 
+.PHONY: dialyze
 dialyze: default .concuerror_plt
 	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) ebin/*.beam
 
@@ -115,10 +120,12 @@ dialyze: default .concuerror_plt
 
 SUITES = {advanced_tests,dpor_tests,basic_tests}
 
+.PHONY: tests
 tests: default tests/scenarios.beam
 	@rm -f $@/thediff
 	@(cd $@; bash -c "./runtests.py suites/$(SUITES)/src/*")
 
+.PHONY: tests-long
 tests-long: default
 	@rm -f $@/thediff
 	$(MAKE) -C $@ \
@@ -128,6 +135,7 @@ tests-long: default
 
 ###-----------------------------------------------------------------------------
 
+.PHONY: cover
 cover: cover-data
 	export CONCUERROR_COVER=true; $(MAKE) tests tests-long
 	tests/cover-report
