@@ -1,17 +1,29 @@
-sudo: false
 language: erlang
+
+sudo: false
+
 otp_release:
    - 18.1
    - 17.4
    - 17.0
    - R16B03-1
+
 env:
    - TEST=tests
    - TEST=tests-long
    - TEST=dialyze
-script: "make -j 4 $TEST"
-after_failure: "./travis/after_failure"
+
 matrix:
    include:
    - otp_release: R16B03-1
      env: TEST=travis_has_latest_otp_version
+
+script: "make -j 4 $TEST"
+
+after_failure: "./travis/after_failure"
+
+before_script: "./travis/recover_plt"
+before_cache: "./travis/store_plt"
+cache:
+   directories:
+   - plts

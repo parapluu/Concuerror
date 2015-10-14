@@ -34,9 +34,6 @@ ERL_COMPILE_FLAGS := \
 	+warn_untyped_record \
 	+warnings_as_errors
 
-DIALYZER_APPS = erts kernel stdlib compiler crypto
-DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
-
 ###-----------------------------------------------------------------------------
 ### Targets
 ###-----------------------------------------------------------------------------
@@ -104,11 +101,17 @@ distclean: clean
 
 ###-----------------------------------------------------------------------------
 
-.PHONY: dialyze
-dialyze: default .concuerror_plt
-	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) ebin/*.beam
+DIALYZER_APPS = erts kernel stdlib compiler crypto
+DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
 
-.concuerror_plt: $(DEPS:%=deps/%.beam)
+DIALYZER_DEPS=$(DEPS:%=deps/%.beam)
+
+.PHONY: dialyze
+dialyze: .concuerror_plt default $(DIALYZER_DEPS)
+	dialyzer --add_to_plt --plt $< $(DIALYZER_DEPS)
+	dialyzer --plt $< $(DIALYZER_FLAGS) ebin/*.beam
+
+.concuerror_plt:
 	dialyzer --build_plt --output_plt $@ --apps $(DIALYZER_APPS) $^
 
 ###-----------------------------------------------------------------------------
