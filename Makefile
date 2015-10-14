@@ -139,3 +139,9 @@ tests-long: default
 cover: cover-data
 	export CONCUERROR_COVER=true; $(MAKE) tests tests-long
 	tests/cover-report
+
+###-----------------------------------------------------------------------------
+
+.PHONY: travis_has_latest_otp_version
+travis_has_latest_otp_version:
+	./travis/$@

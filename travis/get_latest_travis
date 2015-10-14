@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'yaml'
+travis = YAML.load_file(ARGV[0])
+puts travis["otp_release"][0]

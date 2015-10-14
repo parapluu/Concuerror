@@ -11,3 +11,7 @@ env:
    - TEST=dialyze
 script: "make -j 4 $TEST"
 after_failure: "./travis/after_failure"
+matrix:
+   include:
+   - otp_release: R16B03-1
+     env: TEST=travis_has_latest_otp_version
