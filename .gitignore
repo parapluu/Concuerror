@@ -14,3 +14,4 @@ tests/thediff
 *.dot
 *.COVER.html
 cover-data
+thediff

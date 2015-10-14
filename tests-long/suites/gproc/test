@@ -3,11 +3,11 @@ set -e
 
 cd gproc
 for i in t_simple_reg t_simple_reg_or_locate t_reg_or_locate2 test1 test2 test3 test4; do
-    echo -n "Test $i "
+    echo -n "Test $i... "
     RES=$i.out
-    REF=../ref/$RES
-    RUN=../run/$RES
+    REF=$(readlink -m ../ref/$RES)
+    RUN=$(readlink -m ../run/$RES)
     $CONCUERROR --assume_racing=false -q --timeout -1 -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
-    bash $DIFFER $REF $RUN
+    bash $DIFFER $REF $RUN || (echo "FAILED" && false)
     echo ok
 done
