@@ -34,19 +34,15 @@ ERL_COMPILE_FLAGS := \
 	+warn_untyped_record \
 	+warnings_as_errors
 
-DIALYZER_APPS = erts kernel stdlib compiler crypto
-DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
-
 ###-----------------------------------------------------------------------------
 ### Targets
 ###-----------------------------------------------------------------------------
 
 VERSION_HRL=src/concuerror_version.hrl
 
-.PHONY: clean cover dev default dialyze distclean tests tests-long version
-
 ###-----------------------------------------------------------------------------
 
+.PHONY: default dev
 default dev: concuerror
 
 dev: ERL_COMPILE_FLAGS += -DDEV=true
@@ -73,6 +69,9 @@ $(VERSION_HRL): version
 	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
 	@rm $@.tmp
 
+.PHONY: version
+version:
+
 ebin cover-data:
 	@echo " MKDIR $@"
 	@mkdir $@
@@ -88,11 +87,13 @@ deps/%/.git:
 
 ###-----------------------------------------------------------------------------
 
+.PHONY: clean
 clean:
 	rm -f concuerror
 	rm -f tests/scenarios.beam
 	rm -rf ebin cover-data
 
+.PHONY: distclean
 distclean: clean
 	rm -f $(VERSION_HRL) .concuerror_plt concuerror_report.txt
 	rm -rf deps/*
@@ -100,10 +101,17 @@ distclean: clean
 
 ###-----------------------------------------------------------------------------
 
-dialyze: default .concuerror_plt
-	dialyzer --plt .concuerror_plt $(DIALYZER_FLAGS) ebin/*.beam
+DIALYZER_APPS = erts kernel stdlib compiler crypto
+DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
 
-.concuerror_plt: $(DEPS:%=deps/%.beam)
+DIALYZER_DEPS=$(DEPS:%=deps/%.beam)
+
+.PHONY: dialyze
+dialyze: .concuerror_plt default $(DIALYZER_DEPS)
+	dialyzer --add_to_plt --plt $< $(DIALYZER_DEPS)
+	dialyzer --plt $< $(DIALYZER_FLAGS) ebin/*.beam
+
+.concuerror_plt:
 	dialyzer --build_plt --output_plt $@ --apps $(DIALYZER_APPS) $^
 
 ###-----------------------------------------------------------------------------
@@ -115,10 +123,12 @@ dialyze: default .concuerror_plt
 
 SUITES = {advanced_tests,dpor_tests,basic_tests}
 
+.PHONY: tests
 tests: default tests/scenarios.beam
 	@rm -f $@/thediff
 	@(cd $@; bash -c "./runtests.py suites/$(SUITES)/src/*")
 
+.PHONY: tests-long
 tests-long: default
 	@rm -f $@/thediff
 	$(MAKE) -C $@ \
@@ -128,6 +138,13 @@ tests-long: default
 
 ###-----------------------------------------------------------------------------
 
+.PHONY: cover
 cover: cover-data
 	export CONCUERROR_COVER=true; $(MAKE) tests tests-long
 	tests/cover-report
+
+###-----------------------------------------------------------------------------
+
+.PHONY: travis_has_latest_otp_version
+travis_has_latest_otp_version:
+	./travis/$@
