@@ -4,9 +4,13 @@
 
 -export([run/1]).
 
+-export_type([status/0]).
+
+-type status() :: 'completed' | 'error' | 'warning'.
+
 -include("concuerror.hrl").
 
--spec run(options()) -> 'completed' | 'error'.
+-spec run(options()) -> status().
 
 run(RawOptions) ->
   try
@@ -50,8 +54,8 @@ explain(Reason) ->
   try
     {Module, Info} = Reason,
     case Module:explain_error(Info) of
-      {_,_} = ReasonType -> ReasonType;
-      Else -> {Else, error}
+      {_, _} = WithStatus -> WithStatus;
+      ReasonStr -> {ReasonStr, error}
     end
   catch
     _:_ ->

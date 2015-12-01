@@ -1126,7 +1126,7 @@ assert_no_messages() ->
     0 -> ok
   end.
 
--spec explain_error(term()) -> string().
+-spec explain_error(term()) -> string() | {string(), concuerror:status()}.
 
 explain_error(stop_first_error) ->
   {msg(stop_first_error), warning};
