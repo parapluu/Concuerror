@@ -143,9 +143,19 @@ dependent(#message_event{
              timeout = Timeout,
              trapping = Trapping
             }) ->
-  Timeout =/= infinity
-    andalso
-    message_could_match(Patterns, Data, Trapping, Type);
+  %% XXX: Why not check for the exact message?
+  case Type =:= exit_signal of
+    true ->
+      case Data of
+        kill -> true;
+        {'EXIT', _, Reason} ->
+          not Trapping andalso Reason =/= normal
+      end;
+    false ->
+      Timeout =/= infinity
+        andalso
+        message_could_match(Patterns, Data, Trapping, Type)
+  end;
 dependent(#receive_event{
              message = 'after',
              patterns = Patterns,
@@ -449,7 +459,7 @@ dependent_built_in(#builtin_event{mfargs = {ets,_,_}} = Ets,
 message_could_match(Patterns, Data, Trapping, Type) ->
   Patterns(Data)
     andalso
-      (Trapping orelse (Type =:= message)).
+      ((Trapping andalso Data =/= kill) orelse (Type =:= message)).
 
 %%------------------------------------------------------------------------------
 
