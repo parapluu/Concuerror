@@ -792,6 +792,7 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
         {P, Info} = run_built_in(erlang, whereis, 1, [T], Info),
         P
     end,
+  ?badarg_if_not(is_pid(Pid)),
   Extra =
     case Info#concuerror_info.is_timer of
       false -> undefined;
@@ -799,7 +800,6 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
         ets:delete(Info#concuerror_info.timers, Timer),
         Timer
     end,
-  ?badarg_if_not(is_pid(Pid)),
   case EventInfo of
     %% Replaying...
     #builtin_event{result = OldResult} ->
