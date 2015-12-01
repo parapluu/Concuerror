@@ -67,6 +67,7 @@
           need_to_replay     = false   :: boolean(),
           non_racing_system  = []      :: [atom()],
           optimal            = true    :: boolean(),
+          origin             = 1       :: integer(),
           previous_was_enabled = true  :: boolean(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
@@ -166,9 +167,16 @@ log_trace(State) ->
       true -> none;
       false ->
         TraceInfo =
-          case Warnings =:= [sleep_set_block] of
-            true -> [];
-            false ->
+          case Warnings of
+            [{sleep_set_block, {Origin, Sleep}}|_] ->
+              case State#scheduler_state.optimal of
+                false ->
+                  ?unique(Logger, ?lwarning, msg(sleep_set_block), []),
+                  [];
+                true ->
+                  ?crash({optimal_sleep_set_block, Origin, Sleep})
+              end;
+            _ ->
               #scheduler_state{trace = Trace} = State,
               Fold =
                 fun(#trace_state{done = [A|_], index = I}, Acc) ->
@@ -247,9 +255,9 @@ get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
     [] ->
       Event = #event{label = make_ref()},
       get_next_event(Event, State);
-    [#backtrack_entry{event = Event, origin = _N}|_] ->
-      ?debug(_Logger, "New interleaving detected in ~p~n", [_N]),
-      get_next_event(Event, State)
+    [#backtrack_entry{event = Event, origin = N}|_] ->
+      ?debug(_Logger, "New interleaving detected in ~p~n", [N]),
+      get_next_event(Event, State#scheduler_state{origin = N})
   end.
 
 get_next_event(Event, MaybeNeedsReplayState) ->
@@ -376,19 +384,18 @@ free_schedule(Event, [P|ActiveProcesses], State) ->
   end;
 free_schedule(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
-  #scheduler_state{logger = Logger, trace = [Last|Prev]} = State,
+  #scheduler_state{logger = _Logger, trace = [Last|Prev]} = State,
   #trace_state{actors = Actors, sleeping = Sleeping} = Last,
   NewWarnings =
     case Sleeping =/= [] of
       true ->
-        ?debug(Logger, "Sleep set block:~n ~p~n", [Sleeping]),
-        ?unique(Logger, ?lwarning, msg(sleep_set_block), []),
-        [sleep_set_block];
+        ?debug(_Logger, "Sleep set block:~n ~p~n", [Sleeping]),
+        [{sleep_set_block, {State#scheduler_state.origin, Sleeping}}];
       false ->
         case concuerror_callback:collect_deadlock_info(Actors) of
           [] -> [];
           Info ->
-            ?debug(Logger, "Deadlock: ~p~n", [[P || {P,_} <- Info]]),
+            ?debug(_Logger, "Deadlock: ~p~n", [[P || {P,_} <- Info]]),
             [{deadlock, Info}]
         end
     end,
@@ -1126,8 +1133,16 @@ assert_no_messages() ->
     0 -> ok
   end.
 
--spec explain_error(term()) -> string().
+-spec explain_error(term()) -> string() | {string(), concuerror:status()}.
 
+explain_error({optimal_sleep_set_block, Origin, Who}) ->
+  io_lib:format(
+    "During a run of the optimal algorithm, the following events were left in~n"
+    "a sleep set (the race was detected at interleaving #~p)~n~n"
+    "  ~p~n"
+    ?notify_us_msg,
+    [Origin, Who]
+   );
 explain_error(stop_first_error) ->
   {msg(stop_first_error), warning};
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
@@ -1165,7 +1180,7 @@ msg(shutdown) ->
     " supervisor is terminating its children. You can use '--treat_as_normal"
     " shutdown' if this is expected behaviour.~n";
 msg(sleep_set_block) ->
-  "Some interleavings were 'sleep-set blocked'. This is expected if you have"
+  "Some interleavings were 'sleep-set blocked'. This is expected, since you have"
     " specified '--optimal false', but reveals wasted effort.~n";
 msg(stop_first_error) ->
   "Stop testing on first error. (Check '-h keep_going').";

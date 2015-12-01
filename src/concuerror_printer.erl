@@ -32,9 +32,7 @@ error_s({Type, Info}, Depth) ->
         "* Blocked at a 'receive' (when all other processes have exited):~n~s",
       io_lib:format(Format, [InfoStr]);
     depth_bound ->
-      io_lib:format("* Reached the depth bound of ~p events~n",[Info]);
-    sleep_set_block ->
-      io_lib:format("* Nobody woke-up: ~p~n", [Info])
+      io_lib:format("* Reached the depth bound of ~p events~n",[Info])
   end.
 
 -spec pretty(io:device(), event(), pos_integer()) -> ok.

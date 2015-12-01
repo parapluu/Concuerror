@@ -316,9 +316,10 @@ loop(Message, State) ->
       NewState = State#logger_state{streams = NewStreams},
       loop(NewState);
     {complete, Warn} ->
-      NewErrors =
+      {NewErrors, NewSSB} =
         case Warn of
-          {Warnings, TraceInfo} when Warnings =/= [sleep_set_block] ->
+          {[{sleep_set_block, _}], _} -> {Errors, TracesSSB + 1};
+          {Warnings, TraceInfo} ->
             NE = Errors + 1,
             case NE > 1 of
               true -> separator(Output, $#);
@@ -333,13 +334,8 @@ loop(Message, State) ->
             io:format(Output, "Interleaving info:~n", []),
             concuerror_printer:pretty(Output, TraceInfo, PrintDepth),
             print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
-            NE;
-          _ -> Errors
-        end,
-      NewSSB =
-        case Warn =:= {[sleep_set_block], []} of
-          true -> TracesSSB + 1;
-          false -> TracesSSB
+            {NE, TracesSSB};
+          _ -> {Errors, TracesSSB}
         end,
       {GraphMark, Color} =
         if NewSSB =/= TracesSSB -> {"SSB","yellow"};
