@@ -6,13 +6,19 @@
 
 -export_type([options/0]).
 
+%%%-----------------------------------------------------------------------------
+
 -include("concuerror.hrl").
 
 -type options() :: proplists:proplist().
 
+%%%-----------------------------------------------------------------------------
+
 -define(MINIMUM_TIMEOUT, 1000).
 -define(DEFAULT_VERBOSITY, ?linfo).
 -define(DEFAULT_PRINT_DEPTH, 20).
+
+%%%-----------------------------------------------------------------------------
 
 -spec parse_cl([string()]) -> options() | {'exit', concuerror:status()}.
 
@@ -54,6 +60,8 @@ parse_cl_aux(CommandLineArgs) ->
       end
   end.
 
+%%%-----------------------------------------------------------------------------
+
 getopt_spec() ->
   getopt_spec(options()).
 
@@ -84,16 +92,16 @@ options() ->
   ,{verbosity, $v, integer,
     io_lib:format("Sets the verbosity level (0-~p). [default: ~p]",
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY]),
-    "Verbosity decides what is shown on stderr. Messages up to info are"
-    " *always* shown in the output file. The available levels are the"
-    " following:~n~n"
-    "0 <quiet> Nothing is printed~n"
+    "Verbosity decides what is shown on stderr. Messages up to info are~n"
+    "always also shown in the output file. The available levels are the~n"
+    "following:~n~n"
+    "0 <quiet> Nothing is printed (equivalent to -q)~n"
     "1 <error> Critical, resulting in early termination~n"
-    "2 <warn>  Non-critical, notifying about weak support for a feature or the"
-    " use of an option that alters the output~n"
-    "3 <tip>   Notifying of a suggested refactoring or option to make testing"
-    " more efficient~n"
-    "4 <info>  Normal operation messages that can be ignored~n"
+    "2 <warn>  Non-critical, notifying about weak support for a feature or~n"
+    "           the use of an option that alters the output~n"
+    "3 <tip>   Notifying of a suggested refactoring or option to make~n"
+    "           testing more efficient~n"
+    "4 <info>  Normal operation messages, can be ignored~n"
     "5 <time>  Timing messages~n"
     "6 <debug> Used only during debugging~n"
     "7 <trace> Everything else"
@@ -106,8 +114,7 @@ options() ->
     "This is where Concuerror writes the results of the analysis."}
   ,{graph, undefined, string,
     "Produce a DOT graph in the specified file",
-    "The graph 'graph.dot' can then be drawn with 'dot -Tsvg -o graph.svg"
-    " graph.dot"}
+    "The graph can be drawn with 'dot -Tsvg -o graph.svg <graph>"}
   ,{symbolic_names, $s, {boolean, true},
     "Symbolic PIDs in graph/log",
     "Use symbolic names for process identifiers in the output report."}
@@ -236,13 +243,14 @@ cl_usage(Name) ->
       of
         String -> to_stderr(String ++ "~n", [])
       catch
-        _:_ -> to_stderr("No additional help available!~n", [])
+        _:_ -> to_stderr("No additional help available.~n", [])
       end
   end.
 
 cl_version() ->
-  io:format(standard_error, "Concuerror v~s~n",[?VSN]),
-  ok.
+  to_stderr("Concuerror v~s",[?VSN]).
+
+%%%-----------------------------------------------------------------------------
 
 -spec finalize(options()) -> options().
 
@@ -289,6 +297,8 @@ finalize(Options) ->
         " Use '-m <module>' or '-h module' for more info.",
       opt_error(UndefinedEntryPoint)
   end.
+
+%%%-----------------------------------------------------------------------------
 
 rename_equivalent(Options) ->
   rename_equivalent(Options, []).
@@ -506,6 +516,8 @@ check_values([{Key, Validate}|Rest], Other, Reason) ->
         "Setting '~p' to '~p' is not allowed when '~p' is set to ~s.",
         [Key, Set, ReasonKey, ReasonValue])
   end.
+
+%%%-----------------------------------------------------------------------------
 
 -spec opt_error(string()) -> no_return().
 
