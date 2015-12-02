@@ -2,28 +2,27 @@
 ### Application info
 ###-----------------------------------------------------------------------------
 
+NAME := concuerror
 VERSION := 0.12
 
+.PHONY: default dev
+default dev: $(NAME)
+
 ###-----------------------------------------------------------------------------
-### Modules
+### Files
 ###-----------------------------------------------------------------------------
 
 DEPS = getopt/ebin/getopt
+DEPS_BEAMS=$(DEPS:%=deps/%.beam)
 
-MODULES = \
-	concuerror_callback \
-	concuerror_dependencies \
-	concuerror_inspect \
-	concuerror_instrumenter \
-	concuerror_loader \
-	concuerror_logger \
-	concuerror_options \
-	concuerror_printer \
-	concuerror_scheduler \
-	concuerror
+SOURCES = $(wildcard src/*.erl)
+MODULES = $(SOURCES:src/%.erl=%)
+BEAMS = $(MODULES:%=ebin/%.beam)
+
+VERSION_HRL=src/concuerror_version.hrl
 
 ###-----------------------------------------------------------------------------
-### Flags
+### Compile
 ###-----------------------------------------------------------------------------
 
 ERL_COMPILE_FLAGS := \
@@ -34,23 +33,13 @@ ERL_COMPILE_FLAGS := \
 	+warn_untyped_record \
 	+warnings_as_errors
 
-###-----------------------------------------------------------------------------
-### Targets
-###-----------------------------------------------------------------------------
-
-VERSION_HRL=src/concuerror_version.hrl
-
-###-----------------------------------------------------------------------------
-
-.PHONY: default dev
-default dev: concuerror
-
 dev: ERL_COMPILE_FLAGS += -DDEV=true
 dev: VERSION := $(VERSION)-dev
 
-concuerror: $(DEPS:%=deps/%.beam) $(MODULES:%=ebin/%.beam)
+$(NAME): $(DEPS_BEAMS) $(BEAMS)
+	@$(RM) $@
 	@echo " GEN  $@"
-	@ln -s src/concuerror $@
+	@ln -s src/$(NAME) $@
 
 ###-----------------------------------------------------------------------------
 
@@ -62,8 +51,9 @@ ebin/%.beam: src/%.erl Makefile | ebin $(VERSION_HRL)
 	@echo " ERLC $<"
 	@erlc $(ERL_COMPILE_FLAGS) -o ebin $<
 
+###-----------------------------------------------------------------------------
+
 $(VERSION_HRL): version
-	@rm -f concuerror
 	@echo " GEN  $@"
 	@src/versions $(VERSION) > $@.tmp
 	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
@@ -72,70 +62,64 @@ $(VERSION_HRL): version
 .PHONY: version
 version:
 
+###-----------------------------------------------------------------------------
+
 ebin cover-data:
 	@echo " MKDIR $@"
 	@mkdir $@
 
 ###-----------------------------------------------------------------------------
+### Dependencies
+###-----------------------------------------------------------------------------
 
 %/ebin/getopt.beam: %/.git
 	$(MAKE) -C $(dir $<)
-	rm -rf $(dir $<).rebar
+	$(RM) -r $(dir $<).rebar
 
 deps/%/.git:
 	git submodule update --init
 
 ###-----------------------------------------------------------------------------
-
-.PHONY: clean
-clean:
-	rm -f concuerror
-	rm -f tests/scenarios.beam
-	rm -rf ebin cover-data
-
-.PHONY: distclean
-distclean: clean
-	rm -f $(VERSION_HRL) .concuerror_plt concuerror_report.txt
-	rm -rf deps/*
-	git checkout -- deps
-
+### Dialyzer
 ###-----------------------------------------------------------------------------
+
+PLT=.$(NAME)_plt
 
 DIALYZER_APPS = erts kernel stdlib compiler crypto
 DIALYZER_FLAGS = -Wunmatched_returns -Wunderspecs
 
-DIALYZER_DEPS=$(DEPS:%=deps/%.beam)
-
 .PHONY: dialyze
-dialyze: .concuerror_plt default $(DIALYZER_DEPS)
-	dialyzer --add_to_plt --plt $< $(DIALYZER_DEPS)
-	dialyzer --plt $< $(DIALYZER_FLAGS) ebin/*.beam
+dialyze: default $(PLT) $(DEPS_BEAMS)
+	dialyzer --add_to_plt --plt $(PLT) $(DEPS_BEAMS)
+	dialyzer --plt $(PLT) $(DIALYZER_FLAGS) ebin/*.beam
 
-.concuerror_plt:
+$(PLT):
 	dialyzer --build_plt --output_plt $@ --apps $(DIALYZER_APPS) $^
 
 ###-----------------------------------------------------------------------------
 ### Testing
 ###-----------------------------------------------------------------------------
 
-%/scenarios.beam: %/scenarios.erl
-	erlc -o $(@D) $<
-
 SUITES = {advanced_tests,dpor_tests,basic_tests}
 
 .PHONY: tests
 tests: default tests/scenarios.beam
-	@rm -f $@/thediff
+	@$(RM) $@/thediff
 	@(cd $@; bash -c "./runtests.py suites/$(SUITES)/src/*")
 
 .PHONY: tests-long
 tests-long: default
-	@rm -f $@/thediff
+	@$(RM) $@/thediff
 	$(MAKE) -C $@ \
 		CONCUERROR=$(abspath concuerror) \
 		DIFFER=$(abspath tests/differ) \
 		DIFFPRINTER=$(abspath $@/thediff)
 
+%/scenarios.beam: %/scenarios.erl
+	erlc -o $(@D) $<
+
+###-----------------------------------------------------------------------------
+### Cover
 ###-----------------------------------------------------------------------------
 
 .PHONY: cover
@@ -144,7 +128,24 @@ cover: cover-data
 	tests/cover-report
 
 ###-----------------------------------------------------------------------------
+### Travis
+###-----------------------------------------------------------------------------
 
 .PHONY: travis_has_latest_otp_version
 travis_has_latest_otp_version:
 	./travis/$@
+
+###-----------------------------------------------------------------------------
+### Clean
+###-----------------------------------------------------------------------------
+
+.PHONY: clean
+clean:
+	$(RM) $(NAME) $(VERSION_HRL) concuerror_report.txt
+	$(RM) -r ebin cover-data
+
+.PHONY: distclean
+distclean: clean
+	$(RM) $(PLT)
+	$(RM) -r deps/*
+	git checkout -- deps
