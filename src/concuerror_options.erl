@@ -4,13 +4,17 @@
 
 -export([parse_cl/1, finalize/1]).
 
+-export_type([options/0]).
+
 -include("concuerror.hrl").
+
+-type options() :: proplists:proplist().
 
 -define(MINIMUM_TIMEOUT, 1000).
 -define(DEFAULT_VERBOSITY, ?linfo).
 -define(DEFAULT_PRINT_DEPTH, 20).
 
--spec parse_cl([string()]) -> options().
+-spec parse_cl([string()]) -> options() | {'exit', concuerror:status()}.
 
 parse_cl(CommandLineArgs) ->
   try

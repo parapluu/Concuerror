@@ -68,7 +68,7 @@ timediff(After, Before) ->
 
 %%------------------------------------------------------------------------------
 
--spec start(options()) -> pid().
+-spec start(concuerror_options:options()) -> pid().
 
 start(Options) ->
   Parent = self(),

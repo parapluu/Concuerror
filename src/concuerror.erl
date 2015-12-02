@@ -10,7 +10,7 @@
 
 -include("concuerror.hrl").
 
--spec run(options()) -> status().
+-spec run(concuerror_options:options()) -> status().
 
 run(RawOptions) ->
   try
