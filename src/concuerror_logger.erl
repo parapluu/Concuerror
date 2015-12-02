@@ -8,6 +8,8 @@
 
 -include("concuerror.hrl").
 
+-type log_level() :: ?lquiet..?MAX_VERBOSITY.
+
 -define(TICKER_TIMEOUT, 500).
 %%------------------------------------------------------------------------------
 
@@ -72,15 +74,21 @@ timediff(After, Before) ->
 
 start(Options) ->
   Parent = self(),
-  P = spawn_link(fun() -> run(Parent, Options) end),
+  Fun =
+    fun() ->
+        State = initialize(Options),
+        Parent ! logger_ready,
+        loop_entry(State)
+    end,
+  P = spawn_link(Fun),
   receive
     logger_ready -> P
   end.
 
-run(Parent, Options) ->
-  [{Output, OutputName},SymbolicNames,Processes,Modules] =
+initialize(Options) ->
+  [{Output, OutputName}, SymbolicNames, Processes, Modules] =
     get_properties(
-      [output,symbolic_names,processes,modules],
+      [output, symbolic_names, processes, modules],
       Options),
   Fun = fun({M}, _) -> ?log(self(), ?linfo, "Instrumented ~p~n", [M]) end,
   ets:foldl(Fun, ok, Modules),
@@ -98,16 +106,13 @@ run(Parent, Options) ->
             [lists:sort(PrintableOptions)]),
   separator(Output, $#),
   GraphData = graph_preamble(?opt(graph, Options)),
-  State =
-    #logger_state{
-       graph_data = GraphData,
-       output = Output,
-       output_name = OutputName,
-       print_depth = ?opt(print_depth, Options),
-       verbosity = ?opt(verbosity, Options)
-      },
-  Parent ! logger_ready,
-  loop_entry(State).
+  #logger_state{
+     graph_data = GraphData,
+     output = Output,
+     output_name = OutputName,
+     print_depth = ?opt(print_depth, Options),
+     verbosity = ?opt(verbosity, Options)
+    }.
 
 get_properties(Props, PropList) ->
   get_properties(Props, PropList, []).

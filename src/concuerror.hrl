@@ -60,7 +60,6 @@
 -define(ldebug,    6).
 -define(ltrace,    7).
 -define(MAX_VERBOSITY, ?ltrace).
--type log_level() :: ?lquiet..?MAX_VERBOSITY.
 %%------------------------------------------------------------------------------
 -define(nonunique, none).
 
