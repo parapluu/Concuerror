@@ -331,7 +331,7 @@ finalize([{verbosity, N}|Rest], Acc) ->
   Verbosity = min(Sum, ?MAX_VERBOSITY),
   NewRest = proplists:delete(verbosity, Rest),
   if Verbosity < ?ltiming; ?has_dev -> ok;
-     true -> opt_error("To use this verbosity, run 'make clean; make dev' first")
+     true -> opt_error("To use this verbosity, run 'make dev' first")
   end,
   finalize(NewRest, [{verbosity, Verbosity}|Acc]);
 finalize([{file, Value}|Rest], Acc) ->
