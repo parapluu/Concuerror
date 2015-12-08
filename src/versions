@@ -11,7 +11,7 @@ main([ConcuerrorVsn]) ->
     end,
   add_befores_for(CurrentOTPRelease + 1).
 
-add_befores_for(Release) when Release =< 18 ->
+add_befores_for(Release) when Release =< 20 ->
   add_before_for(Release),
   add_befores_for(Release + 1);
 add_befores_for(_) -> ok.

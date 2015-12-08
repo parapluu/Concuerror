@@ -4,6 +4,10 @@
 
 -export([load/2, load_initially/2]).
 
+-export([explain_error/1]).
+
+%%%-----------------------------------------------------------------------------
+
 -define(flag(A), (1 bsl A)).
 
 -define(call, ?flag(1)).
@@ -31,9 +35,14 @@ load(Module, Instrumented) ->
           F ->
             {F, F}
         end,
-      catch load_binary(Module, Filename, Beam, Instrumented),
-      ?log(Logger, ?linfo, "Instrumented ~p~n", [Module]),
-      maybe_instrumenting_myself(Module, Instrumented);
+      try
+        load_binary(Module, Filename, Beam, Instrumented),
+        ?log(Logger, ?linfo, "Instrumented ~p~n", [Module]),
+        maybe_instrumenting_myself(Module, Instrumented)
+      catch
+        exit:{?MODULE, _} = Reason -> exit(Reason);
+        _:_ -> Module
+      end;
     false -> Module
   end.
 
@@ -85,8 +94,15 @@ load_binary(Module, Filename, Beam, Instrumented) ->
     end,
   {ok, _, NewBinary} =
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
-  {module, Module} = code:load_binary(Module, Filename, NewBinary),
-  Module.
+  case load_binary(Module, Filename, NewBinary) of
+    {module, Module} ->
+      Module;
+    {error, Reason} ->
+      case Reason =:= on_load_failure of
+        true -> ?crash({Reason, Module});
+        false -> Module
+      end
+  end.
 
 get_core(Beam) ->
   {ok, {Module, [{abstract_code, ChunkInfo}]}} =
@@ -122,3 +138,37 @@ maybe_instrumenting_myself(Module, Instrumented) ->
       Additional = load(Additional, Instrumented),
       Module
   end.
+
+%%%-----------------------------------------------------------------------------
+
+-ifdef(BEFORE_OTP_20).
+
+%% As of 8th Dec 2015, the spec of code:load_binary/3 is broken and reports
+%% 'on_load' as an error reason, while the correct one is 'on_load_failure'. To
+%% have the 'dialyze' test pass, I am obfuscating the type of the return value.
+
+load_binary(Module, Filename, NewBinary) ->
+  Result = code:load_binary(Module, Filename, NewBinary),
+  [ResultWithTypeAny] = ordsets:from_list([Result]),
+  ResultWithTypeAny.
+
+-else.
+
+load_binary(Module, Filename, NewBinary) ->
+  code:load_binary(Module, Filename, NewBinary).
+
+-endif.
+
+%%%-----------------------------------------------------------------------------
+
+-spec explain_error(term()) -> string().
+
+explain_error({on_load_failure, Module}) ->
+  io_lib:format(
+    "Loading an instrumented version of module '~p' failed, as the on_load/0"
+    " function failed, possibly due to attempting to load a NIF library. It is"
+    " not possible to use NIFs with Concuerror.~n"
+    "You can read more here:"
+    " https://github.com/parapluu/Concuerror/issues/77~n"
+    "If no NIFs are loaded by '~p' with on_load/0, this is a bug of Concuerror",
+    [Module, Module]).

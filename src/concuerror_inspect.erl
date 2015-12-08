@@ -17,6 +17,8 @@
                    Args     :: [term()],
                    Location :: term()) -> Return :: term().
 
+instrumented('call', [erlang, load_nif, _Args], _Location) ->
+  {error, {load, "Concuerror does not work with NIFs"}};
 instrumented(Tag, Args, Location) ->
   Ret =
     case erase(concuerror_info) of
