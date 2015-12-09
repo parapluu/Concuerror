@@ -1,5 +1,5 @@
 title:            Concuerror
-description:      Systematic concurrency testing of Erlang programs.
+description:      Systematic concurrency testing tool for Erlang programs.
 logo:             site-logo.png
 disqus_shortname: 
 #Comment out url when working locally to resolve base urls correctly
@@ -12,13 +12,9 @@ owner:
   email:          aronisstav@gmail.com
   # Social networking links used in footer. Update and remove as you like.
   twitter:        Vahnatai
-  facebook:       
   github:         aronisstav
-  stackexchange:  
-  linkedin:       
-  instagram:      
-  flickr:         
-  tumblr:         
+  stackexchange:  https://stackexchange.com/users/94798/aronisstav
+  linkedin:       stavrosaronis
   # For Google Authorship https://plus.google.com/authorship
   google_plus:    https://plus.google.com/111091514508576496337?rel=author
 
@@ -71,4 +67,3 @@ kramdown:
 
 include: [".htaccess"]
 exclude: ["CNAME", "Gemfile", "LICENSE", "post.thor", "README.md"]
-future: true

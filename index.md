@@ -7,7 +7,9 @@ layout: page
 What is Concuerror?
 -------------------
 
-Concuerror is a tool for systematically testing concurrent Erlang programs. You can use it to detect errors that only occur on few, specific schedulings of your program or verify the absense of such errors.
+Concuerror is a tool for systematically testing Erlang programs. You can use it to detect errors that only occur on few, specific schedulings of your program or verify the absense of such errors.
+
+Concuerror gives a detailed log of all the events that lead to a process crashing or deadlocking.
 
 Resources
 ---------
