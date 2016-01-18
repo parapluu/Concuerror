@@ -103,7 +103,7 @@ $(PLT):
 SUITES = {advanced_tests,dpor_tests,basic_tests}
 
 .PHONY: tests
-tests: default tests/scenarios.beam
+tests:
 	@$(RM) $@/thediff
 	@(cd $@; bash -c "./runtests.py suites/$(SUITES)/src/*")
 
