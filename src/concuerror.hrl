@@ -45,7 +45,6 @@
 %%------------------------------------------------------------------------------
 -type scheduler() :: pid().
 -type logger()    :: pid().
--type options()   :: proplists:proplist().
 -type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
 -type bound()     :: 'infinity' | non_neg_integer().
 -type scheduling_bound_type() :: 'preemption' | 'delay' | 'none'.
@@ -61,7 +60,6 @@
 -define(ldebug,    6).
 -define(ltrace,    7).
 -define(MAX_VERBOSITY, ?ltrace).
--type log_level() :: ?lquiet..?MAX_VERBOSITY.
 %%------------------------------------------------------------------------------
 -define(nonunique, none).
 

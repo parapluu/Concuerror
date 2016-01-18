@@ -85,7 +85,7 @@
 %% LOGIC (high level description of the exploration algorithm)
 %% =============================================================================
 
--spec run(options()) -> ok.
+-spec run(concuerror_options:options()) -> ok.
 
 run(Options) ->
   process_flag(trap_exit, true),

@@ -98,7 +98,7 @@
 
 %%------------------------------------------------------------------------------
 
--spec spawn_first_process(options()) -> {pid(), [pid()]}.
+-spec spawn_first_process(concuerror_options:options()) -> {pid(), [pid()]}.
 
 spawn_first_process(Options) ->
   EtsTables = ets:new(ets_tables, [public]),
