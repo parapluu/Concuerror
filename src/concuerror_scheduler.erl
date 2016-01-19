@@ -152,18 +152,11 @@ explore(State) ->
 
 %%------------------------------------------------------------------------------
 
-log_trace(State) ->
-  #scheduler_state{
-     current_warnings = UnfilteredWarnings,
-     exploring = N,
-     ignore_error = Ignored,
-     logger = Logger
-    } = State,
-  Warnings = filter_warnings(UnfilteredWarnings, Ignored, Logger),
+log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
   Log =
-    case Warnings =:= [] of
-      true -> none;
-      false ->
+    case filter_warnings(State) of
+      [] -> none;
+      Warnings ->
         TraceInfo =
           case Warnings of
             [{sleep_set_block, {Origin, Sleep}}|_] ->
@@ -197,9 +190,7 @@ log_trace(State) ->
       end,
       NextExploring = N + 1,
       NextState =
-        State#scheduler_state{
-          exploring = N+1,
-          current_warnings = []},
+        State#scheduler_state{exploring = N + 1, current_warnings = []},
       case NextExploring =< State#scheduler_state.interleaving_bound of
         true -> NextState;
         false ->
@@ -208,6 +199,14 @@ log_trace(State) ->
           NextState#scheduler_state{trace = []}
       end
   end.
+
+filter_warnings(State) ->
+  #scheduler_state{
+     current_warnings = UnfilteredWarnings,
+     ignore_error = Ignored,
+     logger = Logger
+    } = State,
+  filter_warnings(UnfilteredWarnings, Ignored, Logger).
 
 filter_warnings(Warnings, [], _) -> Warnings;
 filter_warnings(Warnings, [Ignore|Rest] = Ignored, Logger) ->
