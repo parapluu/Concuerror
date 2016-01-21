@@ -99,7 +99,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
             % (dirname, suite, name, funn, preb, file_ext))
     rslt = ("%s/%s/results/%s-%s-%s%s.txt"
             % (results, suite, name, funn, preb, file_ext))
-    equalRes = equalResults(orig, rslt)
+    equalRes = equalResults(suite, name, orig, rslt)
     if status == 0 and not has_crash:
         finished = True
     elif status != 0 and has_crash:
@@ -124,9 +124,15 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
               (suite, name, "("+funn+",  "+preb+",  "+dpor_output+")")
     lock.release()
 
-
-def equalResults(orig, rslt):
-    return 0 == subprocess.call("bash differ %s %s" % (orig, rslt), shell=True)
+def equalResults(suite, name, orig, rslt):
+    global dirname
+    if 0 == subprocess.call("bash differ %s %s" % (orig, rslt), shell=True):
+        return True
+    else:
+        beamdir = ("%s/suites/%s/src" % (dirname, suite))
+        cmd = ("erl -noinput -pa %s/%s -pa %s -run scenarios exceptional \"%s\" \"%s\" \"%s\""
+               % (beamdir, name, beamdir, name, orig, rslt))
+        return 0 == subprocess.call(cmd, shell=True)
 
 #---------------------------------------------------------------------
 # Main program

@@ -1,7 +1,9 @@
 -module(keep_going).
 
--export([scenarios/0]).
 -export([concuerror_options/0]).
+-export([scenarios/0]).
+-export([exceptional/0]).
+
 -export([test/0]).
 
 concuerror_options() ->
@@ -9,6 +11,13 @@ concuerror_options() ->
 
 scenarios() ->
     [{test, inf, dpor, crash}].
+
+exceptional() ->
+  fun(_Expected, Actual) ->
+      Cmd = "grep \"Stop testing on first error. (Check '-h keep_going').\" ",
+      [_,_,_|_] = os:cmd(Cmd ++ Actual),
+      true
+  end.
 
 test() ->
     P = self(),

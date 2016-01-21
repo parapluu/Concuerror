@@ -17,15 +17,23 @@
 %%-------------------------
 -export([scenarios/0]).
 -export([concuerror_options/0]).
+-export([exceptional/0]).
 
 concuerror_options() ->
     [{depth_bound, 100000},
      {non_racing_system, [user]},
      {ignore_first_crash, true},
-     {interleaving_bound, 500}
+     {interleaving_bound, 100}
     ].
 
 scenarios() -> [{concuerror_test, inf, dpor}].
+
+exceptional() ->
+  fun(_Expected, Actual) ->
+      Tail = os:cmd("tail -n1 " ++ Actual),
+      string:str(Tail, "Summary: 0 errors, 100") > 0
+  end.
+
 %%-------------------------
 
 -record(peer_state,
