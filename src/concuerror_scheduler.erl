@@ -1103,6 +1103,13 @@ get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
   Pid ! Event,
   concuerror_callback:wait_actor_reply(Event, Timeout).
 
+assert_no_messages() ->
+  receive
+    Msg -> error({pending_message, Msg})
+  after
+    0 -> ok
+  end.
+
 %%%----------------------------------------------------------------------
 %%% Helper functions
 %%%----------------------------------------------------------------------
@@ -1123,12 +1130,7 @@ max_cv(D1, D2) ->
   Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
   orddict:merge(Merger, D1, D2).
 
-assert_no_messages() ->
-  receive
-    Msg -> error({pending_message, Msg})
-  after
-    0 -> ok
-  end.
+%% =============================================================================
 
 -spec explain_error(term()) -> string() | {string(), concuerror:status()}.
 
