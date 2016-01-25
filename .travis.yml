@@ -17,6 +17,8 @@ matrix:
    include:
    - otp_release: R16B03-1
      env: TEST=travis_has_latest_otp_version
+   allow_failures:
+   - env: TEST=travis_has_latest_otp_version
 
 script: "make -j 4 $TEST"
 
