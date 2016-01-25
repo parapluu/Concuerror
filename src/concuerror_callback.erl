@@ -475,21 +475,31 @@ run_built_in(erlang, make_ref, 0, [], Info) ->
     undefined -> ok
   end,
   {MaybeRef, NewInfo};
-run_built_in(erlang, Name, 0, [], Info)
+run_built_in(erlang, Name, Arity, Args, Info)
   when
-    Name =:= date;
-    Name =:= now;
-    Name =:= time
+    {Name, Arity} =:= {date, 0};
+    {Name, Arity} =:= {monotonic_time, 0};
+    {Name, Arity} =:= {monotonic_time, 1};
+    {Name, Arity} =:= {now, 0};
+    {Name, Arity} =:= {system_time, 0};
+    {Name, Arity} =:= {system_time, 1};
+    {Name, Arity} =:= {time, 0};
+    {Name, Arity} =:= {time_offset, 0};
+    {Name, Arity} =:= {time_offset, 0};
+    {Name, Arity} =:= {time_offset, 1};
+    {Name, Arity} =:= {timestamp, 0};
+    {Name, Arity} =:= {unique_integer, 0};
+    {Name, Arity} =:= {unique_integer, 1}
     ->
   #concuerror_info{event = #event{event_info = EventInfo}} = Info,
-  Ref =
+  Res =
     case EventInfo of
       %% Replaying...
       #builtin_event{result = OldResult} -> OldResult;
       %% New event...
-      undefined -> erlang:apply(erlang,Name,[])
+      undefined -> erlang:apply(erlang, Name, Args)
     end,
-  {Ref, Info};
+  {Res, Info};
 run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
   #concuerror_info{
      monitors = Monitors,

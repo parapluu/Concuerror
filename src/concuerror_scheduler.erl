@@ -7,8 +7,6 @@
 
 %%------------------------------------------------------------------------------
 
-%%-define(DEBUG, true).
--define(CHECK_ASSERTIONS, true).
 -include("concuerror.hrl").
 
 %%------------------------------------------------------------------------------
@@ -154,18 +152,11 @@ explore(State) ->
 
 %%------------------------------------------------------------------------------
 
-log_trace(State) ->
-  #scheduler_state{
-     current_warnings = UnfilteredWarnings,
-     exploring = N,
-     ignore_error = Ignored,
-     logger = Logger
-    } = State,
-  Warnings = filter_warnings(UnfilteredWarnings, Ignored, Logger),
+log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
   Log =
-    case Warnings =:= [] of
-      true -> none;
-      false ->
+    case filter_warnings(State) of
+      [] -> none;
+      Warnings ->
         TraceInfo =
           case Warnings of
             [{sleep_set_block, {Origin, Sleep}}|_] ->
@@ -199,9 +190,7 @@ log_trace(State) ->
       end,
       NextExploring = N + 1,
       NextState =
-        State#scheduler_state{
-          exploring = N+1,
-          current_warnings = []},
+        State#scheduler_state{exploring = N + 1, current_warnings = []},
       case NextExploring =< State#scheduler_state.interleaving_bound of
         true -> NextState;
         false ->
@@ -210,6 +199,14 @@ log_trace(State) ->
           NextState#scheduler_state{trace = []}
       end
   end.
+
+filter_warnings(State) ->
+  #scheduler_state{
+     current_warnings = UnfilteredWarnings,
+     ignore_error = Ignored,
+     logger = Logger
+    } = State,
+  filter_warnings(UnfilteredWarnings, Ignored, Logger).
 
 filter_warnings(Warnings, [], _) -> Warnings;
 filter_warnings(Warnings, [Ignore|Rest] = Ignored, Logger) ->
@@ -1106,6 +1103,13 @@ get_next_event_backend(#event{actor = Pid} = Event, State) when is_pid(Pid) ->
   Pid ! Event,
   concuerror_callback:wait_actor_reply(Event, Timeout).
 
+assert_no_messages() ->
+  receive
+    Msg -> error({pending_message, Msg})
+  after
+    0 -> ok
+  end.
+
 %%%----------------------------------------------------------------------
 %%% Helper functions
 %%%----------------------------------------------------------------------
@@ -1126,12 +1130,7 @@ max_cv(D1, D2) ->
   Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
   orddict:merge(Merger, D1, D2).
 
-assert_no_messages() ->
-  receive
-    Msg -> error({pending_message, Msg})
-  after
-    0 -> ok
-  end.
+%% =============================================================================
 
 -spec explain_error(term()) -> string() | {string(), concuerror:status()}.
 
