@@ -48,6 +48,7 @@
 -type trace_state() :: #trace_state{}.
 
 -record(scheduler_state, {
+          assertions_only    = false   :: boolean(),
           assume_racing      = true    :: boolean(),
           bound_consumed     = 0       :: non_neg_integer(),
           current_graph_ref            :: 'undefined' | reference(),
@@ -96,6 +97,7 @@ run(Options) ->
       },
   InitialState =
     #scheduler_state{
+       assertions_only = ?opt(assertions_only, Options),
        assume_racing = ?opt(assume_racing, Options),
        depth_bound = ?opt(depth_bound, Options),
        entry_point = EntryPoint = ?opt(entry_point, Options),
@@ -468,7 +470,11 @@ update_state(#event{special = Special} = Event, State) ->
   {ok, update_special(Special, NewState)}.
 
 maybe_log(#event{actor = P} = Event, State0, Index) ->
-  #scheduler_state{logger = Logger, treat_as_normal = Normal} = State0,
+  #scheduler_state{
+     assertions_only = AssertionsOnly,
+     logger = Logger,
+     treat_as_normal = Normal
+    } = State0,
   State = 
     case is_pid(P) of
       true -> State0#scheduler_state{last_scheduled = P};
@@ -491,9 +497,23 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
              Tag =:= shutdown -> ?unique(Logger, ?ltip, msg(shutdown), []);
              true -> ok
           end,
-          #event{actor = Actor} = Event,
-          Stacktrace = Exit#exit_event.stacktrace,
-          add_warning({crash, {Index, Actor, Reason, Stacktrace}}, State)
+          Report =
+            case {Reason, AssertionsOnly} of
+              {{{assert, _}, _}, true} -> true;
+              {_, true} ->
+                ?unique(Logger, ?lwarning, msg(assertions_only_filter), []),
+                false;
+              {{{assert, _}, _}, _} ->
+                ?unique(Logger, ?ltip, msg(assertions_only_use), []),
+                true;
+              _ -> true
+            end,
+          if Report ->
+              #event{actor = Actor} = Event,
+              Stacktrace = Exit#exit_event.stacktrace,
+              add_warning({crash, {Index, Actor, Reason, Stacktrace}}, State);
+             true -> State
+          end
       end;
     #builtin_event{mfargs = {erlang, exit, [_,Reason]}}
       when Reason =/= normal ->
@@ -1166,6 +1186,11 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 
 %%==============================================================================
 
+msg(assertions_only_filter) ->
+  "Only assertion failures are considered crashes (--assertions_only).~n";
+msg(assertions_only_use) ->
+  "A process crashed with reason '{{assert,_}, _}'. If you want to see only"
+    " this kind of error you can use the --assertions_only option.~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
