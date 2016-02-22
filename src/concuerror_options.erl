@@ -245,7 +245,8 @@ cl_usage(Name) ->
       catch
         _:_ -> to_stderr("No additional help available.~n", [])
       end
-  end.
+  end,
+  to_stderr("For general help use '-h' without an argument.~n", []).
 
 cl_version() ->
   to_stderr("Concuerror v~s",[?VSN]).
