@@ -351,7 +351,7 @@ finalize([{Key, Value}|Rest], Acc) when Key =:= pa; Key =:=pz ->
       opt_error("could not add ~s to code path", [Value])
   end,
   finalize(Rest, Acc);
-finalize([{Key, Value}|Rest], AccIn) ->
+finalize([{Key, Value} = Option|Rest], AccIn) ->
   Acc =
     case proplists:is_defined(Key, AccIn) of
       true ->
@@ -388,13 +388,13 @@ finalize([{Key, Value}|Rest], AccIn) ->
           true -> Rest;
           false -> [{optimal, false}|Rest]
         end,
-      finalize(NewRest, [{Key, Value}|Acc]);
+      finalize(NewRest, [Option|Acc]);
     timeout ->
       case Value of
         -1 ->
           finalize(Rest, [{Key, infinity}|Acc]);
         N when is_integer(N), N >= ?MINIMUM_TIMEOUT ->
-          finalize(Rest, [{Key, N}|Acc]);
+          finalize(Rest, [Option|Acc]);
         _Else ->
           opt_error(
             "--~s value must be -1 (infinity) or >= ~p",
@@ -403,10 +403,10 @@ finalize([{Key, Value}|Rest], AccIn) ->
     test ->
       case Rest =:= [] of
         true -> finalize(Rest, Acc);
-        false -> finalize(Rest ++ [{Key, Value}], Acc)
+        false -> finalize(Rest ++ [Option], Acc)
       end;
     _ ->
-      finalize(Rest, [{Key, Value}|Acc])
+      finalize(Rest, [Option|Acc])
   end.
 
 -spec file_error(atom(), term()) -> no_return().
@@ -496,7 +496,7 @@ consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc) ->
             true ->
               check_values(
                 [{scheduling, fun(X) -> X =:= round_robin end}],
-                Rest ++ Acc, {scheduling_bound, T}),
+                Rest ++ Acc, BoundType),
               consistent(Rest, [BoundType|Acc]);
             false ->
               consistent(Rest, [BoundType|Acc])
