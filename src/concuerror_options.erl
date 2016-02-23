@@ -201,7 +201,7 @@ options() ->
     " ('shutdown' is usually a normal exit reason in this case)."}
   ,{assertions_only, undefined, {boolean, false},
     "Only crashes due to failed ?asserts are reported.",
-    "Only processes that exit with a reason of form '{{assert, _}, _}' are"
+    "Only processes that exit with a reason of form '{{assert*, _}, _}' are"
     " considered crashes. Such exit reasons are generated e.g. by the"
     " stdlib/include/assert.hrl header file."}
   ,{timeout, undefined, {integer, ?MINIMUM_TIMEOUT},

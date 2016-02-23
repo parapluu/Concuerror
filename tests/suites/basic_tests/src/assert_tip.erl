@@ -8,7 +8,7 @@
 
 -export([test/0]).
 
--include_lib("stdlib/include/assert.hrl").
+-include_lib("eunit/include/eunit.hrl").
 
 scenarios() ->
   [{test, inf, dpor}].

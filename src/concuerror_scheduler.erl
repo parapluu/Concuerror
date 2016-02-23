@@ -497,13 +497,21 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
              Tag =:= shutdown -> ?unique(Logger, ?ltip, msg(shutdown), []);
              true -> ok
           end,
+          IsAssertLike =
+            case Tag of
+              {MaybeAssert, _} when is_atom(MaybeAssert) ->
+                case atom_to_list(MaybeAssert) of
+                  "assert"++_ -> true;
+                  _ -> false
+                end;
+              _ -> false
+            end,
           Report =
-            case {Reason, AssertionsOnly} of
-              {{{assert, _}, _}, true} -> true;
-              {_, true} ->
+            case {IsAssertLike, AssertionsOnly} of
+              {false, true} ->
                 ?unique(Logger, ?lwarning, msg(assertions_only_filter), []),
                 false;
-              {{{assert, _}, _}, _} ->
+              {true, false} ->
                 ?unique(Logger, ?ltip, msg(assertions_only_use), []),
                 true;
               _ -> true
@@ -1189,7 +1197,7 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 msg(assertions_only_filter) ->
   "Only assertion failures are considered crashes (--assertions_only).~n";
 msg(assertions_only_use) ->
-  "A process crashed with reason '{{assert,_}, _}'. If you want to see only"
+  "A process crashed with reason '{{assert*,_}, _}'. If you want to see only"
     " this kind of error you can use the --assertions_only option.~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
