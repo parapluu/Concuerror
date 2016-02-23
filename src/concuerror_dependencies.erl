@@ -167,6 +167,19 @@ dependent(#receive_event{
              type = Type
             }) ->
   message_could_match(Patterns, Data, Trapping, Type);
+dependent(#receive_event{
+             recipient = Recipient,
+             trapping = Trapping},
+          #message_event{
+             message = #message{data = Signal},
+             recipient = Recipient,
+             type = exit_signal
+            }) ->
+  case Signal of
+    kill -> true;
+    {'EXIT', _, Reason} ->
+      not Trapping andalso Reason =/= normal
+  end;
 
 dependent(#message_event{}, _EventB) ->
   false;

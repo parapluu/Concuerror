@@ -2,6 +2,7 @@
 
 Concuerror started with options:
   [{after_timeout,1000},
+   {assertions_only,false},
    {assume_racing,false},
    {depth_bound,5000},
    {entry_point,{test,test4,[]}},
@@ -66,4 +67,4 @@ You can see pairs of racing instructions (in the report and --graph) with '--sho
 ################################################################################
 
 Done! (Exit status: completed)
-  Summary: 0 errors, 384/384 interleavings explored
+  Summary: 0 errors, 432/432 interleavings explored
