@@ -199,6 +199,11 @@ options() ->
     " that is a tuple with the specified atom as a first element) will not be"
     " reported as exiting abnormally. Useful e.g. when analyzing supervisors"
     " ('shutdown' is usually a normal exit reason in this case)."}
+  ,{assertions_only, undefined, {boolean, false},
+    "Only crashes due to failed ?asserts are reported.",
+    "Only processes that exit with a reason of form '{{assert*, _}, _}' are"
+    " considered crashes. Such exit reasons are generated e.g. by the"
+    " stdlib/include/assert.hrl header file."}
   ,{timeout, undefined, {integer, ?MINIMUM_TIMEOUT},
     "How long to wait for an event (>= " ++
       integer_to_list(?MINIMUM_TIMEOUT) ++ "ms)",
@@ -245,7 +250,8 @@ cl_usage(Name) ->
       catch
         _:_ -> to_stderr("No additional help available.~n", [])
       end
-  end.
+  end,
+  to_stderr("For general help use '-h' without an argument.~n", []).
 
 cl_version() ->
   to_stderr("Concuerror v~s",[?VSN]).
@@ -350,7 +356,7 @@ finalize([{Key, Value}|Rest], Acc) when Key =:= pa; Key =:=pz ->
       opt_error("could not add ~s to code path", [Value])
   end,
   finalize(Rest, Acc);
-finalize([{Key, Value}|Rest], AccIn) ->
+finalize([{Key, Value} = Option|Rest], AccIn) ->
   Acc =
     case proplists:is_defined(Key, AccIn) of
       true ->
@@ -387,13 +393,13 @@ finalize([{Key, Value}|Rest], AccIn) ->
           true -> Rest;
           false -> [{optimal, false}|Rest]
         end,
-      finalize(NewRest, [{Key, Value}|Acc]);
+      finalize(NewRest, [Option|Acc]);
     timeout ->
       case Value of
         -1 ->
           finalize(Rest, [{Key, infinity}|Acc]);
         N when is_integer(N), N >= ?MINIMUM_TIMEOUT ->
-          finalize(Rest, [{Key, N}|Acc]);
+          finalize(Rest, [Option|Acc]);
         _Else ->
           opt_error(
             "--~s value must be -1 (infinity) or >= ~p",
@@ -402,10 +408,10 @@ finalize([{Key, Value}|Rest], AccIn) ->
     test ->
       case Rest =:= [] of
         true -> finalize(Rest, Acc);
-        false -> finalize(Rest ++ [{Key, Value}], Acc)
+        false -> finalize(Rest ++ [Option], Acc)
       end;
     _ ->
-      finalize(Rest, [{Key, Value}|Acc])
+      finalize(Rest, [Option|Acc])
   end.
 
 -spec file_error(atom(), term()) -> no_return().
@@ -472,6 +478,11 @@ consistent(Options) ->
   consistent(Options, []).
 
 consistent([], _) -> ok;
+consistent([{assertions_only, true} = Assert|Rest], Acc) ->
+  check_values(
+    [{ignore_error, fun(X) -> not lists:member(crash, X) end}],
+    Rest ++ Acc, Assert),
+  consistent(Rest, [Assert|Acc]);
 consistent([{scheduling_bound, N} = Bound|Rest], Acc) when is_integer(N) ->
   check_values(
     [{scheduling_bound_type, fun(X) -> lists:member(X,[delay, preemption]) end},
@@ -495,7 +506,7 @@ consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc) ->
             true ->
               check_values(
                 [{scheduling, fun(X) -> X =:= round_robin end}],
-                Rest ++ Acc, {scheduling_bound, T}),
+                Rest ++ Acc, BoundType),
               consistent(Rest, [BoundType|Acc]);
             false ->
               consistent(Rest, [BoundType|Acc])
@@ -506,12 +517,13 @@ consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
 
 check_values([], _, _) -> ok;
 check_values([{Key, Validate}|Rest], Other, Reason) ->
-  Set = proplists:get_value(Key, Other),
-  case Validate(Set) of
+  All = proplists:lookup_all(Key, Other),
+  case lists:all(fun({_, X}) -> Validate(X) end, All) of
     true ->
       check_values(Rest, Other, Reason);
     false ->
       {ReasonKey, ReasonValue} = Reason,
+      [Set|_] = [S || {_, S} <- All, not Validate(S)],
       opt_error(
         "Setting '~p' to '~p' is not allowed when '~p' is set to ~s.",
         [Key, Set, ReasonKey, ReasonValue])
