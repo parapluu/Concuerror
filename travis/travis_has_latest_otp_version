@@ -2,7 +2,10 @@
 
 THISDIR=$(dirname $0)
 
-LATEST=`kerl update releases | tr ' ' '\n' | tail -n1`
+curl -sO https://raw.githubusercontent.com/yrashk/kerl/master/kerl
+chmod a+x kerl
+LATEST=`./kerl update releases | tr ' ' '\n' | tail -n1`
+rm ./kerl
 REPO=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
 if [ $LATEST != $REPO ]; then
     printf "\nA newer OTP release is available!\n"
