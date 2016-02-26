@@ -47,8 +47,8 @@ pretty(Output, I, Depth) ->
 -spec pretty_s(event() | indexed_event() | [indexed_event()], pos_integer()) ->
                   [string()].
 
-pretty_s(I, Depth) ->
-  {_, Acc} = pretty_aux(I, {fun io_lib:format/2, []}, Depth),
+pretty_s(Events, Depth) ->
+  {_, Acc} = pretty_aux(Events, {fun io_lib:format/2, []}, Depth),
   lists:reverse(Acc).
 
 pretty_aux({I, #event{} = Event}, {F, Acc}, Depth) ->
