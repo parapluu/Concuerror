@@ -172,9 +172,8 @@
 -type index() :: non_neg_integer().
 
 -record(message, {
-          data            :: term(),
-          id = make_ref() :: reference(),
-          xxx = 0         :: 0 %% UGLY! Added to differ from the {message,_,_} tuple
+          data    :: term(),
+          id      :: {pid(), pos_integer()}
          }).
 
 -type message() :: #message{}.

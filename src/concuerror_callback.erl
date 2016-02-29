@@ -78,6 +78,7 @@
           is_timer = false           :: 'false' | reference(),
           links                      :: links(),
           logger                     :: pid(),
+          message_counter = 1        :: pos_integer(),
           messages_new = queue:new() :: message_queue(),
           messages_old = queue:new() :: message_queue(),
           modules                    :: modules(),
@@ -380,7 +381,9 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
   ?badarg_if_not(is_pid(Pid)),
   case EventInfo of
     %% Replaying...
-    #builtin_event{result = OldResult} -> {OldResult, Info};
+    #builtin_event{result = OldResult} ->
+      {_, MsgInfo} = get_message_cnt(Info),
+      {OldResult, MsgInfo};
     %% New event...
     undefined ->
       Content =
@@ -445,7 +448,9 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
           NewInfo =
             case EventInfo of
               %% Replaying...
-              #builtin_event{} -> Info;
+              #builtin_event{} ->
+                {_, MsgInfo} = get_message_cnt(Info),
+                MsgInfo;
               %% New event...
               undefined ->
                 make_message(Info, message, {'EXIT', Pid, noproc}, self())
@@ -530,16 +535,18 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
     false -> ok
   end,
   FinalInfo =
-    case EventInfo of
-      %% Replaying...
-      #builtin_event{} -> NewInfo;
-      %% New event...
-      undefined ->
-        case IsActive of
-          false ->
+    case IsActive of
+      true -> NewInfo;
+      false ->
+        case EventInfo of
+          %% Replaying...
+          #builtin_event{} ->
+            {_, MsgInfo} = get_message_cnt(Info),
+            MsgInfo;
+          %% New event...
+          undefined ->
             Data = {'DOWN', Ref, process, As, noproc},
-            make_message(NewInfo, message, Data, self());
-          true -> NewInfo
+            make_message(NewInfo, message, Data, self())
         end
     end,
   {Ref, FinalInfo};
@@ -795,7 +802,8 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options], Info) ->
   case EventInfo of
     %% Replaying...
     #builtin_event{result = OldResult} ->
-      {OldResult, Info#concuerror_info{extra = Extra}};
+      {_, MsgInfo} = get_message_cnt(Info),
+      {OldResult, MsgInfo#concuerror_info{extra = Extra}};
     %% New event...
     undefined ->
       ?debug_flag(?send, {send, Recipient, Message}),
@@ -959,7 +967,9 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
   NewInfo =
     case EventInfo of
       %% Replaying. Keep original message
-      #builtin_event{} -> Info;
+      #builtin_event{} ->
+        {_Id, MsgInfo} = get_message_cnt(Info),
+        MsgInfo;
       %% New event...
       undefined ->
         Data = {'ETS-TRANSFER', Tid, Self, GiftData},
@@ -1072,7 +1082,7 @@ deliver_message(Event, MessageEvent, Timeout, Instant) ->
           SystemReply =
             #message_event{
                cause_label = Event#event.label,
-               message = #message{data = Reply},
+               message = #message{data = Reply, id = {System, Id}},
                sender = Recipient,
                recipient = From},
           SystemSpecials =
@@ -1852,14 +1862,18 @@ get_ref(#concuerror_info{ref_queue = {Active, Stored}} = Info) ->
 
 make_message(Info, Type, Data, Recipient) ->
   #concuerror_info{event = #event{label = Label} = Event} = Info,
+  {Id, MsgInfo} = get_message_cnt(Info),
   MessageEvent =
     #message_event{
        cause_label = Label,
-       message = #message{data = Data},
+       message = #message{data = Data, id = Id},
        recipient = Recipient,
        type = Type},
   NewEvent = Event#event{special = [{message, MessageEvent}]},
-  Info#concuerror_info{event = NewEvent}.
+  MsgInfo#concuerror_info{event = NewEvent}.
+
+get_message_cnt(#concuerror_info{message_counter = Counter} = Info) ->
+  {{self(), Counter}, Info#concuerror_info{message_counter = Counter + 1}}.
 
 %%------------------------------------------------------------------------------
 
