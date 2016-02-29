@@ -304,8 +304,13 @@ get_next_event(Event, MaybeNeedsReplayState) ->
               _:_ ->
                 #scheduler_state{print_depth = PrintDepth} = State,
                 #trace_state{index = I} = Last,
+                New =
+                  case NewEvent of
+                    {ok, E} -> E;
+                    _ -> NewEvent
+                  end,
                 Reason =
-                  {replay_mismatch, I, Event, element(2, NewEvent), PrintDepth},
+                  {replay_mismatch, I, Event, New, PrintDepth},
                 ?crash(Reason)
             end;
           false ->
