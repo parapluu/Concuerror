@@ -62,7 +62,6 @@
           keep_going         = false   :: boolean(),
           logger                       :: pid(),
           last_scheduled               :: pid(),
-          message_info                 :: message_info(),
           need_to_replay     = false   :: boolean(),
           non_racing_system  = []      :: [atom()],
           optimal            = true    :: boolean(),
@@ -107,7 +106,6 @@ run(Options) ->
        keep_going = ?opt(keep_going, Options),
        last_scheduled = FirstProcess,
        logger = Logger = ?opt(logger, Options),
-       message_info = ets:new(message_info, [private]),
        non_racing_system = ?opt(non_racing_system, Options),
        optimal = ?opt(optimal, Options),
        print_depth = ?opt(print_depth, Options),
@@ -550,13 +548,12 @@ update_sleeping(NewEvent, Sleeping, State) ->
 update_special(List, State) when is_list(List) ->
   lists:foldl(fun update_special/2, State, List);
 update_special(Special, State) ->
-  #scheduler_state{message_info = MessageInfo, trace = [Next|Trace]} = State,
-  #trace_state{actors = Actors} = Next,
+  #scheduler_state{trace = [#trace_state{actors = Actors} = Next|Trace]} = State,
   NewActors =
     case Special of
       halt -> [];
       {message, Message} ->
-        add_message(Message, Actors, MessageInfo);
+        add_message(Message, Actors);
       {message_delivered, MessageEvent} ->
         remove_message(MessageEvent, Actors);
       {message_received, _Message} ->
@@ -569,16 +566,11 @@ update_special(Special, State) ->
   NewNext = Next#trace_state{actors = NewActors},
   State#scheduler_state{trace = [NewNext|Trace]}.
 
-add_message(MessageEvent, Actors, MessageInfo) ->
-  #message_event{
-     message = #message{id = Id},
-     recipient = Recipient,
-     sender = Sender
-    } = MessageEvent,
+add_message(MessageEvent, Actors) ->
+  #message_event{recipient = Recipient, sender = Sender} = MessageEvent,
   Channel = {Sender, Recipient},
   Update = fun(Queue) -> queue:in(MessageEvent, Queue) end,
   Initial = queue:from_list([MessageEvent]),
-  ets:insert(MessageInfo, ?new_message_info(Id)),
   insert_message(Channel, Update, Initial, Actors).
 
 insert_message(Channel, Update, Initial, Actors) ->
@@ -649,7 +641,7 @@ assign_happens_before(UntimedLate, RevEarly, State) ->
 assign_happens_before([], RevLate, _RevEarly, _State) ->
   lists:reverse(RevLate);
 assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
-  #scheduler_state{logger = _Logger, message_info = MessageInfo} = State,
+  #scheduler_state{logger = _Logger} = State,
   #trace_state{done = [Event|_], index = Index} = TraceState,
   #event{actor = Actor, special = Special} = Event,
   ClockMap = get_base_clock(RevLate, RevEarly),
@@ -657,24 +649,12 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   ActorClock = orddict:store(Actor, Index, OldClock),
   ?trace(_Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
   BaseHappenedBeforeClock =
-    add_pre_message_clocks(Special, MessageInfo, ActorClock),
+    add_pre_message_clocks(Special, ClockMap, ActorClock),
   HappenedBeforeClock =
     update_clock(RevLate++RevEarly, Event, BaseHappenedBeforeClock, State),
-  maybe_mark_sent_message(Special, HappenedBeforeClock, MessageInfo),
-  case proplists:lookup(message_delivered, Special) of
-    none -> true;
-    {message_delivered, MessageEvent} ->
-      #message_event{message = #message{id = Id}} = MessageEvent,
-      Delivery = {?message_delivered, HappenedBeforeClock},
-      ets:update_element(MessageInfo, Id, Delivery)
-  end,
   BaseNewClockMap = dict:store(Actor, HappenedBeforeClock, ClockMap),
   NewClockMap =
-    case proplists:lookup(new, Special) of
-      {new, SpawnedPid} ->
-        dict:store(SpawnedPid, HappenedBeforeClock, BaseNewClockMap);
-      none -> BaseNewClockMap
-    end,
+    add_new_and_messages(Special, HappenedBeforeClock, BaseNewClockMap),
   StateClock = lookup_clock(state, ClockMap),
   OldActorClock = lookup_clock_value(Actor, StateClock),
   FinalActorClock = orddict:store(Actor, OldActorClock, HappenedBeforeClock),
@@ -700,25 +680,31 @@ get_base_clock([#trace_state{clock_map = ClockMap}|_]) -> {ok, ClockMap};
 get_base_clock([]) -> none.
 
 add_pre_message_clocks([], _, Clock) -> Clock;
-add_pre_message_clocks([Special|Specials], MessageInfo, Clock) ->
+add_pre_message_clocks([Special|Specials], ClockMap, Clock) ->
   NewClock =
     case Special of
-      {message_received, Id} ->
-        case ets:lookup_element(MessageInfo, Id, ?message_delivered) of
-          undefined -> Clock;
-          RMessageClock -> max_cv(Clock, RMessageClock)
-        end;
       {message_delivered, #message_event{message = #message{id = Id}}} ->
-        message_clock(Id, MessageInfo, Clock);
+        max_cv(Clock, lookup_clock({Id, sent}, ClockMap));
+      {message_received, Id} ->
+        max_cv(Clock, lookup_clock({Id, delivered}, ClockMap));
       _ -> Clock
     end,
-  add_pre_message_clocks(Specials, MessageInfo, NewClock).
+  add_pre_message_clocks(Specials, ClockMap, NewClock).
 
-message_clock(Id, MessageInfo, ActorClock) ->
-  case ets:lookup_element(MessageInfo, Id, ?message_sent) of
-    undefined -> ActorClock;
-    MessageClock -> max_cv(ActorClock, MessageClock)
-  end.
+add_new_and_messages([], _Clock, ClockMap) ->
+  ClockMap;
+add_new_and_messages([Special|Rest], Clock, ClockMap) ->
+  NewClockMap =
+    case Special of
+      {new, SpawnedPid} ->
+        dict:store(SpawnedPid, Clock, ClockMap);
+      {message, #message_event{message = #message{id = Id}}} ->
+        dict:store({Id, sent}, Clock, ClockMap);
+      {message_delivered, #message_event{message = #message{id = Id}}} ->
+        dict:store({Id, delivered}, Clock, ClockMap);
+      _ -> ClockMap
+    end,
+  add_new_and_messages(Rest, Clock, NewClockMap).
 
 update_clock([], _Event, Clock, _State) ->
   Clock;
@@ -752,20 +738,11 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
     end,
   update_clock(Rest, Event, NewClock, State).
 
-maybe_mark_sent_message(Special, Clock, MessageInfo) when is_list(Special)->
-  Message = proplists:lookup(message, Special),
-  maybe_mark_sent_message(Message, Clock, MessageInfo);
-maybe_mark_sent_message({message, Message}, Clock, MessageInfo) ->
-  #message_event{message = #message{id = Id}} = Message,
-  ets:update_element(MessageInfo, Id, {?message_sent, Clock});
-maybe_mark_sent_message(_, _, _) -> true.
-
 plan_more_interleavings([], OldTrace, _SchedulerState) ->
   OldTrace;
 plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
   #scheduler_state{
      logger = _Logger,
-     message_info = MessageInfo,
      non_racing_system = NonRacingSystem
     } = State,
   #trace_state{done = [Event|_], index = Index, graph_ref = Ref} = TraceState,
@@ -787,7 +764,7 @@ plan_more_interleavings([TraceState|Rest], OldTrace, State) ->
         case ?is_channel(Actor) of
           true ->
             #message_event{message = #message{id = Id}} = EventInfo,
-            message_clock(Id, MessageInfo, ActorClock);
+            lookup_clock({Id, sent}, ClockMap);
           false -> ActorClock
         end,
       ?debug(_Logger, "~s~n", [?pretty_s(Index, Event)]),
