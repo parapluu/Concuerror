@@ -388,14 +388,8 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
           true -> kill;
           false -> {'EXIT', self(), Reason}
         end,
-      MessageEvent =
-        #message_event{
-           cause_label = Event#event.label,
-           message = #message{data = Content},
-           recipient = Pid,
-           type = exit_signal},
-      NewEvent = Event#event{special = [{message, MessageEvent}]},
-      {true, Info#concuerror_info{event = NewEvent}}
+      MsgInfo = make_message(Info, exit_signal, Content, Pid),
+      {true, MsgInfo}
   end;
 
 %% XXX: Temporary
@@ -437,7 +431,8 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
   #concuerror_info{
      flags = #process_flags{trap_exit = TrapExit},
      links = Links,
-     event = #event{event_info = EventInfo} = Event} = Info,
+     event = #event{event_info = EventInfo}
+    } = Info,
   case run_built_in(erlang, is_process_alive, 1, [Pid], Info) of
     {true, Info}->
       Self = self(),
@@ -453,13 +448,7 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
               #builtin_event{} -> Info;
               %% New event...
               undefined ->
-                MessageEvent =
-                  #message_event{
-                     cause_label = Event#event.label,
-                     message = #message{data = {'EXIT', Pid, noproc}},
-                     recipient = self()},
-                NewEvent = Event#event{special = [{message, MessageEvent}]},
-                Info#concuerror_info{event = NewEvent}
+                make_message(Info, message, {'EXIT', Pid, noproc}, self())
             end,
           {true, NewInfo}
       end
@@ -503,7 +492,8 @@ run_built_in(erlang, Name, Arity, Args, Info)
 run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
   #concuerror_info{
      monitors = Monitors,
-     event = #event{event_info = EventInfo} = Event} = Info,
+     event = #event{event_info = EventInfo}
+    } = Info,
   ?badarg_if_not(Type =:= process),
   {Target, As} =
     case InTarget of
@@ -547,14 +537,8 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
       undefined ->
         case IsActive of
           false ->
-            Message = #message{data = {'DOWN', Ref, process, As, noproc}},
-            MessageEvent =
-              #message_event{
-                 cause_label = Event#event.label,
-                 message = Message,
-                 recipient = self()},
-            NewEvent = Event#event{special = [{message, MessageEvent}]},
-            NewInfo#concuerror_info{event = NewEvent};
+            Data = {'DOWN', Ref, process, As, noproc},
+            make_message(NewInfo, message, Data, self());
           true -> NewInfo
         end
     end,
@@ -786,10 +770,8 @@ run_built_in(erlang, spawn_opt, 1, [{Module, Name, Args, SpawnOpts}], Info) ->
 run_built_in(erlang, Send, 2, [Recipient, Message], Info)
   when Send =:= '!'; Send =:= 'send' ->
   run_built_in(erlang, send, 3, [Recipient, Message, []], Info);
-run_built_in(erlang, send, 3, [Recipient, Message, _Options],
-             #concuerror_info{
-                event = #event{event_info = EventInfo} = Event
-               } = Info) ->
+run_built_in(erlang, send, 3, [Recipient, Message, _Options], Info) ->
+  #concuerror_info{event = #event{event_info = EventInfo}} = Info,
   Pid =
     case is_pid(Recipient) of
       true -> Recipient;
@@ -817,14 +799,9 @@ run_built_in(erlang, send, 3, [Recipient, Message, _Options],
     %% New event...
     undefined ->
       ?debug_flag(?send, {send, Recipient, Message}),
-      MessageEvent =
-        #message_event{
-           cause_label = Event#event.label,
-           message = #message{data = Message},
-           recipient = Pid},
-      NewEvent = Event#event{special = [{message, MessageEvent}]},
+      MsgInfo = make_message(Info, message, Message, Pid),
       ?debug_flag(?send, {send, successful}),
-      {Message, Info#concuerror_info{event = NewEvent, extra = Extra}}
+      {Message, MsgInfo#concuerror_info{extra = Extra}}
   end;
 
 run_built_in(erlang, process_flag, 2, [Flag, Value],
@@ -973,7 +950,7 @@ run_built_in(ets, delete, 1, [Name], Info) ->
   ets:delete_all_objects(Tid),
   {true, Info#concuerror_info{extra = Tid}};
 run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
-  #concuerror_info{event = #event{event_info = EventInfo} = Event} = Info,
+  #concuerror_info{event = #event{event_info = EventInfo}} = Info,
   {Tid, _} = check_ets_access_rights(Name, {give_away,3}, Info),
   #concuerror_info{ets_tables = EtsTables} = Info,
   {Alive, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
@@ -981,17 +958,12 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
   ?badarg_if_not(is_pid(Pid) andalso Pid =/= Self andalso Alive),
   NewInfo =
     case EventInfo of
-      %% Replaying. Keep original Message reference.
+      %% Replaying. Keep original message
       #builtin_event{} -> Info;
       %% New event...
       undefined ->
-        MessageEvent =
-          #message_event{
-             cause_label = Event#event.label,
-             message = #message{data = {'ETS-TRANSFER', Tid, Self, GiftData}},
-             recipient = Pid},
-        NewEvent = Event#event{special = [{message, MessageEvent}]},
-        Info#concuerror_info{event = NewEvent}
+        Data = {'ETS-TRANSFER', Tid, Self, GiftData},
+        make_message(Info, message, Data, Pid)
     end,
   Update = [{?ets_owner, Pid}],
   true = ets:update_element(EtsTables, Tid, Update),
@@ -1877,6 +1849,17 @@ get_ref(#concuerror_info{ref_queue = {Active, Stored}} = Info) ->
       NewStored = queue:in(Ref, Stored),
       {Ref, Info#concuerror_info{ref_queue = {NewActive, NewStored}}}
   end.
+
+make_message(Info, Type, Data, Recipient) ->
+  #concuerror_info{event = #event{label = Label} = Event} = Info,
+  MessageEvent =
+    #message_event{
+       cause_label = Label,
+       message = #message{data = Data},
+       recipient = Recipient,
+       type = Type},
+  NewEvent = Event#event{special = [{message, MessageEvent}]},
+  Info#concuerror_info{event = NewEvent}.
 
 %%------------------------------------------------------------------------------
 
