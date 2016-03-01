@@ -651,7 +651,7 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   BaseHappenedBeforeClock =
     add_pre_message_clocks(Special, ClockMap, ActorClock),
   HappenedBeforeClock =
-    update_clock(RevLate++RevEarly, Event, BaseHappenedBeforeClock, State),
+    update_clock(RevLate, RevEarly, Event, BaseHappenedBeforeClock, State),
   BaseNewClockMap = dict:store(Actor, HappenedBeforeClock, ClockMap),
   NewClockMap =
     add_new_and_messages(Special, HappenedBeforeClock, BaseNewClockMap),
@@ -705,6 +705,10 @@ add_new_and_messages([Special|Rest], Clock, ClockMap) ->
       _ -> ClockMap
     end,
   add_new_and_messages(Rest, Clock, NewClockMap).
+
+update_clock(RevLate, RevEarly, Event, Clock, State) ->
+  Clock1 = update_clock(RevLate, Event, Clock, State),
+  update_clock(RevEarly, Event, Clock1, State).
 
 update_clock([], _Event, Clock, _State) ->
   Clock;
