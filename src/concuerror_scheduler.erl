@@ -133,7 +133,9 @@ explore(State) ->
     try
       get_next_event(State)
     catch
-      C:R -> {{crash, C, R}, State}
+      C:R ->
+        S = erlang:get_stacktrace(),
+        {{crash, C, R, S}, State}
     end,
   case Status of
     ok -> explore(UpdatedState);
@@ -145,11 +147,11 @@ explore(State) ->
         true -> explore(NewState);
         false -> ok
       end;
-    {crash, Class, Reason} ->
+    {crash, Class, Reason, Stack} ->
       #scheduler_state{trace = [_|Trace]} = UpdatedState,
       FatalCrashState = add_warning(fatal, Trace, UpdatedState),
       catch log_trace(FatalCrashState),
-      erlang:raise(Class, Reason, erlang:get_stacktrace())
+      erlang:raise(Class, Reason, Stack)
   end.
 
 %%------------------------------------------------------------------------------
