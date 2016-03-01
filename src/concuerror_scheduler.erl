@@ -687,19 +687,17 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   assign_happens_before(Later, [NewTraceState|RevLate], RevEarly, State).
 
 get_base_clock(RevLate, RevEarly) ->
-  try
-    get_base_clock(RevLate)
-  catch
-    throw:none ->
-      try
-        get_base_clock(RevEarly)
-      catch
-        throw:none -> dict:new()
+  case get_base_clock(RevLate) of
+    {ok, V} -> V;
+    none ->
+      case get_base_clock(RevEarly) of
+        {ok, V} -> V;
+        none -> dict:new()
       end
   end.
 
-get_base_clock([]) -> throw(none);
-get_base_clock([#trace_state{clock_map = ClockMap}|_]) -> ClockMap.
+get_base_clock([#trace_state{clock_map = ClockMap}|_]) -> {ok, ClockMap};
+get_base_clock([]) -> none.
 
 add_pre_message_clocks([], _, Clock) -> Clock;
 add_pre_message_clocks([Special|Specials], MessageInfo, Clock) ->
