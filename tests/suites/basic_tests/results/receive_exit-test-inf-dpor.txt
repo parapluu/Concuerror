@@ -2,6 +2,7 @@
 
 Concuerror started with options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
    {depth_bound,5000},
    {entry_point,{receive_exit,test,[]}},
@@ -33,11 +34,11 @@ Erroneous interleaving 1:
 
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-1-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-2-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    4: P: exits normally
    5: P.2: bar = P.1 ! bar
     in receive_exit.erl line 26
@@ -60,11 +61,11 @@ Erroneous interleaving 2:
 
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-1-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-2-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    4: P: exits normally
    5: P.2: bar = P.1 ! bar
     in receive_exit.erl line 26
@@ -82,6 +83,35 @@ Interleaving info:
 ################################################################################
 
 Erroneous interleaving 3:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      die
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2505
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2505
+   4: P: exits normally
+   5: P.2: bar = P.1 ! bar
+    in receive_exit.erl line 26
+   6: P.2: exits normally
+   7: P.3: foo = P.1 ! foo
+    in receive_exit.erl line 27
+   8: P.1: receives message (foo)
+    in receive_exit.erl line 21
+   9: P.3: true = erlang:exit(P.1, die)
+    in receive_exit.erl line 27
+  10: P.3: exits normally
+  11: P.1: exits abnormally (die)
+################################################################################
+
+Erroneous interleaving 4:
 * At step 8 process P.1 exited abnormally
     Reason:
       die
@@ -91,11 +121,11 @@ Erroneous interleaving 3:
 
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-1-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-2-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    4: P: exits normally
    5: P.3: foo = P.1 ! foo
     in receive_exit.erl line 27
@@ -108,7 +138,7 @@ Interleaving info:
   10: P.2: exits normally
 ################################################################################
 
-Erroneous interleaving 4:
+Erroneous interleaving 5:
 * At step 11 process P.1 exited abnormally
     Reason:
       die
@@ -118,11 +148,11 @@ Erroneous interleaving 4:
 
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-1-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-2-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    4: P: exits normally
    5: P.3: foo = P.1 ! foo
     in receive_exit.erl line 27
@@ -137,7 +167,7 @@ Interleaving info:
   11: P.1: exits abnormally (die)
 ################################################################################
 
-Erroneous interleaving 5:
+Erroneous interleaving 6:
 * At step 12 process P.1 exited abnormally
     Reason:
       die
@@ -147,11 +177,11 @@ Erroneous interleaving 5:
 
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-1-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-2-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    4: P: exits normally
    5: P.3: foo = P.1 ! foo
     in receive_exit.erl line 27
@@ -168,7 +198,7 @@ Interleaving info:
   12: P.1: exits abnormally (die)
 ################################################################################
 
-Erroneous interleaving 6:
+Erroneous interleaving 7:
 * At step 9 process P.1 exited abnormally
     Reason:
       die
@@ -178,11 +208,11 @@ Erroneous interleaving 6:
 
 Interleaving info:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-1-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-2-'.0>,[]])
-    in erlang.erl line 2510
+    in erlang.erl line 2505
    4: P: exits normally
    5: P.3: foo = P.1 ! foo
     in receive_exit.erl line 27
@@ -195,6 +225,33 @@ Interleaving info:
   10: P.2: bar = P.1 ! bar
     in receive_exit.erl line 26
   11: P.2: exits normally
+################################################################################
+
+Erroneous interleaving 8:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      die
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2505
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2505
+   4: P: exits normally
+   5: P.3: foo = P.1 ! foo
+    in receive_exit.erl line 27
+   6: P.2: bar = P.1 ! bar
+    in receive_exit.erl line 26
+   7: P.2: exits normally
+   8: P.3: true = erlang:exit(P.1, die)
+    in receive_exit.erl line 27
+   9: P.3: exits normally
+  10: P.1: exits abnormally (die)
 ################################################################################
 
 Warnings:
@@ -222,4 +279,4 @@ You can see pairs of racing instructions (in the report and --graph) with '--sho
 ################################################################################
 
 Done! (Exit status: completed)
-  Summary: 6 errors, 6/6 interleavings explored
+  Summary: 8 errors, 8/8 interleavings explored

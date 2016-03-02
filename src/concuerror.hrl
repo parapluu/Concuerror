@@ -98,12 +98,7 @@
 -define(notify_us_msg,
         "~nPlease notify the developers, as this is a bug of Concuerror.").
 %%------------------------------------------------------------------------------
--type message_info() :: ets:tid().
 -type timers()       :: ets:tid().
-
--define(new_message_info(Id), {Id, undefined, undefined}).
--define(message_sent, 2).
--define(message_delivered, 3).
 
 -define(notify_none, 1).
 %%------------------------------------------------------------------------------
@@ -177,9 +172,8 @@
 -type index() :: non_neg_integer().
 
 -record(message, {
-          data            :: term(),
-          id = make_ref() :: reference(),
-          xxx = 0         :: 0 %% UGLY! Added to differ from the {message,_,_} tuple
+          data    :: term(),
+          id      :: {pid(), pos_integer()}
          }).
 
 -type message() :: #message{}.

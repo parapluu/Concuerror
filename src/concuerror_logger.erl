@@ -3,7 +3,7 @@
 -module(concuerror_logger).
 
 -export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
--export([bound_reached/1]).
+-export([bound_reached/1, set_verbosity/2]).
 -export([graph_set_node/3, graph_new_node/5, graph_race/3]).
 
 -include("concuerror.hrl").
@@ -180,6 +180,12 @@ race(Logger, EarlyEvent, Event) ->
   Logger ! {race, EarlyEvent, Event},
   ok.
 
+-spec set_verbosity(logger(), ?lquiet..?MAX_VERBOSITY) -> ok.
+
+set_verbosity(Logger, Verbosity) ->
+  Logger ! {set_verbosity, Verbosity},
+  ok.
+
 %%------------------------------------------------------------------------------
 
 loop_entry(State) ->
@@ -319,6 +325,9 @@ loop(Message, State) ->
     {print, Type, String} ->
       NewStreams = orddict:append(Type, String, Streams),
       NewState = State#logger_state{streams = NewStreams},
+      loop(NewState);
+    {set_verbosity, NewVerbosity} ->
+      NewState = State#logger_state{verbosity = NewVerbosity},
       loop(NewState);
     {complete, Warn} ->
       {NewErrors, NewSSB} =

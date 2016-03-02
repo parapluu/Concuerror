@@ -14,6 +14,7 @@
 
 run(RawOptions) ->
   try
+    error_logger:tty(false),
     _ = [true = code:unstick_mod(M) || {M, preloaded} <- code:all_loaded()],
     [] = [D || D <- code:get_path(), ok =/= code:unstick_dir(D)],
     case code:get_object_code(erlang) =:= error of
@@ -28,7 +29,6 @@ run(RawOptions) ->
     Options = concuerror_options:finalize([{processes, Processes}|RawOptions]),
     Logger = concuerror_logger:start(Options),
     SchedulerOptions = [{logger, Logger}|Options],
-    error_logger:tty(false),
     {Pid, Ref} =
       spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
     Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
@@ -59,6 +59,7 @@ explain(Reason) ->
     end
   catch
     _:_ ->
-      {io_lib:format("~n  Reason: ~p~nTrace:~n  ~p~n", [Reason, Stacktrace]),
-       error}
+      Str =
+        io_lib:format("~n  Reason: ~p~nTrace:~n  ~p~n", [Reason, Stacktrace]),
+      {Str, error}
   end.

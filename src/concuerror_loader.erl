@@ -104,7 +104,7 @@ get_core(Beam) ->
       Filter =
         fun(Option) ->
             case Option of
-              {Tag, _} -> lists:member(Tag, [d, i]);
+              {Tag, _} -> lists:member(Tag, [d, i, parse_transform]);
               _ -> false
             end
         end,

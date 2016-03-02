@@ -2,6 +2,7 @@
 
 Concuerror started with options:
   [{after_timeout,1000},
+   {assertions_only,false},
    {assume_racing,false},
    {depth_bound,5000},
    {entry_point,{test,t_reg_or_locate2,[]}},
@@ -37,7 +38,7 @@ Interleaving info:
    2: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 678
    3: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[P,[],gen,init_it,[gen_server,P,P,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
    4: P.1: undefined = erlang:put('$ancestors', [P])
     in proc_lib.erl line 234
    5: P.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
@@ -45,7 +46,7 @@ Interleaving info:
    6: P.1: true = erlang:register(gproc_sup, P.1)
     in gen.erl line 301
    7: P.1: false = erlang:process_flag(trap_exit, true)
-    in supervisor.erl line 273
+    in supervisor.erl line 271
    8: P.1: user = erlang:group_leader()
     in application.erl line 327
    9: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
@@ -67,7 +68,7 @@ Interleaving info:
   17: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   18: P.1: P.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   19: P.1.1: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
   20: P.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
@@ -116,8 +117,8 @@ Interleaving info:
   44: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   45: P.1: P.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
-    in erlang.erl line 2673
-  46: Message ({'ETS-TRANSFER',114713,P.1,[]}) from P.1 reaches P.1.2
+    in erlang.erl line 2683
+  46: Message ({'ETS-TRANSFER',110616,P.1,[]}) from P.1 reaches P.1.2
   47: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   48: P.1.3: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -139,7 +140,7 @@ Interleaving info:
   57: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   58: P.1: P.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   59: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   60: P.1.4: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -162,32 +163,32 @@ Interleaving info:
   70: Message ({ack,P.1,{ok,P.1}}) from P.1 reaches P
   71: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 334
-  72: P: {P.2,#Ref<0.0.1.546>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2539
-  73: P.2: #Ref<0.0.1.549> = erlang:monitor(process, P)
+  72: P: {P.2,#Ref<0.0.1.535>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2549
+  73: P.2: #Ref<0.0.1.538> = erlang:monitor(process, P)
     in test.erl line 36
   74: P.2: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  75: P.2: #Ref<0.0.1.554> = erlang:monitor(process, P.1.1)
+  75: P.2: #Ref<0.0.1.543> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}, [noconnect])
+  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}, [noconnect])
     in gen.erl line 166
-  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
-  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}})
+  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
+  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}})
     in gen_server.erl line 382
   79: P.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.2,the_value})
     in gproc_lib.erl line 78
   80: P.1.1: true = ets:insert_new(gproc, {{P.2,{n,l,foo}},[]})
   81: P.1.1: true = ets:insert_new(gproc, {{P.2,l}})
     in gproc_lib.erl line 300
-  82: P.1.1: #Ref<0.0.1.570> = erlang:monitor(process, P.2)
+  82: P.1.1: #Ref<0.0.1.558> = erlang:monitor(process, P.2)
     in gproc_lib.erl line 302
-  83: P.1.1: {#Ref<0.0.1.554>,true} = P.2 ! {#Ref<0.0.1.554>,true}
+  83: P.1.1: {#Ref<0.0.1.543>,true} = P.2 ! {#Ref<0.0.1.543>,true}
     in gen_server.erl line 241
-  84: Message ({#Ref<0.0.1.554>,true}) from P.1.1 reaches P.2
-  85: P.2: receives message ({#Ref<0.0.1.554>,true})
+  84: Message ({#Ref<0.0.1.543>,true}) from P.1.1 reaches P.2
+  85: P.2: receives message ({#Ref<0.0.1.543>,true})
     in gen.erl line 168
-  86: P.2: true = erlang:demonitor(#Ref<0.0.1.554>, [flush])
+  86: P.2: true = erlang:demonitor(#Ref<0.0.1.543>, [flush])
     in gen.erl line 170
   87: P.2: {P.2,ok} = P ! {P.2,ok}
     in test.erl line 38
@@ -196,53 +197,53 @@ Interleaving info:
     in test.erl line 43
   90: P: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  91: P: #Ref<0.0.1.591> = erlang:monitor(process, P.1.1)
+  91: P: #Ref<0.0.1.577> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  92: P: {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+  92: P: {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
     in gen.erl line 166
-  93: Message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
-  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}})
+  93: Message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
+  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}})
     in gen_server.erl line 382
   95: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2072
-  96: P.1.1: {#Ref<0.0.1.591>,{P.2,the_value}} = P ! {#Ref<0.0.1.591>,{P.2,the_value}}
+  96: P.1.1: {#Ref<0.0.1.577>,{P.2,the_value}} = P ! {#Ref<0.0.1.577>,{P.2,the_value}}
     in gen_server.erl line 241
-  97: Message ({#Ref<0.0.1.591>,{P.2,the_value}}) from P.1.1 reaches P
-  98: P: receives message ({#Ref<0.0.1.591>,{P.2,the_value}})
+  97: Message ({#Ref<0.0.1.577>,{P.2,the_value}}) from P.1.1 reaches P
+  98: P: receives message ({#Ref<0.0.1.577>,{P.2,the_value}})
     in gen.erl line 168
-  99: P: true = erlang:demonitor(#Ref<0.0.1.591>, [flush])
+  99: P: true = erlang:demonitor(#Ref<0.0.1.577>, [flush])
     in gen.erl line 170
  100: P: true = erlang:exit(P.2, kill)
     in test.erl line 45
  101: Exit signal (kill) from P reaches P.2
  102: P.2: exits abnormally (killed)
- 103: P.2: {'DOWN',#Ref<0.0.1.546>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 103: P.2: {'DOWN',#Ref<0.0.1.535>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     (while exiting)
- 104: P.2: {'DOWN',#Ref<0.0.1.570>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 104: P.2: {'DOWN',#Ref<0.0.1.558>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     (while exiting)
- 105: Message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed}) from P.2 reaches P
- 106: Message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed}) from P.2 reaches P.1.1
- 107: P: receives message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 105: Message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed}) from P.2 reaches P
+ 106: Message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed}) from P.2 reaches P.1.1
+ 107: P: receives message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     in test.erl line 46
  108: P: exits normally
  109: P: true = erlang:exit(P.1, normal)
     (while exiting)
- 110: P: {'DOWN',#Ref<0.0.1.549>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.549>,process,P,normal})
+ 110: P: {'DOWN',#Ref<0.0.1.538>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.538>,process,P,normal})
     (while exiting)
  111: Exit signal (normal) from P reaches P.1
- 112: Message ({'DOWN',#Ref<0.0.1.549>,process,P,normal}) from P reaches P.2
+ 112: Message ({'DOWN',#Ref<0.0.1.538>,process,P,normal}) from P reaches P.2
  113: P.1: receives message ({'EXIT',P,normal})
     in gen_server.erl line 382
- 114: P.1: #Ref<0.0.1.645> = erlang:monitor(process, P.1.4)
-    in supervisor.erl line 968
+ 114: P.1: #Ref<0.0.1.624> = erlang:monitor(process, P.1.4)
+    in supervisor.erl line 964
  115: P.1: true = erlang:unlink(P.1.4)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  116: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  117: P.1: true = erlang:exit(P.1.4, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  118: Exit signal (shutdown) from P.1 reaches P.1.4
- 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     in gen_server.erl line 382
  120: P.1.1: true = ets:member(gproc, {P.2,l})
     in gproc.erl line 2313
@@ -257,59 +258,59 @@ Interleaving info:
  125: P.1.1: true = ets:delete(gproc, {P.2,l})
     in gproc.erl line 2373
  126: P.1.4: exits abnormally (shutdown)
- 127: P.1.4: {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
+ 127: P.1.4: {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
     (while exiting)
- 128: Message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
- 129: P.1: receives message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
-    in supervisor.erl line 945
- 130: P.1: #Ref<0.0.1.680> = erlang:monitor(process, P.1.3)
-    in supervisor.erl line 968
+ 128: Message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
+ 129: P.1: receives message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    in supervisor.erl line 941
+ 130: P.1: #Ref<0.0.1.657> = erlang:monitor(process, P.1.3)
+    in supervisor.erl line 964
  131: P.1: true = erlang:unlink(P.1.3)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  132: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  133: P.1: true = erlang:exit(P.1.3, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  134: Exit signal (shutdown) from P.1 reaches P.1.3
  135: P.1.3: exits abnormally (shutdown)
- 136: P.1.3: {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
+ 136: P.1.3: {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
     (while exiting)
- 137: Message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
- 138: P.1: receives message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
-    in supervisor.erl line 945
- 139: P.1: #Ref<0.0.1.701> = erlang:monitor(process, P.1.2)
-    in supervisor.erl line 968
+ 137: Message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
+ 138: P.1: receives message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    in supervisor.erl line 941
+ 139: P.1: #Ref<0.0.1.676> = erlang:monitor(process, P.1.2)
+    in supervisor.erl line 964
  140: P.1: true = erlang:unlink(P.1.2)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  141: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  142: P.1: true = erlang:exit(P.1.2, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  143: Exit signal (shutdown) from P.1 reaches P.1.2
  144: P.1.2: exits abnormally (shutdown)
  145: P.1.2: true = ets:give_away(gproc_monitor, P.1, [])
     (while exiting)
- 146: P.1.2: {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
+ 146: P.1.2: {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
     (while exiting)
- 147: Message ({'ETS-TRANSFER',114713,P.1.2,[]}) from P.1.2 reaches P.1
- 148: Message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
- 149: P.1: receives message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
-    in supervisor.erl line 945
- 150: P.1: #Ref<0.0.1.727> = erlang:monitor(process, P.1.1)
-    in supervisor.erl line 968
+ 147: Message ({'ETS-TRANSFER',110616,P.1.2,[]}) from P.1.2 reaches P.1
+ 148: Message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
+ 149: P.1: receives message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    in supervisor.erl line 941
+ 150: P.1: #Ref<0.0.1.699> = erlang:monitor(process, P.1.1)
+    in supervisor.erl line 964
  151: P.1: true = erlang:unlink(P.1.1)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  152: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  153: P.1: true = erlang:exit(P.1.1, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  154: Exit signal (shutdown) from P.1 reaches P.1.1
  155: P.1.1: exits abnormally (shutdown)
- 156: P.1.1: {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
+ 156: P.1.1: {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
     (while exiting)
- 157: Message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
- 158: P.1: receives message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
-    in supervisor.erl line 945
+ 157: Message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
+ 158: P.1: receives message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    in supervisor.erl line 941
  159: P.1: exits normally
  160: P.1: true = ets:delete(gproc)
     (while exiting)
@@ -336,7 +337,7 @@ Interleaving info:
    2: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 678
    3: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[P,[],gen,init_it,[gen_server,P,P,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
    4: P.1: undefined = erlang:put('$ancestors', [P])
     in proc_lib.erl line 234
    5: P.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
@@ -344,7 +345,7 @@ Interleaving info:
    6: P.1: true = erlang:register(gproc_sup, P.1)
     in gen.erl line 301
    7: P.1: false = erlang:process_flag(trap_exit, true)
-    in supervisor.erl line 273
+    in supervisor.erl line 271
    8: P.1: user = erlang:group_leader()
     in application.erl line 327
    9: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
@@ -366,7 +367,7 @@ Interleaving info:
   17: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   18: P.1: P.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   19: P.1.1: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
   20: P.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
@@ -415,8 +416,8 @@ Interleaving info:
   44: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   45: P.1: P.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
-    in erlang.erl line 2673
-  46: Message ({'ETS-TRANSFER',114713,P.1,[]}) from P.1 reaches P.1.2
+    in erlang.erl line 2683
+  46: Message ({'ETS-TRANSFER',110616,P.1,[]}) from P.1 reaches P.1.2
   47: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   48: P.1.3: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -438,7 +439,7 @@ Interleaving info:
   57: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   58: P.1: P.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   59: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   60: P.1.4: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -461,32 +462,32 @@ Interleaving info:
   70: Message ({ack,P.1,{ok,P.1}}) from P.1 reaches P
   71: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 334
-  72: P: {P.2,#Ref<0.0.1.546>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2539
-  73: P.2: #Ref<0.0.1.549> = erlang:monitor(process, P)
+  72: P: {P.2,#Ref<0.0.1.535>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2549
+  73: P.2: #Ref<0.0.1.538> = erlang:monitor(process, P)
     in test.erl line 36
   74: P.2: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  75: P.2: #Ref<0.0.1.554> = erlang:monitor(process, P.1.1)
+  75: P.2: #Ref<0.0.1.543> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}, [noconnect])
+  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}, [noconnect])
     in gen.erl line 166
-  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
-  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}})
+  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
+  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}})
     in gen_server.erl line 382
   79: P.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.2,the_value})
     in gproc_lib.erl line 78
   80: P.1.1: true = ets:insert_new(gproc, {{P.2,{n,l,foo}},[]})
   81: P.1.1: true = ets:insert_new(gproc, {{P.2,l}})
     in gproc_lib.erl line 300
-  82: P.1.1: #Ref<0.0.1.570> = erlang:monitor(process, P.2)
+  82: P.1.1: #Ref<0.0.1.558> = erlang:monitor(process, P.2)
     in gproc_lib.erl line 302
-  83: P.1.1: {#Ref<0.0.1.554>,true} = P.2 ! {#Ref<0.0.1.554>,true}
+  83: P.1.1: {#Ref<0.0.1.543>,true} = P.2 ! {#Ref<0.0.1.543>,true}
     in gen_server.erl line 241
-  84: Message ({#Ref<0.0.1.554>,true}) from P.1.1 reaches P.2
-  85: P.2: receives message ({#Ref<0.0.1.554>,true})
+  84: Message ({#Ref<0.0.1.543>,true}) from P.1.1 reaches P.2
+  85: P.2: receives message ({#Ref<0.0.1.543>,true})
     in gen.erl line 168
-  86: P.2: true = erlang:demonitor(#Ref<0.0.1.554>, [flush])
+  86: P.2: true = erlang:demonitor(#Ref<0.0.1.543>, [flush])
     in gen.erl line 170
   87: P.2: {P.2,ok} = P ! {P.2,ok}
     in test.erl line 38
@@ -495,53 +496,53 @@ Interleaving info:
     in test.erl line 43
   90: P: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  91: P: #Ref<0.0.1.591> = erlang:monitor(process, P.1.1)
+  91: P: #Ref<0.0.1.577> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  92: P: {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+  92: P: {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
     in gen.erl line 166
-  93: Message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
-  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}})
+  93: Message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
+  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}})
     in gen_server.erl line 382
   95: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2072
-  96: P.1.1: {#Ref<0.0.1.591>,{P.2,the_value}} = P ! {#Ref<0.0.1.591>,{P.2,the_value}}
+  96: P.1.1: {#Ref<0.0.1.577>,{P.2,the_value}} = P ! {#Ref<0.0.1.577>,{P.2,the_value}}
     in gen_server.erl line 241
-  97: Message ({#Ref<0.0.1.591>,{P.2,the_value}}) from P.1.1 reaches P
-  98: P: receives message ({#Ref<0.0.1.591>,{P.2,the_value}})
+  97: Message ({#Ref<0.0.1.577>,{P.2,the_value}}) from P.1.1 reaches P
+  98: P: receives message ({#Ref<0.0.1.577>,{P.2,the_value}})
     in gen.erl line 168
-  99: P: true = erlang:demonitor(#Ref<0.0.1.591>, [flush])
+  99: P: true = erlang:demonitor(#Ref<0.0.1.577>, [flush])
     in gen.erl line 170
  100: P: true = erlang:exit(P.2, kill)
     in test.erl line 45
  101: Exit signal (kill) from P reaches P.2
  102: P.2: exits abnormally (killed)
- 103: P.2: {'DOWN',#Ref<0.0.1.546>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 103: P.2: {'DOWN',#Ref<0.0.1.535>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     (while exiting)
- 104: P.2: {'DOWN',#Ref<0.0.1.570>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 104: P.2: {'DOWN',#Ref<0.0.1.558>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     (while exiting)
- 105: Message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed}) from P.2 reaches P
- 106: Message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed}) from P.2 reaches P.1.1
- 107: P: receives message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 105: Message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed}) from P.2 reaches P
+ 106: Message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed}) from P.2 reaches P.1.1
+ 107: P: receives message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     in test.erl line 46
  108: P: exits normally
  109: P: true = erlang:exit(P.1, normal)
     (while exiting)
- 110: P: {'DOWN',#Ref<0.0.1.549>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.549>,process,P,normal})
+ 110: P: {'DOWN',#Ref<0.0.1.538>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.538>,process,P,normal})
     (while exiting)
  111: Exit signal (normal) from P reaches P.1
- 112: Message ({'DOWN',#Ref<0.0.1.549>,process,P,normal}) from P reaches P.2
+ 112: Message ({'DOWN',#Ref<0.0.1.538>,process,P,normal}) from P reaches P.2
  113: P.1: receives message ({'EXIT',P,normal})
     in gen_server.erl line 382
- 114: P.1: #Ref<0.0.1.645> = erlang:monitor(process, P.1.4)
-    in supervisor.erl line 968
+ 114: P.1: #Ref<0.0.1.624> = erlang:monitor(process, P.1.4)
+    in supervisor.erl line 964
  115: P.1: true = erlang:unlink(P.1.4)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  116: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  117: P.1: true = erlang:exit(P.1.4, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  118: Exit signal (shutdown) from P.1 reaches P.1.4
- 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     in gen_server.erl line 382
  120: P.1.1: true = ets:member(gproc, {P.2,l})
     in gproc.erl line 2313
@@ -554,59 +555,59 @@ Interleaving info:
  124: P.1.1: 1 = ets:select_delete(gproc, [{{{P.2,{'_',l,'_'}},'_'},[],[true]}])
     in gproc.erl line 2372
  125: P.1.4: exits abnormally (shutdown)
- 126: P.1.4: {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
+ 126: P.1.4: {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
     (while exiting)
- 127: Message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
- 128: P.1: receives message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
-    in supervisor.erl line 945
- 129: P.1: #Ref<0.0.1.680> = erlang:monitor(process, P.1.3)
-    in supervisor.erl line 968
+ 127: Message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
+ 128: P.1: receives message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    in supervisor.erl line 941
+ 129: P.1: #Ref<0.0.1.657> = erlang:monitor(process, P.1.3)
+    in supervisor.erl line 964
  130: P.1: true = erlang:unlink(P.1.3)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  131: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  132: P.1: true = erlang:exit(P.1.3, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  133: Exit signal (shutdown) from P.1 reaches P.1.3
  134: P.1.3: exits abnormally (shutdown)
- 135: P.1.3: {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
+ 135: P.1.3: {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
     (while exiting)
- 136: Message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
- 137: P.1: receives message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
-    in supervisor.erl line 945
- 138: P.1: #Ref<0.0.1.701> = erlang:monitor(process, P.1.2)
-    in supervisor.erl line 968
+ 136: Message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
+ 137: P.1: receives message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    in supervisor.erl line 941
+ 138: P.1: #Ref<0.0.1.676> = erlang:monitor(process, P.1.2)
+    in supervisor.erl line 964
  139: P.1: true = erlang:unlink(P.1.2)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  140: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  141: P.1: true = erlang:exit(P.1.2, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  142: Exit signal (shutdown) from P.1 reaches P.1.2
  143: P.1.2: exits abnormally (shutdown)
  144: P.1.2: true = ets:give_away(gproc_monitor, P.1, [])
     (while exiting)
- 145: P.1.2: {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
+ 145: P.1.2: {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
     (while exiting)
- 146: Message ({'ETS-TRANSFER',114713,P.1.2,[]}) from P.1.2 reaches P.1
- 147: Message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
- 148: P.1: receives message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
-    in supervisor.erl line 945
- 149: P.1: #Ref<0.0.1.727> = erlang:monitor(process, P.1.1)
-    in supervisor.erl line 968
+ 146: Message ({'ETS-TRANSFER',110616,P.1.2,[]}) from P.1.2 reaches P.1
+ 147: Message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
+ 148: P.1: receives message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    in supervisor.erl line 941
+ 149: P.1: #Ref<0.0.1.699> = erlang:monitor(process, P.1.1)
+    in supervisor.erl line 964
  150: P.1: true = erlang:unlink(P.1.1)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  151: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  152: P.1: true = erlang:exit(P.1.1, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  153: Exit signal (shutdown) from P.1 reaches P.1.1
  154: P.1.1: exits abnormally (shutdown)
- 155: P.1.1: {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
+ 155: P.1.1: {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
     (while exiting)
- 156: Message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
- 157: P.1: receives message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
-    in supervisor.erl line 945
+ 156: Message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
+ 157: P.1: receives message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    in supervisor.erl line 941
  158: P.1: exits normally
  159: P.1: true = ets:delete(gproc)
     (while exiting)
@@ -633,7 +634,7 @@ Interleaving info:
    2: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 678
    3: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[P,[],gen,init_it,[gen_server,P,P,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
    4: P.1: undefined = erlang:put('$ancestors', [P])
     in proc_lib.erl line 234
    5: P.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
@@ -641,7 +642,7 @@ Interleaving info:
    6: P.1: true = erlang:register(gproc_sup, P.1)
     in gen.erl line 301
    7: P.1: false = erlang:process_flag(trap_exit, true)
-    in supervisor.erl line 273
+    in supervisor.erl line 271
    8: P.1: user = erlang:group_leader()
     in application.erl line 327
    9: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
@@ -663,7 +664,7 @@ Interleaving info:
   17: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   18: P.1: P.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   19: P.1.1: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
   20: P.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
@@ -712,8 +713,8 @@ Interleaving info:
   44: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   45: P.1: P.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
-    in erlang.erl line 2673
-  46: Message ({'ETS-TRANSFER',114713,P.1,[]}) from P.1 reaches P.1.2
+    in erlang.erl line 2683
+  46: Message ({'ETS-TRANSFER',110616,P.1,[]}) from P.1 reaches P.1.2
   47: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   48: P.1.3: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -735,7 +736,7 @@ Interleaving info:
   57: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   58: P.1: P.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   59: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   60: P.1.4: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -758,32 +759,32 @@ Interleaving info:
   70: Message ({ack,P.1,{ok,P.1}}) from P.1 reaches P
   71: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 334
-  72: P: {P.2,#Ref<0.0.1.546>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2539
-  73: P.2: #Ref<0.0.1.549> = erlang:monitor(process, P)
+  72: P: {P.2,#Ref<0.0.1.535>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2549
+  73: P.2: #Ref<0.0.1.538> = erlang:monitor(process, P)
     in test.erl line 36
   74: P.2: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  75: P.2: #Ref<0.0.1.554> = erlang:monitor(process, P.1.1)
+  75: P.2: #Ref<0.0.1.543> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}, [noconnect])
+  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}, [noconnect])
     in gen.erl line 166
-  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
-  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}})
+  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
+  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}})
     in gen_server.erl line 382
   79: P.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.2,the_value})
     in gproc_lib.erl line 78
   80: P.1.1: true = ets:insert_new(gproc, {{P.2,{n,l,foo}},[]})
   81: P.1.1: true = ets:insert_new(gproc, {{P.2,l}})
     in gproc_lib.erl line 300
-  82: P.1.1: #Ref<0.0.1.570> = erlang:monitor(process, P.2)
+  82: P.1.1: #Ref<0.0.1.558> = erlang:monitor(process, P.2)
     in gproc_lib.erl line 302
-  83: P.1.1: {#Ref<0.0.1.554>,true} = P.2 ! {#Ref<0.0.1.554>,true}
+  83: P.1.1: {#Ref<0.0.1.543>,true} = P.2 ! {#Ref<0.0.1.543>,true}
     in gen_server.erl line 241
-  84: Message ({#Ref<0.0.1.554>,true}) from P.1.1 reaches P.2
-  85: P.2: receives message ({#Ref<0.0.1.554>,true})
+  84: Message ({#Ref<0.0.1.543>,true}) from P.1.1 reaches P.2
+  85: P.2: receives message ({#Ref<0.0.1.543>,true})
     in gen.erl line 168
-  86: P.2: true = erlang:demonitor(#Ref<0.0.1.554>, [flush])
+  86: P.2: true = erlang:demonitor(#Ref<0.0.1.543>, [flush])
     in gen.erl line 170
   87: P.2: {P.2,ok} = P ! {P.2,ok}
     in test.erl line 38
@@ -792,53 +793,53 @@ Interleaving info:
     in test.erl line 43
   90: P: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  91: P: #Ref<0.0.1.591> = erlang:monitor(process, P.1.1)
+  91: P: #Ref<0.0.1.577> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  92: P: {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+  92: P: {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
     in gen.erl line 166
-  93: Message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
-  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}})
+  93: Message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
+  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}})
     in gen_server.erl line 382
   95: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2072
-  96: P.1.1: {#Ref<0.0.1.591>,{P.2,the_value}} = P ! {#Ref<0.0.1.591>,{P.2,the_value}}
+  96: P.1.1: {#Ref<0.0.1.577>,{P.2,the_value}} = P ! {#Ref<0.0.1.577>,{P.2,the_value}}
     in gen_server.erl line 241
-  97: Message ({#Ref<0.0.1.591>,{P.2,the_value}}) from P.1.1 reaches P
-  98: P: receives message ({#Ref<0.0.1.591>,{P.2,the_value}})
+  97: Message ({#Ref<0.0.1.577>,{P.2,the_value}}) from P.1.1 reaches P
+  98: P: receives message ({#Ref<0.0.1.577>,{P.2,the_value}})
     in gen.erl line 168
-  99: P: true = erlang:demonitor(#Ref<0.0.1.591>, [flush])
+  99: P: true = erlang:demonitor(#Ref<0.0.1.577>, [flush])
     in gen.erl line 170
  100: P: true = erlang:exit(P.2, kill)
     in test.erl line 45
  101: Exit signal (kill) from P reaches P.2
  102: P.2: exits abnormally (killed)
- 103: P.2: {'DOWN',#Ref<0.0.1.546>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 103: P.2: {'DOWN',#Ref<0.0.1.535>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     (while exiting)
- 104: P.2: {'DOWN',#Ref<0.0.1.570>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 104: P.2: {'DOWN',#Ref<0.0.1.558>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     (while exiting)
- 105: Message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed}) from P.2 reaches P
- 106: Message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed}) from P.2 reaches P.1.1
- 107: P: receives message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 105: Message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed}) from P.2 reaches P
+ 106: Message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed}) from P.2 reaches P.1.1
+ 107: P: receives message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     in test.erl line 46
  108: P: exits normally
  109: P: true = erlang:exit(P.1, normal)
     (while exiting)
- 110: P: {'DOWN',#Ref<0.0.1.549>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.549>,process,P,normal})
+ 110: P: {'DOWN',#Ref<0.0.1.538>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.538>,process,P,normal})
     (while exiting)
  111: Exit signal (normal) from P reaches P.1
- 112: Message ({'DOWN',#Ref<0.0.1.549>,process,P,normal}) from P reaches P.2
+ 112: Message ({'DOWN',#Ref<0.0.1.538>,process,P,normal}) from P reaches P.2
  113: P.1: receives message ({'EXIT',P,normal})
     in gen_server.erl line 382
- 114: P.1: #Ref<0.0.1.645> = erlang:monitor(process, P.1.4)
-    in supervisor.erl line 968
+ 114: P.1: #Ref<0.0.1.624> = erlang:monitor(process, P.1.4)
+    in supervisor.erl line 964
  115: P.1: true = erlang:unlink(P.1.4)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  116: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  117: P.1: true = erlang:exit(P.1.4, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  118: Exit signal (shutdown) from P.1 reaches P.1.4
- 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     in gen_server.erl line 382
  120: P.1.1: true = ets:member(gproc, {P.2,l})
     in gproc.erl line 2313
@@ -849,59 +850,59 @@ Interleaving info:
  123: P.1.1: true = ets:delete(gproc, {{n,l,foo},n})
     in gproc.erl line 2325
  124: P.1.4: exits abnormally (shutdown)
- 125: P.1.4: {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
+ 125: P.1.4: {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
     (while exiting)
- 126: Message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
- 127: P.1: receives message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
-    in supervisor.erl line 945
- 128: P.1: #Ref<0.0.1.680> = erlang:monitor(process, P.1.3)
-    in supervisor.erl line 968
+ 126: Message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
+ 127: P.1: receives message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    in supervisor.erl line 941
+ 128: P.1: #Ref<0.0.1.657> = erlang:monitor(process, P.1.3)
+    in supervisor.erl line 964
  129: P.1: true = erlang:unlink(P.1.3)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  130: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  131: P.1: true = erlang:exit(P.1.3, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  132: Exit signal (shutdown) from P.1 reaches P.1.3
  133: P.1.3: exits abnormally (shutdown)
- 134: P.1.3: {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
+ 134: P.1.3: {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
     (while exiting)
- 135: Message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
- 136: P.1: receives message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
-    in supervisor.erl line 945
- 137: P.1: #Ref<0.0.1.701> = erlang:monitor(process, P.1.2)
-    in supervisor.erl line 968
+ 135: Message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
+ 136: P.1: receives message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    in supervisor.erl line 941
+ 137: P.1: #Ref<0.0.1.676> = erlang:monitor(process, P.1.2)
+    in supervisor.erl line 964
  138: P.1: true = erlang:unlink(P.1.2)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  139: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  140: P.1: true = erlang:exit(P.1.2, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  141: Exit signal (shutdown) from P.1 reaches P.1.2
  142: P.1.2: exits abnormally (shutdown)
  143: P.1.2: true = ets:give_away(gproc_monitor, P.1, [])
     (while exiting)
- 144: P.1.2: {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
+ 144: P.1.2: {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
     (while exiting)
- 145: Message ({'ETS-TRANSFER',114713,P.1.2,[]}) from P.1.2 reaches P.1
- 146: Message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
- 147: P.1: receives message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
-    in supervisor.erl line 945
- 148: P.1: #Ref<0.0.1.727> = erlang:monitor(process, P.1.1)
-    in supervisor.erl line 968
+ 145: Message ({'ETS-TRANSFER',110616,P.1.2,[]}) from P.1.2 reaches P.1
+ 146: Message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
+ 147: P.1: receives message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    in supervisor.erl line 941
+ 148: P.1: #Ref<0.0.1.699> = erlang:monitor(process, P.1.1)
+    in supervisor.erl line 964
  149: P.1: true = erlang:unlink(P.1.1)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  150: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  151: P.1: true = erlang:exit(P.1.1, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  152: Exit signal (shutdown) from P.1 reaches P.1.1
  153: P.1.1: exits abnormally (shutdown)
- 154: P.1.1: {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
+ 154: P.1.1: {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
     (while exiting)
- 155: Message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
- 156: P.1: receives message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
-    in supervisor.erl line 945
+ 155: Message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
+ 156: P.1: receives message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    in supervisor.erl line 941
  157: P.1: exits normally
  158: P.1: true = ets:delete(gproc)
     (while exiting)
@@ -928,7 +929,7 @@ Interleaving info:
    2: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 678
    3: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[P,[],gen,init_it,[gen_server,P,P,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
    4: P.1: undefined = erlang:put('$ancestors', [P])
     in proc_lib.erl line 234
    5: P.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
@@ -936,7 +937,7 @@ Interleaving info:
    6: P.1: true = erlang:register(gproc_sup, P.1)
     in gen.erl line 301
    7: P.1: false = erlang:process_flag(trap_exit, true)
-    in supervisor.erl line 273
+    in supervisor.erl line 271
    8: P.1: user = erlang:group_leader()
     in application.erl line 327
    9: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
@@ -958,7 +959,7 @@ Interleaving info:
   17: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   18: P.1: P.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   19: P.1.1: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
   20: P.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
@@ -1007,8 +1008,8 @@ Interleaving info:
   44: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   45: P.1: P.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
-    in erlang.erl line 2673
-  46: Message ({'ETS-TRANSFER',114713,P.1,[]}) from P.1 reaches P.1.2
+    in erlang.erl line 2683
+  46: Message ({'ETS-TRANSFER',110616,P.1,[]}) from P.1 reaches P.1.2
   47: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   48: P.1.3: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -1030,7 +1031,7 @@ Interleaving info:
   57: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   58: P.1: P.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   59: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   60: P.1.4: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -1053,32 +1054,32 @@ Interleaving info:
   70: Message ({ack,P.1,{ok,P.1}}) from P.1 reaches P
   71: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 334
-  72: P: {P.2,#Ref<0.0.1.546>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2539
-  73: P.2: #Ref<0.0.1.549> = erlang:monitor(process, P)
+  72: P: {P.2,#Ref<0.0.1.535>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2549
+  73: P.2: #Ref<0.0.1.538> = erlang:monitor(process, P)
     in test.erl line 36
   74: P.2: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  75: P.2: #Ref<0.0.1.554> = erlang:monitor(process, P.1.1)
+  75: P.2: #Ref<0.0.1.543> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}, [noconnect])
+  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}, [noconnect])
     in gen.erl line 166
-  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
-  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}})
+  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
+  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}})
     in gen_server.erl line 382
   79: P.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.2,the_value})
     in gproc_lib.erl line 78
   80: P.1.1: true = ets:insert_new(gproc, {{P.2,{n,l,foo}},[]})
   81: P.1.1: true = ets:insert_new(gproc, {{P.2,l}})
     in gproc_lib.erl line 300
-  82: P.1.1: #Ref<0.0.1.570> = erlang:monitor(process, P.2)
+  82: P.1.1: #Ref<0.0.1.558> = erlang:monitor(process, P.2)
     in gproc_lib.erl line 302
-  83: P.1.1: {#Ref<0.0.1.554>,true} = P.2 ! {#Ref<0.0.1.554>,true}
+  83: P.1.1: {#Ref<0.0.1.543>,true} = P.2 ! {#Ref<0.0.1.543>,true}
     in gen_server.erl line 241
-  84: Message ({#Ref<0.0.1.554>,true}) from P.1.1 reaches P.2
-  85: P.2: receives message ({#Ref<0.0.1.554>,true})
+  84: Message ({#Ref<0.0.1.543>,true}) from P.1.1 reaches P.2
+  85: P.2: receives message ({#Ref<0.0.1.543>,true})
     in gen.erl line 168
-  86: P.2: true = erlang:demonitor(#Ref<0.0.1.554>, [flush])
+  86: P.2: true = erlang:demonitor(#Ref<0.0.1.543>, [flush])
     in gen.erl line 170
   87: P.2: {P.2,ok} = P ! {P.2,ok}
     in test.erl line 38
@@ -1087,53 +1088,53 @@ Interleaving info:
     in test.erl line 43
   90: P: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  91: P: #Ref<0.0.1.591> = erlang:monitor(process, P.1.1)
+  91: P: #Ref<0.0.1.577> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  92: P: {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+  92: P: {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
     in gen.erl line 166
-  93: Message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
-  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}})
+  93: Message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
+  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}})
     in gen_server.erl line 382
   95: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2072
-  96: P.1.1: {#Ref<0.0.1.591>,{P.2,the_value}} = P ! {#Ref<0.0.1.591>,{P.2,the_value}}
+  96: P.1.1: {#Ref<0.0.1.577>,{P.2,the_value}} = P ! {#Ref<0.0.1.577>,{P.2,the_value}}
     in gen_server.erl line 241
-  97: Message ({#Ref<0.0.1.591>,{P.2,the_value}}) from P.1.1 reaches P
-  98: P: receives message ({#Ref<0.0.1.591>,{P.2,the_value}})
+  97: Message ({#Ref<0.0.1.577>,{P.2,the_value}}) from P.1.1 reaches P
+  98: P: receives message ({#Ref<0.0.1.577>,{P.2,the_value}})
     in gen.erl line 168
-  99: P: true = erlang:demonitor(#Ref<0.0.1.591>, [flush])
+  99: P: true = erlang:demonitor(#Ref<0.0.1.577>, [flush])
     in gen.erl line 170
  100: P: true = erlang:exit(P.2, kill)
     in test.erl line 45
  101: Exit signal (kill) from P reaches P.2
  102: P.2: exits abnormally (killed)
- 103: P.2: {'DOWN',#Ref<0.0.1.546>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 103: P.2: {'DOWN',#Ref<0.0.1.535>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     (while exiting)
- 104: P.2: {'DOWN',#Ref<0.0.1.570>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 104: P.2: {'DOWN',#Ref<0.0.1.558>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     (while exiting)
- 105: Message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed}) from P.2 reaches P
- 106: Message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed}) from P.2 reaches P.1.1
- 107: P: receives message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 105: Message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed}) from P.2 reaches P
+ 106: Message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed}) from P.2 reaches P.1.1
+ 107: P: receives message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     in test.erl line 46
  108: P: exits normally
  109: P: true = erlang:exit(P.1, normal)
     (while exiting)
- 110: P: {'DOWN',#Ref<0.0.1.549>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.549>,process,P,normal})
+ 110: P: {'DOWN',#Ref<0.0.1.538>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.538>,process,P,normal})
     (while exiting)
  111: Exit signal (normal) from P reaches P.1
- 112: Message ({'DOWN',#Ref<0.0.1.549>,process,P,normal}) from P reaches P.2
+ 112: Message ({'DOWN',#Ref<0.0.1.538>,process,P,normal}) from P reaches P.2
  113: P.1: receives message ({'EXIT',P,normal})
     in gen_server.erl line 382
- 114: P.1: #Ref<0.0.1.645> = erlang:monitor(process, P.1.4)
-    in supervisor.erl line 968
+ 114: P.1: #Ref<0.0.1.624> = erlang:monitor(process, P.1.4)
+    in supervisor.erl line 964
  115: P.1: true = erlang:unlink(P.1.4)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  116: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  117: P.1: true = erlang:exit(P.1.4, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  118: Exit signal (shutdown) from P.1 reaches P.1.4
- 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     in gen_server.erl line 382
  120: P.1.1: true = ets:member(gproc, {P.2,l})
     in gproc.erl line 2313
@@ -1142,59 +1143,59 @@ Interleaving info:
  122: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2323
  123: P.1.4: exits abnormally (shutdown)
- 124: P.1.4: {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
+ 124: P.1.4: {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
     (while exiting)
- 125: Message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
- 126: P.1: receives message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
-    in supervisor.erl line 945
- 127: P.1: #Ref<0.0.1.680> = erlang:monitor(process, P.1.3)
-    in supervisor.erl line 968
+ 125: Message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
+ 126: P.1: receives message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    in supervisor.erl line 941
+ 127: P.1: #Ref<0.0.1.657> = erlang:monitor(process, P.1.3)
+    in supervisor.erl line 964
  128: P.1: true = erlang:unlink(P.1.3)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  129: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  130: P.1: true = erlang:exit(P.1.3, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  131: Exit signal (shutdown) from P.1 reaches P.1.3
  132: P.1.3: exits abnormally (shutdown)
- 133: P.1.3: {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
+ 133: P.1.3: {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
     (while exiting)
- 134: Message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
- 135: P.1: receives message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
-    in supervisor.erl line 945
- 136: P.1: #Ref<0.0.1.701> = erlang:monitor(process, P.1.2)
-    in supervisor.erl line 968
+ 134: Message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
+ 135: P.1: receives message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    in supervisor.erl line 941
+ 136: P.1: #Ref<0.0.1.676> = erlang:monitor(process, P.1.2)
+    in supervisor.erl line 964
  137: P.1: true = erlang:unlink(P.1.2)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  138: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  139: P.1: true = erlang:exit(P.1.2, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  140: Exit signal (shutdown) from P.1 reaches P.1.2
  141: P.1.2: exits abnormally (shutdown)
  142: P.1.2: true = ets:give_away(gproc_monitor, P.1, [])
     (while exiting)
- 143: P.1.2: {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
+ 143: P.1.2: {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
     (while exiting)
- 144: Message ({'ETS-TRANSFER',114713,P.1.2,[]}) from P.1.2 reaches P.1
- 145: Message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
- 146: P.1: receives message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
-    in supervisor.erl line 945
- 147: P.1: #Ref<0.0.1.727> = erlang:monitor(process, P.1.1)
-    in supervisor.erl line 968
+ 144: Message ({'ETS-TRANSFER',110616,P.1.2,[]}) from P.1.2 reaches P.1
+ 145: Message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
+ 146: P.1: receives message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    in supervisor.erl line 941
+ 147: P.1: #Ref<0.0.1.699> = erlang:monitor(process, P.1.1)
+    in supervisor.erl line 964
  148: P.1: true = erlang:unlink(P.1.1)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  149: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  150: P.1: true = erlang:exit(P.1.1, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  151: Exit signal (shutdown) from P.1 reaches P.1.1
  152: P.1.1: exits abnormally (shutdown)
- 153: P.1.1: {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
+ 153: P.1.1: {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
     (while exiting)
- 154: Message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
- 155: P.1: receives message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
-    in supervisor.erl line 945
+ 154: Message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
+ 155: P.1: receives message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    in supervisor.erl line 941
  156: P.1: exits normally
  157: P.1: true = ets:delete(gproc)
     (while exiting)
@@ -1221,7 +1222,7 @@ Interleaving info:
    2: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 678
    3: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[P,[],gen,init_it,[gen_server,P,P,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
    4: P.1: undefined = erlang:put('$ancestors', [P])
     in proc_lib.erl line 234
    5: P.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
@@ -1229,7 +1230,7 @@ Interleaving info:
    6: P.1: true = erlang:register(gproc_sup, P.1)
     in gen.erl line 301
    7: P.1: false = erlang:process_flag(trap_exit, true)
-    in supervisor.erl line 273
+    in supervisor.erl line 271
    8: P.1: user = erlang:group_leader()
     in application.erl line 327
    9: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
@@ -1251,7 +1252,7 @@ Interleaving info:
   17: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   18: P.1: P.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   19: P.1.1: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
   20: P.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
@@ -1300,8 +1301,8 @@ Interleaving info:
   44: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   45: P.1: P.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
-    in erlang.erl line 2673
-  46: Message ({'ETS-TRANSFER',114713,P.1,[]}) from P.1 reaches P.1.2
+    in erlang.erl line 2683
+  46: Message ({'ETS-TRANSFER',110616,P.1,[]}) from P.1 reaches P.1.2
   47: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   48: P.1.3: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -1323,7 +1324,7 @@ Interleaving info:
   57: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   58: P.1: P.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   59: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   60: P.1.4: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -1346,32 +1347,32 @@ Interleaving info:
   70: Message ({ack,P.1,{ok,P.1}}) from P.1 reaches P
   71: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 334
-  72: P: {P.2,#Ref<0.0.1.546>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2539
-  73: P.2: #Ref<0.0.1.549> = erlang:monitor(process, P)
+  72: P: {P.2,#Ref<0.0.1.535>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2549
+  73: P.2: #Ref<0.0.1.538> = erlang:monitor(process, P)
     in test.erl line 36
   74: P.2: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  75: P.2: #Ref<0.0.1.554> = erlang:monitor(process, P.1.1)
+  75: P.2: #Ref<0.0.1.543> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}, [noconnect])
+  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}, [noconnect])
     in gen.erl line 166
-  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
-  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}})
+  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
+  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}})
     in gen_server.erl line 382
   79: P.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.2,the_value})
     in gproc_lib.erl line 78
   80: P.1.1: true = ets:insert_new(gproc, {{P.2,{n,l,foo}},[]})
   81: P.1.1: true = ets:insert_new(gproc, {{P.2,l}})
     in gproc_lib.erl line 300
-  82: P.1.1: #Ref<0.0.1.570> = erlang:monitor(process, P.2)
+  82: P.1.1: #Ref<0.0.1.558> = erlang:monitor(process, P.2)
     in gproc_lib.erl line 302
-  83: P.1.1: {#Ref<0.0.1.554>,true} = P.2 ! {#Ref<0.0.1.554>,true}
+  83: P.1.1: {#Ref<0.0.1.543>,true} = P.2 ! {#Ref<0.0.1.543>,true}
     in gen_server.erl line 241
-  84: Message ({#Ref<0.0.1.554>,true}) from P.1.1 reaches P.2
-  85: P.2: receives message ({#Ref<0.0.1.554>,true})
+  84: Message ({#Ref<0.0.1.543>,true}) from P.1.1 reaches P.2
+  85: P.2: receives message ({#Ref<0.0.1.543>,true})
     in gen.erl line 168
-  86: P.2: true = erlang:demonitor(#Ref<0.0.1.554>, [flush])
+  86: P.2: true = erlang:demonitor(#Ref<0.0.1.543>, [flush])
     in gen.erl line 170
   87: P.2: {P.2,ok} = P ! {P.2,ok}
     in test.erl line 38
@@ -1380,112 +1381,112 @@ Interleaving info:
     in test.erl line 43
   90: P: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  91: P: #Ref<0.0.1.591> = erlang:monitor(process, P.1.1)
+  91: P: #Ref<0.0.1.577> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  92: P: {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+  92: P: {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
     in gen.erl line 166
-  93: Message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
-  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}})
+  93: Message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
+  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}})
     in gen_server.erl line 382
   95: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2072
-  96: P.1.1: {#Ref<0.0.1.591>,{P.2,the_value}} = P ! {#Ref<0.0.1.591>,{P.2,the_value}}
+  96: P.1.1: {#Ref<0.0.1.577>,{P.2,the_value}} = P ! {#Ref<0.0.1.577>,{P.2,the_value}}
     in gen_server.erl line 241
-  97: Message ({#Ref<0.0.1.591>,{P.2,the_value}}) from P.1.1 reaches P
-  98: P: receives message ({#Ref<0.0.1.591>,{P.2,the_value}})
+  97: Message ({#Ref<0.0.1.577>,{P.2,the_value}}) from P.1.1 reaches P
+  98: P: receives message ({#Ref<0.0.1.577>,{P.2,the_value}})
     in gen.erl line 168
-  99: P: true = erlang:demonitor(#Ref<0.0.1.591>, [flush])
+  99: P: true = erlang:demonitor(#Ref<0.0.1.577>, [flush])
     in gen.erl line 170
  100: P: true = erlang:exit(P.2, kill)
     in test.erl line 45
  101: Exit signal (kill) from P reaches P.2
  102: P.2: exits abnormally (killed)
- 103: P.2: {'DOWN',#Ref<0.0.1.546>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 103: P.2: {'DOWN',#Ref<0.0.1.535>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     (while exiting)
- 104: P.2: {'DOWN',#Ref<0.0.1.570>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 104: P.2: {'DOWN',#Ref<0.0.1.558>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     (while exiting)
- 105: Message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed}) from P.2 reaches P
- 106: Message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed}) from P.2 reaches P.1.1
- 107: P: receives message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 105: Message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed}) from P.2 reaches P
+ 106: Message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed}) from P.2 reaches P.1.1
+ 107: P: receives message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     in test.erl line 46
  108: P: exits normally
  109: P: true = erlang:exit(P.1, normal)
     (while exiting)
- 110: P: {'DOWN',#Ref<0.0.1.549>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.549>,process,P,normal})
+ 110: P: {'DOWN',#Ref<0.0.1.538>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.538>,process,P,normal})
     (while exiting)
  111: Exit signal (normal) from P reaches P.1
- 112: Message ({'DOWN',#Ref<0.0.1.549>,process,P,normal}) from P reaches P.2
+ 112: Message ({'DOWN',#Ref<0.0.1.538>,process,P,normal}) from P reaches P.2
  113: P.1: receives message ({'EXIT',P,normal})
     in gen_server.erl line 382
- 114: P.1: #Ref<0.0.1.645> = erlang:monitor(process, P.1.4)
-    in supervisor.erl line 968
+ 114: P.1: #Ref<0.0.1.624> = erlang:monitor(process, P.1.4)
+    in supervisor.erl line 964
  115: P.1: true = erlang:unlink(P.1.4)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  116: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  117: P.1: true = erlang:exit(P.1.4, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  118: Exit signal (shutdown) from P.1 reaches P.1.4
- 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     in gen_server.erl line 382
  120: P.1.1: true = ets:member(gproc, {P.2,l})
     in gproc.erl line 2313
  121: P.1.1: [{{n,l,foo},[]}] = ets:select(gproc, [{{{P.2,'$1'},'$2'},[{'==',{element,2,'$1'},l}],[{{'$1','$2'}}]}])
     in gproc.erl line 2317
  122: P.1.4: exits abnormally (shutdown)
- 123: P.1.4: {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
+ 123: P.1.4: {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
     (while exiting)
- 124: Message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
- 125: P.1: receives message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
-    in supervisor.erl line 945
- 126: P.1: #Ref<0.0.1.680> = erlang:monitor(process, P.1.3)
-    in supervisor.erl line 968
+ 124: Message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
+ 125: P.1: receives message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    in supervisor.erl line 941
+ 126: P.1: #Ref<0.0.1.657> = erlang:monitor(process, P.1.3)
+    in supervisor.erl line 964
  127: P.1: true = erlang:unlink(P.1.3)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  128: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  129: P.1: true = erlang:exit(P.1.3, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  130: Exit signal (shutdown) from P.1 reaches P.1.3
  131: P.1.3: exits abnormally (shutdown)
- 132: P.1.3: {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
+ 132: P.1.3: {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
     (while exiting)
- 133: Message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
- 134: P.1: receives message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
-    in supervisor.erl line 945
- 135: P.1: #Ref<0.0.1.701> = erlang:monitor(process, P.1.2)
-    in supervisor.erl line 968
+ 133: Message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
+ 134: P.1: receives message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    in supervisor.erl line 941
+ 135: P.1: #Ref<0.0.1.676> = erlang:monitor(process, P.1.2)
+    in supervisor.erl line 964
  136: P.1: true = erlang:unlink(P.1.2)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  137: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  138: P.1: true = erlang:exit(P.1.2, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  139: Exit signal (shutdown) from P.1 reaches P.1.2
  140: P.1.2: exits abnormally (shutdown)
  141: P.1.2: true = ets:give_away(gproc_monitor, P.1, [])
     (while exiting)
- 142: P.1.2: {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
+ 142: P.1.2: {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
     (while exiting)
- 143: Message ({'ETS-TRANSFER',114713,P.1.2,[]}) from P.1.2 reaches P.1
- 144: Message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
- 145: P.1: receives message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
-    in supervisor.erl line 945
- 146: P.1: #Ref<0.0.1.727> = erlang:monitor(process, P.1.1)
-    in supervisor.erl line 968
+ 143: Message ({'ETS-TRANSFER',110616,P.1.2,[]}) from P.1.2 reaches P.1
+ 144: Message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
+ 145: P.1: receives message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    in supervisor.erl line 941
+ 146: P.1: #Ref<0.0.1.699> = erlang:monitor(process, P.1.1)
+    in supervisor.erl line 964
  147: P.1: true = erlang:unlink(P.1.1)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  148: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  149: P.1: true = erlang:exit(P.1.1, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  150: Exit signal (shutdown) from P.1 reaches P.1.1
  151: P.1.1: exits abnormally (shutdown)
- 152: P.1.1: {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
+ 152: P.1.1: {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
     (while exiting)
- 153: Message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
- 154: P.1: receives message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
-    in supervisor.erl line 945
+ 153: Message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
+ 154: P.1: receives message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    in supervisor.erl line 941
  155: P.1: exits normally
  156: P.1: true = ets:delete(gproc)
     (while exiting)
@@ -1512,7 +1513,7 @@ Interleaving info:
    2: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 678
    3: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[P,[],gen,init_it,[gen_server,P,P,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
    4: P.1: undefined = erlang:put('$ancestors', [P])
     in proc_lib.erl line 234
    5: P.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
@@ -1520,7 +1521,7 @@ Interleaving info:
    6: P.1: true = erlang:register(gproc_sup, P.1)
     in gen.erl line 301
    7: P.1: false = erlang:process_flag(trap_exit, true)
-    in supervisor.erl line 273
+    in supervisor.erl line 271
    8: P.1: user = erlang:group_leader()
     in application.erl line 327
    9: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
@@ -1542,7 +1543,7 @@ Interleaving info:
   17: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   18: P.1: P.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   19: P.1.1: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
   20: P.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
@@ -1591,8 +1592,8 @@ Interleaving info:
   44: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   45: P.1: P.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
-    in erlang.erl line 2673
-  46: Message ({'ETS-TRANSFER',114713,P.1,[]}) from P.1 reaches P.1.2
+    in erlang.erl line 2683
+  46: Message ({'ETS-TRANSFER',110616,P.1,[]}) from P.1 reaches P.1.2
   47: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   48: P.1.3: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -1614,7 +1615,7 @@ Interleaving info:
   57: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   58: P.1: P.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   59: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   60: P.1.4: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -1637,32 +1638,32 @@ Interleaving info:
   70: Message ({ack,P.1,{ok,P.1}}) from P.1 reaches P
   71: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 334
-  72: P: {P.2,#Ref<0.0.1.546>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2539
-  73: P.2: #Ref<0.0.1.549> = erlang:monitor(process, P)
+  72: P: {P.2,#Ref<0.0.1.535>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2549
+  73: P.2: #Ref<0.0.1.538> = erlang:monitor(process, P)
     in test.erl line 36
   74: P.2: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  75: P.2: #Ref<0.0.1.554> = erlang:monitor(process, P.1.1)
+  75: P.2: #Ref<0.0.1.543> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}, [noconnect])
+  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}, [noconnect])
     in gen.erl line 166
-  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
-  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}})
+  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
+  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}})
     in gen_server.erl line 382
   79: P.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.2,the_value})
     in gproc_lib.erl line 78
   80: P.1.1: true = ets:insert_new(gproc, {{P.2,{n,l,foo}},[]})
   81: P.1.1: true = ets:insert_new(gproc, {{P.2,l}})
     in gproc_lib.erl line 300
-  82: P.1.1: #Ref<0.0.1.570> = erlang:monitor(process, P.2)
+  82: P.1.1: #Ref<0.0.1.558> = erlang:monitor(process, P.2)
     in gproc_lib.erl line 302
-  83: P.1.1: {#Ref<0.0.1.554>,true} = P.2 ! {#Ref<0.0.1.554>,true}
+  83: P.1.1: {#Ref<0.0.1.543>,true} = P.2 ! {#Ref<0.0.1.543>,true}
     in gen_server.erl line 241
-  84: Message ({#Ref<0.0.1.554>,true}) from P.1.1 reaches P.2
-  85: P.2: receives message ({#Ref<0.0.1.554>,true})
+  84: Message ({#Ref<0.0.1.543>,true}) from P.1.1 reaches P.2
+  85: P.2: receives message ({#Ref<0.0.1.543>,true})
     in gen.erl line 168
-  86: P.2: true = erlang:demonitor(#Ref<0.0.1.554>, [flush])
+  86: P.2: true = erlang:demonitor(#Ref<0.0.1.543>, [flush])
     in gen.erl line 170
   87: P.2: {P.2,ok} = P ! {P.2,ok}
     in test.erl line 38
@@ -1671,110 +1672,110 @@ Interleaving info:
     in test.erl line 43
   90: P: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  91: P: #Ref<0.0.1.591> = erlang:monitor(process, P.1.1)
+  91: P: #Ref<0.0.1.577> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  92: P: {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+  92: P: {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
     in gen.erl line 166
-  93: Message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
-  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}})
+  93: Message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
+  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}})
     in gen_server.erl line 382
   95: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2072
-  96: P.1.1: {#Ref<0.0.1.591>,{P.2,the_value}} = P ! {#Ref<0.0.1.591>,{P.2,the_value}}
+  96: P.1.1: {#Ref<0.0.1.577>,{P.2,the_value}} = P ! {#Ref<0.0.1.577>,{P.2,the_value}}
     in gen_server.erl line 241
-  97: Message ({#Ref<0.0.1.591>,{P.2,the_value}}) from P.1.1 reaches P
-  98: P: receives message ({#Ref<0.0.1.591>,{P.2,the_value}})
+  97: Message ({#Ref<0.0.1.577>,{P.2,the_value}}) from P.1.1 reaches P
+  98: P: receives message ({#Ref<0.0.1.577>,{P.2,the_value}})
     in gen.erl line 168
-  99: P: true = erlang:demonitor(#Ref<0.0.1.591>, [flush])
+  99: P: true = erlang:demonitor(#Ref<0.0.1.577>, [flush])
     in gen.erl line 170
  100: P: true = erlang:exit(P.2, kill)
     in test.erl line 45
  101: Exit signal (kill) from P reaches P.2
  102: P.2: exits abnormally (killed)
- 103: P.2: {'DOWN',#Ref<0.0.1.546>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 103: P.2: {'DOWN',#Ref<0.0.1.535>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     (while exiting)
- 104: P.2: {'DOWN',#Ref<0.0.1.570>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 104: P.2: {'DOWN',#Ref<0.0.1.558>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     (while exiting)
- 105: Message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed}) from P.2 reaches P
- 106: Message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed}) from P.2 reaches P.1.1
- 107: P: receives message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 105: Message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed}) from P.2 reaches P
+ 106: Message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed}) from P.2 reaches P.1.1
+ 107: P: receives message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     in test.erl line 46
  108: P: exits normally
  109: P: true = erlang:exit(P.1, normal)
     (while exiting)
- 110: P: {'DOWN',#Ref<0.0.1.549>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.549>,process,P,normal})
+ 110: P: {'DOWN',#Ref<0.0.1.538>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.538>,process,P,normal})
     (while exiting)
  111: Exit signal (normal) from P reaches P.1
- 112: Message ({'DOWN',#Ref<0.0.1.549>,process,P,normal}) from P reaches P.2
+ 112: Message ({'DOWN',#Ref<0.0.1.538>,process,P,normal}) from P reaches P.2
  113: P.1: receives message ({'EXIT',P,normal})
     in gen_server.erl line 382
- 114: P.1: #Ref<0.0.1.645> = erlang:monitor(process, P.1.4)
-    in supervisor.erl line 968
+ 114: P.1: #Ref<0.0.1.624> = erlang:monitor(process, P.1.4)
+    in supervisor.erl line 964
  115: P.1: true = erlang:unlink(P.1.4)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  116: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  117: P.1: true = erlang:exit(P.1.4, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  118: Exit signal (shutdown) from P.1 reaches P.1.4
- 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     in gen_server.erl line 382
  120: P.1.1: true = ets:member(gproc, {P.2,l})
     in gproc.erl line 2313
  121: P.1.4: exits abnormally (shutdown)
- 122: P.1.4: {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
+ 122: P.1.4: {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
     (while exiting)
- 123: Message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
- 124: P.1: receives message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
-    in supervisor.erl line 945
- 125: P.1: #Ref<0.0.1.680> = erlang:monitor(process, P.1.3)
-    in supervisor.erl line 968
+ 123: Message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
+ 124: P.1: receives message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    in supervisor.erl line 941
+ 125: P.1: #Ref<0.0.1.657> = erlang:monitor(process, P.1.3)
+    in supervisor.erl line 964
  126: P.1: true = erlang:unlink(P.1.3)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  127: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  128: P.1: true = erlang:exit(P.1.3, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  129: Exit signal (shutdown) from P.1 reaches P.1.3
  130: P.1.3: exits abnormally (shutdown)
- 131: P.1.3: {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
+ 131: P.1.3: {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
     (while exiting)
- 132: Message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
- 133: P.1: receives message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
-    in supervisor.erl line 945
- 134: P.1: #Ref<0.0.1.701> = erlang:monitor(process, P.1.2)
-    in supervisor.erl line 968
+ 132: Message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
+ 133: P.1: receives message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    in supervisor.erl line 941
+ 134: P.1: #Ref<0.0.1.676> = erlang:monitor(process, P.1.2)
+    in supervisor.erl line 964
  135: P.1: true = erlang:unlink(P.1.2)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  136: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  137: P.1: true = erlang:exit(P.1.2, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  138: Exit signal (shutdown) from P.1 reaches P.1.2
  139: P.1.2: exits abnormally (shutdown)
  140: P.1.2: true = ets:give_away(gproc_monitor, P.1, [])
     (while exiting)
- 141: P.1.2: {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
+ 141: P.1.2: {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
     (while exiting)
- 142: Message ({'ETS-TRANSFER',114713,P.1.2,[]}) from P.1.2 reaches P.1
- 143: Message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
- 144: P.1: receives message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
-    in supervisor.erl line 945
- 145: P.1: #Ref<0.0.1.727> = erlang:monitor(process, P.1.1)
-    in supervisor.erl line 968
+ 142: Message ({'ETS-TRANSFER',110616,P.1.2,[]}) from P.1.2 reaches P.1
+ 143: Message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
+ 144: P.1: receives message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    in supervisor.erl line 941
+ 145: P.1: #Ref<0.0.1.699> = erlang:monitor(process, P.1.1)
+    in supervisor.erl line 964
  146: P.1: true = erlang:unlink(P.1.1)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  147: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  148: P.1: true = erlang:exit(P.1.1, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  149: Exit signal (shutdown) from P.1 reaches P.1.1
  150: P.1.1: exits abnormally (shutdown)
- 151: P.1.1: {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
+ 151: P.1.1: {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
     (while exiting)
- 152: Message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
- 153: P.1: receives message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
-    in supervisor.erl line 945
+ 152: Message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
+ 153: P.1: receives message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    in supervisor.erl line 941
  154: P.1: exits normally
  155: P.1: true = ets:delete(gproc)
     (while exiting)
@@ -1801,7 +1802,7 @@ Interleaving info:
    2: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 678
    3: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[P,[],gen,init_it,[gen_server,P,P,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
    4: P.1: undefined = erlang:put('$ancestors', [P])
     in proc_lib.erl line 234
    5: P.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
@@ -1809,7 +1810,7 @@ Interleaving info:
    6: P.1: true = erlang:register(gproc_sup, P.1)
     in gen.erl line 301
    7: P.1: false = erlang:process_flag(trap_exit, true)
-    in supervisor.erl line 273
+    in supervisor.erl line 271
    8: P.1: user = erlang:group_leader()
     in application.erl line 327
    9: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
@@ -1831,7 +1832,7 @@ Interleaving info:
   17: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   18: P.1: P.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   19: P.1.1: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
   20: P.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
@@ -1880,8 +1881,8 @@ Interleaving info:
   44: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   45: P.1: P.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
-    in erlang.erl line 2673
-  46: Message ({'ETS-TRANSFER',114713,P.1,[]}) from P.1 reaches P.1.2
+    in erlang.erl line 2683
+  46: Message ({'ETS-TRANSFER',110616,P.1,[]}) from P.1 reaches P.1.2
   47: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   48: P.1.3: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -1903,7 +1904,7 @@ Interleaving info:
   57: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   58: P.1: P.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   59: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   60: P.1.4: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -1926,32 +1927,32 @@ Interleaving info:
   70: Message ({ack,P.1,{ok,P.1}}) from P.1 reaches P
   71: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 334
-  72: P: {P.2,#Ref<0.0.1.546>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2539
-  73: P.2: #Ref<0.0.1.549> = erlang:monitor(process, P)
+  72: P: {P.2,#Ref<0.0.1.535>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2549
+  73: P.2: #Ref<0.0.1.538> = erlang:monitor(process, P)
     in test.erl line 36
   74: P.2: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  75: P.2: #Ref<0.0.1.554> = erlang:monitor(process, P.1.1)
+  75: P.2: #Ref<0.0.1.543> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}, [noconnect])
+  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}, [noconnect])
     in gen.erl line 166
-  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
-  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}})
+  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
+  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}})
     in gen_server.erl line 382
   79: P.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.2,the_value})
     in gproc_lib.erl line 78
   80: P.1.1: true = ets:insert_new(gproc, {{P.2,{n,l,foo}},[]})
   81: P.1.1: true = ets:insert_new(gproc, {{P.2,l}})
     in gproc_lib.erl line 300
-  82: P.1.1: #Ref<0.0.1.570> = erlang:monitor(process, P.2)
+  82: P.1.1: #Ref<0.0.1.558> = erlang:monitor(process, P.2)
     in gproc_lib.erl line 302
-  83: P.1.1: {#Ref<0.0.1.554>,true} = P.2 ! {#Ref<0.0.1.554>,true}
+  83: P.1.1: {#Ref<0.0.1.543>,true} = P.2 ! {#Ref<0.0.1.543>,true}
     in gen_server.erl line 241
-  84: Message ({#Ref<0.0.1.554>,true}) from P.1.1 reaches P.2
-  85: P.2: receives message ({#Ref<0.0.1.554>,true})
+  84: Message ({#Ref<0.0.1.543>,true}) from P.1.1 reaches P.2
+  85: P.2: receives message ({#Ref<0.0.1.543>,true})
     in gen.erl line 168
-  86: P.2: true = erlang:demonitor(#Ref<0.0.1.554>, [flush])
+  86: P.2: true = erlang:demonitor(#Ref<0.0.1.543>, [flush])
     in gen.erl line 170
   87: P.2: {P.2,ok} = P ! {P.2,ok}
     in test.erl line 38
@@ -1960,108 +1961,108 @@ Interleaving info:
     in test.erl line 43
   90: P: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  91: P: #Ref<0.0.1.591> = erlang:monitor(process, P.1.1)
+  91: P: #Ref<0.0.1.577> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  92: P: {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+  92: P: {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
     in gen.erl line 166
-  93: Message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
-  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}})
+  93: Message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
+  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}})
     in gen_server.erl line 382
   95: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2072
-  96: P.1.1: {#Ref<0.0.1.591>,{P.2,the_value}} = P ! {#Ref<0.0.1.591>,{P.2,the_value}}
+  96: P.1.1: {#Ref<0.0.1.577>,{P.2,the_value}} = P ! {#Ref<0.0.1.577>,{P.2,the_value}}
     in gen_server.erl line 241
-  97: Message ({#Ref<0.0.1.591>,{P.2,the_value}}) from P.1.1 reaches P
-  98: P: receives message ({#Ref<0.0.1.591>,{P.2,the_value}})
+  97: Message ({#Ref<0.0.1.577>,{P.2,the_value}}) from P.1.1 reaches P
+  98: P: receives message ({#Ref<0.0.1.577>,{P.2,the_value}})
     in gen.erl line 168
-  99: P: true = erlang:demonitor(#Ref<0.0.1.591>, [flush])
+  99: P: true = erlang:demonitor(#Ref<0.0.1.577>, [flush])
     in gen.erl line 170
  100: P: true = erlang:exit(P.2, kill)
     in test.erl line 45
  101: Exit signal (kill) from P reaches P.2
  102: P.2: exits abnormally (killed)
- 103: P.2: {'DOWN',#Ref<0.0.1.546>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 103: P.2: {'DOWN',#Ref<0.0.1.535>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     (while exiting)
- 104: P.2: {'DOWN',#Ref<0.0.1.570>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 104: P.2: {'DOWN',#Ref<0.0.1.558>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     (while exiting)
- 105: Message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed}) from P.2 reaches P
- 106: Message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed}) from P.2 reaches P.1.1
- 107: P: receives message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 105: Message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed}) from P.2 reaches P
+ 106: Message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed}) from P.2 reaches P.1.1
+ 107: P: receives message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     in test.erl line 46
  108: P: exits normally
  109: P: true = erlang:exit(P.1, normal)
     (while exiting)
- 110: P: {'DOWN',#Ref<0.0.1.549>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.549>,process,P,normal})
+ 110: P: {'DOWN',#Ref<0.0.1.538>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.538>,process,P,normal})
     (while exiting)
  111: Exit signal (normal) from P reaches P.1
- 112: Message ({'DOWN',#Ref<0.0.1.549>,process,P,normal}) from P reaches P.2
+ 112: Message ({'DOWN',#Ref<0.0.1.538>,process,P,normal}) from P reaches P.2
  113: P.1: receives message ({'EXIT',P,normal})
     in gen_server.erl line 382
- 114: P.1: #Ref<0.0.1.645> = erlang:monitor(process, P.1.4)
-    in supervisor.erl line 968
+ 114: P.1: #Ref<0.0.1.624> = erlang:monitor(process, P.1.4)
+    in supervisor.erl line 964
  115: P.1: true = erlang:unlink(P.1.4)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  116: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  117: P.1: true = erlang:exit(P.1.4, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  118: Exit signal (shutdown) from P.1 reaches P.1.4
- 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 119: P.1.1: receives message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     in gen_server.erl line 382
  120: P.1.4: exits abnormally (shutdown)
- 121: P.1.4: {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
+ 121: P.1.4: {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
     (while exiting)
- 122: Message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
- 123: P.1: receives message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
-    in supervisor.erl line 945
- 124: P.1: #Ref<0.0.1.680> = erlang:monitor(process, P.1.3)
-    in supervisor.erl line 968
+ 122: Message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
+ 123: P.1: receives message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    in supervisor.erl line 941
+ 124: P.1: #Ref<0.0.1.657> = erlang:monitor(process, P.1.3)
+    in supervisor.erl line 964
  125: P.1: true = erlang:unlink(P.1.3)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  126: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  127: P.1: true = erlang:exit(P.1.3, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  128: Exit signal (shutdown) from P.1 reaches P.1.3
  129: P.1.3: exits abnormally (shutdown)
- 130: P.1.3: {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
+ 130: P.1.3: {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
     (while exiting)
- 131: Message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
- 132: P.1: receives message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
-    in supervisor.erl line 945
- 133: P.1: #Ref<0.0.1.701> = erlang:monitor(process, P.1.2)
-    in supervisor.erl line 968
+ 131: Message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
+ 132: P.1: receives message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    in supervisor.erl line 941
+ 133: P.1: #Ref<0.0.1.676> = erlang:monitor(process, P.1.2)
+    in supervisor.erl line 964
  134: P.1: true = erlang:unlink(P.1.2)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  135: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  136: P.1: true = erlang:exit(P.1.2, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  137: Exit signal (shutdown) from P.1 reaches P.1.2
  138: P.1.2: exits abnormally (shutdown)
  139: P.1.2: true = ets:give_away(gproc_monitor, P.1, [])
     (while exiting)
- 140: P.1.2: {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
+ 140: P.1.2: {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
     (while exiting)
- 141: Message ({'ETS-TRANSFER',114713,P.1.2,[]}) from P.1.2 reaches P.1
- 142: Message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
- 143: P.1: receives message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
-    in supervisor.erl line 945
- 144: P.1: #Ref<0.0.1.727> = erlang:monitor(process, P.1.1)
-    in supervisor.erl line 968
+ 141: Message ({'ETS-TRANSFER',110616,P.1.2,[]}) from P.1.2 reaches P.1
+ 142: Message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
+ 143: P.1: receives message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    in supervisor.erl line 941
+ 144: P.1: #Ref<0.0.1.699> = erlang:monitor(process, P.1.1)
+    in supervisor.erl line 964
  145: P.1: true = erlang:unlink(P.1.1)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  146: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  147: P.1: true = erlang:exit(P.1.1, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  148: Exit signal (shutdown) from P.1 reaches P.1.1
  149: P.1.1: exits abnormally (shutdown)
- 150: P.1.1: {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
+ 150: P.1.1: {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
     (while exiting)
- 151: Message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
- 152: P.1: receives message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
-    in supervisor.erl line 945
+ 151: Message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
+ 152: P.1: receives message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    in supervisor.erl line 941
  153: P.1: exits normally
  154: P.1: true = ets:delete(gproc)
     (while exiting)
@@ -2088,7 +2089,7 @@ Interleaving info:
    2: P: [] = erlang:process_info(P, registered_name)
     in proc_lib.erl line 678
    3: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[P,[],gen,init_it,[gen_server,P,P,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
    4: P.1: undefined = erlang:put('$ancestors', [P])
     in proc_lib.erl line 234
    5: P.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
@@ -2096,7 +2097,7 @@ Interleaving info:
    6: P.1: true = erlang:register(gproc_sup, P.1)
     in gen.erl line 301
    7: P.1: false = erlang:process_flag(trap_exit, true)
-    in supervisor.erl line 273
+    in supervisor.erl line 271
    8: P.1: user = erlang:group_leader()
     in application.erl line 327
    9: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
@@ -2118,7 +2119,7 @@ Interleaving info:
   17: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   18: P.1: P.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   19: P.1.1: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
   20: P.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
@@ -2167,8 +2168,8 @@ Interleaving info:
   44: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   45: P.1: P.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
-    in erlang.erl line 2673
-  46: Message ({'ETS-TRANSFER',114713,P.1,[]}) from P.1 reaches P.1.2
+    in erlang.erl line 2683
+  46: Message ({'ETS-TRANSFER',110616,P.1,[]}) from P.1 reaches P.1.2
   47: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   48: P.1.3: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -2190,7 +2191,7 @@ Interleaving info:
   57: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
     in proc_lib.erl line 678
   58: P.1: P.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
-    in erlang.erl line 2673
+    in erlang.erl line 2683
   59: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
   60: P.1.4: undefined = erlang:put('$ancestors', [gproc_sup,P])
     in proc_lib.erl line 234
@@ -2213,32 +2214,32 @@ Interleaving info:
   70: Message ({ack,P.1,{ok,P.1}}) from P.1 reaches P
   71: P: receives message ({ack,P.1,{ok,P.1}})
     in proc_lib.erl line 334
-  72: P: {P.2,#Ref<0.0.1.546>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
-    in erlang.erl line 2539
-  73: P.2: #Ref<0.0.1.549> = erlang:monitor(process, P)
+  72: P: {P.2,#Ref<0.0.1.535>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2549
+  73: P.2: #Ref<0.0.1.538> = erlang:monitor(process, P)
     in test.erl line 36
   74: P.2: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  75: P.2: #Ref<0.0.1.554> = erlang:monitor(process, P.1.1)
+  75: P.2: #Ref<0.0.1.543> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}, [noconnect])
+  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}, [noconnect])
     in gen.erl line 166
-  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
-  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.554>},{reg,{n,l,foo},the_value}})
+  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
+  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}})
     in gen_server.erl line 382
   79: P.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.2,the_value})
     in gproc_lib.erl line 78
   80: P.1.1: true = ets:insert_new(gproc, {{P.2,{n,l,foo}},[]})
   81: P.1.1: true = ets:insert_new(gproc, {{P.2,l}})
     in gproc_lib.erl line 300
-  82: P.1.1: #Ref<0.0.1.570> = erlang:monitor(process, P.2)
+  82: P.1.1: #Ref<0.0.1.558> = erlang:monitor(process, P.2)
     in gproc_lib.erl line 302
-  83: P.1.1: {#Ref<0.0.1.554>,true} = P.2 ! {#Ref<0.0.1.554>,true}
+  83: P.1.1: {#Ref<0.0.1.543>,true} = P.2 ! {#Ref<0.0.1.543>,true}
     in gen_server.erl line 241
-  84: Message ({#Ref<0.0.1.554>,true}) from P.1.1 reaches P.2
-  85: P.2: receives message ({#Ref<0.0.1.554>,true})
+  84: Message ({#Ref<0.0.1.543>,true}) from P.1.1 reaches P.2
+  85: P.2: receives message ({#Ref<0.0.1.543>,true})
     in gen.erl line 168
-  86: P.2: true = erlang:demonitor(#Ref<0.0.1.554>, [flush])
+  86: P.2: true = erlang:demonitor(#Ref<0.0.1.543>, [flush])
     in gen.erl line 170
   87: P.2: {P.2,ok} = P ! {P.2,ok}
     in test.erl line 38
@@ -2247,106 +2248,391 @@ Interleaving info:
     in test.erl line 43
   90: P: P.1.1 = erlang:whereis(gproc)
     in gen.erl line 256
-  91: P: #Ref<0.0.1.591> = erlang:monitor(process, P.1.1)
+  91: P: #Ref<0.0.1.577> = erlang:monitor(process, P.1.1)
     in gen.erl line 155
-  92: P: {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+  92: P: {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
     in gen.erl line 166
-  93: Message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
-  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.591>},{reg_or_locate,{n,l,foo},undefined,P}})
+  93: Message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
+  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}})
     in gen_server.erl line 382
   95: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
     in gproc.erl line 2072
-  96: P.1.1: {#Ref<0.0.1.591>,{P.2,the_value}} = P ! {#Ref<0.0.1.591>,{P.2,the_value}}
+  96: P.1.1: {#Ref<0.0.1.577>,{P.2,the_value}} = P ! {#Ref<0.0.1.577>,{P.2,the_value}}
     in gen_server.erl line 241
-  97: Message ({#Ref<0.0.1.591>,{P.2,the_value}}) from P.1.1 reaches P
-  98: P: receives message ({#Ref<0.0.1.591>,{P.2,the_value}})
+  97: Message ({#Ref<0.0.1.577>,{P.2,the_value}}) from P.1.1 reaches P
+  98: P: receives message ({#Ref<0.0.1.577>,{P.2,the_value}})
     in gen.erl line 168
-  99: P: true = erlang:demonitor(#Ref<0.0.1.591>, [flush])
+  99: P: true = erlang:demonitor(#Ref<0.0.1.577>, [flush])
     in gen.erl line 170
  100: P: true = erlang:exit(P.2, kill)
     in test.erl line 45
  101: Exit signal (kill) from P reaches P.2
  102: P.2: exits abnormally (killed)
- 103: P.2: {'DOWN',#Ref<0.0.1.546>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 103: P.2: {'DOWN',#Ref<0.0.1.535>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     (while exiting)
- 104: P.2: {'DOWN',#Ref<0.0.1.570>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.570>,process,P.2,killed})
+ 104: P.2: {'DOWN',#Ref<0.0.1.558>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
     (while exiting)
- 105: Message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed}) from P.2 reaches P
- 106: P: receives message ({'DOWN',#Ref<0.0.1.546>,process,P.2,killed})
+ 105: Message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed}) from P.2 reaches P
+ 106: Message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed}) from P.2 reaches P.1.1
+ 107: P: receives message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
+    in test.erl line 46
+ 108: P: exits normally
+ 109: P: true = erlang:exit(P.1, normal)
+    (while exiting)
+ 110: P: {'DOWN',#Ref<0.0.1.538>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.538>,process,P,normal})
+    (while exiting)
+ 111: Exit signal (normal) from P reaches P.1
+ 112: Message ({'DOWN',#Ref<0.0.1.538>,process,P,normal}) from P reaches P.2
+ 113: P.1: receives message ({'EXIT',P,normal})
+    in gen_server.erl line 382
+ 114: P.1: #Ref<0.0.1.624> = erlang:monitor(process, P.1.4)
+    in supervisor.erl line 964
+ 115: P.1: true = erlang:unlink(P.1.4)
+    in supervisor.erl line 965
+ 116: P.1: receive timeout expired after 0 ms
+    in supervisor.erl line 967
+ 117: P.1: true = erlang:exit(P.1.4, shutdown)
+    in supervisor.erl line 940
+ 118: Exit signal (shutdown) from P.1 reaches P.1.4
+ 119: P.1.4: exits abnormally (shutdown)
+ 120: P.1.4: {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    (while exiting)
+ 121: Message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
+ 122: P.1: receives message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    in supervisor.erl line 941
+ 123: P.1: #Ref<0.0.1.657> = erlang:monitor(process, P.1.3)
+    in supervisor.erl line 964
+ 124: P.1: true = erlang:unlink(P.1.3)
+    in supervisor.erl line 965
+ 125: P.1: receive timeout expired after 0 ms
+    in supervisor.erl line 967
+ 126: P.1: true = erlang:exit(P.1.3, shutdown)
+    in supervisor.erl line 940
+ 127: Exit signal (shutdown) from P.1 reaches P.1.3
+ 128: P.1.3: exits abnormally (shutdown)
+ 129: P.1.3: {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    (while exiting)
+ 130: Message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
+ 131: P.1: receives message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    in supervisor.erl line 941
+ 132: P.1: #Ref<0.0.1.676> = erlang:monitor(process, P.1.2)
+    in supervisor.erl line 964
+ 133: P.1: true = erlang:unlink(P.1.2)
+    in supervisor.erl line 965
+ 134: P.1: receive timeout expired after 0 ms
+    in supervisor.erl line 967
+ 135: P.1: true = erlang:exit(P.1.2, shutdown)
+    in supervisor.erl line 940
+ 136: Exit signal (shutdown) from P.1 reaches P.1.2
+ 137: P.1.2: exits abnormally (shutdown)
+ 138: P.1.2: true = ets:give_away(gproc_monitor, P.1, [])
+    (while exiting)
+ 139: P.1.2: {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    (while exiting)
+ 140: Message ({'ETS-TRANSFER',110616,P.1.2,[]}) from P.1.2 reaches P.1
+ 141: Message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
+ 142: P.1: receives message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    in supervisor.erl line 941
+ 143: P.1: #Ref<0.0.1.699> = erlang:monitor(process, P.1.1)
+    in supervisor.erl line 964
+ 144: P.1: true = erlang:unlink(P.1.1)
+    in supervisor.erl line 965
+ 145: P.1: receive timeout expired after 0 ms
+    in supervisor.erl line 967
+ 146: P.1: true = erlang:exit(P.1.1, shutdown)
+    in supervisor.erl line 940
+ 147: Exit signal (shutdown) from P.1 reaches P.1.1
+ 148: P.1.1: exits abnormally (shutdown)
+ 149: P.1.1: {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    (while exiting)
+ 150: Message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
+ 151: P.1: receives message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    in supervisor.erl line 941
+ 152: P.1: exits normally
+ 153: P.1: true = ets:delete(gproc)
+    (while exiting)
+ 154: P.1: Exception badarg raised by: ets:give_away(gproc_monitor, P.1, [])
+    (while exiting)
+ 155: P.1: true = ets:delete(gproc_monitor)
+    (while exiting)
+ 156: P.1: true = erlang:exit(P, normal)
+    (while exiting)
+ 157: Exit signal (normal) from P.1 reaches P
+################################################################################
+
+Erroneous interleaving 9:
+* At step 102 process P.2 exited abnormally
+    Reason:
+      killed
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+
+Interleaving info:
+   1: P: undefined = erlang:whereis(gproc_sup)
+    in gen.erl line 298
+   2: P: [] = erlang:process_info(P, registered_name)
+    in proc_lib.erl line 678
+   3: P: P.1 = erlang:spawn_opt({proc_lib,init_p,[P,[],gen,init_it,[gen_server,P,P,{local,gproc_sup},supervisor,{{local,gproc_sup},gproc_sup,[]},[]]],[link]})
+    in erlang.erl line 2683
+   4: P.1: undefined = erlang:put('$ancestors', [P])
+    in proc_lib.erl line 234
+   5: P.1: undefined = erlang:put('$initial_call', {supervisor,gproc_sup,1})
+    in proc_lib.erl line 235
+   6: P.1: true = erlang:register(gproc_sup, P.1)
+    in gen.erl line 301
+   7: P.1: false = erlang:process_flag(trap_exit, true)
+    in supervisor.erl line 271
+   8: P.1: user = erlang:group_leader()
+    in application.erl line 327
+   9: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
+    in application_controller.erl line 326
+  10: P.1: user = erlang:group_leader()
+    in application.erl line 327
+  11: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
+    in application_controller.erl line 326
+  12: P.1: undefined = ets:info(gproc, name)
+    in gproc.erl line 2488
+  13: P.1: gproc = ets:new(gproc, [ordered_set,public,named_table,{write_concurrency,true},{read_concurrency,true}])
+    in gproc.erl line 2490
+  14: P.1: user = erlang:group_leader()
+    in application.erl line 327
+  15: P.1: [] = ets:match(ac_tab, {{application_master,'$1'},user})
+    in application_controller.erl line 326
+  16: P.1: undefined = erlang:whereis(gproc)
+    in gen.erl line 298
+  17: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
+    in proc_lib.erl line 678
+  18: P.1: P.1.1 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc},gproc,[],[{spawn_opt,[]}]]],[link]})
+    in erlang.erl line 2683
+  19: P.1.1: undefined = erlang:put('$ancestors', [gproc_sup,P])
+    in proc_lib.erl line 234
+  20: P.1.1: undefined = erlang:put('$initial_call', {gproc,init,1})
+    in proc_lib.erl line 235
+  21: P.1.1: true = erlang:register(gproc, P.1.1)
+    in gen.erl line 301
+  22: P.1.1: '$end_of_table' = ets:select(gproc, [{{{'$1',l}},[],['$1']}], 100)
+    in gproc.erl line 2502
+  23: P.1.1: {ack,P.1.1,{ok,P.1.1}} = P.1 ! {ack,P.1.1,{ok,P.1.1}}
+    in proc_lib.erl line 378
+  24: Message ({ack,P.1.1,{ok,P.1.1}}) from P.1.1 reaches P.1
+  25: P.1: receives message ({ack,P.1.1,{ok,P.1.1}})
+    in proc_lib.erl line 334
+  26: P.1: user = erlang:group_leader()
+    in error_logger.erl line 211
+  27: P.1: {notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.1},{id,gproc},{mfargs,{gproc,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}} = error_logger ! {notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.1},{id,gproc},{mfargs,{gproc,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}
+    in gen_event.erl line 232
+  28: P.1: undefined = ets:info(gproc_monitor, owner)
+  29: P.1: gproc_monitor = ets:new(gproc_monitor, [ordered_set,protected,named_table,{heir,P.1,[]}])
+  30: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
+    in proc_lib.erl line 678
+  31: P.1: P.1.2 = erlang:spawn_link(proc_lib, init_p, [gproc_sup,[P],gproc_monitor,init,[P.1]])
+    in proc_lib.erl line 93
+  32: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.1},{id,gproc},{mfargs,{gproc,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
+  33: P.1.2: undefined = erlang:put('$ancestors', [gproc_sup,P])
+    in proc_lib.erl line 234
+  34: P.1.2: undefined = erlang:put('$initial_call', {gproc_monitor,init,1})
+    in proc_lib.erl line 235
+  35: P.1.2: normal = erlang:process_flag(priority, high)
+    in gproc_monitor.erl line 123
+  36: P.1.2: true = erlang:register(gproc_monitor, P.1.2)
+    in gproc_monitor.erl line 124
+  37: P.1.2: {ack,P.1.2,{ok,P.1.2}} = P.1 ! {ack,P.1.2,{ok,P.1.2}}
+    in proc_lib.erl line 378
+  38: Message ({ack,P.1.2,{ok,P.1.2}}) from P.1.2 reaches P.1
+  39: P.1: receives message ({ack,P.1.2,{ok,P.1.2}})
+    in proc_lib.erl line 334
+  40: P.1: true = ets:give_away(gproc_monitor, P.1.2, [])
+    in gproc_monitor.erl line 104
+  41: P.1: user = erlang:group_leader()
+    in error_logger.erl line 211
+  42: P.1: {notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}} = error_logger ! {notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}
+    in gen_event.erl line 232
+  43: P.1: undefined = erlang:whereis(gproc_bcast)
+    in gen.erl line 298
+  44: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
+    in proc_lib.erl line 678
+  45: P.1: P.1.3 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_bcast},gproc_bcast,[],[]]],[link]})
+    in erlang.erl line 2683
+  46: Message ({'ETS-TRANSFER',110616,P.1,[]}) from P.1 reaches P.1.2
+  47: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.2},{id,gproc_monitor},{mfargs,{gproc_monitor,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
+  48: P.1.3: undefined = erlang:put('$ancestors', [gproc_sup,P])
+    in proc_lib.erl line 234
+  49: P.1.3: undefined = erlang:put('$initial_call', {gproc_bcast,init,1})
+    in proc_lib.erl line 235
+  50: P.1.3: true = erlang:register(gproc_bcast, P.1.3)
+    in gen.erl line 301
+  51: P.1.3: {ack,P.1.3,{ok,P.1.3}} = P.1 ! {ack,P.1.3,{ok,P.1.3}}
+    in proc_lib.erl line 378
+  52: Message ({ack,P.1.3,{ok,P.1.3}}) from P.1.3 reaches P.1
+  53: P.1: receives message ({ack,P.1.3,{ok,P.1.3}})
+    in proc_lib.erl line 334
+  54: P.1: user = erlang:group_leader()
+    in error_logger.erl line 211
+  55: P.1: {notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}} = error_logger ! {notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}
+    in gen_event.erl line 232
+  56: P.1: undefined = erlang:whereis(gproc_pool)
+    in gen.erl line 298
+  57: P.1: {registered_name,gproc_sup} = erlang:process_info(P.1, registered_name)
+    in proc_lib.erl line 678
+  58: P.1: P.1.4 = erlang:spawn_opt({proc_lib,init_p,[gproc_sup,[P],gen,init_it,[gen_server,P.1,P.1,{local,gproc_pool},gproc_pool,[],[]]],[link]})
+    in erlang.erl line 2683
+  59: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.3},{id,gproc_bcast},{mfargs,{gproc_bcast,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
+  60: P.1.4: undefined = erlang:put('$ancestors', [gproc_sup,P])
+    in proc_lib.erl line 234
+  61: P.1.4: undefined = erlang:put('$initial_call', {gproc_pool,init,1})
+    in proc_lib.erl line 235
+  62: P.1.4: true = erlang:register(gproc_pool, P.1.4)
+    in gen.erl line 301
+  63: P.1.4: {ack,P.1.4,{ok,P.1.4}} = P.1 ! {ack,P.1.4,{ok,P.1.4}}
+    in proc_lib.erl line 378
+  64: Message ({ack,P.1.4,{ok,P.1.4}}) from P.1.4 reaches P.1
+  65: P.1: receives message ({ack,P.1.4,{ok,P.1.4}})
+    in proc_lib.erl line 334
+  66: P.1: user = erlang:group_leader()
+    in error_logger.erl line 211
+  67: P.1: {notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.4},{id,gproc_pool},{mfargs,{gproc_pool,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}} = error_logger ! {notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.4},{id,gproc_pool},{mfargs,{gproc_pool,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}
+    in gen_event.erl line 232
+  68: P.1: {ack,P.1,{ok,P.1}} = P ! {ack,P.1,{ok,P.1}}
+    in proc_lib.erl line 378
+  69: Message ({notify,{info_report,user,{P.1,progress,[{supervisor,{local,gproc_sup}},{started,[{pid,P.1.4},{id,gproc_pool},{mfargs,{gproc_pool,start_link,...}},{restart_type,permanent},{shutdown,2000},{child_type,...}]}]}}}) from P.1 reaches error_logger
+  70: Message ({ack,P.1,{ok,P.1}}) from P.1 reaches P
+  71: P: receives message ({ack,P.1,{ok,P.1}})
+    in proc_lib.erl line 334
+  72: P: {P.2,#Ref<0.0.1.535>} = erlang:spawn_opt({erlang,apply,[#Fun<test.'-t_reg_or_locate2/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2549
+  73: P.2: #Ref<0.0.1.538> = erlang:monitor(process, P)
+    in test.erl line 36
+  74: P.2: P.1.1 = erlang:whereis(gproc)
+    in gen.erl line 256
+  75: P.2: #Ref<0.0.1.543> = erlang:monitor(process, P.1.1)
+    in gen.erl line 155
+  76: P.2: {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}} = erlang:send(P.1.1, {'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}, [noconnect])
+    in gen.erl line 166
+  77: Message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}}) from P.2 reaches P.1.1
+  78: P.1.1: receives message ({'$gen_call',{P.2,#Ref<0.0.1.543>},{reg,{n,l,foo},the_value}})
+    in gen_server.erl line 382
+  79: P.1.1: true = ets:insert_new(gproc, {{{n,l,foo},n},P.2,the_value})
+    in gproc_lib.erl line 78
+  80: P.1.1: true = ets:insert_new(gproc, {{P.2,{n,l,foo}},[]})
+  81: P.1.1: true = ets:insert_new(gproc, {{P.2,l}})
+    in gproc_lib.erl line 300
+  82: P.1.1: #Ref<0.0.1.558> = erlang:monitor(process, P.2)
+    in gproc_lib.erl line 302
+  83: P.1.1: {#Ref<0.0.1.543>,true} = P.2 ! {#Ref<0.0.1.543>,true}
+    in gen_server.erl line 241
+  84: Message ({#Ref<0.0.1.543>,true}) from P.1.1 reaches P.2
+  85: P.2: receives message ({#Ref<0.0.1.543>,true})
+    in gen.erl line 168
+  86: P.2: true = erlang:demonitor(#Ref<0.0.1.543>, [flush])
+    in gen.erl line 170
+  87: P.2: {P.2,ok} = P ! {P.2,ok}
+    in test.erl line 38
+  88: Message ({P.2,ok}) from P.2 reaches P
+  89: P: receives message ({P.2,ok})
+    in test.erl line 43
+  90: P: P.1.1 = erlang:whereis(gproc)
+    in gen.erl line 256
+  91: P: #Ref<0.0.1.577> = erlang:monitor(process, P.1.1)
+    in gen.erl line 155
+  92: P: {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}} = erlang:send(P.1.1, {'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}, [noconnect])
+    in gen.erl line 166
+  93: Message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}}) from P reaches P.1.1
+  94: P.1.1: receives message ({'$gen_call',{P,#Ref<0.0.1.577>},{reg_or_locate,{n,l,foo},undefined,P}})
+    in gen_server.erl line 382
+  95: P.1.1: [{{{n,l,foo},n},P.2,the_value}] = ets:lookup(gproc, {{n,l,foo},n})
+    in gproc.erl line 2072
+  96: P.1.1: {#Ref<0.0.1.577>,{P.2,the_value}} = P ! {#Ref<0.0.1.577>,{P.2,the_value}}
+    in gen_server.erl line 241
+  97: Message ({#Ref<0.0.1.577>,{P.2,the_value}}) from P.1.1 reaches P
+  98: P: receives message ({#Ref<0.0.1.577>,{P.2,the_value}})
+    in gen.erl line 168
+  99: P: true = erlang:demonitor(#Ref<0.0.1.577>, [flush])
+    in gen.erl line 170
+ 100: P: true = erlang:exit(P.2, kill)
+    in test.erl line 45
+ 101: Exit signal (kill) from P reaches P.2
+ 102: P.2: exits abnormally (killed)
+ 103: P.2: {'DOWN',#Ref<0.0.1.535>,process,P.2,killed} = erlang:send(P, {'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
+    (while exiting)
+ 104: P.2: {'DOWN',#Ref<0.0.1.558>,process,P.2,killed} = erlang:send(P.1.1, {'DOWN',#Ref<0.0.1.558>,process,P.2,killed})
+    (while exiting)
+ 105: Message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed}) from P.2 reaches P
+ 106: P: receives message ({'DOWN',#Ref<0.0.1.535>,process,P.2,killed})
     in test.erl line 46
  107: P: exits normally
  108: P: true = erlang:exit(P.1, normal)
     (while exiting)
- 109: P: {'DOWN',#Ref<0.0.1.549>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.549>,process,P,normal})
+ 109: P: {'DOWN',#Ref<0.0.1.538>,process,P,normal} = erlang:send(P.2, {'DOWN',#Ref<0.0.1.538>,process,P,normal})
     (while exiting)
  110: Exit signal (normal) from P reaches P.1
- 111: Message ({'DOWN',#Ref<0.0.1.549>,process,P,normal}) from P reaches P.2
+ 111: Message ({'DOWN',#Ref<0.0.1.538>,process,P,normal}) from P reaches P.2
  112: P.1: receives message ({'EXIT',P,normal})
     in gen_server.erl line 382
- 113: P.1: #Ref<0.0.1.645> = erlang:monitor(process, P.1.4)
-    in supervisor.erl line 968
+ 113: P.1: #Ref<0.0.1.624> = erlang:monitor(process, P.1.4)
+    in supervisor.erl line 964
  114: P.1: true = erlang:unlink(P.1.4)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  115: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  116: P.1: true = erlang:exit(P.1.4, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  117: Exit signal (shutdown) from P.1 reaches P.1.4
  118: P.1.4: exits abnormally (shutdown)
- 119: P.1.4: {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
+ 119: P.1.4: {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
     (while exiting)
- 120: Message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
- 121: P.1: receives message ({'DOWN',#Ref<0.0.1.645>,process,P.1.4,shutdown})
-    in supervisor.erl line 945
- 122: P.1: #Ref<0.0.1.680> = erlang:monitor(process, P.1.3)
-    in supervisor.erl line 968
+ 120: Message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown}) from P.1.4 reaches P.1
+ 121: P.1: receives message ({'DOWN',#Ref<0.0.1.624>,process,P.1.4,shutdown})
+    in supervisor.erl line 941
+ 122: P.1: #Ref<0.0.1.657> = erlang:monitor(process, P.1.3)
+    in supervisor.erl line 964
  123: P.1: true = erlang:unlink(P.1.3)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  124: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  125: P.1: true = erlang:exit(P.1.3, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  126: Exit signal (shutdown) from P.1 reaches P.1.3
  127: P.1.3: exits abnormally (shutdown)
- 128: P.1.3: {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
+ 128: P.1.3: {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
     (while exiting)
- 129: Message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
- 130: P.1: receives message ({'DOWN',#Ref<0.0.1.680>,process,P.1.3,shutdown})
-    in supervisor.erl line 945
- 131: P.1: #Ref<0.0.1.701> = erlang:monitor(process, P.1.2)
-    in supervisor.erl line 968
+ 129: Message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown}) from P.1.3 reaches P.1
+ 130: P.1: receives message ({'DOWN',#Ref<0.0.1.657>,process,P.1.3,shutdown})
+    in supervisor.erl line 941
+ 131: P.1: #Ref<0.0.1.676> = erlang:monitor(process, P.1.2)
+    in supervisor.erl line 964
  132: P.1: true = erlang:unlink(P.1.2)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  133: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  134: P.1: true = erlang:exit(P.1.2, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  135: Exit signal (shutdown) from P.1 reaches P.1.2
  136: P.1.2: exits abnormally (shutdown)
  137: P.1.2: true = ets:give_away(gproc_monitor, P.1, [])
     (while exiting)
- 138: P.1.2: {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
+ 138: P.1.2: {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
     (while exiting)
- 139: Message ({'ETS-TRANSFER',114713,P.1.2,[]}) from P.1.2 reaches P.1
- 140: Message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
- 141: P.1: receives message ({'DOWN',#Ref<0.0.1.701>,process,P.1.2,shutdown})
-    in supervisor.erl line 945
- 142: P.1: #Ref<0.0.1.727> = erlang:monitor(process, P.1.1)
-    in supervisor.erl line 968
+ 139: Message ({'ETS-TRANSFER',110616,P.1.2,[]}) from P.1.2 reaches P.1
+ 140: Message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown}) from P.1.2 reaches P.1
+ 141: P.1: receives message ({'DOWN',#Ref<0.0.1.676>,process,P.1.2,shutdown})
+    in supervisor.erl line 941
+ 142: P.1: #Ref<0.0.1.699> = erlang:monitor(process, P.1.1)
+    in supervisor.erl line 964
  143: P.1: true = erlang:unlink(P.1.1)
-    in supervisor.erl line 969
+    in supervisor.erl line 965
  144: P.1: receive timeout expired after 0 ms
-    in supervisor.erl line 971
+    in supervisor.erl line 967
  145: P.1: true = erlang:exit(P.1.1, shutdown)
-    in supervisor.erl line 944
+    in supervisor.erl line 940
  146: Exit signal (shutdown) from P.1 reaches P.1.1
  147: P.1.1: exits abnormally (shutdown)
- 148: P.1.1: {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
+ 148: P.1.1: {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown} = erlang:send(P.1, {'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
     (while exiting)
- 149: Message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
- 150: Message ({'DOWN',#Ref<0.0.1.570>,process,P.2,killed}) from P.2 reaches P.1.1
- 151: P.1: receives message ({'DOWN',#Ref<0.0.1.727>,process,P.1.1,shutdown})
-    in supervisor.erl line 945
+ 149: Message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown}) from P.1.1 reaches P.1
+ 150: Message ({'DOWN',#Ref<0.0.1.558>,process,P.2,killed}) from P.2 reaches P.1.1
+ 151: P.1: receives message ({'DOWN',#Ref<0.0.1.699>,process,P.1.1,shutdown})
+    in supervisor.erl line 941
  152: P.1: exits normally
  153: P.1: true = ets:delete(gproc)
     (while exiting)
@@ -2400,4 +2686,4 @@ You can see pairs of racing instructions (in the report and --graph) with '--sho
 ################################################################################
 
 Done! (Exit status: completed)
-  Summary: 8 errors, 8/8 interleavings explored
+  Summary: 9 errors, 9/9 interleavings explored
