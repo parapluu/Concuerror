@@ -855,7 +855,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
         (SchedulingBound - length(Done ++ Wakeup) > 0)
       of
         true ->
-          trace_plan(Logger, EarlyIndex, NotDep),
+          show_plan(Logger, EarlyIndex, NotDep),
           NS = TraceState#trace_state{wakeup_tree = NewWakeup},
           [NS|NewOldTrace];
         false ->
@@ -893,8 +893,7 @@ not_dep([TraceState|Rest], Later, Actor, Index, Event, NotDep) ->
     end,
   not_dep(Rest, Later, Actor, Index, Event, NewNotDep).
 
-
-trace_plan(_Logger, _Index, _NotDep) ->
+show_plan(_Logger, _Index, _NotDep) ->
   ?debug(
      _Logger, "     PLAN~n~s",
      begin
