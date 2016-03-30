@@ -25,13 +25,14 @@
 %% =============================================================================
 
 -record(backtrack_entry, {
-          event                   :: event(),
-          origin = 1              :: integer(),
-          wakeup_tree = []        :: event_tree()
+          event            :: event(),
+          origin = 1       :: integer(),
+          wakeup_tree = [] :: event_tree()
          }).
 
+-type event_tree() :: [#backtrack_entry{}].
+
 -type channel_actor() :: {channel(), message_event_queue()}.
--type event_tree()    :: [#backtrack_entry{}].
 
 -record(trace_state, {
           actors           = []         :: [pid() | channel_actor()],
