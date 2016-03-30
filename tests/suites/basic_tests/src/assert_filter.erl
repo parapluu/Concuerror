@@ -14,7 +14,7 @@ scenarios() ->
   [{test, inf, dpor}].
 
 concuerror_options() ->
-    [{assertions_only, true}].
+    [{assertions_only, true}, {instant_delivery, false}].
 
 test() ->
 

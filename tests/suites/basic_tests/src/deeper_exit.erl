@@ -2,6 +2,10 @@
 
 -export([scenarios/0]).
 -export([test/0]).
+-export([concuerror_options/0]).
+
+concuerror_options() ->
+  [{instant_delivery, false}].
 
 scenarios() ->
     [{test, inf, dpor}].

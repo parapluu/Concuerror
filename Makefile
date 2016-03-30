@@ -3,7 +3,7 @@
 ###-----------------------------------------------------------------------------
 
 NAME := concuerror
-VERSION := 0.12
+VERSION := 0.13
 
 .PHONY: default dev
 default dev: $(NAME)

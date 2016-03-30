@@ -2,6 +2,10 @@
 
 -export([sync_start/0, sync_start/1]).
 -export([scenarios/0]).
+-export([concuerror_options/0]).
+
+concuerror_options() ->
+  [{instant_delivery, false}].
 
 scenarios() -> [{?MODULE, inf, dpor}].
 
