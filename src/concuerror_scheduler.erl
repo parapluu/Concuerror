@@ -52,7 +52,6 @@
           assume_racing      = true    :: boolean(),
           bound_consumed     = 0       :: non_neg_integer(),
           current_graph_ref            :: 'undefined' | reference(),
-          current_warnings   = []      :: [concuerror_warning_info()],
           depth_bound                  :: pos_integer(),
           entry_point                  :: mfargs(),
           exploring          = 1       :: integer(),
@@ -76,7 +75,8 @@
           system             = []      :: [pid()],
           timeout                      :: timeout(),
           trace              = []      :: [trace_state()],
-          treat_as_normal    = []      :: [atom()]
+          treat_as_normal    = []      :: [atom()],
+          warnings   = []              :: [concuerror_warning_info()]
          }).
 
 %% =============================================================================
@@ -191,8 +191,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
           ok
       end,
       NextExploring = N + 1,
-      NextState =
-        State#scheduler_state{exploring = N + 1, current_warnings = []},
+      NextState = State#scheduler_state{exploring = N + 1, warnings = []},
       case NextExploring =< State#scheduler_state.interleaving_bound of
         true -> NextState;
         false ->
@@ -204,9 +203,9 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
 
 filter_warnings(State) ->
   #scheduler_state{
-     current_warnings = UnfilteredWarnings,
      ignore_error = Ignored,
-     logger = Logger
+     logger = Logger,
+     warnings = UnfilteredWarnings
     } = State,
   filter_warnings(UnfilteredWarnings, Ignored, Logger).
 
@@ -227,9 +226,9 @@ add_warning(Warning, Trace, State) ->
   add_warnings([Warning], Trace, State).
 
 add_warnings(Warnings, Trace, State) ->
-  #scheduler_state{current_warnings = OldWarnings} = State,
+  #scheduler_state{warnings = OldWarnings} = State,
   State#scheduler_state{
-    current_warnings = Warnings ++ OldWarnings,
+    warnings = Warnings ++ OldWarnings,
     trace = Trace
    }.
 
