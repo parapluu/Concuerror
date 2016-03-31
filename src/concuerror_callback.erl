@@ -74,7 +74,7 @@
           exit_reason = normal       :: term(),
           extra                      :: term(),
           flags = #process_flags{}   :: #process_flags{},
-          instant_delivery = false   :: boolean(),
+          instant_delivery           :: boolean(),
           is_timer = false           :: 'false' | reference(),
           links                      :: links(),
           logger                     :: pid(),

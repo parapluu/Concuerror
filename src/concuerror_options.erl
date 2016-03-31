@@ -169,7 +169,7 @@ options() ->
     "Ignore timeouts greater than this value",
     "Assume that 'after' clause timeouts higher or equal to the specified value"
     " (integer) will never be triggered."}
-  ,{instant_delivery, undefined, {boolean, false},
+  ,{instant_delivery, undefined, {boolean, true},
     "Messages and signals arrive instantly",
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}

@@ -5,7 +5,7 @@
 -export([concuerror_options/0]).
 
 concuerror_options() ->
-    [{ignore_error, deadlock}].
+    [{ignore_error, deadlock}, {instant_delivery, false}].
 
 scenarios() -> [{test, inf, dpor}].
 

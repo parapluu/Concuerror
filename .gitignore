@@ -12,4 +12,5 @@ concuerror_report.txt
 concuerror_version.hrl
 cover-data
 erl_crash.dump
+tests/test_one
 thediff

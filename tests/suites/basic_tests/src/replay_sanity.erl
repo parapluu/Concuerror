@@ -2,6 +2,10 @@
 
 -export([replay_sanity/0]).
 -export([scenarios/0]).
+-export([concuerror_options/0]).
+
+concuerror_options() ->
+  [{instant_delivery, false}].
 
 scenarios() -> [{?MODULE, inf, dpor}].
 

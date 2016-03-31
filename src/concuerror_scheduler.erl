@@ -25,13 +25,14 @@
 %% =============================================================================
 
 -record(backtrack_entry, {
-          event                   :: event(),
-          origin = 1              :: integer(),
-          wakeup_tree = []        :: event_tree()
+          event            :: event(),
+          origin = 1       :: integer(),
+          wakeup_tree = [] :: event_tree()
          }).
 
+-type event_tree() :: [#backtrack_entry{}].
+
 -type channel_actor() :: {channel(), message_event_queue()}.
--type event_tree()    :: [#backtrack_entry{}].
 
 -record(trace_state, {
           actors           = []         :: [pid() | channel_actor()],
@@ -48,35 +49,35 @@
 -type trace_state() :: #trace_state{}.
 
 -record(scheduler_state, {
-          assertions_only    = false   :: boolean(),
-          assume_racing      = true    :: boolean(),
-          bound_consumed     = 0       :: non_neg_integer(),
+          assertions_only              :: boolean(),
+          assume_racing                :: boolean(),
+          bound_consumed       = 0     :: non_neg_integer(),
           current_graph_ref            :: 'undefined' | reference(),
-          current_warnings   = []      :: [concuerror_warning_info()],
           depth_bound                  :: pos_integer(),
           entry_point                  :: mfargs(),
-          exploring          = 1       :: integer(),
+          exploring            = 1     :: integer(),
           first_process                :: pid(),
-          ignore_error       = []      :: [atom()],
+          ignore_error                 :: [atom()],
           interleaving_bound           :: pos_integer(),
-          keep_going         = false   :: boolean(),
+          keep_going                   :: boolean(),
           logger                       :: pid(),
           last_scheduled               :: pid(),
-          need_to_replay     = false   :: boolean(),
-          non_racing_system  = []      :: [atom()],
-          optimal            = true    :: boolean(),
-          origin             = 1       :: integer(),
+          need_to_replay       = false :: boolean(),
+          non_racing_system            :: [atom()],
+          optimal                      :: boolean(),
+          origin               = 1     :: integer(),
           previous_was_enabled = true  :: boolean(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
-          scheduling         = oldest  :: scheduling(),
-          scheduling_bound_type = none :: scheduling_bound_type(),
-          show_races         = true    :: boolean(),
-          strict_scheduling  = false   :: boolean(),
-          system             = []      :: [pid()],
+          scheduling                   :: scheduling(),
+          scheduling_bound_type        :: scheduling_bound_type(),
+          show_races                   :: boolean(),
+          strict_scheduling            :: boolean(),
+          system                       :: [pid()],
           timeout                      :: timeout(),
-          trace              = []      :: [trace_state()],
-          treat_as_normal    = []      :: [atom()]
+          trace                        :: [trace_state()],
+          treat_as_normal              :: [atom()],
+          warnings             = []    :: [concuerror_warning_info()]
          }).
 
 %% =============================================================================
@@ -191,8 +192,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
           ok
       end,
       NextExploring = N + 1,
-      NextState =
-        State#scheduler_state{exploring = N + 1, current_warnings = []},
+      NextState = State#scheduler_state{exploring = N + 1, warnings = []},
       case NextExploring =< State#scheduler_state.interleaving_bound of
         true -> NextState;
         false ->
@@ -204,9 +204,9 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
 
 filter_warnings(State) ->
   #scheduler_state{
-     current_warnings = UnfilteredWarnings,
      ignore_error = Ignored,
-     logger = Logger
+     logger = Logger,
+     warnings = UnfilteredWarnings
     } = State,
   filter_warnings(UnfilteredWarnings, Ignored, Logger).
 
@@ -227,9 +227,9 @@ add_warning(Warning, Trace, State) ->
   add_warnings([Warning], Trace, State).
 
 add_warnings(Warnings, Trace, State) ->
-  #scheduler_state{current_warnings = OldWarnings} = State,
+  #scheduler_state{warnings = OldWarnings} = State,
   State#scheduler_state{
-    current_warnings = Warnings ++ OldWarnings,
+    warnings = Warnings ++ OldWarnings,
     trace = Trace
    }.
 
@@ -855,7 +855,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
         (SchedulingBound - length(Done ++ Wakeup) > 0)
       of
         true ->
-          trace_plan(Logger, EarlyIndex, NotDep),
+          show_plan(Logger, EarlyIndex, NotDep),
           NS = TraceState#trace_state{wakeup_tree = NewWakeup},
           [NS|NewOldTrace];
         false ->
@@ -893,8 +893,7 @@ not_dep([TraceState|Rest], Later, Actor, Index, Event, NotDep) ->
     end,
   not_dep(Rest, Later, Actor, Index, Event, NewNotDep).
 
-
-trace_plan(_Logger, _Index, _NotDep) ->
+show_plan(_Logger, _Index, _NotDep) ->
   ?debug(
      _Logger, "     PLAN~n~s",
      begin

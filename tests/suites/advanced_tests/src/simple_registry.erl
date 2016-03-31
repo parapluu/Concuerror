@@ -5,7 +5,7 @@
 -export([concuerror_options/0]).
 
 concuerror_options() ->
-    [{scheduling, oldest}].
+    [{instant_delivery, false}, {scheduling, oldest}].
 
 scenarios() -> [{?MODULE, inf, dpor}].
 

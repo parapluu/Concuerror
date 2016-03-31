@@ -2,10 +2,11 @@ language: erlang
 
 sudo: false
 
+# Check README for supported versions before changing this
 otp_release:
+   - 18.3
    - 18.2
    - 17.4
-   - 17.0
    - R16B03-1
 
 env:
@@ -19,6 +20,7 @@ matrix:
      env: TEST=travis_has_latest_otp_version
    allow_failures:
    - env: TEST=travis_has_latest_otp_version
+   - otp_release: 18.3
 
 script: "make -j 4 $TEST"
 
