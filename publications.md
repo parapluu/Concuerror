@@ -5,7 +5,7 @@ title: Publications
 description: "Publications regarding Concuerror."
 ---
 
-#Publications
+# Publications
 
 You can find more info about the people behind Concuerror [here](../contact/).
 

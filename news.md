@@ -5,7 +5,7 @@ title: News
 description: "An archive of posts sorted by date."
 ---
 
-#News
+# News
 
 <ul class="post-list">
 {% for post in site.posts %}
