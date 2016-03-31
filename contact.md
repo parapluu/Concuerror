@@ -5,7 +5,7 @@ title: Contact
 description: "People that have contributed to Concuerror"
 ---
 
-#Contact address
+# Contact address
 
 <info@concuerror.com>
 
