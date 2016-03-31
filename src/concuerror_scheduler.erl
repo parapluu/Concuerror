@@ -12,10 +12,19 @@
 %%------------------------------------------------------------------------------
 
 -ifdef(BEFORE_OTP_17).
+%% Not supported.
+-else.
+-ifdef(BEFORE_OTP_18).
+-type clock_vector() :: orddict:orddict().
+-else.
+-type clock_vector() :: orddict:orddict(pid(), index()).
+-endif.
+-endif.
+
+-ifdef(BEFORE_OTP_17).
 -type clock_map()           :: dict().
 -type message_event_queue() :: queue().
 -else.
--type clock_vector()        :: orddict:orddict(). %% orddict(pid(), index()).
 -type clock_map()           :: dict:dict(pid(), clock_vector()).
 -type message_event_queue() :: queue:queue(#message_event{}).
 -endif.
