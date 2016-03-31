@@ -143,7 +143,7 @@ options() ->
     "Maximum number of events",
     "The maximum number of events allowed in an interleaving. Concuerror will"
     " stop exploration beyond this limit."}
-  ,{interleaving_bound, undefined, {integer, infinity},
+  ,{interleaving_bound, $i, {integer, infinity},
     "Maximum number of interleavings",
     "The maximum number of interleavings that will be explored. Concuerror will"
     " stop exploration beyond this limit."}
