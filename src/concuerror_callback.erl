@@ -627,7 +627,7 @@ run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
           ?debug_flag(?loop, sending_kill_to_cancel),
           ets:delete(Timers, Ref),
           Pid ! {exit_signal, #message{data = kill}, self()},
-          receive {trapping, false} -> ok end
+          false = receive_message_ack()
       end,
       {1, Info}
   end;
@@ -1061,13 +1061,13 @@ deliver_message(Event, MessageEvent, Timeout, Instant) ->
     case Recipient =:= Self of
       true ->
         %% Instant delivery to self
-        Self ! {trapping, element(2, Instant)},
+        send_message_ack(Self, element(2, Instant)),
         ?notify_none;
       false -> Self
     end,
   Recipient ! {Type, Message, Notify},
   receive
-    {trapping, Trapping} ->
+    {message_ack, Trapping} ->
       NewMessageEvent = MessageEvent#message_event{trapping = Trapping},
       NewSpecial =
         case already_known_delivery(Message, Special) of
@@ -1465,9 +1465,14 @@ get_their_info(Pid) ->
 send_message_ack(Notify, Trapping) ->
   case Notify =/= ?notify_none of
     true ->
-      Notify ! {trapping, Trapping},
+      Notify ! {message_ack, Trapping},
       ok;
     false -> ok
+  end.
+
+receive_message_ack() ->
+  receive
+    {message_ack, Trapping} -> Trapping
   end.
 
 get_leader(#concuerror_info{processes = Processes}, P) ->
@@ -1776,7 +1781,7 @@ system_wrapper_loop(Name, Wrapped, Info) ->
           catch
             exit:{?MODULE, _} = Reason -> exit(Reason);
             throw:no_reply ->
-              Report ! {trapping, false},
+              send_message_ack(Report, false),
               ok;
             Type:Reason ->
               Stacktrace = erlang:get_stacktrace(),
