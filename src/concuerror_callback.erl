@@ -68,9 +68,9 @@
 
 -record(concuerror_info, {
           after_timeout              :: 'infinite' | integer(),
-          caught_signal = false      :: boolean(),
           escaped_pdict = []         :: term(),
           ets_tables                 :: ets_tables(),
+          exit_by_signal = false     :: boolean(),
           exit_reason = normal       :: term(),
           extra                      :: term(),
           flags = #process_flags{}   :: #process_flags{},
@@ -1376,7 +1376,7 @@ process_loop(Info) ->
             true ->
               ?debug_flag(?loop, kill_signal),
               send_message_ack(Notify, Trapping),
-              exiting(killed, [], Info#concuerror_info{caught_signal = true});
+              exiting(killed, [], Info#concuerror_info{exit_by_signal = true});
             false ->
               case Trapping of
                 true ->
@@ -1392,7 +1392,8 @@ process_loop(Info) ->
                       process_loop(Info);
                     false ->
                       ?debug_flag(?loop, error_signal),
-                      exiting(Reason, [], Info#concuerror_info{caught_signal = true})
+                      NewInfo = Info#concuerror_info{exit_by_signal = true},
+                      exiting(Reason, [], NewInfo)
                   end
               end
           end;
@@ -1895,8 +1896,8 @@ set_status(#concuerror_info{processes = Processes} = Info, Status) ->
   true = ets:update_element(Processes, self(), Updates),
   Info#concuerror_info{status = Status}.
 
-is_active(#concuerror_info{caught_signal = CaughtSignal, status = Status}) ->
-  not CaughtSignal andalso is_active(Status);
+is_active(#concuerror_info{exit_by_signal = ExitBySignal, status = Status}) ->
+  not ExitBySignal andalso is_active(Status);
 is_active(Status) when is_atom(Status) ->
   (Status =:= running) orelse (Status =:= waiting).
 
