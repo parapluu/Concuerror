@@ -1,0 +1,142 @@
+################################################################################
+
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{many_kill,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/many_kill.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {scheduling,round_robin},
+   {scheduling_bound,infinity},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+
+Erroneous interleaving 1:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      not_normal
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2505
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2505
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-3-'.0>,[]])
+    in erlang.erl line 2505
+   5: P: exits normally
+   6: P.2: true = erlang:exit(P.1, not_normal)
+    in many_kill.erl line 14
+   7: P.2: exits normally
+   8: P.3: true = erlang:exit(P.1, also_not_normal)
+    in many_kill.erl line 15
+   9: P.3: exits normally
+  10: P.4: true = erlang:exit(P.1, not_normal)
+    in many_kill.erl line 16
+  11: P.4: exits normally
+  12: P.1: exits abnormally (not_normal)
+################################################################################
+
+Erroneous interleaving 2:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      also_not_normal
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2505
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2505
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-3-'.0>,[]])
+    in erlang.erl line 2505
+   5: P: exits normally
+   6: P.3: true = erlang:exit(P.1, also_not_normal)
+    in many_kill.erl line 15
+   7: P.3: exits normally
+   8: P.4: true = erlang:exit(P.1, not_normal)
+    in many_kill.erl line 16
+   9: P.4: exits normally
+  10: P.1: exits abnormally (also_not_normal)
+  11: P.2: true = erlang:exit(P.1, not_normal)
+    in many_kill.erl line 14
+  12: P.2: exits normally
+################################################################################
+
+Erroneous interleaving 3:
+* At step 8 process P.1 exited abnormally
+    Reason:
+      not_normal
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+
+Interleaving info:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2505
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2505
+   4: P: P.4 = erlang:spawn(erlang, apply, [#Fun<many_kill.'-test/0-fun-3-'.0>,[]])
+    in erlang.erl line 2505
+   5: P: exits normally
+   6: P.4: true = erlang:exit(P.1, not_normal)
+    in many_kill.erl line 16
+   7: P.4: exits normally
+   8: P.1: exits abnormally (not_normal)
+   9: P.2: true = erlang:exit(P.1, not_normal)
+    in many_kill.erl line 14
+  10: P.2: exits normally
+  11: P.3: true = erlang:exit(P.1, also_not_normal)
+    in many_kill.erl line 15
+  12: P.3: exits normally
+################################################################################
+
+Warnings:
+--------------------------------------------------------------------------------
+
+Continuing after error
+
+################################################################################
+
+Tips:
+--------------------------------------------------------------------------------
+
+An abnormal exit signal was sent to a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
+
+################################################################################
+
+Info:
+--------------------------------------------------------------------------------
+
+Instrumented many_kill
+Instrumented io_lib
+Instrumented erlang
+You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
+
+################################################################################
+
+Done! (Exit status: completed)
+  Summary: 3 errors, 3/3 interleavings explored

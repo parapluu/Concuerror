@@ -90,19 +90,29 @@ dependent(#message_event{} = Message,
 
 dependent(#exit_event{
              actor = Recipient,
+             exit_by_signal = ExitBySignal,
              last_status = LastStatus,
              trapping = Trapping},
           #message_event{
+             killing = Killing,
              message = #message{data = Signal},
              recipient = Recipient,
              type = exit_signal}) ->
-  case LastStatus =:= running of
-    false -> throw(irreversible);
+  case Killing andalso ExitBySignal of
     true ->
-      case Signal of
-        kill -> true;
-        {'EXIT', _, Reason} ->
-          not Trapping andalso Reason =/= normal
+      case LastStatus =:= running of
+        false -> throw(irreversible);
+        true -> true
+      end;
+    false ->
+      case ExitBySignal of
+        true -> false;
+        false ->
+          case Signal of
+            kill -> true;
+            {'EXIT', _, Reason} ->
+              not Trapping andalso Reason =/= normal
+          end
       end
   end;
 dependent(#message_event{} = Message, #exit_event{} = Exit) ->
@@ -112,6 +122,7 @@ dependent(#exit_event{}, #exit_event{}) ->
   false;
 
 dependent(#message_event{
+             killing = Killing,
              message = #message{data = EarlyData},
              recipient = Recipient,
              trapping = Trapping,
@@ -122,19 +133,21 @@ dependent(#message_event{
              type = Type
             }) ->
   KindFun =
-    fun(    message,                   _) ->       message;
-       (exit_signal,                kill) ->     kill_exit;
-       (exit_signal, {'EXIT', _, normal}) ->   normal_exit;
-       (exit_signal,                   _) -> abnormal_exit
+    fun(exit_signal,    _,                kill) -> kill_exit;
+       (exit_signal, true,                   _) -> message;
+       (    message,    _,                   _) -> message;
+       (exit_signal,    _, {'EXIT', _, normal}) -> normal_exit;
+       (exit_signal,    _,                   _) -> abnormal_exit
     end,
-  case {KindFun(EarlyType, EarlyData), KindFun(Type, Data)} of
+  case {KindFun(EarlyType, Trapping, EarlyData),
+        KindFun(Type, Trapping, Data)} of
     {message, message} -> true; %% more accurately, if it could be received
-    {message, normal_exit} -> Trapping;
+    {message, normal_exit} -> false;
     {message, _} -> true;
     {normal_exit, kill_exit} -> true;
     {normal_exit, _} -> Trapping;
     {_, normal_exit} -> Trapping;
-    {_, _} -> true %% more accurately, if first causes an exit
+    {_, _} -> Killing
   end;
 
 dependent(#message_event{
