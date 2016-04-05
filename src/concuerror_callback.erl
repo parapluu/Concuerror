@@ -1490,8 +1490,8 @@ exiting(Reason, _,
         EventInfo =
           #exit_event{
              actor = Timer,
-             reason = normal,
-             status = running
+             last_status = running,
+             reason = normal
             },
         Notification = Event#event{event_info = EventInfo},
         add_location_info(exit, notify(Notification, WaitInfo));
@@ -1534,12 +1534,12 @@ exiting(Reason, Stacktrace, #concuerror_info{status = Status} = InfoIn) ->
     Event#event{
       event_info =
         #exit_event{
+           last_status = Status,
            links = [L || {L, _} <- Links],
            monitors = [M || {M, _} <- Monitors],
            name = Name,
            reason = Reason,
            stacktrace = Stacktrace,
-           status = Status,
            trapping = Trapping
           }
      },

@@ -88,10 +88,15 @@ dependent(#message_event{} = Message,
           #builtin_event{} = Builtin) ->
   dependent(Builtin, Message);
 
-dependent(#exit_event{actor = Recipient, status = Status, trapping = Trapping},
-          #message_event{message = #message{data = Signal},
-                         recipient = Recipient, type = exit_signal}) ->
-  case Status =:= running of
+dependent(#exit_event{
+             actor = Recipient,
+             last_status = LastStatus,
+             trapping = Trapping},
+          #message_event{
+             message = #message{data = Signal},
+             recipient = Recipient,
+             type = exit_signal}) ->
+  case LastStatus =:= running of
     false -> throw(irreversible);
     true ->
       case Signal of
