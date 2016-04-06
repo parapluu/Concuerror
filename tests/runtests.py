@@ -143,8 +143,9 @@ concuerror = os.path.abspath(dirname + "/../concuerror")
 results = os.path.abspath(dirname + "/results")
 
 # Cleanup temp files
-os.system("make -j -C %s/.. default tests/scenarios.beam" % dirname)
+assert 0 == os.system("make -j -C %s/.. default tests/scenarios.beam" % dirname)
 os.system("rm -rf %s/*" % results)
+os.system("find . -name concuerror_report.txt -delete")
 
 # If we have arguments we should use them as tests,
 # otherwise check them all

@@ -193,6 +193,7 @@
 -record(message_event, {
           cause_label      :: label(),
           instant = true   :: boolean(),
+          killing = false  :: boolean(),
           message          :: message(),
           recipient        :: pid(),
           sender = self()  :: pid(),
@@ -215,12 +216,13 @@
 
 -record(exit_event, {
           actor = self()            :: pid() | reference(),
+          last_status = running     :: running | waiting,
+          exit_by_signal = false    :: boolean(),
           links = []                :: [pid()],
           monitors = []             :: [{reference(), pid()}],
           name = ?process_name_none :: ?process_name_none | atom(),
           reason = normal           :: term(),
           stacktrace = []           :: [term()],
-          status = running          :: running | waiting,
           trapping = false          :: boolean()
          }).
 

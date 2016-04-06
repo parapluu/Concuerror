@@ -143,7 +143,7 @@ options() ->
     "Maximum number of events",
     "The maximum number of events allowed in an interleaving. Concuerror will"
     " stop exploration beyond this limit."}
-  ,{interleaving_bound, undefined, {integer, infinity},
+  ,{interleaving_bound, $i, {integer, infinity},
     "Maximum number of interleavings",
     "The maximum number of interleavings that will be explored. Concuerror will"
     " stop exploration beyond this limit."}
@@ -336,8 +336,10 @@ finalize([{verbosity, N}|Rest], Acc) ->
   Sum = lists:sum([N|proplists:get_all_values(verbosity, Rest)]),
   Verbosity = min(Sum, ?MAX_VERBOSITY),
   NewRest = proplists:delete(verbosity, Rest),
-  if Verbosity < ?ltiming; ?has_dev -> ok;
-     true -> opt_error("To use this verbosity, run 'make dev' first")
+  if Verbosity < ?ldebug; ?has_dev -> ok;
+     true ->
+      Error = "To use verbosity > ~w, build Concuerror with 'make dev'.",
+      opt_error(Error, [?ldebug - 1])
   end,
   finalize(NewRest, [{verbosity, Verbosity}|Acc]);
 finalize([{file, Value}|Rest], Acc) ->

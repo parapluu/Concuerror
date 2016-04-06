@@ -68,9 +68,9 @@
 
 -record(concuerror_info, {
           after_timeout              :: 'infinite' | integer(),
-          caught_signal = false      :: boolean(),
           escaped_pdict = []         :: term(),
           ets_tables                 :: ets_tables(),
+          exit_by_signal = false     :: boolean(),
           exit_reason = normal       :: term(),
           extra                      :: term(),
           flags = #process_flags{}   :: #process_flags{},
@@ -627,7 +627,8 @@ run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
           ?debug_flag(?loop, sending_kill_to_cancel),
           ets:delete(Timers, Ref),
           Pid ! {exit_signal, #message{data = kill}, self()},
-          receive {trapping, false} -> ok end
+          {false, true} = receive_message_ack(),
+          ok
       end,
       {1, Info}
   end;
@@ -680,10 +681,12 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
           of
             [] ->
               PassedInfo = reset_concuerror_info(NewInfo),
-              NewP =
-                new_process(
-                  PassedInfo#concuerror_info{
-                    instant_delivery = true, is_timer = Ref}),
+              TimerInfo =
+                PassedInfo#concuerror_info{
+                  instant_delivery = true,
+                  is_timer = Ref
+                 },
+              NewP = new_process(TimerInfo),
               true = ets:insert(Processes, ?new_process(NewP, Symbol)),
               NewP;
             [[OldP]] -> OldP
@@ -1061,14 +1064,20 @@ deliver_message(Event, MessageEvent, Timeout, Instant) ->
     case Recipient =:= Self of
       true ->
         %% Instant delivery to self
-        Self ! {trapping, element(2, Instant)},
+        {true, SelfTrapping} = Instant,
+        SelfKilling = Type =:= exit_signal,
+        send_message_ack(Self, SelfTrapping, SelfKilling),
         ?notify_none;
       false -> Self
     end,
   Recipient ! {Type, Message, Notify},
   receive
-    {trapping, Trapping} ->
-      NewMessageEvent = MessageEvent#message_event{trapping = Trapping},
+    {message_ack, Trapping, Killing} ->
+      NewMessageEvent =
+        MessageEvent#message_event{
+          killing = Killing,
+          trapping = Trapping
+         },
       NewSpecial =
         case already_known_delivery(Message, Special) of
           true -> Special;
@@ -1375,8 +1384,8 @@ process_loop(Info) ->
           case Data =:= kill of
             true ->
               ?debug_flag(?loop, kill_signal),
-              send_message_ack(Notify, Trapping),
-              exiting(killed, [], Info#concuerror_info{caught_signal = true});
+              send_message_ack(Notify, Trapping, true),
+              exiting(killed, [], Info#concuerror_info{exit_by_signal = true});
             false ->
               case Trapping of
                 true ->
@@ -1384,27 +1393,28 @@ process_loop(Info) ->
                   self() ! {message, Message, Notify},
                   process_loop(Info);
                 false ->
-                  send_message_ack(Notify, Trapping),
                   {'EXIT', _From, Reason} = Data,
+                  send_message_ack(Notify, Trapping, Reason =/= normal),
                   case Reason =:= normal of
                     true ->
                       ?debug_flag(?loop, ignore_normal_signal),
                       process_loop(Info);
                     false ->
                       ?debug_flag(?loop, error_signal),
-                      exiting(Reason, [], Info#concuerror_info{caught_signal = true})
+                      NewInfo = Info#concuerror_info{exit_by_signal = true},
+                      exiting(Reason, [], NewInfo)
                   end
               end
           end;
         false ->
           ?debug_flag(?loop, ignoring_signal),
-          send_message_ack(Notify, Trapping),
+          send_message_ack(Notify, Trapping, false),
           process_loop(Info)
       end;
     {message, Message, Notify} ->
       ?debug_flag(?loop, message),
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
-      send_message_ack(Notify, Trapping),
+      send_message_ack(Notify, Trapping, false),
       case is_active(Info) of
         true ->
           ?debug_flag(?loop, enqueueing_message),
@@ -1462,12 +1472,17 @@ get_their_info(Pid) ->
     {info, Info} -> Info
   end.
 
-send_message_ack(Notify, Trapping) ->
+send_message_ack(Notify, Trapping, Killing) ->
   case Notify =/= ?notify_none of
     true ->
-      Notify ! {trapping, Trapping},
+      Notify ! {message_ack, Trapping, Killing},
       ok;
     false -> ok
+  end.
+
+receive_message_ack() ->
+  receive
+    {message_ack, Trapping, Killing} -> {Trapping, Killing}
   end.
 
 get_leader(#concuerror_info{processes = Processes}, P) ->
@@ -1481,19 +1496,14 @@ exiting(Reason, _,
     case Reason of
       killed ->
         #concuerror_info{event = Event} = WaitInfo = process_loop(InfoIn),
-        EventInfo =
-          #exit_event{
-             actor = Timer,
-             reason = normal,
-             status = running
-            },
+        EventInfo = #exit_event{actor = Timer, reason = normal},
         Notification = Event#event{event_info = EventInfo},
         add_location_info(exit, notify(Notification, WaitInfo));
       normal ->
         InfoIn
     end,
   process_loop(set_status(Info, exited));
-exiting(Reason, Stacktrace, #concuerror_info{status = Status} = InfoIn) ->
+exiting(Reason, Stacktrace, InfoIn) ->
   %% XXX: The ordering of the following events has to be verified (e.g. R16B03):
   %% XXX:  - process marked as exiting, new messages are not delivered, name is
   %%         unregistered
@@ -1501,6 +1511,10 @@ exiting(Reason, Stacktrace, #concuerror_info{status = Status} = InfoIn) ->
   %% XXX:  - transfer ets ownership and send message or delete table
   %% XXX:  - send link signals
   %% XXX:  - send monitor messages
+  #concuerror_info{
+     exit_by_signal = ExitBySignal,
+     status = Status
+    } = InfoIn,
   ?debug_flag(?loop, {going_to_exit, Reason}),
   Info = process_loop(InfoIn),
   Self = self(),
@@ -1528,12 +1542,13 @@ exiting(Reason, Stacktrace, #concuerror_info{status = Status} = InfoIn) ->
     Event#event{
       event_info =
         #exit_event{
+           exit_by_signal = ExitBySignal,
+           last_status = Status,
            links = [L || {L, _} <- Links],
            monitors = [M || {M, _} <- Monitors],
            name = Name,
            reason = Reason,
            stacktrace = Stacktrace,
-           status = Status,
            trapping = Trapping
           }
      },
@@ -1776,7 +1791,7 @@ system_wrapper_loop(Name, Wrapped, Info) ->
           catch
             exit:{?MODULE, _} = Reason -> exit(Reason);
             throw:no_reply ->
-              Report ! {trapping, false},
+              send_message_ack(Report, false, false),
               ok;
             Type:Reason ->
               Stacktrace = erlang:get_stacktrace(),
@@ -1890,8 +1905,8 @@ set_status(#concuerror_info{processes = Processes} = Info, Status) ->
   true = ets:update_element(Processes, self(), Updates),
   Info#concuerror_info{status = Status}.
 
-is_active(#concuerror_info{caught_signal = CaughtSignal, status = Status}) ->
-  not CaughtSignal andalso is_active(Status);
+is_active(#concuerror_info{exit_by_signal = ExitBySignal, status = Status}) ->
+  not ExitBySignal andalso is_active(Status);
 is_active(Status) when is_atom(Status) ->
   (Status =:= running) orelse (Status =:= waiting).
 
