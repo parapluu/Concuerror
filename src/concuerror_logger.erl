@@ -218,7 +218,7 @@ loop(Message,
     true ->
       ManyMsg =
         "A lot of events in this test are racing. You can see such pairs"
-        " by using --show_races true. You may want to consider reducing some"
+        " by using '--show_races' true. You may want to consider reducing some"
         " parameters in your test (e.g. number of processes or events).~n",
       ?log(self(), ?ltip, ManyMsg, []);
     false -> ok

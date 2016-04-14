@@ -1133,10 +1133,10 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 %%==============================================================================
 
 msg(assertions_only_filter) ->
-  "Only assertion failures are considered crashes (--assertions_only).~n";
+  "Only assertion failures are considered crashes ('--assertions_only').~n";
 msg(assertions_only_use) ->
   "A process crashed with reason '{{assert*,_}, _}'. If you want to see only"
-    " this kind of error you can use the --assertions_only option.~n";
+    " this kind of error you can use the '--assertions_only' option.~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
@@ -1160,4 +1160,4 @@ msg(timeout) ->
     " standard timeout. Use the '--after_timeout' option to treat after clauses"
     " that exceed some threshold as 'impossible'.~n";
 msg(treat_as_normal) ->
-  "Some abnormal exit reasons were treated as normal (--treat_as_normal).~n".
+  "Some abnormal exit reasons were treated as normal ('--treat_as_normal').~n".
