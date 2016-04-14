@@ -226,9 +226,9 @@ loop(Message,
   case Errors =:= 10 of
     true ->
       ErrorsMsg =
-        "Every interleaving explored so far had some error. This can make later"
-        " debugging difficult, as the generated report will include too much"
-        " info. You may want to consider refactoring your code, or using the"
+        "Each of the first 10 interleavings explored so far had some error."
+        " This can make later debugging difficult, as the generated report will"
+        " include too much info. Consider refactoring your code, or using the"
         " appropriate options to filter out irrelevant errors.~n",
       ?log(self(), ?ltip, ErrorsMsg, []);
     false -> ok
