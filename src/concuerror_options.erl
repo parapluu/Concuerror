@@ -386,6 +386,14 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
         {ok, IoDevice} -> finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
         {error, _} -> file_error(Key, Value)
       end;
+    scheduling ->
+      Valid = [newest, oldest, round_robin],
+      case lists:member(Value, Valid) of
+        true -> ok;
+        false ->
+          opt_error("'--~s' value must be one of ~w", [Key, Valid])
+      end,
+      finalize(Rest, [Option|Acc]);
     scheduling_bound_type ->
       NewRest =
         case Value =:= none of
