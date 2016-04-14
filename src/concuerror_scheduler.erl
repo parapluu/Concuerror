@@ -49,7 +49,6 @@
           done             = []         :: [event()],
           index            = 1          :: index(),
           graph_ref        = make_ref() :: reference(),
-          previous_was_enabled = true   :: boolean(),
           scheduling_bound = infinity   :: bound(),
           sleeping         = []         :: [event()],
           wakeup_tree      = []         :: event_tree()
@@ -60,7 +59,6 @@
 -record(scheduler_state, {
           assertions_only              :: boolean(),
           assume_racing                :: boolean(),
-          bound_consumed       = 0     :: non_neg_integer(),
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
           entry_point                  :: mfargs(),
@@ -75,7 +73,6 @@
           non_racing_system            :: [atom()],
           optimal                      :: boolean(),
           origin               = 1     :: integer(),
-          previous_was_enabled = true  :: boolean(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
           scheduling                   :: scheduling(),
@@ -273,37 +270,16 @@ get_next_event(Event, MaybeNeedsReplayState) ->
   #scheduler_state{system = System, trace = [Last|_]} = State,
   #trace_state{
      actors           = Actors,
-     scheduling_bound = SchedulingBound,
      sleeping         = Sleeping
     } = Last,
-  LastScheduled = State#scheduler_state.last_scheduled,
-  PreviousWasEnabled = concuerror_callback:enabled(LastScheduled),
   SortedActors = schedule_sort(Actors, State),
   #event{actor = Actor, label = Label} = Event,
   case Actor =:= undefined of
     true ->
       AvailableActors = filter_sleeping(Sleeping, SortedActors),
-      NewState =
-        State#scheduler_state{
-          bound_consumed = 0,
-          previous_was_enabled = PreviousWasEnabled
-         },
-      free_schedule(Event, System ++ AvailableActors, NewState);
+      free_schedule(Event, System ++ AvailableActors, State);
     false ->
       false = lists:member(Actor, Sleeping),
-      BoundConsumed =
-        case SchedulingBound =/= infinity of
-          true ->
-            case State#scheduler_state.scheduling_bound_type of
-              delay -> count_delay(SortedActors, Actor);
-              preemption ->
-                case PreviousWasEnabled of
-                  true -> 1;
-                  false -> 0
-                end
-            end;
-          false -> 0
-        end,
       {ok, UpdatedEvent} =
         case Label =/= undefined of
           true ->
@@ -329,8 +305,6 @@ get_next_event(Event, MaybeNeedsReplayState) ->
         end,
       NewState =
         State#scheduler_state{
-          bound_consumed = BoundConsumed,
-          previous_was_enabled = PreviousWasEnabled
          },
       update_state(UpdatedEvent, NewState)
   end.
@@ -368,21 +342,6 @@ schedule_sort(Actors, State) ->
       [LastScheduled|lists:delete(LastScheduled, Sorted)];
     _ -> Sorted
   end.
-
-count_delay(Actors, Actor) ->
-  count_delay(Actors, Actor, 0).
-
-count_delay([{Actor,_}|_], Actor, N) -> N;
-count_delay([Actor|_], Actor, N) -> N;
-count_delay([Channel|Rest], Actor, N) when ?is_channel(Channel) ->
-  count_delay(Rest, Actor, N+1);
-count_delay([Other|Rest], Actor, N) ->
-  NN =
-    case concuerror_callback:enabled(Other) of
-      true -> N+1;
-      false -> N
-    end,
-  count_delay(Rest, Actor, NN).
 
 free_schedule(Event, [{Channel, Queue}|_], State) ->
   %% Pending messages can always be sent
@@ -430,9 +389,7 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 
 update_state(#event{special = Special} = Event, State) ->
   #scheduler_state{
-     bound_consumed = BoundConsumed,
      logger = Logger,
-     previous_was_enabled = PreviousWasEnabled,
      trace  = [Last|Prev]
     } = State,
   #trace_state{
@@ -443,13 +400,8 @@ update_state(#event{special = Special} = Event, State) ->
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
-  SchedulingBound =
-    case Prev of
-      [] -> Last#trace_state.scheduling_bound;
-      [P|_] -> P#trace_state.scheduling_bound
-    end,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
-  concuerror_logger:graph_new_node(Logger, Ref, Index, Event, BoundConsumed),
+  concuerror_logger:graph_new_node(Logger, Ref, Index, Event, 0),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
   NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =
@@ -458,12 +410,6 @@ update_state(#event{special = Special} = Event, State) ->
       [#backtrack_entry{wakeup_tree = NWT}|Rest] -> {Rest, NWT}
     end,
   NewLastDone = [Event|Done],
-  NewSchedulingBound =
-    case BoundConsumed =:= 0 of
-      true -> SchedulingBound;
-      false -> SchedulingBound - BoundConsumed
-    end,
-  ?debug(Logger, " PWE:~p BOUND:~p~n", [PreviousWasEnabled, NewSchedulingBound]),
   InitNextTrace =
     #trace_state{
        actors      = Actors,
@@ -474,8 +420,6 @@ update_state(#event{special = Special} = Event, State) ->
   NewLastTrace =
     Last#trace_state{
       done = NewLastDone,
-      previous_was_enabled = PreviousWasEnabled,
-      scheduling_bound = NewSchedulingBound,
       wakeup_tree = NewLastWakeupTree
      },
   InitNewState =
