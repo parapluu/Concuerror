@@ -193,7 +193,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
     Other ->
       case Other of
         true ->
-          ?unique(Logger, ?lwarning, "Continuing after error~n", []);
+          ?unique(Logger, ?lwarning, "Continuing after error (-k)~n", []);
         false ->
           ok
       end,
