@@ -291,7 +291,7 @@ finalize(Options) ->
         _:_ ->
           InvalidEntryPoint =
             "The entry point ~w:~w/~w is not valid. Make sure you have"
-            " specified the correct module ('-m') and test function ('-t')",
+            " specified the correct module ('-m') and test function ('-t').",
           opt_error(InvalidEntryPoint, [M,F,length(B)])
       end;
     _ ->
@@ -352,7 +352,7 @@ finalize([{Key, Value}|Rest], Acc) when Key =:= pa; Key =:=pz ->
   case PathAdd(Value) of
     true -> ok;
     {error, bad_directory} ->
-      opt_error("could not add ~s to code path", [Value])
+      opt_error("could not add ~s to code path.", [Value])
   end,
   finalize(Rest, Acc);
 finalize([{Key, Value} = Option|Rest], AccIn) ->
@@ -372,14 +372,14 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
       end;
     module ->
       case proplists:is_defined(module, Rest) of
-        true -> opt_error("Multiple instances of '--module'.");
+        true -> opt_error("Multiple instances of '--module'");
         false -> ok
       end,
       case proplists:get_value(test, Rest, 1) of
         Name when is_atom(Name) ->
           NewRest = proplists:delete(test, Rest),
           finalize(NewRest, [{entry_point, {Value, Name, []}}|Acc]);
-        _ -> opt_error("The name of the test function is missing")
+        _ -> opt_error("The name of the test function is missing.")
       end;
     output ->
       case file:open(Value, [write]) of
@@ -409,7 +409,7 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
           finalize(Rest, [Option|Acc]);
         _Else ->
           opt_error(
-            "'--~s' value must be -1 (infinity) or >= ~w",
+            "'--~s' value must be -1 (infinity) or >= ~w.",
             [Key, ?MINIMUM_TIMEOUT])
       end;
     test ->
@@ -424,7 +424,7 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
 -spec file_error(atom(), term()) -> no_return().
 
 file_error(Key, Value) ->
-  opt_error("could not open '--~w' file ~s for writing", [Key, Value]).
+  opt_error("could not open '--~w' file ~s for writing.", [Key, Value]).
 
 compile_and_load(Files, Options) ->
   Modules = proplists:get_value(modules, Options),
