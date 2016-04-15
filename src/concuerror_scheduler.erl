@@ -390,6 +390,7 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 update_state(#event{special = Special} = Event, State) ->
   #scheduler_state{
      logger = Logger,
+     scheduling_bound_type = SchedulingBoundType,
      trace  = [Last|Prev]
     } = State,
   #trace_state{
@@ -397,6 +398,7 @@ update_state(#event{special = Special} = Event, State) ->
      done        = Done,
      index       = Index,
      graph_ref   = Ref,
+     scheduling_bound = SchedulingBound,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
@@ -409,17 +411,29 @@ update_state(#event{special = Special} = Event, State) ->
       [] -> {[], []};
       [#backtrack_entry{wakeup_tree = NWT}|Rest] -> {Rest, NWT}
     end,
+  NewSchedulingBound =
+    case SchedulingBoundType of
+      none -> SchedulingBound;
+      simple ->
+        %% First reschedule costs one point, otherwise nothing.
+        case Done of
+          [_] -> SchedulingBound - 1;
+          _ -> SchedulingBound
+        end
+    end,
   NewLastDone = [Event|Done],
   InitNextTrace =
     #trace_state{
        actors      = Actors,
        index       = Index + 1,
+       scheduling_bound = NewSchedulingBound,
        sleeping    = NextSleeping,
        wakeup_tree = NextWakeupTree
       },
   NewLastTrace =
     Last#trace_state{
       done = NewLastDone,
+      scheduling_bound = NewSchedulingBound,
       wakeup_tree = NewLastWakeupTree
      },
   InitNewState =
@@ -787,34 +801,45 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{
      exploring = Exploring,
      logger = Logger,
-     optimal = Optimal
+     optimal = Optimal,
+     scheduling_bound_type = SchedulingBoundType
     } = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done],
-     scheduling_bound = SchedulingBound,
+     scheduling_bound = BaseBound,
      index = EarlyIndex,
-     sleeping = Sleeping,
+     sleeping = BaseSleeping,
      wakeup_tree = Wakeup
     } = TraceState,
-  NotDep = not_dep(NewOldTrace, Later, EarlyActor, EarlyIndex, Event),
-  AllSleeping = Sleeping ++ Done,
-  case insert_wakeup(AllSleeping, Wakeup, NotDep, Optimal, Exploring) of
+  Bound =
+    case SchedulingBoundType of
+      none -> BaseBound;
+      simple ->
+        case Done =:= [] of
+          true -> BaseBound - 1;
+          false -> BaseBound
+        end
+    end,
+  MaybeNewWakeup =
+    case Bound =:= -1 of
+      true -> over_bound;
+      false ->
+        NotDep = not_dep(NewOldTrace, Later, EarlyActor, EarlyIndex, Event),
+        Sleeping = BaseSleeping ++ Done,
+        NW = insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring),
+        show_plan(NW, Logger, EarlyIndex, NotDep),
+        NW
+    end,
+  case MaybeNewWakeup of
     skip ->
       ?debug(Logger, "     SKIP~n",[]),
       skip;
+    over_bound ->
+      concuerror_logger:bound_reached(Logger),
+      skip;
     NewWakeup ->
-      case
-        (SchedulingBound =:= infinity) orelse
-        (SchedulingBound - length(Done ++ Wakeup) > 0)
-      of
-        true ->
-          show_plan(Logger, EarlyIndex, NotDep),
-          NS = TraceState#trace_state{wakeup_tree = NewWakeup},
-          [NS|NewOldTrace];
-        false ->
-          concuerror_logger:bound_reached(Logger),
-          skip
-      end
+      NS = TraceState#trace_state{wakeup_tree = NewWakeup},
+      [NS|NewOldTrace]
   end.
 
 not_dep(Trace, Later, Actor, Index, Event) ->
@@ -846,7 +871,9 @@ not_dep([TraceState|Rest], Later, Actor, Index, Event, NotDep) ->
     end,
   not_dep(Rest, Later, Actor, Index, Event, NewNotDep).
 
-show_plan(_Logger, _Index, _NotDep) ->
+show_plan(Atom, _, _, _) when is_atom(Atom) ->
+  ok;
+show_plan(_NW, _Logger, _Index, _NotDep) ->
   ?debug(
      _Logger, "     PLAN~n~s",
      begin
@@ -871,9 +898,9 @@ maybe_log_race(TraceState, Index, Event, State) ->
       ?unique(Logger, ?linfo, msg(show_races), [])
   end.
 
-insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Exploring) ->
+insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring) ->
   case Optimal of
-    true -> insert_wakeup(Sleeping, Wakeup, NotDep, Exploring);
+    true -> insert_wakeup(Sleeping, Wakeup, NotDep, Bound, Exploring);
     false ->
       Initials = get_initials(NotDep),
       All =
@@ -889,30 +916,48 @@ insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Exploring) ->
       end
   end.      
 
-insert_wakeup([Sleeping|Rest], Wakeup, NotDep, Exploring) ->
-  case check_initial(Sleeping, NotDep) =:= false of
-    true  -> insert_wakeup(Rest, Wakeup, NotDep, Exploring);
-    false -> skip
-  end;
-insert_wakeup([], Wakeup, NotDep, Exploring) ->
-  insert_wakeup(Wakeup, NotDep, Exploring).
+insert_wakeup(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
+  case has_sleeping_initial(Sleeping, NotDep) of
+    true -> skip;
+    false -> insert_wakeup(Wakeup, NotDep, Bound, Exploring)
+  end.
 
-insert_wakeup([], NotDep, Exploring) ->
+has_sleeping_initial([Sleeping|Rest], NotDep) ->
+  case check_initial(Sleeping, NotDep) =:= false of
+    true -> has_sleeping_initial(Rest, NotDep);
+    false -> true
+  end;
+has_sleeping_initial([], _) -> false.
+
+insert_wakeup(          _, _NotDep,     -1, _Exploring) ->
+  over_bound;
+insert_wakeup(         [],  NotDep, _Bound,  Exploring) ->
   backtrackify(NotDep, Exploring);
-insert_wakeup([Node|Rest], NotDep, Exploring) ->
+insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
   #backtrack_entry{event = Event, origin = M, wakeup_tree = Deeper} = Node,
   case check_initial(Event, NotDep) of
     false ->
-      case insert_wakeup(Rest, NotDep, Exploring) of
-        skip -> skip;
+      NewBound =
+        case is_integer(Bound) of
+          true -> Bound - 1;
+          false -> Bound
+        end,
+      case insert_wakeup(Rest, NotDep, NewBound, Exploring) of
+        Special
+          when
+            Special =:= skip;
+            Special =:= over_bound -> Special;
         NewTree -> [Node|NewTree]
       end;
     NewNotDep ->
       case Deeper =:= [] of
         true  -> skip;
         false ->
-          case insert_wakeup(Deeper, NewNotDep, Exploring) of
-            skip -> skip;
+          case insert_wakeup(Deeper, NewNotDep, Bound, Exploring) of
+            Special
+              when
+                Special =:= skip;
+                Special =:= over_bound -> Special;
             NewTree ->
               Entry =
                 #backtrack_entry{

@@ -47,7 +47,7 @@
 -type logger()    :: pid().
 -type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
 -type bound()     :: 'infinity' | non_neg_integer().
--type scheduling_bound_type() :: 'preemption' | 'delay' | 'none'.
+-type scheduling_bound_type() :: 'simple' | 'none'.
 -define(opt(A,O),proplists:get_value(A,O)).
 %%------------------------------------------------------------------------------
 %% Logger verbosity

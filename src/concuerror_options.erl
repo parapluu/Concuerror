@@ -152,7 +152,7 @@ options() ->
     "Setting this to false enables a more lightweight DPOR algorithm. Use this"
     " if the rate of exploration is too slow. Don't use it if a lot of"
     " interleavings are reported as sleep-set blocked."}
-  ,{scheduling_bound_type, $c, {atom, none},
+  ,{scheduling_bound_type, $c, atom,
     "Enable schedule bounding",
     "Enables scheduling rules that prevent interleavings from being explored."
     " The available options are (currently only one):~n"
@@ -272,6 +272,7 @@ finalize(Options) ->
         [{ignore_error, []},
          {non_racing_system, []},
          {optimal, true},
+         {scheduling_bound_type, none},
          {treat_as_normal, []}
         ], Options4)
     catch
@@ -387,20 +388,22 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
         {error, _} -> file_error(Key, Value)
       end;
     scheduling ->
-      Valid = [newest, oldest, round_robin],
-      case lists:member(Value, Valid) of
-        true -> ok;
-        false ->
-          opt_error("'--~s' value must be one of ~w", [Key, Valid])
-      end,
+      check_validity(Key, Value, [newest, oldest, round_robin]),
       finalize(Rest, [Option|Acc]);
-    scheduling_bound_type ->
+    scheduling_bound ->
       NewRest =
-        case Value =:= none of
+        case Value =:= infinity of
           true -> Rest;
-          false -> [{optimal, false}|Rest]
+          false ->
+            case proplists:is_defined(scheduling_bound_type, Acc ++ Rest) of
+              true -> Rest;
+              false -> [{scheduling_bound_type, simple}|Rest]
+            end
         end,
       finalize(NewRest, [Option|Acc]);
+    scheduling_bound_type ->
+      check_validity(Key, Value, [none, simple]),
+      finalize(Rest, [Option|Acc]);
     timeout ->
       case Value of
         -1 ->
@@ -481,6 +484,13 @@ add_missing_getopt_defaults(Opts) ->
     ],
   MissingDefaults ++ Opts.
 
+check_validity(Key, Value, Valid) ->
+  case lists:member(Value, Valid) of
+    true -> ok;
+    false ->
+      opt_error("'--~s' value must be one of ~w.", [Key, Valid])
+  end.
+
 consistent(Options) ->
   consistent(Options, []).
 
@@ -492,10 +502,9 @@ consistent([{assertions_only, true} = Assert|Rest], Acc) ->
   consistent(Rest, [Assert|Acc]);
 consistent([{scheduling_bound, N} = Bound|Rest], Acc) when is_integer(N) ->
   check_values(
-    [{scheduling_bound_type, fun(X) -> lists:member(X,[delay, preemption]) end},
-     {optimal,               fun(X) -> not X end},
-     {strict_scheduling,     fun(X) -> not X end}],
-    Rest ++ Acc, {scheduling_bound, "an integer"}),
+    [{scheduling_bound_type, fun(X) -> lists:member(X,[simple]) end}],
+    Rest ++ Acc,
+    {scheduling_bound, "an integer"}),
   consistent(Rest, [Bound|Acc]);
 consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc) ->
   case T =:= none of
@@ -504,20 +513,12 @@ consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc) ->
       case is_integer(proplists:get_value(scheduling_bound, Rest ++ Acc)) of
         false ->
           Warn =
-            "No bound value set for ~p bound. Use --scheduling_bound to specify"
-            " an integer value as a bound, or remove the bound type"
+            "No bound value set for ~w bound. Use '--scheduling_bound' to"
+            " specify an integer value as a bound, or remove the bound type"
             " specification.",
           opt_error(Warn, [T]);
         true ->
-          case T =:= 'delay' of
-            true ->
-              check_values(
-                [{scheduling, fun(X) -> X =:= round_robin end}],
-                Rest ++ Acc, BoundType),
-              consistent(Rest, [BoundType|Acc]);
-            false ->
-              consistent(Rest, [BoundType|Acc])
-          end
+          consistent(Rest, [BoundType|Acc])
       end
   end;
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).

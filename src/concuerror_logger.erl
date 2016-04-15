@@ -262,7 +262,7 @@ loop(Message, State) ->
     {race, EarlyEvent, Event} ->
       Msg =
         io_lib:format(
-          "* ~s~n  ~s~n",
+          "* ~s~n  ~s~n~n",
           [concuerror_printer:pretty_s(E, PrintDepth)
            || E <- [EarlyEvent,Event]]),
       loop({print, race, Msg}, State);
@@ -350,7 +350,9 @@ loop(Message, State) ->
             concuerror_printer:pretty(Output, TraceInfo, PrintDepth),
             print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
             {NE, TracesSSB};
-          _ -> {Errors, TracesSSB}
+          _ ->
+            print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
+            {Errors, TracesSSB}
         end,
       {GraphMark, Color} =
         if NewSSB =/= TracesSSB -> {"SSB","yellow"};

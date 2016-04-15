@@ -103,12 +103,10 @@ $(PLT):
 ### Testing
 ###-----------------------------------------------------------------------------
 
-SUITES = {advanced_tests,dpor_tests,basic_tests}
-
 .PHONY: tests
 tests:
 	@$(RM) $@/thediff
-	@(cd $@; bash -c "./runtests.py suites/$(SUITES)/src/*")
+	@(cd $@; bash -c "./runtests.py suites/*/src/*")
 
 .PHONY: tests-long
 tests-long: default

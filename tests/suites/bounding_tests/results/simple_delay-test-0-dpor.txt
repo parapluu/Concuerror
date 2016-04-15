@@ -1,0 +1,128 @@
+################################################################################
+
+Concuerror started with options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{simple_delay,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/bounding_tests/src/simple_delay.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {scheduling,round_robin},
+   {scheduling_bound,0},
+   {scheduling_bound_type,simple},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in simple_delay.erl line 16
+--------------------------------------------------------------------------------
+
+Interleaving info:
+   1: P: table = ets:new(table, [public,named_table])
+    in simple_delay.erl line 12
+   2: P: true = ets:insert(table, {x,0})
+    in simple_delay.erl line 23
+   3: P: P.1 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   4: P: P.2 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   5: P: P.3 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   6: P: P.4 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   7: P: P.5 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   8: P: P.6 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+   9: P: P.7 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+  10: P: P.8 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+  11: P: P.9 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+  12: P: P.10 = erlang:spawn(erlang, apply, [#Fun<simple_delay.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2505
+  13: P.1: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  14: P.1: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  15: P.1: exits normally
+  16: P.2: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  17: P.2: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  18: P.2: exits normally
+  19: P.3: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  20: P.3: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  21: P.3: exits normally
+  22: P.4: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  23: P.4: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  24: P.4: exits normally
+  25: P.5: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  26: P.5: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  27: P.5: exits normally
+  28: P.6: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  29: P.6: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  30: P.6: exits normally
+  31: P.7: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  32: P.7: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  33: P.7: exits normally
+  34: P.8: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  35: P.8: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  36: P.8: exits normally
+  37: P.9: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  38: P.9: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  39: P.9: exits normally
+  40: P.10: true = ets:insert(table, {x,1})
+    in simple_delay.erl line 23
+  41: P.10: true = ets:insert(table, {x,2})
+    in simple_delay.erl line 23
+  42: P.10: exits normally
+################################################################################
+
+Warnings:
+--------------------------------------------------------------------------------
+
+Some interleavings were not considered due to schedule bounding.
+Continuing after error
+
+################################################################################
+
+Info:
+--------------------------------------------------------------------------------
+
+Instrumented simple_delay
+Instrumented io_lib
+Instrumented lists
+Instrumented erlang
+
+################################################################################
+
+Done! (Exit status: completed)
+  Summary: 1 errors, 1/1 interleavings explored (the scheduling bound was reached)
