@@ -100,10 +100,11 @@ initialize(Options) ->
       [graph, modules, output, processes, timers, verbosity],
       Options),
   separator(Output, $#),
-  io:format(Output,
-            "Concuerror started with options:~n"
-            "  ~p~n",
-            [lists:sort(PrintableOptions)]),
+  io:format(
+    Output,
+    "Concuerror ~s (~w) started with options:~n"
+    "  ~p~n",
+    [?VSN, ?GIT_SHA, lists:sort(PrintableOptions)]),
   separator(Output, $#),
   GraphData = graph_preamble(?opt(graph, Options)),
   #logger_state{

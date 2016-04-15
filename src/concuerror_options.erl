@@ -251,7 +251,7 @@ cl_usage(Name) ->
   to_stderr("For general help use '-h' without an argument.~n", []).
 
 cl_version() ->
-  to_stderr("Concuerror v~s",[?VSN]).
+  to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
 
 %%%-----------------------------------------------------------------------------
 

@@ -55,7 +55,10 @@ ebin/%.beam: src/%.erl Makefile | ebin $(VERSION_HRL)
 
 $(VERSION_HRL): version
 	@echo " GEN  $@"
-	@src/versions $(VERSION) > $@.tmp
+	@echo -n "-define(GIT_SHA, " > $@.tmp
+	@git rev-parse --short --sq HEAD >> $@.tmp
+	@echo ")." >> $@.tmp
+	@src/versions $(VERSION) >> $@.tmp
 	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
 	@rm $@.tmp
 
