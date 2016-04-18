@@ -54,7 +54,7 @@ parse_cl_aux(CommandLineArgs) ->
           cl_usage(all),
           {exit, completed};
         {missing_option_arg, Option} ->
-          opt_error("no argument given for --~s", [Option]);
+          opt_error("no argument given for '--~s'", [Option]);
         _Other ->
           opt_error(getopt:format_error([], Error))
       end
@@ -90,7 +90,7 @@ options() ->
   ,{version, undefined, undefined,
     "Display version information"}
   ,{verbosity, $v, integer,
-    io_lib:format("Sets the verbosity level (0-~p). [default: ~p]",
+    io_lib:format("Sets the verbosity level (0-~w). [default: ~w]",
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY]),
     "Verbosity decides what is shown on stderr. Messages up to info are~n"
     "always also shown in the output file. The available levels are the~n"
@@ -121,9 +121,9 @@ options() ->
   ,{print_depth, undefined, {integer, ?DEFAULT_PRINT_DEPTH},
     "Print depth for log/graph",
     "Specifies the max depth for any terms printed in the log (behaves just as"
-    " the extra argument of ~W and ~P argument of io:format/3. If you want more"
-    " info about a particular piece of data consider using erlang:display/1"
-    " and check the standard output section instead."}
+    " the extra argument of ~~W and ~~P argument of io:format/3. If you want"
+    " more info about a particular piece of data consider using"
+    " erlang:display/1 and check the standard output section instead."}
   ,{show_races, undefined, {boolean, false},
     "Mark races in log/graph",
     "Determines whether information about pairs of racing instructions will be"
@@ -152,18 +152,15 @@ options() ->
     "Setting this to false enables a more lightweight DPOR algorithm. Use this"
     " if the rate of exploration is too slow. Don't use it if a lot of"
     " interleavings are reported as sleep-set blocked."}
-  ,{scheduling_bound_type, $c, {atom, none},
-    "Enable 'delay' or 'preemption' bounding",
-    "Enables scheduling rules that prevent particular interleavings from being"
-    " explored. The available options are:~n"
-    "'delay' - limits the number of times a round-robin scheduler is allowed to"
-    "deviate from the default scheduling order in order to reverse the order of"
-    " racing events.~n"
-    "'preemption' - limits the number of times the scheduler is allowed to"
-    " preempt a process."}
+  ,{scheduling_bound_type, $c, atom,
+    "Enable schedule bounding",
+    "Enables scheduling rules that prevent interleavings from being explored."
+    " The available options are (currently only one):~n"
+    "- 'simple': how many times per interleaving the scheduler is allowed to"
+    " pick a process different from the 'default one' to schedule.~n"}
   ,{scheduling_bound, $b, {integer, infinity},
     "Scheduling bound value",
-    "The maximum number of times the rule specified in --scheduling_bound_type"
+    "The maximum number of times the rule specified in '--scheduling_bound_type'"
     " can be violated."}
   ,{after_timeout, $a, {integer, infinity},
     "Ignore timeouts greater than this value",
@@ -185,7 +182,7 @@ options() ->
     "Continue running after an error is found",
     "Concuerror stops by default when the first error is found. Enable this"
     " flag to keep looking for more errors. Preferably, modify the test, or"
-    " use the --ignore_error / --treat_as_normal options."}
+    " use the '--ignore_error' / '--treat_as_normal' options."}
   ,{ignore_error, undefined, atom,
     "Ignore 'crash', 'deadlock' or 'depth_bound' errors",
     "Concuerror will not report errors of the specified kind:~n"
@@ -240,7 +237,7 @@ cl_usage(Name) ->
     end,
   case Optname of
     false ->
-      opt_error("Invalid option name: ~p", [Name]);
+      opt_error("Invalid option name: '~w'", [Name]);
     Tuple ->
       getopt:usage(getopt_spec([Tuple]), "./concuerror"),
       try
@@ -254,7 +251,7 @@ cl_usage(Name) ->
   to_stderr("For general help use '-h' without an argument.~n", []).
 
 cl_version() ->
-  to_stderr("Concuerror v~s",[?VSN]).
+  to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
 
 %%%-----------------------------------------------------------------------------
 
@@ -275,6 +272,7 @@ finalize(Options) ->
         [{ignore_error, []},
          {non_racing_system, []},
          {optimal, true},
+         {scheduling_bound_type, none},
          {treat_as_normal, []}
         ], Options4)
     catch
@@ -293,8 +291,8 @@ finalize(Options) ->
       catch
         _:_ ->
           InvalidEntryPoint =
-            "The entry point ~p:~p/~p is not valid. Make sure you have"
-            " specified the correct module ('-m') and test function ('-t')",
+            "The entry point ~w:~w/~w is not valid. Make sure you have"
+            " specified the correct module ('-m') and test function ('-t').",
           opt_error(InvalidEntryPoint, [M,F,length(B)])
       end;
     _ ->
@@ -311,7 +309,7 @@ rename_equivalent(Options) ->
 
 rename_equivalent([quiet|Rest], Acc) ->
   case proplists:is_defined(verbosity, Rest ++ Acc) of
-    true -> opt_error("--verbosity specified together with --quiet");
+    true -> opt_error("'--verbosity' specified together with '--quiet'");
     false ->
       rename_equivalent(Rest, [{verbosity, ?lquiet}|Acc])
   end;
@@ -355,14 +353,14 @@ finalize([{Key, Value}|Rest], Acc) when Key =:= pa; Key =:=pz ->
   case PathAdd(Value) of
     true -> ok;
     {error, bad_directory} ->
-      opt_error("could not add ~s to code path", [Value])
+      opt_error("could not add ~s to code path.", [Value])
   end,
   finalize(Rest, Acc);
 finalize([{Key, Value} = Option|Rest], AccIn) ->
   Acc =
     case proplists:is_defined(Key, AccIn) of
       true ->
-        Format = "multiple instances of --~s defined. Using last value: ~p.",
+        Format = "multiple instances of '--~s' defined. Using last value: ~w.",
         opt_warn(Format, [Key, Value], AccIn ++ Rest),
         proplists:delete(Key, AccIn);
       false -> AccIn
@@ -375,27 +373,37 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
       end;
     module ->
       case proplists:is_defined(module, Rest) of
-        true -> opt_error("Multiple instances of --module.");
+        true -> opt_error("Multiple instances of '--module'");
         false -> ok
       end,
       case proplists:get_value(test, Rest, 1) of
         Name when is_atom(Name) ->
           NewRest = proplists:delete(test, Rest),
           finalize(NewRest, [{entry_point, {Value, Name, []}}|Acc]);
-        _ -> opt_error("The name of the test function is missing")
+        _ -> opt_error("The name of the test function is missing.")
       end;
     output ->
       case file:open(Value, [write]) of
         {ok, IoDevice} -> finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
         {error, _} -> file_error(Key, Value)
       end;
-    scheduling_bound_type ->
+    scheduling ->
+      check_validity(Key, Value, [newest, oldest, round_robin]),
+      finalize(Rest, [Option|Acc]);
+    scheduling_bound ->
       NewRest =
-        case Value =:= none of
+        case Value =:= infinity of
           true -> Rest;
-          false -> [{optimal, false}|Rest]
+          false ->
+            case proplists:is_defined(scheduling_bound_type, Acc ++ Rest) of
+              true -> Rest;
+              false -> [{scheduling_bound_type, simple}|Rest]
+            end
         end,
       finalize(NewRest, [Option|Acc]);
+    scheduling_bound_type ->
+      check_validity(Key, Value, [none, simple]),
+      finalize(Rest, [Option|Acc]);
     timeout ->
       case Value of
         -1 ->
@@ -404,7 +412,7 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
           finalize(Rest, [Option|Acc]);
         _Else ->
           opt_error(
-            "--~s value must be -1 (infinity) or >= ~p",
+            "'--~s' value must be -1 (infinity) or >= ~w.",
             [Key, ?MINIMUM_TIMEOUT])
       end;
     test ->
@@ -419,7 +427,7 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
 -spec file_error(atom(), term()) -> no_return().
 
 file_error(Key, Value) ->
-  opt_error("could not open --~p file ~s for writing", [Key, Value]).
+  opt_error("could not open '--~w' file ~s for writing.", [Key, Value]).
 
 compile_and_load(Files, Options) ->
   Modules = proplists:get_value(modules, Options),
@@ -476,6 +484,13 @@ add_missing_getopt_defaults(Opts) ->
     ],
   MissingDefaults ++ Opts.
 
+check_validity(Key, Value, Valid) ->
+  case lists:member(Value, Valid) of
+    true -> ok;
+    false ->
+      opt_error("'--~s' value must be one of ~w.", [Key, Valid])
+  end.
+
 consistent(Options) ->
   consistent(Options, []).
 
@@ -487,10 +502,9 @@ consistent([{assertions_only, true} = Assert|Rest], Acc) ->
   consistent(Rest, [Assert|Acc]);
 consistent([{scheduling_bound, N} = Bound|Rest], Acc) when is_integer(N) ->
   check_values(
-    [{scheduling_bound_type, fun(X) -> lists:member(X,[delay, preemption]) end},
-     {optimal,               fun(X) -> not X end},
-     {strict_scheduling,     fun(X) -> not X end}],
-    Rest ++ Acc, {scheduling_bound, "an integer"}),
+    [{scheduling_bound_type, fun(X) -> lists:member(X,[simple]) end}],
+    Rest ++ Acc,
+    {scheduling_bound, "an integer"}),
   consistent(Rest, [Bound|Acc]);
 consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc) ->
   case T =:= none of
@@ -499,20 +513,12 @@ consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc) ->
       case is_integer(proplists:get_value(scheduling_bound, Rest ++ Acc)) of
         false ->
           Warn =
-            "No bound value set for ~p bound. Use --scheduling_bound to specify"
-            " an integer value as a bound, or remove the bound type"
+            "No bound value set for ~w bound. Use '--scheduling_bound' to"
+            " specify an integer value as a bound, or remove the bound type"
             " specification.",
           opt_error(Warn, [T]);
         true ->
-          case T =:= 'delay' of
-            true ->
-              check_values(
-                [{scheduling, fun(X) -> X =:= round_robin end}],
-                Rest ++ Acc, BoundType),
-              consistent(Rest, [BoundType|Acc]);
-            false ->
-              consistent(Rest, [BoundType|Acc])
-          end
+          consistent(Rest, [BoundType|Acc])
       end
   end;
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
@@ -527,7 +533,7 @@ check_values([{Key, Validate}|Rest], Other, Reason) ->
       {ReasonKey, ReasonValue} = Reason,
       [Set|_] = [S || {_, S} <- All, not Validate(S)],
       opt_error(
-        "Setting '~p' to '~p' is not allowed when '~p' is set to ~s.",
+        "Setting '~w' to '~w' is not allowed when '~w' is set to ~s.",
         [Key, Set, ReasonKey, ReasonValue])
   end.
 

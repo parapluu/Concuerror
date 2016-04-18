@@ -82,17 +82,21 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         dpor_flag = ""
         file_ext = ""
         dpor_output = "full"
+    if preb == "inf":
+        bound = ""
+    else:
+        bound = ("-b %s") % (preb)
     sema.acquire()
     # Run concuerror
     status = os.system(
         ("%s -kq --timeout -1 --assume_racing false --show_races false"
          " %s -f %s"
          " --output %s/%s/results/%s-%s-%s%s.txt"
-         " -m %s -t %s"
+         " -m %s -t %s %s"
          )
         % (concuerror, dpor_flag, " -f ".join(files),
            results, suite, name, funn, preb, file_ext,
-           modn, funn))
+           modn, funn, bound))
     # Compare the results
     has_crash = "crash" in flags
     orig = ("%s/suites/%s/results/%s-%s-%s%s.txt"

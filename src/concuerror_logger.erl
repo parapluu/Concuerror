@@ -100,10 +100,11 @@ initialize(Options) ->
       [graph, modules, output, processes, timers, verbosity],
       Options),
   separator(Output, $#),
-  io:format(Output,
-            "Concuerror started with options:~n"
-            "  ~p~n",
-            [lists:sort(PrintableOptions)]),
+  io:format(
+    Output,
+    "Concuerror ~s (~w) started with options:~n"
+    "  ~p~n",
+    [?VSN, ?GIT_SHA, lists:sort(PrintableOptions)]),
   separator(Output, $#),
   GraphData = graph_preamble(?opt(graph, Options)),
   #logger_state{
@@ -218,7 +219,7 @@ loop(Message,
     true ->
       ManyMsg =
         "A lot of events in this test are racing. You can see such pairs"
-        " by using --show_races true. You may want to consider reducing some"
+        " by using '--show_races' true. You may want to consider reducing some"
         " parameters in your test (e.g. number of processes or events).~n",
       ?log(self(), ?ltip, ManyMsg, []);
     false -> ok
@@ -226,9 +227,9 @@ loop(Message,
   case Errors =:= 10 of
     true ->
       ErrorsMsg =
-        "Every interleaving explored so far had some error. This can make later"
-        " debugging difficult, as the generated report will include too much"
-        " info. You may want to consider refactoring your code, or using the"
+        "Each of the first 10 interleavings explored so far had some error."
+        " This can make later debugging difficult, as the generated report will"
+        " include too much info. Consider refactoring your code, or using the"
         " appropriate options to filter out irrelevant errors.~n",
       ?log(self(), ?ltip, ErrorsMsg, []);
     false -> ok
@@ -261,7 +262,7 @@ loop(Message, State) ->
     {race, EarlyEvent, Event} ->
       Msg =
         io_lib:format(
-          "* ~s~n  ~s~n",
+          "* ~s~n  ~s~n~n",
           [concuerror_printer:pretty_s(E, PrintDepth)
            || E <- [EarlyEvent,Event]]),
       loop({print, race, Msg}, State);
@@ -349,7 +350,9 @@ loop(Message, State) ->
             concuerror_printer:pretty(Output, TraceInfo, PrintDepth),
             print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
             {NE, TracesSSB};
-          _ -> {Errors, TracesSSB}
+          _ ->
+            print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
+            {Errors, TracesSSB}
         end,
       {GraphMark, Color} =
         if NewSSB =/= TracesSSB -> {"SSB","yellow"};

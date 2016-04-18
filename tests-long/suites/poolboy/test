@@ -88,7 +88,7 @@ good
 testing "Treat shutdown as normal"
 $CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 -t pool_startup \
     --pa .eunit --after_timeout 1000 --treat_as_normal shutdown
-mygrep "Some abnormal exit reasons were treated as normal (--treat_as_normal)."
+mygrep "Some abnormal exit reasons were treated as normal ('--treat_as_normal')."
 good
 
 testing "Find a deadlock"

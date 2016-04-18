@@ -49,7 +49,6 @@
           done             = []         :: [event()],
           index            = 1          :: index(),
           graph_ref        = make_ref() :: reference(),
-          previous_was_enabled = true   :: boolean(),
           scheduling_bound = infinity   :: bound(),
           sleeping         = []         :: [event()],
           wakeup_tree      = []         :: event_tree()
@@ -60,7 +59,6 @@
 -record(scheduler_state, {
           assertions_only              :: boolean(),
           assume_racing                :: boolean(),
-          bound_consumed       = 0     :: non_neg_integer(),
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
           entry_point                  :: mfargs(),
@@ -75,7 +73,6 @@
           non_racing_system            :: [atom()],
           optimal                      :: boolean(),
           origin               = 1     :: integer(),
-          previous_was_enabled = true  :: boolean(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
           scheduling                   :: scheduling(),
@@ -196,7 +193,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
     Other ->
       case Other of
         true ->
-          ?unique(Logger, ?lwarning, "Continuing after error~n", []);
+          ?unique(Logger, ?lwarning, "Continuing after error (-k)~n", []);
         false ->
           ok
       end,
@@ -273,37 +270,16 @@ get_next_event(Event, MaybeNeedsReplayState) ->
   #scheduler_state{system = System, trace = [Last|_]} = State,
   #trace_state{
      actors           = Actors,
-     scheduling_bound = SchedulingBound,
      sleeping         = Sleeping
     } = Last,
-  LastScheduled = State#scheduler_state.last_scheduled,
-  PreviousWasEnabled = concuerror_callback:enabled(LastScheduled),
   SortedActors = schedule_sort(Actors, State),
   #event{actor = Actor, label = Label} = Event,
   case Actor =:= undefined of
     true ->
       AvailableActors = filter_sleeping(Sleeping, SortedActors),
-      NewState =
-        State#scheduler_state{
-          bound_consumed = 0,
-          previous_was_enabled = PreviousWasEnabled
-         },
-      free_schedule(Event, System ++ AvailableActors, NewState);
+      free_schedule(Event, System ++ AvailableActors, State);
     false ->
       false = lists:member(Actor, Sleeping),
-      BoundConsumed =
-        case SchedulingBound =/= infinity of
-          true ->
-            case State#scheduler_state.scheduling_bound_type of
-              delay -> count_delay(SortedActors, Actor);
-              preemption ->
-                case PreviousWasEnabled of
-                  true -> 1;
-                  false -> 0
-                end
-            end;
-          false -> 0
-        end,
       {ok, UpdatedEvent} =
         case Label =/= undefined of
           true ->
@@ -329,8 +305,6 @@ get_next_event(Event, MaybeNeedsReplayState) ->
         end,
       NewState =
         State#scheduler_state{
-          bound_consumed = BoundConsumed,
-          previous_was_enabled = PreviousWasEnabled
          },
       update_state(UpdatedEvent, NewState)
   end.
@@ -368,21 +342,6 @@ schedule_sort(Actors, State) ->
       [LastScheduled|lists:delete(LastScheduled, Sorted)];
     _ -> Sorted
   end.
-
-count_delay(Actors, Actor) ->
-  count_delay(Actors, Actor, 0).
-
-count_delay([{Actor,_}|_], Actor, N) -> N;
-count_delay([Actor|_], Actor, N) -> N;
-count_delay([Channel|Rest], Actor, N) when ?is_channel(Channel) ->
-  count_delay(Rest, Actor, N+1);
-count_delay([Other|Rest], Actor, N) ->
-  NN =
-    case concuerror_callback:enabled(Other) of
-      true -> N+1;
-      false -> N
-    end,
-  count_delay(Rest, Actor, NN).
 
 free_schedule(Event, [{Channel, Queue}|_], State) ->
   %% Pending messages can always be sent
@@ -430,9 +389,8 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 
 update_state(#event{special = Special} = Event, State) ->
   #scheduler_state{
-     bound_consumed = BoundConsumed,
      logger = Logger,
-     previous_was_enabled = PreviousWasEnabled,
+     scheduling_bound_type = SchedulingBoundType,
      trace  = [Last|Prev]
     } = State,
   #trace_state{
@@ -440,16 +398,12 @@ update_state(#event{special = Special} = Event, State) ->
      done        = Done,
      index       = Index,
      graph_ref   = Ref,
+     scheduling_bound = SchedulingBound,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
-  SchedulingBound =
-    case Prev of
-      [] -> Last#trace_state.scheduling_bound;
-      [P|_] -> P#trace_state.scheduling_bound
-    end,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
-  concuerror_logger:graph_new_node(Logger, Ref, Index, Event, BoundConsumed),
+  concuerror_logger:graph_new_node(Logger, Ref, Index, Event, 0),
   AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
   NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =
@@ -457,24 +411,28 @@ update_state(#event{special = Special} = Event, State) ->
       [] -> {[], []};
       [#backtrack_entry{wakeup_tree = NWT}|Rest] -> {Rest, NWT}
     end,
-  NewLastDone = [Event|Done],
   NewSchedulingBound =
-    case BoundConsumed =:= 0 of
-      true -> SchedulingBound;
-      false -> SchedulingBound - BoundConsumed
+    case SchedulingBoundType of
+      none -> SchedulingBound;
+      simple ->
+        %% First reschedule costs one point, otherwise nothing.
+        case Done of
+          [_] -> SchedulingBound - 1;
+          _ -> SchedulingBound
+        end
     end,
-  ?debug(Logger, " PWE:~p BOUND:~p~n", [PreviousWasEnabled, NewSchedulingBound]),
+  NewLastDone = [Event|Done],
   InitNextTrace =
     #trace_state{
        actors      = Actors,
        index       = Index + 1,
+       scheduling_bound = NewSchedulingBound,
        sleeping    = NextSleeping,
        wakeup_tree = NextWakeupTree
       },
   NewLastTrace =
     Last#trace_state{
       done = NewLastDone,
-      previous_was_enabled = PreviousWasEnabled,
       scheduling_bound = NewSchedulingBound,
       wakeup_tree = NewLastWakeupTree
      },
@@ -843,34 +801,45 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{
      exploring = Exploring,
      logger = Logger,
-     optimal = Optimal
+     optimal = Optimal,
+     scheduling_bound_type = SchedulingBoundType
     } = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done],
-     scheduling_bound = SchedulingBound,
+     scheduling_bound = BaseBound,
      index = EarlyIndex,
-     sleeping = Sleeping,
+     sleeping = BaseSleeping,
      wakeup_tree = Wakeup
     } = TraceState,
-  NotDep = not_dep(NewOldTrace, Later, EarlyActor, EarlyIndex, Event),
-  AllSleeping = Sleeping ++ Done,
-  case insert_wakeup(AllSleeping, Wakeup, NotDep, Optimal, Exploring) of
+  Bound =
+    case SchedulingBoundType of
+      none -> BaseBound;
+      simple ->
+        case Done =:= [] of
+          true -> BaseBound - 1;
+          false -> BaseBound
+        end
+    end,
+  MaybeNewWakeup =
+    case Bound =:= -1 of
+      true -> over_bound;
+      false ->
+        NotDep = not_dep(NewOldTrace, Later, EarlyActor, EarlyIndex, Event),
+        Sleeping = BaseSleeping ++ Done,
+        NW = insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring),
+        show_plan(NW, Logger, EarlyIndex, NotDep),
+        NW
+    end,
+  case MaybeNewWakeup of
     skip ->
       ?debug(Logger, "     SKIP~n",[]),
       skip;
+    over_bound ->
+      concuerror_logger:bound_reached(Logger),
+      skip;
     NewWakeup ->
-      case
-        (SchedulingBound =:= infinity) orelse
-        (SchedulingBound - length(Done ++ Wakeup) > 0)
-      of
-        true ->
-          show_plan(Logger, EarlyIndex, NotDep),
-          NS = TraceState#trace_state{wakeup_tree = NewWakeup},
-          [NS|NewOldTrace];
-        false ->
-          concuerror_logger:bound_reached(Logger),
-          skip
-      end
+      NS = TraceState#trace_state{wakeup_tree = NewWakeup},
+      [NS|NewOldTrace]
   end.
 
 not_dep(Trace, Later, Actor, Index, Event) ->
@@ -902,7 +871,9 @@ not_dep([TraceState|Rest], Later, Actor, Index, Event, NotDep) ->
     end,
   not_dep(Rest, Later, Actor, Index, Event, NewNotDep).
 
-show_plan(_Logger, _Index, _NotDep) ->
+show_plan(Atom, _, _, _) when is_atom(Atom) ->
+  ok;
+show_plan(_NW, _Logger, _Index, _NotDep) ->
   ?debug(
      _Logger, "     PLAN~n~s",
      begin
@@ -927,9 +898,9 @@ maybe_log_race(TraceState, Index, Event, State) ->
       ?unique(Logger, ?linfo, msg(show_races), [])
   end.
 
-insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Exploring) ->
+insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring) ->
   case Optimal of
-    true -> insert_wakeup(Sleeping, Wakeup, NotDep, Exploring);
+    true -> insert_wakeup(Sleeping, Wakeup, NotDep, Bound, Exploring);
     false ->
       Initials = get_initials(NotDep),
       All =
@@ -945,30 +916,48 @@ insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Exploring) ->
       end
   end.      
 
-insert_wakeup([Sleeping|Rest], Wakeup, NotDep, Exploring) ->
-  case check_initial(Sleeping, NotDep) =:= false of
-    true  -> insert_wakeup(Rest, Wakeup, NotDep, Exploring);
-    false -> skip
-  end;
-insert_wakeup([], Wakeup, NotDep, Exploring) ->
-  insert_wakeup(Wakeup, NotDep, Exploring).
+insert_wakeup(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
+  case has_sleeping_initial(Sleeping, NotDep) of
+    true -> skip;
+    false -> insert_wakeup(Wakeup, NotDep, Bound, Exploring)
+  end.
 
-insert_wakeup([], NotDep, Exploring) ->
+has_sleeping_initial([Sleeping|Rest], NotDep) ->
+  case check_initial(Sleeping, NotDep) =:= false of
+    true -> has_sleeping_initial(Rest, NotDep);
+    false -> true
+  end;
+has_sleeping_initial([], _) -> false.
+
+insert_wakeup(          _, _NotDep,     -1, _Exploring) ->
+  over_bound;
+insert_wakeup(         [],  NotDep, _Bound,  Exploring) ->
   backtrackify(NotDep, Exploring);
-insert_wakeup([Node|Rest], NotDep, Exploring) ->
+insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
   #backtrack_entry{event = Event, origin = M, wakeup_tree = Deeper} = Node,
   case check_initial(Event, NotDep) of
     false ->
-      case insert_wakeup(Rest, NotDep, Exploring) of
-        skip -> skip;
+      NewBound =
+        case is_integer(Bound) of
+          true -> Bound - 1;
+          false -> Bound
+        end,
+      case insert_wakeup(Rest, NotDep, NewBound, Exploring) of
+        Special
+          when
+            Special =:= skip;
+            Special =:= over_bound -> Special;
         NewTree -> [Node|NewTree]
       end;
     NewNotDep ->
       case Deeper =:= [] of
         true  -> skip;
         false ->
-          case insert_wakeup(Deeper, NewNotDep, Exploring) of
-            skip -> skip;
+          case insert_wakeup(Deeper, NewNotDep, Bound, Exploring) of
+            Special
+              when
+                Special =:= skip;
+                Special =:= over_bound -> Special;
             NewTree ->
               Entry =
                 #backtrack_entry{
@@ -1189,10 +1178,10 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 %%==============================================================================
 
 msg(assertions_only_filter) ->
-  "Only assertion failures are considered crashes (--assertions_only).~n";
+  "Only assertion failures are considered crashes ('--assertions_only').~n";
 msg(assertions_only_use) ->
   "A process crashed with reason '{{assert*,_}, _}'. If you want to see only"
-    " this kind of error you can use the --assertions_only option.~n";
+    " this kind of error you can use the '--assertions_only' option.~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
@@ -1216,4 +1205,4 @@ msg(timeout) ->
     " standard timeout. Use the '--after_timeout' option to treat after clauses"
     " that exceed some threshold as 'impossible'.~n";
 msg(treat_as_normal) ->
-  "Some abnormal exit reasons were treated as normal (--treat_as_normal).~n".
+  "Some abnormal exit reasons were treated as normal ('--treat_as_normal').~n".

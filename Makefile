@@ -3,7 +3,7 @@
 ###-----------------------------------------------------------------------------
 
 NAME := concuerror
-VERSION := 0.13
+VERSION := 0.14
 
 .PHONY: default dev
 default dev: $(NAME)
@@ -55,7 +55,10 @@ ebin/%.beam: src/%.erl Makefile | ebin $(VERSION_HRL)
 
 $(VERSION_HRL): version
 	@echo " GEN  $@"
-	@src/versions $(VERSION) > $@.tmp
+	@echo -n "-define(GIT_SHA, " > $@.tmp
+	@git rev-parse --short --sq HEAD >> $@.tmp
+	@echo ")." >> $@.tmp
+	@src/versions $(VERSION) >> $@.tmp
 	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
 	@rm $@.tmp
 
@@ -100,12 +103,10 @@ $(PLT):
 ### Testing
 ###-----------------------------------------------------------------------------
 
-SUITES = {advanced_tests,dpor_tests,basic_tests}
-
 .PHONY: tests
 tests:
 	@$(RM) $@/thediff
-	@(cd $@; bash -c "./runtests.py suites/$(SUITES)/src/*")
+	@(cd $@; bash -c "./runtests.py suites/*/src/*")
 
 .PHONY: tests-long
 tests-long: default

@@ -15,7 +15,7 @@ scenarios() ->
 
 exceptional() ->
   fun(_Expected, Actual) ->
-      Cmd = "grep \"you can use the --assertions_only option\" ",
+      Cmd = "grep \"you can use the '--assertions_only' option\" ",
       [_,_,_|_] = os:cmd(Cmd ++ Actual),
       true
   end.

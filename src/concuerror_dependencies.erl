@@ -591,7 +591,7 @@ explain_error({undefined_dependency, A, B, C}) ->
   io_lib:format(
     "There exists no race info about the following pair of instructions~n~n"
     "1) ~s~n2) ~s~n~n"
-    "You can run without --assume_racing=false to treat them as racing.~n"
+    "You can run without '--assume_racing false' to treat them as racing.~n"
     "Otherwise please ask the developers to add info about this pair.~n~p",
     [concuerror_printer:pretty_s(#event{event_info = I}, 10)
      || I <- [A,B]] ++ [C]).

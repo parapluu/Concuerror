@@ -2006,7 +2006,7 @@ explain_error({not_local_node, Node}) ->
 explain_error({process_did_not_respond, Timeout, Actor}) ->
   io_lib:format( 
     "A process took more than ~pms to report a built-in event. You can try to"
-    " increase the --timeout limit and/or ensure that there are no infinite"
+    " increase the '--timeout' limit and/or ensure that there are no infinite"
     " loops in your test. (Process: ~p)",
     [Timeout, Actor]
    );
