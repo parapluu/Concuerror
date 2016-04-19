@@ -86,18 +86,13 @@ start(Options) ->
   end.
 
 initialize(Options) ->
-  [{Output, OutputName}, SymbolicNames, Processes, Modules] =
-    get_properties(
-      [output, symbolic_names, processes, modules],
-      Options),
-  Fun = fun({M}, _) -> ?log(self(), ?linfo, "Instrumented ~p~n", [M]) end,
-  ets:foldl(Fun, ok, Modules),
-  ets:insert(Modules, {{logger}, self()}),
+  [{Output, OutputName}, SymbolicNames, Processes] =
+    get_properties([output, symbolic_names, processes], Options),
+  concuerror_loader:register_logger(self()),
   ok = setup_symbolic_names(SymbolicNames, Processes),
-  io_lib = concuerror_loader:load(io_lib, Modules),
   PrintableOptions =
     delete_props(
-      [graph, modules, output, processes, timers, verbosity],
+      [graph, output, processes, timers, verbosity],
       Options),
   separator(Output, $#),
   io:format(

@@ -14,40 +14,36 @@
 
 run(RawOptions) ->
   try
-    error_logger:tty(false),
-    _ = [true = code:unstick_mod(M) || {M, preloaded} <- code:all_loaded()],
-    [] = [D || D <- code:get_path(), ok =/= code:unstick_dir(D)],
-    case code:get_object_code(erlang) =:= error of
-      true ->
-        true =
-          code:add_pathz(filename:join(code:root_dir(), "erts/preloaded/ebin"));
-      false ->
-        ok
-    end,
-    {module, concuerror_inspect} = code:load_file(concuerror_inspect),
-    Processes = ets:new(processes, [public]),
-    Options = concuerror_options:finalize([{processes, Processes}|RawOptions]),
-    Logger = concuerror_logger:start(Options),
-    SchedulerOptions = [{logger, Logger}|Options],
-    {Pid, Ref} =
-      spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
-    Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
-    Status =
-      case Reason =:= normal of
-        true -> completed;
-        false ->
-          {Explain, Type} = explain(Reason),
-          ?error(Logger, "~s~n~n", [Explain]),
-          Type
-      end,
-    concuerror_callback:cleanup_processes(Processes),
-    ?trace(Logger, "Reached the end!~n",[]),
-    concuerror_logger:stop(Logger, Status),
-    ets:delete(Processes),
-    Status
+    concuerror_options:finalize(RawOptions)
+  of
+    Options -> start(Options)
   catch
-    throw:opt_error -> error
+    throw:opt_error -> error;
+    throw:opt_exit -> completed
   end.
+
+start(Options) ->
+  error_logger:tty(false),
+  Processes = ets:new(processes, [public]),
+  LoggerOptions = [{processes, Processes}|Options],
+  Logger = concuerror_logger:start(LoggerOptions),
+  SchedulerOptions = [{logger, Logger}|LoggerOptions],
+  {Pid, Ref} =
+    spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
+  Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
+  Status =
+    case Reason =:= normal of
+      true -> completed;
+      false ->
+        {Explain, Type} = explain(Reason),
+        ?error(Logger, "~s~n~n", [Explain]),
+        Type
+    end,
+  concuerror_callback:cleanup_processes(Processes),
+  ?trace(Logger, "Reached the end!~n",[]),
+  concuerror_logger:stop(Logger, Status),
+  ets:delete(Processes),
+  Status.
 
 explain(Reason) ->
   Stacktrace = erlang:get_stacktrace(),

@@ -32,22 +32,12 @@ parse_cl(CommandLineArgs) ->
 parse_cl_aux(CommandLineArgs) ->
   case getopt:parse(getopt_spec(), CommandLineArgs) of
     {ok, {Options, OtherArgs}} ->
-      case {proplists:get_bool(version, Options),
-            proplists:is_defined(help, Options)} of
-        {true, _} ->
-          cl_version(),
-          {exit, completed};
-        {false, true} ->
-          cl_usage(proplists:get_value(help, Options)),
-          {exit, completed};
-        _ ->
-          case OtherArgs =:= [] of
-            true -> ok;
-            false ->
-              opt_error("Unknown options: ~s", [string:join(OtherArgs, " ")])
-          end,
-          Options
-      end;
+      case OtherArgs =:= [] of
+        true -> ok;
+        false ->
+          opt_error("Unknown options: ~s", [string:join(OtherArgs, " ")])
+      end,
+      Options;
     {error, Error} ->
       case Error of
         {missing_option_arg, help} ->
@@ -258,15 +248,13 @@ cl_version() ->
 -spec finalize(options()) -> options().
 
 finalize(Options) ->
+  check_help_and_version(Options),
   FinalOptions =
     try
       Options1 = rename_equivalent(Options),
       Options2 = add_missing_getopt_defaults(Options1),
       Options3 =
-        add_missing_defaults(
-          [{modules, ets:new(modules, [public])},
-           {verbosity, ?DEFAULT_VERBOSITY}
-          ], Options2),
+        add_missing_defaults([{verbosity, ?DEFAULT_VERBOSITY}], Options2),
       Options4 = finalize_aux(proplists:unfold(Options3)),
       add_missing_defaults(
         [{ignore_error, []},
@@ -300,6 +288,23 @@ finalize(Options) ->
         "The module containing the main test function has not been specified."
         " Use '-m <module>' or '-h module' for more info.",
       opt_error(UndefinedEntryPoint)
+  end.
+
+check_help_and_version(Options) ->
+  case {proplists:get_bool(version, Options),
+        proplists:is_defined(help, Options)} of
+    {true, _} ->
+      cl_version(),
+      throw(opt_exit);
+    {false, true} ->
+      Value = proplists:get_value(help, Options),
+      case Value =:= true of
+        true -> cl_usage(all);
+        false -> cl_usage(Value)
+      end,
+      throw(opt_exit);
+    _ ->
+      ok
   end.
 
 %%%-----------------------------------------------------------------------------
@@ -430,21 +435,15 @@ file_error(Key, Value) ->
   opt_error("could not open '--~w' file ~s for writing.", [Key, Value]).
 
 compile_and_load(Files, Options) ->
-  Modules = proplists:get_value(modules, Options),
-  Processes = proplists:get_value(processes, Options),
   {LoadedFiles, MoreOptions} =
-    compile_and_load(Files, Modules, {[], {none, []}}, Options),
-  Preserved =
-    [{modules, Modules},
-     {processes, Processes},
-     {files, LoadedFiles}
-     |MoreOptions],
+    compile_and_load(Files, {[], {none, []}}, Options),
+  Preserved = [{files, LoadedFiles}|MoreOptions],
   throw({file_defined, Preserved}).
 
-compile_and_load([], _Modules, {Acc, {_, MoreOpts}}, _Options) ->
+compile_and_load([], {Acc, {_, MoreOpts}}, _Options) ->
   {lists:sort(Acc), MoreOpts};
-compile_and_load([File|Rest], Modules, {Acc, MoreOpts}, Options) ->
-  case concuerror_loader:load_initially(File, Modules) of
+compile_and_load([File|Rest], {Acc, MoreOpts}, Options) ->
+  case concuerror_loader:load_initially(File) of
     {ok, Module, Warnings} ->
       lists:foreach(fun(W) -> opt_warn(W, [], Options) end, Warnings),
       NewMoreOpts =
@@ -458,7 +457,7 @@ compile_and_load([File|Rest], Modules, {Acc, MoreOpts}, Options) ->
               " them.",
             opt_error(Error, [Other, File])
         end,
-      compile_and_load(Rest, Modules, {[File|Acc], NewMoreOpts}, Options);
+      compile_and_load(Rest, {[File|Acc], NewMoreOpts}, Options);
     {error, Error} ->
       opt_error(Error)
   end.
@@ -476,11 +475,16 @@ add_missing_getopt_defaults(Opts) ->
        {Key, _Short, Default, _Help} -> {Key, Default};
        {Key, _Short, Default, _Help, _MoreHelp} -> {Key, Default}
      end || Opt <- options()],
+  NoTestIfEntryPoint =
+    case proplists:is_defined(entry_point, Opts) of
+      true -> fun(X) -> X =/= test end;
+      false -> fun(_) -> true end
+    end,
   MissingDefaults =
     [{Key, Default} ||
       {Key, {_, Default}} <- Defaults,
       not proplists:is_defined(Key, Opts),
-      Key =/= test
+      NoTestIfEntryPoint(Key)
     ],
   MissingDefaults ++ Opts.
 
