@@ -324,7 +324,10 @@ rename_equivalent([], Acc) -> lists:reverse(Acc).
 
 finalize_aux(Options) ->
   {value, Verbosity, RestOptions} = lists:keytake(verbosity, 1, Options),
-  finalize([Verbosity|RestOptions], []).
+  case proplists:get_all_values(file, Options) of
+    [] -> finalize([Verbosity|RestOptions], []);
+    Files -> compile_and_load(Files, [Verbosity])
+  end.
 
 finalize([], Acc) -> Acc;
 finalize([{Key, V}|Rest], Acc)
@@ -345,10 +348,6 @@ finalize([{verbosity, N}|Rest], Acc) ->
       opt_error(Error, [?ldebug - 1])
   end,
   finalize(NewRest, [{verbosity, Verbosity}|Acc]);
-finalize([{file, Value}|Rest], Acc) ->
-  %% This will force rechecking defaults, so no need to recurse.
-  Files = [Value|proplists:get_all_values(file, Rest)],
-  compile_and_load(Files, Acc);
 finalize([{Key, Value}|Rest], Acc) when Key =:= pa; Key =:=pz ->
   PathAdd =
     case Key of
