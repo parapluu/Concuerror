@@ -205,7 +205,7 @@ loop_entry(State) ->
 
 loop(State) ->
   receive
-    Message when Message =/= tick -> loop(Message, State)
+    Message -> loop(Message, State)
   end.
 
 loop(Message,
@@ -317,12 +317,10 @@ loop(Message, State) ->
       ok;
     plan ->
       NewState = State#logger_state{traces_total = TracesTotal + 1},
-      FinalState = update_on_ticker(NewState),
-      loop(FinalState);
+      loop(NewState);
     bound_reached ->
       NewState = State#logger_state{bound_reached = true},
-      FinalState = update_on_ticker(NewState),
-      loop(FinalState);
+      loop(NewState);
     {print, Type, String} ->
       NewStreams = orddict:append(Type, String, Streams),
       NewState = State#logger_state{streams = NewStreams},
@@ -376,8 +374,11 @@ loop(Message, State) ->
           traces_ssb = NewSSB,
           errors = NewErrors
          },
-      FinalState = update_on_ticker(NewState),
-      loop(FinalState)
+      loop(NewState);
+    tick ->
+      clear_ticks(),
+      NewState = update_on_ticker(State),
+      loop(NewState)
   end.
 
 format_utc_timestamp() ->
@@ -453,14 +454,17 @@ ticker(Logger) ->
     ?TICKER_TIMEOUT -> ticker(Logger)
   end.
 
-update_on_ticker(State) ->
-  case has_tick() of
-    true  ->
-      {Rate, NewState} = update_rate(State),
-      printout(State, "~s", [Rate]),
-      NewState;
-    false -> State
+clear_ticks() ->
+  receive
+    tick -> clear_ticks()
+  after
+    0 -> ok
   end.
+
+update_on_ticker(State) ->
+  {Rate, NewState} = update_rate(State),
+  printout(State, "~s", [Rate]),
+  NewState.
 
 update_rate(State) ->
   #logger_state{
@@ -470,19 +474,9 @@ update_rate(State) ->
   New = timestamp(),
   Time = timediff(New, Old),
   Diff = Current - Prev,
-  Rate = (Diff / Time),
+  Rate = (Diff / (Time + 1)),
   RateStr = io_lib:format("(~5.1f interleavings/s) ",[Rate]),
   {RateStr, State#logger_state{rate_timestamp = New, rate_prev = Current}}.
-
-has_tick() ->
-  has_tick(false).
-
-has_tick(Result) ->
-  receive
-    tick -> has_tick(true)
-  after
-    0 -> Result
-  end.
 
 separator_string(Char) ->
   lists:duplicate(80, Char).
