@@ -86,7 +86,7 @@ options() ->
     " Concuerror will start the test by spawning a process that calls this function."}
   ,{help, $h, atom,
     "Display help",
-    "You already know how to use this option :-)"}
+    "You already know how to use this option! :-)"}
   ,{version, undefined, undefined,
     "Display version information"}
   ,{verbosity, $v, integer,
