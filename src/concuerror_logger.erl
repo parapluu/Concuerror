@@ -2,7 +2,7 @@
 
 -module(concuerror_logger).
 
--export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
+-export([start/1, complete/2, plan/1, log/5, race/3, finish/2, print/3, time/2]).
 -export([bound_reached/1, set_verbosity/2]).
 -export([graph_set_node/3, graph_new_node/5, graph_race/3]).
 
@@ -150,12 +150,12 @@ log(Logger, Level, Tag, Format, Data) ->
   Logger ! {log, Level, Tag, Format, Data},
   ok.
 
--spec stop(logger(), term()) -> ok.
+-spec finish(logger(), term()) -> concuerror:exit_status().
 
-stop(Logger, Status) ->
-  Logger ! {close, Status, self()},
+finish(Logger, Status) ->
+  Logger ! {finish, Status, self()},
   receive
-    closed -> ok
+    {finished, ExitStatus} -> ExitStatus
   end.
 
 -spec print(logger(), stream(), string()) -> ok.
@@ -287,28 +287,36 @@ loop(Message, State) ->
              log_msgs = NewLogMsgs});
     {graph, Command} ->
       loop(graph_command(Command, State));
-    {close, Status, Scheduler} ->
+    {finish, SchedulerStatus, Scheduler} ->
       case is_pid(Ticker) of
         true -> Ticker ! stop;
         false -> ok
       end,
-      case Errors =:= 0 of
-        true -> io:format(Output, "  No errors found!~n",[]);
-        false -> ok
-      end,
+      ExitStatus =
+        case SchedulerStatus =:= normal of
+          true ->
+            case Errors =/= 0 of
+              true -> error;
+              false ->
+                io:format(Output, "  No errors found!~n",[]),
+                ok
+            end;
+          false -> fail
+        end,
       separator(Output, $#),
       print_log_msgs(Output, LogMsgs),
       Format = "Done! (Exit status: ~p)~n  Summary: ",
       IntMsg = interleavings_message(State),
-      io:format(Output, Format, [Status]),
+      io:format(Output, Format, [ExitStatus]),
       io:format(Output, "~s", [IntMsg]),
       ok = file:close(Output),
       ok = graph_close(State),
       case Verbosity =:= ?lquiet of
         true -> ok;
-        false -> printout(State#logger_state{ticker = show}, Format, [Status])
+        false ->
+          printout(State#logger_state{ticker = show}, Format, [ExitStatus])
       end,
-      Scheduler ! closed,
+      Scheduler ! {finished, ExitStatus},
       ok;
     plan ->
       NewState = State#logger_state{traces_total = TracesTotal + 1},

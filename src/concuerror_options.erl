@@ -20,29 +20,31 @@
 
 %%%-----------------------------------------------------------------------------
 
--spec parse_cl([string()]) -> options() | {'exit', concuerror:status()}.
+-spec parse_cl([string()]) ->
+                  {'ok', options()} | {'exit', concuerror:exit_status()}.
 
 parse_cl(CommandLineArgs) ->
   try
     parse_cl_aux(CommandLineArgs)
   catch
-    throw:opt_error -> {exit, error}
+    throw:opt_error -> {exit, fail}
   end.
 
+parse_cl_aux([]) ->
+  {ok, [help]};
 parse_cl_aux(CommandLineArgs) ->
   case getopt:parse(getopt_spec(), CommandLineArgs) of
     {ok, {Options, OtherArgs}} ->
       case OtherArgs =:= [] of
         true -> ok;
-        false ->
-          opt_error("Unknown options: ~s", [string:join(OtherArgs, " ")])
+        false -> opt_error("Unknown options: ~s", [string:join(OtherArgs, " ")])
       end,
-      Options;
+      {ok, Options};
     {error, Error} ->
       case Error of
         {missing_option_arg, help} ->
           cl_usage(all),
-          {exit, completed};
+          {exit, ok};
         {missing_option_arg, Option} ->
           opt_error("no argument given for '--~s'", [Option]);
         _Other ->
@@ -215,6 +217,7 @@ options() ->
 cl_usage(all) ->
   getopt:usage(getopt_spec(), "./concuerror"),
   to_stderr("More info about a specific option: -h <option>.~n", []),
+  print_exit_status_info(),
   print_bugs_message();
 cl_usage(Name) ->
   Optname =
@@ -239,22 +242,40 @@ cl_usage(Name) ->
         _:_ -> to_stderr("No additional help available.~n", [])
       end
   end,
-  to_stderr("For general help use '-h' without an argument.~n", []),
-  print_bugs_message().
+  to_stderr("For general help use '-h' without an argument.~n", []).
 
 cl_version() ->
   to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
 
+print_exit_status_info() ->
+  Message =
+    "Exit status:~n"
+    " 0    ('ok') : Test went well. No errors were found.~n"
+    " 1 ('error') : Test went bad. Errors were found.~n"
+    " 2  ('fail') : Incorrect use. Bad options used, unsupported code, etc.~n",
+  to_stderr(Message, []).
+
 print_bugs_message() ->
-  Message = "Bugs and other FAQ: http://parapluu.github.io/Concuerror/faq~n",
+  Message = "How to report bugs and other FAQ: http://parapluu.github.io/Concuerror/faq~n",
   to_stderr(Message, []).
 
 %%%-----------------------------------------------------------------------------
 
--spec finalize(options()) -> options().
+-spec finalize(options()) ->
+                  {'ok', options()} | {'exit', concuerror:exit_status()}.
 
 finalize(Options) ->
-  check_help_and_version(Options),
+  case check_help_and_version(Options) of
+    exit -> {exit, ok};
+    ok ->
+      try
+        {ok, finalize_2(Options)}
+      catch
+        throw:opt_error -> {exit, fail}
+      end
+  end.
+
+finalize_2(Options) ->
   FinalOptions =
     try
       Options1 = rename_equivalent(Options),
@@ -274,7 +295,7 @@ finalize(Options) ->
         NewOptions = proplists:delete(file, Options),
         Fold = fun({K,_}, Override) -> lists:keydelete(K, 1, Override) end,
         OverridenOptions = lists:foldl(Fold, NewOptions, FileOptions),
-        finalize(FileOptions ++ OverridenOptions)
+        finalize_2(FileOptions ++ OverridenOptions)
     end,
   consistent(FinalOptions),
   case proplists:get_value(entry_point, FinalOptions, undefined) of
@@ -301,14 +322,14 @@ check_help_and_version(Options) ->
         proplists:is_defined(help, Options)} of
     {true, _} ->
       cl_version(),
-      throw(opt_exit);
+      exit;
     {false, true} ->
       Value = proplists:get_value(help, Options),
       case Value =:= true of
         true -> cl_usage(all);
         false -> cl_usage(Value)
       end,
-      throw(opt_exit);
+      exit;
     _ ->
       ok
   end.

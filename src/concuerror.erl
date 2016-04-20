@@ -4,22 +4,18 @@
 
 -export([run/1]).
 
--export_type([status/0]).
+-export_type([exit_status/0]).
 
--type status() :: 'completed' | 'error' | 'warning'.
+-type exit_status() :: 'ok' | 'error' | 'fail'.
 
 -include("concuerror.hrl").
 
--spec run(concuerror_options:options()) -> status().
+-spec run(concuerror_options:options()) -> exit_status().
 
 run(RawOptions) ->
-  try
-    concuerror_options:finalize(RawOptions)
-  of
-    Options -> start(Options)
-  catch
-    throw:opt_error -> error;
-    throw:opt_exit -> completed
+  case concuerror_options:finalize(RawOptions) of
+    {ok, Options} -> start(Options);
+    {exit, ExitStatus} -> ExitStatus
   end.
 
 start(Options) ->
@@ -31,31 +27,24 @@ start(Options) ->
   {Pid, Ref} =
     spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
   Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
-  Status =
+  SchedulerStatus =
     case Reason =:= normal of
-      true -> completed;
+      true -> normal;
       false ->
-        {Explain, Type} = explain(Reason),
-        ?error(Logger, "~s~n~n", [Explain]),
-        Type
+        ?error(Logger, "~s~n~n", [explain(Reason)]),
+        failed
     end,
   concuerror_callback:cleanup_processes(Processes),
   ?trace(Logger, "Reached the end!~n",[]),
-  concuerror_logger:stop(Logger, Status),
+  ExitStatus = concuerror_logger:finish(Logger, SchedulerStatus),
   ets:delete(Processes),
-  Status.
+  ExitStatus.
 
 explain(Reason) ->
-  Stacktrace = erlang:get_stacktrace(),
   try
     {Module, Info} = Reason,
-    case Module:explain_error(Info) of
-      {_, _} = WithStatus -> WithStatus;
-      ReasonStr -> {ReasonStr, error}
-    end
+    Module:explain_error(Info)
   catch
     _:_ ->
-      Str =
-        io_lib:format("~n  Reason: ~p~nTrace:~n  ~p~n", [Reason, Stacktrace]),
-      {Str, error}
+      io_lib:format("~n  Reason: ~p~n", [Reason])
   end.

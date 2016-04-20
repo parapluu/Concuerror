@@ -104,9 +104,9 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     rslt = ("%s/%s/results/%s-%s-%s%s.txt"
             % (results, suite, name, funn, preb, file_ext))
     equalRes = equalResults(suite, name, orig, rslt)
-    if status == 0 and not has_crash:
+    if status != 512 and not has_crash:
         finished = True
-    elif status != 0 and has_crash:
+    elif status == 512 and has_crash:
         finished = True
     else:
         finished = False

@@ -8,7 +8,7 @@ concuerror_options() ->
     [{keep_going, false}, {depth_bound, 10}].
 
 scenarios() ->
-    [{test, inf, dpor, crash}].
+    [{test, inf, dpor}].
 
 test() ->
     process_flag(trap_exit, true),

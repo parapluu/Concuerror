@@ -8,7 +8,7 @@ concuerror_options() ->
     [{keep_going, false}].
 
 scenarios() ->
-    [{test, inf, dpor, crash}].
+    [{test, inf, dpor}].
 
 test() ->
     P = self(),

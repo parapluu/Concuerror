@@ -50,7 +50,6 @@ good
 has Info
 has Warning
 has Tip
-has Error
 
 testing "Abnormal exit found"
 mygrep "\* At step .* process P\.1 exited abnormally"
