@@ -75,7 +75,7 @@ options() ->
     "This must be a 0-arity function located in the module specified by '-m'."
     " Concuerror will start the test by spawning a process that calls this function."}
   ,{help, $h, atom,
-    "Display help",
+    "Display help (can also be used as '-h <option>')",
     "You already know how to use this option! :-)"}
   ,{version, undefined, undefined,
     "Display version information"}
@@ -214,7 +214,8 @@ options() ->
 
 cl_usage(all) ->
   getopt:usage(getopt_spec(), "./concuerror"),
-  to_stderr("More info about a specific option: -h <option>.~n", []);
+  to_stderr("More info about a specific option: -h <option>.~n", []),
+  print_bugs_message();
 cl_usage(Name) ->
   Optname =
     case lists:keyfind(Name, 1, options()) of
@@ -238,10 +239,15 @@ cl_usage(Name) ->
         _:_ -> to_stderr("No additional help available.~n", [])
       end
   end,
-  to_stderr("For general help use '-h' without an argument.~n", []).
+  to_stderr("For general help use '-h' without an argument.~n", []),
+  print_bugs_message().
 
 cl_version() ->
   to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
+
+print_bugs_message() ->
+  Message = "Bugs and other FAQ: http://parapluu.github.io/Concuerror/faq~n",
+  to_stderr(Message, []).
 
 %%%-----------------------------------------------------------------------------
 
