@@ -189,7 +189,8 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
   concuerror_logger:complete(Logger, Log),
   case Log =/= none of
     true when not State#scheduler_state.keep_going ->
-      ?crash(stop_first_error);
+      ?unique(Logger, ?lwarning, msg(stop_first_error), []),
+      State#scheduler_state{trace = []};
     Other ->
       case Other of
         true ->
@@ -1143,7 +1144,7 @@ max_cv(D1, D2) ->
 
 %% =============================================================================
 
--spec explain_error(term()) -> string() | {string(), concuerror:status()}.
+-spec explain_error(term()) -> string().
 
 explain_error({optimal_sleep_set_block, Origin, Who}) ->
   io_lib:format(
@@ -1153,8 +1154,6 @@ explain_error({optimal_sleep_set_block, Origin, Who}) ->
     ?notify_us_msg,
     [Origin, Who]
    );
-explain_error(stop_first_error) ->
-  {msg(stop_first_error), warning};
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   [EString, NEString] =
     [concuerror_printer:pretty_s(E, Depth) || E <- [Event, NewEvent]],
@@ -1198,7 +1197,7 @@ msg(sleep_set_block) ->
   "Some interleavings were 'sleep-set blocked'. This is expected, since you have"
     " specified '--optimal false', but reveals wasted effort.~n";
 msg(stop_first_error) ->
-  "Stop testing on first error. (Check '-h keep_going').";
+  "Stop testing on first error. (Check '-h keep_going').~n";
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"

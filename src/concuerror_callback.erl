@@ -81,7 +81,6 @@
           message_counter = 1        :: pos_integer(),
           messages_new = queue:new() :: message_queue(),
           messages_old = queue:new() :: message_queue(),
-          modules                    :: modules(),
           monitors                   :: monitors(),
           event = none               :: 'none' | event(),
           notify_when_ready          :: {pid(), boolean()},
@@ -111,7 +110,6 @@ spawn_first_process(Options) ->
        instant_delivery = ?opt(instant_delivery, Options),
        links          = ets:new(links, [bag, public]),
        logger         = ?opt(logger, Options),
-       modules        = ?opt(modules, Options),
        monitors       = ets:new(monitors, [bag, public]),
        notify_when_ready = {self(), true},
        processes      = Processes = ?opt(processes, Options),
@@ -247,9 +245,9 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
       end;
     false ->
       case Info of
-        #concuerror_info{modules = M} ->
+        #concuerror_info{} ->
           ?debug_flag(?non_builtin,{Module,Name,Arity,Location}),
-          Module = concuerror_loader:load(Module, M);
+          Module = concuerror_loader:load(Module);
         _ -> ok
       end,
       {doit, Info}
@@ -1702,11 +1700,10 @@ hijack_or_wrap_system(Name, Info)
   when Name =:= application_controller_disabled ->
   #concuerror_info{
      logger = Logger,
-     modules = Modules,
      timeout = Timeout} = Info,
   Pid = whereis(Name),
   link(Pid),
-  ok = concuerror_loader:load(gen_server, Modules),
+  ok = concuerror_loader:load(gen_server),
   ok = sys:suspend(Name),
   Notify =
     reset_concuerror_info(
@@ -1824,7 +1821,6 @@ reset_concuerror_info(Info) ->
      is_timer = IsTimer,
      links = Links,
      logger = Logger,
-     modules = Modules,
      monitors = Monitors,
      notify_when_ready = {Pid, _},
      processes = Processes,
@@ -1840,7 +1836,6 @@ reset_concuerror_info(Info) ->
      is_timer = IsTimer,
      links = Links,
      logger = Logger,
-     modules = Modules,
      monitors = Monitors,
      notify_when_ready = {Pid, true},
      processes = Processes,

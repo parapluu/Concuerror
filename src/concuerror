@@ -15,8 +15,8 @@ main(Args) ->
   end,
   Status =
     case concuerror_options:parse_cl(Args) of
-      {exit, Exit} -> Exit;
-      Options -> concuerror:run(Options)
+      {ok, Options} -> concuerror:run(Options);
+      {exit, ExitStatus} -> ExitStatus
     end,
   if Cover ->
       Hash = binary:decode_unsigned(erlang:md5(lists:flatten(Args))),
@@ -26,7 +26,11 @@ main(Args) ->
   end,
   cl_exit(Status).
 
-cl_exit(completed) ->
+-spec cl_exit(concuerror:exit_status()) -> no_return().
+
+cl_exit(ok) ->
   erlang:halt(0);
-cl_exit(_) ->
-  erlang:halt(1).
+cl_exit(error) ->
+  erlang:halt(1);
+cl_exit(fail) ->
+  erlang:halt(2).

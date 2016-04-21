@@ -7,8 +7,8 @@ DIFFPRINTER=${DIFFPRINTER-thediff}
 DIFF=$(mktemp)
 
 diff \
-    <(grep -B1 "  Summary" $1 2> /dev/null || echo empty1) \
-    <(grep -B1 "  Summary" $2 2> /dev/null || echo empty2) \
+    <(grep "  Summary" $1 2> /dev/null || echo empty1) \
+    <(grep "  Summary" $2 2> /dev/null || echo empty2) \
     > $DIFF
 
 if [ "$?" -ne 0 ]; then

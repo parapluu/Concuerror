@@ -2,7 +2,7 @@
 
 -module(concuerror_loader).
 
--export([load/2, load_initially/2]).
+-export([load/1, load_initially/1, register_logger/1]).
 
 -define(flag(A), (1 bsl A)).
 
@@ -16,7 +16,11 @@
 %% -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 -include("concuerror.hrl").
 
--spec load(module(), modules()) -> module().
+-spec load(module()) -> module().
+
+load(Module) ->
+  Instrumented = get_instrumented_table(),
+  load(Module, Instrumented).
 
 load(Module, Instrumented) ->
   case ets:lookup(Instrumented, Module) =:= [] of
@@ -37,10 +41,14 @@ load(Module, Instrumented) ->
     false -> Module
   end.
 
--spec load_initially(module(), modules()) ->
+-spec load_initially(module()) ->
                         {ok, module(), [string()]} | {error, string()}.
 
-load_initially(File, Modules) ->
+load_initially(Module) ->
+  Instrumented = get_instrumented_table(),
+  load_initially(Module, Instrumented).
+
+load_initially(File, Instrumented) ->
   MaybeModule =
     case filename:extension(File) of
       ".erl" ->
@@ -63,9 +71,43 @@ load_initially(File, Modules) ->
   case MaybeModule of
     {ok, Module, Binary} ->
       Warnings = check_shadow(File, Module),
-      Module = load_binary(Module, File, Binary, Modules),
+      Module = load_binary(Module, File, Binary, Instrumented),
       {ok, Module, Warnings};
     Error -> Error
+  end.
+
+-spec register_logger(logger()) -> ok.
+
+register_logger(Logger) ->
+  Instrumented = get_instrumented_table(),
+  ets:delete(Instrumented, {logger}),
+  Fun = fun({M}, _) -> ?log(Logger, ?linfo, "Instrumented ~p~n", [M]) end,
+  ets:foldl(Fun, ok, Instrumented),
+  ets:insert(Instrumented, {{logger}, Logger}),
+  io_lib = load(io_lib, Instrumented),
+  ok.
+
+%%------------------------------------------------------------------------------
+
+get_instrumented_table() ->
+  case ets:info(concuerror_instrumented) =:= undefined of
+    true ->
+      setup_sticky_directories(),
+      ets:new(concuerror_instrumented, [named_table, public]);
+    false ->
+      concuerror_instrumented
+  end.
+
+setup_sticky_directories() ->
+  {module, concuerror_inspect} = code:ensure_loaded(concuerror_inspect),
+  _ = [true = code:unstick_mod(M) || {M, preloaded} <- code:all_loaded()],
+  [] = [D || D <- code:get_path(), ok =/= code:unstick_dir(D)],
+  case code:get_object_code(erlang) =:= error of
+    true ->
+      true =
+        code:add_pathz(filename:join(code:root_dir(), "erts/preloaded/ebin"));
+    false ->
+      ok
   end.
 
 check_shadow(File, Module) ->

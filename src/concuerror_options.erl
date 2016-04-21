@@ -20,39 +20,31 @@
 
 %%%-----------------------------------------------------------------------------
 
--spec parse_cl([string()]) -> options() | {'exit', concuerror:status()}.
+-spec parse_cl([string()]) ->
+                  {'ok', options()} | {'exit', concuerror:exit_status()}.
 
 parse_cl(CommandLineArgs) ->
   try
     parse_cl_aux(CommandLineArgs)
   catch
-    throw:opt_error -> {exit, error}
+    throw:opt_error -> {exit, fail}
   end.
 
+parse_cl_aux([]) ->
+  {ok, [help]};
 parse_cl_aux(CommandLineArgs) ->
   case getopt:parse(getopt_spec(), CommandLineArgs) of
     {ok, {Options, OtherArgs}} ->
-      case {proplists:get_bool(version, Options),
-            proplists:is_defined(help, Options)} of
-        {true, _} ->
-          cl_version(),
-          {exit, completed};
-        {false, true} ->
-          cl_usage(proplists:get_value(help, Options)),
-          {exit, completed};
-        _ ->
-          case OtherArgs =:= [] of
-            true -> ok;
-            false ->
-              opt_error("Unknown options: ~s", [string:join(OtherArgs, " ")])
-          end,
-          Options
-      end;
+      case OtherArgs =:= [] of
+        true -> ok;
+        false -> opt_error("Unknown options: ~s", [string:join(OtherArgs, " ")])
+      end,
+      {ok, Options};
     {error, Error} ->
       case Error of
         {missing_option_arg, help} ->
           cl_usage(all),
-          {exit, completed};
+          {exit, ok};
         {missing_option_arg, Option} ->
           opt_error("no argument given for '--~s'", [Option]);
         _Other ->
@@ -85,8 +77,8 @@ options() ->
     "This must be a 0-arity function located in the module specified by '-m'."
     " Concuerror will start the test by spawning a process that calls this function."}
   ,{help, $h, atom,
-    "Display help",
-    "You already know how to use this option :-)"}
+    "Display help (can also be used as '-h <option>')",
+    "You already know how to use this option! :-)"}
   ,{version, undefined, undefined,
     "Display version information"}
   ,{verbosity, $v, integer,
@@ -224,7 +216,9 @@ options() ->
 
 cl_usage(all) ->
   getopt:usage(getopt_spec(), "./concuerror"),
-  to_stderr("More info about a specific option: -h <option>.~n", []);
+  to_stderr("More info about a specific option: -h <option>.~n", []),
+  print_exit_status_info(),
+  print_bugs_message();
 cl_usage(Name) ->
   Optname =
     case lists:keyfind(Name, 1, options()) of
@@ -253,20 +247,41 @@ cl_usage(Name) ->
 cl_version() ->
   to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
 
+print_exit_status_info() ->
+  Message =
+    "Exit status:~n"
+    " 0    ('ok') : Test went well. No errors were found.~n"
+    " 1 ('error') : Test went bad. Errors were found.~n"
+    " 2  ('fail') : Incorrect use. Bad options used, unsupported code, etc.~n",
+  to_stderr(Message, []).
+
+print_bugs_message() ->
+  Message = "How to report bugs and other FAQ: http://parapluu.github.io/Concuerror/faq~n",
+  to_stderr(Message, []).
+
 %%%-----------------------------------------------------------------------------
 
--spec finalize(options()) -> options().
+-spec finalize(options()) ->
+                  {'ok', options()} | {'exit', concuerror:exit_status()}.
 
 finalize(Options) ->
+  case check_help_and_version(Options) of
+    exit -> {exit, ok};
+    ok ->
+      try
+        {ok, finalize_2(Options)}
+      catch
+        throw:opt_error -> {exit, fail}
+      end
+  end.
+
+finalize_2(Options) ->
   FinalOptions =
     try
       Options1 = rename_equivalent(Options),
       Options2 = add_missing_getopt_defaults(Options1),
       Options3 =
-        add_missing_defaults(
-          [{modules, ets:new(modules, [public])},
-           {verbosity, ?DEFAULT_VERBOSITY}
-          ], Options2),
+        add_missing_defaults([{verbosity, ?DEFAULT_VERBOSITY}], Options2),
       Options4 = finalize_aux(proplists:unfold(Options3)),
       add_missing_defaults(
         [{ignore_error, []},
@@ -280,7 +295,7 @@ finalize(Options) ->
         NewOptions = proplists:delete(file, Options),
         Fold = fun({K,_}, Override) -> lists:keydelete(K, 1, Override) end,
         OverridenOptions = lists:foldl(Fold, NewOptions, FileOptions),
-        finalize(FileOptions ++ OverridenOptions)
+        finalize_2(FileOptions ++ OverridenOptions)
     end,
   consistent(FinalOptions),
   case proplists:get_value(entry_point, FinalOptions, undefined) of
@@ -302,6 +317,23 @@ finalize(Options) ->
       opt_error(UndefinedEntryPoint)
   end.
 
+check_help_and_version(Options) ->
+  case {proplists:get_bool(version, Options),
+        proplists:is_defined(help, Options)} of
+    {true, _} ->
+      cl_version(),
+      exit;
+    {false, true} ->
+      Value = proplists:get_value(help, Options),
+      case Value =:= true of
+        true -> cl_usage(all);
+        false -> cl_usage(Value)
+      end,
+      exit;
+    _ ->
+      ok
+  end.
+
 %%%-----------------------------------------------------------------------------
 
 rename_equivalent(Options) ->
@@ -319,7 +351,10 @@ rename_equivalent([], Acc) -> lists:reverse(Acc).
 
 finalize_aux(Options) ->
   {value, Verbosity, RestOptions} = lists:keytake(verbosity, 1, Options),
-  finalize([Verbosity|RestOptions], []).
+  case proplists:get_all_values(file, Options) of
+    [] -> finalize([Verbosity|RestOptions], []);
+    Files -> compile_and_load(Files, [Verbosity])
+  end.
 
 finalize([], Acc) -> Acc;
 finalize([{Key, V}|Rest], Acc)
@@ -340,10 +375,6 @@ finalize([{verbosity, N}|Rest], Acc) ->
       opt_error(Error, [?ldebug - 1])
   end,
   finalize(NewRest, [{verbosity, Verbosity}|Acc]);
-finalize([{file, Value}|Rest], Acc) ->
-  %% This will force rechecking defaults, so no need to recurse.
-  Files = [Value|proplists:get_all_values(file, Rest)],
-  compile_and_load(Files, Acc);
 finalize([{Key, Value}|Rest], Acc) when Key =:= pa; Key =:=pz ->
   PathAdd =
     case Key of
@@ -430,21 +461,15 @@ file_error(Key, Value) ->
   opt_error("could not open '--~w' file ~s for writing.", [Key, Value]).
 
 compile_and_load(Files, Options) ->
-  Modules = proplists:get_value(modules, Options),
-  Processes = proplists:get_value(processes, Options),
   {LoadedFiles, MoreOptions} =
-    compile_and_load(Files, Modules, {[], {none, []}}, Options),
-  Preserved =
-    [{modules, Modules},
-     {processes, Processes},
-     {files, LoadedFiles}
-     |MoreOptions],
+    compile_and_load(Files, {[], {none, []}}, Options),
+  Preserved = [{files, LoadedFiles}|MoreOptions],
   throw({file_defined, Preserved}).
 
-compile_and_load([], _Modules, {Acc, {_, MoreOpts}}, _Options) ->
+compile_and_load([], {Acc, {_, MoreOpts}}, _Options) ->
   {lists:sort(Acc), MoreOpts};
-compile_and_load([File|Rest], Modules, {Acc, MoreOpts}, Options) ->
-  case concuerror_loader:load_initially(File, Modules) of
+compile_and_load([File|Rest], {Acc, MoreOpts}, Options) ->
+  case concuerror_loader:load_initially(File) of
     {ok, Module, Warnings} ->
       lists:foreach(fun(W) -> opt_warn(W, [], Options) end, Warnings),
       NewMoreOpts =
@@ -458,7 +483,7 @@ compile_and_load([File|Rest], Modules, {Acc, MoreOpts}, Options) ->
               " them.",
             opt_error(Error, [Other, File])
         end,
-      compile_and_load(Rest, Modules, {[File|Acc], NewMoreOpts}, Options);
+      compile_and_load(Rest, {[File|Acc], NewMoreOpts}, Options);
     {error, Error} ->
       opt_error(Error)
   end.
@@ -476,11 +501,16 @@ add_missing_getopt_defaults(Opts) ->
        {Key, _Short, Default, _Help} -> {Key, Default};
        {Key, _Short, Default, _Help, _MoreHelp} -> {Key, Default}
      end || Opt <- options()],
+  NoTestIfEntryPoint =
+    case proplists:is_defined(entry_point, Opts) of
+      true -> fun(X) -> X =/= test end;
+      false -> fun(_) -> true end
+    end,
   MissingDefaults =
     [{Key, Default} ||
       {Key, {_, Default}} <- Defaults,
       not proplists:is_defined(Key, Opts),
-      Key =/= test
+      NoTestIfEntryPoint(Key)
     ],
   MissingDefaults ++ Opts.
 

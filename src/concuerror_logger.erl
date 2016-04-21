@@ -2,7 +2,7 @@
 
 -module(concuerror_logger).
 
--export([start/1, complete/2, plan/1, log/5, race/3, stop/2, print/3, time/2]).
+-export([start/1, complete/2, plan/1, log/5, race/3, finish/2, print/3, time/2]).
 -export([bound_reached/1, set_verbosity/2]).
 -export([graph_set_node/3, graph_new_node/5, graph_race/3]).
 
@@ -86,18 +86,13 @@ start(Options) ->
   end.
 
 initialize(Options) ->
-  [{Output, OutputName}, SymbolicNames, Processes, Modules] =
-    get_properties(
-      [output, symbolic_names, processes, modules],
-      Options),
-  Fun = fun({M}, _) -> ?log(self(), ?linfo, "Instrumented ~p~n", [M]) end,
-  ets:foldl(Fun, ok, Modules),
-  ets:insert(Modules, {{logger}, self()}),
+  [{Output, OutputName}, SymbolicNames, Processes] =
+    get_properties([output, symbolic_names, processes], Options),
+  concuerror_loader:register_logger(self()),
   ok = setup_symbolic_names(SymbolicNames, Processes),
-  io_lib = concuerror_loader:load(io_lib, Modules),
   PrintableOptions =
     delete_props(
-      [graph, modules, output, processes, timers, verbosity],
+      [graph, output, processes, timers, verbosity],
       Options),
   separator(Output, $#),
   io:format(
@@ -155,12 +150,12 @@ log(Logger, Level, Tag, Format, Data) ->
   Logger ! {log, Level, Tag, Format, Data},
   ok.
 
--spec stop(logger(), term()) -> ok.
+-spec finish(logger(), term()) -> concuerror:exit_status().
 
-stop(Logger, Status) ->
-  Logger ! {close, Status, self()},
+finish(Logger, Status) ->
+  Logger ! {finish, Status, self()},
   receive
-    closed -> ok
+    {finished, ExitStatus} -> ExitStatus
   end.
 
 -spec print(logger(), stream(), string()) -> ok.
@@ -205,7 +200,7 @@ loop_entry(State) ->
 
 loop(State) ->
   receive
-    Message when Message =/= tick -> loop(Message, State)
+    Message -> loop(Message, State)
   end.
 
 loop(Message,
@@ -292,37 +287,43 @@ loop(Message, State) ->
              log_msgs = NewLogMsgs});
     {graph, Command} ->
       loop(graph_command(Command, State));
-    {close, Status, Scheduler} ->
+    {finish, SchedulerStatus, Scheduler} ->
       case is_pid(Ticker) of
         true -> Ticker ! stop;
         false -> ok
       end,
-      case Errors =:= 0 of
-        true -> io:format(Output, "  No errors found!~n",[]);
-        false -> ok
-      end,
+      ExitStatus =
+        case SchedulerStatus =:= normal of
+          true ->
+            case Errors =/= 0 of
+              true -> error;
+              false ->
+                io:format(Output, "  No errors found!~n",[]),
+                ok
+            end;
+          false -> fail
+        end,
       separator(Output, $#),
       print_log_msgs(Output, LogMsgs),
       Format = "Done! (Exit status: ~p)~n  Summary: ",
       IntMsg = interleavings_message(State),
-      io:format(Output, Format, [Status]),
+      io:format(Output, Format, [ExitStatus]),
       io:format(Output, "~s", [IntMsg]),
       ok = file:close(Output),
       ok = graph_close(State),
       case Verbosity =:= ?lquiet of
         true -> ok;
-        false -> printout(State#logger_state{ticker = show}, Format, [Status])
+        false ->
+          printout(State#logger_state{ticker = show}, Format, [ExitStatus])
       end,
-      Scheduler ! closed,
+      Scheduler ! {finished, ExitStatus},
       ok;
     plan ->
       NewState = State#logger_state{traces_total = TracesTotal + 1},
-      FinalState = update_on_ticker(NewState),
-      loop(FinalState);
+      loop(NewState);
     bound_reached ->
       NewState = State#logger_state{bound_reached = true},
-      FinalState = update_on_ticker(NewState),
-      loop(FinalState);
+      loop(NewState);
     {print, Type, String} ->
       NewStreams = orddict:append(Type, String, Streams),
       NewState = State#logger_state{streams = NewStreams},
@@ -376,8 +377,11 @@ loop(Message, State) ->
           traces_ssb = NewSSB,
           errors = NewErrors
          },
-      FinalState = update_on_ticker(NewState),
-      loop(FinalState)
+      loop(NewState);
+    tick ->
+      clear_ticks(),
+      NewState = update_on_ticker(State),
+      loop(NewState)
   end.
 
 format_utc_timestamp() ->
@@ -453,14 +457,17 @@ ticker(Logger) ->
     ?TICKER_TIMEOUT -> ticker(Logger)
   end.
 
-update_on_ticker(State) ->
-  case has_tick() of
-    true  ->
-      {Rate, NewState} = update_rate(State),
-      printout(State, "~s", [Rate]),
-      NewState;
-    false -> State
+clear_ticks() ->
+  receive
+    tick -> clear_ticks()
+  after
+    0 -> ok
   end.
+
+update_on_ticker(State) ->
+  {Rate, NewState} = update_rate(State),
+  printout(State, "~s", [Rate]),
+  NewState.
 
 update_rate(State) ->
   #logger_state{
@@ -470,19 +477,9 @@ update_rate(State) ->
   New = timestamp(),
   Time = timediff(New, Old),
   Diff = Current - Prev,
-  Rate = (Diff / Time),
+  Rate = (Diff / (Time + 1)),
   RateStr = io_lib:format("(~5.1f interleavings/s) ",[Rate]),
   {RateStr, State#logger_state{rate_timestamp = New, rate_prev = Current}}.
-
-has_tick() ->
-  has_tick(false).
-
-has_tick(Result) ->
-  receive
-    tick -> has_tick(true)
-  after
-    0 -> Result
-  end.
 
 separator_string(Char) ->
   lists:duplicate(80, Char).
