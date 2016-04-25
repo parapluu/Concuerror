@@ -29,6 +29,9 @@
 -type message_event_queue() :: queue:queue(#message_event{}).
 -endif.
 
+%% For demo reasons.
+-define(DPOR, true).
+
 %% =============================================================================
 %% DATA STRUCTURES
 %% =============================================================================
@@ -61,6 +64,7 @@
           assume_racing                :: boolean(),
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
+          dpor                 = ?DPOR :: boolean(),
           entry_point                  :: mfargs(),
           exploring            = 1     :: integer(),
           first_process                :: pid(),
@@ -114,7 +118,7 @@ run(Options) ->
        last_scheduled = FirstProcess,
        logger = Logger = ?opt(logger, Options),
        non_racing_system = ?opt(non_racing_system, Options),
-       optimal = ?opt(optimal, Options),
+       optimal = ?DPOR and ?opt(optimal, Options),
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
@@ -336,18 +340,41 @@ schedule_sort(Actors, State) ->
     _ -> Sorted
   end.
 
-free_schedule(Event, [{Channel, Queue}|_], State) ->
+free_schedule(Event, Actors, State) ->
+  #scheduler_state{dpor = DPOR, logger = Logger, trace = [Last|Prev]} = State,
+  case DPOR of
+    true -> free_schedule_1(Event, Actors, State);
+    false ->
+      Enabled = [A || A <- Actors, enabled(A)],
+      Eventify = [#event{actor = E} || E <- Enabled],
+      FullBacktrack = [#backtrack_entry{event = Ev} || Ev <- Eventify],
+      case FullBacktrack of
+        [] -> ok;
+        [_|L] ->
+          _ = [concuerror_logger:plan(Logger) || _ <- L],
+          ok
+      end,
+      NewLast = Last#trace_state{wakeup_tree = FullBacktrack},
+      NewTrace = [NewLast|Prev],
+      NewState = State#scheduler_state{trace = NewTrace},
+      free_schedule_1(Event, Actors, NewState)
+  end.
+
+enabled({_,_}) -> true;
+enabled(P) -> concuerror_callback:enabled(P).
+
+free_schedule_1(Event, [{Channel, Queue}|_], State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
   UpdatedEvent = Event#event{actor = Channel, event_info = MessageEvent},
   {ok, FinalEvent} = get_next_event_backend(UpdatedEvent, State),
   update_state(FinalEvent, State);
-free_schedule(Event, [P|ActiveProcesses], State) ->
+free_schedule_1(Event, [P|ActiveProcesses], State) ->
   case get_next_event_backend(Event#event{actor = P}, State) of
-    retry -> free_schedule(Event, ActiveProcesses, State);
+    retry -> free_schedule_1(Event, ActiveProcesses, State);
     {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
   end;
-free_schedule(_Event, [], State) ->
+free_schedule_1(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
   #scheduler_state{logger = _Logger, trace = [Last|Prev]} = State,
   #trace_state{actors = Actors, sleeping = Sleeping} = Last,
@@ -574,6 +601,10 @@ remove_message(Channel, [Other|Rest], Acc) ->
 
 %%------------------------------------------------------------------------------
 
+plan_more_interleavings(#scheduler_state{dpor = false} = State) ->
+  #scheduler_state{logger = _Logger} = State,
+  ?debug(_Logger, "Skipping race detection~n", []),
+  State;
 plan_more_interleavings(State) ->
   #scheduler_state{logger = Logger, trace = RevTrace} = State,
   ?time(Logger, "Assigning happens-before..."),
