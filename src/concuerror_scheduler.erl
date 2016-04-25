@@ -901,7 +901,7 @@ maybe_log_race(TraceState, Index, Event, State) ->
 
 insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring) ->
   case Optimal of
-    true -> insert_wakeup(Sleeping, Wakeup, NotDep, Bound, Exploring);
+    true -> insert_wakeup_1(Sleeping, Wakeup, NotDep, Bound, Exploring);
     false ->
       Initials = get_initials(NotDep),
       All =
@@ -917,10 +917,10 @@ insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring) ->
       end
   end.      
 
-insert_wakeup(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
+insert_wakeup_1(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
   case has_sleeping_initial(Sleeping, NotDep) of
     true -> skip;
-    false -> insert_wakeup(Wakeup, NotDep, Bound, Exploring)
+    false -> insert_wakeup(Wakeup, NotDep, Bound, true, Exploring)
   end.
 
 has_sleeping_initial([Sleeping|Rest], NotDep) ->
@@ -930,20 +930,20 @@ has_sleeping_initial([Sleeping|Rest], NotDep) ->
   end;
 has_sleeping_initial([], _) -> false.
 
-insert_wakeup(          _, _NotDep,     -1, _Exploring) ->
+insert_wakeup(          _, _NotDep,     -1, _Paid, _Exploring) ->
   over_bound;
-insert_wakeup(         [],  NotDep, _Bound,  Exploring) ->
+insert_wakeup(         [],  NotDep, _Bound, _Paid,  Exploring) ->
   backtrackify(NotDep, Exploring);
-insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
+insert_wakeup([Node|Rest],  NotDep,  Bound,  Paid,  Exploring) ->
   #backtrack_entry{event = Event, origin = M, wakeup_tree = Deeper} = Node,
   case check_initial(Event, NotDep) of
     false ->
-      NewBound =
-        case is_integer(Bound) of
-          true -> Bound - 1;
-          false -> Bound
+      {NewBound, NewPaid} =
+        case {is_integer(Bound), Paid} of
+          {true, false} -> {Bound - 1, true};
+          _ -> {Bound, Paid}
         end,
-      case insert_wakeup(Rest, NotDep, NewBound, Exploring) of
+      case insert_wakeup(Rest, NotDep, NewBound, NewPaid, Exploring) of
         Special
           when
             Special =:= skip;
@@ -954,7 +954,7 @@ insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
       case Deeper =:= [] of
         true  -> skip;
         false ->
-          case insert_wakeup(Deeper, NewNotDep, Bound, Exploring) of
+          case insert_wakeup(Deeper, NewNotDep, Bound, false, Exploring) of
             Special
               when
                 Special =:= skip;

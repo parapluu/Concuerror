@@ -1,6 +1,6 @@
 ################################################################################
 
-Concuerror 0.14 (ec1402b) started with options:
+Concuerror 0.14 (fd40f4d) started with options:
   [{after_timeout,infinity},
    {assertions_only,false},
    {assume_racing,false},
@@ -33,19 +33,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.1: true = ets:insert(tab, {x,42})
     in readers.erl line 10
   10: P.1: exits normally
@@ -90,19 +90,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -147,19 +147,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -204,19 +204,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -261,19 +261,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -318,19 +318,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -375,19 +375,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -432,19 +432,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -489,19 +489,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -546,19 +546,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -603,19 +603,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -660,19 +660,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -717,19 +717,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -774,19 +774,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -831,19 +831,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -888,19 +888,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -945,19 +945,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1002,19 +1002,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1059,19 +1059,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1116,19 +1116,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1173,19 +1173,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1230,19 +1230,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1287,19 +1287,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1344,19 +1344,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1401,19 +1401,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1458,19 +1458,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1515,19 +1515,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1572,19 +1572,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1629,19 +1629,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1686,19 +1686,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1743,19 +1743,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1800,19 +1800,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1857,19 +1857,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1914,19 +1914,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1971,19 +1971,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2028,19 +2028,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2085,19 +2085,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2142,19 +2142,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2199,19 +2199,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2256,19 +2256,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2313,19 +2313,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2370,19 +2370,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2427,19 +2427,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2484,19 +2484,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2541,19 +2541,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2598,19 +2598,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2655,19 +2655,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2712,19 +2712,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2769,19 +2769,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2826,19 +2826,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2883,19 +2883,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2940,19 +2940,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2997,19 +2997,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3054,19 +3054,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3111,19 +3111,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3168,19 +3168,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3225,19 +3225,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3282,19 +3282,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3339,19 +3339,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3396,19 +3396,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3453,19 +3453,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3510,19 +3510,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3567,19 +3567,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3624,19 +3624,19 @@ Interleaving info:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2516
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -3676,7 +3676,6 @@ Warnings:
 --------------------------------------------------------------------------------
 
 Continuing after error (-k)
-Some interleavings were not considered due to schedule bounding.
 
 ################################################################################
 
@@ -3698,5 +3697,5 @@ You can see pairs of racing instructions (in the report and --graph) with '--sho
 
 ################################################################################
 
-Done! (Exit status: completed)
-  Summary: 64 errors, 64/64 interleavings explored (the scheduling bound was reached)
+Done! (Exit status: error)
+  Summary: 64 errors, 64/64 interleavings explored

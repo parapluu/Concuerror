@@ -1,0 +1,91 @@
+################################################################################
+
+Concuerror 0.14 (fd40f4d) started with options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,5000},
+   {entry_point,{readers_2,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/bounding_tests/src/readers_2.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {scheduling,round_robin},
+   {scheduling_bound,0},
+   {scheduling_bound_type,simple},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+
+Erroneous interleaving 1:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_2.erl line 14
+--------------------------------------------------------------------------------
+
+Interleaving info:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_2.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2516
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2516
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2516
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2516
+   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2516
+   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2516
+   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2516
+   9: P.1: [] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  10: P.1: exits normally
+  11: P.2: [] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  12: P.2: exits normally
+  13: P.3: [] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  14: P.3: exits normally
+  15: P.4: [] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  16: P.4: exits normally
+  17: P.5: [] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  18: P.5: exits normally
+  19: P.6: [] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  20: P.6: exits normally
+  21: P.7: true = ets:insert(tab, {x,42})
+    in readers_2.erl line 10
+  22: P.7: exits normally
+################################################################################
+
+Warnings:
+--------------------------------------------------------------------------------
+
+Some interleavings were not considered due to schedule bounding.
+Continuing after error (-k)
+
+################################################################################
+
+Info:
+--------------------------------------------------------------------------------
+
+Instrumented readers_2
+Instrumented io_lib
+Instrumented lists
+Instrumented erlang
+
+################################################################################
+
+Done! (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored (the scheduling bound was reached)
