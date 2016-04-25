@@ -67,9 +67,9 @@ version:
 
 ###-----------------------------------------------------------------------------
 
-ebin cover-data:
+ebin cover/data:
 	@echo " MKDIR $@"
-	@mkdir $@
+	@mkdir -p $@
 
 ###-----------------------------------------------------------------------------
 ### Dependencies
@@ -124,9 +124,9 @@ tests-long: default
 ###-----------------------------------------------------------------------------
 
 .PHONY: cover
-cover: cover-data
+cover: cover/data
 	export CONCUERROR_COVER=true; $(MAKE) tests tests-long
-	tests/cover-report
+	cd cover; ../tests/cover-report
 
 ###-----------------------------------------------------------------------------
 ### Travis

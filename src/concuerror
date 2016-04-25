@@ -20,7 +20,8 @@ main(Args) ->
     end,
   if Cover ->
       Hash = binary:decode_unsigned(erlang:md5(lists:flatten(Args))),
-      Out = filename:join([ScriptDir,"cover-data",io_lib:format("~.16b",[Hash])]),
+      Out =
+        filename:join([ScriptDir,"cover","data",io_lib:format("~.16b",[Hash])]),
       cover:export(Out);
      true -> ok
   end,

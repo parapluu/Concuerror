@@ -10,7 +10,7 @@
 /concuerror
 concuerror_report.txt
 concuerror_version.hrl
-cover-data
+cover
 erl_crash.dump
 tests/test_one
 thediff
