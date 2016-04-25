@@ -269,10 +269,7 @@ get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
 get_next_event(Event, MaybeNeedsReplayState) ->
   State = replay(MaybeNeedsReplayState),
   #scheduler_state{system = System, trace = [Last|_]} = State,
-  #trace_state{
-     actors           = Actors,
-     sleeping         = Sleeping
-    } = Last,
+  #trace_state{actors = Actors, sleeping = Sleeping} = Last,
   SortedActors = schedule_sort(Actors, State),
   #event{actor = Actor, label = Label} = Event,
   case Actor =:= undefined of
@@ -304,10 +301,7 @@ get_next_event(Event, MaybeNeedsReplayState) ->
             ResetEvent = reset_event(Event),
             get_next_event_backend(ResetEvent, State)
         end,
-      NewState =
-        State#scheduler_state{
-         },
-      update_state(UpdatedEvent, NewState)
+      update_state(UpdatedEvent, State)
   end.
 
 filter_sleeping([], AvailableActors) -> AvailableActors;
