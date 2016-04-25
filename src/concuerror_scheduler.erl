@@ -105,7 +105,7 @@ run(Options) ->
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
        assume_racing = ?opt(assume_racing, Options),
-       depth_bound = ?opt(depth_bound, Options),
+       depth_bound = ?opt(depth_bound, Options) + 1,
        entry_point = EntryPoint = ?opt(entry_point, Options),
        first_process = FirstProcess,
        ignore_error = ?opt(ignore_error, Options),
@@ -246,14 +246,12 @@ get_next_event(
   #scheduler_state{
      depth_bound = Bound,
      logger = Logger,
-     trace = [#trace_state{index = I}|Old]} = State)
-  when
-    I =:= Bound + 1 ->
+     trace = [#trace_state{index = Bound}|Old]} = State) ->
   UniqueMsg =
     "An interleaving reached the depth bound (~p). Consider limiting the size"
     " of the test or increasing the bound ('-d').~n",
-  ?unique(Logger, ?lwarning, UniqueMsg, [Bound]),
-  NewState = add_warning({depth_bound, Bound}, Old, State),
+  ?unique(Logger, ?lwarning, UniqueMsg, [Bound - 1]),
+  NewState = add_warning({depth_bound, Bound - 1}, Old, State),
   {none, NewState};
 get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
   #trace_state{wakeup_tree = WakeupTree} = Last,
