@@ -29,6 +29,9 @@
 -type message_event_queue() :: queue:queue(#message_event{}).
 -endif.
 
+%% For demo reasons.
+-define(DPOR, true).
+
 %% =============================================================================
 %% DATA STRUCTURES
 %% =============================================================================
@@ -61,6 +64,7 @@
           assume_racing                :: boolean(),
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
+          dpor                 = ?DPOR :: boolean(),
           entry_point                  :: mfargs(),
           exploring            = 1     :: integer(),
           first_process                :: pid(),
@@ -105,7 +109,7 @@ run(Options) ->
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
        assume_racing = ?opt(assume_racing, Options),
-       depth_bound = ?opt(depth_bound, Options),
+       depth_bound = ?opt(depth_bound, Options) + 1,
        entry_point = EntryPoint = ?opt(entry_point, Options),
        first_process = FirstProcess,
        ignore_error = ?opt(ignore_error, Options),
@@ -114,7 +118,7 @@ run(Options) ->
        last_scheduled = FirstProcess,
        logger = Logger = ?opt(logger, Options),
        non_racing_system = ?opt(non_racing_system, Options),
-       optimal = ?opt(optimal, Options),
+       optimal = ?DPOR and ?opt(optimal, Options),
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
@@ -246,14 +250,12 @@ get_next_event(
   #scheduler_state{
      depth_bound = Bound,
      logger = Logger,
-     trace = [#trace_state{index = I}|Old]} = State)
-  when
-    I =:= Bound + 1 ->
+     trace = [#trace_state{index = Bound}|Old]} = State) ->
   UniqueMsg =
     "An interleaving reached the depth bound (~p). Consider limiting the size"
     " of the test or increasing the bound ('-d').~n",
-  ?unique(Logger, ?lwarning, UniqueMsg, [Bound]),
-  NewState = add_warning({depth_bound, Bound}, Old, State),
+  ?unique(Logger, ?lwarning, UniqueMsg, [Bound - 1]),
+  NewState = add_warning({depth_bound, Bound - 1}, Old, State),
   {none, NewState};
 get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
   #trace_state{wakeup_tree = WakeupTree} = Last,
@@ -269,10 +271,7 @@ get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
 get_next_event(Event, MaybeNeedsReplayState) ->
   State = replay(MaybeNeedsReplayState),
   #scheduler_state{system = System, trace = [Last|_]} = State,
-  #trace_state{
-     actors           = Actors,
-     sleeping         = Sleeping
-    } = Last,
+  #trace_state{actors = Actors, sleeping = Sleeping} = Last,
   SortedActors = schedule_sort(Actors, State),
   #event{actor = Actor, label = Label} = Event,
   case Actor =:= undefined of
@@ -304,10 +303,7 @@ get_next_event(Event, MaybeNeedsReplayState) ->
             ResetEvent = reset_event(Event),
             get_next_event_backend(ResetEvent, State)
         end,
-      NewState =
-        State#scheduler_state{
-         },
-      update_state(UpdatedEvent, NewState)
+      update_state(UpdatedEvent, State)
   end.
 
 filter_sleeping([], AvailableActors) -> AvailableActors;
@@ -344,18 +340,41 @@ schedule_sort(Actors, State) ->
     _ -> Sorted
   end.
 
-free_schedule(Event, [{Channel, Queue}|_], State) ->
+free_schedule(Event, Actors, State) ->
+  #scheduler_state{dpor = DPOR, logger = Logger, trace = [Last|Prev]} = State,
+  case DPOR of
+    true -> free_schedule_1(Event, Actors, State);
+    false ->
+      Enabled = [A || A <- Actors, enabled(A)],
+      Eventify = [#event{actor = E} || E <- Enabled],
+      FullBacktrack = [#backtrack_entry{event = Ev} || Ev <- Eventify],
+      case FullBacktrack of
+        [] -> ok;
+        [_|L] ->
+          _ = [concuerror_logger:plan(Logger) || _ <- L],
+          ok
+      end,
+      NewLast = Last#trace_state{wakeup_tree = FullBacktrack},
+      NewTrace = [NewLast|Prev],
+      NewState = State#scheduler_state{trace = NewTrace},
+      free_schedule_1(Event, Actors, NewState)
+  end.
+
+enabled({_,_}) -> true;
+enabled(P) -> concuerror_callback:enabled(P).
+
+free_schedule_1(Event, [{Channel, Queue}|_], State) ->
   %% Pending messages can always be sent
   MessageEvent = queue:get(Queue),
   UpdatedEvent = Event#event{actor = Channel, event_info = MessageEvent},
   {ok, FinalEvent} = get_next_event_backend(UpdatedEvent, State),
   update_state(FinalEvent, State);
-free_schedule(Event, [P|ActiveProcesses], State) ->
+free_schedule_1(Event, [P|ActiveProcesses], State) ->
   case get_next_event_backend(Event#event{actor = P}, State) of
-    retry -> free_schedule(Event, ActiveProcesses, State);
+    retry -> free_schedule_1(Event, ActiveProcesses, State);
     {ok, UpdatedEvent} -> update_state(UpdatedEvent, State)
   end;
-free_schedule(_Event, [], State) ->
+free_schedule_1(_Event, [], State) ->
   %% Nothing to do, trace is completely explored
   #scheduler_state{logger = _Logger, trace = [Last|Prev]} = State,
   #trace_state{actors = Actors, sleeping = Sleeping} = Last,
@@ -582,6 +601,10 @@ remove_message(Channel, [Other|Rest], Acc) ->
 
 %%------------------------------------------------------------------------------
 
+plan_more_interleavings(#scheduler_state{dpor = false} = State) ->
+  #scheduler_state{logger = _Logger} = State,
+  ?debug(_Logger, "Skipping race detection~n", []),
+  State;
 plan_more_interleavings(State) ->
   #scheduler_state{logger = Logger, trace = RevTrace} = State,
   ?time(Logger, "Assigning happens-before..."),
@@ -901,7 +924,7 @@ maybe_log_race(TraceState, Index, Event, State) ->
 
 insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring) ->
   case Optimal of
-    true -> insert_wakeup(Sleeping, Wakeup, NotDep, Bound, Exploring);
+    true -> insert_wakeup_1(Sleeping, Wakeup, NotDep, Bound, Exploring);
     false ->
       Initials = get_initials(NotDep),
       All =
@@ -917,10 +940,10 @@ insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring) ->
       end
   end.      
 
-insert_wakeup(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
+insert_wakeup_1(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
   case has_sleeping_initial(Sleeping, NotDep) of
     true -> skip;
-    false -> insert_wakeup(Wakeup, NotDep, Bound, Exploring)
+    false -> insert_wakeup(Wakeup, NotDep, Bound, true, Exploring)
   end.
 
 has_sleeping_initial([Sleeping|Rest], NotDep) ->
@@ -930,20 +953,20 @@ has_sleeping_initial([Sleeping|Rest], NotDep) ->
   end;
 has_sleeping_initial([], _) -> false.
 
-insert_wakeup(          _, _NotDep,     -1, _Exploring) ->
+insert_wakeup(          _, _NotDep,     -1, _Paid, _Exploring) ->
   over_bound;
-insert_wakeup(         [],  NotDep, _Bound,  Exploring) ->
+insert_wakeup(         [],  NotDep, _Bound, _Paid,  Exploring) ->
   backtrackify(NotDep, Exploring);
-insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
+insert_wakeup([Node|Rest],  NotDep,  Bound,  Paid,  Exploring) ->
   #backtrack_entry{event = Event, origin = M, wakeup_tree = Deeper} = Node,
   case check_initial(Event, NotDep) of
     false ->
-      NewBound =
-        case is_integer(Bound) of
-          true -> Bound - 1;
-          false -> Bound
+      {NewBound, NewPaid} =
+        case {is_integer(Bound), Paid} of
+          {true, false} -> {Bound - 1, true};
+          _ -> {Bound, Paid}
         end,
-      case insert_wakeup(Rest, NotDep, NewBound, Exploring) of
+      case insert_wakeup(Rest, NotDep, NewBound, NewPaid, Exploring) of
         Special
           when
             Special =:= skip;
@@ -954,7 +977,7 @@ insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
       case Deeper =:= [] of
         true  -> skip;
         false ->
-          case insert_wakeup(Deeper, NewNotDep, Bound, Exploring) of
+          case insert_wakeup(Deeper, NewNotDep, Bound, false, Exploring) of
             Special
               when
                 Special =:= skip;

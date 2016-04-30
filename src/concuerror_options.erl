@@ -37,7 +37,9 @@ parse_cl_aux(CommandLineArgs) ->
     {ok, {Options, OtherArgs}} ->
       case OtherArgs =:= [] of
         true -> ok;
-        false -> opt_error("Unknown options: ~s", [string:join(OtherArgs, " ")])
+        false ->
+          Msg = "Unknown argument(s)/option(s): ~s",
+          opt_error(Msg, [string:join(OtherArgs, " ")])
       end,
       {ok, Options};
     {error, Error} ->
@@ -387,6 +389,14 @@ finalize([{Key, Value}|Rest], Acc) when Key =:= pa; Key =:=pz ->
       opt_error("could not add ~s to code path.", [Value])
   end,
   finalize(Rest, Acc);
+finalize([{Key, Value} = Option|Rest], Acc)
+  when
+    Key =:= after_timeout;
+    Key =:= depth_bound;
+    Key =:= print_depth
+    ->
+  check_validity(Key, Value, {fun(V) -> V > 0 end, "a positive integer"}),
+  finalize(Rest, [Option|Acc]);
 finalize([{Key, Value} = Option|Rest], AccIn) ->
   Acc =
     case proplists:is_defined(Key, AccIn) of
@@ -435,16 +445,26 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
     scheduling_bound_type ->
       check_validity(Key, Value, [none, simple]),
       finalize(Rest, [Option|Acc]);
-    timeout ->
+    MaybeInfinity
+      when
+        MaybeInfinity =:= interleaving_bound;
+        MaybeInfinity =:= timeout
+        ->
+      Limit =
+        case MaybeInfinity of
+          interleaving_bound -> 0;
+          timeout -> ?MINIMUM_TIMEOUT
+        end,
       case Value of
+        infinity ->
+          finalize(Rest, [Option|Acc]);
         -1 ->
-          finalize(Rest, [{Key, infinity}|Acc]);
-        N when is_integer(N), N >= ?MINIMUM_TIMEOUT ->
+          finalize(Rest, [{MaybeInfinity, infinity}|Acc]);
+        N when is_integer(N), N >= Limit ->
           finalize(Rest, [Option|Acc]);
         _Else ->
-          opt_error(
-            "'--~s' value must be -1 (infinity) or >= ~w.",
-            [Key, ?MINIMUM_TIMEOUT])
+          Error = "The value of '--~s' must be -1 (infinity) or >= ~w.",
+          opt_error(Error, [Key, Limit])
       end;
     test ->
       case Rest =:= [] of
@@ -514,11 +534,17 @@ add_missing_getopt_defaults(Opts) ->
     ],
   MissingDefaults ++ Opts.
 
-check_validity(Key, Value, Valid) ->
+check_validity(Key, Value, Valid) when is_list(Valid) ->
   case lists:member(Value, Valid) of
     true -> ok;
     false ->
-      opt_error("'--~s' value must be one of ~w.", [Key, Valid])
+      opt_error("The value of '--~s' must be one of ~w.", [Key, Valid])
+  end;
+check_validity(Key, Value, {Valid, Explain}) when is_function(Valid) ->
+  case Valid(Value) of
+    true -> ok;
+    false ->
+      opt_error("The value of '--~s' must be ~s.", [Key, Explain])
   end.
 
 consistent(Options) ->

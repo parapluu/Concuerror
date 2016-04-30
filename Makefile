@@ -38,7 +38,7 @@ dev: VERSION := $(VERSION)-dev
 
 $(NAME): $(DEPS_BEAMS) $(BEAMS)
 	@$(RM) $@
-	@echo " GEN  $@"
+	@printf " GEN  $@\n"
 	@ln -s src/$(NAME) $@
 
 ###-----------------------------------------------------------------------------
@@ -46,18 +46,18 @@ $(NAME): $(DEPS_BEAMS) $(BEAMS)
 -include $(MODULES:%=ebin/%.Pbeam)
 
 ebin/%.beam: src/%.erl Makefile | ebin $(VERSION_HRL)
-	@echo " DEPS $<"
+	@printf " DEPS $<\n"
 	@erlc -o ebin -MD -MG $<
-	@echo " ERLC $<"
+	@printf " ERLC $<\n"
 	@erlc $(ERL_COMPILE_FLAGS) -o ebin $<
 
 ###-----------------------------------------------------------------------------
 
 $(VERSION_HRL): version
-	@echo " GEN  $@"
-	@echo -n "-define(GIT_SHA, " > $@.tmp
+	@printf " GEN  $@\n"
+	@printf -- "-define(GIT_SHA, " > $@.tmp
 	@git rev-parse --short --sq HEAD >> $@.tmp
-	@echo ")." >> $@.tmp
+	@printf ").\n" >> $@.tmp
 	@src/versions $(VERSION) >> $@.tmp
 	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
 	@rm $@.tmp
@@ -67,9 +67,9 @@ version:
 
 ###-----------------------------------------------------------------------------
 
-ebin cover-data:
-	@echo " MKDIR $@"
-	@mkdir $@
+ebin cover/data:
+	@printf " MKDIR $@\n"
+	@mkdir -p $@
 
 ###-----------------------------------------------------------------------------
 ### Dependencies
@@ -124,9 +124,9 @@ tests-long: default
 ###-----------------------------------------------------------------------------
 
 .PHONY: cover
-cover: cover-data
+cover: cover/data
 	export CONCUERROR_COVER=true; $(MAKE) tests tests-long
-	tests/cover-report
+	cd cover; ../tests/cover-report
 
 ###-----------------------------------------------------------------------------
 ### Travis
