@@ -38,7 +38,7 @@ dev: VERSION := $(VERSION)-dev
 
 $(NAME): $(DEPS_BEAMS) $(BEAMS)
 	@$(RM) $@
-	@echo " GEN  $@"
+	@printf " GEN  $@\n"
 	@ln -s src/$(NAME) $@
 
 ###-----------------------------------------------------------------------------
@@ -46,18 +46,18 @@ $(NAME): $(DEPS_BEAMS) $(BEAMS)
 -include $(MODULES:%=ebin/%.Pbeam)
 
 ebin/%.beam: src/%.erl Makefile | ebin $(VERSION_HRL)
-	@echo " DEPS $<"
+	@printf " DEPS $<\n"
 	@erlc -o ebin -MD -MG $<
-	@echo " ERLC $<"
+	@printf " ERLC $<\n"
 	@erlc $(ERL_COMPILE_FLAGS) -o ebin $<
 
 ###-----------------------------------------------------------------------------
 
 $(VERSION_HRL): version
-	@echo " GEN  $@"
-	@echo -n "-define(GIT_SHA, " > $@.tmp
+	@printf " GEN  $@\n"
+	@printf -- "-define(GIT_SHA, " > $@.tmp
 	@git rev-parse --short --sq HEAD >> $@.tmp
-	@echo ")." >> $@.tmp
+	@printf ").\n" >> $@.tmp
 	@src/versions $(VERSION) >> $@.tmp
 	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
 	@rm $@.tmp
@@ -68,7 +68,7 @@ version:
 ###-----------------------------------------------------------------------------
 
 ebin cover/data:
-	@echo " MKDIR $@"
+	@printf " MKDIR $@\n"
 	@mkdir -p $@
 
 ###-----------------------------------------------------------------------------
