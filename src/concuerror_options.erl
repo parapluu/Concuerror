@@ -484,24 +484,32 @@ compile_and_load(Files, Options) ->
   {LoadedFiles, MoreOptions} =
     compile_and_load(Files, {[], {none, []}}, Options),
   Preserved = [{files, LoadedFiles}|MoreOptions],
-  throw({file_defined, Preserved}).
+  throw({file_defined, proplists:unfold(Preserved)}).
 
 compile_and_load([], {Acc, {_, MoreOpts}}, _Options) ->
   {lists:sort(Acc), MoreOpts};
-compile_and_load([File|Rest], {Acc, MoreOpts}, Options) ->
+compile_and_load([File|Rest], {Acc, {Already, MoreOpts}}, Options) ->
   case concuerror_loader:load_initially(File) of
     {ok, Module, Warnings} ->
       lists:foreach(fun(W) -> opt_warn(W, [], Options) end, Warnings),
+      MissingModule =
+        case
+          Rest =:= [] andalso
+          Acc =:= [] andalso
+          not proplists:is_defined(module, Options)
+        of
+          true -> [{module, Module}];
+          false -> []
+        end,
       NewMoreOpts =
         case try Module:concuerror_options() catch _:_ -> [] end of
-          [] -> MoreOpts;
-          More when MoreOpts =:= {none, []} -> {File, More};
+          [] -> {Already, MissingModule ++ MoreOpts};
+          More when Already =:= none -> {File, MissingModule ++ More};
           _ ->
-            {Other, _} = MoreOpts,
             Error =
               "Both ~s and ~s export concuerror_options/0. Please remove one of"
               " them.",
-            opt_error(Error, [Other, File])
+            opt_error(Error, [Already, File])
         end,
       compile_and_load(Rest, {[File|Acc], NewMoreOpts}, Options);
     {error, Error} ->
