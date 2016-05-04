@@ -125,8 +125,9 @@ tests-long: default
 
 .PHONY: cover
 cover: cover/data
-	export CONCUERROR_COVER=true; $(MAKE) tests tests-long
-	cd cover; ../tests/cover-report
+	$(RM) $</*
+	export CONCUERROR_COVER=cover/data; $(MAKE) tests tests-long
+	cd cover; ./cover-report
 
 ###-----------------------------------------------------------------------------
 ### Travis
