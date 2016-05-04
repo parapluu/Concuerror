@@ -78,7 +78,7 @@ start(Options) ->
     fun() ->
         State = initialize(Options),
         Parent ! logger_ready,
-        loop_entry(State)
+        loop(State)
     end,
   P = spawn_link(Fun),
   receive
@@ -86,8 +86,9 @@ start(Options) ->
   end.
 
 initialize(Options) ->
-  [{Output, OutputName}, SymbolicNames, Processes] =
-    get_properties([output, symbolic_names, processes], Options),
+  Timestamp = format_utc_timestamp(),
+  [{Output, OutputName}, SymbolicNames, Processes, Verbosity] =
+    get_properties([output, symbolic_names, processes, verbosity], Options),
   concuerror_loader:register_logger(self()),
   ok = setup_symbolic_names(SymbolicNames, Processes),
   PrintableOptions =
@@ -95,11 +96,20 @@ initialize(Options) ->
       [graph, output, processes, timers, verbosity],
       Options),
   separator(Output, $#),
+  Ticker =
+    case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ldebug) of
+      true -> none;
+      false ->
+        to_stderr("Concuerror started at ~s~n", [Timestamp]),
+        to_stderr("Writing results in ~s~n~n~n", [OutputName]),
+        Self = self(),
+        spawn_link(fun() -> ticker(Self) end)
+    end,
   io:format(
     Output,
-    "Concuerror ~s (~w) started with options:~n"
+    "Concuerror ~s (~w) started at ~s with options:~n"
     "  ~p~n",
-    [?VSN, ?GIT_SHA, lists:sort(PrintableOptions)]),
+    [?VSN, ?GIT_SHA, Timestamp, lists:sort(PrintableOptions)]),
   separator(Output, $#),
   GraphData = graph_preamble(?opt(graph, Options)),
   #logger_state{
@@ -107,7 +117,8 @@ initialize(Options) ->
      output = Output,
      output_name = OutputName,
      print_depth = ?opt(print_depth, Options),
-     verbosity = ?opt(verbosity, Options)
+     ticker = Ticker,
+     verbosity = Verbosity
     }.
 
 get_properties(Props, PropList) ->
@@ -183,20 +194,6 @@ set_verbosity(Logger, Verbosity) ->
   ok.
 
 %%------------------------------------------------------------------------------
-
-loop_entry(State) ->
-  #logger_state{output_name = OutputName, verbosity = Verbosity} = State,
-  Ticker =
-    case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ldebug) of
-      true -> none;
-      false ->
-        Timestamp = format_utc_timestamp(),
-        to_stderr("Concuerror started at ~s~n", [Timestamp]),
-        to_stderr("Writing results in ~s~n~n~n", [OutputName]),
-        Self = self(),
-        spawn_link(fun() -> ticker(Self) end)
-    end,
-  loop(State#logger_state{ticker = Ticker}).
 
 loop(State) ->
   receive
@@ -305,16 +302,18 @@ loop(Message, State) ->
         end,
       separator(Output, $#),
       print_log_msgs(Output, LogMsgs),
-      Format = "Done! (Exit status: ~p)~n  Summary: ",
+      FinishTimestamp = format_utc_timestamp(),
+      Format = "Done at ~s (Exit status: ~p)~n  Summary: ",
+      Args = [FinishTimestamp, ExitStatus],
+      io:format(Output, Format, Args),
       IntMsg = interleavings_message(State),
-      io:format(Output, Format, [ExitStatus]),
       io:format(Output, "~s", [IntMsg]),
       ok = file:close(Output),
       ok = graph_close(State),
       case Verbosity =:= ?lquiet of
         true -> ok;
         false ->
-          printout(State#logger_state{ticker = show}, Format, [ExitStatus])
+          printout(State#logger_state{ticker = show}, Format, Args)
       end,
       Scheduler ! {finished, ExitStatus},
       ok;
