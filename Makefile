@@ -127,7 +127,7 @@ tests-long: default
 cover: cover/data
 	$(RM) $</*
 	export CONCUERROR_COVER=cover/data; $(MAKE) tests tests-long
-	cd cover; ./cover-report
+	cd cover; ./cover-report data
 
 ###-----------------------------------------------------------------------------
 ### Travis
