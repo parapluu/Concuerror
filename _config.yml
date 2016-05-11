@@ -4,6 +4,7 @@ logo:             site-logo.png
 disqus_shortname: 
 #Comment out url when working locally to resolve base urls correctly
 url:             http://concuerror.com
+author: Vahnatai
 
 # Owner/author information
 owner:
@@ -64,6 +65,9 @@ kramdown:
     coderay_tab_width: 4
     coderay_bold_every: 10
     coderay_css: class
+
+gems:
+  - jekyll-seo-tag
 
 include: [".htaccess"]
 exclude: ["CNAME", "Gemfile", "LICENSE", "post.thor", "README.md"]
