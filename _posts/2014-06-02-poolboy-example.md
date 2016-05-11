@@ -150,14 +150,7 @@ Tip: An abnormal exit signal was sent to a process...
 Log messages tagged as *Tips* are also non-critical, notifying of a
 suggested refactoring or option that can be used to make testing more efficient.
 
-### Error messages
-
-Log messages tagged as *Errors* are critical and lead to the interruption of
-the exploration. Our first test should crash here, with the following error:
-
-{% highlight text %}
-Error: Stop testing on first error. (Check '-h keep_going').
-{% endhighlight %}
+### The interesting bits!
 
 By default, Concuerror will stop exploration on the first error it encounters.
 In this particular case, it seems that in the very first interleaving we managed
