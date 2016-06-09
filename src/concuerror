@@ -7,8 +7,8 @@ main(Args) ->
   EbinDir = filename:join([ScriptDir,"ebin"]),
   GetoptDir = filename:join([ScriptDir,"deps","getopt","ebin"]),
   ok = code:add_pathsa([EbinDir, GetoptDir]),
-  Cover = os:getenv("CONCUERROR_COVER") =/= false,
-  if Cover ->
+  Cover = os:getenv("CONCUERROR_COVER"),
+  if Cover =/= false ->
       cover:start(),
       cover:compile_beam_directory(EbinDir);
      true -> ok
@@ -18,10 +18,9 @@ main(Args) ->
       {ok, Options} -> concuerror:run(Options);
       {exit, ExitStatus} -> ExitStatus
     end,
-  if Cover ->
+  if Cover =/= false ->
       Hash = binary:decode_unsigned(erlang:md5(lists:flatten(Args))),
-      Out =
-        filename:join([ScriptDir,"cover","data",io_lib:format("~.16b",[Hash])]),
+      Out = filename:join([Cover,io_lib:format("~.16b",[Hash])]),
       cover:export(Out);
      true -> ok
   end,

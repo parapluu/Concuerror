@@ -2,9 +2,7 @@
 %% -*- erlang-indent-level: 2 -*-
 %%! +S1 -nostick -noshell
 
-main(_Args) ->
-  ScriptDir = filename:dirname(escript:script_name()),
-  CoverDir = filename:join([ScriptDir, "..", "cover","data"]),
+main([CoverDir]) ->
   {ok, Files} = file:list_dir(CoverDir),
   Full = [filename:join([CoverDir,F]) || F <- Files],
   Foreach = fun(F) -> cover:import(F) end,
