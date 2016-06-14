@@ -624,7 +624,7 @@ run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
         cancel_timer ->
           ?debug_flag(?loop, sending_kill_to_cancel),
           ets:delete(Timers, Ref),
-          Pid ! {exit_signal, #message{data = kill}, self()},
+          Pid ! {exit_signal, #message{data = kill, id = hidden}, self()},
           {false, true} = receive_message_ack(),
           ok
       end,
