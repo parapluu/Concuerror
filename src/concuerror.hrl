@@ -173,7 +173,7 @@
 
 -record(message, {
           data    :: term(),
-          id      :: {pid(), pos_integer()}
+          id      :: {pid(), pos_integer()} | 'hidden'
          }).
 
 -type message() :: #message{}.
