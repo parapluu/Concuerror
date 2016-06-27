@@ -6,7 +6,6 @@ sudo: false
 otp_release:
    - 19.0
    - 18.3
-   - 18.2
    - 17.4
    - R16B03-1
 
@@ -21,7 +20,6 @@ matrix:
      env: TEST=travis_has_latest_otp_version
    allow_failures:
    - env: TEST=travis_has_latest_otp_version
-   - otp_release: 19.0
 
 script: "make -j 4 $TEST"
 
