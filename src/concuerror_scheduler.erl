@@ -193,7 +193,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
   concuerror_logger:complete(Logger, Log),
   case Log =/= none of
     true when not State#scheduler_state.keep_going ->
-      ?unique(Logger, ?lwarning, msg(stop_first_error), []),
+      ?unique(Logger, ?lerror, msg(stop_first_error), []),
       State#scheduler_state{trace = []};
     Other ->
       case Other of
