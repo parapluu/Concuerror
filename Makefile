@@ -3,7 +3,7 @@
 ###-----------------------------------------------------------------------------
 
 NAME := concuerror
-VERSION := 0.14
+VERSION := 0.15
 
 .PHONY: default dev
 default dev: $(NAME)
@@ -60,7 +60,7 @@ $(VERSION_HRL): version
 	@printf ").\n" >> $@.tmp
 	@src/versions $(VERSION) >> $@.tmp
 	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
-	@rm $@.tmp
+	@$(RM) $@.tmp
 
 .PHONY: version
 version:

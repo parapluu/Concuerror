@@ -137,7 +137,7 @@ options() ->
     "Explicitly load a file (.beam or .erl). Source (.erl) files should not"
     " require any special command line compile options. Use a .beam file if"
     " special compilation is needed (preferably compiled with +debug_info)."}
-  ,{depth_bound, $d, {integer, 5000},
+  ,{depth_bound, $d, {integer, 500},
     "Maximum number of events",
     "The maximum number of events allowed in an interleaving. Concuerror will"
     " stop exploring an interleaving that has events beyond this limit."}
