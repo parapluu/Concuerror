@@ -284,18 +284,25 @@ finalize(Options) ->
 finalize_2(Options) ->
   FinalOptions =
     try
-      Options1 = rename_equivalent(Options),
-      Options2 = add_missing_getopt_defaults(Options1),
-      Options3 =
-        add_missing_defaults([{verbosity, ?DEFAULT_VERBOSITY}], Options2),
-      Options4 = finalize_aux(proplists:unfold(Options3)),
-      add_missing_defaults(
-        [{ignore_error, []},
-         {non_racing_system, []},
-         {optimal, true},
-         {scheduling_bound_type, none},
-         {treat_as_normal, []}
-        ], Options4)
+      Passes =
+        [ fun rename_equivalent/1
+        , fun add_missing_getopt_defaults/1
+        , fun(O) ->
+              add_missing_defaults([{verbosity, ?DEFAULT_VERBOSITY}], O)
+          end
+        , fun proplists:unfold/1
+        , fun finalize_aux/1
+        , fun(O) ->
+              add_missing_defaults(
+                [{ignore_error, []},
+                 {non_racing_system, []},
+                 {optimal, true},
+                 {scheduling_bound_type, none},
+                 {treat_as_normal, []}
+                ], O)
+          end
+        ],
+      run_passes(Passes, Options)
     catch
       throw:{file_defined, FileOptions} ->
         NewOptions = proplists:delete(file, Options),
@@ -322,6 +329,11 @@ finalize_2(Options) ->
         " Add '-m <module>' or use '-h module' for more info.",
       opt_error(UndefinedEntryPoint)
   end.
+
+run_passes([], Options) ->
+  Options;
+run_passes([Pass|Passes], Options) ->
+  run_passes(Passes, Pass(Options)).
 
 check_help_and_version(Options) ->
   case {proplists:get_bool(version, Options),
