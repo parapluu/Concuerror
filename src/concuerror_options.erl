@@ -237,7 +237,12 @@ cl_usage(Name) ->
     end,
   case Optname of
     false ->
-      opt_error("Invalid option name: '~w'", [Name]);
+      case atom_to_list(Name) of
+        "-" ++ Rest -> cl_usage(list_to_atom(Rest));
+        _ ->
+          Message = "Invalid option name (given as argument to --help): '~w'",
+          opt_error(Message, [Name])
+      end;
     Tuple ->
       getopt:usage(getopt_spec([Tuple]), "./concuerror"),
       try
@@ -246,9 +251,9 @@ cl_usage(Name) ->
         String -> to_stderr(String ++ "~n", [])
       catch
         _:_ -> to_stderr("No additional help available.~n", [])
-      end
-  end,
-  to_stderr("For general help use '-h' without an argument.~n", []).
+      end,
+      to_stderr("For general help use '-h' without an argument.~n", [])
+  end.
 
 cl_version() ->
   to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
@@ -271,14 +276,13 @@ print_bugs_message() ->
                   {'ok', options()} | {'exit', concuerror:exit_status()}.
 
 finalize(Options) ->
-  case check_help_and_version(Options) of
-    exit -> {exit, ok};
-    ok ->
-      try
-        {ok, finalize_2(Options)}
-      catch
-        throw:opt_error -> {exit, fail}
-      end
+  try
+    case check_help_and_version(Options) of
+      exit -> {exit, ok};
+      ok -> {ok, finalize_2(Options)}
+    end
+  catch
+    throw:opt_error -> {exit, fail}
   end.
 
 finalize_2(Options) ->
