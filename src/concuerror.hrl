@@ -252,14 +252,13 @@
 -type instrumented_tag() :: 'apply' | 'call' | 'receive'.
 
 -type concuerror_warnings() ::
-        'none' | {[concuerror_warning_info()], [event()]}.
+        'none' | 'sleep_set_block' | {[concuerror_warning_info()], [event()]}.
 
 -type concuerror_warning_info() ::
         'fatal' |
         {'crash', {index(), pid(), term(), [term()]}} |
         {'deadlock', [pid()]} |
-        {'depth_bound', pos_integer()} |
-        'sleep_set_block'.
+        {'depth_bound', pos_integer()}.
 
 %%------------------------------------------------------------------------------
 

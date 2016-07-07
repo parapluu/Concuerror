@@ -170,25 +170,24 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
     case filter_warnings(State) of
       [] -> none;
       Warnings ->
-        TraceInfo =
-          case Warnings of
-            [{sleep_set_block, {Origin, Sleep}}|_] ->
-              case State#scheduler_state.optimal of
-                false ->
-                  ?unique(Logger, ?lwarning, msg(sleep_set_block), []),
-                  [];
-                true ->
-                  ?crash({optimal_sleep_set_block, Origin, Sleep})
-              end;
-            _ ->
-              #scheduler_state{trace = Trace} = State,
-              Fold =
-                fun(#trace_state{done = [A|_], index = I}, Acc) ->
-                    [{I, A}|Acc]
-                end,
-              lists:foldl(Fold, [], Trace)
-          end,
-        {lists:reverse(Warnings), TraceInfo}
+        case proplists:get_value(sleep_set_block, Warnings) of
+          {Origin, Sleep} ->
+            case State#scheduler_state.optimal of
+              false ->
+                ?unique(Logger, ?lwarning, msg(sleep_set_block), []);
+              true ->
+                ?crash({optimal_sleep_set_block, Origin, Sleep})
+            end,
+            sleep_set_block;
+          undefined ->
+            #scheduler_state{trace = Trace} = State,
+            Fold =
+              fun(#trace_state{done = [A|_], index = I}, Acc) ->
+                  [{I, A}|Acc]
+              end,
+            TraceInfo = lists:foldl(Fold, [], Trace),
+            {lists:reverse(Warnings), TraceInfo}
+        end
     end,
   concuerror_logger:complete(Logger, Log),
   case Log =/= none of
@@ -198,7 +197,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
     Other ->
       case Other of
         true ->
-          ?unique(Logger, ?lwarning, "Continuing after error (-k)~n", []);
+          ?unique(Logger, ?linfo, "Continuing after error (-k)~n", []);
         false ->
           ok
       end,

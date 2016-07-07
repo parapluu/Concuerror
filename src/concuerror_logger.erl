@@ -95,7 +95,6 @@ initialize(Options) ->
     delete_props(
       [graph, output, processes, timers, verbosity],
       Options),
-  separator(Output, $#),
   Ticker =
     case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ldebug) of
       true -> none;
@@ -107,10 +106,10 @@ initialize(Options) ->
     end,
   io:format(
     Output,
-    "Concuerror ~s (~w) started at ~s with options:~n"
+    "Concuerror ~s (~w) started at ~s.~n"
+    " Options:~n"
     "  ~p~n",
     [?VSN, ?GIT_SHA, Timestamp, lists:sort(PrintableOptions)]),
-  separator(Output, $#),
   GraphData = graph_preamble(?opt(graph, Options)),
   #logger_state{
      graph_data = GraphData,
@@ -289,11 +288,14 @@ loop(Message, State) ->
         true -> Ticker ! stop;
         false -> ok
       end,
+      separator(Output, $#),
+      io:format(Output, "Exploration completed!~n",[]),
       ExitStatus =
         case SchedulerStatus =:= normal of
           true ->
             case Errors =/= 0 of
-              true -> error;
+              true ->
+                error;
               false ->
                 io:format(Output, "  No errors found!~n",[]),
                 ok
@@ -331,44 +333,46 @@ loop(Message, State) ->
       NewState = State#logger_state{verbosity = NewVerbosity},
       loop(NewState);
     {complete, Warn} ->
-      {NewErrors, NewSSB} =
+      {NewErrors, NewSSB, GraphFinal, GraphColor} =
         case Warn of
-          {[{sleep_set_block, _}], _} -> {Errors, TracesSSB + 1};
-          {Warnings, TraceInfo} ->
-            NE = Errors + 1,
-            case NE > 1 of
-              true -> separator(Output, $#);
-              false -> ok
+          sleep_set_block ->
+            {Errors, TracesSSB + 1, "SSB", "yellow"};
+          none ->
+            RaceInfo = [S || S = {T, _} <- Streams, T =:= race],
+            case RaceInfo =:= [] of
+              true -> ok;
+              false ->
+                separator(Output, $#),
+                io:format(Output, "Interleaving #~p~n", [TracesExplored + 1]),
+                print_streams(RaceInfo, Output)
             end,
-            io:format(Output, "Erroneous interleaving ~p:~n", [NE]),
+            {Errors, TracesSSB, "Ok", "lime"};
+          {Warnings, TraceInfo} ->
+            separator(Output, $#),
+            io:format(Output, "Interleaving #~p~n", [TracesExplored + 1]),
+            separator(Output, $-),
+            io:format(Output, "Errors found:~n", []),
             WarnStr =
               [concuerror_printer:error_s(W, PrintDepth) || W <-Warnings],
             io:format(Output, "~s", [WarnStr]),
             separator(Output, $-),
             print_streams([S || S = {T, _} <- Streams, T =/= race], Output),
-            io:format(Output, "Interleaving info:~n", []),
+            io:format(Output, "Event trace:~n", []),
             concuerror_printer:pretty(Output, TraceInfo, PrintDepth),
             print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
-            {NE, TracesSSB};
-          _ ->
-            print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
-            {Errors, TracesSSB}
-        end,
-      {GraphMark, Color} =
-        if NewSSB =/= TracesSSB -> {"SSB","yellow"};
-           NewErrors =/= Errors ->
             ErrorString =
-              case Warn of
-                {[fatal|_], _} ->
-                  " (Concuerror crashed)";
-                {[{deadlock, Ps}|_], _} ->
-                  io_lib:format(" (~p blocked)", [[P || {P,_} <- Ps]]);
-                _ -> ""
+              case proplists:get_value(fatal, Warnings) of
+                true -> " (Concuerror crashed)";
+                undefined ->
+                  case proplists:get_value(deadlock, Warnings) of
+                    undefined -> "";
+                    Ps -> io_lib:format(" (~p blocked)", [[P || {P,_} <- Ps]])
+                  end
               end,
-            {"Error" ++ ErrorString,"red"};
-           true -> {"Ok","lime"}
+            {Errors + 1, TracesSSB, "Error" ++ ErrorString, "red"}
         end,
-      _ = graph_command({status, TracesExplored, GraphMark, Color}, State),
+      _ =
+        graph_command({status, TracesExplored, GraphFinal, GraphColor}, State),
       NewState =
         State#logger_state{
           streams = [],
@@ -484,7 +488,7 @@ separator_string(Char) ->
   lists:duplicate(80, Char).
 
 separator(Output, Char) ->
-  io:format(Output, "~s~n~n", [separator_string(Char)]).
+  io:format(Output, "~s~n", [separator_string(Char)]).
 
 print_streams(Streams, Output) ->
   Fold =
@@ -508,7 +512,7 @@ tag_to_filename(standard_io) -> "Standard Output";
 tag_to_filename(standard_error) -> "Standard Error";
 tag_to_filename(race) ->
   separator_string($-) ++
-    "~n~nPairs of racing instructions";
+    "~nNew races found";
 tag_to_filename(Filename) when is_list(Filename) ->
   io_lib:format("Text printed to ~s", [Filename]).
 
