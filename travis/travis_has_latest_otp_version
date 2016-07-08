@@ -9,6 +9,6 @@ rm ./kerl
 REPO=`$THISDIR/get_latest_travis $THISDIR/../.travis.yml`
 if [ $LATEST != $REPO ]; then
     printf "\nA newer OTP release is available!\n"
-    printf " (.travis.yml has $REPO on top, kerl also has $LATEST)\n\n"
+    printf " (.travis.yml has $REPO on top, kerl has $LATEST)\n\n"
     false
 fi

@@ -77,7 +77,8 @@ options() ->
   ,{test, $t, {atom, test},
     "Test function",
     "This must be a 0-arity function located in the module specified by '-m'."
-    " Concuerror will start the test by spawning a process that calls this function."}
+    " Concuerror will start the test by spawning a process that calls this"
+    " function."}
   ,{help, $h, atom,
     "Display help (can also be used as '-h <option>')",
     "You already know how to use this option! :-)"}
@@ -86,9 +87,9 @@ options() ->
   ,{verbosity, $v, integer,
     io_lib:format("Sets the verbosity level (0-~w). [default: ~w]",
                   [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY]),
-    "Verbosity decides what is shown on stderr. Messages up to info are~n"
-    "always also shown in the output file. The available levels are the~n"
-    "following:~n~n"
+    "Verbosity decides what is shown on stderr. Messages up to info are"
+    " always also shown in the output file. The available levels are the"
+    " following:~n~n"
     "0 <quiet> Nothing is printed (equivalent to -q)~n"
     "1 <error> Critical, resulting in early termination~n"
     "2 <warn>  Non-critical, notifying about weak support for a feature or~n"
@@ -102,26 +103,29 @@ options() ->
    }
   ,{quiet, $q, undefined,
     "Do not write anything to stderr",
-    "Equivalent to -v 0."}
+    "Shorthand for '-v 0'."}
   ,{output, $o, {string, "concuerror_report.txt"},
     "Output file",
     "This is where Concuerror writes the results of the analysis."}
   ,{graph, undefined, string,
     "Produce a DOT graph in the specified file",
-    "The graph can be drawn with 'dot -Tsvg -o graph.svg <graph>"}
+    "The DOT graph can be converted to an image with 'dot -Tsvg -o graph.svg"
+    " <graph>"}
   ,{symbolic_names, $s, {boolean, true},
-    "Symbolic PIDs in graph/log",
-    "Use symbolic names for process identifiers in the output report."}
+    "Use symbolic PIDs in graph/log",
+    "Use symbolic names for process identifiers in the output report (and"
+    " graph)."}
   ,{print_depth, undefined, {integer, ?DEFAULT_PRINT_DEPTH},
     "Print depth for log/graph",
     "Specifies the max depth for any terms printed in the log (behaves just as"
-    " the extra argument of ~~W and ~~P argument of io:format/3. If you want"
-    " more info about a particular piece of data consider using"
-    " erlang:display/1 and check the standard output section instead."}
+    " the extra argument of ~~W and ~~P argument of io:format/3). If you want"
+    " more info about a particular piece of data in an interleaving, consider"
+    " using erlang:display/1 and checking the 'standard output section; in the"
+    " log instead."}
   ,{show_races, undefined, {boolean, false},
-    "Mark races in log/graph",
+    "Show races in log/graph",
     "Determines whether information about pairs of racing instructions will be"
-    " included in the graph and the logs of erroneous interleavings."}
+    " included in the logs of erroneous interleavings and the graph."}
   ,{pa, undefined, string,
     "Add directory to Erlang's code path (front)",
     "Works exactly like 'erl -pa'."}
@@ -132,11 +136,11 @@ options() ->
     "Load a specific file",
     "Explicitly load a file (.beam or .erl). Source (.erl) files should not"
     " require any special command line compile options. Use a .beam file if"
-    " special compilation is needed."}
-  ,{depth_bound, $d, {integer, 5000},
+    " special compilation is needed (preferably compiled with +debug_info)."}
+  ,{depth_bound, $d, {integer, 500},
     "Maximum number of events",
     "The maximum number of events allowed in an interleaving. Concuerror will"
-    " stop exploration beyond this limit."}
+    " stop exploring an interleaving that has events beyond this limit."}
   ,{interleaving_bound, $i, {integer, infinity},
     "Maximum number of interleavings",
     "The maximum number of interleavings that will be explored. Concuerror will"
@@ -233,7 +237,12 @@ cl_usage(Name) ->
     end,
   case Optname of
     false ->
-      opt_error("Invalid option name: '~w'", [Name]);
+      case atom_to_list(Name) of
+        "-" ++ Rest -> cl_usage(list_to_atom(Rest));
+        _ ->
+          Message = "Invalid option name (given as argument to --help): '~w'",
+          opt_error(Message, [Name])
+      end;
     Tuple ->
       getopt:usage(getopt_spec([Tuple]), "./concuerror"),
       try
@@ -242,9 +251,9 @@ cl_usage(Name) ->
         String -> to_stderr(String ++ "~n", [])
       catch
         _:_ -> to_stderr("No additional help available.~n", [])
-      end
-  end,
-  to_stderr("For general help use '-h' without an argument.~n", []).
+      end,
+      to_stderr("For general help use '-h' without an argument.~n", [])
+  end.
 
 cl_version() ->
   to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
@@ -267,31 +276,37 @@ print_bugs_message() ->
                   {'ok', options()} | {'exit', concuerror:exit_status()}.
 
 finalize(Options) ->
-  case check_help_and_version(Options) of
-    exit -> {exit, ok};
-    ok ->
-      try
-        {ok, finalize_2(Options)}
-      catch
-        throw:opt_error -> {exit, fail}
-      end
+  try
+    case check_help_and_version(Options) of
+      exit -> {exit, ok};
+      ok -> {ok, finalize_2(Options)}
+    end
+  catch
+    throw:opt_error -> {exit, fail}
   end.
 
 finalize_2(Options) ->
   FinalOptions =
     try
-      Options1 = rename_equivalent(Options),
-      Options2 = add_missing_getopt_defaults(Options1),
-      Options3 =
-        add_missing_defaults([{verbosity, ?DEFAULT_VERBOSITY}], Options2),
-      Options4 = finalize_aux(proplists:unfold(Options3)),
-      add_missing_defaults(
-        [{ignore_error, []},
-         {non_racing_system, []},
-         {optimal, true},
-         {scheduling_bound_type, none},
-         {treat_as_normal, []}
-        ], Options4)
+      Passes =
+        [ fun rename_equivalent/1
+        , fun add_missing_getopt_defaults/1
+        , fun(O) ->
+              add_missing_defaults([{verbosity, ?DEFAULT_VERBOSITY}], O)
+          end
+        , fun proplists:unfold/1
+        , fun finalize_aux/1
+        , fun(O) ->
+              add_missing_defaults(
+                [{ignore_error, []},
+                 {non_racing_system, []},
+                 {optimal, true},
+                 {scheduling_bound_type, none},
+                 {treat_as_normal, []}
+                ], O)
+          end
+        ],
+      run_passes(Passes, Options)
     catch
       throw:{file_defined, FileOptions} ->
         NewOptions = proplists:delete(file, Options),
@@ -315,9 +330,14 @@ finalize_2(Options) ->
     _ ->
       UndefinedEntryPoint =
         "The module containing the main test function has not been specified."
-        " Use '-m <module>' or '-h module' for more info.",
+        " Add '-m <module>' or use '-h module' for more info.",
       opt_error(UndefinedEntryPoint)
   end.
+
+run_passes([], Options) ->
+  Options;
+run_passes([Pass|Passes], Options) ->
+  run_passes(Passes, Pass(Options)).
 
 check_help_and_version(Options) ->
   case {proplists:get_bool(version, Options),
