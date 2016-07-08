@@ -23,10 +23,10 @@ matrix:
 
 script: "make -j 4 $TEST"
 
-after_failure: "./travis/after_failure"
+after_failure: "./.travis/after_failure"
 
-before_script: "./travis/recover_plt"
-before_cache: "./travis/store_plt"
+before_script: "./.travis/recover_plt"
+before_cache: "./.travis/store_plt"
 cache:
    directories:
    - plts
