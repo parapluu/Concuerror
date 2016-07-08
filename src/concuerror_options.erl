@@ -273,13 +273,17 @@ print_bugs_message() ->
 %%%-----------------------------------------------------------------------------
 
 -spec finalize(options()) ->
-                  {'ok', options()} | {'exit', concuerror:exit_status()}.
+                  {'ok', options(), [iolist()]} |
+                  {'exit', concuerror:exit_status()}.
 
 finalize(Options) ->
   try
     case check_help_and_version(Options) of
       exit -> {exit, ok};
-      ok -> {ok, finalize_2(Options)}
+      ok ->
+        FinalOptions = finalize_2(Options),
+        Warnings = get_all_warnings(),
+        {ok, FinalOptions, Warnings}
     end
   catch
     throw:opt_error -> {exit, fail}
@@ -422,7 +426,7 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
     case proplists:is_defined(Key, AccIn) of
       true ->
         Format = "multiple instances of '--~s' defined. Using last value: ~w.",
-        opt_warn(Format, [Key, Value], AccIn ++ Rest),
+        opt_warn(Format, [Key, Value]),
         proplists:delete(Key, AccIn);
       false -> AccIn
     end,
@@ -511,7 +515,7 @@ compile_and_load([], {Acc, {_, MoreOpts}}, _Options) ->
 compile_and_load([File|Rest], {Acc, {Already, MoreOpts}}, Options) ->
   case concuerror_loader:load_initially(File) of
     {ok, Module, Warnings} ->
-      lists:foreach(fun(W) -> opt_warn(W, [], Options) end, Warnings),
+      lists:foreach(fun(W) -> opt_warn(W, []) end, Warnings),
       MissingModule =
         case
           Rest =:= [] andalso
@@ -629,15 +633,23 @@ opt_error(Format) ->
   opt_error(Format, []).
 
 opt_error(Format, Data) ->
-  to_stderr("concuerror: ERROR: " ++ Format, Data),
-  to_stderr("concuerror: Use --help for more information.", []),
+  to_stderr("Error: " ++ Format, Data),
+  to_stderr("  Use --help for more information.", []),
   throw(opt_error).
 
-opt_warn(Format, Data, Options) ->
-  case proplists:get_value(verbosity, Options) =:= ?lquiet of
-    true -> ok;
-    false ->
-      to_stderr("concuerror: WARNING: " ++ Format, Data)
+opt_warn(Format, Data) ->
+  Warnings =
+    case get(warnings) of
+      undefined -> [];
+      W -> W
+    end,
+  put(warnings, [io_lib:format(Format ++ "~n", Data)|Warnings]),
+  ok.
+
+get_all_warnings() ->
+  case erase(warnings) of
+    undefined -> [];
+    Warnings -> lists:reverse(Warnings)
   end.
 
 to_stderr(Format, Data) ->
