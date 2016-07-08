@@ -135,7 +135,7 @@ cover: cover/data
 
 .PHONY: travis_has_latest_otp_version
 travis_has_latest_otp_version:
-	./travis/$@
+	./.travis/$@
 
 ###-----------------------------------------------------------------------------
 ### Clean

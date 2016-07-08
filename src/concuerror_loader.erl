@@ -115,7 +115,7 @@ check_shadow(File, Module) ->
   case Default =:= non_existing of
     true -> [];
     false ->
-      [io_lib:format("file ~s shadows the default ~s", [File, Default])]
+      [io_lib:format("File ~s shadows ~s (found in path)", [File, Default])]
   end.
 
 load_binary(Module, Filename, Beam, Instrumented) ->

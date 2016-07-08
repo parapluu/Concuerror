@@ -14,15 +14,16 @@
 
 run(RawOptions) ->
   case concuerror_options:finalize(RawOptions) of
-    {ok, Options} -> start(Options);
+    {ok, Options, Warnings} -> start(Options, Warnings);
     {exit, ExitStatus} -> ExitStatus
   end.
 
-start(Options) ->
+start(Options, Warnings) ->
   error_logger:tty(false),
   Processes = ets:new(processes, [public]),
   LoggerOptions = [{processes, Processes}|Options],
   Logger = concuerror_logger:start(LoggerOptions),
+  _ = [?log(Logger, ?lwarning, W, []) || W <- Warnings],
   SchedulerOptions = [{logger, Logger}|LoggerOptions],
   {Pid, Ref} =
     spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
