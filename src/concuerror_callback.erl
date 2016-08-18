@@ -820,8 +820,22 @@ run_built_in(erlang, unregister, 1, [Name],
   catch
     _:_ -> error(badarg)
   end;
-run_built_in(erlang, whereis, 1, [Name],
-             #concuerror_info{processes = Processes} = Info) ->
+run_built_in(erlang, whereis, 1, [Name], Info) ->
+  #concuerror_info{
+     logger = Logger,
+     processes = Processes
+    } = Info,
+  case Name =:= application_controller of
+    false -> ok;
+    true ->
+      Msg =
+        "Your test communicates with the 'application_controller' process. This"
+        " can be problematic, as this process is not under Concuerror's"
+        " control. You may want to try to start the test from a top-level"
+        " supervisor (or even better a top level gen_server).~n",
+      ?unique(Logger, ?lwarning, Msg, []),
+      ok
+  end,
   case ets:match(Processes, ?process_match_name_to_pid(Name)) of
     [] ->
       case whereis(Name) =:= undefined of
@@ -1705,14 +1719,11 @@ system_processes_wrappers(Info) ->
     hijacked =:= hijack_or_wrap_system(Name, Info)].
 
 %% XXX: Application controller support needs to be checked
-hijack_or_wrap_system(Name, Info)
-  when Name =:= application_controller_disabled ->
-  #concuerror_info{
-     logger = Logger,
-     timeout = Timeout} = Info,
+hijack_or_wrap_system(Name, #concuerror_info{timeout = Timeout} = Info)
+  when Name =:= application_controller ->
   Pid = whereis(Name),
   link(Pid),
-  ok = concuerror_loader:load(gen_server),
+  _ = concuerror_loader:load(gen_server),
   ok = sys:suspend(Name),
   Notify =
     reset_concuerror_info(
@@ -1720,7 +1731,6 @@ hijack_or_wrap_system(Name, Info)
   concuerror_inspect:hijack(Name, Notify),
   ok = sys:resume(Name),
   wait_process(Name, Timeout),
-  ?log(Logger, ?linfo, "Hijacked ~p~n", [Name]),
   hijacked;  
 hijack_or_wrap_system(Name, Info) ->
   #concuerror_info{processes = Processes} = Info,
