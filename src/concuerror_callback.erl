@@ -467,31 +467,6 @@ run_built_in(erlang, make_ref, 0, [], Info) ->
     undefined -> ok
   end,
   {MaybeRef, NewInfo};
-run_built_in(erlang, Name, Arity, Args, Info)
-  when
-    {Name, Arity} =:= {date, 0};
-    {Name, Arity} =:= {monotonic_time, 0};
-    {Name, Arity} =:= {monotonic_time, 1};
-    {Name, Arity} =:= {now, 0};
-    {Name, Arity} =:= {system_time, 0};
-    {Name, Arity} =:= {system_time, 1};
-    {Name, Arity} =:= {time, 0};
-    {Name, Arity} =:= {time_offset, 0};
-    {Name, Arity} =:= {time_offset, 0};
-    {Name, Arity} =:= {time_offset, 1};
-    {Name, Arity} =:= {timestamp, 0};
-    {Name, Arity} =:= {unique_integer, 0};
-    {Name, Arity} =:= {unique_integer, 1}
-    ->
-  #concuerror_info{event = #event{event_info = EventInfo}} = Info,
-  Res =
-    case EventInfo of
-      %% Replaying...
-      #builtin_event{result = OldResult} -> OldResult;
-      %% New event...
-      undefined -> erlang:apply(erlang, Name, Args)
-    end,
-  {Res, Info};
 run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
   #concuerror_info{
      monitors = Monitors,
@@ -845,8 +820,22 @@ run_built_in(erlang, unregister, 1, [Name],
   catch
     _:_ -> error(badarg)
   end;
-run_built_in(erlang, whereis, 1, [Name],
-             #concuerror_info{processes = Processes} = Info) ->
+run_built_in(erlang, whereis, 1, [Name], Info) ->
+  #concuerror_info{
+     logger = Logger,
+     processes = Processes
+    } = Info,
+  case Name =:= application_controller of
+    false -> ok;
+    true ->
+      Msg =
+        "Your test communicates with the 'application_controller' process. This"
+        " can be problematic, as this process is not under Concuerror's"
+        " control. You may want to try to start the test from a top-level"
+        " supervisor (or even better a top level gen_server).~n",
+      ?unique(Logger, ?lwarning, Msg, []),
+      ok
+  end,
   case ets:match(Processes, ?process_match_name_to_pid(Name)) of
     [] ->
       case whereis(Name) =:= undefined of
@@ -1009,7 +998,30 @@ run_built_in(Module, Name, Arity, Args, Info)
       {NewResult, Info}
   end;
 
-%% For other built-ins check whether replaying has the same result:
+run_built_in(erlang = Module, Name, Arity, Args, Info)
+  when
+    {Name, Arity} =:= {date, 0};
+    {Name, Arity} =:= {monotonic_time, 0};
+    {Name, Arity} =:= {monotonic_time, 1};
+    {Name, Arity} =:= {now, 0};
+    {Name, Arity} =:= {system_time, 0};
+    {Name, Arity} =:= {system_time, 1};
+    {Name, Arity} =:= {time, 0};
+    {Name, Arity} =:= {time_offset, 0};
+    {Name, Arity} =:= {time_offset, 0};
+    {Name, Arity} =:= {time_offset, 1};
+    {Name, Arity} =:= {timestamp, 0};
+    {Name, Arity} =:= {unique_integer, 0};
+    {Name, Arity} =:= {unique_integer, 1}
+    ->
+  maybe_reuse_old(Module, Name, Arity, Args, Info);
+
+run_built_in(os = Module, Name, Arity, Args, Info)
+  when
+    {Name, Arity} =:= {timestamp, 0}
+    ->
+  maybe_reuse_old(Module, Name, Arity, Args, Info);
+
 run_built_in(Module, Name, Arity, _Args,
              #concuerror_info{
                 event = #event{location = Location},
@@ -1027,6 +1039,17 @@ not_concuerror_module(Atom) ->
     "concuerror" ++ _ -> false;
     _ -> true
   end.
+
+maybe_reuse_old(Module, Name, _Arity, Args, Info) ->
+  #concuerror_info{event = #event{event_info = EventInfo}} = Info,
+  Res =
+    case EventInfo of
+      %% Replaying...
+      #builtin_event{result = OldResult} -> OldResult;
+      %% New event...
+      undefined -> erlang:apply(Module, Name, Args)
+    end,
+  {Res, Info}.
 
 %%------------------------------------------------------------------------------
 
@@ -1696,14 +1719,11 @@ system_processes_wrappers(Info) ->
     hijacked =:= hijack_or_wrap_system(Name, Info)].
 
 %% XXX: Application controller support needs to be checked
-hijack_or_wrap_system(Name, Info)
-  when Name =:= application_controller_disabled ->
-  #concuerror_info{
-     logger = Logger,
-     timeout = Timeout} = Info,
+hijack_or_wrap_system(Name, #concuerror_info{timeout = Timeout} = Info)
+  when Name =:= application_controller ->
   Pid = whereis(Name),
   link(Pid),
-  ok = concuerror_loader:load(gen_server),
+  _ = concuerror_loader:load(gen_server),
   ok = sys:suspend(Name),
   Notify =
     reset_concuerror_info(
@@ -1711,7 +1731,6 @@ hijack_or_wrap_system(Name, Info)
   concuerror_inspect:hijack(Name, Notify),
   ok = sys:resume(Name),
   wait_process(Name, Timeout),
-  ?log(Logger, ?linfo, "Hijacked ~p~n", [Name]),
   hijacked;  
 hijack_or_wrap_system(Name, Info) ->
   #concuerror_info{processes = Processes} = Info,
@@ -1811,7 +1830,14 @@ check_request(file_server_2, {read_file_info, _}) -> ok;
 check_request(init, {get_argument, _}) -> ok;
 check_request(init, get_arguments) -> ok;
 check_request(Name, Other) ->
-  ?crash({unsupported_request, Name, try element(1,Other) catch _:_ -> Other end}).
+  Request =
+    try
+      element(1, Other)
+    catch
+      _:_ ->
+        Other
+    end,
+  ?crash({unsupported_request, Name, Request}).
 
 reset_concuerror_info(Info) ->
   #concuerror_info{

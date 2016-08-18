@@ -390,7 +390,7 @@ loop(Message, State) ->
 format_utc_timestamp() ->
   TS = os:timestamp(),
   {{Year, Month, Day}, {Hour, Minute, Second}} =
-    calendar:now_to_universal_time(TS),
+    calendar:now_to_local_time(TS),
   Mstr =
     element(Month, {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug",
                     "Sep", "Oct", "Nov", "Dec"}),
