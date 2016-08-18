@@ -467,31 +467,6 @@ run_built_in(erlang, make_ref, 0, [], Info) ->
     undefined -> ok
   end,
   {MaybeRef, NewInfo};
-run_built_in(erlang, Name, Arity, Args, Info)
-  when
-    {Name, Arity} =:= {date, 0};
-    {Name, Arity} =:= {monotonic_time, 0};
-    {Name, Arity} =:= {monotonic_time, 1};
-    {Name, Arity} =:= {now, 0};
-    {Name, Arity} =:= {system_time, 0};
-    {Name, Arity} =:= {system_time, 1};
-    {Name, Arity} =:= {time, 0};
-    {Name, Arity} =:= {time_offset, 0};
-    {Name, Arity} =:= {time_offset, 0};
-    {Name, Arity} =:= {time_offset, 1};
-    {Name, Arity} =:= {timestamp, 0};
-    {Name, Arity} =:= {unique_integer, 0};
-    {Name, Arity} =:= {unique_integer, 1}
-    ->
-  #concuerror_info{event = #event{event_info = EventInfo}} = Info,
-  Res =
-    case EventInfo of
-      %% Replaying...
-      #builtin_event{result = OldResult} -> OldResult;
-      %% New event...
-      undefined -> erlang:apply(erlang, Name, Args)
-    end,
-  {Res, Info};
 run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
   #concuerror_info{
      monitors = Monitors,
@@ -1009,7 +984,30 @@ run_built_in(Module, Name, Arity, Args, Info)
       {NewResult, Info}
   end;
 
-%% For other built-ins check whether replaying has the same result:
+run_built_in(erlang = Module, Name, Arity, Args, Info)
+  when
+    {Name, Arity} =:= {date, 0};
+    {Name, Arity} =:= {monotonic_time, 0};
+    {Name, Arity} =:= {monotonic_time, 1};
+    {Name, Arity} =:= {now, 0};
+    {Name, Arity} =:= {system_time, 0};
+    {Name, Arity} =:= {system_time, 1};
+    {Name, Arity} =:= {time, 0};
+    {Name, Arity} =:= {time_offset, 0};
+    {Name, Arity} =:= {time_offset, 0};
+    {Name, Arity} =:= {time_offset, 1};
+    {Name, Arity} =:= {timestamp, 0};
+    {Name, Arity} =:= {unique_integer, 0};
+    {Name, Arity} =:= {unique_integer, 1}
+    ->
+  maybe_reuse_old(Module, Name, Arity, Args, Info);
+
+run_built_in(os = Module, Name, Arity, Args, Info)
+  when
+    {Name, Arity} =:= {timestamp, 0}
+    ->
+  maybe_reuse_old(Module, Name, Arity, Args, Info);
+
 run_built_in(Module, Name, Arity, _Args,
              #concuerror_info{
                 event = #event{location = Location},
@@ -1027,6 +1025,17 @@ not_concuerror_module(Atom) ->
     "concuerror" ++ _ -> false;
     _ -> true
   end.
+
+maybe_reuse_old(Module, Name, _Arity, Args, Info) ->
+  #concuerror_info{event = #event{event_info = EventInfo}} = Info,
+  Res =
+    case EventInfo of
+      %% Replaying...
+      #builtin_event{result = OldResult} -> OldResult;
+      %% New event...
+      undefined -> erlang:apply(Module, Name, Args)
+    end,
+  {Res, Info}.
 
 %%------------------------------------------------------------------------------
 
