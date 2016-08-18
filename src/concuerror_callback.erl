@@ -1820,7 +1820,14 @@ check_request(file_server_2, {read_file_info, _}) -> ok;
 check_request(init, {get_argument, _}) -> ok;
 check_request(init, get_arguments) -> ok;
 check_request(Name, Other) ->
-  ?crash({unsupported_request, Name, try element(1,Other) catch _:_ -> Other end}).
+  Request =
+    try
+      element(1, Other)
+    catch
+      _:_ ->
+        Other
+    end,
+  ?crash({unsupported_request, Name, Request}).
 
 reset_concuerror_info(Info) ->
   #concuerror_info{
