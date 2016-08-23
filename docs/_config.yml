@@ -1,0 +1,74 @@
+title:            Concuerror
+description:      Systematic concurrency testing tool for Erlang programs.
+logo:             site-logo.png
+disqus_shortname: 
+#Comment out url when working locally to resolve base urls correctly
+url:             http://concuerror.com
+author: Vahnatai
+
+# Owner/author information
+owner:
+  name:           Stavros Aronis
+  avatar:         http://www.gravatar.com/avatar/5730e85681def67cb10151437519f39d?s=200
+  email:          aronisstav@gmail.com
+  # Social networking links used in footer. Update and remove as you like.
+  twitter:        Vahnatai
+  github:         aronisstav
+  stackexchange:  https://stackexchange.com/users/94798/aronisstav
+  linkedin:       stavrosaronis
+  # For Google Authorship https://plus.google.com/authorship
+  google_plus:    https://plus.google.com/111091514508576496337?rel=author
+
+# Analytics and webmaster tools stuff goes here
+google_analytics: UA-43607387-1
+google_verify:      
+# https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
+bing_verify:         
+
+# Links to include in top navigation
+# For external links add external: true
+links:
+  - title: Main
+    url: /
+  - title: Download
+    url: /download
+  - title: News
+    url: /news
+  - title: FAQ
+    url: /faq
+  - title: Tutorials
+    url: /tutorials
+  - title: Publications    
+    url: /publications
+  - title: Contact
+    url: /contact
+
+# http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+timezone:    Europe/Stockholm
+future:      false
+highlighter: rouge
+markdown:    kramdown
+
+# https://github.com/mojombo/jekyll/wiki/Permalinks
+permalink:   /:categories/:title
+
+kramdown:
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  enable_coderay: false
+
+  coderay:
+    coderay_line_numbers: 
+    coderay_line_numbers_start: 1
+    coderay_tab_width: 4
+    coderay_bold_every: 10
+    coderay_css: class
+
+gems:
+  - jekyll-gist
+  - jekyll-seo-tag
+
+include: [".htaccess"]
+exclude: ["CNAME", "Gemfile", "LICENSE", "post.thor", "README.md"]
