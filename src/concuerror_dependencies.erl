@@ -81,7 +81,7 @@ dependent(#builtin_event{actor = Recipient, exiting = false,
 dependent(#builtin_event{actor = Recipient, mfargs = {erlang, demonitor, [R,O]}},
           #message_event{message = #message{data = {_, R, _, _, _}},
                          recipient = Recipient, type = message}) ->
-  lists:member(flush, O);
+  is_list(O) andalso lists:member(flush, O) andalso lists:member(info, O);
 dependent(#builtin_event{}, #message_event{}) ->
   false;
 dependent(#message_event{} = Message,

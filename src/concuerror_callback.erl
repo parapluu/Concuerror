@@ -68,6 +68,7 @@
 
 -record(concuerror_info, {
           after_timeout               :: 'infinite' | integer(),
+          demonitors = []             :: [reference()],
           escaped_pdict = []          :: term(),
           ets_tables                  :: ets_tables(),
           exit_by_signal = false      :: boolean(),
@@ -344,7 +345,7 @@ run_built_in(erlang, demonitor, 1, [Ref], Info) ->
   run_built_in(erlang, demonitor, 2, [Ref, []], Info);
 run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
   ?badarg_if_not(is_reference(Ref)),
-  #concuerror_info{monitors = Monitors} = Info,
+  #concuerror_info{demonitors = Demonitors, monitors = Monitors} = Info,
   {Result, NewInfo} =
     case ets:match(Monitors, ?monitor_match_to_target_source_as(Ref)) of
       [] ->
@@ -369,9 +370,10 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
         true = ets:insert(Monitors, ?monitor(Ref, Target, As, inactive)),
         {not lists:member(flush, Options), Info}
     end,
+  FinalInfo = NewInfo#concuerror_info{demonitors = [Ref|Demonitors]},
   case lists:member(info, Options) of
-    true -> {Result, NewInfo};
-    false -> {true, NewInfo}
+    true -> {Result, FinalInfo};
+    false -> {true, FinalInfo}
   end;
 run_built_in(erlang, exit, 2, [Pid, Reason],
              #concuerror_info{
@@ -1437,7 +1439,7 @@ process_loop(Info) ->
       ?debug_flag(?loop, message),
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
       send_message_ack(Notify, Trapping, false),
-      case is_active(Info) of
+      case is_active(Info) andalso not_demonitored(Message, Info) of
         true ->
           ?debug_flag(?loop, enqueueing_message),
           Old = Info#concuerror_info.messages_new,
@@ -1509,6 +1511,14 @@ receive_message_ack() ->
 
 get_leader(#concuerror_info{processes = Processes}, P) ->
   ets:lookup_element(Processes, P, ?process_leader).
+
+not_demonitored(Message, Info) ->
+  case Message of
+    #message{data = {'DOWN', Ref, _, _, _}} ->
+      #concuerror_info{demonitors = Demonitors} = Info,
+      not lists:member(Ref, Demonitors);
+    _ -> true
+  end.
 
 %%------------------------------------------------------------------------------
 

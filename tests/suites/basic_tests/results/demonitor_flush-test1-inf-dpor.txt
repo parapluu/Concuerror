@@ -1,0 +1,53 @@
+Concuerror 0.15 ('5585cc7') started at 25 Aug 2016 10:59:29.
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {entry_point,{demonitor_flush,test1,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/demonitor_flush.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {optimal,true},
+   {print_depth,20},
+   {scheduling,round_robin},
+   {scheduling_bound,infinity},
+   {scheduling_bound_type,none},
+   {show_races,true},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+New races found:
+*    2: P: true = erlang:demonitor(#Ref<0.0.1.162>, [flush])
+     5: P.1: exits normally
+
+
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+New races found:
+*    3: P.1: {'DOWN',#Ref<0.0.1.162>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.162>,process,P.1,normal})
+     5: P: receive timeout expired after 0 ms
+
+
+################################################################################
+Exploration completed!
+  No errors found!
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented demonitor_flush
+Instrumented io_lib
+Instrumented gen_server
+Instrumented erlang
+
+################################################################################
+Done at 25 Aug 2016 10:59:29 (Exit status: ok)
+  Summary: 0 errors, 3/3 interleavings explored
