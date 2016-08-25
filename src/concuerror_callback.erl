@@ -345,6 +345,13 @@ run_built_in(erlang, demonitor, 1, [Ref], Info) ->
   run_built_in(erlang, demonitor, 2, [Ref, []], Info);
 run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
   ?badarg_if_not(is_reference(Ref)),
+  SaneOptions =
+    try
+      [] =:= [O || O <- Options, O =/= flush, O =/= info]
+    catch
+      _:_ -> false
+    end,
+  ?badarg_if_not(SaneOptions),
   #concuerror_info{demonitors = Demonitors, monitors = Monitors} = Info,
   {Result, NewInfo} =
     case ets:match(Monitors, ?monitor_match_to_target_source_as(Ref)) of
