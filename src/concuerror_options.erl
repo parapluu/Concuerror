@@ -145,17 +145,28 @@ options() ->
     "Maximum number of interleavings",
     "The maximum number of interleavings that will be explored. Concuerror will"
     " stop exploration beyond this limit."}
+  ,{dpor, undefined, atom,
+    "DPOR techique to use. [default: optimal]",
+    "Specifies which Dynamic Partial Order Reduction techique will be used. The"
+    " available options are:~n"
+    "-       'none': Disable DPOR. Do not use.~n"
+    "-    'optimal': Using source sets and wakeup trees.~n"
+    "-     'source': Using source sets only. Use this if the rate of~n"
+    "                exploration is too slow. Use 'optimal' if a lot of~n"
+    "                interleavings are reported as sleep-set blocked.~n"
+    "- 'persistent': Using persistent sets. Do not use."}
   ,{optimal, undefined, boolean,
-    "Whether Optimal DPOR is used [default: true]",
-    "Setting this to false enables a more lightweight DPOR algorithm. Use this"
-    " if the rate of exploration is too slow. Don't use it if a lot of"
-    " interleavings are reported as sleep-set blocked."}
+    "Deprecated. Use '--dpor (optimal | source)' instead."}
   ,{scheduling_bound_type, $c, atom,
-    "Enable schedule bounding",
+    "Use schedule bounding [default: none]",
     "Enables scheduling rules that prevent interleavings from being explored."
-    " The available options are (currently only one):~n"
-    "- 'simple': how many times per interleaving the scheduler is allowed to"
-    " pick a process different from the 'default one' to schedule.~n"}
+    " The available options are:~n"
+    "-   'none': no bounding~n"
+    "-   'bpor': how many times per interleaving the scheduler is allowed~n"
+    "            to preempt a process. Not compatible with Optimal DPOR.~n"
+    "- 'simple': how many times per interleaving the scheduler is allowed~n"
+    "            to pick a process different from the 'default one' to~n"
+    "            schedule."}
   ,{scheduling_bound, $b, {integer, infinity},
     "Scheduling bound value",
     "The maximum number of times the rule specified in '--scheduling_bound_type'"
@@ -170,8 +181,8 @@ options() ->
     " process on the same node."}
   ,{scheduling, undefined, {atom, round_robin},
     "Scheduling order",
-    "How Concuerror picks the next process to run. Valid choices are 'oldest',"
-    " 'newest' and 'round_robin'."}
+    "How Concuerror picks the next process to run. The available options are"
+    " 'oldest', 'newest' and 'round_robin'."}
   ,{strict_scheduling, undefined, {boolean, false},
     "Forces preemptions",
     "Whether Concuerror should enforce the scheduling strategy strictly or let"
@@ -304,7 +315,7 @@ finalize_2(Options) ->
               add_missing_defaults(
                 [{ignore_error, []},
                  {non_racing_system, []},
-                 {optimal, true},
+                 {dpor, optimal},
                  {scheduling_bound_type, none},
                  {treat_as_normal, []}
                 ], O)
@@ -435,6 +446,9 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
       false -> AccIn
     end,
   case Key of
+    dpor ->
+      check_validity(Key, Value, [none, optimal, persistent, source]),
+      finalize(Rest, [Option|Acc]);
     graph ->
       case file:open(Value, [write]) of
         {ok, IoDevice} -> finalize(Rest, [{Key, IoDevice}|Acc]);
@@ -451,6 +465,12 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
           finalize(NewRest, [{entry_point, {Value, Name, []}}|Acc]);
         _ -> opt_error("The name of the test function is missing.")
       end;
+    optimal ->
+      "0.1" ++ [_|_] = ?VSN,
+      Msg =
+        "The '--optimal' option is deprecated."
+        " Use '--dpor (optimal | source)' instead.",
+      opt_error(Msg);
     output ->
       case file:open(Value, [write]) of
         {ok, IoDevice} -> finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
@@ -464,15 +484,28 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
         case Value =:= infinity of
           true -> Rest;
           false ->
+            ValidityCheck = {fun(V) -> V >= 0 end, "a non-negative integer"},
+            check_validity(Key, Value, ValidityCheck),
             case proplists:is_defined(scheduling_bound_type, Acc ++ Rest) of
               true -> Rest;
-              false -> [{scheduling_bound_type, simple}|Rest]
+              false ->
+                Msg = "assuming '--scheduling_bound_type simple'.",
+                opt_warn(Msg, []),
+                [{scheduling_bound_type, simple}|Rest]
             end
         end,
       finalize(NewRest, [Option|Acc]);
     scheduling_bound_type ->
-      check_validity(Key, Value, [none, simple]),
-      finalize(Rest, [Option|Acc]);
+      check_validity(Key, Value, [bpor, none, simple]),
+      NewRest =
+        case Value =/= bpor orelse proplists:is_defined(dpor, Acc ++ Rest) of
+          true -> Rest;
+          false ->
+            Msg = "assuming '--dpor source'.",
+            opt_warn(Msg, []),
+            [{dpor, source}|Rest]
+        end,
+      finalize(NewRest, [Option|Acc]);
     MaybeInfinity
       when
         MaybeInfinity =:= interleaving_bound;
@@ -594,24 +627,31 @@ consistent([{assertions_only, true} = Assert|Rest], Acc) ->
   consistent(Rest, [Assert|Acc]);
 consistent([{scheduling_bound, N} = Bound|Rest], Acc) when is_integer(N) ->
   check_values(
-    [{scheduling_bound_type, fun(X) -> lists:member(X,[simple]) end}],
+    [{scheduling_bound_type, fun(X) -> lists:member(X, [bpor, simple]) end}],
     Rest ++ Acc,
     {scheduling_bound, "an integer"}),
   consistent(Rest, [Bound|Acc]);
-consistent([{scheduling_bound_type, T} = BoundType|Rest], Acc) ->
-  case T =:= none of
+consistent([{scheduling_bound_type, Type} = BoundType|Rest], Acc) ->
+  case Type =:= none of
     true -> consistent(Rest, [BoundType|Acc]);
     false ->
       case is_integer(proplists:get_value(scheduling_bound, Rest ++ Acc)) of
+        true -> ok;
         false ->
           Warn =
             "No bound value set for ~w bound. Use '--scheduling_bound' to"
             " specify an integer value as a bound, or remove the bound type"
             " specification.",
-          opt_error(Warn, [T]);
+          opt_error(Warn, [Type])
+      end,
+      case Type =:= bpor of
+        false -> ok;
         true ->
-          consistent(Rest, [BoundType|Acc])
-      end
+          check_values(
+            [{dpor, fun(X) -> lists:member(X, [source, persistent]) end}],
+            Rest ++ Acc, BoundType)
+      end,
+      consistent(Rest, [BoundType|Acc])
   end;
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
 

@@ -29,9 +29,6 @@
 -type message_event_queue() :: queue:queue(#message_event{}).
 -endif.
 
-%% For demo reasons.
--define(DPOR, true).
-
 %% =============================================================================
 %% DATA STRUCTURES
 %% =============================================================================
@@ -64,7 +61,7 @@
           assume_racing                :: boolean(),
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
-          dpor                 = ?DPOR :: boolean(),
+          dpor                         :: dpor(),
           entry_point                  :: mfargs(),
           exploring            = 1     :: integer(),
           first_process                :: pid(),
@@ -75,7 +72,6 @@
           last_scheduled               :: pid(),
           need_to_replay       = false :: boolean(),
           non_racing_system            :: [atom()],
-          optimal                      :: boolean(),
           origin               = 1     :: integer(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
@@ -110,6 +106,7 @@ run(Options) ->
        assertions_only = ?opt(assertions_only, Options),
        assume_racing = ?opt(assume_racing, Options),
        depth_bound = ?opt(depth_bound, Options) + 1,
+       dpor = ?opt(dpor, Options),
        entry_point = EntryPoint = ?opt(entry_point, Options),
        first_process = FirstProcess,
        ignore_error = ?opt(ignore_error, Options),
@@ -118,7 +115,6 @@ run(Options) ->
        last_scheduled = FirstProcess,
        logger = Logger = ?opt(logger, Options),
        non_racing_system = ?opt(non_racing_system, Options),
-       optimal = ?DPOR and ?opt(optimal, Options),
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
@@ -172,7 +168,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
       Warnings ->
         case proplists:get_value(sleep_set_block, Warnings) of
           {Origin, Sleep} ->
-            case State#scheduler_state.optimal of
+            case State#scheduler_state.dpor =:= optimal of
               false ->
                 ?unique(Logger, ?lwarning, msg(sleep_set_block), []);
               true ->
@@ -341,7 +337,7 @@ schedule_sort(Actors, State) ->
 
 free_schedule(Event, Actors, State) ->
   #scheduler_state{dpor = DPOR, logger = Logger, trace = [Last|Prev]} = State,
-  case DPOR of
+  case DPOR =/= none of
     true -> free_schedule_1(Event, Actors, State);
     false ->
       Enabled = [A || A <- Actors, enabled(A)],
@@ -600,7 +596,7 @@ remove_message(Channel, [Other|Rest], Acc) ->
 
 %%------------------------------------------------------------------------------
 
-plan_more_interleavings(#scheduler_state{dpor = false} = State) ->
+plan_more_interleavings(#scheduler_state{dpor = none} = State) ->
   #scheduler_state{logger = _Logger} = State,
   ?debug(_Logger, "Skipping race detection~n", []),
   State;
@@ -822,9 +818,9 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
 
 update_trace(Event, TraceState, Later, NewOldTrace, State) ->
   #scheduler_state{
+     dpor = DPOR,
      exploring = Exploring,
      logger = Logger,
-     optimal = Optimal,
      scheduling_bound_type = SchedulingBoundType
     } = State,
   #trace_state{
@@ -849,7 +845,7 @@ update_trace(Event, TraceState, Later, NewOldTrace, State) ->
       false ->
         NotDep = not_dep(NewOldTrace, Later, EarlyActor, EarlyIndex, Event),
         Sleeping = BaseSleeping ++ Done,
-        NW = insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring),
+        NW = insert_wakeup(Sleeping, Wakeup, NotDep, DPOR, Bound, Exploring),
         show_plan(NW, Logger, EarlyIndex, NotDep),
         NW
     end,
@@ -921,8 +917,8 @@ maybe_log_race(TraceState, Index, Event, State) ->
       ?unique(Logger, ?linfo, msg(show_races), [])
   end.
 
-insert_wakeup(Sleeping, Wakeup, NotDep, Optimal, Bound, Exploring) ->
-  case Optimal of
+insert_wakeup(Sleeping, Wakeup, NotDep, DPOR, Bound, Exploring) ->
+  case DPOR =:= optimal of
     true -> insert_wakeup_1(Sleeping, Wakeup, NotDep, Bound, Exploring);
     false ->
       Initials = get_initials(NotDep),
@@ -1216,8 +1212,8 @@ msg(shutdown) ->
     " supervisor is terminating its children. You can use '--treat_as_normal"
     " shutdown' if this is expected behaviour.~n";
 msg(sleep_set_block) ->
-  "Some interleavings were 'sleep-set blocked'. This is expected, since you have"
-    " specified '--optimal false', but reveals wasted effort.~n";
+  "Some interleavings were 'sleep-set blocked'. This is expected, since you are"
+    " not using '--dpor optimal', but reveals wasted effort.~n";
 msg(stop_first_error) ->
   "Stop testing on first error. (Check '-h keep_going').~n";
 msg(timeout) ->

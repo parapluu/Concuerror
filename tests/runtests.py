@@ -71,15 +71,15 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     global total_tests
     global total_failed
     if "dpor" in flags:
-        dpor_flag = "--optimal=true"
+        dpor_flag = "--dpor=optimal"
         file_ext = "-dpor"
         dpor_output = "dpor"
     elif "source" in flags:
-        dpor_flag = "--optimal=false"
+        dpor_flag = "--dpor=source"
         file_ext = "-source"
         dpor_output = "source"
     else:
-        dpor_flag = ""
+        dpor_flag = "--dpor=none"
         file_ext = ""
         dpor_output = "full"
     if preb == "inf":
