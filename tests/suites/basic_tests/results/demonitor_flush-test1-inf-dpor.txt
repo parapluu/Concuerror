@@ -1,4 +1,4 @@
-Concuerror 0.15 ('5585cc7') started at 25 Aug 2016 10:59:29.
+Concuerror 0.15 ('90f4283') started at 29 Aug 2016 14:01:26.
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -30,14 +30,6 @@ New races found:
 
 
 ################################################################################
-Interleaving #2
---------------------------------------------------------------------------------
-New races found:
-*    3: P.1: {'DOWN',#Ref<0.0.1.162>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.162>,process,P.1,normal})
-     5: P: receive timeout expired after 0 ms
-
-
-################################################################################
 Exploration completed!
   No errors found!
 ################################################################################
@@ -49,5 +41,5 @@ Instrumented gen_server
 Instrumented erlang
 
 ################################################################################
-Done at 25 Aug 2016 10:59:29 (Exit status: ok)
-  Summary: 0 errors, 3/3 interleavings explored
+Done at 29 Aug 2016 14:01:26 (Exit status: ok)
+  Summary: 0 errors, 2/2 interleavings explored

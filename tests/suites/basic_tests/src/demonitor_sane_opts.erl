@@ -7,7 +7,7 @@
 
 %%------------------------------------------------------------------------------
 
-concuerror_options() -> [].
+concuerror_options() -> [show_races].
 
 scenarios() -> [{T, inf, dpor} || T <- [test1, test2]].
 

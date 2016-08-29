@@ -1,32 +1,55 @@
-################################################################################
-Concuerror started with options:
+Concuerror 0.15 ('90f4283') started at 25 Aug 2016 19:01:59.
+ Options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {delay_bound,infinity},
-   {depth_bound,5000},
+   {depth_bound,500},
    {entry_point,{monitor_info,test1,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/monitor_info.erl"]},
    {ignore_error,[]},
-   {ignore_first_crash,true},
-   {instant_delivery,false},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
    {non_racing_system,[]},
    {optimal,true},
    {print_depth,20},
-   {quiet,true},
    {scheduling,round_robin},
+   {scheduling_bound,infinity},
+   {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
    {treat_as_normal,[]}]
 ################################################################################
-  No errors found!
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in monitor_info.erl line 18
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.156>} = erlang:spawn_opt({erlang,apply,[#Fun<monitor_info.'-test1/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2647
+   2: P: receive timeout expired after 0 ms
+    in monitor_info.erl line 11
+   3: P.1: exits normally
+   4: P: false = erlang:demonitor(#Ref<0.0.1.156>, [info])
+    in monitor_info.erl line 12
+   5: P.1: {'DOWN',#Ref<0.0.1.156>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.0.1.156>,process,P.1,normal})
+    (while exiting)
+################################################################################
+Exploration completed!
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
 Instrumented monitor_info
 Instrumented io_lib
+Instrumented gen_server
 Instrumented erlang
+You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
+Continuing after error (-k)
+
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 0 errors, 3/3 interleavings explored
+Done at 25 Aug 2016 19:01:59 (Exit status: error)
+  Summary: 1 errors, 4/4 interleavings explored

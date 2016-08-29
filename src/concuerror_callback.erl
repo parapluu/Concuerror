@@ -610,7 +610,7 @@ run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
           ?debug_flag(?loop, sending_kill_to_cancel),
           ets:delete(Timers, Ref),
           Pid ! {exit_signal, #message{data = kill, id = hidden}, self()},
-          {false, true} = receive_message_ack(),
+          {false, true, false} = receive_message_ack(),
           ok
       end,
       {1, Info}
@@ -1097,17 +1097,18 @@ deliver_message(Event, MessageEvent, Timeout, Instant) ->
         %% Instant delivery to self
         {true, SelfTrapping} = Instant,
         SelfKilling = Type =:= exit_signal,
-        send_message_ack(Self, SelfTrapping, SelfKilling),
+        send_message_ack(Self, SelfTrapping, SelfKilling, false),
         ?notify_none;
       false -> Self
     end,
   Recipient ! {Type, Message, Notify},
   receive
-    {message_ack, Trapping, Killing} ->
+    {message_ack, Trapping, Killing, Ignored} ->
       NewMessageEvent =
         MessageEvent#message_event{
           killing = Killing,
-          trapping = Trapping
+          trapping = Trapping,
+          ignored = Ignored
          },
       NewSpecial =
         case already_known_delivery(Message, Special) of
@@ -1415,7 +1416,7 @@ process_loop(Info) ->
           case Data =:= kill of
             true ->
               ?debug_flag(?loop, kill_signal),
-              send_message_ack(Notify, Trapping, true),
+              send_message_ack(Notify, Trapping, true, false),
               exiting(killed, [], Info#concuerror_info{exit_by_signal = true});
             false ->
               case Trapping of
@@ -1425,7 +1426,7 @@ process_loop(Info) ->
                   process_loop(Info);
                 false ->
                   {'EXIT', _From, Reason} = Data,
-                  send_message_ack(Notify, Trapping, Reason =/= normal),
+                  send_message_ack(Notify, Trapping, Reason =/= normal, false),
                   case Reason =:= normal of
                     true ->
                       ?debug_flag(?loop, ignore_normal_signal),
@@ -1439,14 +1440,15 @@ process_loop(Info) ->
           end;
         false ->
           ?debug_flag(?loop, ignoring_signal),
-          send_message_ack(Notify, Trapping, false),
+          send_message_ack(Notify, Trapping, false, false),
           process_loop(Info)
       end;
     {message, Message, Notify} ->
       ?debug_flag(?loop, message),
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
-      send_message_ack(Notify, Trapping, false),
-      case is_active(Info) andalso not_demonitored(Message, Info) of
+      NotDemonitored = not_demonitored(Message, Info),
+      send_message_ack(Notify, Trapping, false, not NotDemonitored),
+      case is_active(Info) andalso NotDemonitored of
         true ->
           ?debug_flag(?loop, enqueueing_message),
           Old = Info#concuerror_info.messages_new,
@@ -1503,17 +1505,17 @@ get_their_info(Pid) ->
     {info, Info} -> Info
   end.
 
-send_message_ack(Notify, Trapping, Killing) ->
+send_message_ack(Notify, Trapping, Killing, Ignored) ->
   case Notify =/= ?notify_none of
     true ->
-      Notify ! {message_ack, Trapping, Killing},
+      Notify ! {message_ack, Trapping, Killing, Ignored},
       ok;
     false -> ok
   end.
 
 receive_message_ack() ->
   receive
-    {message_ack, Trapping, Killing} -> {Trapping, Killing}
+    {message_ack, Trapping, Killing, Ignored} -> {Trapping, Killing, Ignored}
   end.
 
 get_leader(#concuerror_info{processes = Processes}, P) ->
@@ -1825,7 +1827,7 @@ system_wrapper_loop(Name, Wrapped, Info) ->
           catch
             exit:{?MODULE, _} = Reason -> exit(Reason);
             throw:no_reply ->
-              send_message_ack(Report, false, false),
+              send_message_ack(Report, false, false, false),
               ok;
             Type:Reason ->
               Stacktrace = erlang:get_stacktrace(),
