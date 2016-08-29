@@ -78,10 +78,18 @@ dependent(#builtin_event{actor = Recipient, exiting = false,
         {'EXIT', _, Reason} = Signal,
         not Trapping andalso Reason =/= normal
     end;
-dependent(#builtin_event{actor = Recipient, mfargs = {erlang, demonitor, [R,O]}},
+dependent(#builtin_event{actor = Recipient,
+                         mfargs = {erlang, demonitor, [R, Opts]}},
           #message_event{message = #message{data = {_, R, _, _, _}},
                          recipient = Recipient, type = message}) ->
-  lists:member(flush, O);
+  is_list(Opts)
+    andalso
+      ([] =:= [O || O <- Opts, O =/= info, O =/= flush])
+    andalso
+    case {lists:member(flush, Opts), lists:member(info, Opts)} of
+      {true, false} -> throw(irreversible);
+      {    _,    _} -> true
+    end;
 dependent(#builtin_event{}, #message_event{}) ->
   false;
 dependent(#message_event{} = Message,
@@ -94,6 +102,7 @@ dependent(#exit_event{
              last_status = LastStatus,
              trapping = Trapping},
           #message_event{
+             ignored = false,
              killing = Killing,
              message = #message{data = Signal},
              recipient = Recipient,
@@ -122,12 +131,14 @@ dependent(#exit_event{}, #exit_event{}) ->
   false;
 
 dependent(#message_event{
+             ignored = false,
              killing = Killing,
              message = #message{data = EarlyData},
              recipient = Recipient,
              trapping = Trapping,
              type = EarlyType},
           #message_event{
+             ignored = false,
              message = #message{data = Data},
              recipient = Recipient,
              type = Type
@@ -151,6 +162,7 @@ dependent(#message_event{
   end;
 
 dependent(#message_event{
+             ignored = false,
              message = #message{data = Data},
              recipient = Recipient,
              type = Type
@@ -180,6 +192,7 @@ dependent(#receive_event{
              recipient = Recipient,
              trapping = Trapping},
           #message_event{
+             ignored = false,
              message = #message{data = Data},
              recipient = Recipient,
              type = Type
@@ -189,6 +202,7 @@ dependent(#receive_event{
              recipient = Recipient,
              trapping = Trapping},
           #message_event{
+             ignored = false,
              message = #message{data = Signal},
              recipient = Recipient,
              type = exit_signal
@@ -303,7 +317,7 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, dictionary]}},
 dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, messages]}},
                        Other) ->
   case Other of
-    #message_event{recipient = Recipient} ->
+    #message_event{ignored = false, recipient = Recipient} ->
       Recipient =:= Pid;
     #receive_event{recipient = Recipient, message = M} ->
       Recipient =:= Pid andalso M =/= 'after';

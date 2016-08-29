@@ -67,31 +67,33 @@
          }).
 
 -record(concuerror_info, {
-          after_timeout              :: 'infinite' | integer(),
-          escaped_pdict = []         :: term(),
-          ets_tables                 :: ets_tables(),
-          exit_by_signal = false     :: boolean(),
-          exit_reason = normal       :: term(),
-          extra                      :: term(),
-          flags = #process_flags{}   :: #process_flags{},
-          instant_delivery           :: boolean(),
-          is_timer = false           :: 'false' | reference(),
-          links                      :: links(),
-          logger                     :: pid(),
-          message_counter = 1        :: pos_integer(),
-          messages_new = queue:new() :: message_queue(),
-          messages_old = queue:new() :: message_queue(),
-          monitors                   :: monitors(),
-          event = none               :: 'none' | event(),
-          notify_when_ready          :: {pid(), boolean()},
-          processes                  :: processes(),
-          ref_queue = new_ref_queue():: ref_queue_2(),
-          scheduler                  :: pid(),
-          stacktop = 'none'          :: 'none' | tuple(),
-          status = running           :: 'exited'| 'exiting' | 'running' | 'waiting',
-          system_ets_entries         :: ets:tid(),
-          timeout                    :: timeout(),
-          timers                     :: timers()
+          after_timeout               :: 'infinite' | integer(),
+          demonitors = []             :: [reference()],
+          escaped_pdict = []          :: term(),
+          ets_tables                  :: ets_tables(),
+          exit_by_signal = false      :: boolean(),
+          exit_reason = normal        :: term(),
+          extra                       :: term(),
+          flags = #process_flags{}    :: #process_flags{},
+          instant_delivery            :: boolean(),
+          is_timer = false            :: 'false' | reference(),
+          links                       :: links(),
+          logger                      :: pid(),
+          message_counter = 1         :: pos_integer(),
+          messages_new = queue:new()  :: message_queue(),
+          messages_old = queue:new()  :: message_queue(),
+          monitors                    :: monitors(),
+          event = none                :: 'none' | event(),
+          notify_when_ready           :: {pid(), boolean()},
+          processes                   :: processes(),
+          ref_queue = new_ref_queue() :: ref_queue_2(),
+          scheduler                   :: pid(),
+          stacktop = 'none'           :: 'none' | tuple(),
+          status = running            ::
+            'exited' | 'exiting' | 'running' | 'waiting',
+          system_ets_entries          :: ets:tid(),
+          timeout                     :: timeout(),
+          timers                      :: timers()
          }).
 
 -type concuerror_info() :: #concuerror_info{}.
@@ -343,7 +345,14 @@ run_built_in(erlang, demonitor, 1, [Ref], Info) ->
   run_built_in(erlang, demonitor, 2, [Ref, []], Info);
 run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
   ?badarg_if_not(is_reference(Ref)),
-  #concuerror_info{monitors = Monitors} = Info,
+  SaneOptions =
+    try
+      [] =:= [O || O <- Options, O =/= flush, O =/= info]
+    catch
+      _:_ -> false
+    end,
+  ?badarg_if_not(SaneOptions),
+  #concuerror_info{demonitors = Demonitors, monitors = Monitors} = Info,
   {Result, NewInfo} =
     case ets:match(Monitors, ?monitor_match_to_target_source_as(Ref)) of
       [] ->
@@ -368,9 +377,10 @@ run_built_in(erlang, demonitor, 2, [Ref, Options], Info) ->
         true = ets:insert(Monitors, ?monitor(Ref, Target, As, inactive)),
         {not lists:member(flush, Options), Info}
     end,
+  FinalInfo = NewInfo#concuerror_info{demonitors = [Ref|Demonitors]},
   case lists:member(info, Options) of
-    true -> {Result, NewInfo};
-    false -> {true, NewInfo}
+    true -> {Result, FinalInfo};
+    false -> {true, FinalInfo}
   end;
 run_built_in(erlang, exit, 2, [Pid, Reason],
              #concuerror_info{
@@ -600,7 +610,7 @@ run_built_in(erlang, ReadorCancelTimer, 1, [Ref], Info)
           ?debug_flag(?loop, sending_kill_to_cancel),
           ets:delete(Timers, Ref),
           Pid ! {exit_signal, #message{data = kill, id = hidden}, self()},
-          {false, true} = receive_message_ack(),
+          {false, true, false} = receive_message_ack(),
           ok
       end,
       {1, Info}
@@ -1087,17 +1097,18 @@ deliver_message(Event, MessageEvent, Timeout, Instant) ->
         %% Instant delivery to self
         {true, SelfTrapping} = Instant,
         SelfKilling = Type =:= exit_signal,
-        send_message_ack(Self, SelfTrapping, SelfKilling),
+        send_message_ack(Self, SelfTrapping, SelfKilling, false),
         ?notify_none;
       false -> Self
     end,
   Recipient ! {Type, Message, Notify},
   receive
-    {message_ack, Trapping, Killing} ->
+    {message_ack, Trapping, Killing, Ignored} ->
       NewMessageEvent =
         MessageEvent#message_event{
           killing = Killing,
-          trapping = Trapping
+          trapping = Trapping,
+          ignored = Ignored
          },
       NewSpecial =
         case already_known_delivery(Message, Special) of
@@ -1405,7 +1416,7 @@ process_loop(Info) ->
           case Data =:= kill of
             true ->
               ?debug_flag(?loop, kill_signal),
-              send_message_ack(Notify, Trapping, true),
+              send_message_ack(Notify, Trapping, true, false),
               exiting(killed, [], Info#concuerror_info{exit_by_signal = true});
             false ->
               case Trapping of
@@ -1415,7 +1426,7 @@ process_loop(Info) ->
                   process_loop(Info);
                 false ->
                   {'EXIT', _From, Reason} = Data,
-                  send_message_ack(Notify, Trapping, Reason =/= normal),
+                  send_message_ack(Notify, Trapping, Reason =/= normal, false),
                   case Reason =:= normal of
                     true ->
                       ?debug_flag(?loop, ignore_normal_signal),
@@ -1429,14 +1440,15 @@ process_loop(Info) ->
           end;
         false ->
           ?debug_flag(?loop, ignoring_signal),
-          send_message_ack(Notify, Trapping, false),
+          send_message_ack(Notify, Trapping, false, false),
           process_loop(Info)
       end;
     {message, Message, Notify} ->
       ?debug_flag(?loop, message),
       Trapping = Info#concuerror_info.flags#process_flags.trap_exit,
-      send_message_ack(Notify, Trapping, false),
-      case is_active(Info) of
+      NotDemonitored = not_demonitored(Message, Info),
+      send_message_ack(Notify, Trapping, false, not NotDemonitored),
+      case is_active(Info) andalso NotDemonitored of
         true ->
           ?debug_flag(?loop, enqueueing_message),
           Old = Info#concuerror_info.messages_new,
@@ -1493,21 +1505,29 @@ get_their_info(Pid) ->
     {info, Info} -> Info
   end.
 
-send_message_ack(Notify, Trapping, Killing) ->
+send_message_ack(Notify, Trapping, Killing, Ignored) ->
   case Notify =/= ?notify_none of
     true ->
-      Notify ! {message_ack, Trapping, Killing},
+      Notify ! {message_ack, Trapping, Killing, Ignored},
       ok;
     false -> ok
   end.
 
 receive_message_ack() ->
   receive
-    {message_ack, Trapping, Killing} -> {Trapping, Killing}
+    {message_ack, Trapping, Killing, Ignored} -> {Trapping, Killing, Ignored}
   end.
 
 get_leader(#concuerror_info{processes = Processes}, P) ->
   ets:lookup_element(Processes, P, ?process_leader).
+
+not_demonitored(Message, Info) ->
+  case Message of
+    #message{data = {'DOWN', Ref, _, _, _}} ->
+      #concuerror_info{demonitors = Demonitors} = Info,
+      not lists:member(Ref, Demonitors);
+    _ -> true
+  end.
 
 %%------------------------------------------------------------------------------
 
@@ -1807,7 +1827,7 @@ system_wrapper_loop(Name, Wrapped, Info) ->
           catch
             exit:{?MODULE, _} = Reason -> exit(Reason);
             throw:no_reply ->
-              send_message_ack(Report, false, false),
+              send_message_ack(Report, false, false, false),
               ok;
             Type:Reason ->
               Stacktrace = erlang:get_stacktrace(),
