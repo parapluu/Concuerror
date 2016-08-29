@@ -240,8 +240,8 @@ cl_usage(Name) ->
       case atom_to_list(Name) of
         "-" ++ Rest -> cl_usage(list_to_atom(Rest));
         _ ->
-          Message = "Invalid option name (given as argument to --help): '~w'",
-          opt_error(Message, [Name])
+          Msg = "Invalid option name (given as argument to --help): '~w'",
+          opt_error(Msg, [Name])
       end;
     Tuple ->
       getopt:usage(getopt_spec([Tuple]), "./concuerror"),
@@ -293,12 +293,12 @@ finalize_2(Options) ->
   FinalOptions =
     try
       Passes =
-        [ fun rename_equivalent/1
+        [ fun proplists:unfold/1
+        , fun rename_equivalent/1
         , fun add_missing_getopt_defaults/1
         , fun(O) ->
               add_missing_defaults([{verbosity, ?DEFAULT_VERBOSITY}], O)
           end
-        , fun proplists:unfold/1
         , fun finalize_aux/1
         , fun(O) ->
               add_missing_defaults(
@@ -365,7 +365,7 @@ check_help_and_version(Options) ->
 rename_equivalent(Options) ->
   rename_equivalent(Options, []).
 
-rename_equivalent([quiet|Rest], Acc) ->
+rename_equivalent([{quiet, true}|Rest], Acc) ->
   case proplists:is_defined(verbosity, Rest ++ Acc) of
     true -> opt_error("'--verbosity' specified together with '--quiet'");
     false ->
@@ -401,7 +401,11 @@ finalize([{verbosity, N}|Rest], Acc) ->
       opt_error(Error, [?ldebug - 1])
   end,
   finalize(NewRest, [{verbosity, Verbosity}|Acc]);
-finalize([{Key, Value}|Rest], Acc) when Key =:= pa; Key =:=pz ->
+finalize([{Key, Value}|Rest], Acc)
+  when
+    Key =:= pa;
+    Key =:=pz
+    ->
   PathAdd =
     case Key of
       pa -> fun code:add_patha/1;
