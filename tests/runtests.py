@@ -73,30 +73,47 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     if "dpor" in flags:
         dpor_flag = "--dpor=optimal"
         file_ext = "-dpor"
-        dpor_output = "dpor"
+        dpor_output = "optimal"
+    elif "optimal" in flags:
+        dpor_flag = "--dpor=optimal"
+        file_ext = "-dpor"
+        dpor_output = "optimal"
     elif "source" in flags:
         dpor_flag = "--dpor=source"
         file_ext = "-source"
         dpor_output = "source"
+    elif "persistent" in flags:
+        dpor_flag = "--dpor=persistent"
+        file_ext = "-persistent"
+        dpor_output = "persistent"
     else:
         dpor_flag = "--dpor=none"
         file_ext = ""
         dpor_output = "full"
     if preb == "inf":
         bound = ""
+        bound_type = ""
+        preb_output = "none"
     else:
         bound = ("-b %s") % (preb)
+        if "bpor" in flags:
+            bound_type = "-c bpor"
+            preb_output=("%s/bpor") % (preb)
+            preb=("%s-bpor") % (preb)
+        else:
+            bound_type = "-c simple"
+            preb_output=("%s/simple") % (preb)
     sema.acquire()
     # Run concuerror
     status = os.system(
         ("%s -kq --timeout -1 --assume_racing false --show_races false"
          " %s -f %s"
          " --output %s/%s/results/%s-%s-%s%s.txt"
-         " -m %s -t %s %s"
+         " -m %s -t %s %s %s"
          )
         % (concuerror, dpor_flag, " -f ".join(files),
            results, suite, name, funn, preb, file_ext,
-           modn, funn, bound))
+           modn, funn, bound, bound_type))
     # Compare the results
     has_crash = "crash" in flags
     orig = ("%s/suites/%s/results/%s-%s-%s%s.txt"
@@ -121,11 +138,11 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         except:
             pass
         print "%-10s %-20s %-50s  \033[01;32mok\033[00m" % \
-              (suite, name, "("+funn+",  "+preb+",  "+dpor_output+")")
+              (suite, name, "("+funn+",  "+preb_output+",  "+dpor_output+")")
     else:
         total_failed.value += 1
         print "%-10s %-20s %-50s  \033[01;31mfailed\033[00m" % \
-              (suite, name, "("+funn+",  "+preb+",  "+dpor_output+")")
+              (suite, name, "("+funn+",  "+preb_output+",  "+dpor_output+")")
     lock.release()
 
 def equalResults(suite, name, orig, rslt):
@@ -170,7 +187,7 @@ if threads == "":
 # Print header
 print "Concuerror's Testsuite (%d threads)\n" % int(threads)
 print "%-10s %-20s %-50s  %s" % \
-      ("Suite", "Test", "(Function,  Preemption Bound,  Reduction)", "Result")
+      ("Suite", "Module", "(Test,  Bound,  DPOR)", "Result")
 print "---------------------------------------------" + \
       "---------------------------------------------"
 

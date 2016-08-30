@@ -10,7 +10,7 @@
 
 concuerror_options() -> [].
 
-scenarios() -> [{test, inf, dpor}].
+scenarios() -> [{test, inf, optimal}].
 
 exceptional() ->
   fun(_Expected, _Actual) ->
