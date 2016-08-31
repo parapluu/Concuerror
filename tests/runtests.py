@@ -76,7 +76,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         dpor_output = "optimal"
     elif "optimal" in flags:
         dpor_flag = "--dpor=optimal"
-        file_ext = "-dpor"
+        file_ext = "-optimal"
         dpor_output = "optimal"
     elif "source" in flags:
         dpor_flag = "--dpor=source"
@@ -89,7 +89,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     else:
         dpor_flag = "--dpor=none"
         file_ext = ""
-        dpor_output = "full"
+        dpor_output = "disabled"
     if preb == "inf":
         bound = ""
         bound_type = ""
