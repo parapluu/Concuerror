@@ -167,7 +167,7 @@ options() ->
     "- 'simple': how many times per interleaving the scheduler is allowed~n"
     "            to pick a process different from the 'default one' to~n"
     "            schedule."}
-  ,{scheduling_bound, $b, {integer, infinity},
+  ,{scheduling_bound, $b, integer,
     "Scheduling bound value",
     "The maximum number of times the rule specified in '--scheduling_bound_type'"
     " can be violated."}
@@ -306,16 +306,16 @@ finalize_2(Options) ->
       Passes =
         [ fun proplists:unfold/1
         , fun rename_equivalent/1
-        , fun add_missing_getopt_defaults/1
         , fun(O) ->
               add_missing_defaults([{verbosity, ?DEFAULT_VERBOSITY}], O)
           end
         , fun finalize_aux/1
+        , fun add_missing_getopt_defaults/1
         , fun(O) ->
               add_missing_defaults(
-                [{ignore_error, []},
+                [{dpor, optimal},
+                 {ignore_error, []},
                  {non_racing_system, []},
-                 {dpor, optimal},
                  {scheduling_bound_type, none},
                  {treat_as_normal, []}
                 ], O)
@@ -480,19 +480,12 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
       check_validity(Key, Value, [newest, oldest, round_robin]),
       finalize(Rest, [Option|Acc]);
     scheduling_bound ->
+      ValidityCheck = {fun(V) -> V >= 0 end, "a non-negative integer"},
+      check_validity(Key, Value, ValidityCheck),
       NewRest =
-        case Value =:= infinity of
+        case proplists:is_defined(scheduling_bound_type, Acc ++ Rest) of
           true -> Rest;
-          false ->
-            ValidityCheck = {fun(V) -> V >= 0 end, "a non-negative integer"},
-            check_validity(Key, Value, ValidityCheck),
-            case proplists:is_defined(scheduling_bound_type, Acc ++ Rest) of
-              true -> Rest;
-              false ->
-                Msg = "assuming '--scheduling_bound_type simple'.",
-                opt_warn(Msg, []),
-                [{scheduling_bound_type, simple}|Rest]
-            end
+          false -> assume(scheduling_bound_type, simple, Rest)
         end,
       finalize(NewRest, [Option|Acc]);
     scheduling_bound_type ->
@@ -500,12 +493,14 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
       NewRest =
         case Value =/= bpor orelse proplists:is_defined(dpor, Acc ++ Rest) of
           true -> Rest;
-          false ->
-            Msg = "assuming '--dpor source'.",
-            opt_warn(Msg, []),
-            [{dpor, source}|Rest]
+          false -> assume(dpor, source, Rest)
         end,
-      finalize(NewRest, [Option|Acc]);
+      NewRest1 =
+        case proplists:is_defined(scheduling_bound, Acc ++ Rest) of
+          true -> NewRest;
+          false -> assume(scheduling_bound, 1, NewRest)
+        end,
+      finalize(NewRest1, [Option|Acc]);
     MaybeInfinity
       when
         MaybeInfinity =:= interleaving_bound;
@@ -625,7 +620,7 @@ consistent([{assertions_only, true} = Assert|Rest], Acc) ->
     [{ignore_error, fun(X) -> not lists:member(crash, X) end}],
     Rest ++ Acc, Assert),
   consistent(Rest, [Assert|Acc]);
-consistent([{scheduling_bound, N} = Bound|Rest], Acc) when is_integer(N) ->
+consistent([{scheduling_bound, _} = Bound|Rest], Acc) ->
   check_values(
     [{scheduling_bound_type, fun(X) -> lists:member(X, [bpor, simple]) end}],
     Rest ++ Acc,
@@ -635,15 +630,6 @@ consistent([{scheduling_bound_type, Type} = BoundType|Rest], Acc) ->
   case Type =:= none of
     true -> consistent(Rest, [BoundType|Acc]);
     false ->
-      case is_integer(proplists:get_value(scheduling_bound, Rest ++ Acc)) of
-        true -> ok;
-        false ->
-          Warn =
-            "No bound value set for ~w bound. Use '--scheduling_bound' to"
-            " specify an integer value as a bound, or remove the bound type"
-            " specification.",
-          opt_error(Warn, [Type])
-      end,
       case Type =:= bpor of
         false -> ok;
         true ->
@@ -689,6 +675,11 @@ opt_warn(Format, Data) ->
     end,
   put(warnings, [io_lib:format(Format ++ "~n", Data)|Warnings]),
   ok.
+
+assume(Opt, Value, Options) ->
+  Msg = "Missing value for --~p. Assuming '--~p ~p'.",
+  opt_warn(Msg, [Opt, Opt, Value]),
+  [{Opt, Value}|Options].
 
 get_all_warnings() ->
   case erase(warnings) of
