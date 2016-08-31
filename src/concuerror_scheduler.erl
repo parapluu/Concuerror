@@ -34,9 +34,10 @@
 %% =============================================================================
 
 -record(backtrack_entry, {
-          event            :: event(),
-          origin = 1       :: integer(),
-          wakeup_tree = [] :: event_tree()
+          conservative = false :: boolean(),
+          event                :: event(),
+          origin = 1           :: integer(),
+          wakeup_tree = []     :: event_tree()
          }).
 
 -type event_tree() :: [#backtrack_entry{}].
@@ -49,6 +50,7 @@
           done             = []         :: [event()],
           index            = 1          :: index(),
           graph_ref        = make_ref() :: reference(),
+          previous_actor   = 'none'     :: 'none' | actor(),
           scheduling_bound = infinity   :: bound(),
           sleeping         = []         :: [event()],
           wakeup_tree      = []         :: event_tree()
@@ -94,6 +96,7 @@
 
 run(Options) ->
   process_flag(trap_exit, true),
+  put(bound_exceeded, false),
   {FirstProcess, System} =
     concuerror_callback:spawn_first_process(Options),
   InitialTrace =
@@ -402,7 +405,7 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 
 %%------------------------------------------------------------------------------
 
-update_state(#event{special = Special} = Event, State) ->
+update_state(#event{actor = Actor} = Event, State) ->
   #scheduler_state{
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
@@ -413,13 +416,18 @@ update_state(#event{special = Special} = Event, State) ->
      done        = Done,
      index       = Index,
      graph_ref   = Ref,
+     previous_actor = PreviousActor,
      scheduling_bound = SchedulingBound,
      sleeping    = Sleeping,
      wakeup_tree = WakeupTree
     } = Last,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
   concuerror_logger:graph_new_node(Logger, Ref, Index, Event, 0),
-  AllSleeping = ordsets:union(ordsets:from_list(Done), Sleeping),
+  AllSleeping =
+    case WakeupTree of
+      [#backtrack_entry{conservative = true}|_] -> Sleeping;
+      _ -> ordsets:union(ordsets:from_list(Done), Sleeping)
+    end,
   NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =
     case WakeupTree of
@@ -427,20 +435,13 @@ update_state(#event{special = Special} = Event, State) ->
       [#backtrack_entry{wakeup_tree = NWT}|Rest] -> {Rest, NWT}
     end,
   NewSchedulingBound =
-    case SchedulingBoundType of
-      none -> SchedulingBound;
-      simple ->
-        %% First reschedule costs one point, otherwise nothing.
-        case Done of
-          [_] -> SchedulingBound - 1;
-          _ -> SchedulingBound
-        end
-    end,
+    next_bound(SchedulingBoundType, Done, PreviousActor, SchedulingBound),
   NewLastDone = [Event|Done],
   InitNextTrace =
     #trace_state{
        actors      = Actors,
        index       = Index + 1,
+       previous_actor = Actor,
        scheduling_bound = NewSchedulingBound,
        sleeping    = NextSleeping,
        wakeup_tree = NextWakeupTree
@@ -454,7 +455,7 @@ update_state(#event{special = Special} = Event, State) ->
   InitNewState =
     State#scheduler_state{trace = [InitNextTrace, NewLastTrace|Prev]},
   NewState = maybe_log(Event, InitNewState, Index),
-  {ok, update_special(Special, NewState)}.
+  {ok, update_special(Event#event.special, NewState)}.
 
 maybe_log(#event{actor = P} = Event, State0, Index) ->
   #scheduler_state{
@@ -824,21 +825,14 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
      scheduling_bound_type = SchedulingBoundType
     } = State,
   #trace_state{
-     done = [#event{actor = EarlyActor}|Done],
-     scheduling_bound = BaseBound,
+     done = [#event{actor = EarlyActor}|Done] = AllDone,
      index = EarlyIndex,
+     previous_actor = PreviousActor,
+     scheduling_bound = BaseBound,
      sleeping = BaseSleeping,
      wakeup_tree = Wakeup
     } = TraceState,
-  Bound =
-    case SchedulingBoundType of
-      none -> BaseBound;
-      simple ->
-        case Done =:= [] of
-          true -> BaseBound - 1;
-          false -> BaseBound
-        end
-    end,
+  Bound = next_bound(SchedulingBoundType, AllDone, PreviousActor, BaseBound),
   MaybeNewWakeup =
     case Bound =:= -1 of
       true -> over_bound;
@@ -849,11 +843,22 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
              true -> Clock;
              false -> {EarlyActor, EarlyIndex}
            end},
-        NotDep = not_dep(NewOldTrace, Later, DPORInfo, Event),
         Sleeping = BaseSleeping ++ Done,
-        NW = insert_wakeup(Sleeping, Wakeup, NotDep, DPOR, Bound, Exploring),
-        show_plan(NW, Logger, EarlyIndex, NotDep),
-        NW
+        NotDep = not_dep(NewOldTrace, Later, DPORInfo, Event),
+        NW =
+          case DPOR =:= optimal of
+            true ->
+              insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring);
+            false ->
+              Initials = get_initials(NotDep),
+              insert_wakeup_non_optimal(Sleeping, Wakeup, Initials, false, Exploring)
+          end,
+        case is_atom(NW) of
+          true -> NW;
+          false ->
+            show_plan(NW, false, Logger, EarlyIndex, NotDep),
+            NW
+        end
     end,
   case MaybeNewWakeup of
     skip ->
@@ -861,6 +866,7 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
       skip;
     over_bound ->
       concuerror_logger:bound_reached(Logger),
+      put(bound_exceeded, true),
       skip;
     NewWakeup ->
       NS = TraceState#trace_state{wakeup_tree = NewWakeup},
@@ -906,17 +912,16 @@ not_dep([TraceState|Rest], Later, {DPOR, Info} = DPORInfo, Event, NotDep) ->
     end,
   not_dep(Rest, Later, DPORInfo, Event, NewNotDep).
 
-show_plan(Atom, _, _, _) when is_atom(Atom) ->
-  ok;
-show_plan(_NW, _Logger, _Index, _NotDep) ->
+show_plan(_NW, _Conservative, _Logger, _Index, _NotDep) ->
   ?debug(
-     _Logger, "     PLAN~n~s",
+     _Logger, "     PLAN (Conservative: ~p)~n~s",
      begin
        Indices = lists:seq(_Index, _Index + length(_NotDep) - 1),
        IndexedNotDep = lists:zip(Indices, _NotDep),
-       [lists:append(
-          [io_lib:format("        ~s~n", [?pretty_s(I,S)])
-           || {I,S} <- IndexedNotDep])]
+       [_Conservative] ++
+         [lists:append(
+            [io_lib:format("        ~s~n", [?pretty_s(I,S)])
+             || {I,S} <- IndexedNotDep])]
      end).
 
 maybe_log_race(TraceState, Index, Event, State) ->
@@ -933,25 +938,40 @@ maybe_log_race(TraceState, Index, Event, State) ->
       ?unique(Logger, ?linfo, msg(show_races), [])
   end.
 
-insert_wakeup(Sleeping, Wakeup, NotDep, DPOR, Bound, Exploring) ->
-  case DPOR =:= optimal of
-    true -> insert_wakeup_1(Sleeping, Wakeup, NotDep, Bound, Exploring);
-    false ->
-      Initials = get_initials(NotDep),
-      All =
-        Sleeping ++
-        [W || #backtrack_entry{event = W, wakeup_tree = []} <- Wakeup],
-      case existing(All, Initials) of
-        true -> skip;
-        false ->
-          [E|_] = NotDep,
-          Entry =
-            #backtrack_entry{event = E, origin = Exploring, wakeup_tree = []},
-          Wakeup ++ [Entry]
-      end
-  end.      
+insert_wakeup_non_optimal(Sleeping, Wakeup, Initials, Conservative, Exploring) ->
+  case existing(Sleeping, Initials) of
+    true -> skip;
+    false -> promote_or_add(Wakeup, Initials, Conservative, Exploring)
+  end.
 
-insert_wakeup_1(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
+promote_or_add(Wakeup, Initials, Conservative, Exploring) ->
+  promote_or_add(Wakeup, Initials, Conservative, Exploring, []).
+
+promote_or_add([], [E|_], Conservative, Exploring, Acc) ->
+  Entry =
+    #backtrack_entry{
+       conservative = Conservative,
+       event = E, origin = Exploring,
+       wakeup_tree = []
+      },
+  lists:reverse([Entry|Acc]);
+promote_or_add([Entry|Rest], Initials, Conservative, Exploring, Acc) ->
+  #backtrack_entry{conservative = C, event = E, wakeup_tree = []} = Entry,
+  #event{actor = A} = E,
+  Pred = fun(#event{actor = B}) -> A =:= B end,
+  case lists:any(Pred, Initials) of
+    true ->
+      case C andalso not Conservative of
+        true ->
+          NewEntry = Entry#backtrack_entry{conservative = false},
+          lists:reverse(Acc, [NewEntry|Rest]);
+        false -> skip
+      end;
+    false ->
+      promote_or_add(Rest, Initials, Conservative, Exploring, [Entry|Acc])
+  end.
+
+insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
   case has_sleeping_initial(Sleeping, NotDep) of
     true -> skip;
     false -> insert_wakeup(Wakeup, NotDep, Bound, true, Exploring)
@@ -1052,8 +1072,12 @@ existing([#event{actor = A}|Rest], Initials) ->
 
 %%------------------------------------------------------------------------------
 
-has_more_to_explore(#scheduler_state{trace = Trace} = State) ->
-  TracePrefix = find_prefix(Trace, State),
+has_more_to_explore(State) ->
+  #scheduler_state{
+     scheduling_bound_type = SchedulingBoundType,
+     trace = Trace
+    } = State,
+  TracePrefix = find_prefix(Trace, SchedulingBoundType),
   case TracePrefix =:= [] of
     true -> {false, State#scheduler_state{trace = []}};
     false ->
@@ -1062,9 +1086,21 @@ has_more_to_explore(#scheduler_state{trace = Trace} = State) ->
       {true, NewState}
   end.
 
-find_prefix([#trace_state{wakeup_tree = []}|Rest], State) ->
-  find_prefix(Rest, State);
-find_prefix(Trace, _State) -> Trace.
+find_prefix([], _SchedulingBoundType) -> [];
+find_prefix(Trace, SchedulingBoundType) ->
+  [#trace_state{wakeup_tree = Tree} = TraceState|Rest] = Trace,
+  case SchedulingBoundType =/= 'bpor' orelse get(bound_exceeded) of
+    false ->
+      case [B || #backtrack_entry{conservative = false} = B <- Tree] of
+        [] -> find_prefix(Rest, SchedulingBoundType);
+        WUT -> [TraceState#trace_state{wakeup_tree = WUT}|Rest]
+      end;
+    true ->
+      case Tree =:= [] of
+        true -> find_prefix(Rest, SchedulingBoundType);
+        false -> Trace
+      end
+  end.
 
 replay(#scheduler_state{need_to_replay = false} = State) ->
   State;
@@ -1175,6 +1211,24 @@ lookup_clock_value(P, CV) ->
 max_cv(D1, D2) ->
   Merger = fun(_Key, V1, V2) -> max(V1, V2) end,
   orddict:merge(Merger, D1, D2).
+
+next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
+  case SchedulingBoundType of
+    none -> Bound;
+    simple ->
+      %% First reschedule costs one point, otherwise nothing.
+      case Done of
+        [_] -> Bound - 1;
+        _ -> Bound
+      end;
+    bpor ->
+      NonPreemptExplored =
+        [E || #event{actor = PA} = E <- Done, PA =:= PreviousActor] =/= [],
+      case NonPreemptExplored of
+        true -> Bound - 1;
+        false -> Bound
+      end
+  end.
 
 %% =============================================================================
 
