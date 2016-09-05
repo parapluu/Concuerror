@@ -96,7 +96,7 @@ initialize(Options) ->
       [graph, output, processes, timers, verbosity],
       Options),
   Ticker =
-    case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ldebug) of
+    case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ltiming) of
       true -> none;
       false ->
         to_stderr("Concuerror started at ~s~n", [Timestamp]),
