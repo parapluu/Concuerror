@@ -603,13 +603,19 @@ plan_more_interleavings(#scheduler_state{dpor = none} = State) ->
   #scheduler_state{logger = _Logger} = State,
   ?debug(_Logger, "Skipping race detection~n", []),
   State;
-plan_more_interleavings(State) ->
+plan_more_interleavings(#scheduler_state{dpor = DPOR} = State) ->
   #scheduler_state{logger = Logger, trace = RevTrace} = State,
   ?time(Logger, "Assigning happens-before..."),
   {RevEarly, UntimedLate} = split_trace(RevTrace),
   Late = assign_happens_before(UntimedLate, RevEarly, State),
   ?time(Logger, "Planning more interleavings..."),
-  NewRevTrace = plan_more_interleavings(lists:reverse(RevEarly, Late), [], State),
+  NewRevTrace =
+    case DPOR =:= persistent of
+      false ->
+        plan_more_interleavings(lists:reverse(RevEarly, Late), [], State);
+      true ->
+        plan_more_interleavings(Late, RevEarly, State)
+    end,
   State#scheduler_state{trace = NewRevTrace}.
 
 split_trace(RevTrace) ->
