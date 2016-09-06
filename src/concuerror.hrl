@@ -46,11 +46,6 @@
 -type scheduler() :: pid().
 -type logger()    :: pid().
 %%------------------------------------------------------------------------------
--type dpor()       :: 'none' | 'optimal' | 'persistent' | 'source'.
--type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
--type bound()      :: 'infinity' | non_neg_integer().
--type scheduling_bound_type() :: 'bpor' | 'none' | 'simple'.
-%%------------------------------------------------------------------------------
 -define(opt(A,O), proplists:get_value(A,O)).
 %%------------------------------------------------------------------------------
 %% Logger verbosity

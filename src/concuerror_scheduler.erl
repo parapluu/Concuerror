@@ -33,6 +33,11 @@
 %% DATA STRUCTURES
 %% =============================================================================
 
+-type bound()      :: 'infinity' | non_neg_integer().
+-type dpor()       :: 'none' | 'optimal' | 'persistent' | 'source'.
+-type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
+-type scheduling_bound_type() :: 'bpor' | 'delay' | 'none' | 'simple'.
+
 -record(backtrack_entry, {
           conservative = false :: boolean(),
           event                :: event(),
@@ -339,12 +344,25 @@ schedule_sort(Actors, State) ->
   end.
 
 free_schedule(Event, Actors, State) ->
-  #scheduler_state{dpor = DPOR, logger = Logger, trace = [Last|Prev]} = State,
+  #scheduler_state{
+     dpor = DPOR,
+     logger = Logger,
+     scheduling_bound_type = SchedulingBoundType,
+     trace = [Last|Prev]
+    } = State,
   case DPOR =/= none of
     true -> free_schedule_1(Event, Actors, State);
     false ->
       Enabled = [A || A <- Actors, enabled(A)],
-      Eventify = [#event{actor = E} || E <- Enabled],
+      ToBeExplored =
+        case SchedulingBoundType =:= delay of
+          false -> Enabled;
+          true ->
+            #trace_state{scheduling_bound = SchedulingBound} = Last,
+            ?debug(Logger, "Select ~p of ~p~n", [SchedulingBound, Enabled]),
+            lists:sublist(Enabled, SchedulingBound + 1)
+        end,
+      Eventify = [#event{actor = E} || E <- ToBeExplored],
       FullBacktrack = [#backtrack_entry{event = Ev} || Ev <- Eventify],
       case FullBacktrack of
         [] -> ok;
@@ -438,6 +456,7 @@ update_state(#event{actor = Actor} = Event, State) ->
     end,
   NewSchedulingBound =
     next_bound(SchedulingBoundType, Done, PreviousActor, SchedulingBound),
+  ?trace(Logger, "  Next bound: ~p~n", [NewSchedulingBound]),
   NewLastDone = [Event|Done],
   InitNextTrace =
     #trace_state{
@@ -1291,18 +1310,24 @@ max_cv(D1, D2) ->
 next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
   case SchedulingBoundType of
     none -> Bound;
-    simple ->
-      %% First reschedule costs one point, otherwise nothing.
-      case Done of
-        [_] -> Bound - 1;
-        _ -> Bound
-      end;
     bpor ->
       NonPreemptExplored =
         [E || #event{actor = PA} = E <- Done, PA =:= PreviousActor] =/= [],
       case NonPreemptExplored of
         true -> Bound - 1;
         false -> Bound
+      end;
+    delay ->
+      %% Every reschedule costs.
+      case Done of
+        [] -> Bound;
+        _ -> Bound - 1
+      end;
+    simple ->
+      %% First reschedule costs, others don't.
+      case Done of
+        [_] -> Bound - 1;
+        _ -> Bound
       end
   end.
 

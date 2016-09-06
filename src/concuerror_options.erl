@@ -163,10 +163,17 @@ options() ->
     " The available options are:~n"
     "-   'none': no bounding~n"
     "-   'bpor': how many times per interleaving the scheduler is allowed~n"
-    "            to preempt a process. Not compatible with Optimal DPOR.~n"
+    "            to preempt a process.~n"
+    "            * Not compatible with Optimal DPOR.~n"
+    "-  'delay': how many times per interleaving the scheduler is allowed~n"
+    "            to skip an enabled process in order to schedule others.~n"
+    "            * Not compatible with POR.~n"
     "- 'simple': how many times per interleaving the scheduler is allowed~n"
     "            to pick a process different from the 'default one' to~n"
-    "            schedule."}
+    "            schedule.~n~n"
+    "For 'simple' the 'default' process is either the one that was freely~n"
+    " scheduled, or a process that was included in a wakeup tree (if optimal~n"
+    " DPOR is used)"}
   ,{scheduling_bound, $b, integer,
     "Scheduling bound value",
     "The maximum number of times the rule specified in '--scheduling_bound_type'"
@@ -489,7 +496,7 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
         end,
       finalize(NewRest, [Option|Acc]);
     scheduling_bound_type ->
-      check_validity(Key, Value, [bpor, none, simple]),
+      check_validity(Key, Value, [bpor, delay, none, simple]),
       NewRest =
         case Value =/= bpor orelse proplists:is_defined(dpor, Acc ++ Rest) of
           true -> Rest;
@@ -500,7 +507,12 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
           true -> NewRest;
           false -> assume(scheduling_bound, 1, NewRest)
         end,
-      finalize(NewRest1, [Option|Acc]);
+      NewRest2 =
+        case Value =/= delay orelse proplists:is_defined(dpor, Acc ++ Rest) of
+          true -> NewRest1;
+          false -> [{dpor, none}|NewRest1]
+        end,
+      finalize(NewRest2, [Option|Acc]);
     MaybeInfinity
       when
         MaybeInfinity =:= interleaving_bound;
@@ -621,8 +633,9 @@ consistent([{assertions_only, true} = Assert|Rest], Acc) ->
     Rest ++ Acc, Assert),
   consistent(Rest, [Assert|Acc]);
 consistent([{scheduling_bound, _} = Bound|Rest], Acc) ->
+  VeryFun = fun(X) -> lists:member(X, [bpor, delay, simple]) end,
   check_values(
-    [{scheduling_bound_type, fun(X) -> lists:member(X, [bpor, simple]) end}],
+    [{scheduling_bound_type, VeryFun}],
     Rest ++ Acc,
     {scheduling_bound, "an integer"}),
   consistent(Rest, [Bound|Acc]);
@@ -630,13 +643,16 @@ consistent([{scheduling_bound_type, Type} = BoundType|Rest], Acc) ->
   case Type =:= none of
     true -> consistent(Rest, [BoundType|Acc]);
     false ->
-      case Type =:= bpor of
-        false -> ok;
-        true ->
-          check_values(
-            [{dpor, fun(X) -> lists:member(X, [source, persistent]) end}],
-            Rest ++ Acc, BoundType)
-      end,
+      DPORVeryFun =
+        case Type of
+          bpor ->
+            fun(X) -> lists:member(X, [source, persistent]) end;
+          delay ->
+            fun(X) -> X =:= none end;
+          _ ->
+            fun(_) -> true end
+        end,
+      check_values([{dpor, DPORVeryFun}], Rest ++ Acc, BoundType),
       consistent(Rest, [BoundType|Acc])
   end;
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).

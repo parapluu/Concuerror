@@ -88,7 +88,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         dpor_output = "persistent"
     else:
         dpor_flag = "--dpor=none"
-        file_ext = ""
+        file_ext = "-nodpor"
         dpor_output = "disabled"
     if preb == "inf":
         bound = ""
@@ -100,6 +100,10 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
             bound_type = "-c bpor"
             preb_output=("%s/bpor") % (preb)
             preb=("%s-bpor") % (preb)
+        elif "delay" in flags:
+            bound_type = "-c delay"
+            preb_output=("%s/delay") % (preb)
+            preb=("%s-delay") % (preb)
         else:
             bound_type = "-c simple"
             preb_output=("%s/simple") % (preb)
