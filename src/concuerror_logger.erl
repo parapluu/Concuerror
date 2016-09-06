@@ -476,13 +476,16 @@ update_rate(State) ->
   #logger_state{
      rate_timestamp = Old,
      rate_prev = Prev,
-     traces_explored = Current} = State,
+     traces_explored = Current,
+     traces_ssb = TracesSSB
+    } = State,
   New = timestamp(),
   Time = timediff(New, Old),
-  Diff = Current - Prev,
+  Useful = Current - TracesSSB,
+  Diff = Useful - Prev,
   Rate = (Diff / (Time + 1)),
-  RateStr = io_lib:format("(~5.1f interleavings/s) ",[Rate]),
-  {RateStr, State#logger_state{rate_timestamp = New, rate_prev = Current}}.
+  RateStr = io_lib:format("(~5.1f /s) ",[Rate]),
+  {RateStr, State#logger_state{rate_timestamp = New, rate_prev = Useful}}.
 
 separator_string(Char) ->
   lists:duplicate(80, Char).
