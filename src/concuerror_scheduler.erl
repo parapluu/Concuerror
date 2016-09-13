@@ -65,7 +65,7 @@
 
 -record(scheduler_state, {
           assertions_only              :: boolean(),
-          assume_racing                :: boolean(),
+          assume_racing                :: assume_racing_opt(),
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
           dpor                         :: dpor(),
@@ -109,10 +109,11 @@ run(Options) ->
        actors = [FirstProcess],
        scheduling_bound = ?opt(scheduling_bound, Options)
       },
+  Logger = ?opt(logger, Options),
   InitialState =
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
-       assume_racing = ?opt(assume_racing, Options),
+       assume_racing = {?opt(assume_racing, Options), Logger},
        depth_bound = ?opt(depth_bound, Options) + 1,
        dpor = ?opt(dpor, Options),
        entry_point = EntryPoint = ?opt(entry_point, Options),
@@ -121,7 +122,7 @@ run(Options) ->
        interleaving_bound = ?opt(interleaving_bound, Options),
        keep_going = ?opt(keep_going, Options),
        last_scheduled = FirstProcess,
-       logger = Logger = ?opt(logger, Options),
+       logger = Logger,
        non_racing_system = ?opt(non_racing_system, Options),
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),

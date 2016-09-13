@@ -24,9 +24,10 @@
 -spec dependent_safe(event(), event()) -> boolean() | irreversible.
 
 dependent_safe(E1, E2) ->
-  dependent(E1, E2, true).
+  dependent(E1, E2, {true, ignore}).
 
--spec dependent(event(), event(), boolean()) -> boolean() | irreversible.
+-spec dependent(event(), event(), assume_racing_opt()) ->
+                   boolean() | irreversible.
 
 dependent(#event{actor = A}, #event{actor = A}, _) ->
   irreversible;
@@ -41,7 +42,21 @@ dependent(#event{event_info = Info1, special = Special1},
   catch
     throw:irreversible -> irreversible;
     Class:Reason ->
-      AssumeRacing orelse ?crash({undefined_dependency, Info1, Info2, {Class,Reason,erlang:get_stacktrace()}})
+      case AssumeRacing of
+        {true, ignore} -> true;
+        {true, Logger} ->
+          Explanation = show_undefined_dependency(Info1, Info2),
+          Msg =
+            io_lib:format(
+              "~s~n"
+              " Concuerror treats such pairs as racing (--assume_racing)."
+              " (No other such warnings will appear)~n", [Explanation]),
+          ?unique(Logger, ?lwarning, Msg, []),
+          true;
+        {false, _} ->
+          ExtInfo = {Class, Reason, erlang:get_stacktrace()},
+          ?crash({undefined_dependency, Info1, Info2, ExtInfo})
+      end
   end.
 
 %% The first event happens before the second.
@@ -602,11 +617,17 @@ from_insert(Table, Insert, InsertNewOrDelete) ->
 -spec explain_error(term()) -> string().
 
 explain_error({undefined_dependency, A, B, C}) ->
+  Message = show_undefined_dependency(A, B),
   io_lib:format(
-    "There exists no race info about the following pair of instructions~n~n"
-    "1) ~s~n2) ~s~n~n"
-    "You can run without '--assume_racing false' to treat them as racing.~n"
-    "Otherwise please ask the developers to add info about this pair.~n~p",
-    [concuerror_printer:pretty_s(#event{event_info = I}, 10)
-     || I <- [A,B]] ++ [C]).
+    "~s~n"
+    " You can run without '--assume_racing false' to treat them as racing.~n"
+    " ~p~n",
+    [Message, C]).
 
+show_undefined_dependency(A, B) ->
+  io_lib:format(
+    "The following pair of instructions is not explicitly marked as non-racing"
+    " in Concuerror's internals:~n"
+    "  1) ~s~n  2) ~s~n"
+    " Please notify the developers to add info about this pair.",
+    [concuerror_printer:pretty_s(#event{event_info = I}, 10) || I <- [A,B]]).
