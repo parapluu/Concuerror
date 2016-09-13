@@ -363,6 +363,10 @@ free_schedule(Event, Actors, State) ->
             ?debug(Logger, "Select ~p of ~p~n", [SchedulingBound, Enabled]),
             lists:sublist(Enabled, SchedulingBound + 1)
         end,
+      case ToBeExplored < Enabled of
+        true -> concuerror_logger:bound_reached(Logger);
+        false -> ok
+      end,
       Eventify = [#event{actor = E} || E <- ToBeExplored],
       FullBacktrack = [#backtrack_entry{event = Ev} || Ev <- Eventify],
       case FullBacktrack of
