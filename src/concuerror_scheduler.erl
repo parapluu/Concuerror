@@ -68,6 +68,7 @@
           assume_racing                :: assume_racing_opt(),
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
+          disable_sleep_sets           :: boolean(),
           dpor                         :: dpor(),
           entry_point                  :: mfargs(),
           exploring            = 1     :: integer(),
@@ -115,6 +116,7 @@ run(Options) ->
        assertions_only = ?opt(assertions_only, Options),
        assume_racing = {?opt(assume_racing, Options), Logger},
        depth_bound = ?opt(depth_bound, Options) + 1,
+       disable_sleep_sets = ?opt(disable_sleep_sets, Options),
        dpor = ?opt(dpor, Options),
        entry_point = EntryPoint = ?opt(entry_point, Options),
        first_process = FirstProcess,
@@ -430,6 +432,7 @@ reset_event(#event{actor = Actor, event_info = EventInfo}) ->
 
 update_state(#event{actor = Actor} = Event, State) ->
   #scheduler_state{
+     disable_sleep_sets = DisableSleepSets,
      logger = Logger,
      scheduling_bound_type = SchedulingBoundType,
      trace  = [Last|Prev]
@@ -446,14 +449,19 @@ update_state(#event{actor = Actor} = Event, State) ->
     } = Last,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
   concuerror_logger:graph_new_node(Logger, Ref, Index, Event, 0),
-  AllSleeping =
-    case WakeupTree of
-      [#backtrack_entry{conservative = true}|_] ->
-        concuerror_logger:plan(Logger),
-        Sleeping;
-      _ -> ordsets:union(ordsets:from_list(Done), Sleeping)
+  NextSleeping =
+    case DisableSleepSets of
+      true -> [];
+      false ->
+        AllSleeping =
+          case WakeupTree of
+            [#backtrack_entry{conservative = true}|_] ->
+              concuerror_logger:plan(Logger),
+              Sleeping;
+            _ -> ordsets:union(ordsets:from_list(Done), Sleeping)
+          end,
+        update_sleeping(Event, AllSleeping, State)
     end,
-  NextSleeping = update_sleeping(Event, AllSleeping, State),
   {NewLastWakeupTree, NextWakeupTree} =
     case WakeupTree of
       [] -> {[], []};

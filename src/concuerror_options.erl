@@ -178,6 +178,9 @@ options() ->
     "Scheduling bound value",
     "The maximum number of times the rule specified in '--scheduling_bound_type'"
     " can be violated."}
+  ,{disable_sleep_sets, undefined, {boolean, false},
+    "Disables use of sleep sets",
+    "This option is only available with '--dpor none'."}
   ,{after_timeout, $a, {integer, infinity},
     "Ignore timeouts greater than this value",
     "Assume that 'after' clause timeouts higher or equal to the specified value"
@@ -456,6 +459,13 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
     dpor ->
       check_validity(Key, Value, [none, optimal, persistent, source]),
       finalize(Rest, [Option|Acc]);
+    disable_sleep_sets ->
+      NewRest =
+        case Value =:= false orelse proplists:is_defined(dpor, Acc ++ Rest) of
+          true -> Rest;
+          false -> [{dpor, none}|Rest]
+        end,
+      finalize(NewRest, [Option|Acc]);
     graph ->
       case file:open(Value, [write]) of
         {ok, IoDevice} -> finalize(Rest, [{Key, IoDevice}|Acc]);
@@ -627,34 +637,36 @@ consistent(Options) ->
   consistent(Options, []).
 
 consistent([], _) -> ok;
-consistent([{assertions_only, true} = Assert|Rest], Acc) ->
+consistent([{assertions_only, true} = Option|Rest], Acc) ->
   check_values(
     [{ignore_error, fun(X) -> not lists:member(crash, X) end}],
-    Rest ++ Acc, Assert),
-  consistent(Rest, [Assert|Acc]);
-consistent([{scheduling_bound, _} = Bound|Rest], Acc) ->
+    Rest ++ Acc, Option),
+  consistent(Rest, [Option|Acc]);
+consistent([{disable_sleep_sets, true} = Option|Rest], Acc) ->
+  check_values(
+    [{dpor, fun(X) -> X =:= none end}],
+    Rest ++ Acc, Option),
+  consistent(Rest, [Option|Acc]);
+consistent([{scheduling_bound, _} = Option|Rest], Acc) ->
   VeryFun = fun(X) -> lists:member(X, [bpor, delay, simple]) end,
   check_values(
     [{scheduling_bound_type, VeryFun}],
     Rest ++ Acc,
     {scheduling_bound, "an integer"}),
-  consistent(Rest, [Bound|Acc]);
-consistent([{scheduling_bound_type, Type} = BoundType|Rest], Acc) ->
-  case Type =:= none of
-    true -> consistent(Rest, [BoundType|Acc]);
-    false ->
-      DPORVeryFun =
-        case Type of
-          bpor ->
-            fun(X) -> lists:member(X, [source, persistent]) end;
-          delay ->
-            fun(X) -> X =:= none end;
-          _ ->
-            fun(_) -> true end
-        end,
-      check_values([{dpor, DPORVeryFun}], Rest ++ Acc, BoundType),
-      consistent(Rest, [BoundType|Acc])
-  end;
+  consistent(Rest, [Option|Acc]);
+consistent([{scheduling_bound_type, Type} = Option|Rest], Acc)
+  when Type =/= none ->
+  DPORVeryFun =
+    case Type of
+      bpor ->
+        fun(X) -> lists:member(X, [source, persistent]) end;
+      delay ->
+        fun(X) -> X =:= none end;
+      _ ->
+        fun(_) -> true end
+    end,
+  check_values([{dpor, DPORVeryFun}], Rest ++ Acc, Option),
+  consistent(Rest, [Option|Acc]);
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
 
 check_values([], _, _) -> ok;
