@@ -1,4 +1,4 @@
-Concuerror 0.16 ('99e189d') started at 27 Sep 2016 16:13:06.
+Concuerror 0.16 ('99e189d') started at 27 Sep 2016 12:09:16.
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -15,7 +15,7 @@ Concuerror 0.16 ('99e189d') started at 27 Sep 2016 16:13:06.
    {non_racing_system,[]},
    {print_depth,20},
    {scheduling,round_robin},
-   {scheduling_bound,5},
+   {scheduling_bound,7},
    {scheduling_bound_type,delay},
    {show_races,false},
    {strict_scheduling,false},
@@ -2858,12 +2858,52 @@ Event trace:
     in readers_2.erl line 11
   22: P.5: exits normally
 ################################################################################
-Exploration completed!
-################################################################################
-Warnings:
+Interleaving #64
 --------------------------------------------------------------------------------
-Some interleavings were not considered due to schedule bounding.
-
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_2.erl line 14
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_2.erl line 9
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers_2.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   9: P.7: true = ets:insert(tab, {x,42})
+    in readers_2.erl line 10
+  10: P.7: exits normally
+  11: P.1: [{x,42}] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  12: P.1: exits normally
+  13: P.2: [{x,42}] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  14: P.2: exits normally
+  15: P.3: [{x,42}] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  16: P.3: exits normally
+  17: P.4: [{x,42}] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  18: P.4: exits normally
+  19: P.5: [{x,42}] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  20: P.5: exits normally
+  21: P.6: [{x,42}] = ets:lookup(tab, x)
+    in readers_2.erl line 11
+  22: P.6: exits normally
+################################################################################
+Exploration completed!
 ################################################################################
 Tips:
 --------------------------------------------------------------------------------
@@ -2881,5 +2921,5 @@ You can see pairs of racing instructions (in the report and --graph) with '--sho
 Continuing after error (-k)
 
 ################################################################################
-Done at 27 Sep 2016 16:13:07 (Exit status: error)
-  Summary: 63 errors, 63/63 interleavings explored (the scheduling bound was reached)
+Done at 27 Sep 2016 12:09:18 (Exit status: error)
+  Summary: 64 errors, 64/64 interleavings explored

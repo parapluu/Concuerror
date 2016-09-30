@@ -1,9 +1,10 @@
-Concuerror 0.16 ('8f052c1') started at 06 Sep 2016 16:29:24.
+Concuerror 0.16 ('99e189d') started at 27 Sep 2016 13:32:34.
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
    {assume_racing,false},
    {depth_bound,500},
+   {disable_sleep_sets,false},
    {dpor,none},
    {entry_point,{readers_delay,test,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/bounding_tests/src/readers_delay.erl"]},
@@ -1337,6 +1338,7 @@ Exploration completed!
 ################################################################################
 Warnings:
 --------------------------------------------------------------------------------
+Some interleavings were not considered due to schedule bounding.
 Some interleavings were 'sleep-set blocked'. This is expected, since you are not using '--dpor optimal', but reveals wasted effort.
 
 ################################################################################
@@ -1350,5 +1352,5 @@ Instrumented lists
 Continuing after error (-k)
 
 ################################################################################
-Done at 06 Sep 2016 16:29:26 (Exit status: error)
-  Summary: 23 errors, 851/851 interleavings explored (828 sleep-set blocked)
+Done at 27 Sep 2016 13:32:36 (Exit status: error)
+  Summary: 23 errors, 851/851 interleavings explored (828 sleep-set blocked) (the scheduling bound was reached)

@@ -36,7 +36,7 @@
 -type bound()      :: 'infinity' | non_neg_integer().
 -type dpor()       :: 'none' | 'optimal' | 'persistent' | 'source'.
 -type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
--type scheduling_bound_type() :: 'bpor' | 'delay' | 'none' | 'simple'.
+-type scheduling_bound_type() :: 'bpor' | 'delay' | 'none'.
 
 -record(backtrack_entry, {
           conservative = false :: boolean(),
@@ -483,7 +483,6 @@ update_state(#event{actor = Actor} = Event, State) ->
   NewLastTrace =
     Last#trace_state{
       done = NewLastDone,
-      scheduling_bound = NewSchedulingBound,
       wakeup_tree = NewLastWakeupTree
      },
   InitNewState =
@@ -881,7 +880,7 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
      end},
   Sleeping = BaseSleeping ++ Done,
   {MaybeNewWakeup, ConservativeInfo} =
-    case Bound =:= -1 of
+    case Bound < 0 of
       true ->
         {over_bound,
          case SchedulingBoundType =:= bpor of
@@ -1029,7 +1028,7 @@ add_or_make_compulsory([Entry|Rest], Initials, Conservative, Exploring, Acc) ->
 insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
   case has_sleeping_initial(Sleeping, NotDep) of
     true -> skip;
-    false -> insert_wakeup(Wakeup, NotDep, Bound, true, Exploring)
+    false -> insert_wakeup(Wakeup, NotDep, Bound, Exploring)
   end.
 
 has_sleeping_initial([Sleeping|Rest], NotDep) ->
@@ -1039,20 +1038,20 @@ has_sleeping_initial([Sleeping|Rest], NotDep) ->
   end;
 has_sleeping_initial([], _) -> false.
 
-insert_wakeup(          _, _NotDep,     -1, _Paid, _Exploring) ->
+insert_wakeup(          _, _NotDep,  Bound, _Exploring) when Bound < 0 ->
   over_bound;
-insert_wakeup(         [],  NotDep, _Bound, _Paid,  Exploring) ->
+insert_wakeup(         [],  NotDep, _Bound,  Exploring) ->
   backtrackify(NotDep, Exploring);
-insert_wakeup([Node|Rest],  NotDep,  Bound,  Paid,  Exploring) ->
+insert_wakeup([Node|Rest],  NotDep,  Bound,  Exploring) ->
   #backtrack_entry{event = Event, origin = M, wakeup_tree = Deeper} = Node,
   case check_initial(Event, NotDep) of
     false ->
-      {NewBound, NewPaid} =
-        case {is_integer(Bound), Paid} of
-          {true, false} -> {Bound - 1, true};
-          _ -> {Bound, Paid}
+      NewBound =
+        case is_integer(Bound) of
+          true -> Bound - 1;
+          false -> Bound
         end,
-      case insert_wakeup(Rest, NotDep, NewBound, NewPaid, Exploring) of
+      case insert_wakeup(Rest, NotDep, NewBound, Exploring) of
         Special
           when
             Special =:= skip;
@@ -1063,7 +1062,7 @@ insert_wakeup([Node|Rest],  NotDep,  Bound,  Paid,  Exploring) ->
       case Deeper =:= [] of
         true  -> skip;
         false ->
-          case insert_wakeup(Deeper, NewNotDep, Bound, false, Exploring) of
+          case insert_wakeup(Deeper, NewNotDep, Bound, Exploring) of
             Special
               when
                 Special =:= skip;
@@ -1332,16 +1331,7 @@ next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
       end;
     delay ->
       %% Every reschedule costs.
-      case Done of
-        [] -> Bound;
-        _ -> Bound - 1
-      end;
-    simple ->
-      %% First reschedule costs, others don't.
-      case Done of
-        [_] -> Bound - 1;
-        _ -> Bound
-      end
+      Bound - length(Done)
   end.
 
 %% =============================================================================

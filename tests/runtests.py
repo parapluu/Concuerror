@@ -100,13 +100,9 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
             bound_type = "-c bpor"
             preb_output=("%s/bpor") % (preb)
             preb=("%s-bpor") % (preb)
-        elif "delay" in flags:
+        else:
             bound_type = "-c delay"
             preb_output=("%s/delay") % (preb)
-            preb=("%s-delay") % (preb)
-        else:
-            bound_type = "-c simple"
-            preb_output=("%s/simple") % (preb)
     sema.acquire()
     # Run concuerror
     status = os.system(

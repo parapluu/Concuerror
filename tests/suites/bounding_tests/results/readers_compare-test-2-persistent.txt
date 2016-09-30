@@ -1,9 +1,10 @@
-Concuerror 0.16 (e4ddbd4) started at 01 Sep 2016 17:45:50.
+Concuerror 0.16 ('99e189d') started at 27 Sep 2016 16:12:55.
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
    {assume_racing,false},
    {depth_bound,500},
+   {disable_sleep_sets,false},
    {dpor,persistent},
    {entry_point,{readers_compare,test,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/bounding_tests/src/readers_compare.erl"]},
@@ -15,7 +16,7 @@ Concuerror 0.16 (e4ddbd4) started at 01 Sep 2016 17:45:50.
    {print_depth,20},
    {scheduling,round_robin},
    {scheduling_bound,2},
-   {scheduling_bound_type,simple},
+   {scheduling_bound_type,delay},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
@@ -221,5 +222,5 @@ You can see pairs of racing instructions (in the report and --graph) with '--sho
 Continuing after error (-k)
 
 ################################################################################
-Done at 01 Sep 2016 17:45:50 (Exit status: error)
-  Summary: 5 errors, 11/11 interleavings explored (6 sleep-set blocked) (the scheduling bound was reached)
+Done at 27 Sep 2016 16:12:56 (Exit status: error)
+  Summary: 5 errors, 9/9 interleavings explored (4 sleep-set blocked) (the scheduling bound was reached)

@@ -1,10 +1,11 @@
-################################################################################
-
-Concuerror 0.14 (ec1402b) started with options:
+Concuerror 0.16 ('99e189d') started at 27 Sep 2016 16:13:00.
+ Options:
   [{after_timeout,infinity},
    {assertions_only,false},
    {assume_racing,false},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{readers,test,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/bounding_tests/src/readers.erl"]},
    {ignore_error,[]},
@@ -12,40 +13,39 @@ Concuerror 0.14 (ec1402b) started with options:
    {interleaving_bound,infinity},
    {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
    {scheduling,round_robin},
    {scheduling_bound,3},
-   {scheduling_bound_type,simple},
+   {scheduling_bound_type,delay},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
    {treat_as_normal,[]}]
 ################################################################################
-
-Erroneous interleaving 1:
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.1: true = ets:insert(tab, {x,42})
     in readers.erl line 10
   10: P.1: exits normally
@@ -80,29 +80,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.7: exits normally
 ################################################################################
-
-Erroneous interleaving 2:
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -137,29 +137,29 @@ Interleaving info:
     in readers.erl line 10
   28: P.1: exits normally
 ################################################################################
-
-Erroneous interleaving 3:
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -194,29 +194,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.7: exits normally
 ################################################################################
-
-Erroneous interleaving 4:
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -251,29 +251,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.6: exits normally
 ################################################################################
-
-Erroneous interleaving 5:
+Interleaving #5
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -308,29 +308,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.7: exits normally
 ################################################################################
-
-Erroneous interleaving 6:
+Interleaving #6
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -365,29 +365,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.5: exits normally
 ################################################################################
-
-Erroneous interleaving 7:
+Interleaving #7
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -422,29 +422,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.7: exits normally
 ################################################################################
-
-Erroneous interleaving 8:
+Interleaving #8
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -479,86 +479,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.6: exits normally
 ################################################################################
-
-Erroneous interleaving 9:
+Interleaving #9
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.3: exits normally
-  19: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.4: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.5: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 10:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -593,29 +536,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.4: exits normally
 ################################################################################
-
-Erroneous interleaving 11:
+Interleaving #10
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -650,29 +593,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.7: exits normally
 ################################################################################
-
-Erroneous interleaving 12:
+Interleaving #11
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -707,86 +650,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.6: exits normally
 ################################################################################
-
-Erroneous interleaving 13:
+Interleaving #12
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.3: exits normally
-  19: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.5: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 14:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -821,200 +707,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.5: exits normally
 ################################################################################
-
-Erroneous interleaving 15:
+Interleaving #13
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.3: exits normally
-  19: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.6: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 16:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.3: exits normally
-  19: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.7: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
-Erroneous interleaving 17:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.3: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.4: exits normally
-  23: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.5: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 18:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1049,29 +764,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.3: exits normally
 ################################################################################
-
-Erroneous interleaving 19:
+Interleaving #14
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1106,29 +821,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.7: exits normally
 ################################################################################
-
-Erroneous interleaving 20:
+Interleaving #15
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1163,86 +878,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.6: exits normally
 ################################################################################
-
-Erroneous interleaving 21:
+Interleaving #16
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.4: exits normally
-  19: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.5: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 22:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1277,143 +935,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.5: exits normally
 ################################################################################
-
-Erroneous interleaving 23:
+Interleaving #17
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.4: exits normally
-  19: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.7: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
-Erroneous interleaving 24:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.4: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.3: exits normally
-  23: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.5: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 25:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1448,428 +992,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.4: exits normally
 ################################################################################
-
-Erroneous interleaving 26:
+Interleaving #18
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.5: exits normally
-  19: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.6: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.4: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 27:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.5: exits normally
-  19: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.7: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.4: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
-Erroneous interleaving 28:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.5: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.3: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 29:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.6: exits normally
-  19: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.7: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.4: exits normally
-  27: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.5: exits normally
-################################################################################
-
-Erroneous interleaving 30:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.6: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.3: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 31:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.7: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.3: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
-Erroneous interleaving 32:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.2: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.2: exits normally
-  17: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  18: P.1: exits normally
-  19: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.3: exits normally
-  21: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.4: exits normally
-  23: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.5: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 33:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1904,29 +1049,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.2: exits normally
 ################################################################################
-
-Erroneous interleaving 34:
+Interleaving #19
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -1961,29 +1106,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.7: exits normally
 ################################################################################
-
-Erroneous interleaving 35:
+Interleaving #20
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2018,86 +1163,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.6: exits normally
 ################################################################################
-
-Erroneous interleaving 36:
+Interleaving #21
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.3: exits normally
-  17: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.4: exits normally
-  19: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.5: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.2: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 37:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2132,143 +1220,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.5: exits normally
 ################################################################################
-
-Erroneous interleaving 38:
+Interleaving #22
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.3: exits normally
-  17: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.4: exits normally
-  19: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.7: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.2: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
-Erroneous interleaving 39:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.3: exits normally
-  17: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.4: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.2: exits normally
-  23: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.5: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 40:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2303,200 +1277,29 @@ Interleaving info:
     in readers.erl line 11
   28: P.4: exits normally
 ################################################################################
-
-Erroneous interleaving 41:
+Interleaving #23
+--------------------------------------------------------------------------------
+Errors found:
 * Blocked at a 'receive' (when all other processes have exited):
     P in readers.erl line 14
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: tab = ets:new(tab, [public,named_table])
     in readers.erl line 9
    2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.3: exits normally
-  17: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.6: exits normally
-  19: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.7: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.2: exits normally
-  25: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.4: exits normally
-  27: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.5: exits normally
-################################################################################
-
-Erroneous interleaving 42:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.3: exits normally
-  17: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.7: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.2: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
-Erroneous interleaving 43:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.3: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.3: exits normally
-  17: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  18: P.1: exits normally
-  19: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.2: exits normally
-  21: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.4: exits normally
-  23: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.5: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 44:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2603
    9: P.2: [] = ets:lookup(tab, 1)
     in readers.erl line 11
   10: P.3: [] = ets:lookup(tab, 2)
@@ -2531,773 +1334,28 @@ Interleaving info:
     in readers.erl line 11
   28: P.3: exits normally
 ################################################################################
-
-Erroneous interleaving 45:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.4: exits normally
-  17: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.5: exits normally
-  19: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.6: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.2: exits normally
-  25: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.3: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
+Exploration completed!
 ################################################################################
-
-Erroneous interleaving 46:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.4: exits normally
-  17: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.5: exits normally
-  19: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.7: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.2: exits normally
-  25: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.3: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
-Erroneous interleaving 47:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.4: exits normally
-  17: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.5: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.2: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 48:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.4: exits normally
-  17: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.6: exits normally
-  19: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.7: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.2: exits normally
-  25: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.3: exits normally
-  27: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.5: exits normally
-################################################################################
-
-Erroneous interleaving 49:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.4: exits normally
-  17: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.7: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.2: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
-Erroneous interleaving 50:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.4: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.4: exits normally
-  17: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  18: P.1: exits normally
-  19: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.2: exits normally
-  21: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.3: exits normally
-  23: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.5: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 51:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.5: exits normally
-  17: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.6: exits normally
-  19: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.7: exits normally
-  21: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  22: P.1: exits normally
-  23: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.2: exits normally
-  25: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.3: exits normally
-  27: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.4: exits normally
-################################################################################
-
-Erroneous interleaving 52:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.5: exits normally
-  17: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.6: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.2: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.4: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 53:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.5: exits normally
-  17: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.7: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.2: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.4: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
-Erroneous interleaving 54:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.5: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.5: exits normally
-  17: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  18: P.1: exits normally
-  19: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.2: exits normally
-  21: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.3: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.6: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 55:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.6: exits normally
-  17: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  18: P.7: exits normally
-  19: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  20: P.1: exits normally
-  21: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.2: exits normally
-  23: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.3: exits normally
-  25: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.4: exits normally
-  27: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.5: exits normally
-################################################################################
-
-Erroneous interleaving 56:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.6: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.6: exits normally
-  17: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  18: P.1: exits normally
-  19: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.2: exits normally
-  21: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.3: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.7: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.7: exits normally
-################################################################################
-
-Erroneous interleaving 57:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in readers.erl line 14
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: tab = ets:new(tab, [public,named_table])
-    in readers.erl line 9
-   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   6: P: P.5 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   7: P: P.6 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   8: P: P.7 = erlang:spawn(erlang, apply, [#Fun<readers.'-readers/1-fun-2-'.0>,[]])
-    in erlang.erl line 2505
-   9: P.2: [] = ets:lookup(tab, 1)
-    in readers.erl line 11
-  10: P.3: [] = ets:lookup(tab, 2)
-    in readers.erl line 11
-  11: P.4: [] = ets:lookup(tab, 3)
-    in readers.erl line 11
-  12: P.5: [] = ets:lookup(tab, 4)
-    in readers.erl line 11
-  13: P.6: [] = ets:lookup(tab, 5)
-    in readers.erl line 11
-  14: P.7: [] = ets:lookup(tab, 6)
-    in readers.erl line 11
-  15: P.7: [] = ets:lookup(tab, x)
-    in readers.erl line 11
-  16: P.7: exits normally
-  17: P.1: true = ets:insert(tab, {x,42})
-    in readers.erl line 10
-  18: P.1: exits normally
-  19: P.2: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  20: P.2: exits normally
-  21: P.3: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  22: P.3: exits normally
-  23: P.4: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  24: P.4: exits normally
-  25: P.5: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  26: P.5: exits normally
-  27: P.6: [{x,42}] = ets:lookup(tab, x)
-    in readers.erl line 11
-  28: P.6: exits normally
-################################################################################
-
 Warnings:
 --------------------------------------------------------------------------------
-
-Continuing after error (-k)
 Some interleavings were not considered due to schedule bounding.
 
 ################################################################################
-
 Tips:
 --------------------------------------------------------------------------------
-
 Each of the first 10 interleavings explored so far had some error. This can make later debugging difficult, as the generated report will include too much info. Consider refactoring your code, or using the appropriate options to filter out irrelevant errors.
 
 ################################################################################
-
 Info:
 --------------------------------------------------------------------------------
-
 Instrumented readers
 Instrumented io_lib
+Instrumented gen_server
 Instrumented erlang
 Instrumented lists
 You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
+Continuing after error (-k)
 
 ################################################################################
-
-Done! (Exit status: completed)
-  Summary: 57 errors, 57/57 interleavings explored (the scheduling bound was reached)
+Done at 27 Sep 2016 16:13:02 (Exit status: error)
+  Summary: 23 errors, 23/23 interleavings explored (the scheduling bound was reached)

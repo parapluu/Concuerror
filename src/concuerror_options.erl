@@ -166,14 +166,7 @@ options() ->
     "            to preempt a process.~n"
     "            * Not compatible with Optimal DPOR.~n"
     "-  'delay': how many times per interleaving the scheduler is allowed~n"
-    "            to skip an enabled process in order to schedule others.~n"
-    "            * Not compatible with POR.~n"
-    "- 'simple': how many times per interleaving the scheduler is allowed~n"
-    "            to pick a process different from the 'default one' to~n"
-    "            schedule.~n~n"
-    "For 'simple' the 'default' process is either the one that was freely~n"
-    " scheduled, or a process that was included in a wakeup tree (if optimal~n"
-    " DPOR is used)"}
+    "            to skip a chosen process in order to schedule others.~n"}
   ,{scheduling_bound, $b, integer,
     "Scheduling bound value",
     "The maximum number of times the rule specified in '--scheduling_bound_type'"
@@ -502,27 +495,22 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
       NewRest =
         case proplists:is_defined(scheduling_bound_type, Acc ++ Rest) of
           true -> Rest;
-          false -> assume(scheduling_bound_type, simple, Rest)
+          false -> assume(scheduling_bound_type, delay, Rest)
         end,
       finalize(NewRest, [Option|Acc]);
     scheduling_bound_type ->
-      check_validity(Key, Value, [bpor, delay, none, simple]),
+      check_validity(Key, Value, [bpor, delay, none]),
       NewRest =
-        case Value =/= bpor orelse proplists:is_defined(dpor, Acc ++ Rest) of
+        case Value =:= none orelse proplists:is_defined(scheduling_bound, Acc ++ Rest) of
           true -> Rest;
-          false -> assume(dpor, source, Rest)
+          false -> assume(scheduling_bound, 1, Rest)
         end,
       NewRest1 =
-        case proplists:is_defined(scheduling_bound, Acc ++ Rest) of
+        case Value =/= bpor orelse proplists:is_defined(dpor, Acc ++ Rest) of
           true -> NewRest;
-          false -> assume(scheduling_bound, 1, NewRest)
+          false -> assume(dpor, optimal, NewRest)
         end,
-      NewRest2 =
-        case Value =/= delay orelse proplists:is_defined(dpor, Acc ++ Rest) of
-          true -> NewRest1;
-          false -> [{dpor, none}|NewRest1]
-        end,
-      finalize(NewRest2, [Option|Acc]);
+      finalize(NewRest1, [Option|Acc]);
     MaybeInfinity
       when
         MaybeInfinity =:= interleaving_bound;
@@ -648,7 +636,7 @@ consistent([{disable_sleep_sets, true} = Option|Rest], Acc) ->
     Rest ++ Acc, Option),
   consistent(Rest, [Option|Acc]);
 consistent([{scheduling_bound, _} = Option|Rest], Acc) ->
-  VeryFun = fun(X) -> lists:member(X, [bpor, delay, simple]) end,
+  VeryFun = fun(X) -> lists:member(X, [bpor, delay]) end,
   check_values(
     [{scheduling_bound_type, VeryFun}],
     Rest ++ Acc,
@@ -660,8 +648,6 @@ consistent([{scheduling_bound_type, Type} = Option|Rest], Acc)
     case Type of
       bpor ->
         fun(X) -> lists:member(X, [source, persistent]) end;
-      delay ->
-        fun(X) -> X =:= none end;
       _ ->
         fun(_) -> true end
     end,

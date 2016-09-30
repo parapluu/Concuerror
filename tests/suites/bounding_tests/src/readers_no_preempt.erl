@@ -5,7 +5,7 @@ scenarios() ->
   [{test, B, DPOR, BoundType} ||
     B <- [0, 1, 2],
     DPOR <- [optimal, source, persistent],
-    BoundType <- [bpor, simple],
+    BoundType <- [bpor, delay],
     DPOR =/= optimal orelse BoundType =/= bpor
   ].
 
