@@ -483,8 +483,8 @@ update_rate(State) ->
   Time = timediff(New, Old),
   Useful = Current - TracesSSB,
   Diff = Useful - Prev,
-  Rate = (Diff / (Time + 1)),
-  RateStr = io_lib:format("(~5.1f /s) ",[Rate]),
+  Rate = (Diff / (Time + 0.0001)),
+  RateStr = io_lib:format("(~5.1f /s) ", [Rate]),
   {RateStr, State#logger_state{rate_timestamp = New, rate_prev = Useful}}.
 
 separator_string(Char) ->
