@@ -508,7 +508,7 @@ finalize([{Key, Value} = Option|Rest], AccIn) ->
       NewRest1 =
         case Value =/= bpor orelse proplists:is_defined(dpor, Acc ++ Rest) of
           true -> NewRest;
-          false -> assume(dpor, optimal, NewRest)
+          false -> assume(dpor, source, NewRest)
         end,
       finalize(NewRest1, [Option|Acc]);
     MaybeInfinity
