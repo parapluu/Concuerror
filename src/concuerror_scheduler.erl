@@ -485,10 +485,11 @@ update_state(#event{actor = Actor} = Event, State) ->
       done = NewLastDone,
       wakeup_tree = NewLastWakeupTree
      },
+  NextTrace = update_special(Event#event.special, InitNextTrace),
   InitNewState =
-    State#scheduler_state{trace = [InitNextTrace, NewLastTrace|Prev]},
+    State#scheduler_state{trace = [NextTrace, NewLastTrace|Prev]},
   NewState = maybe_log(Event, InitNewState, Index),
-  {ok, update_special(Event#event.special, NewState)}.
+  {ok, NewState}.
 
 maybe_log(#event{actor = P} = Event, State0, Index) ->
   #scheduler_state{
@@ -561,10 +562,9 @@ update_sleeping(NewEvent, Sleeping, State) ->
     end,
   lists:filter(Pred, Sleeping).
 
-update_special(List, State) when is_list(List) ->
-  lists:foldl(fun update_special/2, State, List);
-update_special(Special, State) ->
-  #scheduler_state{trace = [#trace_state{actors = Actors} = Next|Trace]} = State,
+update_special(List, TraceState) when is_list(List) ->
+  lists:foldl(fun update_special/2, TraceState, List);
+update_special(Special, #trace_state{actors = Actors} = TraceState) ->
   NewActors =
     case Special of
       halt -> [];
@@ -579,8 +579,7 @@ update_special(Special, State) ->
       {system_communication, _} ->
         Actors
     end,
-  NewNext = Next#trace_state{actors = NewActors},
-  State#scheduler_state{trace = [NewNext|Trace]}.
+  TraceState#trace_state{actors = NewActors}.
 
 add_message(MessageEvent, Actors) ->
   #message_event{recipient = Recipient, sender = Sender} = MessageEvent,
