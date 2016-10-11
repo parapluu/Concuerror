@@ -53,6 +53,7 @@
           actors           = []         :: [pid() | channel_actor()],
           clock_map        = dict:new() :: clock_map(),
           done             = []         :: [event()],
+          enabled          = []         :: [pid() | channel_actor()],
           index            = 1          :: index(),
           graph_ref        = make_ref() :: reference(),
           previous_actor   = 'none'     :: 'none' | actor(),
@@ -105,9 +106,14 @@ run(Options) ->
   put(bound_exceeded, false),
   {FirstProcess, System} =
     concuerror_callback:spawn_first_process(Options),
+  EntryPoint = ?opt(entry_point, Options),
+  Timeout = ?opt(timeout, Options),
+  ok =
+    concuerror_callback:start_first_process(FirstProcess, EntryPoint, Timeout),
   InitialTrace =
     #trace_state{
        actors = [FirstProcess],
+       enabled = [E || E <- [FirstProcess], enabled(E)],
        scheduling_bound = ?opt(scheduling_bound, Options)
       },
   Logger = ?opt(logger, Options),
@@ -118,7 +124,7 @@ run(Options) ->
        depth_bound = ?opt(depth_bound, Options) + 1,
        disable_sleep_sets = ?opt(disable_sleep_sets, Options),
        dpor = ?opt(dpor, Options),
-       entry_point = EntryPoint = ?opt(entry_point, Options),
+       entry_point = EntryPoint,
        first_process = FirstProcess,
        ignore_error = ?opt(ignore_error, Options),
        interleaving_bound = ?opt(interleaving_bound, Options),
@@ -135,9 +141,8 @@ run(Options) ->
        system = System,
        trace = [InitialTrace],
        treat_as_normal = ?opt(treat_as_normal, Options),
-       timeout = Timeout = ?opt(timeout, Options)
+       timeout = Timeout
       },
-  ok = concuerror_callback:start_first_process(FirstProcess, EntryPoint, Timeout),
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
   explore(InitialState).
@@ -485,7 +490,10 @@ update_state(#event{actor = Actor} = Event, State) ->
       done = NewLastDone,
       wakeup_tree = NewLastWakeupTree
      },
-  NextTrace = update_special(Event#event.special, InitNextTrace),
+  UpdatedSpecialNextTrace =
+    update_special(Event#event.special, InitNextTrace),
+  NextTrace =
+    maybe_update_enabled(SchedulingBoundType, UpdatedSpecialNextTrace),
   InitNewState =
     State#scheduler_state{trace = [NextTrace, NewLastTrace|Prev]},
   NewState = maybe_log(Event, InitNewState, Index),
@@ -626,6 +634,13 @@ remove_message(Channel, [{Channel, Queue}|Rest], Acc) ->
   end;
 remove_message(Channel, [Other|Rest], Acc) ->
   remove_message(Channel, Rest, [Other|Acc]).
+
+maybe_update_enabled(bpor, TraceState) ->
+  #trace_state{actors = Actors} = TraceState,
+  Enabled = [E || E <- Actors, enabled(E)],
+  TraceState#trace_state{enabled = Enabled};
+maybe_update_enabled(_, TraceState) ->
+  TraceState.
 
 %%------------------------------------------------------------------------------
 
@@ -1142,6 +1157,7 @@ add_conservative([TraceState|Rest], Actor, Clock, Candidates, State, Acc) ->
     } = State,
   #trace_state{
      done = [#event{actor = EarlyActor} = _EarlyEvent|Done],
+     enabled = Enabled,
      index = EarlyIndex,
      previous_actor = PreviousActor,
      sleeping = BaseSleeping,
@@ -1161,16 +1177,24 @@ add_conservative([TraceState|Rest], Actor, Clock, Candidates, State, Acc) ->
               NewAcc = [TraceState|Acc],
               add_conservative(Rest, Actor, Clock, Candidates, State, NewAcc);
             false ->
-              Sleeping = BaseSleeping ++ Done,
-              case
-                insert_wakeup_non_optimal(
-                  Sleeping, Wakeup, Candidates, true, Exploring
-                 )
-              of
-                skip -> abort;
-                NewWakeup ->
-                  NS = TraceState#trace_state{wakeup_tree = NewWakeup},
-                  lists:reverse(Acc, [NS|Rest])
+              EnabledCandidates =
+                [C ||
+                  #event{actor = A} = C <- Candidates,
+                  lists:member(A, Enabled)],
+              case EnabledCandidates =:= [] of
+                true -> abort;
+                false ->
+                  Sleeping = BaseSleeping ++ Done,
+                  case
+                    insert_wakeup_non_optimal(
+                      Sleeping, Wakeup, EnabledCandidates, true, Exploring
+                     )
+                  of
+                    skip -> abort;
+                    NewWakeup ->
+                      NS = TraceState#trace_state{wakeup_tree = NewWakeup},
+                      lists:reverse(Acc, [NS|Rest])
+                  end
               end
           end
       end
