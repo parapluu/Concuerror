@@ -311,7 +311,7 @@ print_exit_status_info() ->
   to_stderr(Message, []).
 
 print_bugs_message() ->
-  Message = "How to report bugs and other FAQ: http://parapluu.github.io/Concuerror/faq~n",
+  Message = "Report bugs (and other FAQ): http://parapluu.github.io/Concuerror/faq~n",
   to_stderr(Message, []).
 
 get_keywords_and_related(Tuple) ->
