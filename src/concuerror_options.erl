@@ -69,6 +69,12 @@ getopt_spec(Options) ->
        {Key, Short, atom_to_list(Key), Type, Help}
    end || Option <- Options].
 
+-define(OPTION_KEY, 1).
+-define(OPTION_SHORT, 2).
+-define(OPTION_GETOPT_DEFAULT, 3).
+-define(OPTION_GETOPT_SHORT_HELP, 4).
+-define(OPTION_GETOPT_LONG_HELP, 5).
+
 options() ->
   [{module, $m, atom,
     "Module containing the test function",
@@ -241,12 +247,12 @@ cl_usage(all) ->
   print_bugs_message();
 cl_usage(Name) ->
   Optname =
-    case lists:keyfind(Name, 1, options()) of
+    case lists:keyfind(Name, ?OPTION_KEY, options()) of
       false ->
         Str = atom_to_list(Name),
         Name =/= undefined andalso
           length(Str) =:= 1 andalso
-          lists:keyfind(hd(Str), 2, options());
+          lists:keyfind(hd(Str), ?OPTION_SHORT, options());
       R -> R
     end,
   case Optname of
@@ -260,7 +266,7 @@ cl_usage(Name) ->
     Tuple ->
       getopt:usage(getopt_spec([Tuple]), "./concuerror"),
       try
-        element(5, Tuple)
+        element(?OPTION_GETOPT_LONG_HELP, Tuple)
       of
         String -> to_stderr(String ++ "~n", [])
       catch
