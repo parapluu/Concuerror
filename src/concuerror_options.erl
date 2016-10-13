@@ -45,7 +45,7 @@ parse_cl_aux(CommandLineArgs) ->
     {error, Error} ->
       case Error of
         {missing_option_arg, help} ->
-          cl_usage(all),
+          cl_usage(basic),
           {exit, ok};
         {missing_option_arg, Option} ->
           opt_error("no argument given for '--~s'", [Option]);
@@ -408,7 +408,7 @@ check_help_and_version(Options) ->
     {false, true} ->
       Value = proplists:get_value(help, Options),
       case Value =:= true of
-        true -> cl_usage(all);
+        true -> cl_usage(basic);
         false -> cl_usage(Value)
       end,
       exit;
