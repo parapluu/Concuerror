@@ -1,7 +1,7 @@
 -module(readers).
 -export([scenarios/0,test/0]).
 
-scenarios() -> [{test, inf, dpor}].
+scenarios() -> [{test, inf, DPOR} || DPOR <- [optimal, persistent, source]].
 
 test() -> readers(6).
 

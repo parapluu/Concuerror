@@ -96,7 +96,7 @@ initialize(Options) ->
       [graph, output, processes, timers, verbosity],
       Options),
   Ticker =
-    case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ldebug) of
+    case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ltiming) of
       true -> none;
       false ->
         to_stderr("Concuerror started at ~s~n", [Timestamp]),
@@ -476,13 +476,16 @@ update_rate(State) ->
   #logger_state{
      rate_timestamp = Old,
      rate_prev = Prev,
-     traces_explored = Current} = State,
+     traces_explored = Current,
+     traces_ssb = TracesSSB
+    } = State,
   New = timestamp(),
   Time = timediff(New, Old),
-  Diff = Current - Prev,
-  Rate = (Diff / (Time + 1)),
-  RateStr = io_lib:format("(~5.1f interleavings/s) ",[Rate]),
-  {RateStr, State#logger_state{rate_timestamp = New, rate_prev = Current}}.
+  Useful = Current - TracesSSB,
+  Diff = Useful - Prev,
+  Rate = (Diff / (Time + 0.0001)),
+  RateStr = io_lib:format("(~5.1f /s) ", [Rate]),
+  {RateStr, State#logger_state{rate_timestamp = New, rate_prev = Useful}}.
 
 separator_string(Char) ->
   lists:duplicate(80, Char).

@@ -1,0 +1,442 @@
+Concuerror 0.16 ('99e189d') started at 27 Sep 2016 16:12:55.
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,persistent},
+   {entry_point,{readers_compare,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/bounding_tests/src/readers_compare.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {scheduling,round_robin},
+   {scheduling_bound,1},
+   {scheduling_bound_type,bpor},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+   7: P.1: exits normally
+   8: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   9: P.2: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  10: P.2: exits normally
+  11: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+  12: P.3: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  13: P.3: exits normally
+  14: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  15: P.4: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  16: P.4: exits normally
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.2: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   8: P.2: exits normally
+   9: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+  10: P.3: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  11: P.3: exits normally
+  12: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  13: P.4: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  14: P.4: exits normally
+  15: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  16: P.1: exits normally
+################################################################################
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.2: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   8: P.2: exits normally
+   9: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+  10: P.3: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  11: P.3: exits normally
+  12: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  13: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  14: P.1: exits normally
+  15: P.4: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  16: P.4: exits normally
+################################################################################
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.2: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   8: P.2: exits normally
+   9: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+  10: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  11: P.4: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  12: P.4: exits normally
+  13: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  14: P.1: exits normally
+  15: P.3: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  16: P.3: exits normally
+################################################################################
+Interleaving #6
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.2: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   8: P.2: exits normally
+   9: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  10: P.4: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  11: P.4: exits normally
+  12: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  13: P.1: exits normally
+  14: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+  15: P.3: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  16: P.3: exits normally
+################################################################################
+Interleaving #7
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.2: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   8: P.2: exits normally
+   9: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  10: P.4: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  11: P.4: exits normally
+  12: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+  13: P.3: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  14: P.3: exits normally
+  15: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  16: P.1: exits normally
+################################################################################
+Interleaving #8
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.2: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   8: P.2: exits normally
+   9: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  10: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  11: P.1: exits normally
+  12: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+  13: P.3: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  14: P.3: exits normally
+  15: P.4: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  16: P.4: exits normally
+################################################################################
+Interleaving #9
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.2: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   8: P.2: exits normally
+   9: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  10: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+  11: P.3: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  12: P.3: exits normally
+  13: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  14: P.1: exits normally
+  15: P.4: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  16: P.4: exits normally
+################################################################################
+Interleaving #10
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.2: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   8: P.2: exits normally
+   9: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  10: P.1: exits normally
+  11: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+  12: P.3: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  13: P.3: exits normally
+  14: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  15: P.4: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  16: P.4: exits normally
+################################################################################
+Interleaving #11
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+   8: P.3: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   9: P.3: exits normally
+  10: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  11: P.4: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  12: P.4: exits normally
+  13: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  14: P.1: exits normally
+  15: P.2: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  16: P.2: exits normally
+################################################################################
+Interleaving #12
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' (when all other processes have exited):
+    P in readers_compare.erl line 20
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: tab = ets:new(tab, [public,named_table])
+    in readers_compare.erl line 15
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-0-'.0>,[]])
+    in erlang.erl line 2603
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<readers_compare.'-readers/1-fun-2-'.0>,[]])
+    in erlang.erl line 2603
+   6: P.2: [] = ets:lookup(tab, 1)
+    in readers_compare.erl line 17
+   7: P.3: [] = ets:lookup(tab, 2)
+    in readers_compare.erl line 17
+   8: P.3: [] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+   9: P.3: exits normally
+  10: P.1: true = ets:insert(tab, {x,42})
+    in readers_compare.erl line 16
+  11: P.1: exits normally
+  12: P.2: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  13: P.2: exits normally
+  14: P.4: [] = ets:lookup(tab, 3)
+    in readers_compare.erl line 17
+  15: P.4: [{x,42}] = ets:lookup(tab, x)
+    in readers_compare.erl line 17
+  16: P.4: exits normally
+################################################################################
+Exploration completed!
+################################################################################
+Warnings:
+--------------------------------------------------------------------------------
+Some interleavings were not considered due to schedule bounding.
+Some interleavings were 'sleep-set blocked'. This is expected, since you are not using '--dpor optimal', but reveals wasted effort.
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented readers_compare
+Instrumented io_lib
+Instrumented gen_server
+Instrumented erlang
+Instrumented lists
+You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
+Continuing after error (-k)
+
+################################################################################
+Done at 27 Sep 2016 16:12:56 (Exit status: error)
+  Summary: 11 errors, 18/18 interleavings explored (7 sleep-set blocked) (the scheduling bound was reached)

@@ -1,7 +1,7 @@
 -module(readers).
 -export([scenarios/0,test/0]).
 
-scenarios() -> [{test, B, dpor} || B <- [0, 1, 2, 3, 4, 5, 6]].
+scenarios() -> [{test, B, dpor} || B <- [0, 1, 2, 3, 4, 5, 6, 7]].
 
 test() -> readers(6).
 
