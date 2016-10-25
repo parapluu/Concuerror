@@ -76,6 +76,8 @@ getopt_spec(Options) ->
 -define(OPTION_GETOPT_SHORT_HELP, 5).
 -define(OPTION_GETOPT_LONG_HELP, 6).
 
+-define(DEFAULT_OUTPUT, "concuerror_report.txt").
+
 options(Keyword) ->
   [T || T <- options(), lists:member(Keyword, element(?OPTION_KEYWORDS, T))].
 
@@ -89,7 +91,7 @@ options() ->
     "This must be a 0-arity function located in the module specified by '-m'."
     " Concuerror will start the test by spawning a process that calls this"
     " function."}
-  ,{output, [basic, output], $o, {string, "concuerror_report.txt"},
+  ,{output, [basic, output], $o, {string, ?DEFAULT_OUTPUT},
     "Output file",
     "This is where Concuerror writes the results of the analysis."}
   ,{quiet, [basic, console], $q, undefined,
@@ -352,7 +354,11 @@ finalize_2(Options) ->
         [ fun proplists:unfold/1
         , fun rename_equivalent/1
         , fun(O) ->
-              add_missing_defaults([{verbosity, ?DEFAULT_VERBOSITY}], O)
+              add_missing_defaults(
+                [{verbosity, ?DEFAULT_VERBOSITY},
+                 {output, ?DEFAULT_OUTPUT},
+                 {test, test}
+                ], O)
           end
         , fun finalize_aux/1
         , fun add_missing_getopt_defaults/1
