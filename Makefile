@@ -108,8 +108,8 @@ tests:
 	@$(RM) $@/thediff
 	@(cd $@; bash -c "./runtests.py suites/*/src/*")
 
-.PHONY: tests-long
-tests-long: default
+.PHONY: tests-real
+tests-real: default
 	@$(RM) $@/thediff
 	$(MAKE) -C $@ \
 		CONCUERROR=$(abspath concuerror) \
@@ -126,7 +126,7 @@ tests-long: default
 .PHONY: cover
 cover: cover/data
 	$(RM) $</*
-	export CONCUERROR_COVER=cover/data; $(MAKE) tests tests-long
+	export CONCUERROR_COVER=cover/data; $(MAKE) tests tests-real
 	cd cover; ./cover-report data
 
 ###-----------------------------------------------------------------------------

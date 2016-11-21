@@ -88,9 +88,9 @@ options() ->
     " specified by this option."}
   ,{test, [basic, input], $t, {atom, test},
     "Test function",
-    "This must be a 0-arity function located in the module specified by '-m'."
-    " Concuerror will start the test by spawning a process that calls this"
-    " function."}
+    "This must be a 0-arity function located in the module specified by"
+    " '--module'. Concuerror will start the test by spawning a process that"
+    " calls this function."}
   ,{output, [basic, output], $o, {string, ?DEFAULT_OUTPUT},
     "Output file",
     "This is where Concuerror writes the results of the analysis."}
@@ -103,7 +103,7 @@ options() ->
     "Verbosity decides what is shown on stderr. Messages up to info are"
     " always also shown in the output file. The available levels are the"
     " following:~n~n"
-    "0 <quiet> Nothing is printed (equivalent to -q)~n"
+    "0 <quiet> Nothing is printed (equivalent to '--quiet')~n"
     "1 <error> Critical, resulting in early termination~n"
     "2 <warn>  Non-critical, notifying about weak support for a feature or~n"
     "           the use of an option that alters the output~n"
