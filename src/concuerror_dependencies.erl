@@ -66,6 +66,10 @@ dependent(#builtin_event{mfargs = {erlang, halt, _}}, _) ->
 dependent(_, #builtin_event{mfargs = {erlang, halt, _}}) ->
   true;
 
+dependent(#builtin_event{status = {crashed, _}},
+          #builtin_event{status = {crashed, _}}) ->
+  false;
+
 dependent(#builtin_event{mfargs = MFArgs, extra = Extra},
           #exit_event{} = Exit) ->
   dependent_exit(Exit, MFArgs, Extra);
