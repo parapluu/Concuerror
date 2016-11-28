@@ -18,6 +18,7 @@
 -define(MINIMUM_TIMEOUT, 1000).
 -define(DEFAULT_VERBOSITY, ?linfo).
 -define(DEFAULT_PRINT_DEPTH, 20).
+-define(DEFAULT_OUTPUT, "concuerror_report.txt").
 
 %%%-----------------------------------------------------------------------------
 
@@ -76,8 +77,6 @@ getopt_spec(Options) ->
 -define(OPTION_GETOPT_DEFAULT, 4).
 -define(OPTION_GETOPT_SHORT_HELP, 5).
 -define(OPTION_GETOPT_LONG_HELP, 6).
-
--define(DEFAULT_OUTPUT, "concuerror_report.txt").
 
 options(Keyword) ->
   [T || T <- options(), lists:member(Keyword, element(?OPTION_KEYWORDS, T))].
