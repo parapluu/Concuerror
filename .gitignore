@@ -9,6 +9,7 @@
 .concuerror_plt
 /concuerror
 concuerror_report.txt
+concuerror_sha.hrl
 concuerror_version.hrl
 cover
 erl_crash.dump

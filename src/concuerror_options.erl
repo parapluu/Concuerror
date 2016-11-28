@@ -9,6 +9,7 @@
 %%%-----------------------------------------------------------------------------
 
 -include("concuerror.hrl").
+-include("concuerror_sha.hrl").
 
 -type options() :: proplists:proplist().
 

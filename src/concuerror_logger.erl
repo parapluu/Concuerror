@@ -7,6 +7,7 @@
 -export([graph_set_node/3, graph_new_node/5, graph_race/3]).
 
 -include("concuerror.hrl").
+-include("concuerror_sha.hrl").
 
 -type log_level() :: ?lquiet..?MAX_VERBOSITY.
 
