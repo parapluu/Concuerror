@@ -1,11 +1,9 @@
 -module(ignore_error_1).
 
 -export([scenarios/0]).
--export([concuerror_options/0]).
 -export([test/0]).
 
-concuerror_options() ->
-    [{ignore_error, crash}].
+-concuerror_options_forced([{ignore_error, crash}]).
 
 scenarios() ->
     [{test, inf, dpor}].

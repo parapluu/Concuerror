@@ -1,12 +1,9 @@
 -module(immediate_delivery).
 
 -export([test1/0, test2/0, test3/0]).
-
--export([concuerror_options/0]).
 -export([scenarios/0]).
 
-concuerror_options() ->
-    [{instant_delivery, true}].
+-concuerror_options_forced([{instant_delivery, true}]).
 
 scenarios() ->
     [{T, inf, dpor} ||

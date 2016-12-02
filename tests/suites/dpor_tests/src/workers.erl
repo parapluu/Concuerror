@@ -2,15 +2,13 @@
 
 -export([workers/0]).
 -export([scenarios/0]).
--export([concuerror_options/0]).
 
 -define(LOW, 1).
 -define(HIGH, 2).
 -define(ADD, 10).
 -define(WORKERS, 2).
 
-concuerror_options() ->
-  [{instant_delivery, false}].
+-concuerror_options_forced([{instant_delivery, false}]).
 
 scenarios() -> [{?MODULE, inf, dpor}].
 

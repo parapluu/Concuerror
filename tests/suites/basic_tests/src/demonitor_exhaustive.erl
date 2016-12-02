@@ -2,12 +2,11 @@
 
 -compile(export_all).
 
--export([concuerror_options/0]).
 -export([scenarios/0]).
 
-%%------------------------------------------------------------------------------
+-concuerror_options_forced([show_races]).
 
-concuerror_options() -> [show_races].
+%%------------------------------------------------------------------------------
 
 scenarios() ->
   [{T, inf, dpor} ||

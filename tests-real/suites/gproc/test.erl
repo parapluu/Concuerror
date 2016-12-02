@@ -3,12 +3,14 @@
 -export([scenarios/0]).
 -export([t_simple_reg/0, t_simple_reg_or_locate/0, t_reg_or_locate2/0]).
 -export([test1/0, test2/0, test3/0, test4/0]).
--export([concuerror_options/0]).
+
+-concuerror_options_forced(
+   [ {after_timeout, 1000}
+   , {treat_as_normal, shutdown}
+   , {ignore_error, deadlock}
+   ]).
 
 -include_lib("eunit/include/eunit.hrl").
-
-concuerror_options() ->
-	[{after_timeout, 1000}, {treat_as_normal, shutdown}, {ignore_error, deadlock}].
 
 scenarios() ->
     [{T, inf, dpor} ||

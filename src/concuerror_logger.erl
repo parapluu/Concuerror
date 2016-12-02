@@ -92,26 +92,32 @@ initialize(Options) ->
     get_properties([output, symbolic_names, processes, verbosity], Options),
   concuerror_loader:register_logger(self()),
   ok = setup_symbolic_names(SymbolicNames, Processes),
-  PrintableOptions =
-    delete_props(
-      [graph, output, processes, timers, verbosity],
-      Options),
+  Graph = ?opt(graph, Options),
   Ticker =
     case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ltiming) of
       true -> none;
       false ->
         to_stderr("Concuerror started at ~s~n", [Timestamp]),
         to_stderr("Writing results in ~s~n~n~n", [OutputName]),
+        if Graph =:= undefined -> ok;
+           true ->
+            {_, GraphName} = Graph,
+            to_stderr("Writing graph in ~s~n~n~n", [GraphName])
+        end,
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
+  PrintableOptions =
+    delete_props(
+      [graph, output, processes, timers, verbosity],
+      Options),
   io:format(
     Output,
     "Concuerror ~s (~w) started at ~s.~n"
     " Options:~n"
     "  ~p~n",
     [?VSN, ?GIT_SHA, Timestamp, lists:sort(PrintableOptions)]),
-  GraphData = graph_preamble(?opt(graph, Options)),
+  GraphData = graph_preamble(Graph),
   #logger_state{
      graph_data = GraphData,
      output = Output,
@@ -561,7 +567,7 @@ graph_race(Logger, EarlyRef, Ref) ->
   ok.
 
 graph_preamble(undefined) -> undefined;
-graph_preamble(GraphFile) ->
+graph_preamble({GraphFile, _}) ->
   io:format(
     GraphFile,
     "digraph {~n"

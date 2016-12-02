@@ -1,15 +1,13 @@
 -module(infinite_loop).
 
 -export([scenarios/0]).
--export([concuerror_options/0]).
 -export([exceptional/0]).
 -export([test/0]).
 
+-concuerror_options_forced([{timeout, 1000}]).
+
 scenarios() ->
     [{test, inf, dpor, crash}].
-
-concuerror_options() ->
-    [{timeout, 1000}].
 
 exceptional() ->
   fun(_Expected, Actual) ->

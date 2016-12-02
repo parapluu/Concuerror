@@ -1,12 +1,14 @@
 -module(depend_6_newest).
 
 -export([test/0]).
--export([scenarios/0, concuerror_options/0]).
+-export([scenarios/0]).
+
+-concuerror_options_forced(
+   [ {scheduling, newest}
+   , {strict_scheduling, true}
+   ]).
 
 scenarios() -> [{test, inf, dpor}].
-concuerror_options() ->
-    [{scheduling, newest}, {strict_scheduling, true}].
-
 test() ->
     ets:new(table, [public, named_table]),
     ets:insert(table, {y, 0}),

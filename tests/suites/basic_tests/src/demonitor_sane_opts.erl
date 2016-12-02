@@ -2,12 +2,11 @@
 
 -export([test1/0, test2/0]).
 
--export([concuerror_options/0]).
 -export([scenarios/0]).
 
-%%------------------------------------------------------------------------------
+-concuerror_options_forced([show_races]).
 
-concuerror_options() -> [show_races].
+%%------------------------------------------------------------------------------
 
 scenarios() -> [{T, inf, dpor} || T <- [test1, test2]].
 

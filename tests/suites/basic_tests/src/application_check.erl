@@ -2,13 +2,12 @@
 
 -export([test/0]).
 
--export([concuerror_options/0]).
 -export([scenarios/0]).
 -export([exceptional/0]).
 
-%%------------------------------------------------------------------------------
+-concuerror_options_forced([{timeout, 5000}]).
 
-concuerror_options() -> [{timeout, 5000}].
+%%------------------------------------------------------------------------------
 
 scenarios() -> [{test, inf, dpor}].
 

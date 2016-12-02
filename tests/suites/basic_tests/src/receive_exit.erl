@@ -2,13 +2,12 @@
 
 -export([test/0]).
 
--export([scenarios/0, concuerror_options/0]).
+-export([scenarios/0]).
+
+-concuerror_options_forced([{instant_delivery, true}]).
 
 scenarios() ->
   [{test, inf, dpor}].
-
-concuerror_options() ->
-    [{instant_delivery, true}].
 
 %%% Minimal version of a bug reported by Felix Gallo in issue #75.  The problem
 %%% is that a 'receive' event was not properly detected as racing with an exit

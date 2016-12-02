@@ -1,10 +1,8 @@
 -module(last_zero).
 
 -export([scenarios/0, test/0]).
--export([concuerror_options/0]).
 
-concuerror_options() ->
-    [{scheduling, oldest}].
+-concuerror_options_forced([{scheduling, oldest}]).
 
 scenarios() -> [{test, inf, R} || R <- [dpor,source]].
 

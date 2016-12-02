@@ -2,10 +2,8 @@
 
 -export([test_after_spawns/0]).
 -export([scenarios/0]).
--export([concuerror_options/0]).
 
-concuerror_options() ->
-    [{scheduling, oldest}].
+-concuerror_options_forced([{scheduling, oldest}]).
 
 scenarios() -> [{?MODULE, inf, dpor}].
 

@@ -1,11 +1,9 @@
 -module(reuse_raw_pid).
 
 -export([scenarios/0]).
--export([concuerror_options/0]).
 -export([test/0]).
 
-concuerror_options() ->
-    [{symbolic_names, false}].
+-concuerror_options_forced([{symbolic_names, false}]).
 
 scenarios() ->
     [{test, inf, dpor}].

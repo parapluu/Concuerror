@@ -2,10 +2,8 @@
 
 -export([scenarios/0]).
 -export([test/0]).
--export([concuerror_options/0]).
 
-concuerror_options() ->
-    [{non_racing_system, user}].
+-concuerror_options_forced([{non_racing_system, user}]).
 
 scenarios() ->
     [{test, inf, dpor}].

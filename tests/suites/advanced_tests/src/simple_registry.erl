@@ -2,10 +2,11 @@
 
 -export([simple_registry/0]).
 -export([scenarios/0]).
--export([concuerror_options/0]).
 
-concuerror_options() ->
-    [{instant_delivery, false}, {scheduling, oldest}].
+-concuerror_options_forced(
+   [ {instant_delivery, false}
+   , {scheduling, oldest}
+   ]).
 
 scenarios() -> [{?MODULE, inf, dpor}].
 

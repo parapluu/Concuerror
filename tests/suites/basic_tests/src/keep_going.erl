@@ -1,13 +1,11 @@
 -module(keep_going).
 
--export([concuerror_options/0]).
 -export([scenarios/0]).
 -export([exceptional/0]).
 
 -export([test/0]).
 
-concuerror_options() ->
-    [{keep_going, false}].
+-concuerror_options_forced([{keep_going, false}]).
 
 scenarios() ->
     [{test, inf, dpor}].

@@ -2,13 +2,12 @@
 
 -export([test/0]).
 
--export([concuerror_options/0]).
 -export([scenarios/0]).
 -export([exceptional/0]).
 
-%%------------------------------------------------------------------------------
+-concuerror_options_forced([]).
 
-concuerror_options() -> [].
+%%------------------------------------------------------------------------------
 
 scenarios() -> [{test, inf, optimal}].
 
