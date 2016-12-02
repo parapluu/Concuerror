@@ -131,7 +131,7 @@ tests-real: default
 .PHONY: cover
 cover: cover/data
 	$(RM) $</*
-	export CONCUERROR_COVER=cover/data; $(MAKE) tests tests-real
+	export CONCUERROR_COVER=$(abspath cover/data); $(MAKE) tests tests-real
 	cd cover; ./cover-report data
 
 ###-----------------------------------------------------------------------------
