@@ -1336,7 +1336,11 @@ process_top_loop(Info) ->
         concuerror_inspect:instrumented(call, [Module,Name,Args], start),
         exit(normal)
       catch
-        exit:{?MODULE, _} = Reason -> exit(Reason);
+        exit:{M, _} = Reason
+          when
+            M =:= ?MODULE;
+            M =:= concuerror_loader ->
+          exit(Reason);
         Class:Reason ->
           case erase(concuerror_info) of
             #concuerror_info{escaped_pdict = Escaped} = EndInfo ->
@@ -1378,7 +1382,10 @@ new_process(ParentInfo) ->
 wait_process(Pid, Timeout) ->
   %% Wait for the new process to instrument any code.
   receive
-    ready -> ok
+    ready ->
+      ok;
+    {'EXIT', _, What} ->
+      exit(What)
   after
     Timeout ->
       ?crash({process_did_not_respond, Timeout, Pid})
