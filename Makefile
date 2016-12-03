@@ -108,10 +108,11 @@ tests:
 	@$(RM) $@/thediff
 	@(cd $@; bash -c "./runtests.py suites/*/src/*")
 
+## the -j 1 below is so that the outputs of tests are not shown interleaved
 .PHONY: tests-real
 tests-real: default
 	@$(RM) $@/thediff
-	$(MAKE) -C $@ \
+	$(MAKE) -j 1 -C $@ \
 		CONCUERROR=$(abspath concuerror) \
 		DIFFER=$(abspath tests/differ) \
 		DIFFPRINTER=$(abspath $@/thediff)
