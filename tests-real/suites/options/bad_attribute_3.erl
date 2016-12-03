@@ -2,7 +2,7 @@
 
 -export([test/0]).
 
--concuerror_options([keep_going, keep_going]).
+-concuerror_options([symbolic_names, keep_going, keep_going]).
 
 test() ->
   ok.

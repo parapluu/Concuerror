@@ -205,6 +205,35 @@ good
 
 consolehas "Error: Could not add 'bannnn' (-pz) to code path."
 
+testing "Bad output"
+! $CONCUERROR -f foo.erl -o foo/man/choo 2> $Console
+good
+
+consolehas "Error: Could not open '--output' file foo/man/choo for writing."
+
+testing "Bad value for timeout"
+! $CONCUERROR -f foo.erl --timeout 300 2> $Console
+good
+
+consolehas "Error: The value of '--timeout' must be -1 (infinity)"
+
+testing "Bad value for dpor"
+! $CONCUERROR -f foo.erl --dpor exotic 2> $Console
+good
+
+consolehas "Error: The value of '--dpor' must be one of"
+
+testing "Bad value for scheduling_bound"
+! $CONCUERROR -f foo.erl --scheduling_bound -42 2> $Console
+good
+
+consolehas "Error: The value of '--scheduling_bound' must be a non-negative integer."
+
+testing "Sleep sets off only if no DPOR"
+! $CONCUERROR -f foo.erl --disable_sleep_sets --dpor optimal 2> $Console
+good
+
+consolehas "Setting 'dpor' to 'optimal' is not allowed when 'disable_sleep_sets' is set to true."
 
 trap - 0
 
