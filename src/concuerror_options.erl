@@ -88,7 +88,7 @@ options() ->
     "Determines whether information about pairs of racing instructions will be"
     " included in the logs of erroneous interleavings and the graph."}
   ,{file, [input], $f, string,
-    "Load a specific file",
+    "Load a specific file (.beam or .erl)",
     "Explicitly load a file (.beam or .erl). Source (.erl) files should not"
     " require any special command line compile options. Use a .beam file"
     " (preferably compiled with +debug_info) if special compilation is needed."}

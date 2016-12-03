@@ -35,8 +35,14 @@ load(Module, Instrumented) ->
           F ->
             {F, F}
         end,
-      catch load_binary(Module, Filename, Beam, Instrumented),
-      ?log(Logger, ?linfo, "Instrumented ~p~n", [Module]),
+      try
+        load_binary(Module, Filename, Beam, Instrumented),
+        ?log(Logger, ?linfo, "Instrumented ~p~n", [Module])
+      catch
+        _:_ ->
+          Msg = "Could not load module '~p'. Check '-h input'.~n",
+          ?log(Logger, ?lwarning, Msg, [Module])
+      end,
       maybe_instrumenting_myself(Module, Instrumented);
     false -> Module
   end.
