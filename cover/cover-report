@@ -8,4 +8,5 @@ main([CoverDir]) ->
   Foreach = fun(F) -> cover:import(F) end,
   lists:foreach(Foreach, Full),
   Foreach2 = fun(M) -> cover:analyse_to_file(M, [html]) end,
-  lists:foreach(Foreach2, cover:imported_modules()).
+  lists:foreach(Foreach2, cover:imported_modules()),
+  io:format("~p~n",[cover:analyse(coverage,module)]).
