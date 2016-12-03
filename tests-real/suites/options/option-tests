@@ -6,12 +6,12 @@ Console=console
 function abort {
     trap - 0
     set +e
-    echo " FAILED"
+    echo -e "\e[1;31m FAILED\e[0m"
     echo cat $Out
     cat $Out
     echo cat $Console
     cat $Console
-    echo " FAILED"
+    echo -e "\e[1;31m FAILED\e[0m"
 }
 
 function testing {
@@ -19,7 +19,7 @@ function testing {
 }
 
 function good {
-    echo " ok"
+    echo -e " \e[1;32mok\e[0m"
 }
 
 function mygrep {
@@ -237,4 +237,4 @@ consolehas "Setting 'dpor' to 'optimal' is not allowed when 'disable_sleep_sets'
 
 trap - 0
 
-echo "SUCCESS!"
+echo -e "\e[1;32mSUCCESS!\e[0m"
