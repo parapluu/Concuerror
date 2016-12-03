@@ -5,7 +5,7 @@
 -export([scenarios/0]).
 -export([exceptional/0]).
 
--concuerror_options_forced([{timeout, 5000}]).
+-concuerror_options_forced([{timeout, 10000}]).
 
 %%------------------------------------------------------------------------------
 
