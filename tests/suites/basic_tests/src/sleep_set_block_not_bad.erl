@@ -2,12 +2,11 @@
 
 -export([test/0]).
 
--export([concuerror_options/0]).
 -export([scenarios/0]).
 
-%%------------------------------------------------------------------------------
+-concuerror_options_forced([{keep_going, false}, {ignore_error, deadlock}]).
 
-concuerror_options() -> [{keep_going, false}, {ignore_error, deadlock}].
+%%------------------------------------------------------------------------------
 
 scenarios() -> [{test, inf, persistent}].
 

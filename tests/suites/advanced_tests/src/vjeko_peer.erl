@@ -16,15 +16,14 @@
 
 %%-------------------------
 -export([scenarios/0]).
--export([concuerror_options/0]).
 -export([exceptional/0]).
 
-concuerror_options() ->
-    [{depth_bound, 100000},
-     {non_racing_system, [user]},
-     {ignore_first_crash, true},
-     {interleaving_bound, 100}
-    ].
+-concuerror_options_forced(
+    [ {depth_bound, 100000}
+    , {non_racing_system, [user]}
+    , {keep_going, true}
+    , {interleaving_bound, 100}
+    ]).
 
 scenarios() -> [{concuerror_test, inf, dpor}].
 

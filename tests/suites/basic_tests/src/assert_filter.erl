@@ -3,18 +3,19 @@
 
 -module(assert_filter).
 
--export([concuerror_options/0]).
 -export([scenarios/0]).
 
 -export([test/0]).
+
+-concuerror_options_forced(
+   [ {assertions_only, true}
+   , {instant_delivery, false}]
+ ).
 
 -include_lib("eunit/include/eunit.hrl").
 
 scenarios() ->
   [{test, inf, dpor}].
-
-concuerror_options() ->
-    [{assertions_only, true}, {instant_delivery, false}].
 
 test() ->
 

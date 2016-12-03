@@ -2,10 +2,8 @@
 
 -export([proxy/0]).
 -export([scenarios/0]).
--export([concuerror_options/0]).
 
-concuerror_options() ->
-  [{depth_bound, 1000}, {instant_delivery, false}].
+-concuerror_options_forced([{depth_bound, 1000}, {instant_delivery, false}]).
 
 scenarios() -> [{?MODULE, inf, dpor}].
 

@@ -1,11 +1,9 @@
 -module(exit_kill).
 
 -export([scenarios/0]).
--export([concuerror_options/0]).
 -export([test/0]).
 
-concuerror_options() ->
-    [{treat_as_normal, kill}].
+-concuerror_options_forced([{treat_as_normal, kill}]).
 
 scenarios() ->
     [{test, inf, dpor}].

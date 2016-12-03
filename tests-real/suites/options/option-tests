@@ -1,0 +1,240 @@
+#!/bin/bash
+
+Out=concuerror_report.txt
+Console=console
+
+function abort {
+    trap - 0
+    set +e
+    echo -e "\e[1;31m FAILED\e[0m"
+    echo cat $Out
+    cat $Out
+    echo cat $Console
+    cat $Console
+    echo -e "\e[1;31m FAILED\e[0m"
+}
+
+function testing {
+    echo -n "$1..."
+}
+
+function good {
+    echo -e " \e[1;32mok\e[0m"
+}
+
+function mygrep {
+    grep -q "$1" $Out
+}
+
+function mygrepconsole {
+    grep -q "$1" $Console
+}
+
+function has {
+    testing "Output has $1"
+    mygrep "$1"
+    good
+}
+
+function consolehas {
+    testing "Console has $1"
+    mygrepconsole "$1"
+    good
+}
+
+set -e
+trap 'abort' 0
+
+testing "Concuerror has help option"
+$CONCUERROR 2> $Console
+good
+
+consolehas Usage
+
+testing "Report unknown arguments"
+! $CONCUERROR unknown_argument 2> $Console
+good
+
+consolehas "Unknown argument"
+
+testing "Report missing arguments"
+! $CONCUERROR -t 2> $Console
+good
+
+consolehas "No argument given for"
+
+testing "Show all options has > 50 lines"
+if [ $($CONCUERROR -h all 2>&1 | wc -l) -lt 50 ]; then
+    abort
+fi
+good
+
+testing "Get help for long"
+$CONCUERROR -h help 2> $Console
+good
+
+consolehas "You already know how to use this option! :-)"
+
+testing "Get help for short"
+$CONCUERROR -h h 2> $Console
+good
+
+consolehas "You already know how to use this option! :-)"
+
+testing "Get help for prefixed"
+$CONCUERROR -h --help 2> $Console
+good
+
+consolehas "You already know how to use this option! :-)"
+
+testing "Unknown argument to help"
+! $CONCUERROR -h elp 2> $Console
+good
+
+consolehas "Invalid option name/keyword (as argument to --help)"
+
+testing "No additional help available"
+$CONCUERROR -h version 2> $Console
+good
+
+consolehas "No additional help available."
+
+testing "Help for keyword"
+$CONCUERROR -h bound 2> $Console
+good
+
+consolehas "Only showing options with the keyword 'bound'."
+
+testing "Version"
+$CONCUERROR --version 2> $Console
+good
+
+consolehas "Concuerror v"
+
+testing "Bad entry point"
+! $CONCUERROR -f foo.erl -t ban 2> $Console
+good
+
+consolehas "The entry point foo:ban/0 is invalid."
+
+testing "Default verbosity has info"
+$CONCUERROR -f foo.erl 2> $Console
+good
+
+consolehas "Info:"
+
+testing "Verbosity and quiet"
+! $CONCUERROR -v --quiet 2> $Console
+good
+
+consolehas "'--verbosity' specified together with '--quiet'."
+
+testing "Too much verbosity"
+! $CONCUERROR -vvvvvvvvv 2> $Console
+good
+
+consolehas "make dev"
+
+testing "We found erlang without help"
+$CONCUERROR -m erlang -t module_info 2> $Console
+good
+
+testing "No module specified"
+! $CONCUERROR -t module_info 2> $Console
+good
+
+consolehas "The module containing the main test function has not been specified."
+
+testing "Specified module not found"
+! $CONCUERROR -m wat_467346 2> $Console
+good
+
+consolehas "Could not find module wat_467346."
+
+testing "Too many modules"
+! $CONCUERROR -m too -m many 2> $Console
+good
+
+consolehas "Multiple instances of '--module' specified."
+
+testing "Unknown attribute"
+! $CONCUERROR -f bad_attribute_1.erl 2> $Console
+good
+
+consolehas "Unknown option 'unknown_unknown' in concuerror_options."
+
+testing "Attribute not allowed"
+! $CONCUERROR -f bad_attribute_2.erl 2> $Console
+good
+
+consolehas "Option 'version' not allowed in concuerror_options_forced."
+
+testing "Multiple options in attribute 1"
+! $CONCUERROR -f bad_attribute_3.erl 2> $Console
+good
+
+consolehas "Multiple instances of option keep_going not allowed in concuerror_options."
+
+testing "Multiple options in attribute 2"
+! $CONCUERROR -f bad_attribute_4.erl 2> $Console
+good
+
+consolehas "Multiple instances of option keep_going not allowed in concuerror_options_forced."
+
+testing "Multiple options in attribute 3"
+! $CONCUERROR -f bad_attribute_5.erl 2> $Console
+good
+
+consolehas "Multiple instances of option keep_going in concuerror_options_forced and concuerror_options not allowed."
+
+testing "Multiple options in command_line"
+$CONCUERROR -f foo.erl -k false -k 2> $Console
+good
+
+consolehas "Warning: Multiple instances of '--keep_going' defined. Using last value: true."
+
+testing "Derived defaults"
+$CONCUERROR -f foo.erl -b 1 2> $Console
+good
+
+consolehas "Info: Using '--scheduling_bound_type delay'."
+
+testing "Bad path"
+! $CONCUERROR -f foo.erl --pz bannnn 2> $Console
+good
+
+consolehas "Error: Could not add 'bannnn' (-pz) to code path."
+
+testing "Bad output"
+! $CONCUERROR -f foo.erl -o foo/man/choo 2> $Console
+good
+
+consolehas "Error: Could not open '--output' file foo/man/choo for writing."
+
+testing "Bad value for timeout"
+! $CONCUERROR -f foo.erl --timeout 300 2> $Console
+good
+
+consolehas "Error: The value of '--timeout' must be -1 (infinity)"
+
+testing "Bad value for dpor"
+! $CONCUERROR -f foo.erl --dpor exotic 2> $Console
+good
+
+consolehas "Error: The value of '--dpor' must be one of"
+
+testing "Bad value for scheduling_bound"
+! $CONCUERROR -f foo.erl --scheduling_bound -42 2> $Console
+good
+
+consolehas "Error: The value of '--scheduling_bound' must be a non-negative integer."
+
+testing "Sleep sets off only if no DPOR"
+! $CONCUERROR -f foo.erl --disable_sleep_sets --dpor optimal 2> $Console
+good
+
+consolehas "Setting 'dpor' to 'optimal' is not allowed when 'disable_sleep_sets' is set to true."
+
+trap - 0
+
+echo -e "\e[1;32mSUCCESS!\e[0m"

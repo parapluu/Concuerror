@@ -9,6 +9,7 @@
 %%%-----------------------------------------------------------------------------
 
 -include("concuerror.hrl").
+-include("concuerror_sha.hrl").
 
 -type options() :: proplists:proplist().
 
@@ -17,75 +18,30 @@
 -define(MINIMUM_TIMEOUT, 1000).
 -define(DEFAULT_VERBOSITY, ?linfo).
 -define(DEFAULT_PRINT_DEPTH, 20).
+-define(DEFAULT_OUTPUT, "concuerror_report.txt").
 
 %%%-----------------------------------------------------------------------------
 
--spec parse_cl([string()]) ->
-                  {'ok', options()} | {'exit', concuerror:exit_status()}.
-
-parse_cl(CommandLineArgs) ->
-  try
-    parse_cl_aux(CommandLineArgs)
-  catch
-    throw:opt_error -> {exit, fail}
-  end.
-
-parse_cl_aux([]) ->
-  {ok, [help]};
-parse_cl_aux(CommandLineArgs) ->
-  case getopt:parse(getopt_spec(), CommandLineArgs) of
-    {ok, {Options, OtherArgs}} ->
-      case OtherArgs =:= [] of
-        true -> ok;
-        false ->
-          Msg = "Unknown argument(s)/option(s): ~s",
-          opt_error(Msg, [string:join(OtherArgs, " ")])
-      end,
-      {ok, Options};
-    {error, Error} ->
-      case Error of
-        {missing_option_arg, help} ->
-          cl_usage(basic),
-          {exit, ok};
-        {missing_option_arg, Option} ->
-          opt_error("no argument given for '--~s'", [Option]);
-        _Other ->
-          opt_error(getopt:format_error([], Error))
-      end
-  end.
+-define(ATTRIBUTE_OPTIONS, concuerror_options).
+-define(ATTRIBUTE_FORCED_OPTIONS, concuerror_options_forced).
 
 %%%-----------------------------------------------------------------------------
-
-getopt_spec() ->
-  getopt_spec(options()).
-
-getopt_spec(Options) ->
-  %% Option's long name is the same as the inner representation atom for
-  %% consistency.
-  [case Option of
-     {Key, _Keywords, Short, Type, Help} ->
-       {Key, Short, atom_to_list(Key), Type, Help};
-     {Key, _Keywords, Short, Type, Help, _Long} ->
-       {Key, Short, atom_to_list(Key), Type, Help}
-   end || Option <- Options].
 
 -define(OPTION_KEY, 1).
 -define(OPTION_KEYWORDS, 2).
 -define(OPTION_SHORT, 3).
--define(OPTION_GETOPT_DEFAULT, 4).
+-define(OPTION_GETOPT_TYPE_DEFAULT, 4).
 -define(OPTION_GETOPT_SHORT_HELP, 5).
 -define(OPTION_GETOPT_LONG_HELP, 6).
-
--define(DEFAULT_OUTPUT, "concuerror_report.txt").
-
-options(Keyword) ->
-  [T || T <- options(), lists:member(Keyword, element(?OPTION_KEYWORDS, T))].
 
 options() ->
   [{module, [basic, input], $m, atom,
     "Module containing the test function",
     "Concuerror begins exploration from a test function located in the module"
-    " specified by this option."}
+    " specified by this option.~n~n"
+
+    "There is no need to specify other modules used in the test if they are in"
+    " Erlang's code path. Otherwise use '--file'."}
   ,{test, [basic, input], $t, {atom, test},
     "Test function",
     "This must be a 0-arity function located in the module specified by"
@@ -95,11 +51,10 @@ options() ->
     "Output file",
     "This is where Concuerror writes the results of the analysis."}
   ,{quiet, [basic, console], $q, undefined,
-    "Do not write anything to stderr",
-    "Shorthand for '--verbosity 0'."}
-  ,{verbosity, [basic, console, advanced], $v, integer,
-    io_lib:format("Sets the verbosity level (0-~w). [default: ~w]",
-                  [?MAX_VERBOSITY, ?DEFAULT_VERBOSITY]),
+    "Quiet mode",
+    "Do not write anything to stderr. Shorthand for '--verbosity 0'."}
+  ,{verbosity, [basic, console, advanced], $v, {integer, ?DEFAULT_VERBOSITY},
+    io_lib:format("Verbosity level (0-~w)", [?MAX_VERBOSITY]),
     "Verbosity decides what is shown on stderr. Messages up to info are"
     " always also shown in the output file. The available levels are the"
     " following:~n~n"
@@ -112,8 +67,7 @@ options() ->
     "4 <info>  Normal operation messages, can be ignored~n"
     "5 <time>  Timing messages~n"
     "6 <debug> Used only during debugging~n"
-    "7 <trace> Everything else"
-   }
+    "7 <trace> Everything else"}
   ,{graph, [output, visual], undefined, string,
     "Produce a DOT graph in the specified file",
     "The DOT graph can be converted to an image with 'dot -Tsvg -o graph.svg"
@@ -134,10 +88,10 @@ options() ->
     "Determines whether information about pairs of racing instructions will be"
     " included in the logs of erroneous interleavings and the graph."}
   ,{file, [input], $f, string,
-    "Load a specific file",
+    "Load a specific file (.beam or .erl)",
     "Explicitly load a file (.beam or .erl). Source (.erl) files should not"
-    " require any special command line compile options. Use a .beam file if"
-    " special compilation is needed (preferably compiled with +debug_info)."}
+    " require any special command line compile options. Use a .beam file"
+    " (preferably compiled with +debug_info) if special compilation is needed."}
   ,{pa, [input], undefined, string,
     "Add directory to Erlang's code path (front)",
     "Works exactly like 'erl -pa'."}
@@ -152,8 +106,8 @@ options() ->
     "Maximum number of interleavings",
     "The maximum number of interleavings that will be explored. Concuerror will"
     " stop exploration beyond this limit."}
-  ,{dpor, [por], undefined, atom,
-    "DPOR techique to use. [default: optimal]",
+  ,{dpor, [por], undefined, {atom, optimal},
+    "DPOR techique",
     "Specifies which Dynamic Partial Order Reduction techique will be used. The"
     " available options are:~n"
     "-       'none': Disable DPOR. Do not use.~n"
@@ -163,9 +117,10 @@ options() ->
     "                interleavings are reported as sleep-set blocked.~n"
     "- 'persistent': Using persistent sets. Do not use."}
   ,{optimal, [por], undefined, boolean,
-    "Deprecated. Use '--dpor (optimal | source)' instead."}
-  ,{scheduling_bound_type, [bound], $c, atom,
-    "Use schedule bounding [default: none]",
+    "Deprecated. Use '--dpor (optimal | source)' instead.",
+    nolong}
+  ,{scheduling_bound_type, [bound], $c, {atom, none},
+    "Schedule bounding technique",
     "Enables scheduling rules that prevent interleavings from being explored."
     " The available options are:~n"
     "-   'none': no bounding~n"
@@ -179,7 +134,7 @@ options() ->
     "The maximum number of times the rule specified in '--scheduling_bound_type'"
     " can be violated."}
   ,{disable_sleep_sets, [por, advanced], undefined, {boolean, false},
-    "Disables use of sleep sets",
+    "Disable sleep sets",
     "This option is only available with '--dpor none'."}
   ,{after_timeout, [erlang], $a, {integer, infinity},
     "Ignore timeouts greater than this value",
@@ -243,8 +198,107 @@ options() ->
     "Display help (use also as '-h <option/keyword>')",
     "You already know how to use this option! :-)"}
   ,{version, [basic], undefined, undefined,
-    "Display version information"}
+    "Display version information",
+    nolong}
    ].
+
+multiple_allowed() ->
+  [ ignore_error
+  , non_racing_system
+  , treat_as_normal
+  ].
+
+ignored_in_module_attributes() ->
+  [ module
+  , file
+  , pa
+  , pz
+  , help
+  , version
+  ].
+
+derived_defaults() ->
+  [ {{disable_sleep_sets, true}, [{dpor, none}]}
+  , {scheduling_bound, [{scheduling_bound_type, delay}]}
+  , {{scheduling_bound_type, bpor}, [{dpor, source}, {scheduling_bound, 1}]}
+  , {{scheduling_bound_type, delay}, [{scheduling_bound, 1}]}
+  ].
+
+check_validity(Key) ->
+  case Key of
+    _
+      when
+        Key =:= after_timeout;
+        Key =:= depth_bound;
+        Key =:= print_depth
+        ->
+      {fun(V) -> V > 0 end, "a positive integer"};
+    dpor ->
+      [none, optimal, persistent, source];
+    scheduling ->
+      [newest, oldest, round_robin];
+    scheduling_bound ->
+      {fun(V) -> V >= 0 end, "a non-negative integer"};
+    scheduling_bound_type ->
+      [bpor, delay, none];
+    _ -> skip
+  end.
+
+%%------------------------------------------------------------------------------
+
+-spec parse_cl([string()]) ->
+                  {'ok', options()} | {'exit', concuerror:exit_status()}.
+
+parse_cl(CommandLineArgs) ->
+  try
+    parse_cl_aux(CommandLineArgs)
+  catch
+    throw:opt_error -> {exit, fail}
+  end.
+
+parse_cl_aux([]) ->
+  {ok, [help]};
+parse_cl_aux(CommandLineArgs) ->
+  case getopt:parse(getopt_spec_no_default(), CommandLineArgs) of
+    {ok, {Options, OtherArgs}} ->
+      case OtherArgs =:= [] of
+        true -> {ok, Options};
+        false ->
+          Msg = "Unknown argument(s)/option(s): ~s.",
+          opt_error(Msg, [string:join(OtherArgs, " ")])
+      end;
+    {error, Error} ->
+      case Error of
+        {missing_option_arg, help} ->
+          cl_usage(basic),
+          {exit, ok};
+        {missing_option_arg, Option} ->
+          opt_error("No argument given for '--~s'.", [Option]);
+        _Other ->
+          opt_error(getopt:format_error([], Error))
+      end
+  end.
+
+%%%-----------------------------------------------------------------------------
+
+getopt_spec(Options) ->
+  getopt_spec_map_type(Options, fun(X) -> X end).
+
+%% Defaults are stripped and inserted in the end to allow for overrides from an
+%% input file or derived defaults.
+getopt_spec_no_default() ->
+  getopt_spec_map_type(options(), fun no_default/1).
+
+%% An option's long name is the same as the inner representation atom for
+%% consistency.
+getopt_spec_map_type(Options, Fun) ->
+  [{Key, Short, atom_to_list(Key), Fun(Type), Help} ||
+    {Key, _Keywords, Short, Type, Help, _Long} <- Options].
+
+no_default({Type, _Default}) -> Type;
+no_default(Type) -> Type.
+
+%%%-----------------------------------------------------------------------------
 
 cl_usage(all) ->
   Sort = fun(A, B) -> element(?OPTION_KEY, A) =< element(?OPTION_KEY, B) end,
@@ -275,26 +329,23 @@ cl_usage(Name) ->
           case atom_to_list(Name) of
             "-" ++ Rest -> cl_usage(list_to_atom(Rest));
             _ ->
-              Msg = "Invalid option name/keyword (as argument to --help): '~w'",
+              Msg = "Invalid option name/keyword (as argument to --help): '~w'.",
               opt_error(Msg, [Name])
           end
       end;
     Tuple ->
       getopt:usage(getopt_spec([Tuple]), "./concuerror"),
-      try
-        element(?OPTION_GETOPT_LONG_HELP, Tuple)
-      of
+      case element(?OPTION_GETOPT_LONG_HELP, Tuple) of
+        nolong -> to_stderr("No additional help available.~n", []);
         String -> to_stderr(String ++ "~n", [])
-      catch
-        _:_ -> to_stderr("No additional help available.~n", [])
       end,
       {Keywords, Related} = get_keywords_and_related(Tuple),
       to_stderr("Option Keywords: ~p~nRelated Options: ~p~n", [Keywords, Related]),
       to_stderr("For general help use '-h' without an argument.~n", [])
   end.
 
-cl_version() ->
-  to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
+options(Keyword) ->
+  [T || T <- options(), lists:member(Keyword, element(?OPTION_KEYWORDS, T))].
 
 print_suffix(Keyword) ->
   to_stderr("More info & keywords about a specific option: -h <option>.~n", []),
@@ -331,7 +382,7 @@ get_keywords_and_related(Tuple) ->
 %%%-----------------------------------------------------------------------------
 
 -spec finalize(options()) ->
-                  {'ok', options(), [iolist()]} |
+                  {'ok', options(), Warnings :: [iolist()], Info :: [iolist()]} |
                   {'exit', concuerror:exit_status()}.
 
 finalize(Options) ->
@@ -340,70 +391,13 @@ finalize(Options) ->
       exit -> {exit, ok};
       ok ->
         FinalOptions = finalize_2(Options),
-        Warnings = get_all_warnings(),
-        {ok, FinalOptions, Warnings}
+        Warnings = get_warnings(),
+        Info = get_info(),
+        {ok, FinalOptions, Warnings, Info}
     end
   catch
     throw:opt_error -> {exit, fail}
   end.
-
-finalize_2(Options) ->
-  FinalOptions =
-    try
-      Passes =
-        [ fun proplists:unfold/1
-        , fun rename_equivalent/1
-        , fun(O) ->
-              add_missing_defaults(
-                [{verbosity, ?DEFAULT_VERBOSITY},
-                 {output, ?DEFAULT_OUTPUT},
-                 {test, test}
-                ], O)
-          end
-        , fun finalize_aux/1
-        , fun add_missing_getopt_defaults/1
-        , fun(O) ->
-              add_missing_defaults(
-                [{dpor, optimal},
-                 {ignore_error, []},
-                 {non_racing_system, []},
-                 {scheduling_bound_type, none},
-                 {treat_as_normal, []}
-                ], O)
-          end
-        ],
-      run_passes(Passes, Options)
-    catch
-      throw:{file_defined, FileOptions} ->
-        NewOptions = proplists:delete(file, Options),
-        Fold = fun({K,_}, Override) -> lists:keydelete(K, 1, Override) end,
-        OverridenOptions = lists:foldl(Fold, NewOptions, FileOptions),
-        finalize_2(FileOptions ++ OverridenOptions)
-    end,
-  consistent(FinalOptions),
-  case proplists:get_value(entry_point, FinalOptions, undefined) of
-    {M,F,B} when is_atom(M), is_atom(F), is_list(B) ->
-      try
-        true = lists:member({F,length(B)}, M:module_info(exports)),
-        FinalOptions
-      catch
-        _:_ ->
-          InvalidEntryPoint =
-            "The entry point ~w:~w/~w is not valid. Make sure you have"
-            " specified the correct module ('-m') and test function ('-t').",
-          opt_error(InvalidEntryPoint, [M,F,length(B)])
-      end;
-    _ ->
-      UndefinedEntryPoint =
-        "The module containing the main test function has not been specified."
-        " Add '-m <module>' or use '-h module' for more info.",
-      opt_error(UndefinedEntryPoint)
-  end.
-
-run_passes([], Options) ->
-  Options;
-run_passes([Pass|Passes], Options) ->
-  run_passes(Passes, Pass(Options)).
 
 check_help_and_version(Options) ->
   case {proplists:get_bool(version, Options),
@@ -422,224 +416,266 @@ check_help_and_version(Options) ->
       ok
   end.
 
+cl_version() ->
+  to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
+
 %%%-----------------------------------------------------------------------------
 
-rename_equivalent(Options) ->
-  rename_equivalent(Options, []).
-
-rename_equivalent([{quiet, true}|Rest], Acc) ->
-  case proplists:is_defined(verbosity, Rest ++ Acc) of
-    true -> opt_error("'--verbosity' specified together with '--quiet'");
-    false ->
-      rename_equivalent(Rest, [{verbosity, ?lquiet}|Acc])
-  end;
-rename_equivalent([Other|Rest], Acc) ->
-  rename_equivalent(Rest, [Other|Acc]);
-rename_equivalent([], Acc) -> lists:reverse(Acc).
-
-finalize_aux(Options) ->
-  {value, Verbosity, RestOptions} = lists:keytake(verbosity, 1, Options),
-  case proplists:get_all_values(file, Options) of
-    [] -> finalize([Verbosity|RestOptions], []);
-    Files -> compile_and_load(Files, [Verbosity])
+finalize_2(Options) ->
+  Passes =
+    [ fun proplists:unfold/1
+    , fun set_verbosity/1
+    , fun load_files/1
+    , fun add_options_from_module/1
+    , fun add_derived_defaults/1
+    , fun add_getopt_defaults/1
+    , fun process_options/1
+    , fun(O) ->
+          add_defaults([{Opt, []} || Opt <- multiple_allowed()], false, O)
+      end
+    ],
+  FinalOptions = run_passes(Passes, Options),
+  consistent(FinalOptions),
+  {M, F, B} = proplists:get_value(entry_point, FinalOptions),
+  try
+    true = is_atom(M),
+    true = is_atom(F),
+    true = is_list(B),
+    true = lists:member({F,length(B)}, M:module_info(exports)),
+    FinalOptions
+  catch
+    _:_ ->
+      InvalidEntryPoint =
+        "The entry point ~w:~w/~w is invalid. Make sure you have"
+        " specified the correct module ('-m') and test function ('-t').",
+      opt_error(InvalidEntryPoint, [M,F,length(B)])
   end.
 
-finalize([], Acc) -> Acc;
-finalize([{Key, V}|Rest], Acc)
-  when
-    Key =:= ignore_error;
-    Key =:= non_racing_system;
-    Key =:= treat_as_normal ->
-  Values = [V|proplists:get_all_values(Key, Rest)],
-  NewRest = proplists:delete(Key, Rest),
-  finalize(NewRest, [{Key, lists:usort(Values)}|Acc]);
-finalize([{verbosity, N}|Rest], Acc) ->
-  Sum = lists:sum([N|proplists:get_all_values(verbosity, Rest)]),
-  Verbosity = min(Sum, ?MAX_VERBOSITY),
-  NewRest = proplists:delete(verbosity, Rest),
+run_passes([], Options) ->
+  Options;
+run_passes([Pass|Passes], Options) ->
+  run_passes(Passes, Pass(Options)).
+
+%%%-----------------------------------------------------------------------------
+
+set_verbosity(Options) ->
+  HasQuiet = proplists:get_bool(quiet, Options),
+  AllVerbosity = lists:sum(proplists:get_all_values(verbosity, Options)),
+  SpecifiedVerbosity =
+    case {AllVerbosity, HasQuiet} of
+      {0, false} -> ?DEFAULT_VERBOSITY;
+      {0, true} -> 0;
+      {_, true} ->
+        opt_error("'--verbosity' specified together with '--quiet'.");
+      {N, false} -> N
+    end,
+  Verbosity = min(SpecifiedVerbosity, ?MAX_VERBOSITY),
   if Verbosity < ?ldebug; ?has_dev -> ok;
      true ->
       Error = "To use verbosity > ~w, build Concuerror with 'make dev'.",
       opt_error(Error, [?ldebug - 1])
   end,
-  finalize(NewRest, [{verbosity, Verbosity}|Acc]);
-finalize([{Key, Value}|Rest], Acc)
-  when
-    Key =:= pa;
-    Key =:=pz
-    ->
-  PathAdd =
-    case Key of
-      pa -> fun code:add_patha/1;
-      pz -> fun code:add_pathz/1
-    end,
-  case PathAdd(Value) of
-    true -> ok;
-    {error, bad_directory} ->
-      opt_error("could not add ~s to code path.", [Value])
-  end,
-  finalize(Rest, Acc);
-finalize([{Key, Value} = Option|Rest], Acc)
-  when
-    Key =:= after_timeout;
-    Key =:= depth_bound;
-    Key =:= print_depth
-    ->
-  check_validity(Key, Value, {fun(V) -> V > 0 end, "a positive integer"}),
-  finalize(Rest, [Option|Acc]);
-finalize([{Key, Value} = Option|Rest], AccIn) ->
-  Acc =
-    case proplists:is_defined(Key, AccIn) of
-      true ->
-        Format = "multiple instances of '--~s' defined. Using last value: ~w.",
-        opt_warn(Format, [Key, Value]),
-        proplists:delete(Key, AccIn);
-      false -> AccIn
-    end,
-  case Key of
-    dpor ->
-      check_validity(Key, Value, [none, optimal, persistent, source]),
-      finalize(Rest, [Option|Acc]);
-    disable_sleep_sets ->
-      NewRest =
-        case Value =:= false orelse proplists:is_defined(dpor, Acc ++ Rest) of
-          true -> Rest;
-          false -> [{dpor, none}|Rest]
-        end,
-      finalize(NewRest, [Option|Acc]);
-    graph ->
-      case file:open(Value, [write]) of
-        {ok, IoDevice} -> finalize(Rest, [{Key, IoDevice}|Acc]);
-        {error, _} -> file_error(Key, Value)
-      end;
-    module ->
-      case proplists:is_defined(module, Rest) of
-        true -> opt_error("Multiple instances of '--module'");
-        false -> ok
-      end,
-      case proplists:get_value(test, Rest, 1) of
-        Name when is_atom(Name) ->
-          NewRest = proplists:delete(test, Rest),
-          finalize(NewRest, [{entry_point, {Value, Name, []}}|Acc]);
-        _ -> opt_error("The name of the test function is missing.")
-      end;
-    optimal ->
-      "0.1" ++ [_|_] = ?VSN,
-      Msg =
-        "The '--optimal' option is deprecated."
-        " Use '--dpor (optimal | source)' instead.",
-      opt_error(Msg);
-    output ->
-      case file:open(Value, [write]) of
-        {ok, IoDevice} -> finalize(Rest, [{Key, {IoDevice, Value}}|Acc]);
-        {error, _} -> file_error(Key, Value)
-      end;
-    scheduling ->
-      check_validity(Key, Value, [newest, oldest, round_robin]),
-      finalize(Rest, [Option|Acc]);
-    scheduling_bound ->
-      ValidityCheck = {fun(V) -> V >= 0 end, "a non-negative integer"},
-      check_validity(Key, Value, ValidityCheck),
-      NewRest =
-        case proplists:is_defined(scheduling_bound_type, Acc ++ Rest) of
-          true -> Rest;
-          false -> assume(scheduling_bound_type, delay, Rest)
-        end,
-      finalize(NewRest, [Option|Acc]);
-    scheduling_bound_type ->
-      check_validity(Key, Value, [bpor, delay, none]),
-      NewRest =
-        case Value =:= none orelse proplists:is_defined(scheduling_bound, Acc ++ Rest) of
-          true -> Rest;
-          false -> assume(scheduling_bound, 1, Rest)
-        end,
-      NewRest1 =
-        case Value =/= bpor orelse proplists:is_defined(dpor, Acc ++ Rest) of
-          true -> NewRest;
-          false -> assume(dpor, source, NewRest)
-        end,
-      finalize(NewRest1, [Option|Acc]);
-    MaybeInfinity
-      when
-        MaybeInfinity =:= interleaving_bound;
-        MaybeInfinity =:= timeout
-        ->
-      Limit =
-        case MaybeInfinity of
-          interleaving_bound -> 0;
-          timeout -> ?MINIMUM_TIMEOUT
-        end,
-      case Value of
-        infinity ->
-          finalize(Rest, [Option|Acc]);
-        -1 ->
-          finalize(Rest, [{MaybeInfinity, infinity}|Acc]);
-        N when is_integer(N), N >= Limit ->
-          finalize(Rest, [Option|Acc]);
-        _Else ->
-          Error = "The value of '--~s' must be -1 (infinity) or >= ~w.",
-          opt_error(Error, [Key, Limit])
-      end;
-    test ->
-      case Rest =:= [] of
-        true -> finalize(Rest, Acc);
-        false -> finalize(Rest ++ [Option], Acc)
-      end;
-    _ ->
-      finalize(Rest, [Option|Acc])
+  NewOptions = proplists:delete(verbosity, Options),
+  [{verbosity, Verbosity}|NewOptions].
+
+%%%-----------------------------------------------------------------------------
+
+load_files(Options) ->
+  case proplists:get_all_values(file, Options) of
+    [] -> Options;
+    Files ->
+      NewOptions = proplists:delete(file, Options),
+      compile_and_load(Files, [], false, NewOptions)
   end.
 
--spec file_error(atom(), term()) -> no_return().
-
-file_error(Key, Value) ->
-  opt_error("could not open '--~w' file ~s for writing.", [Key, Value]).
-
-compile_and_load(Files, Options) ->
-  {LoadedFiles, MoreOptions} =
-    compile_and_load(Files, {[], {none, []}}, Options),
-  Preserved = [{files, LoadedFiles}|MoreOptions],
-  throw({file_defined, proplists:unfold(Preserved)}).
-
-compile_and_load([], {Acc, {_, MoreOpts}}, _Options) ->
-  {lists:sort(Acc), MoreOpts};
-compile_and_load([File|Rest], {Acc, {Already, MoreOpts}}, Options) ->
+compile_and_load([], [_|More] = LoadedFiles, LastModule, Options) ->
+  MissingModule =
+    case
+      More =:= [] andalso
+      not proplists:is_defined(module, Options)
+    of
+      true -> [{module, LastModule}];
+      false -> []
+    end,
+  MissingModule ++ [{files, lists:sort(LoadedFiles)}|Options];
+compile_and_load([File|Rest], Acc, _LastModule, Options) ->
   case concuerror_loader:load_initially(File) of
     {ok, Module, Warnings} ->
       lists:foreach(fun(W) -> opt_warn(W, []) end, Warnings),
-      MissingModule =
-        case
-          Rest =:= [] andalso
-          Acc =:= [] andalso
-          not proplists:is_defined(module, Options)
-        of
-          true -> [{module, Module}];
-          false -> []
-        end,
-      NewMoreOpts =
-        case try Module:concuerror_options() catch _:_ -> [] end of
-          [] -> {Already, MissingModule ++ MoreOpts};
-          More when Already =:= none -> {File, MissingModule ++ More};
-          _ ->
-            Error =
-              "Both ~s and ~s export concuerror_options/0. Please remove one of"
-              " them.",
-            opt_error(Error, [Already, File])
-        end,
-      compile_and_load(Rest, {[File|Acc], NewMoreOpts}, Options);
+      compile_and_load(Rest, [File|Acc], Module, Options);
     {error, Error} ->
       opt_error(Error)
   end.
 
-add_missing_defaults([], Options) -> Options;
-add_missing_defaults([{Key, _} = Default|Rest], Options) ->
-  case proplists:is_defined(Key, Options) of
-    true -> add_missing_defaults(Rest, Options);
-    false -> [Default|add_missing_defaults(Rest, Options)]
+%%%-----------------------------------------------------------------------------
+
+add_options_from_module(Options) ->
+  case proplists:get_all_values(module, Options) of
+    [] ->
+      UndefinedEntryPoint =
+        "The module containing the main test function has not been specified."
+        " Add '-m <module>' or use '-h module' for more info.",
+      opt_error(UndefinedEntryPoint);
+    [Module] ->
+      Attributes =
+        try
+          Module:module_info(attributes)
+        catch
+          _:_ ->
+            opt_error("Could not find module ~w.", [Module])
+        end,
+      Forced =
+        get_options_from_attribute(?ATTRIBUTE_FORCED_OPTIONS, Attributes),
+      Others =
+        get_options_from_attribute(?ATTRIBUTE_OPTIONS, Attributes),
+      check_unique_options_from_module(Forced, Others),
+      WithForced =
+        override(?ATTRIBUTE_FORCED_OPTIONS, Forced, "command line", Options),
+      KeepLast = keep_last_option(WithForced),
+      override("command line", KeepLast, ?ATTRIBUTE_OPTIONS, Others);
+    _Modules ->
+      opt_error("Multiple instances of '--module' specified. See '-h module'.")
   end.
 
-add_missing_getopt_defaults(Opts) ->
+get_options_from_attribute(Attribute, Attributes) ->
+  case proplists:get_value(Attribute, Attributes) of
+    undefined ->
+      [];
+    Options ->
+      filter_from_attribute(Options, Attribute)
+  end.
+
+filter_from_attribute(OptionsRaw, Where) ->
+  Options = proplists:unfold(OptionsRaw),
+  KnownPred =
+    fun({Key, _Value}) -> lists:keymember(Key, 1, options()) end,
+  WarnUnknownFun =
+    fun({Key, _Value}) ->
+        io_lib:format("Unknown option '~p' in ~p.", [Key, Where])
+    end,
+  Known = filter_and_warn(KnownPred, WarnUnknownFun, Options),
+  Ignored = ignored_in_module_attributes(),
+  NotIgnoredPred =
+    fun({Key, _Value}) -> not lists:member(Key, Ignored) end,
+  WarnIgnoredFun =
+    fun({Key, _Value}) ->
+        io_lib:format("Option '~p' not allowed in ~p.", [Key, Where])
+    end,
+  filter_and_warn(NotIgnoredPred, WarnIgnoredFun, Known).
+
+filter_and_warn(Pred, WarnFun, Options) ->
+  {Satisfying, NotSatisfying} = lists:partition(Pred, Options),
+  case NotSatisfying of
+    [] -> ok;
+    [Option|_] -> opt_error(WarnFun(Option))
+  end,
+  Satisfying.
+
+check_unique_options_from_module(Forced, Options) ->
+  Pred = fun({Key, _Value}) -> not lists:member(Key, multiple_allowed()) end,
+  ForcedNonMultiple = lists:filter(Pred, Forced),
+  OptionsNonMultiple = lists:filter(Pred, Options),
+  check_unique_options_from_module_aux(ForcedNonMultiple, OptionsNonMultiple).
+
+check_unique_options_from_module_aux([], []) -> ok;
+check_unique_options_from_module_aux([], [{Key, _Value}|Rest]) ->
+  case proplists:is_defined(Key, Rest) of
+    true ->
+      Msg = "Multiple instances of option ~p not allowed in ~p.",
+      opt_error(Msg, [Key, ?ATTRIBUTE_OPTIONS]);
+    false ->
+      check_unique_options_from_module_aux([], Rest)
+  end;
+check_unique_options_from_module_aux([{Key, _Value}|Rest], Options) ->
+  case proplists:is_defined(Key, Rest) of
+    true ->
+      Msg = "Multiple instances of option ~p not allowed in ~p.",
+      opt_error(Msg, [Key, ?ATTRIBUTE_FORCED_OPTIONS]);
+    false ->
+      case proplists:is_defined(Key, Options) of
+        true ->
+          Msg = "Multiple instances of option ~p in ~p and ~p not allowed.",
+          opt_error(Msg, [Key, ?ATTRIBUTE_FORCED_OPTIONS, ?ATTRIBUTE_OPTIONS]);
+        false ->
+          check_unique_options_from_module_aux(Rest, Options)
+      end
+  end.
+
+%% This unintentionally puts the 'multiple_allowed' options in front.
+%% Possible to do otherwise but not needed.
+keep_last_option(Options) ->
+  Pred = fun({Key, _Value}) -> lists:member(Key, multiple_allowed()) end,
+  {Multiple, NonMultiple} = lists:partition(Pred, Options),
+  Fold =
+    fun({Key, _Value} = Option, Acc) ->
+        case proplists:lookup(Key, Acc) of
+          none -> [Option|Acc];
+          {Key, Value} ->
+            Msg = "Multiple instances of '--~s' defined. Using last value: ~p.",
+            opt_warn(Msg, [Key, Value]),
+            Acc
+        end
+    end,
+  KeepLastNonMultiple = lists:foldr(Fold, [], NonMultiple),
+  Multiple ++ KeepLastNonMultiple.
+
+override(_Where1, [], _Where2, Options) -> Options;
+override(Where1, [{Key, _Value} = Option|Rest], Where2, Options) ->
+  NewOptions =
+    case lists:member(Key, multiple_allowed()) of
+      true -> Options;
+      false ->
+        NO = proplists:delete(Key, Options),
+        case NO =:= Options of
+          true -> Options;
+          false ->
+            Warn = "Option ~p from ~s overrides the one specified in ~s.",
+            opt_warn(Warn, [Key, Where1, Where2]),
+            NO
+        end
+    end,
+  override(Where1, Rest, Where2, [Option|NewOptions]).
+
+%%------------------------------------------------------------------------------
+
+add_derived_defaults(Options) ->
+  add_derived_defaults(derived_defaults(), Options).
+
+add_derived_defaults([], Options) ->
+  Options;
+add_derived_defaults([{TestRaw, Defaults}|Rest], Options) ->
+  Test =
+    case is_tuple(TestRaw) of
+      true -> fun(Os) -> lists:member(TestRaw, Os) end;
+      false -> fun(Os) -> proplists:is_defined(TestRaw, Os) end
+    end,
+  ToAdd =
+    case Test(Options) of
+      true -> Defaults;
+      false -> []
+    end,
+  NewOptions = add_defaults(ToAdd, true, Options),
+  add_derived_defaults(Rest, NewOptions).
+
+add_defaults([], _Notify, Options) -> Options;
+add_defaults([{Key, Value} = Default|Rest], Notify, Options) ->
+  case proplists:is_defined(Key, Options) of
+    true -> add_defaults(Rest, Notify, Options);
+    false ->
+      case Notify of
+        true ->
+          Msg = "Using '--~p ~p'.",
+          opt_info(Msg, [Key, Value]);
+        false -> ok
+      end,
+      add_defaults(Rest, Notify, [Default|Options])
+  end.
+
+%%------------------------------------------------------------------------------
+
+add_getopt_defaults(Opts) ->
   Defaults =
-    [{element(?OPTION_KEY, Opt), element(?OPTION_GETOPT_DEFAULT, Opt)}
+    [{element(?OPTION_KEY, Opt), element(?OPTION_GETOPT_TYPE_DEFAULT, Opt)}
      || Opt <- options()],
   NoTestIfEntryPoint =
     case proplists:is_defined(entry_point, Opts) of
@@ -654,6 +690,102 @@ add_missing_getopt_defaults(Opts) ->
     ],
   MissingDefaults ++ Opts.
 
+%%------------------------------------------------------------------------------
+
+process_options(Options) ->
+  process_options(Options, []).
+
+process_options([], Acc) -> lists:reverse(Acc);
+process_options([{Key, Value} = Option|Rest], Acc) ->
+  case Key of
+    _  when
+        Key =:= ignore_error;
+        Key =:= non_racing_system;
+        Key =:= treat_as_normal
+        ->
+      Values = lists:flatten([Value|proplists:get_all_values(Key, Rest)]),
+      NewRest = proplists:delete(Key, Rest),
+      process_options(NewRest, [{Key, lists:usort(Values)}|Acc]);
+    _ when
+        Key =:= pa;
+        Key =:= pz
+        ->
+      PathAdd =
+        case Key of
+          pa -> fun code:add_patha/1;
+          pz -> fun code:add_pathz/1
+        end,
+      case PathAdd(Value) of
+        true -> ok;
+        {error, bad_directory} ->
+          opt_error("Could not add '~s' (-~p) to code path.", [Value, Key])
+      end,
+      process_options(Rest, Acc);
+    _ when
+        Key =:= graph;
+        Key =:= output
+        ->
+      case file:open(Value, [write]) of
+        {ok, IoDevice} ->
+          process_options(Rest, [{Key, {IoDevice, Value}}|Acc]);
+        {error, _} ->
+          opt_error("Could not open '--~w' file ~s for writing.", [Key, Value])
+      end;
+    module ->
+      case proplists:get_value(test, Rest, 1) of
+        Name when is_atom(Name) ->
+          NewRest = proplists:delete(test, Rest),
+          process_options(NewRest, [{entry_point, {Value, Name, []}}|Acc]);
+        _ -> opt_error("The name of the test function is missing")
+      end;
+    optimal ->
+      "0.1" ++ [_|_] = ?VSN,
+      Msg =
+        "The option '--optimal' is deprecated."
+        " Use '--dpor (optimal | source)' instead.",
+      opt_error(Msg);
+    MaybeInfinity
+      when
+        MaybeInfinity =:= interleaving_bound;
+        MaybeInfinity =:= timeout
+        ->
+      Limit =
+        case MaybeInfinity of
+          interleaving_bound -> 0;
+          timeout -> ?MINIMUM_TIMEOUT
+        end,
+      case Value of
+        infinity ->
+          process_options(Rest, [Option|Acc]);
+        -1 ->
+          process_options(Rest, [{MaybeInfinity, infinity}|Acc]);
+        N when is_integer(N), N >= Limit ->
+          process_options(Rest, [Option|Acc]);
+        _Else ->
+          Error = "The value of '--~s' must be -1 (infinity) or >= ~w",
+          opt_error(Error, [Key, Limit])
+      end;
+    test ->
+      case Rest =:= [] of
+        true -> process_options(Rest, Acc);
+        false -> process_options(Rest ++ [Option], Acc)
+      end;
+    _ ->
+      process_options(Rest, [Option|Acc])
+  end.
+
+%%------------------------------------------------------------------------------
+
+consistent(Options) ->
+  CheckValidity =
+    fun({Key, Value}) ->
+        ValidityCheck = check_validity(Key),
+        check_validity(Key, Value, ValidityCheck)
+    end,
+  lists:foreach(CheckValidity, Options),
+  consistent(Options, []).
+
+check_validity(_Key, _Value, skip) -> ok;
 check_validity(Key, Value, Valid) when is_list(Valid) ->
   case lists:member(Value, Valid) of
     true -> ok;
@@ -666,9 +798,6 @@ check_validity(Key, Value, {Valid, Explain}) when is_function(Valid) ->
     false ->
       opt_error("The value of '--~s' must be ~s.", [Key, Explain])
   end.
-
-consistent(Options) ->
-  consistent(Options, []).
 
 consistent([], _) -> ok;
 consistent([{assertions_only, true} = Option|Rest], Acc) ->
@@ -727,24 +856,31 @@ opt_error(Format, Data) ->
   to_stderr("  Use --help for more information.", []),
   throw(opt_error).
 
+opt_info(Format, Data) ->
+  opt_log(info, Format, Data).
+
 opt_warn(Format, Data) ->
-  Warnings =
-    case get(warnings) of
+  opt_log(warnings, Format, Data).
+
+opt_log(What, Format, Data) ->
+  Whats =
+    case get(What) of
       undefined -> [];
       W -> W
     end,
-  put(warnings, [io_lib:format(Format ++ "~n", Data)|Warnings]),
+  put(What, [io_lib:format(Format ++ "~n", Data)|Whats]),
   ok.
 
-assume(Opt, Value, Options) ->
-  Msg = "Missing value for --~p. Assuming '--~p ~p'.",
-  opt_warn(Msg, [Opt, Opt, Value]),
-  [{Opt, Value}|Options].
+get_info() ->
+  get_log(info).
 
-get_all_warnings() ->
-  case erase(warnings) of
+get_warnings() ->
+  get_log(warnings).
+
+get_log(What) ->
+  case erase(What) of
     undefined -> [];
-    Warnings -> lists:reverse(Warnings)
+    Whats -> lists:reverse(Whats)
   end.
 
 to_stderr(Format, Data) ->

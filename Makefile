@@ -19,6 +19,7 @@ SOURCES = $(wildcard src/*.erl)
 MODULES = $(SOURCES:src/%.erl=%)
 BEAMS = $(MODULES:%=ebin/%.beam)
 
+SHA_HRL=src/concuerror_sha.hrl
 VERSION_HRL=src/concuerror_version.hrl
 
 ###-----------------------------------------------------------------------------
@@ -45,7 +46,7 @@ $(NAME): $(DEPS_BEAMS) $(BEAMS)
 
 -include $(MODULES:%=ebin/%.Pbeam)
 
-ebin/%.beam: src/%.erl Makefile | ebin $(VERSION_HRL)
+ebin/%.beam: src/%.erl Makefile | ebin $(SHA_HRL) $(VERSION_HRL)
 	@printf " DEPS $<\n"
 	@erlc -o ebin -MD -MG $<
 	@printf " ERLC $<\n"
@@ -53,13 +54,16 @@ ebin/%.beam: src/%.erl Makefile | ebin $(VERSION_HRL)
 
 ###-----------------------------------------------------------------------------
 
-$(VERSION_HRL): version
-	@printf " GEN  $@\n"
+$(SHA_HRL): version
 	@printf -- "-define(GIT_SHA, " > $@.tmp
 	@git rev-parse --short --sq HEAD >> $@.tmp
 	@printf ").\n" >> $@.tmp
+	@cmp -s $@.tmp $@ > /dev/null || (printf " GEN  $@\n" && cp $@.tmp $@)
+	@$(RM) $@.tmp
+
+$(VERSION_HRL): version
 	@src/versions $(VERSION) >> $@.tmp
-	@cmp -s $@.tmp $@ > /dev/null || cp $@.tmp $@
+	@cmp -s $@.tmp $@ > /dev/null || (printf " GEN  $@\n" && cp $@.tmp $@)
 	@$(RM) $@.tmp
 
 .PHONY: version
@@ -127,7 +131,7 @@ tests-real: default
 .PHONY: cover
 cover: cover/data
 	$(RM) $</*
-	export CONCUERROR_COVER=cover/data; $(MAKE) tests tests-real
+	export CONCUERROR_COVER=$(abspath cover/data); $(MAKE) tests tests-real
 	cd cover; ./cover-report data
 
 ###-----------------------------------------------------------------------------
@@ -144,7 +148,7 @@ travis_has_latest_otp_version:
 
 .PHONY: clean
 clean:
-	$(RM) $(NAME) $(VERSION_HRL) concuerror_report.txt
+	$(RM) $(NAME) $(SHA_HRL) $(VERSION_HRL) concuerror_report.txt
 	$(RM) -r ebin cover-data
 
 .PHONY: distclean

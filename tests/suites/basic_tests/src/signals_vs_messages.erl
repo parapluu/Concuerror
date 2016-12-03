@@ -1,11 +1,9 @@
 -module(signals_vs_messages).
 
 -export([scenarios/0]).
--export([concuerror_options/0]).
 -export([test/0, test1/0]).
 
-concuerror_options() ->
-    [{treat_as_normal, die}].
+-concuerror_options_forced([{treat_as_normal, die}]).
 
 scenarios() ->
     [{T, inf, dpor} || T <- [test, test1]].

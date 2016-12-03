@@ -2,10 +2,8 @@
 
 -export([scenarios/0]).
 -export([test/0]).
--export([concuerror_options/0]).
 
-concuerror_options() ->
-    [{treat_as_normal, shutdown}].
+-concuerror_options_forced([{treat_as_normal, shutdown}]).
 
 scenarios() ->
     [{test, inf, dpor}].

@@ -1,11 +1,9 @@
 -module(ignore_error_2).
 
 -export([scenarios/0]).
--export([concuerror_options/0]).
 -export([test/0]).
 
-concuerror_options() ->
-    [{ignore_error, deadlock}].
+-concuerror_options_forced([{ignore_error, deadlock}]).
 
 scenarios() ->
     [{test, inf, dpor}].

@@ -131,6 +131,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     # Print the results
     lock.acquire()
     total_tests.value += 1
+    suitename = re.sub('\_tests$', '', suite)
     if equalRes and finished:
         # We don't need to keep the results file
         try:
@@ -138,11 +139,11 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
         except:
             pass
         print "%-10s %-20s %-50s  \033[01;32mok\033[00m" % \
-              (suite, name, "("+funn+",  "+preb_output+",  "+dpor_output+")")
+              (suitename, name, "("+funn+",  "+preb_output+",  "+dpor_output+")")
     else:
         total_failed.value += 1
         print "%-10s %-20s %-50s  \033[01;31mfailed\033[00m" % \
-              (suite, name, "("+funn+",  "+preb_output+",  "+dpor_output+")")
+              (suitename, name, "("+funn+",  "+preb_output+",  "+dpor_output+")")
     lock.release()
 
 def equalResults(suite, name, orig, rslt):

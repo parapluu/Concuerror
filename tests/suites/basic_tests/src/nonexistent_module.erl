@@ -1,4 +1,4 @@
--module(test_template).
+-module(nonexistent_module).
 
 -export([test/0]).
 
@@ -12,13 +12,13 @@
 scenarios() -> [{test, inf, optimal}].
 
 exceptional() ->
-  fun(_Expected, _Actual) ->
-      %% Cmd = "grep \"<text>\" ",
-      %% [_,_,_|_] = os:cmd(Cmd ++ Actual),
-      false
+  fun(_Expected, Actual) ->
+      Cmd = "grep \"Could not load module 'nonexistent_module_42'\" ",
+      [_,_,_|_] = os:cmd(Cmd ++ Actual),
+      true
   end.
 
 %%------------------------------------------------------------------------------
 
 test() ->
-  ok.
+  nonexistent_module_42:test().

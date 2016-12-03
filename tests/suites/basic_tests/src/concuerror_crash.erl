@@ -1,11 +1,12 @@
 -module(concuerror_crash).
 
 -export([scenarios/0]).
--export([concuerror_options/0]).
 -export([test/0]).
 
-concuerror_options() ->
-    [{timeout, 3000}, {report_unknown, false}, {assume_racing, true}].
+-concuerror_options_forced(
+   [ {timeout, 3000}
+   , {assume_racing, true}
+   ]).
 
 scenarios() ->
     [{test, inf, dpor, crash}].

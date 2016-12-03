@@ -2,7 +2,8 @@
 
 -export([scenarios/0]).
 -export([test/0]).
--export([concuerror_options/0]).
+
+-concuerror_options_forced([{instant_delivery, false}]).
 
 -record(activity, {
         timestamp       ,%:: timestamp() ,
@@ -26,9 +27,6 @@
 %%% Tests scenarios
 %%%
 scenarios() -> [{test, inf, dpor}].
-
-concuerror_options() ->
-  [{instant_delivery, false}].
 
 test() -> spawn(fun start/0), spawn(fun start/0).
 
