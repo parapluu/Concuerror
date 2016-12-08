@@ -425,6 +425,7 @@ finalize_2(Options) ->
   Passes =
     [ fun proplists:unfold/1
     , fun set_verbosity/1
+    , fun add_to_path/1
     , fun load_files/1
     , fun add_options_from_module/1
     , fun add_derived_defaults/1
@@ -477,6 +478,26 @@ set_verbosity(Options) ->
   end,
   NewOptions = proplists:delete(verbosity, Options),
   [{verbosity, Verbosity}|NewOptions].
+
+%%%-----------------------------------------------------------------------------
+
+add_to_path(Options) ->
+  Foreach =
+    fun({Key, Value}) when Key =:= pa; Key =:= pz ->
+        PathAdd =
+          case Key of
+            pa -> fun code:add_patha/1;
+            pz -> fun code:add_pathz/1
+          end,
+        case PathAdd(Value) of
+          true -> ok;
+          {error, bad_directory} ->
+            opt_error("Could not add '~s' (-~p) to code path.", [Value, Key])
+        end;
+       (_) -> ok
+    end,
+  lists:foreach(Foreach, Options),
+  Options.
 
 %%%-----------------------------------------------------------------------------
 
@@ -706,21 +727,6 @@ process_options([{Key, Value} = Option|Rest], Acc) ->
       Values = lists:flatten([Value|proplists:get_all_values(Key, Rest)]),
       NewRest = proplists:delete(Key, Rest),
       process_options(NewRest, [{Key, lists:usort(Values)}|Acc]);
-    _ when
-        Key =:= pa;
-        Key =:= pz
-        ->
-      PathAdd =
-        case Key of
-          pa -> fun code:add_patha/1;
-          pz -> fun code:add_pathz/1
-        end,
-      case PathAdd(Value) of
-        true -> ok;
-        {error, bad_directory} ->
-          opt_error("Could not add '~s' (-~p) to code path.", [Value, Key])
-      end,
-      process_options(Rest, Acc);
     _ when
         Key =:= graph;
         Key =:= output

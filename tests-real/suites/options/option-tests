@@ -235,6 +235,15 @@ good
 
 consolehas "Setting 'dpor' to 'optimal' is not allowed when 'disable_sleep_sets' is set to true."
 
+testing "Can find default in path"
+rm -rf path
+rm -rf foo.beam
+mkdir path
+erlc -o path foo.erl
+$CONCUERROR --pz path -m foo 2> $Console
+rm -rf path
+good
+
 trap - 0
 
 echo -e "\e[1;32mSUCCESS!\e[0m"
