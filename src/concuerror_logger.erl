@@ -93,11 +93,15 @@ initialize(Options) ->
   concuerror_loader:register_logger(self()),
   ok = setup_symbolic_names(SymbolicNames, Processes),
   Graph = ?opt(graph, Options),
+  Header =
+    io_lib:format(
+      "Concuerror ~s (~w) started at ~s~n",
+      [?VSN, ?GIT_SHA, Timestamp]),
   Ticker =
     case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ltiming) of
       true -> none;
       false ->
-        to_stderr("Concuerror started at ~s~n", [Timestamp]),
+        to_stderr("~s", [Header]),
         to_stderr("Writing results in ~s~n~n~n", [OutputName]),
         if Graph =:= undefined -> ok;
            true ->
@@ -111,12 +115,12 @@ initialize(Options) ->
     delete_props(
       [graph, output, processes, timers, verbosity],
       Options),
+  io:format(Output, "~s", [Header]),
   io:format(
     Output,
-    "Concuerror ~s (~w) started at ~s.~n"
     " Options:~n"
     "  ~p~n",
-    [?VSN, ?GIT_SHA, Timestamp, lists:sort(PrintableOptions)]),
+    [lists:sort(PrintableOptions)]),
   GraphData = graph_preamble(Graph),
   #logger_state{
      graph_data = GraphData,
