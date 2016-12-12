@@ -1,6 +1,6 @@
 %% -*- erlang-indent-level: 2 -*-
 
--module(concuerror_printer).
+-module(concuerror_io_lib).
 
 -export([error_s/2, pretty/3, pretty_s/2]).
 

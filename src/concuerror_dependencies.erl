@@ -635,4 +635,4 @@ show_undefined_dependency(A, B) ->
     " in Concuerror's internals:~n"
     "  1) ~s~n  2) ~s~n"
     " Please notify the developers to add info about this pair.",
-    [concuerror_printer:pretty_s(#event{event_info = I}, 10) || I <- [A,B]]).
+    [concuerror_io_lib:pretty_s(#event{event_info = I}, 10) || I <- [A,B]]).

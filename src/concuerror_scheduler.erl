@@ -1371,7 +1371,7 @@ explain_error({optimal_sleep_set_block, Origin, Who}) ->
    );
 explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
   [EString, NEString] =
-    [concuerror_printer:pretty_s(E, Depth) || E <- [Event, NewEvent]],
+    [concuerror_io_lib:pretty_s(E, Depth) || E <- [Event, NewEvent]],
   [Original, New] =
     case EString =/= NEString of
       true -> [EString, NEString];
