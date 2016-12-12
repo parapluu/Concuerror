@@ -275,7 +275,10 @@ loop(Message, State) ->
           false ->
             case Verbosity < Level of
               true  -> ok;
-              false -> printout(State, Level, Format, Data)
+              false ->
+                LevelFormat = verbosity_to_tag(Level),
+                NewFormat = LevelFormat ++ Format,
+                printout(State, NewFormat, Data)
             end,
             NLM =
               case Level < ?ltiming of
@@ -416,11 +419,6 @@ printout(#logger_state{ticker = Ticker} = State, Format, Data)
   to_stderr("~s", [IntMsg]);
 printout(_, Format, Data) ->
   to_stderr(Format, Data).
-
-printout(State, Level, Format, Data) ->
-  Tag = verbosity_to_tag(Level),
-  NewFormat = Tag ++ Format,
-  printout(State, NewFormat, Data).
 
 print_log_msgs(Output, LogMsgs) ->
   ForeachInner = fun({Format, Data}) -> io:format(Output,Format,Data) end,
