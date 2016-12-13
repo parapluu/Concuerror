@@ -67,10 +67,9 @@ timediff(After, Before) ->
           print_depth                  :: pos_integer(),
           rate_timestamp = timestamp() :: timestamp(),
           rate_prev = 0                :: non_neg_integer(),
-          rate_width = 3               :: non_neg_integer(),
           streams = []                 :: [{stream(), [string()]}],
           timestamp = timestamp()      :: timestamp(),
-          ticker = none                :: pid() | 'none' | 'show',
+          ticker = none                :: pid() | 'none' | 'force',
           traces_explored = 0          :: non_neg_integer(),
           traces_ssb = 0               :: non_neg_integer(),
           traces_total = 0             :: non_neg_integer(),
@@ -121,7 +120,7 @@ initialize(Options) ->
             {_, GraphName} = Graph,
             to_stderr("Writing graph in ~s~n", [GraphName])
         end,
-        to_stderr("~n~n",[]),
+        rate_initial_padding(),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
@@ -333,7 +332,9 @@ loop(Message, State) ->
       loop(graph_command(Command, State));
     {finish, SchedulerStatus, Scheduler} ->
       case is_pid(Ticker) of
-        true -> Ticker ! stop;
+        true ->
+          rate_clear(),
+	  stop_ticker(Ticker);
         false -> ok
       end,
       separator(Output, $#),
@@ -362,13 +363,14 @@ loop(Message, State) ->
       Format = "Done at ~s (Exit status: ~p)~n  Summary: ",
       Args = [FinishTimestamp, ExitStatus],
       to_file(Output, Format, Args),
-      IntMsg = interleavings_message(State),
+      IntMsg = final_interleavings_message(State),
       to_file(Output, "~s", [IntMsg]),
       ok = close_files(State),
       case Verbosity =:= ?lquiet of
         true -> ok;
         false ->
-          force_printout(State, Format, Args)
+          FinalFormat = Format ++ IntMsg,
+          force_printout(State, FinalFormat, Args)
       end,
       Scheduler ! {finished, ExitStatus},
       ok;
@@ -448,8 +450,7 @@ loop(Message, State) ->
       loop(NewState);
     tick ->
       clear_ticks(),
-      NewState = update_on_ticker(State),
-      loop(NewState)
+      loop(printout(State, "", []))
   end.
 
 format_utc_timestamp() ->
@@ -463,14 +464,13 @@ format_utc_timestamp() ->
                 [Day, Mstr, Year, Hour, Minute, Second]).
 
 force_printout(State, Format, Data) ->
-  printout(State#logger_state{ticker = show}, Format, Data).
+  printout(State#logger_state{ticker = force}, Format, Data).
 
 printout(#logger_state{ticker = Ticker} = State, Format, Data)
   when Ticker =/= none ->
-  IntMsg = interleavings_message(State),
-  clear_progress(),
+  rate_clear(),
   to_stderr(Format, Data),
-  to_stderr("~s", [IntMsg]);
+  rate_print(State);
 printout(_, Format, Data) ->
   to_stderr(Format, Data).
 
@@ -512,22 +512,12 @@ level_to_string(Level) ->
     _ -> ""
   end.
 
-clear_progress() ->
-  to_stderr("~c[1A~c[2K\r", [27, 27]).
-
-to_stderr(Format, Data) ->
-  to_file(standard_error, Format, Data).
-
-to_file(disable, _, _) ->
-  ok;
-to_file(Output, Format, Data) ->
-  Msg = io_lib:format(Format, Data),
-  io:format(Output, "~s", [Msg]).
+%%------------------------------------------------------------------------------
 
 ticker(Logger) ->
   Logger ! tick,
   receive
-    stop -> ok
+    {stop, L} -> L ! stopped
   after
     ?TICKER_TIMEOUT -> ticker(Logger)
   end.
@@ -539,33 +529,13 @@ clear_ticks() ->
     0 -> ok
   end.
 
-update_on_ticker(State) ->
-  {Rate, NewState} = update_rate(State),
-  printout(State, "~s", [Rate]),
-  NewState.
+stop_ticker(Ticker) ->
+  Ticker ! {stop, self()},
+  receive
+    stopped -> ok
+  end.
 
-update_rate(State) ->
-  #logger_state{
-     rate_timestamp = Old,
-     rate_prev = Prev,
-     rate_width = OldWidth,
-     traces_explored = Current,
-     traces_ssb = TracesSSB
-    } = State,
-  New = timestamp(),
-  Time = timediff(New, Old),
-  Useful = Current - TracesSSB,
-  Diff = Useful - Prev,
-  Rate = (Diff / (Time + 0.0001)) + 0.01,
-  Width = max(OldWidth, trunc(math:log10(Rate)) + 3),
-  WidthStr = [$0 + Width],
-  RateStr = io_lib:format("(~"++WidthStr++".1f/s) ", [Rate]),
-  NewState =
-    State#logger_state{
-      rate_timestamp = New,
-      rate_prev = Useful,
-      rate_width = Width},
-  {RateStr, NewState}.
+%%------------------------------------------------------------------------------
 
 separator_string(Char) ->
   lists:duplicate(80, Char).
@@ -595,7 +565,78 @@ stream_tag_to_string(standard_io) -> "Standard Output:~n";
 stream_tag_to_string(standard_error) -> "Standard Error:~n";
 stream_tag_to_string(race) -> "New races found:". % ~n is added by buffer
 
-interleavings_message(State) ->
+%%------------------------------------------------------------------------------
+
+rate_initial_padding() ->
+  to_stderr("~n~n~n~n~n~n",[]).
+
+rate_clear() ->
+  delete_lines(5).
+
+delete_lines(0) -> ok;
+delete_lines(N) ->
+  to_stderr("~c[1A~c[2K\r", [27, 27]),
+  delete_lines(N - 1).
+
+rate_print(State) ->
+  {Str, NewState} = rate_content(State),
+  Line = rate_line(State),
+  to_stderr("~s~n", [Line]),
+  to_stderr("~s~n", [rate_header(State)]),
+  to_stderr("~s~n", [Line]),
+  to_stderr("~s~n", [Str]),
+  to_stderr("~s~n", [Line]),
+  NewState.
+
+rate_header(#logger_state{traces_ssb = 0}) ->
+  "   Errors | Explored |  Planned |   Rate ";
+rate_header(_State) ->
+  "   Errors | Explored |  Planned |     SSB |   Rate ".
+
+rate_line(#logger_state{traces_ssb = 0}) ->
+  "-----------------------------------------";
+rate_line(_State) ->
+  "---------------------------------------------------".
+
+rate_content(State) ->
+  #logger_state{
+     errors = Errors,
+     rate_timestamp = Old,
+     rate_prev = Prev,
+     traces_explored = TracesExplored,
+     traces_ssb = TracesSSB,
+     traces_total = TracesTotal
+    } = State,
+  New = timestamp(),
+  Time = timediff(New, Old),
+  Useful = TracesExplored - TracesSSB,
+  Diff = Useful - Prev,
+  Rate = round((Diff / (Time + 0.0001))),
+  SSBStr =
+    case TracesSSB =:= 0 of
+      true -> "";
+      false -> io_lib:format(" ~7w |", [TracesSSB])
+    end,
+  Str =
+    io_lib:format(
+      " ~8w | ~8w | ~8w |~s ~3w /s ",
+      [Errors, TracesExplored, TracesTotal, SSBStr, Rate]
+     ),
+  NewState = State#logger_state{rate_timestamp = New, rate_prev = Useful},
+  {Str, NewState}.
+
+to_stderr(Format, Data) ->
+  to_file(standard_error, Format, Data).
+
+to_file(disable, _, _) ->
+  ok;
+to_file(Output, Format, Data) ->
+  Msg = io_lib:format(Format, Data),
+  io:format(Output, "~s", [Msg]).
+
+%%------------------------------------------------------------------------------
+
+final_interleavings_message(State) ->
   #logger_state{
      bound_reached = BoundReached,
      errors = Errors,
