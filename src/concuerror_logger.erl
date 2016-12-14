@@ -29,6 +29,7 @@
 -type unique_ids() :: set().
 -else.
 -type unique_ids() :: sets:set(integer()).
+-type queue()      :: queue:queue().
 -endif.
 
 %%------------------------------------------------------------------------------
@@ -53,11 +54,21 @@ timediff(After, Before) ->
 
 %%------------------------------------------------------------------------------
 
+-record(rate_info, {
+          delay     :: pos_integer(),
+          timestamp :: timestamp(),
+          prev      :: non_neg_integer(),
+          queue     :: queue(),
+          smooth    :: 'wait' | pos_integer(),
+          sum       :: float()
+         }).
+
 -record(logger_state, {
           already_emitted = sets:new() :: unique_ids(),
           bound_reached = false        :: boolean(),
           emit_logger_tips = initial   :: 'initial' | 'false',
           errors = 0                   :: non_neg_integer(),
+          estimator                    :: concuerror_estimator:estimator(),
           graph_data                   :: graph_data() | 'disable',
           interleaving_bound           :: concuerror_options:bound(),
           last_had_errors = false      :: boolean(),
@@ -65,8 +76,7 @@ timediff(After, Before) ->
           output                       :: file:io_device() | 'disable',
           output_name                  :: string(),
           print_depth                  :: pos_integer(),
-          rate_timestamp = timestamp() :: timestamp(),
-          rate_prev = 0                :: non_neg_integer(),
+          rate_info = init_rate_info() :: #rate_info{},
           streams = []                 :: [{stream(), [string()]}],
           timestamp = timestamp()      :: timestamp(),
           ticker = none                :: pid() | 'none' | 'force',
@@ -82,15 +92,16 @@ timediff(After, Before) ->
 
 start(Options) ->
   Parent = self(),
+  Ref = make_ref(),
   Fun =
     fun() ->
         State = initialize(Options),
-        Parent ! logger_ready,
+        Parent ! Ref,
         loop(State)
     end,
   P = spawn_link(Fun),
   receive
-    logger_ready -> P
+    Ref -> P
   end.
 
 initialize(Options) ->
@@ -120,13 +131,13 @@ initialize(Options) ->
             {_, GraphName} = Graph,
             to_stderr("Writing graph in ~s~n", [GraphName])
         end,
-        rate_initial_padding(),
+        progress_initial_padding(),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
   PrintableOptions =
     delete_props(
-      [graph, output, processes, timers, verbosity],
+      [estimator, graph, output, processes, timers, verbosity],
       Options),
   to_file(Output, "~s", [Header]),
   to_file(
@@ -137,6 +148,7 @@ initialize(Options) ->
   ?autoload_and_log(io_lib, self()),
   ok = setup_symbolic_names(SymbolicNames, Processes),
   #logger_state{
+     estimator = ?opt(estimator, Options),
      graph_data = GraphData,
      interleaving_bound = ?opt(interleaving_bound, Options),
      output = Output,
@@ -333,7 +345,7 @@ loop(Message, State) ->
     {finish, SchedulerStatus, Scheduler} ->
       case is_pid(Ticker) of
         true ->
-          rate_clear(),
+          progress_clear(),
 	  stop_ticker(Ticker);
         false -> ok
       end,
@@ -468,9 +480,9 @@ force_printout(State, Format, Data) ->
 
 printout(#logger_state{ticker = Ticker} = State, Format, Data)
   when Ticker =/= none ->
-  rate_clear(),
+  progress_clear(),
   to_stderr(Format, Data),
-  rate_print(State);
+  progress_print(State);
 printout(_, Format, Data) ->
   to_stderr(Format, Data).
 
@@ -567,10 +579,10 @@ stream_tag_to_string(race) -> "New races found:". % ~n is added by buffer
 
 %%------------------------------------------------------------------------------
 
-rate_initial_padding() ->
+progress_initial_padding() ->
   to_stderr("~n~n~n~n~n~n",[]).
 
-rate_clear() ->
+progress_clear() ->
   delete_lines(5).
 
 delete_lines(0) -> ok;
@@ -578,52 +590,125 @@ delete_lines(N) ->
   to_stderr("~c[1A~c[2K\r", [27, 27]),
   delete_lines(N - 1).
 
-rate_print(State) ->
-  {Str, NewState} = rate_content(State),
-  Line = rate_line(State),
+progress_print(State) ->
+  {Str, NewState} = progress_content(State),
+  Line = progress_line(State),
   to_stderr("~s~n", [Line]),
-  to_stderr("~s~n", [rate_header(State)]),
+  to_stderr("~s~n", [progress_header(State)]),
   to_stderr("~s~n", [Line]),
   to_stderr("~s~n", [Str]),
   to_stderr("~s~n", [Line]),
   NewState.
 
-rate_header(#logger_state{traces_ssb = 0}) ->
-  "   Errors | Explored |  Planned |   Rate ";
-rate_header(_State) ->
-  "   Errors | Explored |  Planned |     SSB |   Rate ".
+progress_header(#logger_state{traces_ssb = 0}) ->
+  progress_header_common("");
+progress_header(_State) ->
+  progress_header_common("|     SSB ").
 
-rate_line(#logger_state{traces_ssb = 0}) ->
-  "-----------------------------------------";
-rate_line(_State) ->
-  "---------------------------------------------------".
+progress_header_common(SSB) ->
+  "    Errors |  Explored " ++ SSB ++
+    "| Planned | ~ Rate |  Total(?) | Time(?) ".
 
-rate_content(State) ->
+progress_line(#logger_state{traces_ssb = 0}) ->
+  progress_line_common("");
+progress_line(_State) ->
+  progress_line_common("-----------").
+
+progress_line_common(SSB) ->
+  "-----------------------" ++ SSB ++
+    "-----------------------------------------".
+
+progress_content(State) ->
   #logger_state{
      errors = Errors,
-     rate_timestamp = Old,
-     rate_prev = Prev,
+     estimator = Estimator,
+     rate_info = RateInfo,
      traces_explored = TracesExplored,
      traces_ssb = TracesSSB,
      traces_total = TracesTotal
     } = State,
-  New = timestamp(),
-  Time = timediff(New, Old),
+  Estimation = max(concuerror_estimator:poll(Estimator), TracesTotal),
   Useful = TracesExplored - TracesSSB,
-  Diff = Useful - Prev,
-  Rate = round((Diff / (Time + 0.0001))),
+  {Rate, NewRateInfo} = update_rate(RateInfo, Useful),
+  Planned = TracesTotal - TracesExplored,
   SSBStr =
     case TracesSSB =:= 0 of
       true -> "";
       false -> io_lib:format(" ~7w |", [TracesSSB])
     end,
+  CompletionStr =
+    concuerror_estimator:estimate_completion(Estimation, TracesExplored, Rate),
+  RateStr =
+    case Rate of
+      wait -> "  wait";
+      0    -> " <1 /s";
+      _    -> io_lib:format("~3w /s", [Rate])
+    end,
   Str =
     io_lib:format(
-      " ~8w | ~8w | ~8w |~s ~3w /s ",
-      [Errors, TracesExplored, TracesTotal, SSBStr, Rate]
+      " ~9w | ~9w |~s ~7w | ~s | ~9w | ~s",
+      [Errors, TracesExplored, SSBStr, Planned,
+       RateStr, two_significant(Estimation), CompletionStr]
      ),
-  NewState = State#logger_state{rate_timestamp = New, rate_prev = Useful},
+  NewState = State#logger_state{rate_info = NewRateInfo},
   {Str, NewState}.
+
+two_significant(Other) when not is_integer(Other) -> Other;
+two_significant(Number) when Number < 100 -> Number;
+two_significant(Number) -> 10 * two_significant(Number div 10 + 1).
+
+%%------------------------------------------------------------------------------
+
+-define(SAMPLES, 5).
+
+init_rate_info() ->
+  #rate_info{
+     delay     = ?SAMPLES,
+     timestamp = timestamp(),
+     prev      = 0,
+     queue     = queue:from_list([0 || _ <- lists:seq(1, ?SAMPLES)]),
+     smooth    = wait,
+     sum       = 0
+    }.
+
+update_rate(RateInfo, Useful) ->
+  #rate_info{
+     delay     = Delay,
+     timestamp = Old,
+     prev      = Prev,
+     queue     = Queue,
+     sum       = Sum
+    } = RateInfo,
+  New = timestamp(),
+  Time = timediff(New, Old),
+  Diff = Useful - Prev,
+  CurrentRate = Diff / (Time + 0.0001),
+  {{value, Out}, OutQueue} = queue:out(Queue),
+  NewQueue = queue:in(CurrentRate, OutQueue),
+  NewSum = Sum + CurrentRate - Out,
+  UpdatedRateInfo =
+    RateInfo#rate_info{
+      timestamp = New,
+      prev      = Useful,
+      queue     = NewQueue,
+      sum       = NewSum
+     },
+  NewRateInfo =
+    case Delay > 0 of
+      true ->
+        NewDelay = Delay - 1,
+        UpdatedRateInfo#rate_info{delay = NewDelay};
+      false ->
+        NewSmooth = round(NewSum/?SAMPLES),
+        UpdatedRateInfo#rate_info{
+          delay = ?SAMPLES,
+          smooth = NewSmooth
+         }
+    end,
+  Rate = NewRateInfo#rate_info.smooth,
+  {Rate, NewRateInfo}.
+
+%%------------------------------------------------------------------------------
 
 to_stderr(Format, Data) ->
   to_file(standard_error, Format, Data).

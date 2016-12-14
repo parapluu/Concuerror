@@ -37,7 +37,8 @@ run(RawOptions) ->
 start(Options, LogMsgs) ->
   error_logger:tty(false),
   Processes = ets:new(processes, [public]),
-  LoggerOptions = [{processes, Processes}|Options],
+  Estimator = concuerror_estimator:start_link(Options),
+  LoggerOptions = [{estimator, Estimator},{processes, Processes}|Options],
   Logger = concuerror_logger:start(LoggerOptions),
   _ = [?log(Logger, Level, Format, Args) || {Level, Format, Args} <- LogMsgs],
   SchedulerOptions = [{logger, Logger}|LoggerOptions],
@@ -53,6 +54,7 @@ start(Options, LogMsgs) ->
     end,
   ?trace(Logger, "Reached the end!~n",[]),
   ExitStatus = concuerror_logger:finish(Logger, SchedulerStatus),
+  concuerror_estimator:finish(Estimator),
   ets:delete(Processes),
   ExitStatus.
 
