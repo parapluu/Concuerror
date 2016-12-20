@@ -29,7 +29,6 @@
 -type unique_ids() :: set().
 -else.
 -type unique_ids() :: sets:set(integer()).
--type queue()      :: queue:queue().
 -endif.
 
 %%------------------------------------------------------------------------------
@@ -55,12 +54,10 @@ timediff(After, Before) ->
 %%------------------------------------------------------------------------------
 
 -record(rate_info, {
-          delay     :: pos_integer(),
-          timestamp :: timestamp(),
+          average   :: 'wait' | average:average(),
           prev      :: non_neg_integer(),
-          queue     :: queue(),
-          smooth    :: 'wait' | pos_integer(),
-          sum       :: float()
+          ready     :: boolean(),
+          timestamp :: timestamp()
          }).
 
 -record(logger_state, {
@@ -659,53 +656,42 @@ two_significant(Number) -> 10 * two_significant(Number div 10 + 1).
 
 %%------------------------------------------------------------------------------
 
--define(SAMPLES, 5).
-
 init_rate_info() ->
   #rate_info{
-     delay     = ?SAMPLES,
-     timestamp = timestamp(),
+     average   = wait,
      prev      = 0,
-     queue     = queue:from_list([0 || _ <- lists:seq(1, ?SAMPLES)]),
-     smooth    = wait,
-     sum       = 0
+     ready     = false,
+     timestamp = timestamp()
     }.
 
 update_rate(RateInfo, Useful) ->
   #rate_info{
-     delay     = Delay,
-     timestamp = Old,
+     average   = Average,
      prev      = Prev,
-     queue     = Queue,
-     sum       = Sum
+     ready     = Ready,
+     timestamp = Old
     } = RateInfo,
   New = timestamp(),
   Time = timediff(New, Old),
   Diff = Useful - Prev,
   CurrentRate = Diff / (Time + 0.0001),
-  {{value, Out}, OutQueue} = queue:out(Queue),
-  NewQueue = queue:in(CurrentRate, OutQueue),
-  NewSum = Sum + CurrentRate - Out,
-  UpdatedRateInfo =
-    RateInfo#rate_info{
-      timestamp = New,
-      prev      = Useful,
-      queue     = NewQueue,
-      sum       = NewSum
-     },
-  NewRateInfo =
-    case Delay > 0 of
+  {Rate, NewAverage, NewReady} =
+    case Ready of
       true ->
-        NewDelay = Delay - 1,
-        UpdatedRateInfo#rate_info{delay = NewDelay};
+        {R, NA} = average:update(CurrentRate, Average),
+        {round(R), NA, true};
+      false when Prev > 30 ->
+        {CurrentRate, average:init(CurrentRate, 20), true};
       false ->
-        NewSmooth = round(NewSum/?SAMPLES),
-        UpdatedRateInfo#rate_info{
-          delay = ?SAMPLES,
-          smooth = NewSmooth
-         }
+        {wait, wait, false}
     end,
-  Rate = NewRateInfo#rate_info.smooth,
+  NewRateInfo =
+    RateInfo#rate_info{
+      average   = NewAverage,
+      prev      = Useful,
+      ready     = NewReady,
+      timestamp = New
+     },
   {Rate, NewRateInfo}.
 
 %%------------------------------------------------------------------------------
