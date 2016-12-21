@@ -459,7 +459,7 @@ loop(Message, State) ->
       loop(NewState);
     tick ->
       clear_ticks(),
-      loop(printout(State, "", []))
+      loop(progress_refresh(State))
   end.
 
 format_utc_timestamp() ->
@@ -580,7 +580,14 @@ progress_initial_padding() ->
   to_stderr("~n~n~n~n~n~n",[]).
 
 progress_clear() ->
-  delete_lines(5).
+  delete_lines(4).
+
+progress_refresh(State) ->
+  %% No extra line afterwards to ease printing of 'running logs'.
+  delete_lines(1),
+  {Str, NewState} = progress_content(State),
+  to_stderr("~s~n", [Str]),
+  NewState.
 
 delete_lines(0) -> ok;
 delete_lines(N) ->
@@ -588,14 +595,12 @@ delete_lines(N) ->
   delete_lines(N - 1).
 
 progress_print(State) ->
-  {Str, NewState} = progress_content(State),
   Line = progress_line(State),
   to_stderr("~s~n", [Line]),
   to_stderr("~s~n", [progress_header(State)]),
   to_stderr("~s~n", [Line]),
-  to_stderr("~s~n", [Str]),
-  to_stderr("~s~n", [Line]),
-  NewState.
+  {Str, _NewState} = progress_content(State),
+  to_stderr("~s~n", [Str]).
 
 progress_header(#logger_state{traces_ssb = 0}) ->
   progress_header_common("");
