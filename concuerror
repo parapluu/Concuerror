@@ -3,7 +3,7 @@
 %%! +S1 -noshell -pa . -pa ebin
 
 main(Args) ->
-  ScriptDir = filename:dirname(escript:script_name()),
+  ScriptDir = filename:dirname(script_name()),
   EbinDir = filename:join([ScriptDir,"ebin"]),
   GetoptDir = filename:join([ScriptDir,"deps","getopt","ebin"]),
   ok = code:add_pathsa([EbinDir, GetoptDir]),
@@ -25,6 +25,14 @@ main(Args) ->
      true -> ok
   end,
   cl_exit(Status).
+
+-spec script_name() -> file:filename().
+script_name() ->
+  Scriptname = escript:script_name(),
+  case file:read_link_all(Scriptname) of
+    {ok, Filename} -> Filename;
+    _Other -> Scriptname
+  end.
 
 -spec cl_exit(concuerror:exit_status()) -> no_return().
 
