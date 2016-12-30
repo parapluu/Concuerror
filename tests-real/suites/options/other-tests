@@ -1,0 +1,72 @@
+#!/bin/bash
+
+Out=concuerror_report.txt
+Console=console
+
+function abort {
+    trap - 0
+    set +e
+    echo ""
+    echo cat $Out
+    cat $Out
+    echo cat $Console
+    cat $Console
+    echo -e "\e[1;31m FAILED\e[0m"
+}
+
+function testing {
+    echo -n "$1..."
+}
+
+function good {
+    rm -rf $Out $Console
+    print_ok
+}
+
+function print_ok {
+    echo -e " \e[1;32mok\e[0m"
+}
+
+function mygrep {
+    grep -q "$1" $Out
+}
+
+function mygrepconsole {
+    grep -q "$1" $Console
+}
+
+function has {
+    testing "Output has $1"
+    mygrep "$1"
+    good
+}
+
+function consolehas {
+    print_ok
+    testing "Console has $1"
+    mygrepconsole "$1"
+    good
+}
+
+set -e
+trap 'abort' 0
+
+testing "Can find default in path"
+rm -rf path
+rm -rf foo.beam
+mkdir path
+erlc -o path foo.erl
+$CONCUERROR --pz path -m foo 2> $Console
+rm -rf path
+good
+
+testing "Script is symlinkable"
+rm -rf concuerror
+ln -s $CONCUERROR concuerror
+./concuerror 2> $Console
+rm -rf concuerror
+good
+
+trap - 0
+
+echo -e "\e[1;32mSUCCESS!\e[0m"
