@@ -3,9 +3,9 @@
 %%! +S1 -noshell -pa . -pa ebin
 
 main(Args) ->
-  ScriptDir = filename:dirname(escript:script_name()),
-  EbinDir = filename:join([ScriptDir,"ebin"]),
-  GetoptDir = filename:join([ScriptDir,"deps","getopt","ebin"]),
+  ScriptDir = filename:dirname(read_link(escript:script_name())),
+  EbinDir = filename:join([ScriptDir,"..","ebin"]),
+  GetoptDir = filename:join([ScriptDir,"..","deps","getopt","ebin"]),
   ok = code:add_pathsa([EbinDir, GetoptDir]),
   Cover = os:getenv("CONCUERROR_COVER"),
   if Cover =/= false ->
@@ -25,6 +25,13 @@ main(Args) ->
      true -> ok
   end,
   cl_exit(Status).
+
+-spec read_link(file:filename()) -> file:filename().
+read_link(Filename) ->
+  case file:read_link_all(Filename) of
+    {ok, Follow} -> read_link(Follow);
+    _Other -> Filename
+  end.
 
 -spec cl_exit(concuerror:exit_status()) -> no_return().
 

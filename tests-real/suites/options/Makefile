@@ -1,4 +1,10 @@
 .PHONY: test
+test: options other
 
-test:
+.PHONY: options
+options:
 	./option-tests
+
+.PHONY: other
+other:
+	./other-tests
