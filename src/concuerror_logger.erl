@@ -629,7 +629,7 @@ progress_content(State) ->
      traces_ssb = TracesSSB,
      traces_total = TracesTotal
     } = State,
-  Estimation = max(concuerror_estimator:poll(Estimator), TracesTotal),
+  Estimation = max(concuerror_estimator:get_estimation(Estimator), TracesTotal),
   Useful = TracesExplored - TracesSSB,
   {Rate, NewRateInfo} = update_rate(RateInfo, Useful),
   Planned = TracesTotal - TracesExplored,

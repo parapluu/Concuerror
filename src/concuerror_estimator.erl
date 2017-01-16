@@ -10,7 +10,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/1, finish/1, restart/2, plan/2, poll/1]).
+-export([start_link/1, finish/1, restart/2, plan/2, get_estimation/1]).
 
 %% Other
 -export([estimate_completion/3]).
@@ -24,7 +24,7 @@
 -export_type([estimator/0, estimation/0]).
 
 -type estimator()  :: pid() | 'none'.
--type estimation() :: 'unknown' | pos_integer().
+-type estimation() :: pos_integer() | 'unknown'.
 
 %%------------------------------------------------------------------------------
 
@@ -44,21 +44,23 @@
 
 %%------------------------------------------------------------------------------
 
--define(COUNTDOWN, 50).
+-define(INITIAL_DELAY, 100).
+-define(DELAY, 10).
 
 -record(state, {
-          countdown   = ?COUNTDOWN :: non_neg_integer(),
-          delay_bound = false      :: boolean(),
-          estimation  = unknown    :: estimation(),
-          explored    = dict:new() :: explored(),
-          planned     = dict:new() :: planned()
+          average    = initial        :: 'initial' | average:average(),
+          delay      = ?INITIAL_DELAY :: non_neg_integer(),
+          estimation = unknown        :: estimation(),
+          explored   = dict:new()     :: explored(),
+          planned    = dict:new()     :: planned(),
+          style      = recursive      :: estimation_style()
          }).
 
 %%%=============================================================================
 %%% API
 %%%=============================================================================
 
--type call() :: 'poll'.
+-type call() :: 'get_estimation'.
 -type cast() ::  {'restart' | 'plan', index()}.
 
 %%%=============================================================================
@@ -66,16 +68,55 @@
 -spec start_link(concuerror_options:options()) -> estimator().
 
 start_link(Options) ->
+  case estimation_style(Options) of
+    unknown -> none;
+    Other ->
+      {ok, Pid} = gen_server:start_link(?MODULE, Other, []),
+      Pid
+  end.
+
+%%------------------------------------------------------------------------------
+
+-record(delay_bounded, {
+          bound     = 0                   :: pos_integer(),
+          races_avg = average:init(4, 20) :: average:average()
+         }).
+
+-type estimation_style() ::
+        {'hard_bound', pos_integer(), estimation_style()} |
+        {'recursive', 'branch' | 'tree'} |
+        #delay_bounded{} |
+        'unknown'.
+
+-spec estimation_style(concuerror_options:options()) -> estimation_style().
+
+estimation_style(Options) ->
   Verbosity = ?opt(verbosity, Options),
   case
     (Verbosity =:= ?lquiet) orelse
     (Verbosity >= ?ltiming)
   of
-    true -> none;
+    true -> unknown;
     false ->
-      DelayBound = ?opt(scheduling_bound_type, Options) =:= delay,
-      {ok, Pid} = gen_server:start_link(?MODULE, DelayBound, []),
-      Pid
+      Style =
+        case ?opt(scheduling_bound_type, Options) of
+          delay ->
+            Bound = ?opt(scheduling_bound, Options),
+            #delay_bounded{bound = Bound};
+          none ->
+            case ?opt(dpor, Options) =:= optimal of
+              false -> {recursive, branch};
+              true -> {recursive, tree}
+            end;
+          _ ->
+            unknown
+        end,
+      case ?opt(interleaving_bound, Options) of
+        IBound when is_number(IBound), Style =/= unknown ->
+          {hard_bound, IBound, Style};
+        _ ->
+          Style
+      end
   end.
 
 %%------------------------------------------------------------------------------
@@ -108,6 +149,7 @@ gen_server_stop(Server) ->
 
 restart(none, _Index) -> ok;
 restart(Estimator, Index) ->
+  %% io:format("Restart: ~p~n", [Index]),
   gen_server:cast(Estimator, {restart, Index}).
 
 %%------------------------------------------------------------------------------
@@ -116,30 +158,31 @@ restart(Estimator, Index) ->
 
 plan(none, _Index) -> ok;
 plan(Estimator, Index) ->
+  %% io:format("Plan: ~p~n", [Index]),
   gen_server:cast(Estimator, {plan, Index}).
 
 %%------------------------------------------------------------------------------
 
--spec poll(estimator()) -> estimation().
+-spec get_estimation(estimator()) -> estimation().
 
-poll(none) -> -1;
-poll(Estimator) ->
-  gen_server:call(Estimator, poll).
+get_estimation(none) -> unknown;
+get_estimation(Estimator) ->
+  gen_server:call(Estimator, get_estimation).
 
 %%%=============================================================================
 %%% gen_server callbacks
 %%%=============================================================================
 
--spec init(boolean()) -> {'ok', #state{}}.
+-spec init(estimation_style()) -> {'ok', #state{}}.
 
-init(DelayBound) ->
-  {ok, #state{delay_bound = DelayBound}}.
+init(Style) ->
+  {ok, #state{style = Style}}.
 
 %%------------------------------------------------------------------------------
 
 -spec handle_call(call(), _From, #state{}) -> {'reply', term(), #state{}}.
 
-handle_call(poll, _From, #state{estimation = Estimation} = State) ->
+handle_call(get_estimation, _From, #state{estimation = Estimation} = State) ->
   {reply, Estimation, State}.
 
 %%------------------------------------------------------------------------------
@@ -155,15 +198,16 @@ handle_cast({plan, I}, State) ->
 handle_cast({restart, I}, State) ->
   #state{explored = Explored, planned = Planned} = State,
   SmallerFun = fun(K) -> K =< I end,
-  Marks = all_keys(Explored, dict:new()),
-  Larger = lists:dropwhile(SmallerFun, Marks),
   NewPlanned =
     case dict:find(I, Planned) of
       {ok, Value} when Value > 0 ->
         dict:update_counter(I, -1, Planned);
       _ ->
-        AllPlanned = lists:sort(dict:fetch_keys(Planned)),
+        CleanupFun = fun(_, V) -> V > 0 end,
+        CleanPlanned = dict:filter(CleanupFun, Planned),
+        AllPlanned = lists:sort(dict:fetch_keys(CleanPlanned)),
         [NI|_] = lists:reverse(lists:takewhile(SmallerFun, AllPlanned)),
+        %% io:format("Miss! Hit @ ~p~n", [NI]),
         dict:update_counter(NI, -1, Planned)
     end,
   FoldFun =
@@ -172,10 +216,12 @@ handle_cast({restart, I}, State) ->
         NE = dict:erase(M, E),
         {Total + Sum, NE}
     end,
+  Marks = ordsets:from_list(dict:fetch_keys(Explored)),
+  Larger = lists:dropwhile(SmallerFun, Marks),
   {Sum, OutExplored} = lists:foldl(FoldFun, {1, Explored}, Larger),
   NewExplored = dict:append(I, Sum, OutExplored),
   NewState = State#state{explored = NewExplored, planned = NewPlanned},
-  FinalState = countdown(NewState),
+  FinalState = reestimate(NewState),
   {noreply, FinalState}.
 
 %%------------------------------------------------------------------------------
@@ -203,12 +249,21 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%=============================================================================
 
-countdown(#state{countdown = Countdown} = State) ->
-  case Countdown > 0 of
-    true -> State#state{countdown = Countdown - 1};
+reestimate(#state{average = Average, delay = Delay} = State) ->
+  case Delay > 0 of
+    true -> State#state{delay = Delay - 1};
     false ->
-      {Estimation, NewState} = estimate(State),
-      NewState#state{countdown = ?COUNTDOWN, estimation = Estimation}
+      {Value, NewState} = estimate(State),
+      {Estimation, NewAverage} =
+        case Average =:= initial of
+          false -> average:update(Value, Average);
+          true -> {Value, average:init(Value, 10)}
+        end,
+      NewState#state{
+        average = NewAverage,
+        delay = ?DELAY,
+        estimation = round(Estimation)
+       }
   end.
 
 all_keys(Explored, Planned) ->
@@ -217,45 +272,70 @@ all_keys(Explored, Planned) ->
       D <- [Explored, Planned]],
   ordsets:union(ExploredKeys, PlannedKeys).
 
+estimate(#state{style = {hard_bound, Bound, Style}} = State) ->
+  {Est, NewState} = estimate(State#state{style = Style}),
+  NewStyle = NewState#state.style,
+  {min(Est, Bound), NewState#state{style = {hard_bound, Bound, NewStyle}}};
 estimate(State) ->
   #state{
-     delay_bound = DelayBound,
      explored = Explored,
-     planned = Planned
+     planned = RawPlanned,
+     style = Style
     } = State,
   CleanupFun = fun(_, V) -> V > 0 end,
-  NewPlanned = dict:filter(CleanupFun, Planned),
-  Marks = all_keys(Explored, NewPlanned),
-  NewState = State#state{planned = NewPlanned},
-  FoldFun =
-    fun(M, L) ->
-        AllExplored =
-          case dict:find(M, Explored) of
-            error -> [L];
-            {ok, More} -> [L|More]
-          end,
-        Sum = lists:sum(AllExplored),
-        AllPlanned =
-          case dict:find(M, NewPlanned) of
-            error -> 0;
-            {ok, P} ->
-              case DelayBound of
-                false -> round(P*Sum/length(AllExplored));
-                true ->
-                  Min = max(1, lists:min(AllExplored)),
-                  round(scale(P, Min))
-              end
-          end,
-        Sum + AllPlanned
-    end,
-  AllButLast = lists:reverse(Marks),
-  Sum = lists:foldl(FoldFun, 1, AllButLast),
-  {Sum, NewState}.
+  Planned = dict:filter(CleanupFun, RawPlanned),
+  NewState = State#state{planned = Planned},
+  case Style of
+    {recursive, Subtree} ->
+      Marks = all_keys(Explored, Planned),
+      FoldFun =
+        fun(M, L) ->
+            AllExplored =
+              case dict:find(M, Explored) of
+                error -> [L];
+                {ok, More} -> [L|More]
+              end,
+            Sum = lists:sum(AllExplored),
+            Average = Sum / length(AllExplored),
+            AllPlanned =
+              case dict:find(M, Planned) of
+                error -> 0;
+                {ok, P} ->
+                  Mult =
+                    case Subtree of
+                      branch -> P;
+                      tree -> math:log(P) + 1
+                    end,
+                  Mult * Average
+              end,
+            Sum + AllPlanned
+        end,
+      AllButLast = lists:reverse(Marks),
+      {round(lists:foldl(FoldFun, 1, AllButLast)), NewState};
+    #delay_bounded{
+       bound = Bound,
+       races_avg = RacesAvg
+      } ->
+      MoreThanOne = fun(_, V) -> V > 1 end,
+      SignificantPlanned = dict:filter(MoreThanOne, Planned),
+      Marks = all_keys(Explored, SignificantPlanned),
+      Length = length(Marks),
+      {Races, NewRacesAvg} = average:update(Length, RacesAvg),
+      Est = bounded_estimation(Races, Bound),
+      %% io:format("~w~n~w~n", [lists:sort(dict:to_list(Explored)), lists:sort(dict:to_list(Planned))]),
+      %% io:format("~w, ~.2f, ~.2f~n", [Length, Races, Est]),
+      NewStyle = Style#delay_bounded{races_avg = NewRacesAvg},
+      {round(Est), NewState#state{style = NewStyle}}
+  end.
 
-scale(0, _Acc) -> 0;
-scale(N, Acc) ->
-  NewAcc = Acc / 2,
-  NewAcc + scale(N - 1, NewAcc).
+bounded_estimation(Races, Bound) ->
+  bounded_estimation(Races, Bound, 1).
+
+bounded_estimation(_Races, 0, Acc) ->
+  Acc;
+bounded_estimation(Races, N , Acc) ->
+  %% XXX: Think more about this...
+  bounded_estimation(Races, N - 1, 1 + Races * Acc).
 
 %%%=============================================================================
 %%% Other functions
@@ -274,23 +354,23 @@ estimate_completion(Estimated, Explored, Rate)
 estimate_completion(Estimated, Explored, Rate) ->
   Remaining = Estimated - Explored,
   Completion = round(Remaining/(Rate + 0.001)),
-  " " ++ estimated_completion_to_string(Completion).
+  " " ++ approximate_time_string(Completion).
 
 -type posint() :: pos_integer().
 -type split_fun() :: fun((posint()) -> posint() | {posint(), posint()}).
 
--record(estimated_completion_formatter, {
-          threshold  = 1       :: posint() | 'infinity',
-          rounding   = 1       :: posint(),
+-record(approximate_time_formatter, {
+          threshold  = 1       :: pos_integer() | 'infinity',
+          rounding   = 1       :: pos_integer(),
           split_fun            :: split_fun(),
           one_format = "~w"    :: string(),
           two_format = "~w ~w" :: string()
          }).
 
-estimated_completion_formatters() ->
+approximate_time_formatters() ->
   SecondsSplitFun = fun(_) -> 5 end,
-  SecondsECF =
-    #estimated_completion_formatter{
+  SecondsATF =
+    #approximate_time_formatter{
        threshold  = 5 * 60,
        rounding   = 60,
        split_fun  = SecondsSplitFun,
@@ -303,8 +383,8 @@ estimated_completion_formatters() ->
           false -> {Minutes div 60, Minutes rem 60}
         end
     end,
-  MinutesECF =
-    #estimated_completion_formatter{
+  MinutesATF =
+    #approximate_time_formatter{
        threshold  = 60,
        rounding   = 15,
        split_fun  = MinutesSplitFun,
@@ -313,8 +393,8 @@ estimated_completion_formatters() ->
       },
   QuartersSplitFun =
     fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 15} end,
-  QuartersECF =
-    #estimated_completion_formatter{
+  QuartersATF =
+    #approximate_time_formatter{
        threshold  = 4 * 3,
        rounding   = 4,
        split_fun  = QuartersSplitFun,
@@ -327,8 +407,8 @@ estimated_completion_formatters() ->
           false -> {Hours div 24, Hours rem 24}
         end
     end,
-  HoursECF =
-    #estimated_completion_formatter{
+  HoursATF =
+    #approximate_time_formatter{
        threshold  = 3 * 24,
        rounding   = 6,
        split_fun  = HoursSplitFun,
@@ -337,8 +417,8 @@ estimated_completion_formatters() ->
       },
   DayQuartersSplitFun =
     fun(Quarters) -> {Quarters div 4, (Quarters rem 4) * 6} end,
-  DayQuartersECF =
-    #estimated_completion_formatter{
+  DayQuartersATF =
+    #approximate_time_formatter{
        threshold  = 4 * 15,
        rounding   = 4,
        split_fun  = DayQuartersSplitFun,
@@ -346,27 +426,33 @@ estimated_completion_formatters() ->
        two_format = "~2wd~2..0wh"
       },
   DaysSplitFun = fun(Days) -> Days end,
-  DaysECF =
-    #estimated_completion_formatter{
+  DaysATF =
+    #approximate_time_formatter{
        threshold  = infinity,
        split_fun  = DaysSplitFun,
        one_format = "~5wd"
       },
-  [SecondsECF, MinutesECF, QuartersECF, HoursECF, DayQuartersECF, DaysECF].
+  [ SecondsATF
+  , MinutesATF
+  , QuartersATF
+  , HoursATF
+  , DayQuartersATF
+  , DaysATF
+  ].
 
-estimated_completion_to_string(Seconds) ->
-  estimated_completion_to_string(estimated_completion_formatters(), Seconds).
+approximate_time_string(Seconds) ->
+  approximate_time_string(approximate_time_formatters(), Seconds).
 
-estimated_completion_to_string([ECF|Rest], Value) ->
-  #estimated_completion_formatter{
+approximate_time_string([ATF|Rest], Value) ->
+  #approximate_time_formatter{
      threshold  = Threshold,
      rounding   = Rounding,
      split_fun  = SplitFun,
      one_format = OneFormat,
      two_format = TwoFormat
-    } = ECF,
+    } = ATF,
   case Value > Threshold of
-    true -> estimated_completion_to_string(Rest, round(Value/Rounding));
+    true -> approximate_time_string(Rest, round(Value/Rounding));
     false ->
       case SplitFun(Value) of
         {High, Low} -> io_lib:format(TwoFormat, [High, Low]);
