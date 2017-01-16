@@ -263,6 +263,7 @@ dependent_exit(_Exit, {erlang, A, _})
   when
     A =:= erase;
     A =:= exit;
+    A =:= get_stacktrace;
     A =:= make_ref;
     A =:= process_flag;
     A =:= put;
