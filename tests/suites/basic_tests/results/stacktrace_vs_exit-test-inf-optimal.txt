@@ -1,0 +1,43 @@
+Concuerror 0.17 ('3c15bbb') started at 16 Jan 2017 13:56:47
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{stacktrace_vs_exit,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/stacktrace_vs_exit.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]}]
+################################################################################
+Exploration completed!
+  No errors found!
+################################################################################
+Warnings:
+--------------------------------------------------------------------------------
+Concuerror does not fully support erlang:get_stacktrace/0, returning an empty list instead. If you need proper support, notify the developers to add this feature.
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented stacktrace_vs_exit
+Instrumented io_lib
+Instrumented gen_server
+Instrumented erlang
+
+################################################################################
+Done at 16 Jan 2017 13:56:48 (Exit status: ok)
+  Summary: 0 errors, 1/1 interleavings explored
