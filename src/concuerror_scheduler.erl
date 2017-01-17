@@ -290,23 +290,22 @@ get_next_event(Event, MaybeNeedsReplayState) ->
       AvailableActors = filter_sleeping(Sleeping, SortedActors),
       free_schedule(Event, System ++ AvailableActors, State);
     false ->
+      #scheduler_state{print_depth = PrintDepth} = State,
+      #trace_state{index = I} = Last,
       false = lists:member(Actor, Sleeping),
-      {ok, UpdatedEvent} =
+      OkUpdatedEvent =
         case Label =/= undefined of
           true ->
             NewEvent = get_next_event_backend(Event, State),
             try {ok, Event} = NewEvent
             catch
               _:_ ->
-                #scheduler_state{print_depth = PrintDepth} = State,
-                #trace_state{index = I} = Last,
                 New =
                   case NewEvent of
                     {ok, E} -> E;
                     _ -> NewEvent
                   end,
-                Reason =
-                  {replay_mismatch, I, Event, New, PrintDepth},
+                Reason = {replay_mismatch, I, Event, New, PrintDepth},
                 ?crash(Reason)
             end;
           false ->
@@ -314,7 +313,13 @@ get_next_event(Event, MaybeNeedsReplayState) ->
             ResetEvent = reset_event(Event),
             get_next_event_backend(ResetEvent, State)
         end,
-      update_state(UpdatedEvent, State)
+      case OkUpdatedEvent of
+        {ok, UpdatedEvent} ->
+          update_state(UpdatedEvent, State);
+        retry ->
+          BReason = {blocked_mismatch, I, Event, PrintDepth},
+          ?crash(BReason)
+      end
   end.
 
 filter_sleeping([], AvailableActors) -> AvailableActors;
@@ -1361,6 +1366,18 @@ next_bound(SchedulingBoundType, Done, PreviousActor, Bound) ->
 
 -spec explain_error(term()) -> string().
 
+explain_error({blocked_mismatch, I, Event, Depth}) ->
+  EString = concuerror_io_lib:pretty_s(Event, Depth),
+  io_lib:format(
+    "On step ~p, replaying a built-in returned a different result than"
+    " expected:~n"
+    "  original:~n"
+    "    ~s~n"
+    "  new:~n"
+    "    blocked~n"
+    ?notify_us_msg,
+    [I,EString]
+   );
 explain_error({optimal_sleep_set_block, Origin, Who}) ->
   io_lib:format(
     "During a run of the optimal algorithm, the following events were left in~n"
