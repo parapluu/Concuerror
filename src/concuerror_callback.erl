@@ -210,6 +210,29 @@ instrumented('receive', [PatternFun, Timeout], Location, Info) ->
       {doit, Info}
   end.
 
+instrumented_aux(Module, Name, Arity, Args, _Location,
+                 {logger, Processes} = Info) ->
+  case {Module, Name, Arity} of
+    {erlang, pid_to_list, 1} ->
+      [Term] = Args,
+      try
+        Symbol = ets:lookup_element(Processes, Term, ?process_symbolic),
+        {{didit, Symbol}, Info}
+      catch
+        _:_ -> {doit, Info}
+      end;
+    {erlang, fun_to_list, 1} ->
+      %% Slightly prettier printer than the default...
+      [Fun] = Args,
+      [M, F, A] =
+        [I ||
+          {_, I} <-
+            [erlang:fun_info(Fun, T) || T <- [module, name, arity]]],
+      String = lists:flatten(io_lib:format("#Fun<~p.~p.~p>", [M, F, A])),
+      {{didit, String}, Info};
+    _ ->
+      {doit, Info}
+  end;
 instrumented_aux(erlang, apply, 3, [Module, Name, Args], Location, Info) ->
   instrumented_aux(Module, Name, length(Args), Args, Location, Info);
 instrumented_aux(Module, Name, Arity, Args, Location, Info)
@@ -219,32 +242,7 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
     not lists:member({Module, Name, Arity}, ?RACE_FREE_BIFS)
   of
     true ->
-      case Info of
-        #concuerror_info{} ->
-          built_in(Module, Name, Arity, Args, Location, Info);
-        {logger, Processes} ->
-          case {Module, Name, Arity} of
-            {erlang, pid_to_list, 1} ->
-              [Term] = Args,
-              try
-                Symbol = ets:lookup_element(Processes, Term, ?process_symbolic),
-                {{didit, Symbol}, Info}
-              catch
-                _:_ -> {doit, Info}
-              end;
-            {erlang, fun_to_list, 1} ->
-              %% Slightly prettier printer than the default...
-              [Fun] = Args,
-              [M, F, A] =
-                [I ||
-                  {_, I} <-
-                    [erlang:fun_info(Fun, T) || T <- [module, name, arity]]],
-              String = lists:flatten(io_lib:format("#Fun<~p.~p.~p>", [M, F, A])),
-              {{didit, String}, Info};
-            _ ->
-              {doit, Info}
-          end
-      end;
+      built_in(Module, Name, Arity, Args, Location, Info);
     false ->
       case Info of
         #concuerror_info{} ->
