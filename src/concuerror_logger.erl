@@ -340,12 +340,7 @@ loop(Message, State) ->
     {graph, Command} ->
       loop(graph_command(Command, State));
     {finish, SchedulerStatus, Scheduler} ->
-      case is_pid(Ticker) of
-        true ->
-          progress_clear(),
-	  stop_ticker(Ticker);
-        false -> ok
-      end,
+      stop_ticker(Ticker),
       separator(Output, $#),
       to_file(Output, "Exploration completed!~n",[]),
       ExitStatus =
@@ -379,7 +374,7 @@ loop(Message, State) ->
         true -> ok;
         false ->
           FinalFormat = Format ++ IntMsg,
-          force_printout(State, FinalFormat, Args)
+          printout(State#logger_state{ticker = none}, FinalFormat, Args)
       end,
       Scheduler ! {finished, ExitStatus},
       ok;
@@ -539,9 +534,14 @@ clear_ticks() ->
   end.
 
 stop_ticker(Ticker) ->
-  Ticker ! {stop, self()},
-  receive
-    stopped -> ok
+  case is_pid(Ticker) of
+    true ->
+      Ticker ! {stop, self()},
+      progress_clear(),
+      receive
+        stopped -> ok
+      end;
+    false -> ok
   end.
 
 %%------------------------------------------------------------------------------
