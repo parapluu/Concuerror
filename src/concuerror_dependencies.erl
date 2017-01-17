@@ -348,7 +348,14 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
   case Other of
     #builtin_event{mfargs = {erlang,group_leader,[Pid,_]}} -> true;
     _-> false
-  end.
+  end;
+dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
+                       _) when
+    Safe =:= heap_size;
+    Safe =:= reductions;
+    Safe =:= stack_size
+    ->
+  false.
 
 %%------------------------------------------------------------------------------
 
