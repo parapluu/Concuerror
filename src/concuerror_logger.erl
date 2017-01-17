@@ -265,7 +265,7 @@ loop(Message, State) ->
       Msg =
         io_lib:format(
           "* ~s~n  ~s~n~n",
-          [concuerror_printer:pretty_s(E, PrintDepth)
+          [concuerror_io_lib:pretty_s(E, PrintDepth)
            || E <- [EarlyEvent,Event]]),
       loop({print, race, Msg}, State);
     {log, Level, Tag, Format, Data} ->
@@ -275,7 +275,10 @@ loop(Message, State) ->
           false ->
             case Verbosity < Level of
               true  -> ok;
-              false -> printout(State, Level, Format, Data)
+              false ->
+                LevelFormat = verbosity_to_tag(Level),
+                NewFormat = LevelFormat ++ Format,
+                printout(State, NewFormat, Data)
             end,
             NLM =
               case Level < ?ltiming of
@@ -364,12 +367,12 @@ loop(Message, State) ->
             separator(Output, $-),
             io:format(Output, "Errors found:~n", []),
             WarnStr =
-              [concuerror_printer:error_s(W, PrintDepth) || W <-Warnings],
+              [concuerror_io_lib:error_s(W, PrintDepth) || W <-Warnings],
             io:format(Output, "~s", [WarnStr]),
             separator(Output, $-),
             print_streams([S || S = {T, _} <- Streams, T =/= race], Output),
             io:format(Output, "Event trace:~n", []),
-            concuerror_printer:pretty(Output, TraceInfo, PrintDepth),
+            concuerror_io_lib:pretty(Output, TraceInfo, PrintDepth),
             print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
             ErrorString =
               case proplists:get_value(fatal, Warnings) of
@@ -416,11 +419,6 @@ printout(#logger_state{ticker = Ticker} = State, Format, Data)
   to_stderr("~s", [IntMsg]);
 printout(_, Format, Data) ->
   to_stderr(Format, Data).
-
-printout(State, Level, Format, Data) ->
-  Tag = verbosity_to_tag(Level),
-  NewFormat = Tag ++ Format,
-  printout(State, NewFormat, Data).
 
 print_log_msgs(Output, LogMsgs) ->
   ForeachInner = fun({Format, Data}) -> io:format(Output,Format,Data) end,
@@ -600,7 +598,7 @@ graph_command(Command, State) ->
               ",color=orange,penwidth=5";
             _ -> ""
           end,
-        Label = concuerror_printer:pretty_s({I,Event#event{location=[]}}, PrintDepth - 19),
+        Label = concuerror_io_lib:pretty_s({I,Event#event{location=[]}}, PrintDepth - 19),
         EnabledLabel =
           case BoundConsumed =:= 0 of
             true -> "    ";

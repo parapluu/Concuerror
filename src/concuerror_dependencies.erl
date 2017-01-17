@@ -348,7 +348,14 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, group_leader]}},
   case Other of
     #builtin_event{mfargs = {erlang,group_leader,[Pid,_]}} -> true;
     _-> false
-  end.
+  end;
+dependent_process_info(#builtin_event{mfargs = {_,_,[_, Safe]}},
+                       _) when
+    Safe =:= heap_size;
+    Safe =:= reductions;
+    Safe =:= stack_size
+    ->
+  false.
 
 %%------------------------------------------------------------------------------
 
@@ -635,4 +642,4 @@ show_undefined_dependency(A, B) ->
     " in Concuerror's internals:~n"
     "  1) ~s~n  2) ~s~n"
     " Please notify the developers to add info about this pair.",
-    [concuerror_printer:pretty_s(#event{event_info = I}, 10) || I <- [A,B]]).
+    [concuerror_io_lib:pretty_s(#event{event_info = I}, 10) || I <- [A,B]]).
