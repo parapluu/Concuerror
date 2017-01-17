@@ -524,7 +524,7 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
         case EventInfo of
           %% Replaying...
           #builtin_event{} ->
-            {_, MsgInfo} = get_message_cnt(Info),
+            {_, MsgInfo} = get_message_cnt(NewInfo),
             MsgInfo;
           %% New event...
           undefined ->
