@@ -466,14 +466,14 @@ run_passes([Pass|Passes], Options) ->
 
 set_verbosity(Options) ->
   HasQuiet = proplists:get_bool(quiet, Options),
-  AllVerbosity = lists:sum(proplists:get_all_values(verbosity, Options)),
+  AllVerbosity = proplists:get_all_values(verbosity, Options),
   SpecifiedVerbosity =
     case {AllVerbosity, HasQuiet} of
-      {0, false} -> ?DEFAULT_VERBOSITY;
-      {0, true} -> 0;
+      {[], false} -> ?DEFAULT_VERBOSITY;
+      {[], true} -> 0;
       {_, true} ->
         opt_error("'--verbosity' specified together with '--quiet'.");
-      {N, false} -> N
+      {N, false} -> lists:sum(N)
     end,
   Verbosity = min(SpecifiedVerbosity, ?MAX_VERBOSITY),
   if Verbosity < ?ldebug; ?has_dev -> ok;
