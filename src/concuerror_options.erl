@@ -40,8 +40,8 @@ options() ->
     "Concuerror begins exploration from a test function located in the module"
     " specified by this option.~n~n"
 
-    "There is no need to specify other modules used in the test if they are in"
-    " Erlang's code path. Otherwise use '--file'."}
+    "There is no need to specify modules used in the test if they are in"
+    " Erlang's code path. Otherwise use '--file', '--pa' or '--pz'."}
   ,{test, [basic, input], $t, {atom, test},
     "Test function",
     "This must be a 0-arity function located in the module specified by"
@@ -193,10 +193,14 @@ options() ->
     "No races due to 'system' messages",
     "Assume that any messages sent to the specified (by registered name) system"
     " process are not racing with each-other. Useful for reducing the number of"
-    " interleavings when processes have calls to e.g. io:format/1,2 or similar."}
+    " interleavings when processes have calls to e.g. io:format/1,2 or"
+    " similar."}
   ,{help, [basic], $h, atom,
     "Display help (use also as '-h <option/keyword>')",
-    "You already know how to use this option! :-)"}
+    "Without an argument, prints help for all basic options.~n"
+    "With some option as argument, prints help for that option.~n"
+    "Options also have keywords associated with them. With a keyword as an"
+    " argument, you can see all options related to that keyword."}
   ,{version, [basic], undefined, undefined,
     "Display version information",
     nolong}
@@ -273,7 +277,7 @@ parse_cl_aux(CommandLineArgs) ->
           cl_usage(basic),
           {exit, ok};
         {missing_option_arg, Option} ->
-          opt_error("No argument given for '--~s'.", [Option]);
+          opt_error("No argument given for '--~s'.", [Option], Option);
         _Other ->
           opt_error(getopt:format_error([], Error))
       end
@@ -330,7 +334,7 @@ cl_usage(Name) ->
             "-" ++ Rest -> cl_usage(list_to_atom(Rest));
             _ ->
               Msg = "Invalid option name/keyword (as argument to --help): '~w'.",
-              opt_error(Msg, [Name])
+              opt_error(Msg, [Name], help)
           end
       end;
     Tuple ->
@@ -426,6 +430,7 @@ finalize_2(Options) ->
     [ fun proplists:unfold/1
     , fun set_verbosity/1
     , fun add_to_path/1
+    , fun add_missing_file/1
     , fun load_files/1
     , fun add_options_from_module/1
     , fun add_derived_defaults/1
@@ -449,7 +454,7 @@ finalize_2(Options) ->
       InvalidEntryPoint =
         "The entry point ~w:~w/~w is invalid. Make sure you have"
         " specified the correct module ('-m') and test function ('-t').",
-      opt_error(InvalidEntryPoint, [M,F,length(B)])
+      opt_error(InvalidEntryPoint, [M,F,length(B)], input)
   end.
 
 run_passes([], Options) ->
@@ -461,14 +466,14 @@ run_passes([Pass|Passes], Options) ->
 
 set_verbosity(Options) ->
   HasQuiet = proplists:get_bool(quiet, Options),
-  AllVerbosity = lists:sum(proplists:get_all_values(verbosity, Options)),
+  AllVerbosity = proplists:get_all_values(verbosity, Options),
   SpecifiedVerbosity =
     case {AllVerbosity, HasQuiet} of
-      {0, false} -> ?DEFAULT_VERBOSITY;
-      {0, true} -> 0;
+      {[], false} -> ?DEFAULT_VERBOSITY;
+      {[], true} -> 0;
       {_, true} ->
         opt_error("'--verbosity' specified together with '--quiet'.");
-      {N, false} -> N
+      {N, false} -> lists:sum(N)
     end,
   Verbosity = min(SpecifiedVerbosity, ?MAX_VERBOSITY),
   if Verbosity < ?ldebug; ?has_dev -> ok;
@@ -492,12 +497,38 @@ add_to_path(Options) ->
         case PathAdd(Value) of
           true -> ok;
           {error, bad_directory} ->
-            opt_error("Could not add '~s' (-~p) to code path.", [Value, Key])
+            Msg = "Could not add '~s' to code path.",
+            opt_error(Msg, [Value], Key)
         end;
        (_) -> ok
     end,
   lists:foreach(Foreach, Options),
   Options.
+
+%%%-----------------------------------------------------------------------------
+
+add_missing_file(Options) ->
+  case proplists:get_all_values(module, Options) of
+    [Module] ->
+      try
+        _ = Module:module_info(attributes),
+        Options
+      catch
+        _:_ ->
+          case proplists:get_all_values(file, Options) of
+            [] ->
+              Source = atom_to_list(Module) ++ ".erl",
+              Msg = "Automatically added '--file ~s'.",
+              opt_info(Msg, [Source]),
+              case filelib:is_file(Source) of
+                true -> [{file, Source}|Options];
+                false -> Options
+              end;
+            _ -> Options
+          end
+      end;
+    _ -> Options
+  end.
 
 %%%-----------------------------------------------------------------------------
 
@@ -534,16 +565,15 @@ add_options_from_module(Options) ->
   case proplists:get_all_values(module, Options) of
     [] ->
       UndefinedEntryPoint =
-        "The module containing the main test function has not been specified."
-        " Add '-m <module>' or use '-h module' for more info.",
-      opt_error(UndefinedEntryPoint);
+        "The module containing the main test function has not been specified.",
+      opt_error(UndefinedEntryPoint, [], module);
     [Module] ->
       Attributes =
         try
           Module:module_info(attributes)
         catch
           _:_ ->
-            opt_error("Could not find module ~w.", [Module])
+            opt_error("Could not find module ~w.", [Module], module)
         end,
       Forced =
         get_options_from_attribute(?ATTRIBUTE_FORCED_OPTIONS, Attributes),
@@ -555,7 +585,7 @@ add_options_from_module(Options) ->
       KeepLast = keep_last_option(WithForced),
       override("command line", KeepLast, ?ATTRIBUTE_OPTIONS, Others);
     _Modules ->
-      opt_error("Multiple instances of '--module' specified. See '-h module'.")
+      opt_error("Multiple instances of '--module' specified.", [], module)
   end.
 
 get_options_from_attribute(Attribute, Attributes) ->
@@ -769,7 +799,7 @@ process_options([{Key, Value} = Option|Rest], Acc) ->
           process_options(Rest, [Option|Acc]);
         _Else ->
           Error = "The value of '--~s' must be -1 (infinity) or >= ~w",
-          opt_error(Error, [Key, Limit])
+          opt_error(Error, [Key, Limit], Key)
       end;
     test ->
       case Rest =:= [] of
@@ -796,13 +826,13 @@ check_validity(Key, Value, Valid) when is_list(Valid) ->
   case lists:member(Value, Valid) of
     true -> ok;
     false ->
-      opt_error("The value of '--~s' must be one of ~w.", [Key, Valid])
+      opt_error("The value of '--~s' must be one of ~w.", [Key, Valid], Key)
   end;
 check_validity(Key, Value, {Valid, Explain}) when is_function(Valid) ->
   case Valid(Value) of
     true -> ok;
     false ->
-      opt_error("The value of '--~s' must be ~s.", [Key, Explain])
+      opt_error("The value of '--~s' must be ~s.", [Key, Explain], Key)
   end.
 
 consistent([], _) -> ok;
@@ -857,9 +887,19 @@ check_values([{Key, Validate}|Rest], Other, Reason) ->
 opt_error(Format) ->
   opt_error(Format, []).
 
+-spec opt_error(string(), [term()]) -> no_return().
+
 opt_error(Format, Data) ->
+  opt_error(Format, Data, "--help").
+
+-spec opt_error(string(), [term()], string() | atom()) -> no_return().
+
+opt_error(Format, Data, Extra) when is_atom(Extra) ->
+  ExtraS = io_lib:format("'--help ~p'", [Extra]),
+  opt_error(Format, Data, ExtraS);
+opt_error(Format, Data, Extra) ->
   to_stderr("Error: " ++ Format, Data),
-  to_stderr("  Use --help for more information.", []),
+  to_stderr("  Use ~s for more information.", [Extra]),
   throw(opt_error).
 
 opt_info(Format, Data) ->

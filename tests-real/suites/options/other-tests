@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CONCUERROR=${CONCUERROR:-concuerror}
+
 Out=concuerror_report.txt
 Console=console
 
@@ -62,9 +64,13 @@ good
 
 testing "Script is symlinkable"
 rm -rf concuerror
-ln -s $CONCUERROR concuerror
+ln -s $(which $CONCUERROR) concuerror
 ./concuerror 2> $Console
 rm -rf concuerror
+good
+
+testing "Limited automatic compilation with -m"
+$CONCUERROR -m foo 2> $Console
 good
 
 trap - 0

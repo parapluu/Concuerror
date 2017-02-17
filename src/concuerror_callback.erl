@@ -210,6 +210,29 @@ instrumented('receive', [PatternFun, Timeout], Location, Info) ->
       {doit, Info}
   end.
 
+instrumented_aux(Module, Name, Arity, Args, _Location,
+                 {logger, Processes} = Info) ->
+  case {Module, Name, Arity} of
+    {erlang, pid_to_list, 1} ->
+      [Term] = Args,
+      try
+        Symbol = ets:lookup_element(Processes, Term, ?process_symbolic),
+        {{didit, Symbol}, Info}
+      catch
+        _:_ -> {doit, Info}
+      end;
+    {erlang, fun_to_list, 1} ->
+      %% Slightly prettier printer than the default...
+      [Fun] = Args,
+      [M, F, A] =
+        [I ||
+          {_, I} <-
+            [erlang:fun_info(Fun, T) || T <- [module, name, arity]]],
+      String = lists:flatten(io_lib:format("#Fun<~p.~p.~p>", [M, F, A])),
+      {{didit, String}, Info};
+    _ ->
+      {doit, Info}
+  end;
 instrumented_aux(erlang, apply, 3, [Module, Name, Args], Location, Info) ->
   instrumented_aux(Module, Name, length(Args), Args, Location, Info);
 instrumented_aux(Module, Name, Arity, Args, Location, Info)
@@ -219,32 +242,7 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
     not lists:member({Module, Name, Arity}, ?RACE_FREE_BIFS)
   of
     true ->
-      case Info of
-        #concuerror_info{} ->
-          built_in(Module, Name, Arity, Args, Location, Info);
-        {logger, Processes} ->
-          case {Module, Name, Arity} of
-            {erlang, pid_to_list, 1} ->
-              [Term] = Args,
-              try
-                Symbol = ets:lookup_element(Processes, Term, ?process_symbolic),
-                {{didit, Symbol}, Info}
-              catch
-                _:_ -> {doit, Info}
-              end;
-            {erlang, fun_to_list, 1} ->
-              %% Slightly prettier printer than the default...
-              [Fun] = Args,
-              [M, F, A] =
-                [I ||
-                  {_, I} <-
-                    [erlang:fun_info(Fun, T) || T <- [module, name, arity]]],
-              String = lists:flatten(io_lib:format("#Fun<~p.~p.~p>", [M, F, A])),
-              {{didit, String}, Info};
-            _ ->
-              {doit, Info}
-          end
-      end;
+      built_in(Module, Name, Arity, Args, Location, Info);
     false ->
       case Info of
         #concuerror_info{} ->
@@ -283,6 +281,15 @@ built_in(erlang, PDict, _Arity, Args, _Location, Info)
   ?debug_flag(?builtin, {'built-in', erlang, PDict, _Arity, Args, _Location}),
   Res = erlang:apply(erlang,PDict,Args),
   {{didit, Res}, Info};
+%% XXX: Temporary
+built_in(erlang, get_stacktrace, 0, [], _Location, Info) ->
+  #concuerror_info{logger = Logger} = Info,
+  Msg =
+    "Concuerror does not fully support erlang:get_stacktrace/0, returning an"
+    " empty list instead. If you need proper support, notify the developers to"
+    " add this feature.~n",
+  ?unique(Logger, ?lwarning, Msg, []),
+  {{didit, []}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
 %% for the logger)
 built_in(erlang, pid_to_list, _Arity, _Args, _Location, Info) ->
@@ -402,16 +409,6 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       MsgInfo = make_message(Info, exit_signal, Content, Pid),
       {true, MsgInfo}
   end;
-
-%% XXX: Temporary
-run_built_in(erlang, get_stacktrace, 0, [], Info) ->
-  #concuerror_info{logger = Logger} = Info,
-  Msg =
-    "Concuerror does not fully support erlang:get_stacktrace/0, returning an"
-    " empty list instead. If you need proper support, notify the developers to"
-    " add this feature.~n",
-  ?unique(Logger, ?lwarning, Msg, []),
-  {[], Info};
 
 run_built_in(erlang, group_leader, 0, [], Info) ->
   Leader = get_leader(Info, self()),

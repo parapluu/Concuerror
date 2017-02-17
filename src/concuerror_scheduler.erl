@@ -269,13 +269,16 @@ get_next_event(
   NewState = add_warning({depth_bound, Bound - 1}, Old, State),
   {none, NewState};
 get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
-  #trace_state{wakeup_tree = WakeupTree} = Last,
+  #trace_state{index = _I, wakeup_tree = WakeupTree} = Last,
   case WakeupTree of
     [] ->
       Event = #event{label = make_ref()},
       get_next_event(Event, State);
     [#backtrack_entry{event = Event, origin = N}|_] ->
-      ?debug(_Logger, "New interleaving detected in ~p~n", [N]),
+      ?debug(
+         _Logger,
+         "New interleaving detected in ~p (diverge @ ~p)~n",
+         [N, _I]),
       get_next_event(Event, State#scheduler_state{origin = N})
   end.
 

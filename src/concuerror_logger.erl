@@ -162,8 +162,11 @@ plan(Logger) ->
 -spec complete(logger(), concuerror_warnings()) -> ok.
 
 complete(Logger, Warnings) ->
-  Logger ! {complete, Warnings},
-  ok.
+  Ref = make_ref(),
+  Logger ! {complete, Warnings, self(), Ref},
+  receive
+    Ref -> ok
+  end.
 
 -spec log(logger(), log_level(), term(), string(), [term()]) -> ok.
 
@@ -346,7 +349,7 @@ loop(Message, State) ->
     {set_verbosity, NewVerbosity} ->
       NewState = State#logger_state{verbosity = NewVerbosity},
       loop(NewState);
-    {complete, Warn} ->
+    {complete, Warn, Scheduler, Ref} ->
       {NewErrors, NewSSB, GraphFinal, GraphColor} =
         case Warn of
           sleep_set_block ->
@@ -394,6 +397,7 @@ loop(Message, State) ->
           traces_ssb = NewSSB,
           errors = NewErrors
          },
+      Scheduler ! Ref,
       loop(NewState);
     tick ->
       clear_ticks(),
