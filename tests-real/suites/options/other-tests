@@ -69,6 +69,10 @@ ln -s $(which $CONCUERROR) concuerror
 rm -rf concuerror
 good
 
+testing "Limited automatic compilation with -m"
+$CONCUERROR -m foo 2> $Console
+good
+
 trap - 0
 
 echo -e "\e[1;32mSUCCESS!\e[0m"

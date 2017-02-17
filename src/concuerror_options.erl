@@ -430,6 +430,7 @@ finalize_2(Options) ->
     [ fun proplists:unfold/1
     , fun set_verbosity/1
     , fun add_to_path/1
+    , fun add_missing_file/1
     , fun load_files/1
     , fun add_options_from_module/1
     , fun add_derived_defaults/1
@@ -503,6 +504,31 @@ add_to_path(Options) ->
     end,
   lists:foreach(Foreach, Options),
   Options.
+
+%%%-----------------------------------------------------------------------------
+
+add_missing_file(Options) ->
+  case proplists:get_all_values(module, Options) of
+    [Module] ->
+      try
+        _ = Module:module_info(attributes),
+        Options
+      catch
+        _:_ ->
+          case proplists:get_all_values(file, Options) of
+            [] ->
+              Source = atom_to_list(Module) ++ ".erl",
+              Msg = "Automatically added '--file ~s'.",
+              opt_info(Msg, [Source]),
+              case filelib:is_file(Source) of
+                true -> [{file, Source}|Options];
+                false -> Options
+              end;
+            _ -> Options
+          end
+      end;
+    _ -> Options
+  end.
 
 %%%-----------------------------------------------------------------------------
 
