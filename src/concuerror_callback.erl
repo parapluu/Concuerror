@@ -281,6 +281,15 @@ built_in(erlang, PDict, _Arity, Args, _Location, Info)
   ?debug_flag(?builtin, {'built-in', erlang, PDict, _Arity, Args, _Location}),
   Res = erlang:apply(erlang,PDict,Args),
   {{didit, Res}, Info};
+%% XXX: Temporary
+built_in(erlang, get_stacktrace, 0, [], _Location, Info) ->
+  #concuerror_info{logger = Logger} = Info,
+  Msg =
+    "Concuerror does not fully support erlang:get_stacktrace/0, returning an"
+    " empty list instead. If you need proper support, notify the developers to"
+    " add this feature.~n",
+  ?unique(Logger, ?lwarning, Msg, []),
+  {{didit, []}, Info};
 %% Instrumented processes may just call pid_to_list (we instrument this builtin
 %% for the logger)
 built_in(erlang, pid_to_list, _Arity, _Args, _Location, Info) ->
@@ -400,16 +409,6 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       MsgInfo = make_message(Info, exit_signal, Content, Pid),
       {true, MsgInfo}
   end;
-
-%% XXX: Temporary
-run_built_in(erlang, get_stacktrace, 0, [], Info) ->
-  #concuerror_info{logger = Logger} = Info,
-  Msg =
-    "Concuerror does not fully support erlang:get_stacktrace/0, returning an"
-    " empty list instead. If you need proper support, notify the developers to"
-    " add this feature.~n",
-  ?unique(Logger, ?lwarning, Msg, []),
-  {[], Info};
 
 run_built_in(erlang, group_leader, 0, [], Info) ->
   Leader = get_leader(Info, self()),
