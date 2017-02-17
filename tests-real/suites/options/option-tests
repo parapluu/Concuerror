@@ -1,5 +1,7 @@
 #!/bin/bash
 
+CONCUERROR=${CONCUERROR:-concuerror}
+
 Out=concuerror_report.txt
 Console=console
 
