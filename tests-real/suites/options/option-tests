@@ -73,15 +73,15 @@ good
 
 testing "Get help for long"
 $CONCUERROR -h help 2> $Console
-consolehas "You already know how to use this option! :-)"
+consolehas "Without an argument, prints help for all basic options."
 
 testing "Get help for short"
 $CONCUERROR -h h 2> $Console
-consolehas "You already know how to use this option! :-)"
+consolehas "Without an argument, prints help for all basic options."
 
 testing "Get help for prefixed"
 $CONCUERROR -h --help 2> $Console
-consolehas "You already know how to use this option! :-)"
+consolehas "Without an argument, prints help for all basic options."
 
 testing "Unknown argument to help"
 ! $CONCUERROR -h elp 2> $Console
@@ -161,7 +161,7 @@ consolehas "Info: Using '--scheduling_bound_type delay'."
 
 testing "Bad path"
 ! $CONCUERROR -f foo.erl --pz bannnn 2> $Console
-consolehas "Error: Could not add 'bannnn' (-pz) to code path."
+consolehas "Error: Could not add 'bannnn' to code path."
 
 testing "Bad output"
 ! $CONCUERROR -f foo.erl -o foo/man/choo 2> $Console
