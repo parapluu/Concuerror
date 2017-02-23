@@ -21,10 +21,10 @@ depend_4_screen() ->
                                1 ->
                                    [{y, Y}] = ets:lookup(table, y),
                                    case Y of
-                                       1 -> ets:lookup(table, z);
-                                       _ -> "10"
+                                       1 -> [{x,1},{y,1}|ets:lookup(table, z)];
+                                       _ -> [{x,1},{y,0}]
                                    end;
-                               _ -> X
+                               _ -> [{x, X}]
                            end,
                        ets:insert(table, {p4, Val}),
                        get_and_send(P3)
@@ -33,8 +33,8 @@ depend_4_screen() ->
                        [{y, Y}] = ets:lookup(table, y),
                        Val =
                            case Y of
-                               1 -> ets:lookup(table, z);
-                               _ -> "0"
+                               1 -> [{y,1}|ets:lookup(table, z)];
+                               _ -> [{y,0}]
                            end,
                        ets:insert(table, {p5, Val}),
                        get_and_send(P4)
@@ -44,8 +44,8 @@ depend_4_screen() ->
     receive
         ok ->
             A = ets:lookup(table, x),
-            B = ets:lookup(table, p4),
-            C = ets:lookup(table, p5),
+            B = ets:lookup(table, p5),
+            C = ets:lookup(table, p4),
             throw({A,B,C})
     end.
 
