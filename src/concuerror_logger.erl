@@ -102,12 +102,13 @@ initialize(Options) ->
       true -> none;
       false ->
         to_stderr("~s", [Header]),
-        to_stderr("Writing results in ~s~n~n~n", [OutputName]),
+        to_stderr("~nWriting results in ~s~n", [OutputName]),
         if Graph =:= undefined -> ok;
            true ->
             {_, GraphName} = Graph,
-            to_stderr("Writing graph in ~s~n~n~n", [GraphName])
+            to_stderr("Writing graph in ~s~n", [GraphName])
         end,
+        to_stderr("~n~n",[]),
         Self = self(),
         spawn_link(fun() -> ticker(Self) end)
     end,
