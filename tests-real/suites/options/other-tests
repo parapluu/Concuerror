@@ -45,7 +45,7 @@ function has {
 
 function consolehas {
     print_ok
-    testing "Console has $1"
+    testing "Console has \"$1\""
     mygrepconsole "$1"
     good
 }
@@ -72,6 +72,15 @@ good
 testing "Limited automatic compilation with -m"
 $CONCUERROR -m foo 2> $Console
 good
+
+testing "Long short option fixes works"
+rm -rf path
+rm -rf foo.beam
+mkdir path
+erlc -o path foo.erl
+$CONCUERROR -pz path --ignore-error deadlock --m foo 2> $Console
+consolehas "converted to"
+rm -rf path
 
 trap - 0
 

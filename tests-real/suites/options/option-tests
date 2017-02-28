@@ -45,7 +45,7 @@ function has {
 
 function consolehas {
     print_ok
-    testing "Console has $1"
+    testing "Console has \"$1\""
     mygrepconsole "$1"
     good
 }

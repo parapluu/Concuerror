@@ -262,7 +262,8 @@ parse_cl(CommandLineArgs) ->
 
 parse_cl_aux([]) ->
   {ok, [help]};
-parse_cl_aux(CommandLineArgs) ->
+parse_cl_aux(RawCommandLineArgs) ->
+  CommandLineArgs = fix_common_errors(RawCommandLineArgs),
   case getopt:parse(getopt_spec_no_default(), CommandLineArgs) of
     {ok, {Options, OtherArgs}} ->
       case OtherArgs =:= [] of
@@ -282,6 +283,29 @@ parse_cl_aux(CommandLineArgs) ->
           opt_error(getopt:format_error([], Error))
       end
   end.
+
+fix_common_errors(RawCommandLineArgs) ->
+  lists:map(fun fix_common_error/1, RawCommandLineArgs).
+
+fix_common_error("--" ++ [C] = Option) ->
+  opt_warn("~s converted to -~c", [Option, C]),
+  "-" ++ [C];
+fix_common_error("--" ++ Text = Option) ->
+  Underscored = lists:map(fun dash_to_underscore/1, Text),
+  case Text =:= Underscored of
+    true -> Option;
+    false ->
+      opt_warn("~s converted to --~s", [Option, Underscored]),
+      "--" ++ Underscored
+  end;
+fix_common_error("-p" ++ [A] = Option) when A =:= $a; A=:= $z ->
+  opt_warn("~s converted to -~s", [Option, Option]),
+  fix_common_error("-" ++ Option);
+fix_common_error(OptionOrArg) ->
+  OptionOrArg.
+
+dash_to_underscore($-) -> $_;
+dash_to_underscore(Ch) -> Ch.
 
 %%%-----------------------------------------------------------------------------
 
