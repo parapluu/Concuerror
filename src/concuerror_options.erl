@@ -340,19 +340,19 @@ cl_usage(Name) ->
     Tuple ->
       getopt:usage(getopt_spec([Tuple]), "./concuerror"),
       case element(?OPTION_GETOPT_LONG_HELP, Tuple) of
-        nolong -> to_stderr("No additional help available.~n", []);
-        String -> to_stderr(String ++ "~n", [])
+        nolong -> to_stderr("No additional help available.~n");
+        String -> to_stderr(String ++ "~n")
       end,
       {Keywords, Related} = get_keywords_and_related(Tuple),
       to_stderr("Option Keywords: ~p~nRelated Options: ~p~n", [Keywords, Related]),
-      to_stderr("For general help use '-h' without an argument.~n", [])
+      to_stderr("For general help use '-h' without an argument.~n")
   end.
 
 options(Keyword) ->
   [T || T <- options(), lists:member(Keyword, element(?OPTION_KEYWORDS, T))].
 
 print_suffix(Keyword) ->
-  to_stderr("More info & keywords about a specific option: -h <option>.~n", []),
+  to_stderr("More info & keywords about a specific option: -h <option>.~n"),
   case Keyword =:= basic orelse Keyword =:= all of
     true -> print_exit_status_info();
     false -> ok
@@ -365,11 +365,11 @@ print_exit_status_info() ->
     " 0    ('ok') : Test went well. No errors were found.~n"
     " 1 ('error') : Test went bad. Errors were found.~n"
     " 2  ('fail') : Incorrect use. Bad options used, unsupported code, etc.~n",
-  to_stderr(Message, []).
+  to_stderr(Message).
 
 print_bugs_message() ->
   Message = "Report bugs (and other FAQ): http://parapluu.github.io/Concuerror/faq~n",
-  to_stderr(Message, []).
+  to_stderr(Message).
 
 get_keywords_and_related(Tuple) ->
   Keywords = element(?OPTION_KEYWORDS, Tuple),
@@ -928,6 +928,9 @@ get_log(What) ->
     undefined -> [];
     Whats -> lists:reverse(Whats)
   end.
+
+to_stderr(Format) ->
+  to_stderr(Format, []).
 
 to_stderr(Format, Data) ->
   io:format(standard_error, Format ++ "~n", Data).
