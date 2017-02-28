@@ -1430,7 +1430,7 @@ msg(shutdown) ->
     " shutdown' if this is expected behaviour.~n";
 msg(sleep_set_block) ->
   "Some interleavings were 'sleep-set blocked'. This is expected, since you are"
-    " not using '--dpor optimal', but reveals wasted effort.~n";
+    " not using '--dpor optimal', but indicates wasted effort.~n";
 msg(stop_first_error) ->
   "Stop testing on first error. (Check '-h keep_going').~n";
 msg(timeout) ->
