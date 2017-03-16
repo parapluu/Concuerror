@@ -107,9 +107,9 @@ options() ->
     "The maximum number of interleavings that will be explored. Concuerror will"
     " stop exploration beyond this limit."}
   ,{dpor, [por], undefined, {atom, optimal},
-    "DPOR techique",
-    "Specifies which Dynamic Partial Order Reduction techique will be used. The"
-    " available options are:~n"
+    "DPOR technique",
+    "Specifies which Dynamic Partial Order Reduction technique will be used."
+    " The available options are:~n"
     "-       'none': Disable DPOR. Do not use.~n"
     "-    'optimal': Using source sets and wakeup trees.~n"
     "-     'source': Using source sets only. Use this if the rate of~n"
