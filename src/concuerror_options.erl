@@ -5,6 +5,13 @@
 -export([parse_cl/1, finalize/1]).
 
 -export_type([options/0]).
+-export_type(
+   [ bound/0
+   , dpor/0
+   , ignore_error/0
+   , scheduling/0
+   , scheduling_bound_type/0
+   ]).
 
 %%%-----------------------------------------------------------------------------
 
@@ -12,6 +19,12 @@
 -include("concuerror_sha.hrl").
 
 -type options() :: proplists:proplist().
+
+-type bound()        :: 'infinity' | non_neg_integer().
+-type dpor()         :: 'none' | 'optimal' | 'persistent' | 'source'.
+-type ignore_error() :: 'crash' | 'deadlock' | 'depth_bound'.
+-type scheduling()   :: 'oldest' | 'newest' | 'round_robin'.
+-type scheduling_bound_type() :: 'bpor' | 'delay' | 'none'.
 
 %%%-----------------------------------------------------------------------------
 

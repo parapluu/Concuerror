@@ -33,11 +33,6 @@
 %% DATA STRUCTURES
 %% =============================================================================
 
--type bound()      :: 'infinity' | non_neg_integer().
--type dpor()       :: 'none' | 'optimal' | 'persistent' | 'source'.
--type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
--type scheduling_bound_type() :: 'bpor' | 'delay' | 'none'.
-
 -record(backtrack_entry, {
           conservative = false :: boolean(),
           event                :: event(),
@@ -57,7 +52,7 @@
           index            = 1          :: index(),
           graph_ref        = make_ref() :: reference(),
           previous_actor   = 'none'     :: 'none' | actor(),
-          scheduling_bound = infinity   :: bound(),
+          scheduling_bound = infinity   :: concuerror_options:bound(),
           sleeping         = []         :: [event()],
           wakeup_tree      = []         :: event_tree()
          }).
@@ -70,12 +65,12 @@
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
           disable_sleep_sets           :: boolean(),
-          dpor                         :: dpor(),
+          dpor                         :: concuerror_options:dpor(),
           entry_point                  :: mfargs(),
           exploring            = 1     :: integer(),
           first_process                :: pid(),
-          ignore_error                 :: [atom()],
-          interleaving_bound           :: pos_integer(),
+          ignore_error                 :: [concuerror_options:ignore_error()],
+          interleaving_bound           :: concuerror_options:bound(),
           keep_going                   :: boolean(),
           logger                       :: pid(),
           last_scheduled               :: pid(),
@@ -84,8 +79,8 @@
           origin               = 1     :: integer(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
-          scheduling                   :: scheduling(),
-          scheduling_bound_type        :: scheduling_bound_type(),
+          scheduling                   :: concuerror_options:scheduling(),
+          scheduling_bound_type        :: concuerror_options:scheduling_bound_type(),
           show_races                   :: boolean(),
           strict_scheduling            :: boolean(),
           system                       :: [pid()],
