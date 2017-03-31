@@ -24,7 +24,7 @@
 -type dpor()         :: 'none' | 'optimal' | 'persistent' | 'source'.
 -type ignore_error() :: 'crash' | 'deadlock' | 'depth_bound'.
 -type scheduling()   :: 'oldest' | 'newest' | 'round_robin'.
--type scheduling_bound_type() :: 'bpor' | 'delay' | 'none'.
+-type scheduling_bound_type() :: 'bpor' | 'delay' | 'none' | 'ubpor'.
 
 %%%-----------------------------------------------------------------------------
 
@@ -141,7 +141,10 @@ options() ->
     "            to preempt a process.~n"
     "            * Not compatible with Optimal DPOR.~n"
     "-  'delay': how many times per interleaving the scheduler is allowed~n"
-    "            to skip a chosen process in order to schedule others.~n"}
+    "            to skip the process chosen by default in order to schedule~n"
+    "            others.~n"
+    "-  'ubpor': same as 'bpor' but without conservative backtrack points.~n"
+    "            * Experimental, unsound, not compatible with Optimal DPOR.~n"}
   ,{scheduling_bound, [bound], $b, integer,
     "Scheduling bound value",
     "The maximum number of times the rule specified in '--scheduling_bound_type'"
@@ -239,6 +242,7 @@ derived_defaults() ->
   , {scheduling_bound, [{scheduling_bound_type, delay}]}
   , {{scheduling_bound_type, bpor}, [{dpor, source}, {scheduling_bound, 1}]}
   , {{scheduling_bound_type, delay}, [{scheduling_bound, 1}]}
+  , {{scheduling_bound_type, ubpor}, [{dpor, source}, {scheduling_bound, 1}]}
   ].
 
 check_validity(Key) ->
@@ -257,7 +261,7 @@ check_validity(Key) ->
     scheduling_bound ->
       {fun(V) -> V >= 0 end, "a non-negative integer"};
     scheduling_bound_type ->
-      [bpor, delay, none];
+      [bpor, delay, none, ubpor];
     _ -> skip
   end.
 
@@ -884,7 +888,7 @@ consistent([{disable_sleep_sets, true} = Option|Rest], Acc) ->
     Rest ++ Acc, Option),
   consistent(Rest, [Option|Acc]);
 consistent([{scheduling_bound, _} = Option|Rest], Acc) ->
-  VeryFun = fun(X) -> lists:member(X, [bpor, delay]) end,
+  VeryFun = fun(X) -> lists:member(X, [bpor, delay, ubpor]) end,
   check_values(
     [{scheduling_bound_type, VeryFun}],
     Rest ++ Acc,
@@ -894,7 +898,7 @@ consistent([{scheduling_bound_type, Type} = Option|Rest], Acc)
   when Type =/= none ->
   DPORVeryFun =
     case Type of
-      bpor ->
+      BPORvar when BPORvar =:= bpor; BPORvar =:= ubpor ->
         fun(X) -> lists:member(X, [source, persistent]) end;
       _ ->
         fun(_) -> true end

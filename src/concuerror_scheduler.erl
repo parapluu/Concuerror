@@ -87,6 +87,7 @@
           timeout                      :: timeout(),
           trace                        :: [trace_state()],
           treat_as_normal              :: [atom()],
+          unsound_bpor         = false :: boolean(),
           warnings             = []    :: [concuerror_warning_info()]
          }).
 
@@ -112,6 +113,11 @@ run(Options) ->
        scheduling_bound = ?opt(scheduling_bound, Options)
       },
   Logger = ?opt(logger, Options),
+  {SchedulingBoundType, UnsoundBPOR} =
+    case ?opt(scheduling_bound_type, Options) of
+      ubpor -> {bpor, true};
+      Else -> {Else, false}
+    end,
   InitialState =
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
@@ -130,13 +136,14 @@ run(Options) ->
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
-       scheduling_bound_type = ?opt(scheduling_bound_type, Options),
+       scheduling_bound_type = SchedulingBoundType,
        show_races = ?opt(show_races, Options),
        strict_scheduling = ?opt(strict_scheduling, Options),
        system = System,
        trace = [InitialTrace],
        treat_as_normal = ?opt(treat_as_normal, Options),
-       timeout = Timeout
+       timeout = Timeout,
+       unsound_bpor = UnsoundBPOR
       },
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
@@ -878,7 +885,8 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
      dpor = DPOR,
      exploring = Exploring,
      logger = Logger,
-     scheduling_bound_type = SchedulingBoundType
+     scheduling_bound_type = SchedulingBoundType,
+     unsound_bpor = UnsoundBPOR
     } = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done] = AllDone,
@@ -935,7 +943,10 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
       skip;
     over_bound ->
       concuerror_logger:bound_reached(Logger),
-      put(bound_exceeded, true),
+      case UnsoundBPOR of
+        true -> ok;
+        false -> put(bound_exceeded, true)
+      end,
       {[TraceState|NewOldTrace], ConservativeInfo};
     NewWakeup ->
       NS = TraceState#trace_state{wakeup_tree = NewWakeup},
