@@ -1,5 +1,42 @@
 %% -*- erlang-indent-level: 2 -*-
 
+%%% @doc Concuerror's scheduler component
+%%%
+%%% concuerror_scheduler is the main driver of interleaving
+%%% exploration.  A rough trace through it is the following:
+
+%%% The entry point is `concuerror_scheduler:run/1` which takes the
+%%% options and initialises the exploration, spawning the main
+%%% process.  There are plenty of state info that are kept in the
+%%% `#scheduler_state` record the most important of which being a list
+%%% of `#trace_state` records, recording events in the exploration.
+%%% This list corresponds more or less to "E" in the various DPOR
+%%% papers (representing the execution trace).
+
+%%% The logic of the exploration goes through `explore/1`, which is
+%%% fairly clean: as long as there are more processes that can be
+%%% executed and yield events, `get_next_event/1` will be returning
+%%% `ok`, after executing one of them and doing all necessary updates
+%%% to the state (adding new `#trace_state`s, etc).  If
+%%% `get_next_event/1` returns `none`, we are at the end of an
+%%% interleaving (either due to no more enabled processes or due to
+%%% "sleep set blocking") and can do race analysis and report any
+%%% erros found in the interleaving.  Race analysis is contained in
+%%% `plan_more_interleavings/1`, reporting whether the current
+%%% interleaving was buggy is contained in `log_trace/1` and resetting
+%%% most parts to continue exploration is contained in
+%%% `has_more_to_explore/1`.
+
+%%% Focusing on `plan_more_interleavings`, it is composed out of two
+%%% steps: first (`assign_happens_before/3`) we assign a
+%%% happens-before relation to all events to be able to detect when
+%%% races are reversible or not (if two events are dependent not only
+%%% directly but also via a chain of dependent events then the race is
+%%% not reversible) and then (`plan_more_interleavings/3`) for each
+%%% event (`more_interleavings_for_event/6`) we do an actual race
+%%% analysis, adding initials or wakeup sequences in appropriate
+%%% places in the list of `#trace_state`s.
+
 -module(concuerror_scheduler).
 
 %% User interface
