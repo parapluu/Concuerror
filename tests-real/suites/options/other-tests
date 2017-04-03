@@ -82,6 +82,10 @@ $CONCUERROR -pz path --ignore-error deadlock --m foo 2> $Console
 consolehas "converted to"
 rm -rf path
 
+testing "Interleaving bound caps total"
+$CONCUERROR -f six.erl -i 4 2> $Console
+consolehas "4/4"
+
 trap - 0
 
 echo -e "\e[1;32mSUCCESS!\e[0m"

@@ -54,6 +54,7 @@ timediff(After, Before) ->
           emit_logger_tips = initial   :: 'initial' | 'false',
           errors = 0                   :: non_neg_integer(),
           graph_data                   :: graph_data() | 'undefined',
+          interleaving_bound           :: concuerror_options:bound(),
           log_msgs = []                :: [string()],
           output                       :: file:io_device(),
           output_name                  :: string(),
@@ -125,6 +126,7 @@ initialize(Options) ->
   GraphData = graph_preamble(Graph),
   #logger_state{
      graph_data = GraphData,
+     interleaving_bound = ?opt(interleaving_bound, Options),
      output = Output,
      output_name = OutputName,
      print_depth = ?opt(print_depth, Options),
@@ -537,6 +539,7 @@ interleavings_message(State) ->
   #logger_state{
      bound_reached = BoundReached,
      errors = Errors,
+     interleaving_bound = InterleavingBound,
      traces_explored = TracesExplored,
      traces_ssb = TracesSSB,
      traces_total = TracesTotal
@@ -551,8 +554,9 @@ interleavings_message(State) ->
       true -> " (the scheduling bound was reached)";
       false -> ""
     end,
+  ExploreTotal = min(TracesTotal, InterleavingBound),
   io_lib:format("~p errors, ~p/~p interleavings explored~s~s~n",
-                [Errors, TracesExplored, TracesTotal, SSB, BR]).
+                [Errors, TracesExplored, ExploreTotal, SSB, BR]).
 
 %%------------------------------------------------------------------------------
 

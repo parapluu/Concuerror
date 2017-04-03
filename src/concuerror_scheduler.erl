@@ -33,11 +33,6 @@
 %% DATA STRUCTURES
 %% =============================================================================
 
--type bound()      :: 'infinity' | non_neg_integer().
--type dpor()       :: 'none' | 'optimal' | 'persistent' | 'source'.
--type scheduling() :: 'oldest' | 'newest' | 'round_robin'.
--type scheduling_bound_type() :: 'bpor' | 'delay' | 'none'.
-
 -record(backtrack_entry, {
           conservative = false :: boolean(),
           event                :: event(),
@@ -57,7 +52,7 @@
           index            = 1          :: index(),
           graph_ref        = make_ref() :: reference(),
           previous_actor   = 'none'     :: 'none' | actor(),
-          scheduling_bound = infinity   :: bound(),
+          scheduling_bound = infinity   :: concuerror_options:bound(),
           sleeping         = []         :: [event()],
           wakeup_tree      = []         :: event_tree()
          }).
@@ -70,12 +65,12 @@
           current_graph_ref            :: 'undefined' | reference(),
           depth_bound                  :: pos_integer(),
           disable_sleep_sets           :: boolean(),
-          dpor                         :: dpor(),
+          dpor                         :: concuerror_options:dpor(),
           entry_point                  :: mfargs(),
           exploring            = 1     :: integer(),
           first_process                :: pid(),
-          ignore_error                 :: [atom()],
-          interleaving_bound           :: pos_integer(),
+          ignore_error                 :: [concuerror_options:ignore_error()],
+          interleaving_bound           :: concuerror_options:bound(),
           keep_going                   :: boolean(),
           logger                       :: pid(),
           last_scheduled               :: pid(),
@@ -84,14 +79,15 @@
           origin               = 1     :: integer(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
-          scheduling                   :: scheduling(),
-          scheduling_bound_type        :: scheduling_bound_type(),
+          scheduling                   :: concuerror_options:scheduling(),
+          scheduling_bound_type        :: concuerror_options:scheduling_bound_type(),
           show_races                   :: boolean(),
           strict_scheduling            :: boolean(),
           system                       :: [pid()],
           timeout                      :: timeout(),
           trace                        :: [trace_state()],
           treat_as_normal              :: [atom()],
+          unsound_bpor         = false :: boolean(),
           warnings             = []    :: [concuerror_warning_info()]
          }).
 
@@ -117,6 +113,11 @@ run(Options) ->
        scheduling_bound = ?opt(scheduling_bound, Options)
       },
   Logger = ?opt(logger, Options),
+  {SchedulingBoundType, UnsoundBPOR} =
+    case ?opt(scheduling_bound_type, Options) of
+      ubpor -> {bpor, true};
+      Else -> {Else, false}
+    end,
   InitialState =
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
@@ -135,13 +136,14 @@ run(Options) ->
        print_depth = ?opt(print_depth, Options),
        processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
-       scheduling_bound_type = ?opt(scheduling_bound_type, Options),
+       scheduling_bound_type = SchedulingBoundType,
        show_races = ?opt(show_races, Options),
        strict_scheduling = ?opt(strict_scheduling, Options),
        system = System,
        trace = [InitialTrace],
        treat_as_normal = ?opt(treat_as_normal, Options),
-       timeout = Timeout
+       timeout = Timeout,
+       unsound_bpor = UnsoundBPOR
       },
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
@@ -883,7 +885,8 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
      dpor = DPOR,
      exploring = Exploring,
      logger = Logger,
-     scheduling_bound_type = SchedulingBoundType
+     scheduling_bound_type = SchedulingBoundType,
+     unsound_bpor = UnsoundBPOR
     } = State,
   #trace_state{
      done = [#event{actor = EarlyActor}|Done] = AllDone,
@@ -940,7 +943,10 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
       skip;
     over_bound ->
       concuerror_logger:bound_reached(Logger),
-      put(bound_exceeded, true),
+      case UnsoundBPOR of
+        true -> ok;
+        false -> put(bound_exceeded, true)
+      end,
       {[TraceState|NewOldTrace], ConservativeInfo};
     NewWakeup ->
       NS = TraceState#trace_state{wakeup_tree = NewWakeup},
