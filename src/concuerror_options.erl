@@ -160,6 +160,12 @@ options() ->
     "Messages and signals arrive instantly",
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
+  ,{use_receive_patterns, [erlang], undefined, {boolean, false},
+    "Use receive patterns for racing sends",
+    "Experimental. If true, Concuerror will only consider two"
+    " message deliveries as racing when the first message is really"
+    " received and the patterns used could also match the second"
+    " message."}
   ,{scheduling, [advanced], undefined, {atom, round_robin},
     "Scheduling order",
     "How Concuerror picks the next process to run. The available options are"
@@ -371,8 +377,10 @@ cl_usage(Name) ->
           to_stderr(KeywordWarningFormat, [Name]),
           print_suffix(Name);
         false ->
-          case atom_to_list(Name) of
-            "-" ++ Rest -> cl_usage(list_to_atom(Rest));
+          ListName = atom_to_list(Name),
+          case [dash_to_underscore(L) || L <- ListName] of
+            "_" ++ Rest -> cl_usage(list_to_atom(Rest));
+            Other when Other =/= ListName -> cl_usage(list_to_atom(Other));
             _ ->
               Msg = "Invalid option name/keyword (as argument to --help): '~w'.",
               opt_error(Msg, [Name], help)

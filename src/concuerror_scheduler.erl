@@ -1,5 +1,42 @@
 %% -*- erlang-indent-level: 2 -*-
 
+%%% @doc Concuerror's scheduler component
+%%%
+%%% concuerror_scheduler is the main driver of interleaving
+%%% exploration.  A rough trace through it is the following:
+
+%%% The entry point is `concuerror_scheduler:run/1` which takes the
+%%% options and initialises the exploration, spawning the main
+%%% process.  There are plenty of state info that are kept in the
+%%% `#scheduler_state` record the most important of which being a list
+%%% of `#trace_state` records, recording events in the exploration.
+%%% This list corresponds more or less to "E" in the various DPOR
+%%% papers (representing the execution trace).
+
+%%% The logic of the exploration goes through `explore/1`, which is
+%%% fairly clean: as long as there are more processes that can be
+%%% executed and yield events, `get_next_event/1` will be returning
+%%% `ok`, after executing one of them and doing all necessary updates
+%%% to the state (adding new `#trace_state`s, etc).  If
+%%% `get_next_event/1` returns `none`, we are at the end of an
+%%% interleaving (either due to no more enabled processes or due to
+%%% "sleep set blocking") and can do race analysis and report any
+%%% erros found in the interleaving.  Race analysis is contained in
+%%% `plan_more_interleavings/1`, reporting whether the current
+%%% interleaving was buggy is contained in `log_trace/1` and resetting
+%%% most parts to continue exploration is contained in
+%%% `has_more_to_explore/1`.
+
+%%% Focusing on `plan_more_interleavings`, it is composed out of two
+%%% steps: first (`assign_happens_before/3`) we assign a
+%%% happens-before relation to all events to be able to detect when
+%%% races are reversible or not (if two events are dependent not only
+%%% directly but also via a chain of dependent events then the race is
+%%% not reversible) and then (`plan_more_interleavings/3`) for each
+%%% event (`more_interleavings_for_event/6`) we do an actual race
+%%% analysis, adding initials or wakeup sequences in appropriate
+%%% places in the list of `#trace_state`s.
+
 -module(concuerror_scheduler).
 
 %% User interface
@@ -59,6 +96,9 @@
 
 -type trace_state() :: #trace_state{}.
 
+%% DO NOT ADD A DEFAULT VALUE IF IT WILL ALWAYS BE OVERWRITTEN.
+%% Default values for fields should be specified in ONLY ONE PLACE.
+%% For e.g., user options this is normally in the _options module.
 -record(scheduler_state, {
           assertions_only              :: boolean(),
           assume_racing                :: assume_racing_opt(),
@@ -87,7 +127,8 @@
           timeout                      :: timeout(),
           trace                        :: [trace_state()],
           treat_as_normal              :: [atom()],
-          unsound_bpor         = false :: boolean(),
+          unsound_bpor                 :: boolean(),
+          use_receive_patterns         :: boolean(),
           warnings             = []    :: [concuerror_warning_info()]
          }).
 
@@ -118,6 +159,8 @@ run(Options) ->
       ubpor -> {bpor, true};
       Else -> {Else, false}
     end,
+  UseReceivePatterns = ?opt(use_receive_patterns, Options),
+  concuerror_receive_dependencies:initialise(UseReceivePatterns),
   InitialState =
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
@@ -143,7 +186,8 @@ run(Options) ->
        trace = [InitialTrace],
        treat_as_normal = ?opt(treat_as_normal, Options),
        timeout = Timeout,
-       unsound_bpor = UnsoundBPOR
+       unsound_bpor = UnsoundBPOR,
+       use_receive_patterns = UseReceivePatterns
       },
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
@@ -700,6 +744,7 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   ?trace(_Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
   BaseHappenedBeforeClock =
     add_pre_message_clocks(Special, ClockMap, ActorClock),
+  maybe_store_delivery_patterns(Event),
   HappenedBeforeClock =
     update_clock(RevLate, RevEarly, Event, BaseHappenedBeforeClock, State),
   BaseNewClockMap = dict:store(Actor, HappenedBeforeClock, ClockMap),
@@ -1236,12 +1281,16 @@ find_prefix(Trace, SchedulingBoundType) ->
   case SchedulingBoundType =/= 'bpor' orelse get(bound_exceeded) of
     false ->
       case [B || #backtrack_entry{conservative = false} = B <- Tree] of
-        [] -> find_prefix(Rest, SchedulingBoundType);
+        [] ->
+          maybe_reset_delivery_patterns(hd(TraceState#trace_state.done)),
+          find_prefix(Rest, SchedulingBoundType);
         WUT -> [TraceState#trace_state{wakeup_tree = WUT}|Rest]
       end;
     true ->
       case Tree =:= [] of
-        true -> find_prefix(Rest, SchedulingBoundType);
+        true ->
+          maybe_reset_delivery_patterns(hd(TraceState#trace_state.done)),
+          find_prefix(Rest, SchedulingBoundType);
         false -> Trace
       end
   end.
@@ -1260,6 +1309,27 @@ replay(State) ->
   NewState = replay_prefix(NewTrace, State#scheduler_state{trace = NewTrace}),
   ?debug(Logger, "~s~n",["Replay done."]),
   NewState#scheduler_state{need_to_replay = false}.
+
+%% =============================================================================
+
+maybe_store_delivery_patterns(Event) ->
+  case Event of
+    #event{event_info = #receive_event{message = Msg} = Info}
+      when Msg =/= 'after' ->
+      #message{id = Id} = Msg,
+      #receive_event{patterns = Patterns} = Info,
+      concuerror_receive_dependencies:store(Id, Patterns);
+    _Else -> ok
+  end.
+
+maybe_reset_delivery_patterns(Event) ->
+  case Event of
+    #event{event_info = #receive_event{message = Msg}}
+      when Msg =/= 'after' ->
+      #message{id = Id} = Msg,
+      concuerror_receive_dependencies:reset(Id);
+    _Else -> ok
+  end.
 
 %% =============================================================================
 %% ENGINE (manipulation of the Erlang processes under the scheduler)

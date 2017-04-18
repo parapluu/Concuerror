@@ -1,0 +1,40 @@
+Concuerror 0.17 ('17d5365') started at 18 Apr 2017 16:18:24
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{receive_pats,test2,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_pats.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Exploration completed!
+  No errors found!
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented receive_pats
+Instrumented io_lib
+Instrumented gen_server
+Instrumented erlang
+You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
+
+################################################################################
+Done at 18 Apr 2017 16:18:25 (Exit status: ok)
+  Summary: 0 errors, 2/2 interleavings explored
