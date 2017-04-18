@@ -170,9 +170,11 @@
 
 -type index() :: non_neg_integer().
 
+-type message_id() :: {pid(), pos_integer()} | 'hidden'.
+
 -record(message, {
           data    :: term(),
-          id      :: {pid(), pos_integer()} | 'hidden'
+          id      :: message_id()
          }).
 
 -type message() :: #message{}.
