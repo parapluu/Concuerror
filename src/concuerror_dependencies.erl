@@ -152,7 +152,7 @@ dependent(#exit_event{}, #exit_event{}) ->
 dependent(#message_event{
              ignored = false,
              killing = Killing,
-             message = #message{data = EarlyData},
+             message = #message{id = Id, data = EarlyData},
              recipient = Recipient,
              trapping = Trapping,
              type = EarlyType},
@@ -171,7 +171,8 @@ dependent(#message_event{
     end,
   case {KindFun(EarlyType, Trapping, EarlyData),
         KindFun(Type, Trapping, Data)} of
-    {message, message} -> true; %% more accurately, if it could be received
+    {message, message} -> 
+      concuerror_receive_dependencies:dependent_delivery(Id, Data);
     {message, normal_exit} -> false;
     {message, _} -> true;
     {normal_exit, kill_exit} -> true;

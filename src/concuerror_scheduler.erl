@@ -128,6 +128,7 @@
           trace                        :: [trace_state()],
           treat_as_normal              :: [atom()],
           unsound_bpor                 :: boolean(),
+          use_receive_patterns         :: boolean(),
           warnings             = []    :: [concuerror_warning_info()]
          }).
 
@@ -158,6 +159,8 @@ run(Options) ->
       ubpor -> {bpor, true};
       Else -> {Else, false}
     end,
+  UseReceivePatterns = ?opt(use_receive_patterns, Options),
+  concuerror_receive_dependencies:initialise(UseReceivePatterns),
   InitialState =
     #scheduler_state{
        assertions_only = ?opt(assertions_only, Options),
@@ -183,7 +186,8 @@ run(Options) ->
        trace = [InitialTrace],
        treat_as_normal = ?opt(treat_as_normal, Options),
        timeout = Timeout,
-       unsound_bpor = UnsoundBPOR
+       unsound_bpor = UnsoundBPOR,
+       use_receive_patterns = UseReceivePatterns
       },
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
@@ -740,6 +744,7 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   ?trace(_Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
   BaseHappenedBeforeClock =
     add_pre_message_clocks(Special, ClockMap, ActorClock),
+  maybe_store_delivery_patterns(Event),
   HappenedBeforeClock =
     update_clock(RevLate, RevEarly, Event, BaseHappenedBeforeClock, State),
   BaseNewClockMap = dict:store(Actor, HappenedBeforeClock, ClockMap),
@@ -1276,12 +1281,16 @@ find_prefix(Trace, SchedulingBoundType) ->
   case SchedulingBoundType =/= 'bpor' orelse get(bound_exceeded) of
     false ->
       case [B || #backtrack_entry{conservative = false} = B <- Tree] of
-        [] -> find_prefix(Rest, SchedulingBoundType);
+        [] ->
+          maybe_reset_delivery_patterns(hd(TraceState#trace_state.done)),
+          find_prefix(Rest, SchedulingBoundType);
         WUT -> [TraceState#trace_state{wakeup_tree = WUT}|Rest]
       end;
     true ->
       case Tree =:= [] of
-        true -> find_prefix(Rest, SchedulingBoundType);
+        true ->
+          maybe_reset_delivery_patterns(hd(TraceState#trace_state.done)),
+          find_prefix(Rest, SchedulingBoundType);
         false -> Trace
       end
   end.
@@ -1300,6 +1309,27 @@ replay(State) ->
   NewState = replay_prefix(NewTrace, State#scheduler_state{trace = NewTrace}),
   ?debug(Logger, "~s~n",["Replay done."]),
   NewState#scheduler_state{need_to_replay = false}.
+
+%% =============================================================================
+
+maybe_store_delivery_patterns(Event) ->
+  case Event of
+    #event{event_info = #receive_event{message = Msg} = Info}
+      when Msg =/= 'after' ->
+      #message{id = Id} = Msg,
+      #receive_event{patterns = Patterns} = Info,
+      concuerror_receive_dependencies:store(Id, Patterns);
+    _Else -> ok
+  end.
+
+maybe_reset_delivery_patterns(Event) ->
+  case Event of
+    #event{event_info = #receive_event{message = Msg}}
+      when Msg =/= 'after' ->
+      #message{id = Id} = Msg,
+      concuerror_receive_dependencies:reset(Id);
+    _Else -> ok
+  end.
 
 %% =============================================================================
 %% ENGINE (manipulation of the Erlang processes under the scheduler)
