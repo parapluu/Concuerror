@@ -96,6 +96,9 @@
 
 -type trace_state() :: #trace_state{}.
 
+%% DO NOT ADD A DEFAULT VALUE IF IT WILL ALWAYS BE OVERWRITTEN.
+%% Default values for fields should be specified in ONLY ONE PLACE.
+%% For e.g., user options this is normally in the _options module.
 -record(scheduler_state, {
           assertions_only              :: boolean(),
           assume_racing                :: assume_racing_opt(),
@@ -124,7 +127,7 @@
           timeout                      :: timeout(),
           trace                        :: [trace_state()],
           treat_as_normal              :: [atom()],
-          unsound_bpor         = false :: boolean(),
+          unsound_bpor                 :: boolean(),
           warnings             = []    :: [concuerror_warning_info()]
          }).
 
