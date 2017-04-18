@@ -95,6 +95,9 @@ testing "Help for keyword"
 $CONCUERROR -h bound 2> $Console
 consolehas "Only showing options with the keyword 'bound'."
 
+testing "Help for keyword with dashes"
+$CONCUERROR -h keep-going 2> $Console
+
 testing "Version"
 $CONCUERROR --version 2> $Console
 consolehas "Concuerror v"

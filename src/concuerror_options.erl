@@ -377,8 +377,10 @@ cl_usage(Name) ->
           to_stderr(KeywordWarningFormat, [Name]),
           print_suffix(Name);
         false ->
-          case atom_to_list(Name) of
-            "-" ++ Rest -> cl_usage(list_to_atom(Rest));
+          ListName = atom_to_list(Name),
+          case [dash_to_underscore(L) || L <- ListName] of
+            "_" ++ Rest -> cl_usage(list_to_atom(Rest));
+            Other when Other =/= ListName -> cl_usage(list_to_atom(Other));
             _ ->
               Msg = "Invalid option name/keyword (as argument to --help): '~w'.",
               opt_error(Msg, [Name], help)
