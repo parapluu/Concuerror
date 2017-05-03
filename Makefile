@@ -40,7 +40,7 @@ dev: VERSION := $(VERSION)-dev
 $(NAME): $(DEPS_BEAMS) $(BEAMS)
 	@$(RM) $@
 	@printf " GEN  $@\n"
-	@ln -s `readlink -f src/$(NAME)` $@
+	@ln -s "$$(pwd -P)/src/$(NAME)" $@
 
 ###-----------------------------------------------------------------------------
 
