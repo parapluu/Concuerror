@@ -132,7 +132,7 @@ options() ->
   ,{optimal, [por], undefined, boolean,
     "Deprecated. Use '--dpor (optimal | source)' instead.",
     nolong}
-  ,{scheduling_bound_type, [bound], $c, {atom, none},
+  ,{scheduling_bound_type, [bound, experimental], $c, {atom, none},
     "Schedule bounding technique",
     "Enables scheduling rules that prevent interleavings from being explored."
     " The available options are:~n"
@@ -160,7 +160,7 @@ options() ->
     "Messages and signals arrive instantly",
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
-  ,{use_receive_patterns, [erlang], undefined, {boolean, false},
+  ,{use_receive_patterns, [erlang, experimental], undefined, {boolean, false},
     "Use receive patterns for racing sends",
     "Experimental. If true, Concuerror will only consider two"
     " message deliveries as racing when the first message is really"
