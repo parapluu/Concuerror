@@ -1037,8 +1037,7 @@ run_built_in(Module, Name, Arity, _Args,
   ?crash({unknown_built_in, {Module, Name, Arity, Location, Clean}}, Scheduler).
 
 clean_stacktrace() ->
-  catch throw(foo),
-  Trace = erlang:get_stacktrace(),
+  Trace = try throw(foo) catch throw:_ -> erlang:get_stacktrace() end,
   [T || {M,_,_,_} = T <- Trace, not_concuerror_module(M)].
 
 not_concuerror_module(Atom) ->
