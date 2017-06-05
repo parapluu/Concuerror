@@ -42,10 +42,12 @@ Concuerror automatically adds instrumentation code and reloads any module that
 is used by the test. The instrumentation forces any process involved in the test
 to stop and report any operation that affects shared state.
 
-## What subset of Erlang does Concuerror support?
+## How much of Erlang does Concuerror support?
 
 Concuerror supports the complete Erlang language and can instrument programs of
-any size. There are however certain limitations regarding e.g.
+any size. It can be the case that support for some built-in operations is not complete
+but this is a matter of prioritization of tasks.
+There are however certain limitations regarding e.g.
 [timeouts](#how-does-concuerror-handle-timeouts-and-other-time-related-functions)
 and [non-deterministic
 functions](#how-does-concuerror-handle-non-deterministic-functions).
