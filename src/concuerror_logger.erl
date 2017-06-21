@@ -276,6 +276,7 @@ loop(Message, State) ->
         {log, ?ltiming, none, Msg, [Diff, Tag]},
         State#logger_state{timestamp = Now});
     {race, EarlyEvent, Event} ->
+      print_depth_tip(),
       Msg =
         io_lib:format(
           "* ~s~n  ~s~n~n",
@@ -380,6 +381,7 @@ loop(Message, State) ->
             io:format(Output, "Interleaving #~p~n", [TracesExplored + 1]),
             separator(Output, $-),
             io:format(Output, "Errors found:~n", []),
+            print_depth_tip(),
             WarnStr =
               [concuerror_io_lib:error_s(W, PrintDepth) || W <-Warnings],
             io:format(Output, "~s", [WarnStr]),
@@ -615,6 +617,7 @@ graph_command(Command, State) ->
               ",color=orange,penwidth=5";
             _ -> ""
           end,
+        print_depth_tip(),
         Label = concuerror_io_lib:pretty_s({I,Event#event{location=[]}}, PrintDepth - 19),
         EnabledLabel =
           case BoundConsumed =:= 0 of
@@ -673,6 +676,12 @@ graph_close(#logger_state{graph_data = {GraphFile, _, _}}) ->
     "  }~n"
     "}~n", []),
   file:close(GraphFile).
+
+%%------------------------------------------------------------------------------
+
+print_depth_tip() ->
+  Tip = "Increase '--print_depth' if output/graph contains \"...\".~n",
+  ?unique(self(), ?ltip, Tip, []).
 
 %%------------------------------------------------------------------------------
 
