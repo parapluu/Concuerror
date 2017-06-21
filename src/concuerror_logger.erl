@@ -212,9 +212,17 @@ set_verbosity(Logger, Verbosity) ->
 %%------------------------------------------------------------------------------
 
 loop(State) ->
-  receive
-    Message -> loop(Message, State)
-  end.
+  Message =
+    receive
+      {finish, _, _} = Finish ->
+        receive
+          M -> self() ! Finish, M
+        after
+          0 -> Finish
+        end;
+      M -> M
+    end,
+  loop(Message, State).
 
 loop(Message,
      #logger_state{
