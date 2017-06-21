@@ -2,7 +2,7 @@
 layout: post
 title: "Testing Poolboy, Part 2: Reading Concuerror's reports"
 category: tutorials
-updated: 2016-03-31
+updated: 2017-06-21
 ---
 
 We continue our tutorial on Concuerror, explaining the errors it can detect and
@@ -202,7 +202,7 @@ The output file now contains the following description:
 
 {% highlight text %}
 Erroneous interleaving 1:
-* Blocked at a 'receive' (when all other processes have exited):
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P.1 in gen_server.erl line 360
     P.1.1 in gen_server.erl line 360
     P.1.1.1 in gen_server.erl line 360

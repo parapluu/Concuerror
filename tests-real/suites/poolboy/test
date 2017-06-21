@@ -93,7 +93,7 @@ good
 testing "Find a deadlock"
 ! $CONCUERROR -q -f poolboy_tests_1.erl -m poolboy_tests_1 --pa .eunit \
  -t pool_startup_no_stop
-mygrep "* Blocked at a 'receive' (when all other processes have exited):"
+mygrep "* Blocked at a 'receive' (\"deadlocked\"; other processes have exited):"
 good
 
 testing "Ignore a deadlock"
