@@ -249,6 +249,7 @@ derived_defaults() ->
   , {{scheduling_bound_type, bpor}, [{dpor, source}, {scheduling_bound, 1}]}
   , {{scheduling_bound_type, delay}, [{scheduling_bound, 1}]}
   , {{scheduling_bound_type, ubpor}, [{dpor, source}, {scheduling_bound, 1}]}
+  , {{use_receive_patterns, true}, [{dpor, source}]}
   ].
 
 check_validity(Key) ->
@@ -917,6 +918,15 @@ consistent([{scheduling_bound_type, Type} = Option|Rest], Acc)
         fun(_) -> true end
     end,
   check_values([{dpor, DPORVeryFun}], Rest ++ Acc, Option),
+  consistent(Rest, [Option|Acc]);
+consistent([{use_receive_patterns = Key, true} = Option|Rest], Acc) ->
+  case lists:keyfind(dpor, 1, Rest ++ Acc) of
+    {dpor, optimal} ->
+      Format =
+        "Use of '--~p' with '--~p ~p' can lead to crashes.",
+      opt_warn(Format, [Key, dpor, optimal]);
+    _ -> ok
+  end,
   consistent(Rest, [Option|Acc]);
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
 
