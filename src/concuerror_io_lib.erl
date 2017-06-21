@@ -29,7 +29,7 @@ error_s({Type, Info}, Depth) ->
         [io_lib:format("    ~p ~s~n", [P, location(F, L)]) ||
           {P, [L, {file, F}]} <- Info],
       Format =
-        "* Blocked at a 'receive' (when all other processes have exited):~n~s",
+        "* Blocked at a 'receive' (\"deadlocked\"; other processes have exited):~n~s",
       io_lib:format(Format, [InfoStr]);
     depth_bound ->
       io_lib:format("* Reached the depth bound of ~p events~n",[Info])

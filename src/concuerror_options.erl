@@ -218,11 +218,14 @@ options() ->
     " interleavings when processes have calls to e.g. io:format/1,2 or"
     " similar."}
   ,{help, [basic], $h, atom,
-    "Display help (use also as '-h <option/keyword>')",
-    "Without an argument, prints help for all basic options.~n"
-    "With some option as argument, prints help for that option.~n"
-    "Options also have keywords associated with them. With a keyword as an"
-    " argument, you can see all options related to that keyword."}
+    "Display help (use '-h h' for more help)",
+    "Without an argument, prints info for basic options.~n~n"
+    "With 'all' as argument, prints info for all options.~n~n"
+    "With an option name as argument, prints more help for that option.~n~n"
+    "Options have keywords associated with them. With a keyword as"
+    " argument, prints info for all options with that keyword.~n~n"
+    "Options take a SINGLE argument. If omitted, 'true' or '1' is the implied"
+    " value, if appropriate."}
   ,{version, [basic], undefined, undefined,
     "Display version information",
     nolong}
@@ -249,6 +252,7 @@ derived_defaults() ->
   , {{scheduling_bound_type, bpor}, [{dpor, source}, {scheduling_bound, 1}]}
   , {{scheduling_bound_type, delay}, [{scheduling_bound, 1}]}
   , {{scheduling_bound_type, ubpor}, [{dpor, source}, {scheduling_bound, 1}]}
+  , {{use_receive_patterns, true}, [{dpor, source}]}
   ].
 
 check_validity(Key) ->
@@ -754,7 +758,7 @@ add_derived_defaults([{TestRaw, Defaults}|Rest], Options) ->
       true -> Defaults;
       false -> []
     end,
-  NewOptions = add_defaults(ToAdd, true, Options),
+  NewOptions = add_defaults(ToAdd, {true, TestRaw}, Options),
   add_derived_defaults(Rest, NewOptions).
 
 add_defaults([], _Notify, Options) -> Options;
@@ -763,9 +767,14 @@ add_defaults([{Key, Value} = Default|Rest], Notify, Options) ->
     true -> add_defaults(Rest, Notify, Options);
     false ->
       case Notify of
-        true ->
-          Msg = "Using '--~p ~p'.",
-          opt_info(Msg, [Key, Value]);
+        {true, Source} ->
+          Form =
+            case Source of
+              {K, V} -> io_lib:format("'--~p ~p'", [K, V]);
+              K -> io_lib:format("'--~p'", [K])
+            end,
+          Msg = "Using '--~p ~p' (default for ~s).",
+          opt_info(Msg, [Key, Value, Form]);
         false -> ok
       end,
       add_defaults(Rest, Notify, [Default|Options])
@@ -912,6 +921,15 @@ consistent([{scheduling_bound_type, Type} = Option|Rest], Acc)
         fun(_) -> true end
     end,
   check_values([{dpor, DPORVeryFun}], Rest ++ Acc, Option),
+  consistent(Rest, [Option|Acc]);
+consistent([{use_receive_patterns = Key, true} = Option|Rest], Acc) ->
+  case lists:keyfind(dpor, 1, Rest ++ Acc) of
+    {dpor, optimal} ->
+      Format =
+        "Use of '--~p' with '--~p ~p' can lead to crashes.",
+      opt_warn(Format, [Key, dpor, optimal]);
+    _ -> ok
+  end,
   consistent(Rest, [Option|Acc]);
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
 

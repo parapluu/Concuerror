@@ -73,15 +73,15 @@ good
 
 testing "Get help for long"
 $CONCUERROR -h help 2> $Console
-consolehas "Without an argument, prints help for all basic options."
+consolehas "Without an argument, prints info for basic options."
 
 testing "Get help for short"
 $CONCUERROR -h h 2> $Console
-consolehas "Without an argument, prints help for all basic options."
+consolehas "Without an argument, prints info for basic options."
 
 testing "Get help for prefixed"
 $CONCUERROR -h --help 2> $Console
-consolehas "Without an argument, prints help for all basic options."
+consolehas "Without an argument, prints info for basic options."
 
 testing "Unknown argument to help"
 ! $CONCUERROR -h elp 2> $Console
