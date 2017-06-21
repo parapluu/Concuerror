@@ -754,7 +754,7 @@ add_derived_defaults([{TestRaw, Defaults}|Rest], Options) ->
       true -> Defaults;
       false -> []
     end,
-  NewOptions = add_defaults(ToAdd, true, Options),
+  NewOptions = add_defaults(ToAdd, {true, TestRaw}, Options),
   add_derived_defaults(Rest, NewOptions).
 
 add_defaults([], _Notify, Options) -> Options;
@@ -763,9 +763,14 @@ add_defaults([{Key, Value} = Default|Rest], Notify, Options) ->
     true -> add_defaults(Rest, Notify, Options);
     false ->
       case Notify of
-        true ->
-          Msg = "Using '--~p ~p'.",
-          opt_info(Msg, [Key, Value]);
+        {true, Source} ->
+          Form =
+            case Source of
+              {K, V} -> io_lib:format("'--~p ~p'", [K, V]);
+              K -> io_lib:format("'--~p'", [K])
+            end,
+          Msg = "Using '--~p ~p' (default for ~s).",
+          opt_info(Msg, [Key, Value, Form]);
         false -> ok
       end,
       add_defaults(Rest, Notify, [Default|Options])
