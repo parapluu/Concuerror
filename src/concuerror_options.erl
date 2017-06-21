@@ -218,11 +218,14 @@ options() ->
     " interleavings when processes have calls to e.g. io:format/1,2 or"
     " similar."}
   ,{help, [basic], $h, atom,
-    "Display help (use also as '-h <option/keyword>')",
-    "Without an argument, prints help for all basic options.~n"
-    "With some option as argument, prints help for that option.~n"
-    "Options also have keywords associated with them. With a keyword as an"
-    " argument, you can see all options related to that keyword."}
+    "Display help (use '-h h' for more help)",
+    "Without an argument, prints info for basic options.~n~n"
+    "With 'all' as argument, prints info for all options.~n~n"
+    "With an option name as argument, prints more help for that option.~n~n"
+    "Options have keywords associated with them. With a keyword as"
+    " argument, prints info for all options with that keyword.~n~n"
+    "Options take a SINGLE argument. If omitted, 'true' or '1' is the implied"
+    " value, if appropriate."}
   ,{version, [basic], undefined, undefined,
     "Display version information",
     nolong}

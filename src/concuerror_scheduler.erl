@@ -1499,7 +1499,7 @@ msg(signal) ->
     " too many interleavings consider refactoring your code.~n";
 msg(show_races) ->
   "You can see pairs of racing instructions (in the report and"
-    " --graph) with '--show_races true'~n";
+    " '--graph') with '--show_races true'~n";
 msg(shutdown) ->
   "A process crashed with reason 'shutdown'. This may happen when a"
     " supervisor is terminating its children. You can use '--treat_as_normal"
