@@ -685,7 +685,11 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
       start_timer -> {timeout, Ref, Msg}
     end,
   ets:insert(Timers, {Ref, Pid, Dest}),
-  Pid ! {start, erlang, send, [Dest, ActualMessage]},
+  TimerFun =
+    fun() ->
+        catch concuerror_inspect:instrumented(call, [erlang, send, [Dest, ActualMessage]], foo)
+    end,
+  Pid ! {start, erlang, apply, [TimerFun, []]},
   wait_process(Pid, Wait),
   {Ref, FinalInfo};
 
