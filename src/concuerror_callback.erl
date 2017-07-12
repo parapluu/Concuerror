@@ -689,6 +689,12 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
   wait_process(Pid, Wait),
   {Ref, FinalInfo};
 
+run_built_in(erlang, SendAfter, 4, [Timeout, Dest, Msg, []], Info)
+  when
+    SendAfter =:= send_after;
+    SendAfter =:= start_timer ->
+  run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info);
+
 run_built_in(erlang, spawn, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, []}], Info);
 run_built_in(erlang, spawn_link, 3, [M, F, Args], Info) ->
