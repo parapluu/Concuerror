@@ -416,7 +416,12 @@ run_built_in(erlang, group_leader, 0, [], Info) ->
 
 run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
              #concuerror_info{processes = Processes} = Info) ->
-  ?badarg_if_not(is_pid(GroupLeader) andalso is_pid(Pid)),
+  try
+    {true, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
+    {true, Info} = run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info)
+  catch
+    _:_ -> error(badarg)
+  end,
   true = ets:update_element(Processes, Pid, {?process_leader, GroupLeader}),
   {true, Info};
 
