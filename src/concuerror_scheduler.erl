@@ -339,6 +339,7 @@ get_next_event(Event, MaybeNeedsReplayState) ->
       AvailableActors = filter_sleeping(Sleeping, SortedActors),
       free_schedule(Event, System ++ AvailableActors, State);
     false ->
+      ?debug(State#scheduler_state.logger, "Directed ~p~n  ~p~n", [Actor, Event]),
       #scheduler_state{print_depth = PrintDepth} = State,
       #trace_state{index = I} = Last,
       false = lists:member(Actor, Sleeping),
@@ -428,7 +429,7 @@ free_schedule(Event, Actors, State) ->
         true -> concuerror_logger:bound_reached(Logger);
         false -> ok
       end,
-      Eventify = [#event{actor = E} || E <- ToBeExplored],
+      Eventify = [maybe_prepare_channel_event(E, #event{}) || E <- ToBeExplored],
       FullBacktrack = [#backtrack_entry{event = Ev} || Ev <- Eventify],
       case FullBacktrack of
         [] -> ok;
@@ -445,11 +446,10 @@ free_schedule(Event, Actors, State) ->
 enabled({_,_}) -> true;
 enabled(P) -> concuerror_callback:enabled(P).
 
-free_schedule_1(Event, [{Channel, Queue}|_], State) ->
+free_schedule_1(Event, [Actor|_], State) when ?is_channel(Actor) ->
   %% Pending messages can always be sent
-  MessageEvent = queue:get(Queue),
-  UpdatedEvent = Event#event{actor = Channel, event_info = MessageEvent},
-  {ok, FinalEvent} = get_next_event_backend(UpdatedEvent, State),
+  PrepEvent = maybe_prepare_channel_event(Actor, Event),
+  {ok, FinalEvent} = get_next_event_backend(PrepEvent, State),
   update_state(FinalEvent, State);
 free_schedule_1(Event, [P|ActiveProcesses], State) ->
   case get_next_event_backend(Event#event{actor = P}, State) of
@@ -474,6 +474,15 @@ free_schedule_1(_Event, [], State) ->
         end
     end,
   {none, add_warnings(NewWarnings, Prev, State)}.
+
+maybe_prepare_channel_event(Actor, Event) ->
+  case ?is_channel(Actor) of
+    false -> Event#event{actor = Actor};
+    true ->
+      {Channel, Queue} = Actor,
+      MessageEvent = queue:get(Queue),
+      Event#event{actor = Channel, event_info = MessageEvent}
+  end.      
 
 reset_event(#event{actor = Actor, event_info = EventInfo}) ->
   ResetEventInfo =
