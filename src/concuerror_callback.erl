@@ -1343,7 +1343,7 @@ process_top_loop(Info) ->
       process_top_loop(Info);
     {start, Module, Name, Args} ->
       ?debug_flag(?loop, {start, Module, Name, Args}),
-      put(concuerror_info, Info),
+      put(concuerror_info, set_status(Info, running)),
       try
         concuerror_inspect:instrumented(call, [Module,Name,Args], start),
         exit(normal)
@@ -1479,12 +1479,13 @@ process_loop(Info) ->
       end;
     reset ->
       ?debug_flag(?loop, reset),
-      NewInfo =
+      ResetInfo =
         #concuerror_info{
            ets_tables = EtsTables,
            links = Links,
            monitors = Monitors,
            processes = Processes} = reset_concuerror_info(Info),
+      NewInfo = set_status(ResetInfo, exited),
       _ = erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
       ets:insert(Processes, ?new_process(self(), Symbol)),
