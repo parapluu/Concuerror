@@ -418,7 +418,8 @@ run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
              #concuerror_info{processes = Processes} = Info) ->
   try
     {true, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
-    {true, Info} = run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info)
+    {true, Info} = run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info),
+    ok
   catch
     _:_ -> error(badarg)
   end,
