@@ -416,7 +416,13 @@ run_built_in(erlang, group_leader, 0, [], Info) ->
 
 run_built_in(erlang, group_leader, 2, [GroupLeader, Pid],
              #concuerror_info{processes = Processes} = Info) ->
-  ?badarg_if_not(is_pid(GroupLeader) andalso is_pid(Pid)),
+  try
+    {true, Info} = run_built_in(erlang, is_process_alive, 1, [Pid], Info),
+    {true, Info} = run_built_in(erlang, is_process_alive, 1, [GroupLeader], Info),
+    ok
+  catch
+    _:_ -> error(badarg)
+  end,
   true = ets:update_element(Processes, Pid, {?process_leader, GroupLeader}),
   {true, Info};
 
@@ -680,9 +686,19 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
       start_timer -> {timeout, Ref, Msg}
     end,
   ets:insert(Timers, {Ref, Pid, Dest}),
-  Pid ! {start, erlang, send, [Dest, ActualMessage]},
+  TimerFun =
+    fun() ->
+        catch concuerror_inspect:instrumented(call, [erlang, send, [Dest, ActualMessage]], foo)
+    end,
+  Pid ! {start, erlang, apply, [TimerFun, []]},
   wait_process(Pid, Wait),
   {Ref, FinalInfo};
+
+run_built_in(erlang, SendAfter, 4, [Timeout, Dest, Msg, []], Info)
+  when
+    SendAfter =:= send_after;
+    SendAfter =:= start_timer ->
+  run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info);
 
 run_built_in(erlang, spawn, 3, [M, F, Args], Info) ->
   run_built_in(erlang, spawn_opt, 1, [{M, F, Args, []}], Info);
@@ -1327,7 +1343,7 @@ process_top_loop(Info) ->
       process_top_loop(Info);
     {start, Module, Name, Args} ->
       ?debug_flag(?loop, {start, Module, Name, Args}),
-      put(concuerror_info, Info),
+      put(concuerror_info, set_status(Info, running)),
       try
         concuerror_inspect:instrumented(call, [Module,Name,Args], start),
         exit(normal)
@@ -1463,12 +1479,13 @@ process_loop(Info) ->
       end;
     reset ->
       ?debug_flag(?loop, reset),
-      NewInfo =
+      ResetInfo =
         #concuerror_info{
            ets_tables = EtsTables,
            links = Links,
            monitors = Monitors,
            processes = Processes} = reset_concuerror_info(Info),
+      NewInfo = set_status(ResetInfo, exited),
       _ = erase(),
       Symbol = ets:lookup_element(Processes, self(), ?process_symbolic),
       ets:insert(Processes, ?new_process(self(), Symbol)),

@@ -1,0 +1,2627 @@
+Concuerror 0.17 ('542d25b') started at 13 Jul 2017 13:28:34
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,true},
+   {dpor,none},
+   {entry_point,{deliver_exhaustive,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,false},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,false}]
+################################################################################
+Interleaving #1345
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: P.2: exits normally
+   9: Message (second) from P.2 reaches P.1
+  10: Message (first) from P reaches P.1
+  11: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  12: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1346
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: P.2: exits normally
+   9: Message (second) from P.2 reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: Message (first) from P reaches P.1
+################################################################################
+Interleaving #1347
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: P.2: exits normally
+   9: Message (second) from P.2 reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: Message (first) from P reaches P.1
+  16: P: exits normally
+################################################################################
+Interleaving #1348
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: P.2: exits normally
+   9: Message (second) from P.2 reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: Message (first) from P reaches P.1
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1349
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: P.2: exits normally
+   9: Message (second) from P.2 reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message (first) from P reaches P.1
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1350
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: P.2: exits normally
+   9: Message (second) from P.2 reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: Message (first) from P reaches P.1
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1351
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: P.2: exits normally
+   9: Message (second) from P.2 reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: Message (first) from P reaches P.1
+  12: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1359
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.2: exits normally
+  10: Message (first) from P reaches P.1
+  11: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  12: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1360
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.2: exits normally
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: Message (first) from P reaches P.1
+################################################################################
+Interleaving #1361
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.2: exits normally
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: Message (first) from P reaches P.1
+  16: P: exits normally
+################################################################################
+Interleaving #1362
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.2: exits normally
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: Message (first) from P reaches P.1
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1363
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.2: exits normally
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message (first) from P reaches P.1
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1364
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.2: exits normally
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: Message (first) from P reaches P.1
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1365
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.2: exits normally
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: Message (first) from P reaches P.1
+  12: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1366
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: Message (first) from P reaches P.1
+  10: P.2: exits normally
+  11: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  12: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1367
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: Message (first) from P reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P.2: exits normally
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1368
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: Message (first) from P reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: P.2: exits normally
+################################################################################
+Interleaving #1369
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: Message (first) from P reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P.2: exits normally
+  16: P: exits normally
+################################################################################
+Interleaving #1370
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: Message (first) from P reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: P.2: exits normally
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1371
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: Message (first) from P reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.2: exits normally
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1372
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: Message (first) from P reaches P.1
+  10: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  11: P.2: exits normally
+  12: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1373
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: P.2: exits normally
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: Message (first) from P reaches P.1
+################################################################################
+Interleaving #1374
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: P.2: exits normally
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: Message (first) from P reaches P.1
+  16: P: exits normally
+################################################################################
+Interleaving #1375
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: P.2: exits normally
+  14: Message (first) from P reaches P.1
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1376
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  14: P: exits normally
+  15: Message (first) from P reaches P.1
+  16: P.2: exits normally
+################################################################################
+Interleaving #1377
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  14: P: exits normally
+  15: P.2: exits normally
+  16: Message (first) from P reaches P.1
+################################################################################
+Interleaving #1378
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  14: Message (first) from P reaches P.1
+  15: P: exits normally
+  16: P.2: exits normally
+################################################################################
+Interleaving #1379
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  14: Message (first) from P reaches P.1
+  15: P.2: exits normally
+  16: P: exits normally
+################################################################################
+Interleaving #1380
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  14: P.2: exits normally
+  15: P: exits normally
+  16: Message (first) from P reaches P.1
+################################################################################
+Interleaving #1381
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  14: P.2: exits normally
+  15: Message (first) from P reaches P.1
+  16: P: exits normally
+################################################################################
+Interleaving #1382
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: Message (first) from P reaches P.1
+  14: P.2: exits normally
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1383
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: Message (first) from P reaches P.1
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: P.2: exits normally
+################################################################################
+Interleaving #1384
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  13: Message (first) from P reaches P.1
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P.2: exits normally
+  16: P: exits normally
+################################################################################
+Interleaving #1385
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: P.2: exits normally
+  13: Message (first) from P reaches P.1
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1386
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: P.2: exits normally
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: Message (first) from P reaches P.1
+################################################################################
+Interleaving #1387
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: P.2: exits normally
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: Message (first) from P reaches P.1
+  16: P: exits normally
+################################################################################
+Interleaving #1388
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: P.2: exits normally
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: Message (first) from P reaches P.1
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1389
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message (first) from P reaches P.1
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P.2: exits normally
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1390
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message (first) from P reaches P.1
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: P.2: exits normally
+################################################################################
+Interleaving #1391
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message (first) from P reaches P.1
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P.2: exits normally
+  16: P: exits normally
+################################################################################
+Interleaving #1392
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  12: Message (first) from P reaches P.1
+  13: P.2: exits normally
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1393
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.2: exits normally
+  12: Message (first) from P reaches P.1
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1394
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.2: exits normally
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: Message (first) from P reaches P.1
+################################################################################
+Interleaving #1395
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.2: exits normally
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: Message (first) from P reaches P.1
+  16: P: exits normally
+################################################################################
+Interleaving #1396
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.2: exits normally
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: Message (first) from P reaches P.1
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1397
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: P.2: exits normally
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message (first) from P reaches P.1
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1398
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: Message (first) from P reaches P.1
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P.2: exits normally
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1399
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: Message (first) from P reaches P.1
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: P.2: exits normally
+################################################################################
+Interleaving #1400
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: Message (first) from P reaches P.1
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P.2: exits normally
+  16: P: exits normally
+################################################################################
+Interleaving #1401
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: Message (first) from P reaches P.1
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: P.2: exits normally
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1402
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  11: Message (first) from P reaches P.1
+  12: P.2: exits normally
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1403
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.2: exits normally
+  11: Message (first) from P reaches P.1
+  12: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1404
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.2: exits normally
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: Message (first) from P reaches P.1
+################################################################################
+Interleaving #1405
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.2: exits normally
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: Message (first) from P reaches P.1
+  16: P: exits normally
+################################################################################
+Interleaving #1406
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.2: exits normally
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: Message (first) from P reaches P.1
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1407
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.2: exits normally
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message (first) from P reaches P.1
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1408
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: P.2: exits normally
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: Message (first) from P reaches P.1
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1409
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: Message (first) from P reaches P.1
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P.2: exits normally
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1410
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: Message (first) from P reaches P.1
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P: exits normally
+  16: P.2: exits normally
+################################################################################
+Interleaving #1411
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: Message (first) from P reaches P.1
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  14: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  15: P.2: exits normally
+  16: P: exits normally
+################################################################################
+Interleaving #1412
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: Message (first) from P reaches P.1
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  13: P.2: exits normally
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1413
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: Message (first) from P reaches P.1
+  11: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  12: P.2: exits normally
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Interleaving #1414
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      {{badmatch,first},
+       [{deliver_exhaustive,p1,0,
+                            [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                             {line,17}]}]}
+    Stacktrace:
+      [{deliver_exhaustive,p1,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/corner_tests/src/deliver_exhaustive.erl"},
+                            {line,17}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.0.1.379>} = erlang:spawn_opt({erlang,apply,[#Fun<deliver_exhaustive.'-test/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2690
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<deliver_exhaustive.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2646
+   3: P: first = P.1 ! first
+    in deliver_exhaustive.erl line 30
+   4: P: second = P.2 ! second
+    in deliver_exhaustive.erl line 31
+   5: Message (second) from P reaches P.2
+   6: P.2: receives message (second)
+    in deliver_exhaustive.erl line 21
+   7: P.2: second = P.1 ! second
+    in deliver_exhaustive.erl line 22
+   8: Message (second) from P.2 reaches P.1
+   9: P.1: receives message (second)
+    in deliver_exhaustive.erl line 16
+  10: Message (first) from P reaches P.1
+  11: P.2: exits normally
+  12: P.1: exits abnormally ({{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,17}]}]})
+  13: P.1: {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}} = erlang:send(P, {'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    (while exiting)
+  14: Message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}}) from P.1 reaches P
+  15: P: receives message ({'DOWN',#Ref<0.0.1.379>,process,P.1,{{badmatch,first},[{deliver_exhaustive,p1,0,[{file,[47,104,111,109|...]},{line,17}]}]}})
+    in deliver_exhaustive.erl line 32
+  16: P: exits normally
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented deliver_exhaustive
+Instrumented io_lib
+Instrumented gen_server
+Instrumented erlang
+Continuing after error (-k)
+
+################################################################################
+Done at 13 Jul 2017 13:28:35 (Exit status: error)
+  Summary: 63 errors, 3472/3472 interleavings explored
