@@ -186,9 +186,9 @@ options() ->
     "Messages and signals arrive instantly",
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
-  ,{use_receive_patterns, [erlang, experimental], undefined, {boolean, false},
-    "* Use receive patterns for racing sends",
-    "Experimental. If true, Concuerror will only consider two"
+  ,{use_receive_patterns, [erlang], undefined, {boolean, true},
+    "Use receive patterns for racing sends",
+    "If true, Concuerror will only consider two"
     " message deliveries as racing when the first message is really"
     " received and the patterns used could also match the second"
     " message."}
@@ -283,7 +283,6 @@ derived_defaults() ->
   , {{scheduling_bound_type, bpor}, [{dpor, source}, {scheduling_bound, 1}]}
   , {{scheduling_bound_type, delay}, [{scheduling_bound, 1}]}
   , {{scheduling_bound_type, ubpor}, [{dpor, source}, {scheduling_bound, 1}]}
-  , {{use_receive_patterns, true}, [{dpor, source}]}
   ].
 
 check_validity(Key) ->
@@ -1068,15 +1067,6 @@ consistent([{scheduling_bound_type, Type} = Option|Rest], Acc)
         fun(_) -> true end
     end,
   check_values([{dpor, DPORVeryFun}], Rest ++ Acc, Option),
-  consistent(Rest, [Option|Acc]);
-consistent([{use_receive_patterns = Key, true} = Option|Rest], Acc) ->
-  case lists:keyfind(dpor, 1, Rest ++ Acc) of
-    {dpor, optimal} ->
-      Format =
-        "Use of '--~p' with '--~p ~p' can lead to crashes.",
-      opt_warn(Format, [Key, dpor, optimal]);
-    _ -> ok
-  end,
   consistent(Rest, [Option|Acc]);
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
 
