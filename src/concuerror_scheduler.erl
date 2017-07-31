@@ -560,6 +560,7 @@ update_state(#event{actor = Actor} = Event, State) ->
   InitNewState =
     State#scheduler_state{trace = [NextTrace, NewLastTrace|Prev]},
   NewState = maybe_log(Event, InitNewState, Index),
+  maybe_store_delivery_patterns(Event),
   {ok, NewState}.
 
 maybe_log(#event{actor = P} = Event, State0, Index) ->
@@ -753,7 +754,6 @@ assign_happens_before([TraceState|Later], RevLate, RevEarly, State) ->
   ?trace(_Logger, "HB: ~s~n", [?pretty_s(Index,Event)]),
   BaseHappenedBeforeClock =
     add_pre_message_clocks(Special, ClockMap, ActorClock),
-  maybe_store_delivery_patterns(Event),
   HappenedBeforeClock =
     update_clock(RevLate, RevEarly, Event, BaseHappenedBeforeClock, State),
   BaseNewClockMap = dict:store(Actor, HappenedBeforeClock, ClockMap),
