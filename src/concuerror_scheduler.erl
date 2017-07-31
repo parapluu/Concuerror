@@ -916,16 +916,21 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
       false -> none;
       true ->
         Dependent =
-          concuerror_dependencies:dependent_safe(EarlyEvent, Event),
+          case concuerror_dependencies:dependent_safe(EarlyEvent, Event) of
+            true -> {true, no_observer};
+            Other -> Other
+          end,
         case Dependent of
           false -> none;
           irreversible -> update_clock;
-          true ->
+          {true, ObserverInfo} ->
             ?debug(State#scheduler_state.logger,
                    "   races with ~s~n",
                    [?pretty_s(EarlyIndex, EarlyEvent)]),
             case
-              update_trace(Event, Clock, TraceState, Later, NewOldTrace, State)
+              update_trace(
+                EarlyEvent, Event, Clock, TraceState,
+                Later, NewOldTrace, Rest, ObserverInfo, State)
             of
               skip -> update_clock;
               {UpdatedNewOldTrace, ConservativeCandidates} ->
@@ -948,7 +953,10 @@ more_interleavings_for_event([TraceState|Rest], Event, Later, Clock, State,
     end,
   more_interleavings_for_event(NewRest, Event, Later, NewClock, State, Index, NewTrace).
 
-update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
+update_trace(
+  EarlyEvent, Event, Clock, TraceState,
+  Later, NewOldTrace, Rest, ObserverInfo, State
+ ) ->
   #scheduler_state{
      dpor = DPOR,
      exploring = Exploring,
@@ -989,7 +997,19 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
         {Plan, _} = NW =
           case DPOR =:= optimal of
             true ->
-              {insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring), false};
+              case ObserverInfo =:= no_observer of
+                true ->
+                  {insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring), false};
+                false ->
+                  NotObsRaw = not_obs_raw(NewOldTrace, Later, ObserverInfo),
+                  NotObs = NotObsRaw -- NotDep,
+                  V = NotDep ++ [EarlyEvent#event{label = undefined}] ++ NotObs,
+                  case has_weak_initial_before(Rest, V) of
+                    true -> skip;
+                    false ->
+                      {insert_wakeup_optimal(Sleeping, Wakeup, V, Bound, Exploring), false}
+                  end
+              end;
             false ->
               Initials = get_initials(NotDep),
               AddCons =
@@ -1085,6 +1105,32 @@ is_process_info_related(Event) ->
     #builtin_event{mfargs = {erlang, process_info, _}} -> true;
     _ -> false
   end.
+
+not_obs_raw(NewOldTrace, Later, ObserverInfo) ->
+  lists:reverse(not_obs_raw(NewOldTrace, Later, ObserverInfo, [])).
+
+not_obs_raw([], Later, ObserverInfo, NotObs) ->
+  not_obs_raw(Later, [], ObserverInfo, NotObs);
+not_obs_raw([TraceState|Rest], Later, ObserverInfo, NotObs) ->
+  #trace_state{done = [Event|_]} = TraceState,
+  case Event of
+    #event{
+       event_info =
+         #receive_event{
+            message =
+              #message{
+                 id = ObserverInfo
+                }
+           }
+      } ->
+      [Event#event{label = undefined}|NotObs];
+    _ ->
+      not_obs_raw(Rest, Later, ObserverInfo, [Event|NotObs])
+  end.
+
+has_weak_initial_before(_, _) ->
+  %% STUB
+  false.
 
 show_plan(_Type, _Logger, _Index, _NotDep) ->
   ?debug(

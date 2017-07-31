@@ -73,8 +73,11 @@ dependent_delivery(MessageId, Data) ->
     false -> true;
     true ->
       case ets:lookup(use_receive_patterns, MessageId) of
-        [] -> true;
+        [] -> false;
         [{MessageId, Pats}] ->
-          Pats(Data)
+          case Pats(Data) of
+            true -> {true, MessageId};
+            false -> false
+          end
       end
   end.

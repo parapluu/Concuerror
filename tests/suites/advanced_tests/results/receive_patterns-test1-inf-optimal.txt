@@ -1,0 +1,46 @@
+Concuerror v0.17 ('62ab815') started at 14 Sep 2017 14:05:57
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{receive_patterns,test1,[]}},
+   {exclude_module,[]},
+   {files,["/home/stavros/git/Concuerror/tests/suites/advanced_tests/src/receive_patterns.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Exploration completed!
+  No errors found!
+################################################################################
+Warnings:
+--------------------------------------------------------------------------------
+Option dpor from concuerror_options_forced overrides the one specified in command line.
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented & loaded module receive_patterns
+Automatically instrumented module io_lib
+Automatically instrumented module gen_server
+Automatically instrumented module erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 14 Sep 2017 14:05:58 (Exit status: ok)
+  Summary: 0 errors, 3/3 interleavings explored

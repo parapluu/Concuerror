@@ -289,6 +289,7 @@ derived_defaults() ->
   , {{scheduling_bound_type, bpor}, [{dpor, source}, {scheduling_bound, 1}]}
   , {{scheduling_bound_type, delay}, [{scheduling_bound, 1}]}
   , {{scheduling_bound_type, ubpor}, [{dpor, source}, {scheduling_bound, 1}]}
+  , {{dpor, source}, [{use_receive_patterns, false}]}
   ].
 
 check_validity(Key) ->
@@ -1083,6 +1084,11 @@ consistent([{scheduling_bound_type, Type} = Option|Rest], Acc)
         fun(_) -> true end
     end,
   check_values([{dpor, DPORVeryFun}], Rest ++ Acc, Option),
+  consistent(Rest, [Option|Acc]);
+consistent([{use_receive_patterns, true} = Option|Rest], Acc) ->
+  check_values(
+    [{dpor, fun(X) -> X =:= optimal end}],
+    Rest ++ Acc, Option),
   consistent(Rest, [Option|Acc]);
 consistent([A|Rest], Acc) -> consistent(Rest, [A|Acc]).
 

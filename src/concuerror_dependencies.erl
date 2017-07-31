@@ -27,7 +27,7 @@ dependent_safe(E1, E2) ->
   dependent(E1, E2, {true, ignore}).
 
 -spec dependent(event(), event(), assume_racing_opt()) ->
-                   boolean() | irreversible.
+                   boolean() | irreversible | {'true', message_id()}.
 
 dependent(#event{actor = A}, #event{actor = A}, _) ->
   irreversible;
@@ -37,8 +37,8 @@ dependent(#event{event_info = Info1, special = Special1},
   M1 = [M || {message_delivered, M} <- Special1],
   M2 = [M || {message_delivered, M} <- Special2],
   try
-    lists:any(fun({A,B}) -> dependent(A,B) end,
-              [{I1,I2}|| I1 <- [Info1|M1], I2 <- [Info2|M2]])
+    first_non_false(
+      [dependent(I1,I2)|| I1 <- [Info1|M1], I2 <- [Info2|M2]])
   catch
     throw:irreversible -> irreversible;
     error:function_clause ->
@@ -57,6 +57,10 @@ dependent(#event{event_info = Info1, special = Special1},
           exit({undefined_dependency, Info1, Info2, erlang:get_stacktrace()})
       end
   end.
+
+first_non_false([]) -> false;
+first_non_false([false|Rest]) -> first_non_false(Rest);
+first_non_false([Other|_]) -> Other.
 
 %% The first event happens before the second.
 
