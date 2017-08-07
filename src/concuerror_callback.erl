@@ -561,6 +561,9 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
           messages ->
             #concuerror_info{messages_new = Queue} = TheirInfo,
             [M || #message{data = M} <- queue:to_list(Queue)];
+          message_queue_len ->
+            #concuerror_info{messages_new = Queue} = TheirInfo,
+            queue:len(Queue);
           registered_name ->
             #concuerror_info{processes = Processes} = TheirInfo,
             [?process_pat_pid_name(Pid, Name)] = ets:lookup(Processes, Pid),

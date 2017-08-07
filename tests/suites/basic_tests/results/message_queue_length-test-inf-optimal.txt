@@ -1,0 +1,39 @@
+Concuerror 0.17 ('41659ff') started at 07 Aug 2017 11:25:49
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{message_queue_length,test,[]}},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/message_queue_length.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,false}]
+################################################################################
+Exploration completed!
+  No errors found!
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented message_queue_length
+Instrumented io_lib
+Instrumented gen_server
+Instrumented erlang
+
+################################################################################
+Done at 07 Aug 2017 11:25:49 (Exit status: ok)
+  Summary: 0 errors, 1/1 interleavings explored
