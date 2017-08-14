@@ -1,32 +1,40 @@
-################################################################################
-Concuerror started with options:
+Concuerror 0.17 (a62e2f6) started at 09 Aug 2017 12:46:17
+ Options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {delay_bound,infinity},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{send_after_trouble,test,[]}},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_after_trouble.erl"]},
    {ignore_error,[]},
-   {ignore_first_crash,true},
-   {instant_delivery,false},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
    {quiet,true},
    {scheduling,round_robin},
+   {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[]}]
+   {treat_as_normal,[]},
+   {use_receive_patterns,false}]
 ################################################################################
+Exploration completed!
   No errors found!
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
 Instrumented send_after_trouble
 Instrumented io_lib
+Instrumented gen_server
 Instrumented erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 0 errors, 5/5 interleavings explored
+Done at 09 Aug 2017 12:46:17 (Exit status: ok)
+  Summary: 0 errors, 2/2 interleavings explored

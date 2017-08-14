@@ -81,7 +81,7 @@ options() ->
     "5 <time>  Timing messages~n"
     "6 <debug> Used only during debugging~n"
     "7 <trace> Everything else"}
-  ,{graph, [output, visual], undefined, string,
+  ,{graph, [output, visual], $g, string,
     "Produce a DOT graph in the specified file",
     "The DOT graph can be converted to an image with 'dot -Tsvg -o graph.svg"
     " <graph>"}

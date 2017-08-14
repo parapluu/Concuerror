@@ -183,17 +183,17 @@ dependent(#message_event{
 
 dependent(#message_event{
              ignored = false,
-             message = #message{data = Data},
+             message = #message{data = Data, id = MsgId},
              recipient = Recipient,
              type = Type
             },
           #receive_event{
+             message = Recv,
              patterns = Patterns,
              recipient = Recipient,
              timeout = Timeout,
              trapping = Trapping
             }) ->
-  %% XXX: Why not check for the exact message?
   case Type =:= exit_signal of
     true ->
       case Data of
@@ -204,7 +204,16 @@ dependent(#message_event{
     false ->
       Timeout =/= infinity
         andalso
-        message_could_match(Patterns, Data, Trapping, Type)
+          case Recv of
+            'after' ->
+              %% Can only happen during wakeup (otherwise an actually
+              %% delivered msg would be received)
+              message_could_match(Patterns, Data, Trapping, Type);
+            #message{id = RecId} ->
+              %% Race exactly with the delivery of the received
+              %% message
+              MsgId =:= RecId
+          end
   end;
 dependent(#receive_event{
              message = 'after',
