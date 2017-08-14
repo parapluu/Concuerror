@@ -339,7 +339,6 @@ get_next_event(Event, MaybeNeedsReplayState) ->
       AvailableActors = filter_sleeping(Sleeping, SortedActors),
       free_schedule(Event, System ++ AvailableActors, State);
     false ->
-      ?debug(State#scheduler_state.logger, "Directed ~p~n  ~p~n", [Actor, Event]),
       #scheduler_state{print_depth = PrintDepth} = State,
       #trace_state{index = I} = Last,
       false = lists:member(Actor, Sleeping),
