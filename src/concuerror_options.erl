@@ -2,7 +2,7 @@
 
 -module(concuerror_options).
 
--export([parse_cl/1, finalize/1]).
+-export([parse_cl/1, finalize/1, version/0]).
 
 -export_type([options/0]).
 -export_type(
@@ -460,7 +460,7 @@ check_help_and_version(Options) ->
   case {proplists:get_bool(version, Options),
         proplists:is_defined(help, Options)} of
     {true, _} ->
-      cl_version(),
+      to_stderr("~s", [version()]),
       exit;
     {false, true} ->
       Value = proplists:get_value(help, Options),
@@ -473,8 +473,12 @@ check_help_and_version(Options) ->
       ok
   end.
 
-cl_version() ->
-  to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
+%%%-----------------------------------------------------------------------------
+
+-spec version() -> string().
+
+version() ->
+  io_lib:format("Concuerror v~s (~w)", [?VSN, ?GIT_SHA]).
 
 %%%-----------------------------------------------------------------------------
 

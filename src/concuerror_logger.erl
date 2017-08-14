@@ -7,7 +7,6 @@
 -export([graph_set_node/3, graph_new_node/5, graph_race/3]).
 
 -include("concuerror.hrl").
--include("concuerror_sha.hrl").
 
 -type log_level() :: ?lquiet..?MAX_VERBOSITY.
 
@@ -96,8 +95,8 @@ initialize(Options) ->
   Graph = ?opt(graph, Options),
   Header =
     io_lib:format(
-      "Concuerror ~s (~w) started at ~s~n",
-      [?VSN, ?GIT_SHA, Timestamp]),
+      "~s started at ~s~n",
+      [concuerror_options:version(), Timestamp]),
   Ticker =
     case (Verbosity =:= ?lquiet) orelse (Verbosity >= ?ltiming) of
       true -> none;
