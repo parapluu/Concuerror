@@ -1008,19 +1008,22 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
   end.
 
 not_dep(Trace, Later, DPORInfo, Event) ->
-  not_dep(Trace, Later, DPORInfo, Event, []).
-
-not_dep([], [], _DPORInfo, Event, NotDep) ->
+  NotDep = not_dep1(Trace, Later, DPORInfo, []),
   %% The racing event's effect may differ, so new label.
-  lists:reverse([Event#event{label = undefined}|NotDep]);
-not_dep([], T, {DPOR, _} = DPORInfo, Event, NotDep) ->
+  lists:reverse(
+    [Event#event{label = undefined}|
+     NotDep]).
+
+not_dep1([], [], _DPORInfo, NotDep) ->
+  NotDep;
+not_dep1([], T, {DPOR, _} = DPORInfo, NotDep) ->
   KeepLooking =
     case DPOR =:= persistent of
       true -> [];
       false -> T
     end,
-  not_dep(KeepLooking,  [], DPORInfo, Event, NotDep);
-not_dep([TraceState|Rest], Later, {DPOR, Info} = DPORInfo, Event, NotDep) ->
+  not_dep1(KeepLooking,  [], DPORInfo, NotDep);
+not_dep1([TraceState|Rest], Later, {DPOR, Info} = DPORInfo, NotDep) ->
   #trace_state{
      clock_map = ClockMap,
      done = [#event{actor = LaterActor} = LaterEvent|_],
@@ -1044,7 +1047,7 @@ not_dep([TraceState|Rest], Later, {DPOR, Info} = DPORInfo, Event, NotDep) ->
           true -> [LaterEvent|NotDep]
         end
     end,
-  not_dep(Rest, Later, DPORInfo, Event, NewNotDep).
+  not_dep1(Rest, Later, DPORInfo, NewNotDep).
 
 show_plan(_NW, _Conservative, _Logger, _Index, _NotDep) ->
   ?debug(
