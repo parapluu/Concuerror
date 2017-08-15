@@ -3,7 +3,8 @@ test: options other
 
 .PHONY: options
 options:
-	./option-tests
+	./option1-tests
+	./option2-tests
 
 .PHONY: other
 other:
