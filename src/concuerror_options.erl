@@ -492,6 +492,7 @@ finalize_2(Options) ->
     , fun add_options_from_module/1
     , fun add_derived_defaults/1
     , fun add_getopt_defaults/1
+    , fun group_multiples/1
     , fun process_options/1
     , fun(O) ->
           add_defaults([{Opt, []} || Opt <- multiple_allowed()], false, O)
@@ -805,20 +806,29 @@ add_getopt_defaults(Opts) ->
 
 %%------------------------------------------------------------------------------
 
+group_multiples(Options) ->
+  group_multiples(Options, []).
+
+group_multiples([], Acc) ->
+  lists:reverse(Acc);
+group_multiples([{Key, Value} = Option|Rest], Acc) ->
+  case lists:member(Key, multiple_allowed()) of
+    true ->
+      Values = lists:flatten([Value|proplists:get_all_values(Key, Rest)]),
+      NewRest = proplists:delete(Key, Rest),
+      group_multiples(NewRest, [{Key, lists:usort(Values)}|Acc]);
+    false ->
+      group_multiples(Rest, [Option|Acc])
+  end.
+
+%%------------------------------------------------------------------------------
+
 process_options(Options) ->
   process_options(Options, []).
 
 process_options([], Acc) -> lists:reverse(Acc);
 process_options([{Key, Value} = Option|Rest], Acc) ->
   case Key of
-    _  when
-        Key =:= ignore_error;
-        Key =:= non_racing_system;
-        Key =:= treat_as_normal
-        ->
-      Values = lists:flatten([Value|proplists:get_all_values(Key, Rest)]),
-      NewRest = proplists:delete(Key, Rest),
-      process_options(NewRest, [{Key, lists:usort(Values)}|Acc]);
     _ when
         Key =:= graph;
         Key =:= output
