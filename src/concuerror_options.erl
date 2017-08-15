@@ -111,6 +111,13 @@ options() ->
   ,{pz, [input], undefined, string,
     "Add directory to Erlang's code path (rear)",
     "Works exactly like 'erl -pz'."}
+  ,{exclude_module, [input, experimental, advanced], $x, atom,
+    "* Do not instrument the specified module",
+    "Experimental. Concuerror needs to instrument all code in a test to be able"
+    " to reset the state after each exploration. You can use this option to"
+    " exclude a module from instrumentation, but you must ensure that any state"
+    " is reset correctly, or Concuerror will complain that operations have"
+    " unexpected results."}
   ,{depth_bound, [bound], $d, {integer, 500},
     "Maximum number of events",
     "The maximum number of events allowed in an interleaving. Concuerror will"
@@ -232,17 +239,19 @@ options() ->
    ].
 
 multiple_allowed() ->
-  [ ignore_error
+  [ exclude_module
+  , ignore_error
   , non_racing_system
   , treat_as_normal
   ].
 
 ignored_in_module_attributes() ->
-  [ module
+  [ exclude_module
   , file
+  , help
+  , module
   , pa
   , pz
-  , help
   , version
   ].
 
@@ -492,6 +501,8 @@ finalize_2(Options) ->
     , fun set_verbosity/1
     , fun add_to_path/1
     , fun add_missing_file/1
+      %% We need group multiples to find excluded files before loading
+    , fun group_multiples/1
     , fun load_files/1
     , fun add_options_from_module/1
     , fun add_derived_defaults/1
@@ -595,11 +606,17 @@ add_missing_file(Options) ->
 %%%-----------------------------------------------------------------------------
 
 load_files(Options) ->
-  case proplists:get_all_values(file, Options) of
-    [] -> Options;
-    Files ->
-      NewOptions = proplists:delete(file, Options),
-      compile_and_load(Files, [], false, NewOptions)
+  Excluded = proplists:get_value(exclude_module, Options, []),
+  case concuerror_loader:initialize(Excluded) of
+    ok ->
+      case proplists:get_all_values(file, Options) of
+        [] -> Options;
+        Files ->
+          NewOptions = proplists:delete(file, Options),
+          compile_and_load(Files, [], false, NewOptions)
+      end;
+    {error, Error} ->
+      opt_error(Error)
   end.
 
 compile_and_load([], [_|More] = LoadedFiles, LastModule, Options) ->
