@@ -42,10 +42,10 @@ load(Module, Instrumented) ->
         _:_ ->
           Msg = "Could not load module '~p'. Check '-h input'.~n",
           ?log(Logger, ?lwarning, Msg, [Module])
-      end,
-      maybe_instrumenting_myself(Module, Instrumented);
-    false -> Module
-  end.
+      end;
+    false -> ok
+  end,
+  Module.
 
 -spec load_initially(module()) ->
                         {ok, module(), [string()]} | {error, string()}.
@@ -127,10 +127,7 @@ check_shadow(File, Module) ->
 load_binary(Module, Filename, Beam, Instrumented) ->
   Core = get_core(Beam),
   InstrumentedCore =
-    case Module =:= concuerror_inspect of
-      true -> Core;
-      false -> concuerror_instrumenter:instrument(Module, Core, Instrumented)
-    end,
+    concuerror_instrumenter:instrument(Module, Core, Instrumented),
   {ok, _, NewBinary} =
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
   {module, Module} = code:load_binary(Module, Filename, NewBinary),
@@ -160,13 +157,4 @@ get_core(Beam) ->
       Options = [debug_info, report_errors, binary, to_core0|CleanOptions],
       {ok, Module, Core} = compile:file(File, Options),
       Core
-  end.
-
-maybe_instrumenting_myself(Module, Instrumented) ->
-  case Module =:= concuerror_inspect of
-    false -> Module;
-    true ->
-      Additional = concuerror_callback,
-      Additional = load(Additional, Instrumented),
-      Module
   end.
