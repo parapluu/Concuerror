@@ -2,7 +2,7 @@
 
 -module(concuerror_options).
 
--export([parse_cl/1, finalize/1]).
+-export([parse_cl/1, finalize/1, version/0]).
 
 -export_type([options/0]).
 -export_type(
@@ -111,6 +111,13 @@ options() ->
   ,{pz, [input], undefined, string,
     "Add directory to Erlang's code path (rear)",
     "Works exactly like 'erl -pz'."}
+  ,{exclude_module, [input, experimental, advanced], $x, atom,
+    "* Do not instrument the specified module",
+    "Experimental. Concuerror needs to instrument all code in a test to be able"
+    " to reset the state after each exploration. You can use this option to"
+    " exclude a module from instrumentation, but you must ensure that any state"
+    " is reset correctly, or Concuerror will complain that operations have"
+    " unexpected results."}
   ,{depth_bound, [bound], $d, {integer, 500},
     "Maximum number of events",
     "The maximum number of events allowed in an interleaving. Concuerror will"
@@ -133,7 +140,7 @@ options() ->
     "Deprecated. Use '--dpor (optimal | source)' instead.",
     nolong}
   ,{scheduling_bound_type, [bound, experimental], $c, {atom, none},
-    "Schedule bounding technique",
+    "* Schedule bounding technique",
     "Enables scheduling rules that prevent interleavings from being explored."
     " The available options are:~n"
     "-   'none': no bounding~n"
@@ -161,7 +168,7 @@ options() ->
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
   ,{use_receive_patterns, [erlang, experimental], undefined, {boolean, false},
-    "Use receive patterns for racing sends",
+    "* Use receive patterns for racing sends",
     "Experimental. If true, Concuerror will only consider two"
     " message deliveries as racing when the first message is really"
     " received and the patterns used could also match the second"
@@ -232,17 +239,19 @@ options() ->
    ].
 
 multiple_allowed() ->
-  [ ignore_error
+  [ exclude_module
+  , ignore_error
   , non_racing_system
   , treat_as_normal
   ].
 
 ignored_in_module_attributes() ->
-  [ module
+  [ exclude_module
   , file
+  , help
+  , module
   , pa
   , pz
-  , help
   , version
   ].
 
@@ -405,6 +414,10 @@ options(Keyword) ->
   [T || T <- options(), lists:member(Keyword, element(?OPTION_KEYWORDS, T))].
 
 print_suffix(Keyword) ->
+  case Keyword =:= basic of
+    false -> to_stderr("Options with '*' are experimental.~n");
+    true -> ok
+  end,
   to_stderr("More info & keywords about a specific option: -h <option>.~n"),
   case Keyword =:= basic orelse Keyword =:= all of
     true -> print_exit_status_info();
@@ -460,7 +473,7 @@ check_help_and_version(Options) ->
   case {proplists:get_bool(version, Options),
         proplists:is_defined(help, Options)} of
     {true, _} ->
-      cl_version(),
+      to_stderr("~s", [version()]),
       exit;
     {false, true} ->
       Value = proplists:get_value(help, Options),
@@ -473,8 +486,12 @@ check_help_and_version(Options) ->
       ok
   end.
 
-cl_version() ->
-  to_stderr("Concuerror v~s (~w)",[?VSN, ?GIT_SHA]).
+%%%-----------------------------------------------------------------------------
+
+-spec version() -> string().
+
+version() ->
+  io_lib:format("Concuerror v~s (~w)", [?VSN, ?GIT_SHA]).
 
 %%%-----------------------------------------------------------------------------
 
@@ -484,10 +501,13 @@ finalize_2(Options) ->
     , fun set_verbosity/1
     , fun add_to_path/1
     , fun add_missing_file/1
+      %% We need group multiples to find excluded files before loading
+    , fun group_multiples/1
     , fun load_files/1
     , fun add_options_from_module/1
     , fun add_derived_defaults/1
     , fun add_getopt_defaults/1
+    , fun group_multiples/1
     , fun process_options/1
     , fun(O) ->
           add_defaults([{Opt, []} || Opt <- multiple_allowed()], false, O)
@@ -586,11 +606,17 @@ add_missing_file(Options) ->
 %%%-----------------------------------------------------------------------------
 
 load_files(Options) ->
-  case proplists:get_all_values(file, Options) of
-    [] -> Options;
-    Files ->
-      NewOptions = proplists:delete(file, Options),
-      compile_and_load(Files, [], false, NewOptions)
+  Excluded = proplists:get_value(exclude_module, Options, []),
+  case concuerror_loader:initialize(Excluded) of
+    ok ->
+      case proplists:get_all_values(file, Options) of
+        [] -> Options;
+        Files ->
+          NewOptions = proplists:delete(file, Options),
+          compile_and_load(Files, [], false, NewOptions)
+      end;
+    {error, Error} ->
+      opt_error(Error)
   end.
 
 compile_and_load([], [_|More] = LoadedFiles, LastModule, Options) ->
@@ -801,20 +827,29 @@ add_getopt_defaults(Opts) ->
 
 %%------------------------------------------------------------------------------
 
+group_multiples(Options) ->
+  group_multiples(Options, []).
+
+group_multiples([], Acc) ->
+  lists:reverse(Acc);
+group_multiples([{Key, Value} = Option|Rest], Acc) ->
+  case lists:member(Key, multiple_allowed()) of
+    true ->
+      Values = lists:flatten([Value|proplists:get_all_values(Key, Rest)]),
+      NewRest = proplists:delete(Key, Rest),
+      group_multiples(NewRest, [{Key, lists:usort(Values)}|Acc]);
+    false ->
+      group_multiples(Rest, [Option|Acc])
+  end.
+
+%%------------------------------------------------------------------------------
+
 process_options(Options) ->
   process_options(Options, []).
 
 process_options([], Acc) -> lists:reverse(Acc);
 process_options([{Key, Value} = Option|Rest], Acc) ->
   case Key of
-    _  when
-        Key =:= ignore_error;
-        Key =:= non_racing_system;
-        Key =:= treat_as_normal
-        ->
-      Values = lists:flatten([Value|proplists:get_all_values(Key, Rest)]),
-      NewRest = proplists:delete(Key, Rest),
-      process_options(NewRest, [{Key, lists:usort(Values)}|Acc]);
     _ when
         Key =:= graph;
         Key =:= output

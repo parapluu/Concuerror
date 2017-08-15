@@ -1,0 +1,9 @@
+#!/bin/bash
+
+. header
+
+testing "Excluding works minimally"
+$CONCUERROR -f exclude_modules/test.erl -f exclude_modules/excluded.erl -x excluded -m test 2> $Console
+consolehas "1/1"
+
+. footer

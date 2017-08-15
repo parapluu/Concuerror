@@ -2,7 +2,15 @@
 
 -module(concuerror_loader).
 
--export([load/1, load_initially/1, register_logger/1]).
+-export([initialize/1, load/1, load_initially/1, register_logger/1]).
+
+%%------------------------------------------------------------------------------
+
+-export_type([instrumented/0]).
+
+-type instrumented() :: 'concuerror_instrumented'.
+
+%%------------------------------------------------------------------------------
 
 -define(flag(A), (1 bsl A)).
 
@@ -37,15 +45,15 @@ load(Module, Instrumented) ->
         end,
       try
         load_binary(Module, Filename, Beam, Instrumented),
-        ?log(Logger, ?linfo, "Instrumented ~p~n", [Module])
+        ?log(Logger, ?linfo, "Automatically instrumented module ~p~n", [Module])
       catch
         _:_ ->
           Msg = "Could not load module '~p'. Check '-h input'.~n",
           ?log(Logger, ?lwarning, Msg, [Module])
-      end,
-      maybe_instrumenting_myself(Module, Instrumented);
-    false -> Module
-  end.
+      end;
+    false -> ok
+  end,
+  Module.
 
 -spec load_initially(module()) ->
                         {ok, module(), [string()]} | {error, string()}.
@@ -87,7 +95,15 @@ load_initially(File, Instrumented) ->
 register_logger(Logger) ->
   Instrumented = get_instrumented_table(),
   ets:delete(Instrumented, {logger}),
-  Fun = fun({M}, _) -> ?log(Logger, ?linfo, "Instrumented ~p~n", [M]) end,
+  Fun =
+    fun({M, S}, _) ->
+        {Tag, Text} =
+          case S of
+            concuerror_instrumented -> {?linfo, "Instrumented & loaded module"};
+            concuerror_excluded -> {?lwarning, "Not instrumenting module"}
+          end,
+        ?log(Logger, Tag, "~s ~p~n", [Text, M])
+    end,
   ets:foldl(Fun, ok, Instrumented),
   ets:insert(Instrumented, {{logger}, Logger}),
   io_lib = load(io_lib, Instrumented),
@@ -96,12 +112,30 @@ register_logger(Logger) ->
 %%------------------------------------------------------------------------------
 
 get_instrumented_table() ->
-  case ets:info(concuerror_instrumented) =:= undefined of
+  concuerror_instrumented.
+
+%%------------------------------------------------------------------------------
+
+-spec initialize([atom()]) -> 'ok' | {'error', string()}.
+
+initialize(Excluded) ->
+  Instrumented = get_instrumented_table(),
+  case ets:info(Instrumented) =:= undefined of
     true ->
       setup_sticky_directories(),
-      ets:new(concuerror_instrumented, [named_table, public]);
+      Instrumented = ets:new(Instrumented, [named_table, public]),
+      ok;
     false ->
-      concuerror_instrumented
+      ets:match_delete(Instrumented, {'_', concuerror_excluded}),
+      ok
+  end,
+  Entries = [{X, concuerror_excluded} || X <- Excluded],
+  try
+    true = ets:insert_new(Instrumented, Entries),
+    ok
+  catch
+    _:_ ->
+      {error, "Excluded modules already intrumented. Restart the shell."}
   end.
 
 setup_sticky_directories() ->
@@ -127,9 +161,11 @@ check_shadow(File, Module) ->
 load_binary(Module, Filename, Beam, Instrumented) ->
   Core = get_core(Beam),
   InstrumentedCore =
-    case Module =:= concuerror_inspect of
-      true -> Core;
-      false -> concuerror_instrumenter:instrument(Module, Core, Instrumented)
+    case ets:lookup(Instrumented, Module) =:= [] of
+      true ->
+        concuerror_instrumenter:instrument(Module, Core, Instrumented);
+      false ->
+        Core
     end,
   {ok, _, NewBinary} =
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
@@ -160,13 +196,4 @@ get_core(Beam) ->
       Options = [debug_info, report_errors, binary, to_core0|CleanOptions],
       {ok, Module, Core} = compile:file(File, Options),
       Core
-  end.
-
-maybe_instrumenting_myself(Module, Instrumented) ->
-  case Module =:= concuerror_inspect of
-    false -> Module;
-    true ->
-      Additional = concuerror_callback,
-      Additional = load(Additional, Instrumented),
-      Module
   end.

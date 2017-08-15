@@ -16,10 +16,11 @@
 %% -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 -include("concuerror.hrl").
 
--spec instrument(module(), cerl:cerl(), ets:tid()) -> cerl:cerl().
+-spec instrument(module(), cerl:cerl(), concuerror_loader:instrumented())
+                -> cerl:cerl().
 
 instrument(Module, CoreCode, Instrumented) ->
-  ets:insert(Instrumented, {Module}),
+  ets:insert(Instrumented, {Module, concuerror_instrumented}),
   ?if_debug(Stripper = fun(Tree) -> cerl:set_ann(Tree, []) end),
   ?debug_flag(?input, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, CoreCode))]),
