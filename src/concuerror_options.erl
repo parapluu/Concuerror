@@ -133,7 +133,7 @@ options() ->
     "Deprecated. Use '--dpor (optimal | source)' instead.",
     nolong}
   ,{scheduling_bound_type, [bound, experimental], $c, {atom, none},
-    "Schedule bounding technique",
+    "* Schedule bounding technique",
     "Enables scheduling rules that prevent interleavings from being explored."
     " The available options are:~n"
     "-   'none': no bounding~n"
@@ -161,7 +161,7 @@ options() ->
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
   ,{use_receive_patterns, [erlang, experimental], undefined, {boolean, false},
-    "Use receive patterns for racing sends",
+    "* Use receive patterns for racing sends",
     "Experimental. If true, Concuerror will only consider two"
     " message deliveries as racing when the first message is really"
     " received and the patterns used could also match the second"
@@ -405,6 +405,10 @@ options(Keyword) ->
   [T || T <- options(), lists:member(Keyword, element(?OPTION_KEYWORDS, T))].
 
 print_suffix(Keyword) ->
+  case Keyword =:= basic of
+    false -> to_stderr("Options with '*' are experimental.~n");
+    true -> ok
+  end,
   to_stderr("More info & keywords about a specific option: -h <option>.~n"),
   case Keyword =:= basic orelse Keyword =:= all of
     true -> print_exit_status_info();
