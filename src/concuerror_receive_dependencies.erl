@@ -20,7 +20,7 @@
 
 %%==============================================================================
 
--export([initialise/1, store/2, reset/1, dependent_delivery/2]).
+-export([initialise/1, store/3, reset/1, dependent_delivery/3]).
 
 %%==============================================================================
 
@@ -42,13 +42,13 @@ initialise(UseReceivePatterns) ->
 
 %%==============================================================================
 
--spec store(message_id(), receive_pattern_fun()) -> ok.
+-spec store(message_id(), receive_pattern_fun(), pos_integer()) -> ok.
 
-store(MessageId, PatternFun) ->
+store(MessageId, PatternFun, Counter) ->
   case get(use_receive_patterns) of
     false -> ok;
     true ->
-      ets:insert(use_receive_patterns, {MessageId, PatternFun}),
+      ets:insert(use_receive_patterns, {MessageId, PatternFun, Counter}),
       ok
   end.
 
@@ -66,17 +66,23 @@ reset(MessageId) ->
 
 %%==============================================================================
 
--spec dependent_delivery(message_id(), term()) -> boolean().
+-spec dependent_delivery(message_id(), message_id(), term()) -> boolean().
 
-dependent_delivery(MessageId, Data) ->
+dependent_delivery(MessageId, MessageId2, Data) ->
   case get(use_receive_patterns) of
     false -> true;
     true ->
       case ets:lookup(use_receive_patterns, MessageId) of
         [] -> false;
-        [{MessageId, Pats}] ->
+        [{MessageId, Pats, Counter}] ->
           case Pats(Data) of
-            true -> {true, MessageId};
+            true ->
+              case ets:lookup(use_receive_patterns, MessageId2) of
+                [{MessageId2, _, Counter2}]
+                  when Counter2 < Counter ->
+                  false;
+                _ -> {true, MessageId}
+              end;
             false -> false
           end
       end

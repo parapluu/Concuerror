@@ -92,6 +92,7 @@
           event = none                :: 'none' | event(),
           notify_when_ready           :: {pid(), boolean()},
           processes                   :: processes(),
+          receive_counter = 1         :: pos_integer(),
           ref_queue = new_ref_queue() :: ref_queue_2(),
           scheduler                   :: pid(),
           stacktop = 'none'           :: 'none' | tuple(),
@@ -1256,13 +1257,15 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   end.
 
 handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
+  {Cnt, ReceiveInfo} = get_receive_cnt(Info),
   #concuerror_info{
      event = NextEvent,
      flags = #process_flags{trap_exit = Trapping}
     } = UpdatedInfo =
-    add_location_info(Location, Info),
+    add_location_info(Location, ReceiveInfo),
   ReceiveEvent =
     #receive_event{
+       counter = Cnt,
        message = MessageOrAfter,
        patterns = PatternFun,
        timeout = Timeout,
@@ -2004,6 +2007,9 @@ make_message(Info, Type, Data, Recipient) ->
 
 get_message_cnt(#concuerror_info{message_counter = Counter} = Info) ->
   {{self(), Counter}, Info#concuerror_info{message_counter = Counter + 1}}.
+
+get_receive_cnt(#concuerror_info{receive_counter = Counter} = Info) ->
+  {Counter, Info#concuerror_info{receive_counter = Counter + 1}}.
 
 %%------------------------------------------------------------------------------
 

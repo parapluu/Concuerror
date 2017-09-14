@@ -1411,8 +1411,8 @@ maybe_store_delivery_patterns(Event) ->
     #event{event_info = #receive_event{message = Msg} = Info}
       when Msg =/= 'after' ->
       #message{id = Id} = Msg,
-      #receive_event{patterns = Patterns} = Info,
-      concuerror_receive_dependencies:store(Id, Patterns);
+      #receive_event{counter = Cnt, patterns = Patterns} = Info,
+      concuerror_receive_dependencies:store(Id, Patterns, Cnt);
     _Else -> ok
   end.
 

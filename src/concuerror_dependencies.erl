@@ -162,7 +162,7 @@ dependent(#message_event{
           #message_event{
              ignored = false,
              killing = Killing2,
-             message = #message{data = Data},
+             message = #message{id = Id2, data = Data},
              recipient = Recipient,
              type = Type
             }) ->
@@ -176,7 +176,7 @@ dependent(#message_event{
   case {KindFun(EarlyType, Trapping, EarlyData),
         KindFun(Type, Trapping, Data)} of
     {message, message} -> 
-      concuerror_receive_dependencies:dependent_delivery(Id, Data);
+      concuerror_receive_dependencies:dependent_delivery(Id, Id2, Data);
     {message, normal_exit} -> false;
     {message, _} -> true;
     {normal_exit, kill_exit} -> true;

@@ -220,6 +220,7 @@
 
 -record(receive_event, {
           %% clause_location :: location(),
+          counter            :: pos_integer(),
           message            :: message() | 'after',
           patterns           :: receive_pattern_fun(),
           recipient = self() :: pid(),
