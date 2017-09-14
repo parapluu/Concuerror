@@ -834,9 +834,9 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
                  Star = fun(false) -> " ";(_) -> "*" end,
                  [Star(Dependent), ?pretty_s(EarlyIndex,EarlyEvent)]
                end),
-        case Dependent of
-          false -> Clock;
-          True when True =:= true; True =:= irreversible ->
+        case Dependent =:= false of
+          true -> Clock;
+          false ->
             #trace_state{clock_map = ClockMap} = TraceState,
             EarlyActorClock = lookup_clock(EarlyActor, ClockMap),
             max_cv(
@@ -1180,9 +1180,9 @@ check_initial(Event, [E|NotDep], Acc) ->
   case EventActor =:= EActor of
     true -> lists:reverse(Acc,NotDep);
     false ->
-      case concuerror_dependencies:dependent_safe(E, Event) of
-        True when True =:= true; True =:= irreversible -> false;
-        false -> check_initial(Event, NotDep, [E|Acc])
+      case concuerror_dependencies:dependent_safe(E, Event) =:= false of
+        true -> check_initial(Event, NotDep, [E|Acc]);
+        false -> false
       end
   end.
 
