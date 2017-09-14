@@ -1109,18 +1109,18 @@ add_or_make_compulsory([Entry|Rest], Initials, Conservative, Exploring, Acc) ->
       add_or_make_compulsory(Rest, Initials, Conservative, Exploring, NewAcc)
   end.
 
-insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
-  case has_sleeping_initial(Sleeping, NotDep) of
+insert_wakeup_optimal(Sleeping, Wakeup, V, Bound, Exploring) ->
+  case has_initial(Sleeping, V) of
     true -> skip;
-    false -> insert_wakeup(Wakeup, NotDep, Bound, Exploring)
+    false -> insert_wakeup(Wakeup, V, Bound, Exploring)
   end.
 
-has_sleeping_initial([Sleeping|Rest], NotDep) ->
-  case check_initial(Sleeping, NotDep) =:= false of
-    true -> has_sleeping_initial(Rest, NotDep);
+has_initial([Event|Rest], V) ->
+  case check_initial(Event, V) =:= false of
+    true -> has_initial(Rest, V);
     false -> true
   end;
-has_sleeping_initial([], _) -> false.
+has_initial([], _) -> false.
 
 insert_wakeup(          _, _NotDep,  Bound, _Exploring) when Bound < 0 ->
   over_bound;
