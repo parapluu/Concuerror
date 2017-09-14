@@ -21,13 +21,14 @@
 
 %%------------------------------------------------------------------------------
 
--spec dependent_safe(event(), event()) -> boolean() | irreversible.
+-spec dependent_safe(event(), event()) ->
+                        boolean() | 'irreversible' | {'true', message_id()}.
 
 dependent_safe(E1, E2) ->
   dependent(E1, E2, {true, ignore}).
 
 -spec dependent(event(), event(), assume_racing_opt()) ->
-                   boolean() | irreversible | {'true', message_id()}.
+                   boolean() | 'irreversible' | {'true', message_id()}.
 
 dependent(#event{actor = A}, #event{actor = A}, _) ->
   irreversible;

@@ -66,7 +66,8 @@ reset(MessageId) ->
 
 %%==============================================================================
 
--spec dependent_delivery(message_id(), message_id(), term()) -> boolean().
+-spec dependent_delivery(message_id(), message_id(), term()) ->
+                            boolean() | {'true', message_id()}.
 
 dependent_delivery(MessageId, MessageId2, Data) ->
   case get(use_receive_patterns) of
