@@ -1004,10 +1004,10 @@ update_trace(
                   NotObsRaw = not_obs_raw(NewOldTrace, Later, ObserverInfo),
                   NotObs = NotObsRaw -- NotDep,
                   V = NotDep ++ [EarlyEvent#event{label = undefined}] ++ NotObs,
-                  case has_weak_initial_before(Rest, V) of
-                    true -> skip;
+                  case has_weak_initial_before(Rest, V, Logger) of
+                    true -> {skip, false};
                     false ->
-                      {insert_wakeup_optimal(Sleeping, Wakeup, V, Bound, Exploring), false}
+                      {insert_wakeup_optimal(Done, Wakeup, V, Bound, Exploring), false}
                   end
               end;
             false ->
@@ -1128,9 +1128,18 @@ not_obs_raw([TraceState|Rest], Later, ObserverInfo, NotObs) ->
       not_obs_raw(Rest, Later, ObserverInfo, [Event|NotObs])
   end.
 
-has_weak_initial_before(_, _) ->
-  %% STUB
-  false.
+has_weak_initial_before([], _, _Logger) ->
+  ?debug(_Logger, "No weak initial before~n",[]),
+  false;
+has_weak_initial_before([TraceState|Rest], V, Logger) ->
+  #trace_state{done = [EarlyEvent|Done]} = TraceState,
+  case has_initial(Done, V) of
+    true ->
+      ?debug(Logger, "Check: ~p~n",[Done]),
+      show_plan(initial, Logger, 0, V),
+      true;
+    false -> has_weak_initial_before(Rest, [EarlyEvent|V], Logger)
+  end.
 
 show_plan(_Type, _Logger, _Index, _NotDep) ->
   ?debug(
