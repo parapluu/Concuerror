@@ -1,234 +1,149 @@
-################################################################################
-
-Concuerror started with options:
+Concuerror v0.17 ('9e3f818') started at 14 Sep 2017 14:18:08
+ Options:
   [{after_timeout,infinity},
    {assertions_only,true},
    {assume_racing,false},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
    {entry_point,{assert_filter,test,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"]},
    {ignore_error,[]},
    {instant_delivery,false},
    {interleaving_bound,infinity},
    {keep_going,true},
    {non_racing_system,[]},
-   {optimal,true},
    {print_depth,20},
+   {quiet,true},
    {scheduling,round_robin},
-   {scheduling_bound,infinity},
    {scheduling_bound_type,none},
    {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[]}]
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
 ################################################################################
-
-Erroneous interleaving 1:
-* At step 12 process P exited abnormally
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* At step 13 process P exited abnormally
     Reason:
       {{assert,[{module,assert_filter},
-                {line,41},
+                {line,42},
                 {expression,"First andalso Second"},
                 {expected,true},
                 {value,false}]},
        [{assert_filter,'-test/0-fun-1-',2,
                        [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                        {line,41}]},
+                        {line,42}]},
         {assert_filter,test,0,
                        [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                        {line,41}]}]}
+                        {line,42}]}]}
     Stacktrace:
       [{assert_filter,'-test/0-fun-1-',2,
                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                       {line,41}]},
+                       {line,42}]},
        {assert_filter,test,0,
                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                       {line,41}]}]
+                       {line,42}]}]
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<assert_filter.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2673
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<assert_filter.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2673
    3: P.1: true = erlang:register(same_name, P.1)
-    in assert_filter.erl line 27
+    in assert_filter.erl line 28
    4: P.1: {P.1,true} = P ! {P.1,true}
-    in assert_filter.erl line 31
+    in assert_filter.erl line 32
    5: Message ({P.1,true}) from P.1 reaches P
    6: P: receives message ({P.1,true})
-    in assert_filter.erl line 37
+    in assert_filter.erl line 38
    7: P.2: Exception badarg raised by: erlang:register(same_name, P.2)
-    in assert_filter.erl line 27
+    in assert_filter.erl line 28
    8: P.2: {P.2,false} = P ! {P.2,false}
-    in assert_filter.erl line 31
+    in assert_filter.erl line 32
    9: P.2: exits normally
   10: Message ({P.2,false}) from P.2 reaches P
   11: P: receives message ({P.2,false})
-    in assert_filter.erl line 39
-  12: P: exits abnormally ({{assert,[{module,assert_filter},{line,41},{expression,[70,105,114,115,116,32,97,110,100,97,108|...]},{expected,true},{value,false}]},[{assert_filter,'-test/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,41}]},{assert_filter,test,0,[{file,[47,104,111,109,101,47,115,116|...]},{line,41}]}]})
-  13: P.1: exits normally
+    in assert_filter.erl line 40
+  12: P: true = erlang:is_process_alive(P)
+    in assert_filter.erl line 42
+  13: P: exits abnormally ({{assert,[{module,assert_filter},{line,42},{expression,[70,105,114,115,116,32,97,110,100,97,108|...]},{expected,true},{value,false}]},[{assert_filter,'-test/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,42}]},{assert_filter,test,0,[{file,[47,104,111,109,101,47,115,116|...]},{line,42}]}]})
+  14: P.1: exits normally
 ################################################################################
-
-Erroneous interleaving 2:
-* At step 13 process P exited abnormally
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* At step 14 process P exited abnormally
     Reason:
       {{assert,[{module,assert_filter},
-                {line,41},
+                {line,42},
                 {expression,"First andalso Second"},
                 {expected,true},
                 {value,false}]},
        [{assert_filter,'-test/0-fun-1-',2,
                        [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                        {line,41}]},
+                        {line,42}]},
         {assert_filter,test,0,
                        [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                        {line,41}]}]}
+                        {line,42}]}]}
     Stacktrace:
       [{assert_filter,'-test/0-fun-1-',2,
                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                       {line,41}]},
+                       {line,42}]},
        {assert_filter,test,0,
                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                       {line,41}]}]
+                       {line,42}]}]
 --------------------------------------------------------------------------------
-
-Interleaving info:
+Event trace:
    1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<assert_filter.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2673
    2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<assert_filter.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P.1: true = erlang:register(same_name, P.1)
-    in assert_filter.erl line 27
-   4: P.1: {P.1,true} = P ! {P.1,true}
-    in assert_filter.erl line 31
-   5: P.2: Exception badarg raised by: erlang:register(same_name, P.2)
-    in assert_filter.erl line 27
-   6: P.2: {P.2,false} = P ! {P.2,false}
-    in assert_filter.erl line 31
-   7: P.2: exits normally
-   8: P.1: exits normally
-   9: Message ({P.2,false}) from P.2 reaches P
-  10: Message ({P.1,true}) from P.1 reaches P
-  11: P: receives message ({P.1,true})
-    in assert_filter.erl line 37
-  12: P: receives message ({P.2,false})
-    in assert_filter.erl line 39
-  13: P: exits abnormally ({{assert,[{module,assert_filter},{line,41},{expression,[70,105,114,115,116,32,97,110,100,97,108|...]},{expected,true},{value,false}]},[{assert_filter,'-test/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,41}]},{assert_filter,test,0,[{file,[47,104,111,109,101,47,115,116|...]},{line,41}]}]})
-################################################################################
-
-Erroneous interleaving 3:
-* At step 13 process P exited abnormally
-    Reason:
-      {{assert,[{module,assert_filter},
-                {line,41},
-                {expression,"First andalso Second"},
-                {expected,true},
-                {value,false}]},
-       [{assert_filter,'-test/0-fun-1-',2,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                        {line,41}]},
-        {assert_filter,test,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                        {line,41}]}]}
-    Stacktrace:
-      [{assert_filter,'-test/0-fun-1-',2,
-                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                       {line,41}]},
-       {assert_filter,test,0,
-                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                       {line,41}]}]
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<assert_filter.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<assert_filter.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2505
+    in erlang.erl line 2673
    3: P.2: true = erlang:register(same_name, P.2)
-    in assert_filter.erl line 27
+    in assert_filter.erl line 28
    4: P.2: {P.2,true} = P ! {P.2,true}
-    in assert_filter.erl line 31
+    in assert_filter.erl line 32
    5: Message ({P.2,true}) from P.2 reaches P
    6: P.1: Exception badarg raised by: erlang:register(same_name, P.1)
-    in assert_filter.erl line 27
+    in assert_filter.erl line 28
    7: P.1: {P.1,false} = P ! {P.1,false}
-    in assert_filter.erl line 31
+    in assert_filter.erl line 32
    8: P.1: exits normally
    9: Message ({P.1,false}) from P.1 reaches P
   10: P.2: exits normally
   11: P: receives message ({P.1,false})
-    in assert_filter.erl line 37
+    in assert_filter.erl line 38
   12: P: receives message ({P.2,true})
-    in assert_filter.erl line 39
-  13: P: exits abnormally ({{assert,[{module,assert_filter},{line,41},{expression,[70,105,114,115,116,32,97,110,100,97,108|...]},{expected,true},{value,false}]},[{assert_filter,'-test/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,41}]},{assert_filter,test,0,[{file,[47,104,111,109,101,47,115,116|...]},{line,41}]}]})
+    in assert_filter.erl line 40
+  13: P: true = erlang:is_process_alive(P)
+    in assert_filter.erl line 42
+  14: P: exits abnormally ({{assert,[{module,assert_filter},{line,42},{expression,[70,105,114,115,116,32,97,110,100,97,108|...]},{expected,true},{value,false}]},[{assert_filter,'-test/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,42}]},{assert_filter,test,0,[{file,[47,104,111,109,101,47,115,116|...]},{line,42}]}]})
 ################################################################################
-
-Erroneous interleaving 4:
-* At step 13 process P exited abnormally
-    Reason:
-      {{assert,[{module,assert_filter},
-                {line,41},
-                {expression,"First andalso Second"},
-                {expected,true},
-                {value,false}]},
-       [{assert_filter,'-test/0-fun-1-',2,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                        {line,41}]},
-        {assert_filter,test,0,
-                       [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                        {line,41}]}]}
-    Stacktrace:
-      [{assert_filter,'-test/0-fun-1-',2,
-                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                       {line,41}]},
-       {assert_filter,test,0,
-                      [{file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/assert_filter.erl"},
-                       {line,41}]}]
---------------------------------------------------------------------------------
-
-Interleaving info:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<assert_filter.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<assert_filter.'-test/0-fun-0-'.0>,[]])
-    in erlang.erl line 2505
-   3: P.2: true = erlang:register(same_name, P.2)
-    in assert_filter.erl line 27
-   4: P.2: {P.2,true} = P ! {P.2,true}
-    in assert_filter.erl line 31
-   5: P.1: Exception badarg raised by: erlang:register(same_name, P.1)
-    in assert_filter.erl line 27
-   6: P.1: {P.1,false} = P ! {P.1,false}
-    in assert_filter.erl line 31
-   7: P.1: exits normally
-   8: P.2: exits normally
-   9: Message ({P.1,false}) from P.1 reaches P
-  10: Message ({P.2,true}) from P.2 reaches P
-  11: P: receives message ({P.1,false})
-    in assert_filter.erl line 37
-  12: P: receives message ({P.2,true})
-    in assert_filter.erl line 39
-  13: P: exits abnormally ({{assert,[{module,assert_filter},{line,41},{expression,[70,105,114,115,116,32,97,110,100,97,108|...]},{expected,true},{value,false}]},[{assert_filter,'-test/0-fun-1-',2,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,41}]},{assert_filter,test,0,[{file,[47,104,111,109,101,47,115,116|...]},{line,41}]}]})
+Exploration completed!
 ################################################################################
-
 Warnings:
 --------------------------------------------------------------------------------
-
-Only assertion failures are considered crashes (--assertions_only).
-Continuing after error
+Only assertion failures are considered crashes ('--assertions_only').
 
 ################################################################################
+Tips:
+--------------------------------------------------------------------------------
+Increase '--print_depth' if output/graph contains "...".
 
+################################################################################
 Info:
 --------------------------------------------------------------------------------
-
-Instrumented assert_filter
-Instrumented io_lib
-Instrumented erlang
-You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
+Instrumented & loaded module assert_filter
+Automatically instrumented module io_lib
+Automatically instrumented module gen_server
+Automatically instrumented module erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+Continuing after error (-k)
 
 ################################################################################
-
-Done! (Exit status: completed)
-  Summary: 4 errors, 8/8 interleavings explored
+Done at 14 Sep 2017 14:18:09 (Exit status: error)
+  Summary: 2 errors, 4/4 interleavings explored
