@@ -834,9 +834,9 @@ update_clock([TraceState|Rest], Event, Clock, State) ->
                  Star = fun(false) -> " ";(_) -> "*" end,
                  [Star(Dependent), ?pretty_s(EarlyIndex,EarlyEvent)]
                end),
-        case Dependent of
-          false -> Clock;
-          True when True =:= true; True =:= irreversible ->
+        case Dependent =:= false of
+          true -> Clock;
+          false ->
             #trace_state{clock_map = ClockMap} = TraceState,
             EarlyActorClock = lookup_clock(EarlyActor, ClockMap),
             max_cv(
@@ -1109,18 +1109,18 @@ add_or_make_compulsory([Entry|Rest], Initials, Conservative, Exploring, Acc) ->
       add_or_make_compulsory(Rest, Initials, Conservative, Exploring, NewAcc)
   end.
 
-insert_wakeup_optimal(Sleeping, Wakeup, NotDep, Bound, Exploring) ->
-  case has_sleeping_initial(Sleeping, NotDep) of
+insert_wakeup_optimal(Sleeping, Wakeup, V, Bound, Exploring) ->
+  case has_initial(Sleeping, V) of
     true -> skip;
-    false -> insert_wakeup(Wakeup, NotDep, Bound, Exploring)
+    false -> insert_wakeup(Wakeup, V, Bound, Exploring)
   end.
 
-has_sleeping_initial([Sleeping|Rest], NotDep) ->
-  case check_initial(Sleeping, NotDep) =:= false of
-    true -> has_sleeping_initial(Rest, NotDep);
+has_initial([Event|Rest], V) ->
+  case check_initial(Event, V) =:= false of
+    true -> has_initial(Rest, V);
     false -> true
   end;
-has_sleeping_initial([], _) -> false.
+has_initial([], _) -> false.
 
 insert_wakeup(          _, _NotDep,  Bound, _Exploring) when Bound < 0 ->
   over_bound;
@@ -1180,9 +1180,9 @@ check_initial(Event, [E|NotDep], Acc) ->
   case EventActor =:= EActor of
     true -> lists:reverse(Acc,NotDep);
     false ->
-      case concuerror_dependencies:dependent_safe(Event, E) of
-        True when True =:= true; True =:= irreversible -> false;
-        false -> check_initial(Event, NotDep, [E|Acc])
+      case concuerror_dependencies:dependent_safe(E, Event) =:= false of
+        true -> check_initial(Event, NotDep, [E|Acc]);
+        false -> false
       end
   end.
 
