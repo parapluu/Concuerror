@@ -151,13 +151,14 @@ dependent(#exit_event{}, #exit_event{}) ->
 
 dependent(#message_event{
              ignored = false,
-             killing = Killing,
+             killing = Killing1,
              message = #message{id = Id, data = EarlyData},
              recipient = Recipient,
              trapping = Trapping,
              type = EarlyType},
           #message_event{
              ignored = false,
+             killing = Killing2,
              message = #message{data = Data},
              recipient = Recipient,
              type = Type
@@ -178,7 +179,7 @@ dependent(#message_event{
     {normal_exit, kill_exit} -> true;
     {normal_exit, _} -> Trapping;
     {_, normal_exit} -> Trapping;
-    {_, _} -> Killing
+    {_, _} -> Killing1 orelse Killing2 %% This is an ugly hack, see blame.
   end;
 
 dependent(#message_event{

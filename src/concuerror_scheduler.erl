@@ -1180,7 +1180,7 @@ check_initial(Event, [E|NotDep], Acc) ->
   case EventActor =:= EActor of
     true -> lists:reverse(Acc,NotDep);
     false ->
-      case concuerror_dependencies:dependent_safe(Event, E) of
+      case concuerror_dependencies:dependent_safe(E, Event) of
         True when True =:= true; True =:= irreversible -> false;
         false -> check_initial(Event, NotDep, [E|Acc])
       end
