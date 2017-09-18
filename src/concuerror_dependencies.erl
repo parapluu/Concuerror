@@ -204,16 +204,16 @@ dependent(#message_event{
     false ->
       Timeout =/= infinity
         andalso
-          case Recv of
-            'after' ->
-              %% Can only happen during wakeup (otherwise an actually
-              %% delivered msg would be received)
-              message_could_match(Patterns, Data, Trapping, Type);
-            #message{id = RecId} ->
-              %% Race exactly with the delivery of the received
-              %% message
-              MsgId =:= RecId
-          end
+        case Recv of
+          'after' ->
+            %% Can only happen during wakeup (otherwise an actually
+            %% delivered msg would be received)
+            message_could_match(Patterns, Data, Trapping, Type);
+          #message{id = RecId} ->
+            %% Race exactly with the delivery of the received
+            %% message
+            MsgId =:= RecId
+        end
   end;
 dependent(#receive_event{
              message = 'after',
