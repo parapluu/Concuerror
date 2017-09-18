@@ -157,13 +157,15 @@ dependent(#message_event{
              ignored = false,
              killing = Killing1,
              message = #message{id = Id, data = EarlyData},
+             receive_info = EarlyInfo,
              recipient = Recipient,
              trapping = Trapping,
              type = EarlyType},
           #message_event{
              ignored = false,
              killing = Killing2,
-             message = #message{id = Id2, data = Data},
+             message = #message{data = Data},
+             receive_info = LateInfo,
              recipient = Recipient,
              type = Type
             }) ->
@@ -176,8 +178,22 @@ dependent(#message_event{
     end,
   case {KindFun(EarlyType, Trapping, EarlyData),
         KindFun(Type, Trapping, Data)} of
-    {message, message} -> 
-      concuerror_receive_dependencies:dependent_delivery(Id, Id2, Data);
+    {message, message} ->
+      case EarlyInfo of
+        undefined -> true;
+        not_received -> false;
+        {Counter1, Patterns} ->
+          ObsDep =
+            Patterns(Data) andalso
+            case LateInfo of
+              {Counter2, _} -> Counter2 >= Counter1;
+              not_received -> true;
+              undefined -> false
+            end,
+          if ObsDep -> {true, Id};
+             true -> false
+          end
+      end;
     {message, normal_exit} -> false;
     {message, _} -> true;
     {normal_exit, kill_exit} -> true;
@@ -194,7 +210,7 @@ dependent(#message_event{
             },
           #receive_event{
              message = Recv,
-             patterns = Patterns,
+             receive_info = {_, Patterns},
              recipient = Recipient,
              timeout = Timeout,
              trapping = Trapping
@@ -229,7 +245,7 @@ dependent(#message_event{
   end;
 dependent(#receive_event{
              message = 'after',
-             patterns = Patterns,
+             receive_info = {_,  Patterns},
              recipient = Recipient,
              trapping = Trapping},
           #message_event{

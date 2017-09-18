@@ -178,6 +178,7 @@
 
 -type mfargs() :: {atom(), atom(), [term()]}.
 -type receive_pattern_fun() :: fun((term()) -> boolean()).
+-type receive_info() :: {pos_integer(), receive_pattern_fun()}.
 
 -type location() :: 'exit' | [non_neg_integer() | {file, string()}].
 
@@ -210,6 +211,7 @@
           instant = true   :: boolean(),
           killing = false  :: boolean(),
           message          :: message(),
+          receive_info     :: 'undefined' | 'not_received' | receive_info(),
           recipient        :: pid(),
           sender = self()  :: pid(),
           trapping = false :: boolean(),
@@ -220,9 +222,8 @@
 
 -record(receive_event, {
           %% clause_location :: location(),
-          counter            :: pos_integer(),
           message            :: message() | 'after',
-          patterns           :: receive_pattern_fun(),
+          receive_info       :: receive_info(),
           recipient = self() :: pid(),
           timeout = infinity :: timeout(),
           trapping = false   :: boolean()
