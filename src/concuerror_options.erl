@@ -289,10 +289,9 @@ derived_defaults() ->
   , {{scheduling_bound_type, bpor}, [{dpor, source}, {scheduling_bound, 1}]}
   , {{scheduling_bound_type, delay}, [{scheduling_bound, 1}]}
   , {{scheduling_bound_type, ubpor}, [{dpor, source}, {scheduling_bound, 1}]}
-  , {{dpor, source}, [{use_receive_patterns, false}]}
-  , {{dpor, persistent}, [{use_receive_patterns, false}]}
-  , {{dpor, none}, [{use_receive_patterns, false}]}
-  ].
+  ] ++
+  [{{dpor, NotObsDPOR}, [{use_receive_patterns, false}]}
+    || NotObsDPOR <- [none, persistent, source]].
 
 check_validity(Key) ->
   case Key of
