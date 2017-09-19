@@ -194,7 +194,14 @@ dependent(#message_event{
              timeout = Timeout,
              trapping = Trapping
             }) ->
-  case Type =:= exit_signal of
+  EffType =
+    case {Type, Trapping, Data} of
+      {exit_signal,     _, kill} -> exit_signal;
+      {exit_signal,  true,    _} -> message;
+      {    message,     _,    _} -> message;
+      _                          -> exit_signal
+    end,
+  case EffType =:= exit_signal of
     true ->
       case Data of
         kill -> true;

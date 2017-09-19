@@ -642,7 +642,7 @@ update_sleeping(NewEvent, Sleeping, State) ->
   #scheduler_state{logger = _Logger} = State,
   Pred =
     fun(OldEvent) ->
-        V = concuerror_dependencies:dependent_safe(OldEvent, NewEvent),
+        V = concuerror_dependencies:dependent_safe(NewEvent, OldEvent),
         ?trace(_Logger, "     Awaking (~p): ~s~n", [V,?pretty_s(OldEvent)]),
         V =:= false
     end,
