@@ -1128,23 +1128,17 @@ is_process_info_related(Event) ->
 not_obs_raw(NewOldTrace, Later, ObserverInfo) ->
   lists:reverse(not_obs_raw(NewOldTrace, Later, ObserverInfo, [])).
 
+not_obs_raw([], [], _ObserverInfo, _NotObs) ->
+  [];
 not_obs_raw([], Later, ObserverInfo, NotObs) ->
   not_obs_raw(Later, [], ObserverInfo, NotObs);
 not_obs_raw([TraceState|Rest], Later, ObserverInfo, NotObs) ->
-  #trace_state{done = [Event|_]} = TraceState,
-  case Event of
-    #event{
-       event_info =
-         #receive_event{
-            message =
-              #message{
-                 id = ObserverInfo
-                }
-           }
-      } ->
-      [Event#event{label = undefined}|NotObs];
-    _ ->
-      not_obs_raw(Rest, Later, ObserverInfo, [Event|NotObs])
+  #trace_state{done = [#event{special = Special} = Event|_]} = TraceState,
+  case [Id || {message_received, Id} <- Special, Id =:= ObserverInfo] =:= [] of
+    true ->
+      not_obs_raw(Rest, Later, ObserverInfo, [Event|NotObs]);
+    false ->
+      [Event#event{label = undefined}|NotObs]
   end.
 
 has_weak_initial_before([], _, _Logger) ->
@@ -1446,26 +1440,31 @@ fix_receive_info([#trace_state{} = TraceState|RevTrace], ReceiveInfoDict, Trace)
   NewTraceState = TraceState#trace_state{done = [NewEvent|Rest]},
   fix_receive_info(RevTrace, NewDict, [NewTraceState|Trace]);
 fix_receive_info([#event{} = Event|RevEvents], ReceiveInfoDict, Events) ->
-  case Event of
-    #event{event_info = #receive_event{message = Msg} = Info}
-      when Msg =/= 'after' ->
-      #message{id = Id} = Msg,
-      #receive_event{receive_info = ReceiveInfo} = Info,
-      NewDict = dict:store(Id, ReceiveInfo, ReceiveInfoDict),
-      fix_receive_info(RevEvents, NewDict, [Event|Events]);
-    #event{event_info = EventInfo, special = Special} ->
-      NewSpecial =
-        [patch_message_delivery(S, ReceiveInfoDict) || S <- Special],
-      NewEventInfo =
+  #event{event_info = EventInfo, special = Special} = Event,
+  NewReceiveInfoDict = store_receive_info(EventInfo, Special, ReceiveInfoDict),
+  NewSpecial = [patch_message_delivery(S, NewReceiveInfoDict) || S <- Special],
+  NewEventInfo =
+    case EventInfo of
+      #message_event{} ->
+        {_, NI} =
+          patch_message_delivery({message_delivered, EventInfo}, NewReceiveInfoDict),
+        NI;
+      _ -> EventInfo
+    end,
+  NewEvent = Event#event{event_info = NewEventInfo, special = NewSpecial},
+  fix_receive_info(RevEvents, NewReceiveInfoDict, [NewEvent|Events]).
+
+store_receive_info(EventInfo, Special, ReceiveInfoDict) ->
+  case [ID || {message_received, ID} <- Special] of
+    [] -> ReceiveInfoDict;
+    IDs ->
+      ReceiveInfo =
         case EventInfo of
-           #message_event{} ->
-            {_, NI} =
-              patch_message_delivery({message_delivered, EventInfo}, ReceiveInfoDict),
-            NI;
-          _ -> EventInfo
+          #receive_event{receive_info = RI} -> RI;
+          _ -> {system, fun(_) -> true end}
         end,
-      NewEvent = Event#event{event_info = NewEventInfo, special = NewSpecial},
-      fix_receive_info(RevEvents, ReceiveInfoDict, [NewEvent|Events])
+      Fold = fun(ID,Dict) -> dict:store(ID, ReceiveInfo, Dict) end,
+      lists:foldl(Fold, ReceiveInfoDict, IDs)
   end.
 
 patch_message_delivery({message_delivered, MessageEvent}, ReceiveInfoDict) ->

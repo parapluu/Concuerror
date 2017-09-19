@@ -178,7 +178,7 @@
 
 -type mfargs() :: {atom(), atom(), [term()]}.
 -type receive_pattern_fun() :: fun((term()) -> boolean()).
--type receive_info() :: {pos_integer(), receive_pattern_fun()}.
+-type receive_info() :: {pos_integer() | 'system', receive_pattern_fun()}.
 
 -type location() :: 'exit' | [non_neg_integer() | {file, string()}].
 
