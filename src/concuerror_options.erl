@@ -503,6 +503,7 @@ finalize_2(Options) ->
     , fun add_missing_file/1
       %% We need group multiples to find excluded files before loading
     , fun group_multiples/1
+    , fun initialize_loader/1
     , fun load_files/1
     , fun add_options_from_module/1
     , fun add_derived_defaults/1
@@ -605,20 +606,23 @@ add_missing_file(Options) ->
 
 %%%-----------------------------------------------------------------------------
 
-load_files(Options) ->
+initialize_loader(Options) ->
   Excluded = proplists:get_value(exclude_module, Options, []),
   case concuerror_loader:initialize(Excluded) of
-    ok ->
-      case proplists:get_all_values(file, Options) of
-        [] -> Options;
-        Files ->
-          NewOptions = proplists:delete(file, Options),
-          compile_and_load(Files, [], false, NewOptions)
-      end;
-    {error, Error} ->
-      opt_error(Error)
+    ok -> Options;
+    {error, Error} -> opt_error(Error)
   end.
 
+%%%-----------------------------------------------------------------------------
+
+load_files(Options) ->
+  Singles = proplists:get_all_values(file, Options),
+  Multis = proplists:get_all_values(files, Options),
+  Files = lists:append([Singles|Multis]),
+  compile_and_load(Files, [], false, Options).
+
+compile_and_load([], [], _, Options) ->
+  Options;
 compile_and_load([], [_|More] = LoadedFiles, LastModule, Options) ->
   MissingModule =
     case
@@ -628,7 +632,8 @@ compile_and_load([], [_|More] = LoadedFiles, LastModule, Options) ->
       true -> [{module, LastModule}];
       false -> []
     end,
-  MissingModule ++ [{files, lists:sort(LoadedFiles)}|Options];
+  NewOptions = proplists:delete(files, proplists:delete(file, Options)),
+  MissingModule ++ [{files, lists:sort(LoadedFiles)}|NewOptions];
 compile_and_load([File|Rest], Acc, _LastModule, Options) ->
   case concuerror_loader:load_initially(File) of
     {ok, Module, Warnings} ->
