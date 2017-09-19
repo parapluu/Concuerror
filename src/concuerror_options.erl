@@ -627,7 +627,8 @@ compile_and_load([], [_|More] = LoadedFiles, LastModule, Options) ->
   MissingModule =
     case
       More =:= [] andalso
-      not proplists:is_defined(module, Options)
+      not proplists:is_defined(module, Options) andalso
+      not proplists:is_defined(entry_point, Options)
     of
       true -> [{module, LastModule}];
       false -> []
@@ -646,31 +647,38 @@ compile_and_load([File|Rest], Acc, _LastModule, Options) ->
 %%%-----------------------------------------------------------------------------
 
 add_options_from_module(Options) ->
-  case proplists:get_all_values(module, Options) of
-    [] ->
-      UndefinedEntryPoint =
-        "The module containing the main test function has not been specified.",
-      opt_error(UndefinedEntryPoint, [], module);
-    [Module] ->
-      Attributes =
-        try
-          Module:module_info(attributes)
-        catch
-          _:_ ->
-            opt_error("Could not find module ~w.", [Module], module)
-        end,
-      Forced =
-        get_options_from_attribute(?ATTRIBUTE_FORCED_OPTIONS, Attributes),
-      Others =
-        get_options_from_attribute(?ATTRIBUTE_OPTIONS, Attributes),
-      check_unique_options_from_module(Forced, Others),
-      WithForced =
-        override(?ATTRIBUTE_FORCED_OPTIONS, Forced, "command line", Options),
-      KeepLast = keep_last_option(WithForced),
-      override("command line", KeepLast, ?ATTRIBUTE_OPTIONS, Others);
-    _Modules ->
-      opt_error("Multiple instances of '--module' specified.", [], module)
-  end.
+  Module =
+    case proplists:get_all_values(entry_point, Options) of
+      [] ->
+        case proplists:get_all_values(module, Options) of
+          [] ->
+            UndefinedEntryPoint =
+              "The module containing the main test function has not been specified.",
+            opt_error(UndefinedEntryPoint, [], module);
+          [M] -> M;
+          _ ->
+            opt_error("Multiple instances of '--module' specified.", [], module)
+        end;
+      [{M,_,_}] -> M;
+      _ ->
+        opt_error("Multiple instances of 'entry_point' specified.", [], module)
+    end,
+  Attributes =
+    try
+      Module:module_info(attributes)
+    catch
+      _:_ ->
+        opt_error("Could not find module ~w.", [Module], module)
+    end,
+  Forced =
+    get_options_from_attribute(?ATTRIBUTE_FORCED_OPTIONS, Attributes),
+  Others =
+    get_options_from_attribute(?ATTRIBUTE_OPTIONS, Attributes),
+  check_unique_options_from_module(Forced, Others),
+  WithForced =
+    override(?ATTRIBUTE_FORCED_OPTIONS, Forced, "command line", Options),
+  KeepLast = keep_last_option(WithForced),
+  override("command line", KeepLast, ?ATTRIBUTE_OPTIONS, Others).
 
 get_options_from_attribute(Attribute, Attributes) ->
   case proplists:get_value(Attribute, Attributes) of
