@@ -1,4 +1,4 @@
-Concuerror 0.17 (a62e2f6) started at 09 Aug 2017 12:47:05
+Concuerror v0.17 ('189e1f0') started at 19 Sep 2017 17:51:20
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -7,6 +7,7 @@ Concuerror 0.17 (a62e2f6) started at 09 Aug 2017 12:47:05
    {disable_sleep_sets,false},
    {dpor,optimal},
    {entry_point,{workers,workers,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/workers.erl"]},
    {ignore_error,[]},
    {instant_delivery,false},
@@ -22,20 +23,20 @@ Concuerror 0.17 (a62e2f6) started at 09 Aug 2017 12:47:05
    {symbolic_names,true},
    {timeout,infinity},
    {treat_as_normal,[]},
-   {use_receive_patterns,false}]
+   {use_receive_patterns,true}]
 ################################################################################
 Exploration completed!
   No errors found!
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
-Instrumented workers
-Instrumented io_lib
-Instrumented gen_server
-Instrumented erlang
-Instrumented lists
+Instrumented & loaded module workers
+Automatically instrumented module io_lib
+Automatically instrumented module gen_server
+Automatically instrumented module erlang
+Automatically instrumented module lists
 You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-Done at 09 Aug 2017 12:47:07 (Exit status: ok)
-  Summary: 0 errors, 396/396 interleavings explored
+Done at 19 Sep 2017 17:51:21 (Exit status: ok)
+  Summary: 0 errors, 200/200 interleavings explored
