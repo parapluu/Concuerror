@@ -509,7 +509,7 @@ update_state(#event{actor = Actor} = Event, State) ->
     } = State,
   #trace_state{
      actors      = Actors,
-     done        = Done,
+     done        = RawDone,
      index       = Index,
      graph_ref   = Ref,
      previous_actor = PreviousActor,
@@ -519,6 +519,7 @@ update_state(#event{actor = Actor} = Event, State) ->
     } = Last,
   ?trace(Logger, "~s~n", [?pretty_s(Index, Event)]),
   concuerror_logger:graph_new_node(Logger, Ref, Index, Event, 0),
+  Done = reset_receive_done(RawDone, State),
   NextSleeping =
     case DisableSleepSets of
       true -> [];
@@ -1425,6 +1426,13 @@ replay(State) ->
   NewState#scheduler_state{need_to_replay = false}.
 
 %% =============================================================================
+
+reset_receive_done([Event|Rest], #scheduler_state{use_receive_patterns = true}) ->
+  NewSpecial =
+    [patch_message_delivery(S, dict:new()) || S <- Event#event.special],
+  [Event#event{special = NewSpecial}|Rest];
+reset_receive_done(Done, _) ->
+  Done.
 
 fix_receive_info(RevTraceOrEvents) ->
   fix_receive_info(RevTraceOrEvents, dict:new()).
