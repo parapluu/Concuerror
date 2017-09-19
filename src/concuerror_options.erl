@@ -503,6 +503,7 @@ finalize_2(Options) ->
     , fun add_missing_file/1
       %% We need group multiples to find excluded files before loading
     , fun group_multiples/1
+    , fun initialize_loader/1
     , fun load_files/1
     , fun add_options_from_module/1
     , fun add_derived_defaults/1
@@ -605,30 +606,35 @@ add_missing_file(Options) ->
 
 %%%-----------------------------------------------------------------------------
 
-load_files(Options) ->
+initialize_loader(Options) ->
   Excluded = proplists:get_value(exclude_module, Options, []),
   case concuerror_loader:initialize(Excluded) of
-    ok ->
-      case proplists:get_all_values(file, Options) of
-        [] -> Options;
-        Files ->
-          NewOptions = proplists:delete(file, Options),
-          compile_and_load(Files, [], false, NewOptions)
-      end;
-    {error, Error} ->
-      opt_error(Error)
+    ok -> Options;
+    {error, Error} -> opt_error(Error)
   end.
 
+%%%-----------------------------------------------------------------------------
+
+load_files(Options) ->
+  Singles = proplists:get_all_values(file, Options),
+  Multis = proplists:get_all_values(files, Options),
+  Files = lists:append([Singles|Multis]),
+  compile_and_load(Files, [], false, Options).
+
+compile_and_load([], [], _, Options) ->
+  Options;
 compile_and_load([], [_|More] = LoadedFiles, LastModule, Options) ->
   MissingModule =
     case
       More =:= [] andalso
-      not proplists:is_defined(module, Options)
+      not proplists:is_defined(module, Options) andalso
+      not proplists:is_defined(entry_point, Options)
     of
       true -> [{module, LastModule}];
       false -> []
     end,
-  MissingModule ++ [{files, lists:sort(LoadedFiles)}|Options];
+  NewOptions = proplists:delete(files, proplists:delete(file, Options)),
+  MissingModule ++ [{files, lists:sort(LoadedFiles)}|NewOptions];
 compile_and_load([File|Rest], Acc, _LastModule, Options) ->
   case concuerror_loader:load_initially(File) of
     {ok, Module, Warnings} ->
@@ -641,31 +647,38 @@ compile_and_load([File|Rest], Acc, _LastModule, Options) ->
 %%%-----------------------------------------------------------------------------
 
 add_options_from_module(Options) ->
-  case proplists:get_all_values(module, Options) of
-    [] ->
-      UndefinedEntryPoint =
-        "The module containing the main test function has not been specified.",
-      opt_error(UndefinedEntryPoint, [], module);
-    [Module] ->
-      Attributes =
-        try
-          Module:module_info(attributes)
-        catch
-          _:_ ->
-            opt_error("Could not find module ~w.", [Module], module)
-        end,
-      Forced =
-        get_options_from_attribute(?ATTRIBUTE_FORCED_OPTIONS, Attributes),
-      Others =
-        get_options_from_attribute(?ATTRIBUTE_OPTIONS, Attributes),
-      check_unique_options_from_module(Forced, Others),
-      WithForced =
-        override(?ATTRIBUTE_FORCED_OPTIONS, Forced, "command line", Options),
-      KeepLast = keep_last_option(WithForced),
-      override("command line", KeepLast, ?ATTRIBUTE_OPTIONS, Others);
-    _Modules ->
-      opt_error("Multiple instances of '--module' specified.", [], module)
-  end.
+  Module =
+    case proplists:get_all_values(entry_point, Options) of
+      [] ->
+        case proplists:get_all_values(module, Options) of
+          [] ->
+            UndefinedEntryPoint =
+              "The module containing the main test function has not been specified.",
+            opt_error(UndefinedEntryPoint, [], module);
+          [M] -> M;
+          _ ->
+            opt_error("Multiple instances of '--module' specified.", [], module)
+        end;
+      [{M,_,_}] -> M;
+      _ ->
+        opt_error("Multiple instances of 'entry_point' specified.", [], module)
+    end,
+  Attributes =
+    try
+      Module:module_info(attributes)
+    catch
+      _:_ ->
+        opt_error("Could not find module ~w.", [Module], module)
+    end,
+  Forced =
+    get_options_from_attribute(?ATTRIBUTE_FORCED_OPTIONS, Attributes),
+  Others =
+    get_options_from_attribute(?ATTRIBUTE_OPTIONS, Attributes),
+  check_unique_options_from_module(Forced, Others),
+  WithForced =
+    override(?ATTRIBUTE_FORCED_OPTIONS, Forced, "command line", Options),
+  KeepLast = keep_last_option(WithForced),
+  override("command line", KeepLast, ?ATTRIBUTE_OPTIONS, Others).
 
 get_options_from_attribute(Attribute, Attributes) ->
   case proplists:get_value(Attribute, Attributes) of

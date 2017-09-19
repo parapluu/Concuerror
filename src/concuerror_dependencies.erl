@@ -41,7 +41,7 @@ dependent(#event{event_info = Info1, special = Special1},
               [{I1,I2}|| I1 <- [Info1|M1], I2 <- [Info2|M2]])
   catch
     throw:irreversible -> irreversible;
-    Class:Reason ->
+    error:function_clause ->
       case AssumeRacing of
         {true, ignore} -> true;
         {true, Logger} ->
@@ -54,8 +54,7 @@ dependent(#event{event_info = Info1, special = Special1},
           ?unique(Logger, ?lwarning, Msg, []),
           true;
         {false, _} ->
-          ExtInfo = {Class, Reason, erlang:get_stacktrace()},
-          ?crash({undefined_dependency, Info1, Info2, ExtInfo})
+          ?crash({undefined_dependency, Info1, Info2, erlang:get_stacktrace()})
       end
   end.
 
@@ -205,16 +204,16 @@ dependent(#message_event{
     false ->
       Timeout =/= infinity
         andalso
-          case Recv of
-            'after' ->
-              %% Can only happen during wakeup (otherwise an actually
-              %% delivered msg would be received)
-              message_could_match(Patterns, Data, Trapping, Type);
-            #message{id = RecId} ->
-              %% Race exactly with the delivery of the received
-              %% message
-              MsgId =:= RecId
-          end
+        case Recv of
+          'after' ->
+            %% Can only happen during wakeup (otherwise an actually
+            %% delivered msg would be received)
+            message_could_match(Patterns, Data, Trapping, Type);
+          #message{id = RecId} ->
+            %% Race exactly with the delivery of the received
+            %% message
+            MsgId =:= RecId
+        end
   end;
 dependent(#receive_event{
              message = 'after',
