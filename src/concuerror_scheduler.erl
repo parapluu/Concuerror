@@ -986,7 +986,7 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
         case is_atom(Plan) of
           true -> NW;
           false ->
-            show_plan(Plan, false, Logger, EarlyIndex, NotDep),
+            show_plan(standard, Logger, EarlyIndex, NotDep),
             NW
         end
     end,
@@ -1049,13 +1049,13 @@ not_dep1([TraceState|Rest], Later, {DPOR, Info} = DPORInfo, NotDep) ->
     end,
   not_dep1(Rest, Later, DPORInfo, NewNotDep).
 
-show_plan(_NW, _Conservative, _Logger, _Index, _NotDep) ->
+show_plan(_Type, _Logger, _Index, _NotDep) ->
   ?debug(
-     _Logger, "     PLAN (Conservative: ~p)~n~s",
+     _Logger, "     PLAN (Type: ~p)~n~s",
      begin
        Indices = lists:seq(_Index, _Index + length(_NotDep) - 1),
        IndexedNotDep = lists:zip(Indices, _NotDep),
-       [_Conservative] ++
+       [_Type] ++
          [lists:append(
             [io_lib:format("        ~s~n", [?pretty_s(I,S)])
              || {I,S} <- IndexedNotDep])]
