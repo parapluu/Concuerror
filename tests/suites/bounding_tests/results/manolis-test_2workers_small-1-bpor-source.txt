@@ -1,4 +1,4 @@
-Concuerror 0.16 (c9dd421) started at 11 Oct 2016 15:37:54.
+Concuerror v0.17 ('613f493') started at 21 Sep 2017 14:24:07
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -7,6 +7,7 @@ Concuerror 0.16 (c9dd421) started at 11 Oct 2016 15:37:54.
    {disable_sleep_sets,false},
    {dpor,source},
    {entry_point,{test,test_2workers_small,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/bounding_tests/src/manolis/rush_hour.erl",
            "/home/stavros/git/Concuerror/tests/suites/bounding_tests/src/manolis/search.erl",
            "/home/stavros/git/Concuerror/tests/suites/bounding_tests/src/manolis/test.erl"]},
@@ -16,6 +17,7 @@ Concuerror 0.16 (c9dd421) started at 11 Oct 2016 15:37:54.
    {keep_going,true},
    {non_racing_system,[]},
    {print_depth,20},
+   {quiet,true},
    {scheduling,round_robin},
    {scheduling_bound,1},
    {scheduling_bound_type,bpor},
@@ -23,7 +25,8 @@ Concuerror 0.16 (c9dd421) started at 11 Oct 2016 15:37:54.
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[]}]
+   {treat_as_normal,[]},
+   {use_receive_patterns,false}]
 ################################################################################
 Exploration completed!
   No errors found!
@@ -31,19 +34,21 @@ Exploration completed!
 Warnings:
 --------------------------------------------------------------------------------
 Some interleavings were not considered due to schedule bounding.
+Some interleavings were 'sleep-set blocked'. This is expected, since you are not using '--dpor optimal', but indicates wasted effort.
 
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
-Instrumented rush_hour
-Instrumented search
-Instrumented test
-Instrumented io_lib
-Instrumented gen_server
-Instrumented lists
-Instrumented erlang
-You can see pairs of racing instructions (in the report and --graph) with '--show_races true'
+Instrumented & loaded module rush_hour
+Instrumented & loaded module search
+Instrumented & loaded module test
+Automatically instrumented module io_lib
+Using '--use_receive_patterns false' (default for '--dpor source').
+Automatically instrumented module gen_server
+Automatically instrumented module lists
+Automatically instrumented module erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-Done at 11 Oct 2016 15:37:57 (Exit status: ok)
-  Summary: 0 errors, 326/326 interleavings explored (the scheduling bound was reached)
+Done at 21 Sep 2017 14:24:11 (Exit status: ok)
+  Summary: 0 errors, 322/322 interleavings explored (2 sleep-set blocked) (the scheduling bound was reached)

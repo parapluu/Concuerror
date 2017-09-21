@@ -1,0 +1,72 @@
+Concuerror v0.17 ('59c67f8') started at 20 Sep 2017 11:07:38
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{group_leader,test1,[]}},
+   {exclude_module,[]},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/group_leader.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 6 process P exited abnormally
+    Reason:
+      {badarg,[{erlang,group_leader,
+                       [P.1,P],
+                       [19,
+                        {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/group_leader.erl"}]}]}
+    Stacktrace:
+      [{erlang,group_leader,
+               [P.1,P],
+               [19,
+                {file,"/home/stavros/git/Concuerror/tests/suites/basic_tests/src/group_leader.erl"}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.2692407628.911736833.221457>} = erlang:spawn_opt({erlang,apply,[#Fun<group_leader.'-test1/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2717
+   2: P.1: exits normally
+   3: P.1: {'DOWN',#Ref<0.2692407628.911736833.221457>,process,P.1,normal} = erlang:send(P, {'DOWN',#Ref<0.2692407628.911736833.221457>,process,P.1,normal})
+    (while exiting)
+   4: P: receives message ({'DOWN',#Ref<0.2692407628.911736833.221457>,process,P.1,normal})
+    in group_leader.erl line 16
+   5: P: Exception badarg raised by: erlang:group_leader(P.1, P)
+    in group_leader.erl line 19
+   6: P: exits abnormally ({badarg,[{erlang,group_leader,[P.1,P],[19,{file,[47,104,111,109,101,47,115,116|...]}]}]})
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented & loaded module group_leader
+Automatically instrumented module io_lib
+Automatically instrumented module gen_server
+Automatically instrumented module erlang
+Continuing after error (-k)
+
+################################################################################
+Done at 20 Sep 2017 11:07:38 (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored

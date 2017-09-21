@@ -18,6 +18,14 @@
 -include("concuerror.hrl").
 -include("concuerror_sha.hrl").
 
+-ifdef(BEFORE_OTP_19).
+-define(join(Strings, Sep), string:join(Strings, Sep)).
+-else.
+-define(join(Strings, Sep), lists:join(Sep, Strings)).
+-endif.
+
+%%%-----------------------------------------------------------------------------
+
 -type options() :: proplists:proplist().
 
 -type bound()        :: 'infinity' | non_neg_integer().
@@ -305,8 +313,8 @@ parse_cl_aux(RawCommandLineArgs) ->
       case OtherArgs =:= [] of
         true -> {ok, Options};
         false ->
-          Msg = "Unknown argument(s)/option(s): ~s.",
-          opt_error(Msg, [string:join(OtherArgs, " ")])
+          Msg = "Unknown argument(s)/option(s): ~s",
+          opt_error(Msg, [?join(OtherArgs, " ")])
       end;
     {error, Error} ->
       case Error of

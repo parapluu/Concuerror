@@ -1,29 +1,37 @@
-################################################################################
-Concuerror started with options:
+Concuerror v0.17 ('613f493') started at 21 Sep 2017 14:24:16
+ Options:
   [{after_timeout,infinity},
+   {assertions_only,false},
    {assume_racing,false},
-   {depth_bound,5000},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,source},
    {entry_point,{combination_lock_1,combination_lock_1,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/combination_lock_1.erl"]},
    {ignore_error,[]},
-   {ignore_first_crash,true},
-   {instant_delivery,false},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
    {non_racing_system,[]},
-   {optimal,false},
    {print_depth,20},
    {quiet,true},
-   {report_unknown,true},
-   {scheduling,oldest},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
    {strict_scheduling,false},
    {symbolic_names,true},
    {timeout,infinity},
-   {treat_as_normal,[]}]
+   {treat_as_normal,[]},
+   {use_receive_patterns,false}]
 ################################################################################
-Erroneous interleaving 1:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in combination_lock_1.erl line 54
 --------------------------------------------------------------------------------
-Interleaving info:
+Event trace:
    1: P: table = ets:new(table, [public,named_table])
     in combination_lock_1.erl line 9
    2: P: true = ets:insert(table, {v,0})
@@ -36,14 +44,14 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
-    in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
-    in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
-    in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
-    in erlang.erl line 2329
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-0-'.0>,[]])
+    in erlang.erl line 2693
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-1-'.0>,[]])
+    in erlang.erl line 2693
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-2-'.0>,[]])
+    in erlang.erl line 2693
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-3-'.0>,[]])
+    in erlang.erl line 2693
   11: P.1: true = ets:insert(table, {z,1})
     in combination_lock_1.erl line 15
   12: P.1: exits normally
@@ -67,11 +75,13 @@ Interleaving info:
     in combination_lock_1.erl line 43
   23: P.4: exits normally
 ################################################################################
-Erroneous interleaving 2:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in combination_lock_1.erl line 54
 --------------------------------------------------------------------------------
-Interleaving info:
+Event trace:
    1: P: table = ets:new(table, [public,named_table])
     in combination_lock_1.erl line 9
    2: P: true = ets:insert(table, {v,0})
@@ -84,14 +94,68 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
-    in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
-    in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
-    in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
-    in erlang.erl line 2329
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-0-'.0>,[]])
+    in erlang.erl line 2693
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-1-'.0>,[]])
+    in erlang.erl line 2693
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-2-'.0>,[]])
+    in erlang.erl line 2693
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-3-'.0>,[]])
+    in erlang.erl line 2693
+  11: P.1: true = ets:insert(table, {z,1})
+    in combination_lock_1.erl line 15
+  12: P.1: exits normally
+  13: P.2: true = ets:insert(table, {x,1})
+    in combination_lock_1.erl line 17
+  14: P.2: true = ets:insert(table, {a,1})
+    in combination_lock_1.erl line 18
+  15: P.3: [{x,1}] = ets:lookup(table, x)
+    in combination_lock_1.erl line 29
+  16: P.3: true = ets:insert(table, {y,1})
+    in combination_lock_1.erl line 32
+  17: P.3: true = ets:insert(table, {c,0})
+    in combination_lock_1.erl line 33
+  18: P.3: [{v,0}] = ets:lookup(table, v)
+    in combination_lock_1.erl line 34
+  19: P.3: exits normally
+  20: P.4: [{w,0}] = ets:lookup(table, w)
+    in combination_lock_1.erl line 43
+  21: P.4: exits normally
+  22: P.2: [{y,1}] = ets:lookup(table, y)
+    in combination_lock_1.erl line 19
+  23: P.2: true = ets:insert(table, {w,1})
+    in combination_lock_1.erl line 22
+  24: P.2: true = ets:insert(table, {b,0})
+    in combination_lock_1.erl line 23
+  25: P.2: exits normally
+################################################################################
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    P in combination_lock_1.erl line 54
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: table = ets:new(table, [public,named_table])
+    in combination_lock_1.erl line 9
+   2: P: true = ets:insert(table, {v,0})
+    in combination_lock_1.erl line 10
+   3: P: true = ets:insert(table, {w,0})
+    in combination_lock_1.erl line 11
+   4: P: true = ets:insert(table, {x,0})
+    in combination_lock_1.erl line 12
+   5: P: true = ets:insert(table, {y,0})
+    in combination_lock_1.erl line 13
+   6: P: true = ets:insert(table, {z,0})
+    in combination_lock_1.erl line 14
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-0-'.0>,[]])
+    in erlang.erl line 2693
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-1-'.0>,[]])
+    in erlang.erl line 2693
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-2-'.0>,[]])
+    in erlang.erl line 2693
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-3-'.0>,[]])
+    in erlang.erl line 2693
   11: P.1: true = ets:insert(table, {z,1})
     in combination_lock_1.erl line 15
   12: P.1: exits normally
@@ -123,11 +187,13 @@ Interleaving info:
     in combination_lock_1.erl line 47
   27: P.4: exits normally
 ################################################################################
-Erroneous interleaving 3:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in combination_lock_1.erl line 54
 --------------------------------------------------------------------------------
-Interleaving info:
+Event trace:
    1: P: table = ets:new(table, [public,named_table])
     in combination_lock_1.erl line 9
    2: P: true = ets:insert(table, {v,0})
@@ -140,66 +206,14 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
-    in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
-    in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
-    in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
-    in erlang.erl line 2329
-  11: P.1: true = ets:insert(table, {z,1})
-    in combination_lock_1.erl line 15
-  12: P.1: exits normally
-  13: P.2: true = ets:insert(table, {x,1})
-    in combination_lock_1.erl line 17
-  14: P.2: true = ets:insert(table, {a,1})
-    in combination_lock_1.erl line 18
-  15: P.3: [{x,1}] = ets:lookup(table, x)
-    in combination_lock_1.erl line 29
-  16: P.3: true = ets:insert(table, {y,1})
-    in combination_lock_1.erl line 32
-  17: P.3: true = ets:insert(table, {c,0})
-    in combination_lock_1.erl line 33
-  18: P.3: [{v,0}] = ets:lookup(table, v)
-    in combination_lock_1.erl line 34
-  19: P.3: exits normally
-  20: P.2: [{y,1}] = ets:lookup(table, y)
-    in combination_lock_1.erl line 19
-  21: P.4: [{w,0}] = ets:lookup(table, w)
-    in combination_lock_1.erl line 43
-  22: P.4: exits normally
-  23: P.2: true = ets:insert(table, {w,1})
-    in combination_lock_1.erl line 22
-  24: P.2: true = ets:insert(table, {b,0})
-    in combination_lock_1.erl line 23
-  25: P.2: exits normally
-################################################################################
-Erroneous interleaving 4:
-* Blocked at a 'receive' (when all other processes have exited):
-    P in combination_lock_1.erl line 54
---------------------------------------------------------------------------------
-Interleaving info:
-   1: P: table = ets:new(table, [public,named_table])
-    in combination_lock_1.erl line 9
-   2: P: true = ets:insert(table, {v,0})
-    in combination_lock_1.erl line 10
-   3: P: true = ets:insert(table, {w,0})
-    in combination_lock_1.erl line 11
-   4: P: true = ets:insert(table, {x,0})
-    in combination_lock_1.erl line 12
-   5: P: true = ets:insert(table, {y,0})
-    in combination_lock_1.erl line 13
-   6: P: true = ets:insert(table, {z,0})
-    in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
-    in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
-    in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
-    in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
-    in erlang.erl line 2329
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-0-'.0>,[]])
+    in erlang.erl line 2693
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-1-'.0>,[]])
+    in erlang.erl line 2693
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-2-'.0>,[]])
+    in erlang.erl line 2693
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-3-'.0>,[]])
+    in erlang.erl line 2693
   11: P.1: true = ets:insert(table, {z,1})
     in combination_lock_1.erl line 15
   12: P.1: exits normally
@@ -233,11 +247,13 @@ Interleaving info:
     in combination_lock_1.erl line 36
   28: P.3: exits normally
 ################################################################################
-Erroneous interleaving 5:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #6
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in combination_lock_1.erl line 54
 --------------------------------------------------------------------------------
-Interleaving info:
+Event trace:
    1: P: table = ets:new(table, [public,named_table])
     in combination_lock_1.erl line 9
    2: P: true = ets:insert(table, {v,0})
@@ -250,23 +266,23 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
-    in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
-    in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
-    in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
-    in erlang.erl line 2329
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-0-'.0>,[]])
+    in erlang.erl line 2693
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-1-'.0>,[]])
+    in erlang.erl line 2693
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-2-'.0>,[]])
+    in erlang.erl line 2693
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-3-'.0>,[]])
+    in erlang.erl line 2693
   11: P.1: true = ets:insert(table, {z,1})
     in combination_lock_1.erl line 15
   12: P.1: exits normally
-  13: P.4: [{w,0}] = ets:lookup(table, w)
-    in combination_lock_1.erl line 43
-  14: P.4: exits normally
-  15: P.3: [{x,0}] = ets:lookup(table, x)
+  13: P.3: [{x,0}] = ets:lookup(table, x)
     in combination_lock_1.erl line 29
-  16: P.3: exits normally
+  14: P.3: exits normally
+  15: P.4: [{w,0}] = ets:lookup(table, w)
+    in combination_lock_1.erl line 43
+  16: P.4: exits normally
   17: P.2: true = ets:insert(table, {x,1})
     in combination_lock_1.erl line 17
   18: P.2: true = ets:insert(table, {a,1})
@@ -275,11 +291,13 @@ Interleaving info:
     in combination_lock_1.erl line 19
   20: P.2: exits normally
 ################################################################################
-Erroneous interleaving 6:
-* Blocked at a 'receive' (when all other processes have exited):
+Interleaving #10
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
     P in combination_lock_1.erl line 54
 --------------------------------------------------------------------------------
-Interleaving info:
+Event trace:
    1: P: table = ets:new(table, [public,named_table])
     in combination_lock_1.erl line 9
    2: P: true = ets:insert(table, {v,0})
@@ -292,14 +310,14 @@ Interleaving info:
     in combination_lock_1.erl line 13
    6: P: true = ets:insert(table, {z,0})
     in combination_lock_1.erl line 14
-   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.0.105205610>,[]])
-    in erlang.erl line 2329
-   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.1.105205610>,[]])
-    in erlang.erl line 2329
-   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.2.105205610>,[]])
-    in erlang.erl line 2329
-  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.3.105205610>,[]])
-    in erlang.erl line 2329
+   7: P: P.1 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-0-'.0>,[]])
+    in erlang.erl line 2693
+   8: P: P.2 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-1-'.0>,[]])
+    in erlang.erl line 2693
+   9: P: P.3 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-2-'.0>,[]])
+    in erlang.erl line 2693
+  10: P: P.4 = erlang:spawn(erlang, apply, [#Fun<combination_lock_1.'-combination_lock_1/0-fun-3-'.0>,[]])
+    in erlang.erl line 2693
   11: P.2: true = ets:insert(table, {x,1})
     in combination_lock_1.erl line 17
   12: P.2: true = ets:insert(table, {a,1})
@@ -333,11 +351,28 @@ Interleaving info:
     in combination_lock_1.erl line 15
   28: P.1: exits normally
 ################################################################################
-Concuerror Info:
---------------------------------------------------------------------------------
-Instrumenting: combination_lock_1
-Instrumenting: io_lib
-Instrumenting: erlang
+Exploration completed!
 ################################################################################
-Done! (Exit status: completed)
-  Summary: 6 errors, 14/14 interleavings explored (8 sleep-set blocked)
+Warnings:
+--------------------------------------------------------------------------------
+Some interleavings were 'sleep-set blocked'. This is expected, since you are not using '--dpor optimal', but indicates wasted effort.
+
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented & loaded module combination_lock_1
+Automatically instrumented module io_lib
+Using '--use_receive_patterns false' (default for '--dpor source').
+Automatically instrumented module gen_server
+Automatically instrumented module erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+Continuing after error (-k)
+
+################################################################################
+Done at 21 Sep 2017 14:24:16 (Exit status: error)
+  Summary: 6 errors, 12/12 interleavings explored (6 sleep-set blocked)
