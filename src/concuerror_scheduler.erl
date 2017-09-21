@@ -718,10 +718,10 @@ plan_more_interleavings(#scheduler_state{dpor = DPOR} = State) ->
   Late = assign_happens_before(UntimedLate, RevEarly, State),
   ?time(Logger, "Planning more interleavings..."),
   NewRevTrace =
-    case DPOR =:= persistent of
-      false ->
-        plan_more_interleavings(lists:reverse(RevEarly, Late), [], State);
+    case DPOR =:= optimal of
       true ->
+        plan_more_interleavings(lists:reverse(RevEarly, Late), [], State);
+      false ->
         plan_more_interleavings(Late, RevEarly, State)
     end,
   State#scheduler_state{trace = NewRevTrace}.
@@ -1018,9 +1018,9 @@ not_dep1([], [], _DPORInfo, NotDep) ->
   NotDep;
 not_dep1([], T, {DPOR, _} = DPORInfo, NotDep) ->
   KeepLooking =
-    case DPOR =:= persistent of
-      true -> [];
-      false -> T
+    case DPOR =:= optimal of
+      true -> T;
+      false -> []
     end,
   not_dep1(KeepLooking,  [], DPORInfo, NotDep);
 not_dep1([TraceState|Rest], Later, {DPOR, Info} = DPORInfo, NotDep) ->
