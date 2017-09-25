@@ -18,6 +18,12 @@
 -include("concuerror.hrl").
 -include("concuerror_sha.hrl").
 
+-ifdef(BEFORE_OTP_20).
+-define(lowercase, to_lower).
+-else.
+-define(lowercase, lowercase).
+-endif.
+
 -ifdef(BEFORE_OTP_19).
 -define(join(Strings, Sep), string:join(Strings, Sep)).
 -else.
@@ -335,7 +341,7 @@ fix_common_error("--" ++ [C] = Option) ->
   opt_warn("~s converted to -~c", [Option, C]),
   "-" ++ [C];
 fix_common_error("--" ++ Text = Option) ->
-  Underscored = lists:map(fun dash_to_underscore/1, Text),
+  Underscored = lists:map(fun dash_to_underscore/1, string:?lowercase(Text)),
   case Text =:= Underscored of
     true -> Option;
     false ->
