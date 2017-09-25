@@ -474,6 +474,22 @@ dependent_built_in(#builtin_event{mfargs = {erlang,UnRegisterOp,_}} = R,
        (SendOrWhereis =:= '!' orelse SendOrWhereis =:= send orelse
         SendOrWhereis =:= whereis) ->
   dependent_built_in(S, R);
+dependent_built_in(#builtin_event{mfargs = {erlang,RegistryOp,_}},
+                   #builtin_event{mfargs = {erlang,LinkOp,_}})
+  when (RegistryOp =:= register orelse 
+        RegistryOp =:= unregister orelse 
+        RegistryOp =:= whereis),
+       (LinkOp =:= link orelse
+        LinkOp =:= unlink) ->
+  false;
+dependent_built_in(#builtin_event{mfargs = {erlang,LinkOp,_}} = L,
+                   #builtin_event{mfargs = {erlang,RegistryOp,_}} = R)
+  when (RegistryOp =:= register orelse 
+        RegistryOp =:= unregister orelse 
+        RegistryOp =:= whereis),
+       (LinkOp =:= link orelse
+        LinkOp =:= unlink) ->
+  dependent_built_in(R, L);
 
 dependent_built_in(#builtin_event{mfargs = {erlang,send,_}, extra = Extra},
                    #builtin_event{mfargs = {erlang,ReadorCancelTimer,[Timer]}})

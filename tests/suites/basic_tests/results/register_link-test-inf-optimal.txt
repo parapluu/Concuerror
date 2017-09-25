@@ -1,0 +1,41 @@
+Concuerror v0.17 ('8aeb32a') started at 25 Sep 2017 16:04:52
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{register_link,test,[]}},
+   {exclude_module,[]},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/register_link.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Exploration completed!
+  No errors found!
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+Instrumented & loaded module register_link
+Automatically instrumented module io_lib
+Automatically instrumented module gen_server
+Automatically instrumented module erlang
+You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+
+################################################################################
+Done at 25 Sep 2017 16:04:52 (Exit status: ok)
+  Summary: 0 errors, 2/2 interleavings explored
