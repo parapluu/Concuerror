@@ -186,12 +186,15 @@ options() ->
     "Messages and signals arrive instantly",
     "Assume that messages and signals are delivered immediately, when sent to a"
     " process on the same node."}
-  ,{use_receive_patterns, [erlang], undefined, {boolean, true},
+  ,{use_receive_patterns, [erlang,por,advanced], undefined, {boolean, true},
     "Use receive patterns for racing sends",
     "If true, Concuerror will only consider two"
     " message deliveries as racing when the first message is really"
     " received and the patterns used could also match the second"
     " message."}
+  ,{observers, [erlang,por,advanced], undefined, boolean,
+    "Synonym of --use_receive_patterns",
+    nolong}
   ,{scheduling, [advanced], undefined, {atom, round_robin},
     "Scheduling order",
     "How Concuerror picks the next process to run. The available options are"
@@ -259,6 +262,9 @@ options() ->
     "Display version information",
     nolong}
    ].
+
+synonyms() ->
+  [{observers, use_receive_patterns}].
 
 multiple_allowed() ->
   [ exclude_module
@@ -551,6 +557,7 @@ finalize_2(Options) ->
     [ fun proplists:unfold/1
     , fun set_verbosity/1
     , fun assert_tuples/1
+    , fun fix_synonyms/1
     , fun open_files/1
     , fun add_to_path/1
     , fun add_missing_file/1
@@ -657,6 +664,15 @@ assert_tuples(Options) ->
       Error = "Malformed option: ~w",
       opt_error(Error, [T], input)
   end.
+
+%%%-----------------------------------------------------------------------------
+
+fix_synonyms(Options) ->
+  Map =
+    fun(Key) ->
+        hd([R || {K, R} <- synonyms() ++ [{Key, Key}], K =:= Key])
+    end,
+  lists:keymap(Map, 1, Options).
 
 %%%-----------------------------------------------------------------------------
 
