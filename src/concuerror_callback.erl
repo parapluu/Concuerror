@@ -932,9 +932,9 @@ run_built_in(ets, new, 2, [Name, Options], Info) ->
   ets:update_element(EtsTables, Tid, Update),
   ets:delete_all_objects(Tid),
   {Ret, Info#concuerror_info{extra = Tid}};
-run_built_in(ets, info, _, [Name|Rest], Info) ->
+run_built_in(ets, info, _, [Name|Rest] = Args, Info) ->
   try
-    {Tid, _} = check_ets_access_rights(Name, info, Info),
+    {Tid, _} = check_ets_access_rights(Name, {info, length(Args)}, Info),
     {erlang:apply(ets, info, [Tid|Rest]), Info#concuerror_info{extra = Tid}}
   catch
     error:badarg -> {undefined, Info}
