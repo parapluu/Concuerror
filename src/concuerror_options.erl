@@ -513,6 +513,7 @@ finalize_2(Options) ->
   Passes =
     [ fun proplists:unfold/1
     , fun set_verbosity/1
+    , fun assert_tuples/1
     , fun add_to_path/1
     , fun add_missing_file/1
       %% We need group multiples to find excluded files before loading
@@ -571,6 +572,17 @@ set_verbosity(Options) ->
   end,
   NewOptions = proplists:delete(verbosity, Options),
   [{verbosity, Verbosity}|NewOptions].
+
+%%%-----------------------------------------------------------------------------
+
+assert_tuples(Options) ->
+  Fun = fun(T) -> is_tuple(T) andalso size(T) =:= 2 end,
+  case lists:dropwhile(Fun, Options) of
+    [] -> Options;
+    [T|_] ->
+      Error = "Malformed option: ~w",
+      opt_error(Error, [T], input)
+  end.
 
 %%%-----------------------------------------------------------------------------
 
