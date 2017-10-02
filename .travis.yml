@@ -4,8 +4,8 @@ sudo: false
 
 # Check README for supported versions before changing this
 otp_release:
-   - 20.0
    - 20.1
+   - 20.0
    - 19.3
    - 18.3
    - 17.4
@@ -20,8 +20,8 @@ matrix:
    include:
    - otp_release: R16B03-1
      env: TEST=travis_has_latest_otp_version
-   allow_failures:
-   - otp_release: 20.1
+   # allow_failures:
+   # - env: TEST=travis_has_latest_otp_version
 
 script: "make -j 4 $TEST"
 
