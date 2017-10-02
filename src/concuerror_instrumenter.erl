@@ -20,7 +20,6 @@
                 -> cerl:cerl().
 
 instrument(Module, CoreCode, Instrumented) ->
-  ets:insert(Instrumented, {Module, concuerror_instrumented}),
   ?if_debug(Stripper = fun(Tree) -> cerl:set_ann(Tree, []) end),
   ?debug_flag(?input, "~s\n",
               [cerl_prettypr:format(cerl_trees:map(Stripper, CoreCode))]),

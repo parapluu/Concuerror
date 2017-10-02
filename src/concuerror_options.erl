@@ -18,6 +18,12 @@
 -include("concuerror.hrl").
 -include("concuerror_sha.hrl").
 
+-ifdef(BEFORE_OTP_20).
+-define(lowercase, to_lower).
+-else.
+-define(lowercase, lowercase).
+-endif.
+
 -ifdef(BEFORE_OTP_19).
 -define(join(Strings, Sep), string:join(Strings, Sep)).
 -else.
@@ -335,7 +341,7 @@ fix_common_error("--" ++ [C] = Option) ->
   opt_warn("~s converted to -~c", [Option, C]),
   "-" ++ [C];
 fix_common_error("--" ++ Text = Option) ->
-  Underscored = lists:map(fun dash_to_underscore/1, Text),
+  Underscored = lists:map(fun dash_to_underscore/1, string:?lowercase(Text)),
   case Text =:= Underscored of
     true -> Option;
     false ->
@@ -507,6 +513,7 @@ finalize_2(Options) ->
   Passes =
     [ fun proplists:unfold/1
     , fun set_verbosity/1
+    , fun assert_tuples/1
     , fun add_to_path/1
     , fun add_missing_file/1
       %% We need group multiples to find excluded files before loading
@@ -565,6 +572,17 @@ set_verbosity(Options) ->
   end,
   NewOptions = proplists:delete(verbosity, Options),
   [{verbosity, Verbosity}|NewOptions].
+
+%%%-----------------------------------------------------------------------------
+
+assert_tuples(Options) ->
+  Fun = fun(T) -> is_tuple(T) andalso size(T) =:= 2 end,
+  case lists:dropwhile(Fun, Options) of
+    [] -> Options;
+    [T|_] ->
+      Error = "Malformed option: ~w",
+      opt_error(Error, [T], input)
+  end.
 
 %%%-----------------------------------------------------------------------------
 

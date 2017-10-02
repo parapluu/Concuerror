@@ -60,6 +60,7 @@ timediff(After, Before) ->
           print_depth                  :: pos_integer(),
           rate_timestamp = timestamp() :: timestamp(),
           rate_prev = 0                :: non_neg_integer(),
+          rate_width = 3               :: non_neg_integer(),
           streams = []                 :: [{stream(), [string()]}],
           timestamp = timestamp()      :: timestamp(),
           ticker = none                :: pid() | 'none' | 'show',
@@ -501,6 +502,7 @@ update_rate(State) ->
   #logger_state{
      rate_timestamp = Old,
      rate_prev = Prev,
+     rate_width = OldWidth,
      traces_explored = Current,
      traces_ssb = TracesSSB
     } = State,
@@ -508,9 +510,16 @@ update_rate(State) ->
   Time = timediff(New, Old),
   Useful = Current - TracesSSB,
   Diff = Useful - Prev,
-  Rate = (Diff / (Time + 0.0001)),
-  RateStr = io_lib:format("(~5.1f /s) ", [Rate]),
-  {RateStr, State#logger_state{rate_timestamp = New, rate_prev = Useful}}.
+  Rate = (Diff / (Time + 0.0001)) + 0.01,
+  Width = max(OldWidth, trunc(math:log10(Rate)) + 3),
+  WidthStr = [$0 + Width],
+  RateStr = io_lib:format("(~"++WidthStr++".1f/s) ", [Rate]),
+  NewState =
+    State#logger_state{
+      rate_timestamp = New,
+      rate_prev = Useful,
+      rate_width = Width},
+  {RateStr, NewState}.
 
 separator_string(Char) ->
   lists:duplicate(80, Char).
