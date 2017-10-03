@@ -29,9 +29,12 @@ All you have to do is specify the module and function you want to test:
 `concuerror -m my_module -t my_test`
 </div>
 
+However, note that your test function needs to be terminating (in fact, it needs
+to terminate under all possible schedulings) and data-deterministic.
+
 ## ... is it really that simple?
 
-Well, for most programs that is probably enough!
+Well, for many programs that is probably enough!
 If your test is named `test` you can even skip the `-t test` option!
 The tool automatically instruments any modules used in the test,
 using Erlang's automatic code loading infrastructure,
@@ -39,7 +42,7 @@ so nothing more is in principle needed!
 
 If a scheduling leads to one or more processes crashing or
 deadlocking, Concuerror will print a detailed log of all the events
-that lead to the error.
+that lead to the error and by default stop the exporation at that error.
 
 Otherwise it will keep exploring schedulings, [until it has checked them all...](/faq/#will-the-exploration-ever-finish)
 
@@ -53,7 +56,7 @@ page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail
 Concuerror schedules the Erlang processes spawned in the test as if a single scheduler was available.
 During execution, the tool records calls to built-in operations that can behave differently depending on the scheduling (e.g., receive statements, registry operations, ETS operations).
 It then analyzes the trace, detecting pairs of operations that are really racing.
-Based on this analysis, it explores more schedulings, reversing the order of execution of such pairs. This is a technique known as _stateless model checking with partial order reduction_.
+Based on this analysis, it explores more schedulings, reversing the order of execution of such pairs. This is a technique known as _stateless model checking with dynamic partial order reduction_.
 
 You can find more details [here](/faq/#how-does-concuerror-work-extended).
 
