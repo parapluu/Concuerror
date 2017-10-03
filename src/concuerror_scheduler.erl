@@ -1525,7 +1525,7 @@ msg(stop_first_error) ->
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"
-    " standard timeout. Use the '--after_timeout' option to treat after clauses"
-    " that exceed some threshold as 'impossible'.~n";
+    " standard timeout. You can use e.g. '--after_timeout 2000' to treat after"
+    " clauses that exceed some threshold (here 2000ms) as 'impossible'.~n";
 msg(treat_as_normal) ->
   "Some abnormal exit reasons were treated as normal ('--treat_as_normal').~n".
