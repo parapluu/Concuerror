@@ -1,6 +1,9 @@
 ---
 layout: page
 permalink: /faq/index.html
+title: "Concuerror's FAQ"
+description: "Concuerror's Frequently Asked Questions"
+updated: 2017-10-03
 ---
 
 # Frequently Asked Questions
@@ -9,12 +12,34 @@ permalink: /faq/index.html
 1. This text will be replaced by the ToC, excluding the previous header (WOW!)
 {:toc}
 
-## How to report a bug?
+How do I report a bug?
+----------------------
 
-The preferred way is the official repository's [Issues
+The preferred way is in the repository's [Issues
 page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/contact).
 
-## How does Concuerror work?
+## Will the exploration ever finish?
+
+Complex concurrent programs can have a LOT of schedulings!  Concuerror
+uses a technique called Optimal Dynamic Partial Order Reduction to
+filter through them and has special knowledge about the interferences
+of Erlang/OTP built-ins (see the relevant [Publications](/publications)).
+Still, all this reduction power may sometimes not be enough.
+
+If Concuerror keeps running for a while, you may want to limit the exploration
+(using e.g. the `--interleaving_bound` option)
+and visualize the explored schedulings
+via the `--graph` option (the [dot](http://www.graphviz.org/) tool
+is needed to produce an image).
+You can then see which operations the tool considers as racing
+using the `--show_races` option and possibly simplify the test.
+
+Concuerror may also print tips during its execution,
+suggesting ways to improve the effectiveness of testing.
+A large number of options are available to fine tune the tool.
+You can find out more about them by using `concuerror -h`.
+
+## How does Concuerror work? (extended)
 
 Concuerror runs the program under test in a controlled way so that only one
 process runs at a time.
