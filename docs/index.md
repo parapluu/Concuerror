@@ -1,5 +1,8 @@
 ---
 layout: page
+title: "Concuerror's Homepage"
+description: "Concuerror's Homepage"
+updated: 2017-10-03
 ---
 
 <h1 class="download-link"><a href="./download"><img src="./images/button.png" alt="Get Concuerror!"></a></h1>
