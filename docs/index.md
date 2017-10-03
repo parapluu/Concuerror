@@ -54,6 +54,14 @@ It may advice e.g. to refactor a test, if too many operations are racing.
 A large number of options are also available.
 You can find out more about them by running `concuerror -h`.
 
+How do I report bugs?
+---------------------
+
+The preferred way is in the repository's [Issues
+page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/contact).
+
+
+
 Read Further
 ------------
 
