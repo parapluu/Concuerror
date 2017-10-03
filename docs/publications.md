@@ -15,9 +15,11 @@ You can find more info about the developers of Concuerror [here](../contact/).
 ## Papers
 
 <div style="margin-left:25px" markdown="1">
-<a href="/assets/pdf/iFM2017.pdf">**Testing and Verifying Chain Repair Methods for Corfu Using Stateless Model Checking**</a>
-Stavros Aronis, Scott Lystig Fritchie, Konstantinos Sagonas
-IFM 2017, Proceedings of Integrated Formal Methods: 13th International Conference, 2017
+<a href="/assets/pdf/iFM2017.pdf">
+**Testing and Verifying Chain Repair Methods for Corfu Using Stateless Model Checking**
+</a>  
+Stavros Aronis, Scott Lystig Fritchie, Konstantinos Sagonas  
+IFM 2017, Proceedings of Integrated Formal Methods: 13th International Conference, 2017  
 <span class="footnotes">
 The final publication is available at link.springer.com via <https://doi.org/10.1007/978-3-319-66845-1_15>.
 </span>
@@ -41,27 +43,27 @@ The final publication is available at link.springer.com via <https://doi.org/10.
 <div style="margin-left:25px" markdown="1">
 <a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6569727">
 **Systematic Testing for Detecting Concurrency Errors in Erlang Programs**
-</a>
-Maria Christakis, Alkis Gotovos, Konstantinos Sagonas
+</a>  
+Maria Christakis, Alkis Gotovos, Konstantinos Sagonas  
 ICST 2013, Proceedings of the International Conference on Software Testing, Verification and Validation (ICST). 2013.
 </div>
 
 <div style="margin-left:25px" markdown="1">
-<a href="/assets/pdf/erlang1110-gotovos.pdf">**Test-Driven Development of Concurrent Programs using Concuerror**</a>
-Alkis Gotovos, Maria Christakis, Konstantinos Sagonas
+<a href="/assets/pdf/erlang1110-gotovos.pdf">**Test-Driven Development of Concurrent Programs using Concuerror**</a>  
+Alkis Gotovos, Maria Christakis, Konstantinos Sagonas  
 Erlang 2011, Proceedings of the 10th ACM SIGPLAN workshop on Erlang. 2011.
 </div>
 
 ## Theses
 
 <div style="margin-left:25px" markdown="1">
-[**Systematic Testing of Concurrent Erlang Programs: Some Experiences**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/6823/1/DT2013-0245.pdf)
-Ilias Tsitsimpis
+[**Systematic Testing of Concurrent Erlang Programs: Some Experiences**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/6823/1/DT2013-0245.pdf)  
+Ilias Tsitsimpis  
 Diploma Thesis. National Technical University of Athens. 2013.
 </div>
 
 <div style="margin-left:25px" markdown="1">
-[**Dynamic Systematic Testing of Concurrent Erlang Programs**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/5505/1/DT2011-0081.pdf)
-Alkis Gotovos
+[**Dynamic Systematic Testing of Concurrent Erlang Programs**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/5505/1/DT2011-0081.pdf)  
+Alkis Gotovos  
 Diploma Thesis. National Technical University of Athens. 2011.
 </div>
