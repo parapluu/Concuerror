@@ -308,10 +308,7 @@ get_next_event(
      depth_bound = Bound,
      logger = Logger,
      trace = [#trace_state{index = Bound}|Old]} = State) ->
-  UniqueMsg =
-    "An interleaving reached the depth bound (~p). Consider limiting the size"
-    " of the test or increasing the bound ('-d').~n",
-  ?unique(Logger, ?lwarning, UniqueMsg, [Bound - 1]),
+  ?unique(Logger, ?lwarning, msg(depth_bound), []),
   NewState = add_warning({depth_bound, Bound - 1}, Old, State),
   {none, NewState};
 get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
@@ -1503,6 +1500,11 @@ msg(assertions_only_filter) ->
 msg(assertions_only_use) ->
   "A process crashed with reason '{{assert*,_}, _}'. If you want to see only"
     " this kind of error you can use the '--assertions_only' option.~n";
+msg(depth_bound) ->
+  "An interleaving reached the depth bound. This can happen if a test has an"
+    " infinite execution. Concuerror is not sound for testing programs with"
+    " infinite executions. Consider limiting the size of the test or increasing"
+    " the bound ('-h depth_bound').~n";
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
