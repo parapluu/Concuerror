@@ -38,7 +38,7 @@ How does it work?
 Concuerror schedules the Erlang processes spawned in the test as if a single scheduler was available.
 During execution, the tool automatically instruments the modules used and intercepts and records calls to primitive Erlang operations that can behave differently depending on the scheduling (e.g., receive statements, registry operations, ETS operations).
 It then analyzes the trace, detecting pairs of operations that are really racing.
-Based on this analysis, it explores more schedulings, reversing the order of execution of such pairs. This is a procedure also known as _stateless model checking_.
+Based on this analysis, it explores more schedulings, reversing the order of execution of such pairs. This is a procedure also known as _stateless model checking with partial order reduction_.
 
 How are errors shown?
 ---------------------
