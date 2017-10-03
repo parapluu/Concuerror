@@ -24,8 +24,10 @@
   </article>
 </div><!-- /#main -->
 
+
 <div class="footer-wrapper">
   <footer role="contentinfo">
+    {% if page.updated %}<time datetime="{{ page.updated | date_to_xmlschema }}" itemprop="dateUpdated"> Updated: {{ page.updated | date: "%B %d, %Y" }} </time>{% endif %}
     {% include footer.html %}
   </footer>
 </div><!-- /.footer-wrapper -->
