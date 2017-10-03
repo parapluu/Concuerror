@@ -258,6 +258,7 @@ loop(Message, State) ->
      errors = Errors,
      log_msgs = LogMsgs,
      output = Output,
+     output_name = OutputName,
      print_depth = PrintDepth,
      streams = Streams,
      ticker = Ticker,
@@ -324,6 +325,12 @@ loop(Message, State) ->
           true ->
             case Errors =/= 0 of
               true ->
+                case Verbosity =:= ?lquiet of
+                  true -> ok;
+                  false ->
+                    Form = "Errors were found! (check ~s)~n",
+                    force_printout(State, Form, [OutputName])
+                end,
                 error;
               false ->
                 io:format(Output, "  No errors found!~n",[]),
@@ -344,7 +351,7 @@ loop(Message, State) ->
       case Verbosity =:= ?lquiet of
         true -> ok;
         false ->
-          printout(State#logger_state{ticker = show}, Format, Args)
+          force_printout(State, Format, Args)
       end,
       Scheduler ! {finished, ExitStatus},
       ok;
@@ -427,6 +434,9 @@ format_utc_timestamp() ->
                     "Sep", "Oct", "Nov", "Dec"}),
   io_lib:format("~2..0w ~s ~4w ~2..0w:~2..0w:~2..0w",
                 [Day, Mstr, Year, Hour, Minute, Second]).
+
+force_printout(State, Format, Data) ->
+  printout(State#logger_state{ticker = show}, Format, Data).
 
 printout(#logger_state{ticker = Ticker} = State, Format, Data)
   when Ticker =/= none ->
