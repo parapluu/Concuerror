@@ -21,7 +21,7 @@ You can find more info about the developers of Concuerror [here](../contact/).
 Stavros Aronis, Scott Lystig Fritchie, and Konstantinos Sagonas.<br />
 IFM 2017, Integrated Formal Methods: Proceedings of the 13th International Conference, 2017.
 <div class="footnotes">
-The official publication is available at link.springer.com via <https://doi.org/10.1007/978-3-319-66845-1_15>.
+The official publication is available at link.springer.com via <a href="https://doi.org/10.1007/978-3-319-66845-1_15">its DOI link</a>.
 </div>
 </div>
 
