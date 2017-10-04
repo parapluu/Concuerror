@@ -18,11 +18,11 @@ You can find more info about the developers of Concuerror [here](../contact/).
 <a href="/assets/pdf/iFM2017.pdf">
 **Testing and Verifying Chain Repair Methods for Corfu Using Stateless Model Checking**
 </a>  
-Stavros Aronis, Scott Lystig Fritchie, and Konstantinos Sagonas.
+Stavros Aronis, Scott Lystig Fritchie, and Konstantinos Sagonas.<br />
 IFM 2017, Integrated Formal Methods: Proceedings of the 13th International Conference, 2017.
-<span class="footnotes">
+<div class="footnotes">
 The official publication is available at link.springer.com via <https://doi.org/10.1007/978-3-319-66845-1_15>.
-</span>
+</div>
 </div>
 
 <!-- ACM DL Article: The shared-memory interferences of Erlang/OTP built-ins -->
@@ -44,13 +44,13 @@ The official publication is available at link.springer.com via <https://doi.org/
 <a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6569727">
 **Systematic Testing for Detecting Concurrency Errors in Erlang Programs**
 </a>  
-Maria Christakis, Alkis Gotovos, and Konstantinos Sagonas.
+Maria Christakis, Alkis Gotovos, and Konstantinos Sagonas.<br />
 ICST 2013, Proceedings of the International Conference on Software Testing, Verification and Validation (ICST), 2013.
 </div>
 
 <div style="margin-left:25px" markdown="1">
 <a href="/assets/pdf/erlang1110-gotovos.pdf">**Test-Driven Development of Concurrent Programs using Concuerror**</a>  
-Alkis Gotovos, Maria Christakis, and Konstantinos Sagonas.
+Alkis Gotovos, Maria Christakis, and Konstantinos Sagonas.<br />
 Erlang 2011, Proceedings of the 10th ACM SIGPLAN workshop on Erlang, 2011.
 </div>
 
@@ -58,12 +58,12 @@ Erlang 2011, Proceedings of the 10th ACM SIGPLAN workshop on Erlang, 2011.
 
 <div style="margin-left:25px" markdown="1">
 [**Systematic Testing of Concurrent Erlang Programs: Some Experiences**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/6823/1/DT2013-0245.pdf)  
-Ilias Tsitsimpis.
+Ilias Tsitsimpis.<br />
 Diploma Thesis, National Technical University of Athens, 2013.
 </div>
 
 <div style="margin-left:25px" markdown="1">
 [**Dynamic Systematic Testing of Concurrent Erlang Programs**](http://artemis-new.cslab.ece.ntua.gr:8080/jspui/bitstream/123456789/5505/1/DT2011-0081.pdf)  
-Alkis Gotovos.
+Alkis Gotovos.<br />
 Diploma Thesis, National Technical University of Athens, 2011.
 </div>
