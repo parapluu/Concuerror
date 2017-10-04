@@ -1,5 +1,5 @@
-title:            concuerror.com
-description:      Systematic concurrency testing tool for Erlang programs.
+title:            Concuerror
+description:      Concuerror is a model checking tool for testing and verifying concurrent Erlang programs.
 logo:             site-logo.png
 disqus_shortname: 
 #Comment out url when working locally to resolve base urls correctly
@@ -28,7 +28,7 @@ bing_verify:
 # Links to include in top navigation
 # For external links add external: true
 links:
-  - title: Main
+  - title: Home
     url: /
   - title: Download
     url: /download
