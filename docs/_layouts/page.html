@@ -13,6 +13,20 @@
 {% include browser-upgrade.html %}
 {% include navigation.html %}
 
+{% if page.image.feature %}<header class="masthead" itemscope itemtype="http://schema.org/Organization">
+	<div class="wrap">
+		<a href="{{ site.url }}" class="site-logo" rel="home" title="{{ site.title }}" itemprop="url"><img src="{{ site.url }}/images/{{ site.logo }}" width="200" height="200" alt="{{ site.title }} logo" class="animated bounceInDown" itemprop="logo"></a>
+	</div>
+</header><!-- /.masthead -->
+{% else %}<header class="masthead" itemscope itemtype="http://schema.org/Organization">
+	<h1 class="wrap">
+		<a href="{{ site.url }}" class="site-logo" rel="home" title="{{ site.title }}" itemprop="url">
+		<img src="{{ site.url }}/images/{{ site.logo }}" alt="{{ site.title }} logo" class="animated fadeInUp" itemprop="logo">
+		<p class="site-description animated fadeIn" itemprop="description">{{ site.description }}</p>
+		</a>
+	</h1>
+</header><!-- /.masthead -->{% endif %}
+
 <div id="main" role="main" itemprop="mainContentOfPage">
   <article class="entry" itemscope>
     {% if page.image.feature %}<img src="{{ site.url }}/images/{{ page.image.feature }}" class="entry-feature-image" alt="{{ page.title }}" itemprop="image">{% if page.image.credit %}<p class="image-credit">Photo Credit: <a href="{{ page.image.creditlink }}">{{ page.image.credit }}</a>{% endif %}{% endif %}
