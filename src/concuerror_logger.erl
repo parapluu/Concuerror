@@ -375,7 +375,7 @@ loop(Message, State) ->
                 io:format(Output, "Interleaving #~p~n", [TracesExplored + 1]),
                 print_streams(RaceInfo, Output)
             end,
-            {Errors, TracesSSB, "Ok", "lime"};
+            {Errors, TracesSSB, "Ok", "limegreen"};
           {Warnings, TraceInfo} ->
             separator(Output, $#),
             io:format(Output, "Interleaving #~p~n", [TracesExplored + 1]),
@@ -618,7 +618,7 @@ graph_command(Command, State) ->
         ErrorS =
           case Event#event.event_info of
             #exit_event{reason = normal} ->
-              ",color=lime,penwidth=5";
+              ",color=limegreen,penwidth=5";
             #exit_event{} ->
               ",color=red,penwidth=5";
             #builtin_event{status = {crashed, _}} ->
