@@ -17,23 +17,20 @@ starting from and including *R16*. We use
 
 ## How do I get Concuerror?
 
-{% highlight bash %}
+```bash
 $ git clone https://github.com/parapluu/Concuerror.git
 $ cd Concuerror
 $ make -j
-{% endhighlight %}
+```
 
 ## How do I use Concuerror?
 
-Bare minimums:
-
-* Run Concuerror    : `concuerror --help`
+Bare minimum: `concuerror --help`
 
 [Read how to use Concuerror!](http://parapluu.github.io/Concuerror/#how-do-i-use-concuerror)
 
 ## How do I contribute to Concuerror?
 
-* Build Concuerror  : `make`
 * Run the testsuite : `make tests`
 * Dialyze           : `make dialyze`
 * Cleanup           : `make clean`
