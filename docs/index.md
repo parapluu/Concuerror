@@ -33,6 +33,17 @@ Once you have such a test, all you have to do is compile your code and invoke Co
 $ concuerror -m my_module -t my_test
 {% endhighlight %}
 
+You can also invoke `concuerror:run/1` from an Erlang shell:
+
+{% highlight erlang %}
+1> concuerror:run([{module, my_module}, {test, my_test}]).
+{% endhighlight %}
+
+or:
+
+{% highlight erlang %}
+2> concuerror:run([{entry_point, {my_module, my_test, []}]).
+{% endhighlight %}
 
 ## ... is it really that simple?
 
