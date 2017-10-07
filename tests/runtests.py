@@ -38,28 +38,26 @@ def runTest(test):
     # Compile it
     os.system("erlc -W0 -o %s %s/%s.erl" % (dirn, dirn, modn))
     # And extract scenarios from it
-    pout = subprocess.Popen(
+    pout = subprocess.check_output(
         ["erl -noinput -pa %s -pa %s -s scenarios extract %s -s init stop"
-         % (dirname, dirn, modn)], stdout=subprocess.PIPE, shell=True)
+         % (dirname, dirn, modn)], shell=True).splitlines()
     sema.release()
     procS = []
-    for scenario in pout.stdout:
+    for scenario in pout:
         # scenario has the format of {<mod_name>,<func_name>,<preb>}\n
-        scen = scenario.strip("{}\n").split(",")
+        scen = scenario.strip("{}").split(",")
         # And run the test
         p = Process(
             target=runScenario,
             args=(suite, name, modn, scen[1], scen[2], scen[3:], files))
         p.start()
         procS.append(p)
-    pout.stdout.close()
     # Wait
     for p in procS:
         p.join()
-    # Cleanup temp files
-    os.remove("%s/%s.beam" % (dirn, modn))
-
-
+    # Must happen late, in case the test has/needs exceptional
+    os.remove("%s/%s.beam" % (dirn,modn))
+        
 #---------------------------------------------------------------------
 # Run the specified scenario and print the results
 def runScenario(suite, name, modn, funn, preb, flags, files):
@@ -104,22 +102,24 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
             bound_type = "-c delay"
             preb_output=("%s/delay") % (preb)
     sema.acquire()
+    txtname = "%s-%s-%s%s.txt" % (name, funn, preb, file_ext)
+    rslt = "%s/%s/results/%s" % (results, suite, txtname)
+    try:
+        os.remove(rslt)
+    except OSError:
+        pass
     # Run concuerror
     status = os.system(
         ("%s -kq --timeout -1 --assume_racing false --show_races false"
          " %s -f %s"
-         " --output %s/%s/results/%s-%s-%s%s.txt"
+         " --output %s"
          " -m %s -t %s %s %s"
          )
         % (concuerror, dpor_flag, " -f ".join(files),
-           results, suite, name, funn, preb, file_ext,
-           modn, funn, bound, bound_type))
+           rslt, modn, funn, bound, bound_type))
     # Compare the results
     has_crash = "crash" in flags
-    orig = ("%s/suites/%s/results/%s-%s-%s%s.txt"
-            % (dirname, suite, name, funn, preb, file_ext))
-    rslt = ("%s/%s/results/%s-%s-%s%s.txt"
-            % (results, suite, name, funn, preb, file_ext))
+    orig = "%s/suites/%s/results/%s" % (dirname, suite, txtname)
     equalRes = equalResults(suite, name, orig, rslt)
     if status != 512 and not has_crash:
         finished = True
@@ -132,18 +132,20 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     lock.acquire()
     total_tests.value += 1
     suitename = re.sub('\_tests$', '', suite)
+    logline = ("%-10s %-20s %-50s"
+               % (suitename, name,
+                  "("+funn+",  "+preb_output+",  "+dpor_output+")"))
     if equalRes and finished:
         # We don't need to keep the results file
         try:
             os.remove(rslt)
         except:
             pass
-        print "%-10s %-20s %-50s  \033[01;32mok\033[00m" % \
-              (suitename, name, "("+funn+",  "+preb_output+",  "+dpor_output+")")
+        print "%s  \033[01;32mok\033[00m" % (logline)
+              
     else:
         total_failed.value += 1
-        print "%-10s %-20s %-50s  \033[01;31mfailed\033[00m" % \
-              (suitename, name, "("+funn+",  "+preb_output+",  "+dpor_output+")")
+        print "%s  \033[01;31mfailed\033[00m" % (logline)
     lock.release()
 
 def equalResults(suite, name, orig, rslt):
@@ -151,8 +153,9 @@ def equalResults(suite, name, orig, rslt):
     if 0 == subprocess.call("bash differ %s %s" % (orig, rslt), shell=True):
         return True
     else:
-        beamdir = ("%s/suites/%s/src" % (dirname, suite))
-        cmd = ("erl -noinput -pa %s/%s -pa %s -run scenarios exceptional \"%s\" \"%s\" \"%s\""
+        beamdir = "%s/suites/%s/src" % (dirname, suite)
+        cmd = ("erl -noinput -pa %s/%s -pa %s"
+               " -run scenarios exceptional \"%s\" \"%s\" \"%s\""
                % (beamdir, name, beamdir, name, orig, rslt))
         return 0 == subprocess.call(cmd, shell=True)
 
@@ -164,10 +167,8 @@ dirname = os.path.abspath(os.path.dirname(sys.argv[0]))
 concuerror = os.path.abspath(dirname + "/../concuerror")
 results = os.path.abspath(dirname + "/results")
 
-# Cleanup temp files
+# Ensure made
 assert 0 == os.system("make -j -C %s/.. default tests/scenarios.beam" % dirname)
-os.system("rm -rf %s/*" % results)
-os.system("find . -name concuerror_report.txt -delete")
 
 # If we have arguments we should use them as tests,
 # otherwise check them all
@@ -183,7 +184,7 @@ if threads == "":
     try:
         threads = str(cpu_count())
     except:
-        threads = "4"
+        threads = "1"
 
 # Print header
 print "Concuerror's Testsuite (%d threads)\n" % int(threads)
@@ -204,16 +205,16 @@ sema = BoundedSemaphore(int(threads))
 procT = []
 for test in tests:
     p = Process(target=runTest, args=(test,))
-    p.start()
     procT.append(p)
+    p.start()
 # Wait
 for p in procT:
     p.join()
 
 # Print overview
 print "\nOVERALL SUMMARY for test run"
-print "  %d total tests, which gave rise to" % len(tests)
-print "  %d test cases, of which" % total_tests.value
+print "  %d total tests, which contained" % len(tests)
+print "  %d scenarios, of which" % total_tests.value
 print "  %d caused unexpected failures!" % total_failed.value
 
 if total_failed.value != 0:
