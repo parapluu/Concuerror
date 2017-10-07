@@ -119,6 +119,7 @@
           origin               = 1     :: integer(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
+          receive_timeout_total = 0    :: non_neg_integer(),
           scheduling                   :: concuerror_options:scheduling(),
           scheduling_bound_type        :: concuerror_options:scheduling_bound_type(),
           show_races                   :: boolean(),
@@ -563,6 +564,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
   #scheduler_state{
      assertions_only = AssertionsOnly,
      logger = Logger,
+     receive_timeout_total = ReceiveTimeoutTotal,
      treat_as_normal = Normal
     } = State0,
   State = 
@@ -617,6 +619,15 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
              true -> State
           end
       end;
+    #receive_event{message = 'after'} ->
+      NewReceiveTimeoutTotal = ReceiveTimeoutTotal + 1,
+      Threshold = 20,
+      case NewReceiveTimeoutTotal =:= Threshold of
+        true ->
+          ?unique(Logger, ?ltip, msg(maybe_receive_loop), [Threshold]);
+        false -> ok
+      end,
+      State#scheduler_state{receive_timeout_total = NewReceiveTimeoutTotal};
     _ -> State
   end.
 
@@ -1508,6 +1519,12 @@ msg(depth_bound) ->
     " infinite execution. Concuerror is not sound for testing programs with"
     " infinite executions. Consider limiting the size of the test or increasing"
     " the bound ('-h depth_bound').~n";
+msg(maybe_receive_loop) ->
+  "The trace contained more than ~w receive timeout events"
+    " (receive statements that executed their 'after' clause). Concuerror by"
+    " default treats 'after' clauses as always possible, so a 'receive loop'"
+    " using a timeout can lead to an infinite execution. "
+    ++ msg(after_timeout_tip);
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
