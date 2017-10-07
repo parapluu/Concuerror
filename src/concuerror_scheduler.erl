@@ -1495,6 +1495,9 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 
 %%==============================================================================
 
+msg(after_timeout_tip) ->
+  "You can use e.g. '--after_timeout 2000' to treat after"
+    " clauses that exceed some threshold (here 2000ms) as 'impossible'.~n";
 msg(assertions_only_filter) ->
   "Only assertion failures are considered crashes ('--assertions_only').~n";
 msg(assertions_only_use) ->
@@ -1525,7 +1528,7 @@ msg(stop_first_error) ->
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"
-    " standard timeout. You can use e.g. '--after_timeout 2000' to treat after"
-    " clauses that exceed some threshold (here 2000ms) as 'impossible'.~n";
+    " standard timeout. "
+    ++ msg(after_timeout_tip);
 msg(treat_as_normal) ->
   "Some abnormal exit reasons were treated as normal ('--treat_as_normal').~n".
