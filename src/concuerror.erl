@@ -36,9 +36,9 @@ start(Options, Warnings, Info) ->
         ?error(Logger, "~s~n~n", [explain(Reason)]),
         failed
     end,
-  concuerror_callback:cleanup_processes(Processes),
   ?trace(Logger, "Reached the end!~n",[]),
   ExitStatus = concuerror_logger:finish(Logger, SchedulerStatus),
+  concuerror_callback:cleanup_processes(Processes),
   ets:delete(Processes),
   ExitStatus.
 

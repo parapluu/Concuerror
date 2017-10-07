@@ -43,6 +43,9 @@ instrumented(Tag, Args, Location) ->
     retry -> instrumented(Tag, Args, Location);
     skip_timeout -> 0;
     {didit, Res} -> Res;
+    unhijack ->
+      erase(concuerror_info),
+      instrumented(Tag, Args, Location);
     {error, Reason} -> error(Reason)
   end.
 

@@ -165,7 +165,8 @@ hijack_backend(#concuerror_info{processes = Processes} = Info) ->
                           'doit' |
                           {'didit', term()} |
                           {'error', term()} |
-                          'skip_timeout'.
+                          'skip_timeout' |
+                          'unhijack'.
 
 instrumented_top(Tag, Args, Location, #concuerror_info{} = Info) ->
   #concuerror_info{escaped_pdict = Escaped} = Info,
@@ -1225,13 +1226,19 @@ enabled(P) ->
 handle_receive(PatternFun, Timeout, Location, Info) ->
   %% No distinction between replaying/new as we have to clear the message from
   %% the queue anyway...
-  {MessageOrAfter, ReceiveInfo} =
-    has_matching_or_after(PatternFun, Timeout, Location, Info, blocking),
+  case has_matching_or_after(PatternFun, Timeout, Location, Info, blocking) of
+    unhijack ->
+      {unhijack, Info};
+    {MessageOrAfter, NewInfo} ->
+      handle_receive(MessageOrAfter, PatternFun, Timeout, Location, NewInfo)
+  end.
+
+handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
   #concuerror_info{
      event = NextEvent,
      flags = #process_flags{trap_exit = Trapping}
     } = UpdatedInfo =
-    add_location_info(Location, ReceiveInfo),
+    add_location_info(Location, Info),
   ReceiveEvent =
     #receive_event{
        message = MessageOrAfter,
@@ -1254,6 +1261,8 @@ handle_receive(PatternFun, Timeout, Location, Info) ->
   end,
   {skip_timeout, notify(Notification, UpdatedInfo)}.
 
+has_matching_or_after(_, _, _, unhijack, _) ->
+  unhijack;
 has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
   {Result, NewOldMessages} = has_matching_or_after(PatternFun, Timeout, InfoIn),
   UpdatedInfo = update_messages(Result, NewOldMessages, InfoIn),
@@ -1512,7 +1521,9 @@ process_loop(Info) ->
       process_loop(notify({enabled, Reply}, Info));
     {get_info, To} ->
       To ! {info, Info},
-      process_loop(Info)
+      process_loop(Info);
+    unhijack ->
+      unhijack
   end.
 
 get_their_info(Pid) ->
@@ -1729,16 +1740,16 @@ ets_ops_access_rights_map(Op) ->
 
 -spec cleanup_processes(processes()) -> ok.
 
-cleanup_processes(Processes) ->
-  Fold =
-    fun(?process_pat_pid_kind(P,Kind), true) ->
+cleanup_processes(ProcessesTable) ->
+  Processes = ets:tab2list(ProcessesTable),
+  Foreach =
+    fun(?process_pat_pid_kind(P,Kind)) ->
         case Kind =:= hijacked of
-          true -> true;
+          true -> P ! unhijack;
           false -> exit(P, kill)
         end
     end,
-  true = ets:foldl(Fold, true, Processes),
-  ok.
+  lists:foreach(Foreach, Processes).
 
 %%------------------------------------------------------------------------------
 

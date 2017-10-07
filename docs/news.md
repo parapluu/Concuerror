@@ -2,7 +2,7 @@
 layout: page
 permalink: /news/index.html
 title: News
-description: "An archive of posts sorted by date."
+description: "An archive of all posts sorted by date."
 ---
 
 # News

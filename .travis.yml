@@ -14,12 +14,11 @@ otp_release:
 env:
    - TEST=tests
    - TEST=tests-real
-   - TEST=dialyze
 
 matrix:
    include:
-   - otp_release: R16B03-1
-     env: TEST=travis_has_latest_otp_version
+   - env: TEST=dialyze
+   - env: TEST=travis_has_latest_otp_version
    # allow_failures:
    # - env: TEST=travis_has_latest_otp_version
 

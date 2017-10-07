@@ -6,7 +6,7 @@
 %%% exploration.  A rough trace through it is the following:
 
 %%% The entry point is `concuerror_scheduler:run/1` which takes the
-%%% options and initialises the exploration, spawning the main
+%%% options and initializes the exploration, spawning the main
 %%% process.  There are plenty of state info that are kept in the
 %%% `#scheduler_state` record the most important of which being a list
 %%% of `#trace_state` records, recording events in the exploration.
@@ -21,7 +21,7 @@
 %%% `get_next_event/1` returns `none`, we are at the end of an
 %%% interleaving (either due to no more enabled processes or due to
 %%% "sleep set blocking") and can do race analysis and report any
-%%% erros found in the interleaving.  Race analysis is contained in
+%%% errors found in the interleaving.  Race analysis is contained in
 %%% `plan_more_interleavings/1`, reporting whether the current
 %%% interleaving was buggy is contained in `log_trace/1` and resetting
 %%% most parts to continue exploration is contained in
@@ -119,6 +119,7 @@
           origin               = 1     :: integer(),
           print_depth                  :: pos_integer(),
           processes                    :: processes(),
+          receive_timeout_total = 0    :: non_neg_integer(),
           scheduling                   :: concuerror_options:scheduling(),
           scheduling_bound_type        :: concuerror_options:scheduling_bound_type(),
           show_races                   :: boolean(),
@@ -307,9 +308,9 @@ get_next_event(
   #scheduler_state{
      depth_bound = Bound,
      logger = Logger,
-     trace = [#trace_state{index = Bound}|Old]} = State) ->
+     trace = [#trace_state{index = Bound}|Trace]} = State) ->
   ?unique(Logger, ?lwarning, msg(depth_bound), []),
-  NewState = add_warning({depth_bound, Bound - 1}, Old, State),
+  NewState = add_warning({depth_bound, Bound - 1}, Trace, State),
   {none, NewState};
 get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
   #trace_state{index = _I, wakeup_tree = WakeupTree} = Last,
@@ -563,6 +564,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
   #scheduler_state{
      assertions_only = AssertionsOnly,
      logger = Logger,
+     receive_timeout_total = ReceiveTimeoutTotal,
      treat_as_normal = Normal
     } = State0,
   State = 
@@ -571,6 +573,10 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
       false -> State0
     end,
   case Event#event.event_info of
+    #builtin_event{mfargs = {erlang, exit, [_,Reason]}}
+      when Reason =/= normal ->
+      ?unique(Logger, ?ltip, msg(signal), []),
+      State;
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
       {Tag, WasTimeout} =
         if tuple_size(Reason) > 0 ->
@@ -613,10 +619,15 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
              true -> State
           end
       end;
-    #builtin_event{mfargs = {erlang, exit, [_,Reason]}}
-      when Reason =/= normal ->
-      ?unique(Logger, ?ltip, msg(signal), []),
-      State;
+    #receive_event{message = 'after'} ->
+      NewReceiveTimeoutTotal = ReceiveTimeoutTotal + 1,
+      Threshold = 20,
+      case NewReceiveTimeoutTotal =:= Threshold of
+        true ->
+          ?unique(Logger, ?ltip, msg(maybe_receive_loop), [Threshold]);
+        false -> ok
+      end,
+      State#scheduler_state{receive_timeout_total = NewReceiveTimeoutTotal};
     _ -> State
   end.
 
@@ -1495,6 +1506,9 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 
 %%==============================================================================
 
+msg(after_timeout_tip) ->
+  "You can use e.g. '--after_timeout 2000' to treat after"
+    " clauses that exceed some threshold (here 2000ms) as 'impossible'.~n";
 msg(assertions_only_filter) ->
   "Only assertion failures are considered crashes ('--assertions_only').~n";
 msg(assertions_only_use) ->
@@ -1505,6 +1519,12 @@ msg(depth_bound) ->
     " infinite execution. Concuerror is not sound for testing programs with"
     " infinite executions. Consider limiting the size of the test or increasing"
     " the bound ('-h depth_bound').~n";
+msg(maybe_receive_loop) ->
+  "The trace contained more than ~w receive timeout events"
+    " (receive statements that executed their 'after' clause). Concuerror by"
+    " default treats 'after' clauses as always possible, so a 'receive loop'"
+    " using a timeout can lead to an infinite execution. "
+    ++ msg(after_timeout_tip);
 msg(signal) ->
   "An abnormal exit signal was sent to a process. This is probably the worst"
     " thing that can happen race-wise, as any other side-effecting"
@@ -1525,7 +1545,7 @@ msg(stop_first_error) ->
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"
-    " standard timeout. You can use e.g. '--after_timeout 2000' to treat after"
-    " clauses that exceed some threshold (here 2000ms) as 'impossible'.~n";
+    " standard timeout. "
+    ++ msg(after_timeout_tip);
 msg(treat_as_normal) ->
   "Some abnormal exit reasons were treated as normal ('--treat_as_normal').~n".
