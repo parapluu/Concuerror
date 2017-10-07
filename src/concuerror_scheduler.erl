@@ -571,6 +571,10 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
       false -> State0
     end,
   case Event#event.event_info of
+    #builtin_event{mfargs = {erlang, exit, [_,Reason]}}
+      when Reason =/= normal ->
+      ?unique(Logger, ?ltip, msg(signal), []),
+      State;
     #exit_event{reason = Reason} = Exit when Reason =/= normal ->
       {Tag, WasTimeout} =
         if tuple_size(Reason) > 0 ->
@@ -613,10 +617,6 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
              true -> State
           end
       end;
-    #builtin_event{mfargs = {erlang, exit, [_,Reason]}}
-      when Reason =/= normal ->
-      ?unique(Logger, ?ltip, msg(signal), []),
-      State;
     _ -> State
   end.
 
