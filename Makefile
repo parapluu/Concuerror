@@ -110,7 +110,7 @@ $(PLT):
 .PHONY: tests
 tests:
 	@$(RM) $@/thediff
-	@(cd $@; bash -c "./runtests.py suites/*/src/*")
+	@(cd $@; ./runtests.py)
 
 ## the -j 1 below is so that the outputs of tests are not shown interleaved
 .PHONY: tests-real
