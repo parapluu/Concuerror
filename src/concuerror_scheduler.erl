@@ -6,7 +6,7 @@
 %%% exploration.  A rough trace through it is the following:
 
 %%% The entry point is `concuerror_scheduler:run/1` which takes the
-%%% options and initialises the exploration, spawning the main
+%%% options and initializes the exploration, spawning the main
 %%% process.  There are plenty of state info that are kept in the
 %%% `#scheduler_state` record the most important of which being a list
 %%% of `#trace_state` records, recording events in the exploration.
@@ -21,7 +21,7 @@
 %%% `get_next_event/1` returns `none`, we are at the end of an
 %%% interleaving (either due to no more enabled processes or due to
 %%% "sleep set blocking") and can do race analysis and report any
-%%% erros found in the interleaving.  Race analysis is contained in
+%%% errors found in the interleaving.  Race analysis is contained in
 %%% `plan_more_interleavings/1`, reporting whether the current
 %%% interleaving was buggy is contained in `log_trace/1` and resetting
 %%% most parts to continue exploration is contained in
