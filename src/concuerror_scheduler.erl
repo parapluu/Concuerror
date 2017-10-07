@@ -307,9 +307,9 @@ get_next_event(
   #scheduler_state{
      depth_bound = Bound,
      logger = Logger,
-     trace = [#trace_state{index = Bound}|Old]} = State) ->
+     trace = [#trace_state{index = Bound}|Trace]} = State) ->
   ?unique(Logger, ?lwarning, msg(depth_bound), []),
-  NewState = add_warning({depth_bound, Bound - 1}, Old, State),
+  NewState = add_warning({depth_bound, Bound - 1}, Trace, State),
   {none, NewState};
 get_next_event(#scheduler_state{logger = _Logger, trace = [Last|_]} = State) ->
   #trace_state{index = _I, wakeup_tree = WakeupTree} = Last,
