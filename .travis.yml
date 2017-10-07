@@ -18,8 +18,7 @@ env:
 matrix:
    include:
    - env: TEST=dialyze
-   - otp_release: R16B03-1
-     env: TEST=travis_has_latest_otp_version
+   - env: TEST=travis_has_latest_otp_version
    # allow_failures:
    # - env: TEST=travis_has_latest_otp_version
 
