@@ -294,7 +294,7 @@ loop(Message, State) ->
               false ->
                 LevelFormat = verbosity_to_tag(Level),
                 NewFormat = LevelFormat ++ Format,
-                printout(State, NewFormat, Data)
+                printout(State, "* " ++ NewFormat, Data)
             end,
             NLM =
               case Level < ?ltiming of
@@ -448,7 +448,10 @@ printout(_, Format, Data) ->
   to_stderr(Format, Data).
 
 print_log_msgs(Output, LogMsgs) ->
-  ForeachInner = fun({Format, Data}) -> io:format(Output,Format,Data) end,
+  ForeachInner =
+    fun({Format, Data}) ->
+        io:format(Output, "* " ++ Format, Data)
+    end,
   Foreach =
     fun({Type, Messages}) ->
         Header = verbosity_to_string(Type),
