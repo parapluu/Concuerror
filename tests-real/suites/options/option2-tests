@@ -2,68 +2,70 @@
 
 . header
 
+echo -e "\e[0;34m$0\e[0m"
+
 testing "No module specified"
-! $CONCUERROR -t module_info 2> $Console
+! concuerror_console -t module_info
 consolehas "The module containing the main test function has not been specified."
 
 testing "Specified module not found"
-! $CONCUERROR -m wat_467346 2> $Console
+! concuerror_console -m wat_467346
 consolehas "Could not find module wat_467346."
 
 testing "Too many modules"
-! $CONCUERROR -m too -m many 2> $Console
+! concuerror_console -m too -m many
 consolehas "Multiple instances of '--module' specified."
 
 testing "Unknown attribute"
-! $CONCUERROR -f bad_attribute_1.erl 2> $Console
+! concuerror_console -f bad_attribute_1.erl
 consolehas "Unknown option 'unknown_unknown' in concuerror_options."
 
 testing "Attribute not allowed"
-! $CONCUERROR -f bad_attribute_2.erl 2> $Console
+! concuerror_console -f bad_attribute_2.erl
 consolehas "Option 'version' not allowed in concuerror_options_forced."
 
 testing "Multiple options in attribute 1"
-! $CONCUERROR -f bad_attribute_3.erl 2> $Console
+! concuerror_console -f bad_attribute_3.erl
 consolehas "Multiple instances of option keep_going not allowed in concuerror_options."
 
 testing "Multiple options in attribute 2"
-! $CONCUERROR -f bad_attribute_4.erl 2> $Console
+! concuerror_console -f bad_attribute_4.erl
 consolehas "Multiple instances of option keep_going not allowed in concuerror_options_forced."
 
 testing "Multiple options in attribute 3"
-! $CONCUERROR -f bad_attribute_5.erl 2> $Console
+! concuerror_console -f bad_attribute_5.erl
 consolehas "Multiple instances of option keep_going in concuerror_options_forced and concuerror_options not allowed."
 
 testing "Multiple options in command_line"
-$CONCUERROR -f foo.erl -k false -k 2> $Console
+concuerror_console -f foo.erl -k false -k
 consolehas "Warning: Multiple instances of '--keep_going' defined. Using last value: true."
 
 testing "Derived defaults"
-$CONCUERROR -f foo.erl -b 1 2> $Console
+concuerror_console -f foo.erl -b 1
 consolehas "Info: Using '--scheduling_bound_type delay'."
 
 testing "Bad path"
-! $CONCUERROR -f foo.erl --pz bannnn 2> $Console
+! concuerror_console -f foo.erl --pz bannnn
 consolehas "Error: Could not add 'bannnn' to code path."
 
 testing "Bad output"
-! $CONCUERROR -f foo.erl -o foo/man/choo 2> $Console
+! concuerror_console -f foo.erl -o foo/man/choo
 consolehas "Error: Could not open '--output' file foo/man/choo for writing."
 
 testing "Bad value for timeout"
-! $CONCUERROR -f foo.erl --timeout 300 2> $Console
+! concuerror_console -f foo.erl --timeout 300
 consolehas "Error: The value of '--timeout' must be -1 (infinity)"
 
 testing "Bad value for dpor"
-! $CONCUERROR -f foo.erl --dpor exotic 2> $Console
+! concuerror_console -f foo.erl --dpor exotic
 consolehas "Error: The value of '--dpor' must be one of"
 
 testing "Bad value for scheduling_bound"
-! $CONCUERROR -f foo.erl --scheduling_bound -42 2> $Console
+! concuerror_console -f foo.erl --scheduling_bound -42
 consolehas "Error: The value of '--scheduling_bound' must be a non-negative integer."
 
 testing "Sleep sets off only if no DPOR"
-! $CONCUERROR -f foo.erl --disable_sleep_sets --dpor optimal 2> $Console
+! concuerror_console -f foo.erl --disable_sleep_sets --dpor optimal
 consolehas "Setting 'dpor' to 'optimal' is not allowed when 'disable_sleep_sets' is set to true."
 
 . footer

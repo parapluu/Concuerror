@@ -2,16 +2,18 @@
 
 . header
 
+echo -e "\e[0;34m$0\e[0m"
+
 testing "Concuerror has help option"
-$CONCUERROR 2> $Console
+concuerror_console
 consolehas Usage
 
 testing "Report unknown arguments"
-! $CONCUERROR unknown_argument 2> $Console
+! concuerror_console unknown_argument
 consolehas "Unknown argument"
 
 testing "Report missing arguments"
-! $CONCUERROR -t 2> $Console
+! concuerror_console -t
 consolehas "No argument given for"
 
 testing "Show all options has > 50 lines"
@@ -21,54 +23,55 @@ fi
 good
 
 testing "Get help for long"
-$CONCUERROR -h help 2> $Console
+concuerror_console -h help
 consolehas "Without an argument, prints info for basic options."
 
 testing "Get help for short"
-$CONCUERROR -h h 2> $Console
+concuerror_console -h h
 consolehas "Without an argument, prints info for basic options."
 
 testing "Get help for prefixed"
-$CONCUERROR -h --help 2> $Console
+concuerror_console -h --help
 consolehas "Without an argument, prints info for basic options."
 
 testing "Unknown argument to help"
-! $CONCUERROR -h elp 2> $Console
+! concuerror_console -h elp
 consolehas "Invalid option name/keyword (as argument to --help)"
 
 testing "No additional help available"
-$CONCUERROR -h version 2> $Console
+concuerror_console -h version
 consolehas "No additional help available."
 
 testing "Help for keyword"
-$CONCUERROR -h bound 2> $Console
+concuerror_console -h bound
 consolehas "Only showing options with the keyword 'bound'."
 
 testing "Help for keyword with dashes"
-$CONCUERROR -h keep-going 2> $Console
+concuerror_console -h keep-going
+consolehas "keep_going"
 
 testing "Version"
-$CONCUERROR --version 2> $Console
+concuerror_console --version
 consolehas "Concuerror v"
 
 testing "Bad entry point"
-! $CONCUERROR -f foo.erl -t ban 2> $Console
+! concuerror_console -f foo.erl -t ban
 consolehas "The entry point foo:ban/0 is invalid."
 
 testing "Default verbosity has info"
-$CONCUERROR -f foo.erl 2> $Console
+concuerror_console -f foo.erl
 consolehas "Info:"
 
 testing "Verbosity and quiet"
-! $CONCUERROR -v --quiet 2> $Console
+! concuerror_console -v --quiet
 consolehas "'--verbosity' specified together with '--quiet'."
 
 testing "Too much verbosity"
-! $CONCUERROR -vvvvvvvvv 2> $Console
+! concuerror_console -vvvvvvvvv
 consolehas "make dev"
 
 testing "We found erlang without help"
-$CONCUERROR -m erlang -t module_info 2> $Console
+concuerror_console -m erlang -t module_info
 good
 
 . footer
