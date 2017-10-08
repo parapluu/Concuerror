@@ -6,7 +6,7 @@ NAME := concuerror
 VERSION := 0.17
 
 .PHONY: default dev
-default dev: $(NAME)
+default dev native: $(NAME)
 
 ###-----------------------------------------------------------------------------
 ### Files
@@ -36,6 +36,9 @@ ERL_COMPILE_FLAGS := \
 
 dev: ERL_COMPILE_FLAGS += -DDEV=true
 dev: VERSION := $(VERSION)-dev
+
+native: ERL_COMPILE_FLAGS += +native
+native: VERSION := $(VERSION)-hipe
 
 $(NAME): $(DEPS_BEAMS) $(BEAMS)
 	@$(RM) $@
