@@ -115,18 +115,19 @@ options() ->
     "Determines whether information about pairs of racing instructions will be"
     " included in the logs of erroneous interleavings and the graph."}
   ,{file, [input], $f, string,
-    "Load a specific file (.beam or .erl)",
-    "Explicitly load a file (.beam or .erl). Source (.erl) files should not"
+    "Load specific files (.beam or .erl)",
+    "Explicitly load the specified file(s) (.beam or .erl)."
+    " Source (.erl) files should not"
     " require any special command line compile options. Use a .beam file"
     " (preferably compiled with +debug_info) if special compilation is needed."}
   ,{pa, [input], undefined, string,
-    "Add directory to Erlang's code path (front)",
+    "Add directories to Erlang's code path (front)",
     "Works exactly like 'erl -pa'."}
   ,{pz, [input], undefined, string,
-    "Add directory to Erlang's code path (rear)",
+    "Add directories to Erlang's code path (rear)",
     "Works exactly like 'erl -pz'."}
   ,{exclude_module, [input, experimental, advanced], $x, atom,
-    "* Do not instrument the specified module",
+    "* Do not instrument the specified modules",
     "Experimental. Concuerror needs to instrument all code in a test to be able"
     " to reset the state after each exploration. You can use this option to"
     " exclude a module from instrumentation, but you must ensure that any state"
@@ -242,11 +243,14 @@ options() ->
     "Display help (use '-h h' for more help)",
     "Without an argument, prints info for basic options.~n~n"
     "With 'all' as argument, prints info for all options.~n~n"
+    "With 'attributes' as argument, prints info about passing options using"
+    " module attributes.~n~n"
     "With an option name as argument, prints more help for that option.~n~n"
-    "Options have keywords associated with them. With a keyword as"
-    " argument, prints info for all options with that keyword.~n~n"
-    "Options take a SINGLE argument. If omitted, 'true' or '1' is the implied"
-    " value, if appropriate."}
+    "Options have keywords associated with them (shown in their help)."
+    " With a keyword as argument, prints a list of all options with the"
+    " keyword.~n~n"
+    "If an expected argument is omitted, 'true' or '1' is the implied"
+    " value."}
   ,{version, [basic], undefined, undefined,
     "Display version information",
     nolong}
@@ -335,27 +339,42 @@ parse_cl_aux(RawCommandLineArgs) ->
   end.
 
 fix_common_errors(RawCommandLineArgs) ->
-  lists:map(fun fix_common_error/1, RawCommandLineArgs).
+  FixDashes = lists:map(fun fix_common_error/1, RawCommandLineArgs),
+  fix_multiargs(FixDashes).
 
 fix_common_error("--" ++ [C] = Option) ->
-  opt_warn("~s converted to -~c", [Option, C]),
+  opt_info("\"~s\" converted to \"-~c\"", [Option, C]),
   "-" ++ [C];
 fix_common_error("--" ++ Text = Option) ->
   Underscored = lists:map(fun dash_to_underscore/1, string:?lowercase(Text)),
   case Text =:= Underscored of
     true -> Option;
     false ->
-      opt_warn("~s converted to --~s", [Option, Underscored]),
+      opt_info("\"~s\" converted to \"--~s\"", [Option, Underscored]),
       "--" ++ Underscored
   end;
 fix_common_error("-p" ++ [A] = Option) when A =:= $a; A=:= $z ->
-  opt_warn("~s converted to -~s", [Option, Option]),
+  opt_info("\"~s\" converted to \"-~s\"", [Option, Option]),
   fix_common_error("-" ++ Option);
 fix_common_error(OptionOrArg) ->
   OptionOrArg.
 
 dash_to_underscore($-) -> $_;
 dash_to_underscore(Ch) -> Ch.
+
+fix_multiargs(CommandLineArgs) ->
+  fix_multiargs(CommandLineArgs, []).
+
+fix_multiargs([], Fixed) ->
+  lists:reverse(Fixed);
+fix_multiargs([Flag1, Arg1, Arg2 | Rest], Fixed)
+  when hd(Flag1) =:= $-, hd(Arg1) =/= $-, hd(Arg2) =/= $- ->
+  opt_info(
+    "\"~s ~s ~s\" converted to \"~s ~s ~s ~s\"",
+    [Flag1, Arg1, Arg2, Flag1, Arg1, Flag1, Arg2]),
+  fix_multiargs([Flag1,Arg2|Rest], [Arg1,Flag1|Fixed]);
+fix_multiargs([Other|Rest], Fixed) ->
+  fix_multiargs(Rest, [Other|Fixed]).
 
 %%%-----------------------------------------------------------------------------
 
@@ -382,6 +401,21 @@ cl_usage(all) ->
   Sort = fun(A, B) -> element(?OPTION_KEY, A) =< element(?OPTION_KEY, B) end,
   getopt:usage(getopt_spec(lists:sort(Sort, options())), "./concuerror"),
   print_suffix(all);
+cl_usage(Attribute)
+  when Attribute =:= attribute;
+       Attribute =:= attributes ->
+  Msg =
+    "Passing options using module attributes:~n"
+    "----------------------------------------~n"
+    "You can use the following attributes in the module specified by '--module'"
+    " to pass options to Concuerror:~n"
+    "~n"
+    "  -~s(Options).~n"
+    "    A list of Options that can be overriden by other options.~n"
+    "  -~s(Options).~n"
+    "    A list of Options that override any other options.~n"
+    ,
+  to_stderr(Msg, [?ATTRIBUTE_OPTIONS, ?ATTRIBUTE_FORCED_OPTIONS]);
 cl_usage(Name) ->
   Optname =
     case lists:keyfind(Name, ?OPTION_KEY, options()) of
@@ -465,8 +499,10 @@ get_keywords_and_related(Tuple) ->
 
 %%%-----------------------------------------------------------------------------
 
+-type log_messages() :: [{?lwarning..?linfo, string(), [term()]}].
+
 -spec finalize(options()) ->
-                  {'ok', options(), Warnings :: [iolist()], Info :: [iolist()]} |
+                  {'ok', options(), log_messages()} |
                   {'exit', concuerror:exit_status()}.
 
 finalize(Options) ->
@@ -475,9 +511,7 @@ finalize(Options) ->
       exit -> {exit, ok};
       ok ->
         FinalOptions = finalize_2(Options),
-        Warnings = get_warnings(),
-        Info = get_info(),
-        {ok, FinalOptions, Warnings, Info}
+        {ok, FinalOptions, get_logs()}
     end
   catch
     throw:opt_error -> {exit, fail}
@@ -700,6 +734,12 @@ add_options_from_module(Options) ->
     get_options_from_attribute(?ATTRIBUTE_FORCED_OPTIONS, Attributes),
   Others =
     get_options_from_attribute(?ATTRIBUTE_OPTIONS, Attributes),
+  case Forced ++ Others =:= [] of
+    true when length(Options) > 5 ->
+      opt_tip("Check '--help attributes' for info on how to pass options via"
+              " module attributes.", []);
+    _ -> ok
+  end,
   check_unique_options_from_module(Forced, Others),
   WithForced =
     override(?ATTRIBUTE_FORCED_OPTIONS, Forced, "command line", Options),
@@ -1044,28 +1084,25 @@ opt_error(Format, Data, Extra) ->
   throw(opt_error).
 
 opt_info(Format, Data) ->
-  opt_log(info, Format, Data).
+  opt_log(?linfo, Format, Data).
 
 opt_warn(Format, Data) ->
-  opt_log(warnings, Format, Data).
+  opt_log(?lwarning, Format, Data).
 
-opt_log(What, Format, Data) ->
-  Whats =
-    case get(What) of
+opt_tip(Format, Data) ->
+  opt_log(?ltip, Format, Data).
+
+opt_log(Level, Format, Data) ->
+  Logs =
+    case get(log_messages) of
       undefined -> [];
       W -> W
     end,
-  put(What, [io_lib:format(Format ++ "~n", Data)|Whats]),
+  put(log_messages, [{Level, Format, Data}|Logs]),
   ok.
 
-get_info() ->
-  get_log(info).
-
-get_warnings() ->
-  get_log(warnings).
-
-get_log(What) ->
-  case erase(What) of
+get_logs() ->
+  case erase(log_messages) of
     undefined -> [];
     Whats -> lists:reverse(Whats)
   end.

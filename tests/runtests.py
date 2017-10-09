@@ -115,7 +115,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
          " --output %s"
          " -m %s -t %s %s %s"
          )
-        % (concuerror, dpor_flag, " -f ".join(files),
+        % (concuerror, dpor_flag, " ".join(files),
            rslt, modn, funn, bound, bound_type))
     # Compare the results
     has_crash = "crash" in flags
