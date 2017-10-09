@@ -41,6 +41,10 @@ function has {
     good
 }
 
+function concuerror_console {
+    2> $Console $CONCUERROR $@
+}
+
 function consolehas {
     print_ok
     testing "... and console has \"$1\""

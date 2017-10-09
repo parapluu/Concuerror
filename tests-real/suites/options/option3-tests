@@ -2,12 +2,14 @@
 
 . header
 
+echo -e "\e[0;34m$0\e[0m"
+
 testing "Excluding works minimally"
-$CONCUERROR -f exclude_modules/test.erl -f exclude_modules/excluded.erl -x excluded -m test 2> $Console
+concuerror_console -f exclude_modules/test.erl -f exclude_modules/excluded.erl -x excluded -m test
 consolehas "1/1"
 
 testing "Mixed case options are ok"
-$CONCUERROR --VeRsIoN 2> $Console
+concuerror_console --VeRsIoN
 consolehas "Concuerror v"
 
 . footer

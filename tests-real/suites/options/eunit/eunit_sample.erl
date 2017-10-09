@@ -1,0 +1,41 @@
+-module(eunit_sample).
+
+-include_lib("eunit/include/eunit.hrl").
+
+%%==============================================================================
+
+foo_test() ->
+  ?assert(true).
+
+msg_test() ->
+  P = self(),
+  spawn(fun() -> P ! foo end),
+  spawn(fun() -> P ! bar end),
+  receive
+    Msg -> ?assertEqual(foo, Msg)
+  end.
+
+reg_test() ->
+  Fun =
+    fun() ->
+        receive message -> ok
+        after 100 -> timeout
+        end
+    end,
+  P = spawn(Fun),
+  register(p, P),
+  p ! message,
+  ?assert(true).
+
+%%==============================================================================
+
+-define(concuerror_options, [{module, ?MODULE}, quiet]).
+
+foo_concuerror_test() ->
+  ?assertEqual(ok, concuerror:run([{test, foo_test}|?concuerror_options])).
+
+msg_concuerror_test() ->
+  ?assertEqual(error, concuerror:run([{test, msg_test}|?concuerror_options])).
+
+reg_concuerror_test() ->
+  ?assertEqual(error, concuerror:run([{test, reg_test}|?concuerror_options])).

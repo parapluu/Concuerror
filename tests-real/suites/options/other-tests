@@ -2,12 +2,14 @@
 
 . header
 
+echo -e "\e[0;34m$0\e[0m"
+
 testing "Can find default in path"
 rm -rf path
 rm -rf foo.beam
 mkdir path
 erlc -o path foo.erl
-$CONCUERROR --pz path -m foo 2> $Console
+concuerror_console --pz path -m foo
 rm -rf path
 good
 
@@ -19,7 +21,7 @@ rm -rf concuerror
 good
 
 testing "Limited automatic compilation with -m"
-$CONCUERROR -m foo 2> $Console
+concuerror_console -m foo
 good
 
 testing "Long short option fixes works"
@@ -27,12 +29,24 @@ rm -rf path
 rm -rf foo.beam
 mkdir path
 erlc -o path foo.erl
-$CONCUERROR -pz path --ignore-error deadlock --m foo 2> $Console
+concuerror_console -pz path --ignore-error deadlock --m foo
 consolehas "converted to"
 rm -rf path
 
 testing "Interleaving bound caps total"
-$CONCUERROR -f six.erl -i 4 2> $Console
+concuerror_console -f six.erl -i 4
 consolehas "4/4"
+
+testing "Bad idea for EUnit"
+! concuerror_console -f eunit/eunit_sample.erl
+consolehas "bad idea"
+
+testing "Simple EUnit use"
+cd eunit
+erlc eunit_sample.erl
+> $Console erl -pa "$(dirname $CONCUERROR)/ebin" -noinput -s eunit_sample test -s erlang halt
+consolehas "All 6 tests passed."
+rm eunit_sample.beam
+cd ..
 
 . footer
