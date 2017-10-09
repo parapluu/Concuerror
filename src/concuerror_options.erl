@@ -481,8 +481,10 @@ get_keywords_and_related(Tuple) ->
 
 %%%-----------------------------------------------------------------------------
 
+-type log_messages() :: [{?lwarning..?linfo, string(), [term()]}].
+
 -spec finalize(options()) ->
-                  {'ok', options(), Warnings :: [iolist()], Info :: [iolist()]} |
+                  {'ok', options(), log_messages()} |
                   {'exit', concuerror:exit_status()}.
 
 finalize(Options) ->
@@ -491,9 +493,7 @@ finalize(Options) ->
       exit -> {exit, ok};
       ok ->
         FinalOptions = finalize_2(Options),
-        Warnings = get_warnings(),
-        Info = get_info(),
-        {ok, FinalOptions, Warnings, Info}
+        {ok, FinalOptions, get_logs()}
     end
   catch
     throw:opt_error -> {exit, fail}
@@ -1060,28 +1060,22 @@ opt_error(Format, Data, Extra) ->
   throw(opt_error).
 
 opt_info(Format, Data) ->
-  opt_log(info, Format, Data).
+  opt_log(?linfo, Format, Data).
 
 opt_warn(Format, Data) ->
-  opt_log(warnings, Format, Data).
+  opt_log(?lwarning, Format, Data).
 
-opt_log(What, Format, Data) ->
-  Whats =
-    case get(What) of
+opt_log(Level, Format, Data) ->
+  Logs =
+    case get(log_messages) of
       undefined -> [];
       W -> W
     end,
-  put(What, [io_lib:format(Format ++ "~n", Data)|Whats]),
+  put(log_messages, [{Level, Format, Data}|Logs]),
   ok.
 
-get_info() ->
-  get_log(info).
-
-get_warnings() ->
-  get_log(warnings).
-
-get_log(What) ->
-  case erase(What) of
+get_logs() ->
+  case erase(log_messages) of
     undefined -> [];
     Whats -> lists:reverse(Whats)
   end.
