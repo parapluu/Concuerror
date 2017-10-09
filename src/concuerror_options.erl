@@ -243,6 +243,8 @@ options() ->
     "Display help (use '-h h' for more help)",
     "Without an argument, prints info for basic options.~n~n"
     "With 'all' as argument, prints info for all options.~n~n"
+    "With 'attributes' as argument, prints info about passing options using"
+    " module attributes.~n~n"
     "With an option name as argument, prints more help for that option.~n~n"
     "Options have keywords associated with them (shown in their help)."
     " With a keyword as argument, prints a list of all options with the"
@@ -399,6 +401,21 @@ cl_usage(all) ->
   Sort = fun(A, B) -> element(?OPTION_KEY, A) =< element(?OPTION_KEY, B) end,
   getopt:usage(getopt_spec(lists:sort(Sort, options())), "./concuerror"),
   print_suffix(all);
+cl_usage(Attribute)
+  when Attribute =:= attribute;
+       Attribute =:= attributes ->
+  Msg =
+    "Passing options using module attributes:~n"
+    "----------------------------------------~n"
+    "You can use the following attributes in the module specified by '--module'"
+    " to pass options to Concuerror:~n"
+    "~n"
+    "  -~s(Options).~n"
+    "    A list of Options that can be overriden by other options.~n"
+    "  -~s(Options).~n"
+    "    A list of Options that override any other options.~n"
+    ,
+  to_stderr(Msg, [?ATTRIBUTE_OPTIONS, ?ATTRIBUTE_FORCED_OPTIONS]);
 cl_usage(Name) ->
   Optname =
     case lists:keyfind(Name, ?OPTION_KEY, options()) of
@@ -717,6 +734,12 @@ add_options_from_module(Options) ->
     get_options_from_attribute(?ATTRIBUTE_FORCED_OPTIONS, Attributes),
   Others =
     get_options_from_attribute(?ATTRIBUTE_OPTIONS, Attributes),
+  case Forced ++ Others =:= [] of
+    true when length(Options) > 5 ->
+      opt_tip("Check '--help attributes' for info on how to pass options via"
+              " module attributes.", []);
+    _ -> ok
+  end,
   check_unique_options_from_module(Forced, Others),
   WithForced =
     override(?ATTRIBUTE_FORCED_OPTIONS, Forced, "command line", Options),
@@ -1065,6 +1088,9 @@ opt_info(Format, Data) ->
 
 opt_warn(Format, Data) ->
   opt_log(?lwarning, Format, Data).
+
+opt_tip(Format, Data) ->
+  opt_log(?ltip, Format, Data).
 
 opt_log(Level, Format, Data) ->
   Logs =
