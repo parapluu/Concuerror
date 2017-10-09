@@ -67,7 +67,7 @@ timediff(After, Before) ->
           traces_explored = 0          :: non_neg_integer(),
           traces_ssb = 0               :: non_neg_integer(),
           traces_total = 0             :: non_neg_integer(),
-          verbosity                    :: non_neg_integer()
+          verbosity                    :: log_level()
          }).
 
 %%------------------------------------------------------------------------------
