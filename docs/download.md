@@ -1,11 +1,11 @@
 ---
 layout: page
 permalink: /download/index.html
-title: Download
-description: "Get Concuerror!"
+title: "Download Concuerror"
+description: "Information on how to download Concuerror."
 ---
 
-# Download
+## Download
 
 Concuerror's latest stable version is available on [Github](https://github.com/parapluu/Concuerror):
 
