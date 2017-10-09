@@ -59,14 +59,12 @@ kramdown:
   toc_levels: 1..6
   enable_coderay: false
 
-  coderay:
-    coderay_line_numbers: 
-    coderay_line_numbers_start: 1
-    coderay_tab_width: 4
-    coderay_bold_every: 10
-    coderay_css: class
+syntax_highlighter_opts:
+  tab_width: 4
+  bold_every: 10
+  css: class
 
-gems:
+plugins:
   - jekyll-gist
   - jekyll-seo-tag
 
