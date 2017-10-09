@@ -244,8 +244,9 @@ options() ->
     "Without an argument, prints info for basic options.~n~n"
     "With 'all' as argument, prints info for all options.~n~n"
     "With an option name as argument, prints more help for that option.~n~n"
-    "Options have keywords associated with them. With a keyword as"
-    " argument, prints info for all options with that keyword.~n~n"
+    "Options have keywords associated with them (shown in their help)."
+    " With a keyword as argument, prints a list of all options with the"
+    " keyword.~n~n"
     "If an expected argument is omitted, 'true' or '1' is the implied"
     " value."}
   ,{version, [basic], undefined, undefined,
