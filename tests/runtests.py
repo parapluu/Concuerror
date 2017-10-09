@@ -36,10 +36,10 @@ def runTest(test):
         pass
     sema.acquire()
     # Compile it
-    os.system("erlc -W0 -o %s %s/%s.erl" % (dirn, dirn, modn))
+    subprocess.call("erlc -W0 -o %s %s/%s.erl" % (dirn, dirn, modn), shell=True)
     # And extract scenarios from it
     pout = subprocess.check_output(
-        ["erl -noinput -pa %s -pa %s -s scenarios extract %s -s init stop"
+        ["erl +S1 -noinput -pa %s -pa %s -s scenarios extract %s -s init stop"
          % (dirname, dirn, modn)], shell=True).splitlines()
     sema.release()
     procS = []
@@ -109,14 +109,15 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
     except OSError:
         pass
     # Run concuerror
-    status = os.system(
+    status = subprocess.call(
         ("%s -kq --timeout -1 --assume_racing false --show_races false"
          " %s -f %s"
          " --output %s"
          " -m %s -t %s %s %s"
-         )
+        )
         % (concuerror, dpor_flag, " ".join(files),
-           rslt, modn, funn, bound, bound_type))
+           rslt, modn, funn, bound, bound_type),
+        shell=True)
     # Compare the results
     has_crash = "crash" in flags
     orig = "%s/suites/%s/results/%s" % (dirname, suite, txtname)
@@ -168,7 +169,7 @@ concuerror = os.path.abspath(dirname + "/../concuerror")
 results = os.path.abspath(dirname + "/results")
 
 # Ensure made
-assert 0 == os.system("make -j -C %s/.. default tests/scenarios.beam" % dirname)
+assert 0 == subprocess.call("make -j -C %s/.. default tests/scenarios.beam" % dirname, shell=True)
 
 # If we have arguments we should use them as tests,
 # otherwise check them all
