@@ -1,4 +1,4 @@
-Concuerror 0.17 (a62e2f6) started at 09 Aug 2017 12:46:17
+Concuerror v0.17 ('1ad04d0') started at 10 Oct 2017 14:30:10
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -7,6 +7,7 @@ Concuerror 0.17 (a62e2f6) started at 09 Aug 2017 12:46:17
    {disable_sleep_sets,false},
    {dpor,optimal},
    {entry_point,{send_after_trouble,test,[]}},
+   {exclude_module,[]},
    {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/send_after_trouble.erl"]},
    {ignore_error,[]},
    {instant_delivery,true},
@@ -27,14 +28,18 @@ Concuerror 0.17 (a62e2f6) started at 09 Aug 2017 12:46:17
 Exploration completed!
   No errors found!
 ################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check '--help attributes' for info on how to pass options via module attributes.
+################################################################################
 Info:
 --------------------------------------------------------------------------------
-Instrumented send_after_trouble
-Instrumented io_lib
-Instrumented gen_server
-Instrumented erlang
-You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+* Instrumented & loaded module send_after_trouble
+* Automatically instrumented module io_lib
+* Automatically instrumented module gen_server
+* Automatically instrumented module erlang
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-Done at 09 Aug 2017 12:46:17 (Exit status: ok)
-  Summary: 0 errors, 2/2 interleavings explored
+Done at 10 Oct 2017 14:30:11 (Exit status: ok)
+  Summary: 0 errors, 4/4 interleavings explored
