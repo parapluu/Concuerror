@@ -261,7 +261,12 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
           ok
       end,
       NextExploring = N + 1,
-      NextState = State#scheduler_state{exploring = N + 1, warnings = []},
+      NextState =
+        State#scheduler_state{
+          exploring = N + 1,
+          receive_timeout_total = 0,
+          warnings = []
+         },
       case NextExploring =< State#scheduler_state.interleaving_bound of
         true -> NextState;
         false ->
@@ -621,7 +626,7 @@ maybe_log(#event{actor = P} = Event, State0, Index) ->
       end;
     #receive_event{message = 'after'} ->
       NewReceiveTimeoutTotal = ReceiveTimeoutTotal + 1,
-      Threshold = 20,
+      Threshold = 50,
       case NewReceiveTimeoutTotal =:= Threshold of
         true ->
           ?unique(Logger, ?ltip, msg(maybe_receive_loop), [Threshold]);
@@ -1507,8 +1512,8 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 %%==============================================================================
 
 msg(after_timeout_tip) ->
-  "You can use e.g. '--after_timeout 2000' to treat after"
-    " clauses that exceed some threshold (here 2000ms) as 'impossible'.~n";
+  "You can use e.g. '--after_timeout 2000' to treat after timeouts that exceed"
+    " some threshold (here 2000ms) as 'infinity'.~n";
 msg(assertions_only_filter) ->
   "Only assertion failures are considered crashes ('--assertions_only').~n";
 msg(assertions_only_use) ->
