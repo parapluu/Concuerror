@@ -1099,7 +1099,7 @@ opt_log(Level, Format, Data) ->
       undefined -> [];
       W -> W
     end,
-  put(log_messages, [{Level, Format, Data}|Logs]),
+  put(log_messages, [{Level, Format ++ "~n", Data}|Logs]),
   ok.
 
 get_logs() ->
