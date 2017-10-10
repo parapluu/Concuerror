@@ -1024,7 +1024,7 @@ not_dep(Trace, Later, DPORInfo, Event) ->
   NotDep = not_dep1(Trace, Later, DPORInfo, []),
   %% The racing event's effect may differ, so new label.
   lists:reverse(
-    [Event#event{label = undefined}|
+    [update_context(Event)|
      NotDep]).
 
 not_dep1([], [], _DPORInfo, NotDep) ->
@@ -1061,6 +1061,18 @@ not_dep1([TraceState|Rest], Later, {DPOR, Info} = DPORInfo, NotDep) ->
         end
     end,
   not_dep1(Rest, Later, DPORInfo, NewNotDep).
+
+update_context(Event) ->
+  NewEventInfo =
+    case Event#event.event_info of
+      #receive_event{message = Msg} = Info when Msg =/= 'after' ->
+        Info#receive_event{message = 'after'};
+      Info -> Info
+    end,
+  Event#event{
+    event_info = NewEventInfo,
+    label = undefined
+   }.
 
 show_plan(_Type, _Logger, _Index, _NotDep) ->
   ?debug(
