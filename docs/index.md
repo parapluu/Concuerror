@@ -21,6 +21,16 @@ $ cd Concuerror
 $ make -j
 {% endhighlight %}
 
+### Supported OTP Releases
+
+Concuerror's developers are always working with the latest otp/master branch
+available on Github. Concuerror is also expected to work on all OTP releases
+starting from and including *R16*. We use
+[Travis](https://travis-ci.org/parapluu/Concuerror) to test:
+
+* The *two last* minor versions of the 'current' major Erlang/OTP release
+* The *last* minor version of older major releases
+
 ## How do I use Concuerror?
 
 First you need to come up with a test that is **terminating** (ideally in any scheduling of the processes) and **closed** (does not require any inputs).
@@ -59,11 +69,6 @@ that lead to the error and by default stop the exporation at that error.
 
 Otherwise it will keep exploring schedulings, until it has checked them all. [Will the exploration ever finish?](/faq/#will-the-exploration-ever-finish)
 
-## How do I report a bug?
-
-The preferred way is in the repository's [Issues
-page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/contact).
-
 ## How does Concuerror work?
 
 Concuerror schedules the Erlang processes spawned in the test as if only a single scheduler was available.
@@ -72,6 +77,11 @@ It then analyzes the trace, detecting pairs of operations that are really racing
 Based on this analysis, it explores more schedulings, reversing the order of execution of such pairs. This is a technique known as _stateless model checking with dynamic partial order reduction_.
 
 You can find more details [here](/faq/#how-does-concuerror-work-extended).
+
+## How do I report a bug?
+
+The preferred way is in the repository's [Issues
+page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/contact).
 
 ## Further Reads
 

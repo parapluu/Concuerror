@@ -12,8 +12,7 @@ updated: 2017-10-03
 1. This text will be replaced by the ToC, excluding the previous header (WOW!)
 {:toc}
 
-How do I report a bug?
-----------------------
+## How do I report a bug?
 
 The preferred way is in the repository's [Issues
 page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/contact).
