@@ -5,7 +5,7 @@
 -export([scenarios/0]).
 -export([exceptional/0]).
 
--concuerror_options_forced([{keep_going, false}, {depth_bound, 50}]).
+-concuerror_options_forced([{keep_going, false}, {depth_bound, 80}]).
 
 %%------------------------------------------------------------------------------
 
@@ -23,8 +23,11 @@ exceptional() ->
 test() ->
   P = self(),
   spawn(fun() -> P ! ok end),
+  loop().
+
+loop() ->
   receive
     ok -> ok
   after
-    50 -> test()
+    50 -> loop()
   end.

@@ -61,6 +61,8 @@
 
 -type ref_queue_2() :: {ref_queue(), ref_queue()}.
 
+-type status() :: 'running' | 'waiting' | 'exiting' | 'exited'.
+
 -record(process_flags, {
           trap_exit = false  :: boolean(),
           priority  = normal :: 'low' | 'normal' | 'high' | 'max'
@@ -89,8 +91,7 @@
           ref_queue = new_ref_queue() :: ref_queue_2(),
           scheduler                   :: pid(),
           stacktop = 'none'           :: 'none' | tuple(),
-          status = running            ::
-            'exited' | 'exiting' | 'running' | 'waiting',
+          status = 'running'          :: status(),
           system_ets_entries          :: ets:tid(),
           timeout                     :: timeout(),
           timers                      :: timers()
@@ -1195,7 +1196,9 @@ wait_actor_reply(Event, Timeout) ->
     {'EXIT', _, What} ->
       exit(What)
   after
-    Timeout -> ?crash({process_did_not_respond, Timeout, Event#event.actor})
+    Timeout ->
+      Pid = Event#event.actor,
+      ?crash({process_did_not_respond, Timeout, Pid})
   end.
 
 %%------------------------------------------------------------------------------
