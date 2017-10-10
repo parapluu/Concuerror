@@ -51,6 +51,7 @@
 
 -define(ATTRIBUTE_OPTIONS, concuerror_options).
 -define(ATTRIBUTE_FORCED_OPTIONS, concuerror_options_forced).
+-define(ATTRIBUTE_TIP_THRESHOLD, 8).
 
 %%%-----------------------------------------------------------------------------
 
@@ -735,7 +736,7 @@ add_options_from_module(Options) ->
   Others =
     get_options_from_attribute(?ATTRIBUTE_OPTIONS, Attributes),
   case Forced ++ Others =:= [] of
-    true when length(Options) > 5 ->
+    true when length(Options) > ?ATTRIBUTE_TIP_THRESHOLD ->
       opt_tip("Check '--help attributes' for info on how to pass options via"
               " module attributes.", []);
     _ -> ok
