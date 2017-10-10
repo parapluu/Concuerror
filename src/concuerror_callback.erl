@@ -1196,7 +1196,9 @@ wait_actor_reply(Event, Timeout) ->
     {'EXIT', _, What} ->
       exit(What)
   after
-    Timeout -> ?crash({process_did_not_respond, Timeout, Event#event.actor})
+    Timeout ->
+      Pid = Event#event.actor,
+      ?crash({process_did_not_respond, Timeout, Pid})
   end.
 
 %%------------------------------------------------------------------------------
