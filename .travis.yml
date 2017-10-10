@@ -1,28 +1,33 @@
-language: erlang
-
 sudo: false
 
-# Check README for supported versions before changing this
-otp_release:
-   - 20.1
-   - 20.0
-   - 19.3
-   - 18.3
-   - 17.4
-   - R16B03-1
+language: erlang
 
-env:
-   - TEST=tests
-   - TEST=tests-real
+script: "make $TEST"
+
+stages:
+  - basic
+  - test
 
 matrix:
-   include:
-   - env: TEST=dialyze
-   - env: TEST=travis_has_latest_otp_version
-   # allow_failures:
-   # - env: TEST=travis_has_latest_otp_version
+  include:
+  - stage: basic
+    env: TEST=travis_has_latest_otp_version
+  - env: TEST=dialyze
+  - env: TEST=cover
+  exclude:
+  - otp_release: 20.1
 
-script: "make -j 4 $TEST"
+env:
+  - TEST=tests
+  - TEST=tests-real
+
+otp_release:
+  - 20.1
+  - 20.0
+  - 19.3
+  - 18.3
+  - 17.4
+  - R16B03-1
 
 after_failure: "./.travis/after_failure"
 
