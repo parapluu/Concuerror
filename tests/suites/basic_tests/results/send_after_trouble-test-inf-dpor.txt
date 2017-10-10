@@ -1,4 +1,4 @@
-Concuerror v0.17 ('1ad04d0') started at 10 Oct 2017 14:30:10
+Concuerror v0.17 (b695793) started at 10 Oct 2017 14:47:24
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -23,7 +23,7 @@ Concuerror v0.17 ('1ad04d0') started at 10 Oct 2017 14:30:10
    {symbolic_names,true},
    {timeout,infinity},
    {treat_as_normal,[]},
-   {use_receive_patterns,false}]
+   {use_receive_patterns,true}]
 ################################################################################
 Exploration completed!
   No errors found!
@@ -31,6 +31,7 @@ Exploration completed!
 Tips:
 --------------------------------------------------------------------------------
 * Check '--help attributes' for info on how to pass options via module attributes.
+
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
@@ -41,5 +42,5 @@ Info:
 * You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 
 ################################################################################
-Done at 10 Oct 2017 14:30:11 (Exit status: ok)
-  Summary: 0 errors, 4/4 interleavings explored
+Done at 10 Oct 2017 14:47:24 (Exit status: ok)
+  Summary: 0 errors, 3/3 interleavings explored
