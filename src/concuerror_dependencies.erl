@@ -708,6 +708,7 @@ ets_is_mutating(#builtin_event{ mfargs = {_, Op, [_|Rest] = Args}
         SelDelete =:= internal_select_delete ->
       from_delete(hd(Rest));
     {update_counter, 3} -> with_key(hd(Rest));
+    {update_element, 3} -> with_key(hd(Rest));
     {whereis, 1} -> false
   end.
 
@@ -767,6 +768,7 @@ keys_or_tuples(#builtin_event{mfargs = {_, Op, [_|Rest] = Args}}) ->
         SelDelete =:= internal_select_delete ->
       {matchspec, hd(Rest)};
     {update_counter, 3} -> {keys, [hd(Rest)]};
+    {update_element, 3} -> {keys, [hd(Rest)]};
     {whereis, 1} -> none
   end.
 

@@ -1097,6 +1097,7 @@ run_built_in(ets, F, N, [NameOrTid|Args], Info)
     ; {F, N} =:= {select, 3}
     ; {F, N} =:= {select_delete, 2}
     ; {F, N} =:= {update_counter, 3}
+    ; {F, N} =:= {update_element, 3}
     ->
   {Tid, Id, IsSystem} = ets_access_table_info(NameOrTid, {F, N}, Info),
   case IsSystem of
@@ -1897,6 +1898,7 @@ ets_ops_access_rights_map(Op) ->
     {select, _} -> read;
     {select_delete, 2} -> write;
     {update_counter, 3} -> write;
+    {update_element, 3} -> write;
     {whereis, 1} -> none
   end.
 
