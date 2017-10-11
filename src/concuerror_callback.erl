@@ -1806,7 +1806,8 @@ hijack_or_wrap_system(Name, #concuerror_info{timeout = Timeout} = Info)
   hijacked;  
 hijack_or_wrap_system(Name, Info) ->
   #concuerror_info{processes = Processes} = Info,
-  Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Info) end,
+  Wrapped = whereis(Name),
+  Fun = fun() -> system_wrapper_loop(Name, Wrapped, Info) end,
   Pid = spawn_link(Fun),
   ets:insert(Processes, ?new_system_process(Pid, Name, wrapper)),
   wrapped.
