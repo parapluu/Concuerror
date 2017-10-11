@@ -1286,7 +1286,6 @@ handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
     end,
   {{skip_timeout, AddMessage}, delay_notify(Notification, UpdatedInfo)}.
 
-
 has_matching_or_after(_, _, _, unhijack, _) ->
   unhijack;
 has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
@@ -2118,7 +2117,7 @@ explain_error({checking_system_process, Pid}) ->
   io_lib:format(
     "A process tried to link/monitor/inspect process ~p which was not"
     " started by Concuerror and has no suitable wrapper to work with"
-    " Concuerror.~n"
+    " Concuerror."
     ?notify_us_msg,
     [Pid]);
 explain_error({inconsistent_builtin,
@@ -2130,12 +2129,12 @@ explain_error({inconsistent_builtin,
     "  Later result: ~p~n"
     "Concuerror cannot explore behaviours that depend on~n"
     "data that may differ on separate runs of the program.~n"
-    "Location: ~p~n~n",
+    "Location: ~p~n",
     [Module, Name, Arity, Args, OldResult, NewResult, Location]);
 explain_error({no_response_for_message, Timeout, Recipient}) ->
   io_lib:format(
     "A process took more than ~pms to send an acknowledgement for a message"
-    " that was sent to it. (Process: ~p)~n"
+    " that was sent to it. (Process: ~p)"
     ?notify_us_msg,
     [Timeout, Recipient]);
 explain_error({not_local_node, Node}) ->
@@ -2145,15 +2144,15 @@ explain_error({not_local_node, Node}) ->
     [Node]);
 explain_error({process_did_not_respond, Timeout, Actor}) ->
   io_lib:format( 
-    "A process took more than ~pms to report a built-in event. You can try to"
-    " increase the '--timeout' limit and/or ensure that there are no infinite"
-    " loops in your test. (Process: ~p)",
-    [Timeout, Actor]
+    "A process (~p) took more than ~pms to report a built-in event. You can try"
+    " to increase the '--timeout' limit and/or ensure that there are no"
+    " infinite loops in your test.",
+    [Actor, Timeout]
    );
 explain_error({process_did_not_respond_system, Actor}) ->
   io_lib:format(
-    "A process did not respond to a control signal. Ensure that"
-    " there are no infinite loops in your test. (Process: ~p)",
+    "A process (~p) did not respond to a control signal. Ensure that there are"
+    " no infinite loops in your test.",
     [Actor]
    );
 explain_error({registered_process_not_wrapped, Name, Location}) ->
@@ -2178,7 +2177,7 @@ explain_error({unexpected_builtin_change,
     "to ~p:~p/~p with args:~n  ~p~n"
     "Concuerror cannot explore behaviours that depend on~n"
     "data that may differ on separate runs of the program.~n"
-    "Location: ~p~n~n",
+    "Location: ~p~n",
     [Module, Name, Arity, Args, M, F, length(OArgs), OArgs, Location]);
 explain_error({unknown_protocol_for_system, System}) ->
   io_lib:format(
@@ -2193,12 +2192,12 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
     end,
   io_lib:format(
     "Concuerror does not support calls to built-in ~p:~p/~p~s.~n  If you cannot"
-    " avoid its use, please contact the developers.~n  Stacktrace:~n    ~p",
+    " avoid its use, please contact the developers.~n  Stacktrace:~n    ~p~n",
     [Module, Name, Arity, LocationString, Stack]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
     "A process send a request of type '~p' to ~p. Concuerror does not yet support"
-    " this type of request to this process.~n"
+    " this type of request to this process."
     ?notify_us_msg,
     [Type, Name]);
 explain_error({wrapper_asked_for_status, Name}) ->
