@@ -14,7 +14,8 @@ matrix:
   - stage: basic
     env: TEST=travis_has_latest_otp_version
   - env: TEST=dialyze
-  - env: TEST=cover
+  - stage: test
+    env: TEST=cover
   exclude:
   - otp_release: 20.1
 
