@@ -1378,15 +1378,7 @@ replay_prefix(Trace, State) ->
      processes = Processes,
      timeout = Timeout
     } = State,
-  Fold =
-    fun(?process_pat_pid_kind(P, Kind), _) ->
-        case Kind =:= regular of
-          true -> P ! reset;
-          false -> ok
-        end,
-        ok
-    end,
-  ok = ets:foldl(Fold, ok, Processes),
+  concuerror_callback:reset_processes(Processes),
   ok =
     concuerror_callback:start_first_process(FirstProcess, EntryPoint, Timeout),
   NewState = State#scheduler_state{last_scheduled = FirstProcess},

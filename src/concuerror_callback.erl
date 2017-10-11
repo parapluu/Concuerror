@@ -8,7 +8,7 @@
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/3,
          deliver_message/3, wait_actor_reply/2, collect_deadlock_info/1,
-         enabled/1, cleanup_processes/1]).
+         enabled/1, reset_processes/1, cleanup_processes/1]).
 
 %% Interface to logger:
 -export([setup_logger/1]).
@@ -1203,6 +1203,23 @@ wait_actor_reply(Event, Timeout) ->
 
 %%------------------------------------------------------------------------------
 
+-spec reset_processes(processes()) -> ok.
+
+reset_processes(Processes) ->
+  Fold =
+    fun(?process_pat_pid_kind(P, Kind), _) ->
+        case Kind =:= regular of
+          true ->
+            P ! reset,
+            receive reset_done -> ok end;
+          false -> ok
+        end,
+        ok
+    end,
+  ok = ets:foldl(Fold, ok, Processes).
+
+%%------------------------------------------------------------------------------
+
 -spec collect_deadlock_info([pid()]) -> [{pid(), location()}].
 
 collect_deadlock_info(Actors) ->
@@ -1353,11 +1370,11 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
 process_top_loop(Info) ->
   ?debug_flag(?loop, top_waiting),
   receive
-    reset -> process_top_loop(Info);
+    reset ->
+      process_top_loop(notify(reset_done, Info));
     reset_system ->
       reset_system(Info),
-      Info#concuerror_info.scheduler ! reset_system,
-      process_top_loop(Info);
+      process_top_loop(notify(reset_system_done, Info));
     {start, Module, Name, Args} ->
       ?debug_flag(?loop, {start, Module, Name, Args}),
       put(concuerror_info, set_status(Info, running)),
@@ -1387,7 +1404,7 @@ process_top_loop(Info) ->
 request_system_reset(Pid) ->
   Pid ! reset_system,
   receive
-    reset_system -> ok
+    reset_system_done -> ok
   end.
 
 reset_system(Info) ->
@@ -1512,6 +1529,7 @@ process_loop(Info) ->
       ets:match_delete(Links, ?links_match_mine()),
       ets:match_delete(Monitors, ?monitors_match_mine()),
       FinalInfo = NewInfo#concuerror_info{ref_queue = reset_ref_queue(Info)},
+      _ = notify(reset_done, FinalInfo),
       erlang:hibernate(concuerror_callback, process_top_loop, [FinalInfo]);
     deadlock_poll ->
       ?debug_flag(?loop, deadlock_poll),
