@@ -14,37 +14,57 @@ main([CoverDir]) ->
 
 print(List) ->
 
+  %% THRESHOLDS
   ThresholdSingle = 0.75,
   Threshold = 0.91,
 
-  io:format("~n"),
-  io:format("~-30s | ~5s | ~5s | ~6s~n", ["Module", "Lines", "Cov", "Cov %"]),
-  sep(),
+  %% HEADER
+  to_stderr("~-30s | ~5s | ~5s | ~6s~n", ["Module", "Lines", "Cov", "Cov %"]),
+  print_separator(),
+
   Fold =
     fun({Mod, {Cov, NotCov}}, {Fail, TotSum, CovSum}) ->
         Tot = Cov + NotCov,
         Pct = Cov / Tot,
-        io:format("~-30s | ~5w | ~5w | ~6.1f~n", [Mod, Tot, NotCov, Cov/Tot*100]),
-        {Fail orelse Pct < ThresholdSingle, TotSum + Tot, CovSum + Cov}
+        Fails = Pct < ThresholdSingle,
+        Suffix =
+          case Fails of
+            true -> "  <--";
+            false -> ""
+          end,
+        %% PER MODULE ENTRY
+        to_stderr(
+          "~-30s | ~5w | ~5w | ~6.1f~s~n",
+          [Mod, Tot, NotCov, Pct * 100, Suffix]),
+        {Fail orelse Fails, TotSum + Tot, CovSum + Cov}
     end,
   {Fail, TotSum, CovSum} = lists:foldl(Fold, {false, 0,0}, List),
   Pct = CovSum / TotSum,
-  sep(),
-  io:format("~-30s   ~5w   ~5w   ~6.1f~n", ["Total", TotSum, CovSum, Pct * 100]),
+
+  %% FOOTER
+  print_separator(),
+  to_stderr("~-30s   ~5w   ~5w   ~6.1f~n", ["Total", TotSum, CovSum, Pct * 100]),
   case Fail of
     false -> ok;
     true ->
-      io:format("~nCode coverage for a module fell below ~.1f% threshold!~n", [ThresholdSingle * 100])
+      to_stderr(
+        "~nCode coverage for some module(s) is below ~.1f% threshold!~n",
+        [ThresholdSingle * 100])
   end,
   case Pct < Threshold of
     false -> ok;
     true ->
-      io:format("~nTotal code coverage fell below ~.1f% threshold!~n", [Threshold * 100])
+      to_stderr(
+        "~nTotal code coverage is below ~.1f% threshold!~n",
+        [Threshold * 100])
   end,
   case Fail orelse Pct < Threshold of
     true -> halt(1);
     false -> halt(0)
   end.
 
-sep() ->
-  io:format("~s~n", [[$- || _ <- lists:seq(1, 55)]]).
+print_separator() ->
+  to_stderr("~s~n", [[$- || _ <- lists:seq(1, 55)]]).
+
+to_stderr(Format, Args) ->
+  io:format(standard_error, Format, Args).
