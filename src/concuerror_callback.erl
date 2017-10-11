@@ -1206,6 +1206,7 @@ wait_actor_reply(Event, Timeout) ->
 -spec reset_processes(processes()) -> ok.
 
 reset_processes(Processes) ->
+  Procs = ets:tab2list(Processes),
   Fold =
     fun(?process_pat_pid_kind(P, Kind), _) ->
         case Kind =:= regular of
@@ -1216,7 +1217,7 @@ reset_processes(Processes) ->
         end,
         ok
     end,
-  ok = ets:foldl(Fold, ok, Processes).
+  ok = lists:foldl(Fold, ok, Procs).
 
 %%------------------------------------------------------------------------------
 
@@ -1409,7 +1410,8 @@ request_system_reset(Pid) ->
 
 reset_system(Info) ->
   #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
-  ets:foldl(fun delete_system_entries/2, true, SystemEtsEntries),
+  Entries = ets:tab2list(SystemEtsEntries),
+  lists:foldl(fun delete_system_entries/2, true, Entries),
   ets:delete_all_objects(SystemEtsEntries).
 
 delete_system_entries({T, Objs}, true) when is_list(Objs) ->
