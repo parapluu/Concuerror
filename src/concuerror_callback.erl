@@ -1419,7 +1419,7 @@ delete_system_entries({T, O}, true) ->
 
 new_process(ParentInfo) ->
   Info = ParentInfo#concuerror_info{notify_when_ready = {self(), true}},
-  spawn_link(fun() -> process_top_loop(Info) end).
+  spawn_link(?MODULE, process_top_loop, [Info]).
 
 wait_process(Pid, Timeout) ->
   %% Wait for the new process to instrument any code.
