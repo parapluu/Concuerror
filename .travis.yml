@@ -16,6 +16,8 @@ matrix:
   - env: TEST=dialyze
   - stage: test
     env: TEST=cover
+  - otp_release: R16B03-1
+    env: TES=tests-real
   exclude:
   - otp_release: 20.1
 
@@ -29,7 +31,6 @@ otp_release:
   - 19.3
   - 18.3
   - 17.4
-  - R16B03-1
 
 after_failure: "./.travis/after_failure"
 
