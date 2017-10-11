@@ -19,6 +19,9 @@
 -spec instrument(module(), cerl:cerl(), concuerror_loader:instrumented())
                 -> cerl:cerl().
 
+instrument(?inspect, CoreCode, _Instrumented) ->
+  %% The inspect module should never be instrumented.
+  CoreCode;
 instrument(Module, CoreCode, Instrumented) ->
   ?if_debug(Stripper = fun(Tree) -> cerl:set_ann(Tree, []) end),
   ?debug_flag(?input, "~s\n",
@@ -85,7 +88,7 @@ inspect(Tag, Args, Tree) ->
   CArgs = cerl:make_list(Args),
   cerl:update_tree(Tree, call,
                    [[cerl:c_atom(?inspect)],
-                    [cerl:c_atom(instrumented)],
+                    [cerl:c_atom(inspect)],
                     [CTag, CArgs, cerl:abstract(cerl:get_ann(Tree))]]).
 
 receive_matching_fun(Tree) ->

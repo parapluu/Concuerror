@@ -3,7 +3,7 @@
 -module(concuerror_callback).
 
 %% Interface to concuerror_inspect:
--export([instrumented_top/4, hijack_backend/1]).
+-export([instrumented/4, hijack_backend/1]).
 
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/3,
@@ -71,7 +71,6 @@
 -record(concuerror_info, {
           after_timeout               :: 'infinite' | integer(),
           demonitors = []             :: [reference()],
-          escaped_pdict = []          :: term(),
           ets_tables                  :: ets_tables(),
           exit_by_signal = false      :: boolean(),
           exit_reason = normal        :: term(),
@@ -140,48 +139,33 @@ start_first_process(Pid, {Module, Name, Args}, Timeout) ->
 -spec setup_logger(processes()) -> ok.
 
 setup_logger(Processes) ->
-  put(concuerror_info, {logger, Processes}),
-  ok.
+  concuerror_inspect:start_inspection({logger, Processes}).
 
 -spec hijack_backend(concuerror_info()) -> ok.
 
 hijack_backend(#concuerror_info{processes = Processes} = Info) ->
-  Escaped = erase(),
   true = group_leader() =:= whereis(user),
   {GroupLeader, _} = run_built_in(erlang,whereis,1,[user], Info),
   {registered_name, Name} = process_info(self(), registered_name),
   true = ets:insert(Processes, ?new_system_process(self(), Name, hijacked)),
   {true, Info} =
     run_built_in(erlang, group_leader, 2, [GroupLeader, self()], Info),
-  NewInfo = Info#concuerror_info{escaped_pdict = Escaped},
-  put(concuerror_info, NewInfo),
+  concuerror_inspect:start_inspection(Info),
   ok.
 
 %%------------------------------------------------------------------------------
 
--spec instrumented_top(Tag      :: instrumented_tag(),
-                       Args     :: [term()],
-                       Location :: term(),
-                       Info     :: concuerror_info()) ->
-                          'doit' |
-                          {'didit', term()} |
-                          {'error', term()} |
-                          'skip_timeout' |
-                          'unhijack'.
+-type instrumented_return() :: 'doit' |
+                               {'didit', term()} |
+                               {'error', term()} |
+                               'skip_timeout' |
+                               'unhijack'.
 
-instrumented_top(Tag, Args, Location, #concuerror_info{} = Info) ->
-  #concuerror_info{escaped_pdict = Escaped} = Info,
-  lists:foreach(fun({K,V}) -> put(K,V) end, Escaped),
-  {Result, #concuerror_info{} = NewInfo} =
-    instrumented(Tag, Args, Location, Info),
-  NewEscaped = erase(),
-  FinalInfo = NewInfo#concuerror_info{escaped_pdict = NewEscaped},
-  put(concuerror_info, FinalInfo),
-  Result;
-instrumented_top(Tag, Args, Location, {logger, _} = Info) ->
-  {Result, _} = instrumented(Tag, Args, Location, Info),
-  put(concuerror_info, Info),
-  Result.
+-spec instrumented(Tag      :: instrumented_tag(),
+                   Args     :: [term()],
+                   Location :: term(),
+                   Info     :: concuerror_info()) ->
+                      {instrumented_return(), concuerror_info()}.
 
 instrumented(call, [Module, Name, Args], Location, Info) ->
   Arity = length(Args),
@@ -278,11 +262,13 @@ built_in(erlang, Display, 1, [Term], _Location, Info)
   concuerror_logger:print(Info#concuerror_info.logger, standard_io, Chars),
   {{didit, true}, Info};
 %% Process dictionary has been restored here. No need to report such ops.
-built_in(erlang, PDict, _Arity, Args, _Location, Info)
-  when PDict =:= get; PDict =:= get_keys ->
-  ?debug_flag(?builtin, {'built-in', erlang, PDict, _Arity, Args, _Location}),
-  Res = erlang:apply(erlang,PDict,Args),
-  {{didit, Res}, Info};
+built_in(erlang, Name, _Arity, Args, _Location, Info)
+  when Name =:= get; Name =:= get_keys; Name =:= put; Name =:= erase ->
+  try
+    {{didit, erlang:apply(erlang, Name, Args)}, Info}
+  catch
+    error:Reason -> {{error, Reason}, Info}
+  end;
 %% XXX: Temporary
 built_in(erlang, get_stacktrace, 0, [], _Location, Info) ->
   #concuerror_info{logger = Logger} = Info,
@@ -543,16 +529,15 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
   case Alive of
     false -> {undefined, Info};
     true ->
-      TheirInfo =
+      {TheirInfo, TheirDict} =
         case Pid =:= self() of
-          true -> Info;
+          true -> {Info, get()};
           false -> get_their_info(Pid)
         end,
       Res =
         case Item of
           dictionary ->
-            #concuerror_info{escaped_pdict = Escaped} = TheirInfo,
-            Escaped;
+            TheirDict;
           group_leader ->
             get_leader(Info, Pid);
           links ->
@@ -701,7 +686,7 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
   ets:insert(Timers, {Ref, Pid, Dest}),
   TimerFun =
     fun() ->
-        catch concuerror_inspect:instrumented(call, [erlang, send, [Dest, ActualMessage]], foo)
+        catch concuerror_inspect:inspect(call, [erlang, send, [Dest, ActualMessage]], foo)
     end,
   Pid ! {start, erlang, apply, [TimerFun, []]},
   wait_process(Pid, Wait),
@@ -1001,9 +986,6 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
 
 run_built_in(Module, Name, Arity, Args, Info)
   when
-    {Module, Name, Arity} =:= {erlang, erase, 0};
-    {Module, Name, Arity} =:= {erlang, erase, 1};
-    {Module, Name, Arity} =:= {erlang, put, 2};
     {Module, Name, Arity} =:= {os, getenv, 1}
     ->
   #concuerror_info{event = Event} = Info,
@@ -1378,16 +1360,15 @@ process_top_loop(Info) ->
       process_top_loop(notify(reset_system_done, Info));
     {start, Module, Name, Args} ->
       ?debug_flag(?loop, {start, Module, Name, Args}),
-      put(concuerror_info, set_status(Info, running)),
+      concuerror_inspect:start_inspection(set_status(Info, running)),
       try
-        concuerror_inspect:instrumented(call, [Module,Name,Args], start),
+        concuerror_inspect:inspect(call, [Module, Name, Args], start),
         exit(normal)
       catch
         exit:{?MODULE, _} = Reason -> exit(Reason);
         Class:Reason ->
-          case erase(concuerror_info) of
-            #concuerror_info{escaped_pdict = Escaped} = EndInfo ->
-              lists:foreach(fun({K,V}) -> put(K,V) end, Escaped),
+          case concuerror_inspect:stop_inspection() of
+            {true, EndInfo} ->
               Stacktrace = fix_stacktrace(EndInfo),
               ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
               NewReason =
@@ -1545,7 +1526,7 @@ process_loop(Info) ->
       Reply = Status =:= running orelse Status =:= exiting,
       process_loop(notify({enabled, Reply}, Info));
     {get_info, To} ->
-      To ! {info, Info},
+      To ! {info, {Info, get()}},
       process_loop(Info);
     unhijack ->
       unhijack;
