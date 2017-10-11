@@ -2,7 +2,7 @@
 
 -module(concuerror_loader).
 
--export([initialize/1, load/1, load_initially/1, register_logger/1]).
+-export([initialize/1, load/1, load_initially/1]).
 
 %%------------------------------------------------------------------------------
 
@@ -14,7 +14,9 @@
 
 -include("concuerror.hrl").
 
--spec load(module()) -> module().
+%%------------------------------------------------------------------------------
+
+-spec load(module()) -> 'ok' | 'already_done' | 'fail'.
 
 load(Module) ->
   Instrumented = get_instrumented_table(),
@@ -23,7 +25,6 @@ load(Module) ->
 load(Module, Instrumented) ->
   case ets:lookup(Instrumented, Module) =:= [] of
     true ->
-      Logger = ets:lookup_element(Instrumented, {logger}, 2),
       {Beam, Filename} =
         case code:which(Module) of
           preloaded ->
@@ -34,15 +35,12 @@ load(Module, Instrumented) ->
         end,
       try
         load_binary(Module, Filename, Beam, Instrumented),
-        ?log(Logger, ?linfo, "Automatically instrumented module ~p~n", [Module])
+        ok
       catch
-        _:_ ->
-          Msg = "Could not load module '~p'. Check '-h input'.~n",
-          ?log(Logger, ?lwarning, Msg, [Module])
+        _:_ -> fail
       end;
-    false -> ok
-  end,
-  Module.
+    false -> already_done
+  end.
 
 -spec load_initially(module()) ->
                         {ok, module(), [string()]} | {error, string()}.
@@ -74,29 +72,10 @@ load_initially(File, Instrumented) ->
   case MaybeModule of
     {ok, Module, Binary} ->
       Warnings = check_shadow(File, Module),
-      Module = load_binary(Module, File, Binary, Instrumented),
+      load_binary(Module, File, Binary, Instrumented),
       {ok, Module, Warnings};
     Error -> Error
   end.
-
--spec register_logger(logger()) -> ok.
-
-register_logger(Logger) ->
-  Instrumented = get_instrumented_table(),
-  ets:delete(Instrumented, {logger}),
-  Fun =
-    fun({M, S}, _) ->
-        {Tag, Text} =
-          case S of
-            concuerror_instrumented -> {?linfo, "Instrumented & loaded module"};
-            concuerror_excluded -> {?lwarning, "Not instrumenting module"}
-          end,
-        ?log(Logger, Tag, "~s ~p~n", [Text, M])
-    end,
-  ets:foldl(Fun, ok, Instrumented),
-  ets:insert(Instrumented, {{logger}, Logger}),
-  io_lib = load(io_lib, Instrumented),
-  ok.
 
 %%------------------------------------------------------------------------------
 
@@ -160,7 +139,7 @@ load_binary(Module, Filename, Beam, Instrumented) ->
   {ok, _, NewBinary} =
     compile:forms(InstrumentedCore, [from_core, report_errors, binary]),
   {module, Module} = code:load_binary(Module, Filename, NewBinary),
-  Module.
+  ok.
 
 get_core(Beam) ->
   {ok, {Module, [{abstract_code, ChunkInfo}]}} =

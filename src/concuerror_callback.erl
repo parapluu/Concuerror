@@ -247,9 +247,9 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
       built_in(Module, Name, Arity, Args, Location, Info);
     false ->
       case Info of
-        #concuerror_info{} ->
+        #concuerror_info{logger = Logger} ->
           ?debug_flag(?non_builtin,{Module,Name,Arity,Location}),
-          Module = concuerror_loader:load(Module);
+          ?autoload_and_log(Module, Logger);
         _ -> ok
       end,
       {doit, Info}
