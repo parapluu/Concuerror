@@ -1529,7 +1529,7 @@ process_loop(Info) ->
       ets:match_delete(Links, ?links_match_mine()),
       ets:match_delete(Monitors, ?monitors_match_mine()),
       FinalInfo = NewInfo#concuerror_info{ref_queue = reset_ref_queue(Info)},
-      notify(reset_done, FinalInfo),
+      _ = notify(reset_done, FinalInfo),
       erlang:hibernate(concuerror_callback, process_top_loop, [FinalInfo]);
     deadlock_poll ->
       ?debug_flag(?loop, deadlock_poll),
