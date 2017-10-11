@@ -9,6 +9,7 @@ stages:
   - test
 
 matrix:
+  fast_finish: true
   include:
   - stage: basic
     env: TEST=travis_has_latest_otp_version
