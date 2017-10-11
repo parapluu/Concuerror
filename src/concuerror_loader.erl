@@ -12,16 +12,6 @@
 
 %%------------------------------------------------------------------------------
 
--define(flag(A), (1 bsl A)).
-
--define(call, ?flag(1)).
--define(result, ?flag(2)).
--define(detail, ?flag(3)).
-
--define(ACTIVE_FLAGS, [?result]).
-
-%% -define(DEBUG, true).
-%% -define(DEBUG_FLAGS, lists:foldl(fun erlang:'bor'/2, 0, ?ACTIVE_FLAGS)).
 -include("concuerror.hrl").
 
 -spec load(module()) -> module().
@@ -33,7 +23,6 @@ load(Module) ->
 load(Module, Instrumented) ->
   case ets:lookup(Instrumented, Module) =:= [] of
     true ->
-      ?debug_flag(?call, {load, Module}),
       Logger = ets:lookup_element(Instrumented, {logger}, 2),
       {Beam, Filename} =
         case code:which(Module) of
@@ -181,7 +170,6 @@ get_core(Beam) ->
       {ok, Module, Core} = compile:forms(Chunk, [binary, to_core0]),
       Core;
     no_abstract_code ->
-      ?debug_flag(?detail, {adding_debug_info, Module}),
       {ok, {Module, [{compile_info, CompileInfo}]}} =
         beam_lib:chunks(Beam, [compile_info]),
       {source, File} = proplists:lookup(source, CompileInfo),
