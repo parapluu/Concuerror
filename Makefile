@@ -135,7 +135,7 @@ tests-real: default
 cover: cover/data
 	$(RM) $</*
 	export CONCUERROR_COVER=$(abspath cover/data); $(MAKE) tests tests-real
-	cd cover; ./cover-report data
+	cd cover; ./cover-report data > /dev/null
 
 ###-----------------------------------------------------------------------------
 ### Travis

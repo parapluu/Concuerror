@@ -9,4 +9,62 @@ main([CoverDir]) ->
   lists:foreach(Foreach, Full),
   Foreach2 = fun(M) -> cover:analyse_to_file(M, [html]) end,
   lists:foreach(Foreach2, cover:imported_modules()),
-  io:format("~p~n",[cover:analyse(coverage,module)]).
+  {result, Result, _} = cover:analyse(coverage, module),
+  print(Result).
+
+print(List) ->
+
+  %% THRESHOLDS
+  ThresholdSingle = 0.75,
+  Threshold = 0.91,
+
+  %% HEADER
+  to_stderr("~-30s | ~5s | ~5s | ~6s~n", ["Module", "Lines", "Cov", "Cov %"]),
+  print_separator(),
+
+  Fold =
+    fun({Mod, {Cov, NotCov}}, {Fail, TotSum, CovSum}) ->
+        Tot = Cov + NotCov,
+        Pct = Cov / Tot,
+        Fails = Pct < ThresholdSingle,
+        Suffix =
+          case Fails of
+            true -> "  <--";
+            false -> ""
+          end,
+        %% PER MODULE ENTRY
+        to_stderr(
+          "~-30s | ~5w | ~5w | ~6.1f~s~n",
+          [Mod, Tot, NotCov, Pct * 100, Suffix]),
+        {Fail orelse Fails, TotSum + Tot, CovSum + Cov}
+    end,
+  {Fail, TotSum, CovSum} = lists:foldl(Fold, {false, 0,0}, List),
+  Pct = CovSum / TotSum,
+
+  %% FOOTER
+  print_separator(),
+  to_stderr("~-30s   ~5w   ~5w   ~6.1f~n", ["Total", TotSum, CovSum, Pct * 100]),
+  case Fail of
+    false -> ok;
+    true ->
+      to_stderr(
+        "~nCode coverage for some module(s) is below ~.1f% threshold!~n",
+        [ThresholdSingle * 100])
+  end,
+  case Pct < Threshold of
+    false -> ok;
+    true ->
+      to_stderr(
+        "~nTotal code coverage is below ~.1f% threshold!~n",
+        [Threshold * 100])
+  end,
+  case Fail orelse Pct < Threshold of
+    true -> halt(1);
+    false -> halt(0)
+  end.
+
+print_separator() ->
+  to_stderr("~s~n", [[$- || _ <- lists:seq(1, 55)]]).
+
+to_stderr(Format, Args) ->
+  io:format(standard_error, Format, Args).
