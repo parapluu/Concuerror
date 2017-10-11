@@ -78,9 +78,9 @@ options() ->
   ,{output, [basic, output], $o, {string, ?DEFAULT_OUTPUT},
     "Output file",
     "This is where Concuerror writes the results of the analysis."}
-  ,{quiet, [basic, console], $q, undefined,
-    "Quiet mode",
-    "Do not write anything to stderr. Shorthand for '--verbosity 0'."}
+  ,{no_output, [basic, output], undefined, boolean,
+    "Disable output file",
+    "Concuerror will not produce an output file."}
   ,{verbosity, [basic, console, advanced], $v, {integer, ?DEFAULT_VERBOSITY},
     io_lib:format("Verbosity level (0-~w)", [?MAX_VERBOSITY]),
     "Verbosity decides what is shown on stderr. Messages up to info are"
@@ -96,6 +96,9 @@ options() ->
     "5 <time>  Timing messages~n"
     "6 <debug> Used only during debugging~n"
     "7 <trace> Everything else"}
+  ,{quiet, [basic, console], $q, undefined,
+    "Quiet mode",
+    "Do not write anything to stderr. Shorthand for '--verbosity 0'."}
   ,{graph, [output, visual], $g, string,
     "Produce a DOT graph in the specified file",
     "The DOT graph can be converted to an image with 'dot -Tsvg -o graph.svg"
@@ -549,6 +552,7 @@ finalize_2(Options) ->
     [ fun proplists:unfold/1
     , fun set_verbosity/1
     , fun assert_tuples/1
+    , fun open_files/1
     , fun add_to_path/1
     , fun add_missing_file/1
       %% We need group multiples to find excluded files before loading
@@ -607,6 +611,42 @@ set_verbosity(Options) ->
   end,
   NewOptions = proplists:delete(verbosity, Options),
   [{verbosity, Verbosity}|NewOptions].
+
+%%%-----------------------------------------------------------------------------
+
+open_files(Options) ->
+  HasNoOutput = proplists:get_bool(no_output, Options),
+  OutputOption =
+    form_file_option(Options, output, ?DEFAULT_OUTPUT, HasNoOutput),
+  GraphOption =
+    form_file_option(Options, graph, "/dev/null", HasNoOutput),
+  NewOptions = proplists:delete(graph, proplists:delete(output, Options)),
+  [{output, OutputOption}, {graph, GraphOption} | NewOptions].
+
+form_file_option(Options, FileOption, Default, HasNoOutput) ->
+  case {proplists:get_all_values(FileOption, Options), HasNoOutput} of
+    {[], true} -> open_file("/dev/null", FileOption);
+    {[], false} -> open_file(Default, FileOption);
+    {[F], false} -> open_file(F, FileOption);
+    {_, true} ->
+      opt_error(
+        "'--~p' cannot be used together with '--no_output'.",
+        [FileOption], FileOption);
+    {_, false} ->
+      multiple_opt_error(output)
+  end.
+
+open_file("/dev/null", _FileOption) ->
+  {disable, ""};
+open_file(Filename, FileOption) ->
+  case file:open(Filename, [write]) of
+    {ok, IoDevice} ->
+      {IoDevice, Filename};
+    {error, _} ->
+      opt_error(
+        "Could not open '--~w' file ~s for writing.",
+        [FileOption, Filename], FileOption)
+  end.
 
 %%%-----------------------------------------------------------------------------
 
@@ -720,7 +760,7 @@ add_options_from_module(Options) ->
             opt_error(UndefinedEntryPoint, [], module);
           [M] -> M;
           _ ->
-            opt_error("Multiple instances of '--module' specified.", [], module)
+            multiple_opt_error(module)
         end;
       [{M,_,_}] -> M;
       _ ->
@@ -932,16 +972,6 @@ process_options(Options) ->
 process_options([], Acc) -> lists:reverse(Acc);
 process_options([{Key, Value} = Option|Rest], Acc) ->
   case Key of
-    _ when
-        Key =:= graph;
-        Key =:= output
-        ->
-      case file:open(Value, [write]) of
-        {ok, IoDevice} ->
-          process_options(Rest, [{Key, {IoDevice, Value}}|Acc]);
-        {error, _} ->
-          opt_error("Could not open '--~w' file ~s for writing.", [Key, Value])
-      end;
     module ->
       case proplists:get_value(test, Rest, 1) of
         Name when is_atom(Name) ->
@@ -1085,6 +1115,11 @@ opt_error(Format, Data, Extra) ->
   to_stderr("Error: " ++ Format, Data),
   to_stderr("  Use ~s for more information.", [Extra]),
   throw(opt_error).
+
+-spec multiple_opt_error(atom()) -> no_return().
+
+multiple_opt_error(M) ->
+  opt_error("Multiple instances of '--~s' specified.", [M], module).
 
 opt_info(Format, Data) ->
   opt_log(?linfo, Format, Data).
