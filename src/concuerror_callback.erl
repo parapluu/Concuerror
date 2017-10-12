@@ -1546,7 +1546,9 @@ process_loop(Info) ->
       To ! {info, Info},
       process_loop(Info);
     unhijack ->
-      unhijack
+      unhijack;
+    quit ->
+      ok
   end.
 
 get_their_info(Pid) ->
@@ -1769,7 +1771,7 @@ cleanup_processes(ProcessesTable) ->
     fun(?process_pat_pid_kind(P,Kind)) ->
         case Kind =:= hijacked of
           true -> P ! unhijack;
-          false -> exit(P, kill)
+          false -> P ! quit
         end
     end,
   lists:foreach(Foreach, Processes).
@@ -1811,6 +1813,7 @@ hijack_or_wrap_system(Name, Info) ->
 
 system_wrapper_loop(Name, Wrapped, Info) ->
   receive
+    quit -> ok;
     Message ->
       case Message of
         {message,
@@ -1885,9 +1888,9 @@ system_wrapper_loop(Name, Wrapped, Info) ->
           end;
         {get_info, _} ->
           ?crash({wrapper_asked_for_status, Name})
-      end
-  end,
-  system_wrapper_loop(Name, Wrapped, Info).
+      end,
+      system_wrapper_loop(Name, Wrapped, Info)
+  end.
 
 check_request(code_server, get_path) -> ok;
 check_request(code_server, {ensure_loaded, _}) -> ok;
