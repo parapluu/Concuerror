@@ -8,7 +8,7 @@
 *.dot
 .concuerror_plt
 /concuerror
-concuerror_report.txt
+*concuerror_report.txt
 concuerror_sha.hrl
 concuerror_version.hrl
 cover
