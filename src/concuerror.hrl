@@ -299,6 +299,7 @@
                  {integer_to_list,1},
                  {iolist_size, 1},
                  {iolist_to_binary, 1},
+                 {is_builtin, 3},
                  {list_to_atom, 1},
                  {list_to_binary, 1},
                  {list_to_integer, 1},
