@@ -237,7 +237,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
               false ->
                 ?unique(Logger, ?lwarning, msg(sleep_set_block), []);
               true ->
-                ?crash({optimal_sleep_set_block, Origin, Sleep})
+                exit({optimal_sleep_set_block, Origin, Sleep})
             end,
             sleep_set_block;
           undefined ->
@@ -360,7 +360,7 @@ get_next_event(Event, MaybeNeedsReplayState) ->
                     _ -> NewEvent
                   end,
                 Reason = {replay_mismatch, I, Event, New, PrintDepth},
-                ?crash(Reason)
+                exit(Reason)
             end;
           false ->
             %% Last event = Previously racing event = Result may differ.
@@ -372,7 +372,7 @@ get_next_event(Event, MaybeNeedsReplayState) ->
           update_state(UpdatedEvent, State);
         retry ->
           BReason = {blocked_mismatch, I, Event, PrintDepth},
-          ?crash(BReason)
+          exit(BReason)
       end
   end.
 
@@ -1398,7 +1398,7 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   catch
     _:_ ->
       #scheduler_state{print_depth = PrintDepth} = State,
-      ?crash({replay_mismatch, I, Event, NewEvent, PrintDepth})
+      exit({replay_mismatch, I, Event, NewEvent, PrintDepth})
   end,
   NewLastScheduled =
     case is_pid(Actor) of

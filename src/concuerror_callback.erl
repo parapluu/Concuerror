@@ -51,6 +51,9 @@
 
 -include("concuerror.hrl").
 
+-define(crash_instr(Reason), exit(self(), {?MODULE, Reason})).
+-define(crash(Reason), exit({?MODULE, Reason})).
+
 -ifdef(BEFORE_OTP_17).
 -type ref_queue() :: queue().
 -type message_queue() :: queue().
@@ -434,7 +437,7 @@ run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
   #concuerror_info{processes = Processes} = Info,
   Return =
     case ets:lookup(Processes, Pid) of
-      [] -> ?crash({checking_system_process, Pid});
+      [] -> ?crash_instr({checking_system_process, Pid});
       [?process_pat_pid_status(Pid, Status)] -> is_active(Status)
     end,
   {Return, Info};
@@ -491,7 +494,7 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
       A when is_atom(A) -> {InTarget, {InTarget, node()}};
       {Name, Node} = Local when is_atom(Name), Node =:= node() ->
         {Name, Local};
-      {Name, Node} when is_atom(Name) -> ?crash({not_local_node, Node});
+      {Name, Node} when is_atom(Name) -> ?crash_instr({not_local_node, Node});
       _ -> error(badarg)
     end,
   {Ref, NewInfo} = get_ref(Info),
@@ -868,7 +871,7 @@ run_built_in(erlang, whereis, 1, [Name], Info) ->
         true -> {undefined, Info};
         false ->
           Stacktrace = fix_stacktrace(Info),
-          ?crash({registered_process_not_wrapped, Name, Stacktrace})
+          ?crash_instr({registered_process_not_wrapped, Name, Stacktrace})
       end;
     [[Pid]] -> {Pid, Info}
   end;
@@ -1012,10 +1015,10 @@ run_built_in(Module, Name, Arity, Args, Info)
         false ->
           case M =:= Module andalso F =:= Name andalso Args =:= OArgs of
             true ->
-              ?crash({inconsistent_builtin,
+              ?crash_instr({inconsistent_builtin,
                       [Module, Name, Arity, Args, OldResult, NewResult, Location]});
             false ->
-              ?crash({unexpected_builtin_change,
+              ?crash_instr({unexpected_builtin_change,
                       [Module, Name, Arity, Args, M, F, OArgs, Location]})
           end
       end;
@@ -1048,11 +1051,9 @@ run_built_in(os = Module, Name, Arity, Args, Info)
   maybe_reuse_old(Module, Name, Arity, Args, Info);
 
 run_built_in(Module, Name, Arity, _Args,
-             #concuerror_info{
-                event = #event{location = Location},
-                scheduler = Scheduler}) ->
+             #concuerror_info{event = #event{location = Location}}) ->
   Clean = clean_stacktrace(),
-  ?crash({unknown_built_in, {Module, Name, Arity, Location, Clean}}, Scheduler).
+  ?crash_instr({unknown_built_in, {Module, Name, Arity, Location, Clean}}).
 
 clean_stacktrace() ->
   Trace = try throw(foo) catch throw:_ -> erlang:get_stacktrace() end,
@@ -1384,7 +1385,6 @@ process_top_loop(Info) ->
         concuerror_inspect:inspect(call, [Module, Name, Args], start),
         exit(normal)
       catch
-        exit:{?MODULE, _} = Reason -> exit(Reason);
         Class:Reason ->
           case concuerror_inspect:stop_inspection() of
             {true, EndInfo} ->
@@ -1397,7 +1397,7 @@ process_top_loop(Info) ->
                   exit  -> Reason
                 end,
               exiting(NewReason, Stacktrace, EndInfo);
-            _ -> exit({process_crashed, Class, Reason, erlang:get_stacktrace()})
+            false -> exit(Reason)
           end
       end
   end.
@@ -1883,18 +1883,16 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                   ?unique(Logger, ?ltip, Msg, []),
                   {From, Reply};
                 Else ->
-                  ?crash({unknown_protocol_for_system, Else})
+                  throw({unknown_protocol_for_system, Else})
               end,
             Report ! {system_reply, F, Id, R, Name},
             ok
           catch
-            exit:{?MODULE, _} = Reason -> exit(Reason);
-            throw:no_reply ->
-              send_message_ack(Report, false, false, false),
-              ok;
-            Type:Reason ->
+            no_reply -> send_message_ack(Report, false, false, false);
+            {unknown_protocol_for_system, _} = Reason -> ?crash(Reason);
+            Class:Reason ->
               Stacktrace = erlang:get_stacktrace(),
-              ?crash({system_wrapper_error, Name, Type, Reason, Stacktrace})
+              ?crash({system_wrapper_error, Name, Class, Reason, Stacktrace})
           end;
         {get_info, _} ->
           ?crash({wrapper_asked_for_status, Name})

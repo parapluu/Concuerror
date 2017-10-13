@@ -106,8 +106,6 @@
 -define(pretty_s(I,E), concuerror_io_lib:pretty_s({I,E#event{location = []}},5)).
 -define(pretty_s(E), ?pretty_s(0,E)).
 %%------------------------------------------------------------------------------
--define(crash(Reason), exit({?MODULE, Reason})).
--define(crash(Reason, Scheduler), exit(Scheduler, {?MODULE, Reason})).
 -define(notify_us_msg,
         "~nPlease notify the developers, as this is a bug of Concuerror.").
 %%------------------------------------------------------------------------------
