@@ -247,9 +247,9 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
       built_in(Module, Name, Arity, Args, Location, Info);
     false ->
       case Info of
-        #concuerror_info{} ->
+        #concuerror_info{logger = Logger} ->
           ?debug_flag(?non_builtin,{Module,Name,Arity,Location}),
-          Module = concuerror_loader:load(Module);
+          ?autoload_and_log(Module, Logger);
         _ -> ok
       end,
       {doit, Info}
@@ -1419,7 +1419,7 @@ delete_system_entries({T, O}, true) ->
 
 new_process(ParentInfo) ->
   Info = ParentInfo#concuerror_info{notify_when_ready = {self(), true}},
-  spawn_link(fun() -> process_top_loop(Info) end).
+  spawn_link(?MODULE, process_top_loop, [Info]).
 
 wait_process(Pid, Timeout) ->
   %% Wait for the new process to instrument any code.
@@ -1546,7 +1546,9 @@ process_loop(Info) ->
       To ! {info, Info},
       process_loop(Info);
     unhijack ->
-      unhijack
+      unhijack;
+    quit ->
+      ok
   end.
 
 get_their_info(Pid) ->
@@ -1769,7 +1771,7 @@ cleanup_processes(ProcessesTable) ->
     fun(?process_pat_pid_kind(P,Kind)) ->
         case Kind =:= hijacked of
           true -> P ! unhijack;
-          false -> exit(P, kill)
+          false -> P ! quit
         end
     end,
   lists:foreach(Foreach, Processes).
@@ -1804,13 +1806,15 @@ hijack_or_wrap_system(Name, #concuerror_info{timeout = Timeout} = Info)
   hijacked;  
 hijack_or_wrap_system(Name, Info) ->
   #concuerror_info{processes = Processes} = Info,
-  Fun = fun() -> system_wrapper_loop(Name, whereis(Name), Info) end,
+  Wrapped = whereis(Name),
+  Fun = fun() -> system_wrapper_loop(Name, Wrapped, Info) end,
   Pid = spawn_link(Fun),
   ets:insert(Processes, ?new_system_process(Pid, Name, wrapper)),
   wrapped.
 
 system_wrapper_loop(Name, Wrapped, Info) ->
   receive
+    quit -> ok;
     Message ->
       case Message of
         {message,
@@ -1885,9 +1889,9 @@ system_wrapper_loop(Name, Wrapped, Info) ->
           end;
         {get_info, _} ->
           ?crash({wrapper_asked_for_status, Name})
-      end
-  end,
-  system_wrapper_loop(Name, Wrapped, Info).
+      end,
+      system_wrapper_loop(Name, Wrapped, Info)
+  end.
 
 check_request(code_server, get_path) -> ok;
 check_request(code_server, {ensure_loaded, _}) -> ok;

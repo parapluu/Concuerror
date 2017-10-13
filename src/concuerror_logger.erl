@@ -91,7 +91,7 @@ initialize(Options) ->
   Timestamp = format_utc_timestamp(),
   [{Output, OutputName}, SymbolicNames, Processes, Verbosity] =
     get_properties([output, symbolic_names, processes, verbosity], Options),
-  concuerror_loader:register_logger(self()),
+  ?autoload_and_log(io_lib, self()),
   ok = setup_symbolic_names(SymbolicNames, Processes),
   Graph = ?opt(graph, Options),
   Header =

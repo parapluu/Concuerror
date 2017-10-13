@@ -89,6 +89,20 @@
 -define(time(Logger, Tag),
         concuerror_logger:time(Logger, Tag)).
 
+-define(
+   autoload_and_log(Module, Logger),
+   case concuerror_loader:load(Module) of
+     already_done -> ok;
+     ok ->
+       ?log(Logger, ?linfo,
+            "Automatically instrumented module ~p~n", [Module]),
+       ok;
+     fail ->
+       ?log(Logger, ?lwarning,
+            "Could not load module '~p'. Check '-h input'.~n", [Module]),
+       ok
+   end).
+
 -define(pretty_s(I,E), concuerror_io_lib:pretty_s({I,E#event{location = []}},5)).
 -define(pretty_s(E), ?pretty_s(0,E)).
 %%------------------------------------------------------------------------------
@@ -285,6 +299,7 @@
                  {integer_to_list,1},
                  {iolist_size, 1},
                  {iolist_to_binary, 1},
+                 {is_builtin, 3},
                  {list_to_atom, 1},
                  {list_to_binary, 1},
                  {list_to_integer, 1},
@@ -299,7 +314,8 @@
                  {setelement, 3},
                  {term_to_binary, 1},
                  {throw, 1},
-                 {tuple_to_list, 1}
+                 {tuple_to_list, 1},
+                 {universaltime_to_localtime,1}
                 ]]
         ++ [{error_logger, N, A} ||
                {N, A} <-

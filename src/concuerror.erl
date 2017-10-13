@@ -26,7 +26,7 @@ start(Options, LogMsgs) ->
   _ = [?log(Logger, Level, Format, Args) || {Level, Format, Args} <- LogMsgs],
   SchedulerOptions = [{logger, Logger}|LoggerOptions],
   {Pid, Ref} =
-    spawn_monitor(fun() -> concuerror_scheduler:run(SchedulerOptions) end),
+    spawn_monitor(concuerror_scheduler, run, [SchedulerOptions]),
   Reason = receive {'DOWN', Ref, process, Pid, R} -> R end,
   SchedulerStatus =
     case Reason =:= normal of

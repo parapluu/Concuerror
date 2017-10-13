@@ -669,6 +669,7 @@ add_missing_file(Options) ->
 
 initialize_loader(Options) ->
   Excluded = proplists:get_value(exclude_module, Options, []),
+  [opt_warn("Not instrumenting module ~p", [M]) || M <- Excluded],
   case concuerror_loader:initialize(Excluded) of
     ok -> Options;
     {error, Error} -> opt_error(Error)
@@ -699,6 +700,7 @@ compile_and_load([], [_|More] = LoadedFiles, LastModule, Options) ->
 compile_and_load([File|Rest], Acc, _LastModule, Options) ->
   case concuerror_loader:load_initially(File) of
     {ok, Module, Warnings} ->
+      opt_info("Instrumented & loaded module ~p", [Module]),
       lists:foreach(fun(W) -> opt_warn(W, []) end, Warnings),
       compile_and_load(Rest, [File|Acc], Module, Options);
     {error, Error} ->
