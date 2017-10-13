@@ -199,15 +199,15 @@ instrumented(apply, [Fun, Args], Location, Info) ->
     false ->
       {doit, Info}
   end;
-instrumented('receive', [PatternFun, Timeout], Location, Info) ->
+instrumented('receive', [PatternFun, RealTimeout], Location, Info) ->
   case Info of
     #concuerror_info{after_timeout = AfterTimeout} ->
-      RealTimeout =
-        case Timeout =:= infinity orelse Timeout > AfterTimeout of
-          false -> Timeout;
+      Timeout =
+        case RealTimeout =:= infinity orelse RealTimeout >= AfterTimeout of
+          false -> RealTimeout;
           true -> infinity
         end,
-      handle_receive(PatternFun, RealTimeout, Location, Info);
+      handle_receive(PatternFun, Timeout, Location, Info);
     _Logger ->
       {doit, Info}
   end.
