@@ -178,7 +178,7 @@ run(Options) ->
        logger = Logger,
        non_racing_system = ?opt(non_racing_system, Options),
        print_depth = ?opt(print_depth, Options),
-       processes = ?opt(processes, Options),
+       processes = Processes = ?opt(processes, Options),
        scheduling = ?opt(scheduling, Options),
        scheduling_bound_type = SchedulingBoundType,
        show_races = ?opt(show_races, Options),
@@ -192,7 +192,9 @@ run(Options) ->
       },
   concuerror_logger:plan(Logger),
   ?time(Logger, "Exploration start"),
-  explore(InitialState).
+  Ret = explore(InitialState),
+  concuerror_callback:cleanup_processes(Processes),
+  Ret.
 
 %%------------------------------------------------------------------------------
 

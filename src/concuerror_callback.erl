@@ -1773,7 +1773,9 @@ cleanup_processes(ProcessesTable) ->
     fun(?process_pat_pid_kind(P,Kind)) ->
         case Kind =:= hijacked of
           true -> P ! unhijack;
-          false -> P ! quit
+          false ->
+            unlink(P),
+            P ! quit
         end
     end,
   lists:foreach(Foreach, Processes).
