@@ -1016,7 +1016,8 @@ update_trace(
                     case ObserverInfo =:= no_observer of
                       true -> NotDep;
                       false ->
-                        NotObsRaw = not_obs_raw(NewOldTrace, Later, ObserverInfo),
+                        NotObsRaw =
+                          not_obs_raw(NewOldTrace, Later, ObserverInfo, Event),
                         NotObs = NotObsRaw -- NotDep,
                         NotDep ++ [EarlyEvent#event{label = undefined}] ++ NotObs
                     end,
@@ -1126,20 +1127,27 @@ is_process_info_related(Event) ->
     _ -> false
   end.
 
-not_obs_raw(NewOldTrace, Later, ObserverInfo) ->
-  lists:reverse(not_obs_raw(NewOldTrace, Later, ObserverInfo, [])).
+not_obs_raw(NewOldTrace, Later, ObserverInfo, Event) ->
+  lists:reverse(not_obs_raw(NewOldTrace, Later, ObserverInfo, Event, [])).
 
-not_obs_raw([], [], _ObserverInfo, _NotObs) ->
+not_obs_raw([], [], _ObserverInfo, _Event, _NotObs) ->
   [];
-not_obs_raw([], Later, ObserverInfo, NotObs) ->
-  not_obs_raw(Later, [], ObserverInfo, NotObs);
-not_obs_raw([TraceState|Rest], Later, ObserverInfo, NotObs) ->
-  #trace_state{done = [#event{special = Special} = Event|_]} = TraceState,
+not_obs_raw([], Later, ObserverInfo, Event, NotObs) ->
+  not_obs_raw(Later, [], ObserverInfo, Event, NotObs);
+not_obs_raw([TraceState|Rest], Later, ObserverInfo, Event, NotObs) ->
+  #trace_state{done = [#event{special = Special} = E|_]} = TraceState,
   case [Id || {message_received, Id} <- Special, Id =:= ObserverInfo] =:= [] of
     true ->
-      not_obs_raw(Rest, Later, ObserverInfo, [Event|NotObs]);
+      not_obs_raw(Rest, Later, ObserverInfo, Event, [E|NotObs]);
     false ->
-      [Event#event{label = undefined}|NotObs]
+      #event{special = NewSpecial} = Event,
+      ObsNewSpecial =
+        case lists:keyfind(message_delivered, 1, NewSpecial) of
+          {message_delivered, #message_event{message = #message{id = NewId}}} ->
+            lists:keyreplace(ObserverInfo, 2, Special, {message_received, NewId});
+          _ -> exit(impossible)
+        end,
+      [E#event{label = undefined, special = ObsNewSpecial}|NotObs]
   end.
 
 has_weak_initial_before([], _, _Logger) ->

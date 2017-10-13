@@ -1,0 +1,216 @@
+Concuerror v0.17 ('5b1c05b') started at 13 Oct 2017 15:15:49
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{diff_obs,test,[]}},
+   {exclude_module,[]},
+   {files,["/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/diff_obs.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    P in diff_obs.erl line 28
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: true = erlang:register(main, P)
+    in diff_obs.erl line 21
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-3-'.0>,[]])
+    in erlang.erl line 2673
+   6: P: receive timeout expired after 0 ms
+    in diff_obs.erl line 23
+   7: P.1: {x,0} = main ! {x,0}
+    in diff_obs.erl line 9
+   8: P.1: exits normally
+   9: P.2: {y,0} = main ! {y,0}
+    in diff_obs.erl line 12
+  10: P.2: exits normally
+  11: P.3: {x,1} = main ! {x,1}
+    in diff_obs.erl line 15
+  12: P.3: exits normally
+  13: P.4: o = main ! o
+    in diff_obs.erl line 18
+  14: P.4: exits normally
+  15: P: receives message ({x,0})
+    in diff_obs.erl line 26
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    P in diff_obs.erl line 28
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: true = erlang:register(main, P)
+    in diff_obs.erl line 21
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-3-'.0>,[]])
+    in erlang.erl line 2673
+   6: P: receive timeout expired after 0 ms
+    in diff_obs.erl line 23
+   7: P.4: o = main ! o
+    in diff_obs.erl line 18
+   8: P.4: exits normally
+   9: P.2: {y,0} = main ! {y,0}
+    in diff_obs.erl line 12
+  10: P.1: {x,0} = main ! {x,0}
+    in diff_obs.erl line 9
+  11: P.1: exits normally
+  12: P.2: exits normally
+  13: P.3: {x,1} = main ! {x,1}
+    in diff_obs.erl line 15
+  14: P.3: exits normally
+  15: P: receives message ({y,0})
+    in diff_obs.erl line 26
+################################################################################
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    P in diff_obs.erl line 28
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: true = erlang:register(main, P)
+    in diff_obs.erl line 21
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-3-'.0>,[]])
+    in erlang.erl line 2673
+   6: P: receive timeout expired after 0 ms
+    in diff_obs.erl line 23
+   7: P.4: o = main ! o
+    in diff_obs.erl line 18
+   8: P.4: exits normally
+   9: P.3: {x,1} = main ! {x,1}
+    in diff_obs.erl line 15
+  10: P.1: {x,0} = main ! {x,0}
+    in diff_obs.erl line 9
+  11: P.1: exits normally
+  12: P.2: {y,0} = main ! {y,0}
+    in diff_obs.erl line 12
+  13: P.2: exits normally
+  14: P.3: exits normally
+  15: P: receives message ({x,1})
+    in diff_obs.erl line 26
+################################################################################
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    P in diff_obs.erl line 28
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: true = erlang:register(main, P)
+    in diff_obs.erl line 21
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-3-'.0>,[]])
+    in erlang.erl line 2673
+   6: P.1: {x,0} = main ! {x,0}
+    in diff_obs.erl line 9
+   7: P.1: exits normally
+   8: P.2: {y,0} = main ! {y,0}
+    in diff_obs.erl line 12
+   9: P.2: exits normally
+  10: P.3: {x,1} = main ! {x,1}
+    in diff_obs.erl line 15
+  11: P.3: exits normally
+  12: P.4: o = main ! o
+    in diff_obs.erl line 18
+  13: P.4: exits normally
+  14: P: receives message (o)
+    in diff_obs.erl line 23
+  15: P: receives message ({x,0})
+    in diff_obs.erl line 24
+################################################################################
+Interleaving #5
+--------------------------------------------------------------------------------
+Errors found:
+* Blocked at a 'receive' ("deadlocked"; other processes have exited):
+    P in diff_obs.erl line 28
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: true = erlang:register(main, P)
+    in diff_obs.erl line 21
+   2: P: P.1 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.2 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: P.3 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   5: P: P.4 = erlang:spawn(erlang, apply, [#Fun<diff_obs.'-test/0-fun-3-'.0>,[]])
+    in erlang.erl line 2673
+   6: P.2: {y,0} = main ! {y,0}
+    in diff_obs.erl line 12
+   7: P.2: exits normally
+   8: P.4: o = main ! o
+    in diff_obs.erl line 18
+   9: P.4: exits normally
+  10: P: receives message (o)
+    in diff_obs.erl line 23
+  11: P.3: {x,1} = main ! {x,1}
+    in diff_obs.erl line 15
+  12: P.1: {x,0} = main ! {x,0}
+    in diff_obs.erl line 9
+  13: P.1: exits normally
+  14: P.3: exits normally
+  15: P: receives message ({x,1})
+    in diff_obs.erl line 24
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check '--help attributes' for info on how to pass options via module attributes.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Automatically instrumented module io_lib
+* Instrumented & loaded module diff_obs
+* Automatically instrumented module erlang
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+* Continuing after error (-k)
+
+################################################################################
+Done at 13 Oct 2017 15:15:50 (Exit status: error)
+  Summary: 5 errors, 5/5 interleavings explored

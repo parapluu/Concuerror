@@ -1,4 +1,4 @@
-Concuerror v0.17 (b695793) started at 10 Oct 2017 14:47:55
+Concuerror v0.17 ('5b1c05b') started at 13 Oct 2017 15:15:41
  Options:
   [{after_timeout,infinity},
    {assertions_only,false},
@@ -654,104 +654,6 @@ Event trace:
 Interleaving #14
 --------------------------------------------------------------------------------
 Errors found:
-* At step 14 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[]},{2,[]},{3,[two,one]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   6: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   7: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   8: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   9: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-  10: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-  11: P: receives message (one)
-    in test_after_spawns.erl line 30
-  12: P: receives message (two)
-    in test_after_spawns.erl line 30
-  13: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  14: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[]},{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-  15: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  16: P.1: exits normally
-  17: P.2: exits normally
-  18: P.3: exits normally
-################################################################################
-Interleaving #15
---------------------------------------------------------------------------------
-Errors found:
-* At step 19 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[]},{2,[]},{3,[one,two,one]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   6: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   7: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   8: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   9: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-  10: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-  11: P: receives message (one)
-    in test_after_spawns.erl line 30
-  12: P: receives message (two)
-    in test_after_spawns.erl line 30
-  13: P.2: exits normally
-  14: P.3: exits normally
-  15: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  16: P.1: exits normally
-  17: P: receives message (one)
-    in test_after_spawns.erl line 30
-  18: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[]},{3,[one,two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #16
---------------------------------------------------------------------------------
-Errors found:
 * At step 13 process P exited abnormally
     Reason:
       {{nocatch,{ok,{1,[]},{2,[]},{3,[one]}}},
@@ -794,6 +696,104 @@ Event trace:
   16: P.2: two = P ! two
     in test_after_spawns.erl line 13
   17: P.2: exits normally
+################################################################################
+Interleaving #15
+--------------------------------------------------------------------------------
+Errors found:
+* At step 18 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[]},{2,[]},{3,[one,two,one]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+   6: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   7: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+   8: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   9: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+  10: P: receives message (one)
+    in test_after_spawns.erl line 30
+  11: P.3: exits normally
+  12: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+  13: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  14: P.1: exits normally
+  15: P: receives message (two)
+    in test_after_spawns.erl line 30
+  16: P: receives message (one)
+    in test_after_spawns.erl line 30
+  17: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  18: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[]},{3,[one,two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+  19: P.2: exits normally
+################################################################################
+Interleaving #16
+--------------------------------------------------------------------------------
+Errors found:
+* At step 16 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[]},{2,[]},{3,[two,one]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+   6: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   7: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+   8: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   9: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+  10: P: receives message (one)
+    in test_after_spawns.erl line 30
+  11: P.3: exits normally
+  12: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+  13: P: receives message (two)
+    in test_after_spawns.erl line 30
+  14: P.2: exits normally
+  15: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  16: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[]},{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+  17: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  18: P.1: exits normally
 ################################################################################
 Interleaving #17
 --------------------------------------------------------------------------------
@@ -926,48 +926,6 @@ Interleaving #20
 Errors found:
 * At step 13 process P exited abnormally
     Reason:
-      {{nocatch,{ok,{1,[]},{2,[]},one}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   6: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   7: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   8: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   9: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-  10: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  11: P.1: exits normally
-  12: P: receives message (one)
-    in test_after_spawns.erl line 21
-  13: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-  14: P.2: exits normally
-  15: P.3: exits normally
-################################################################################
-Interleaving #21
---------------------------------------------------------------------------------
-Errors found:
-* At step 13 process P exited abnormally
-    Reason:
       {{nocatch,{ok,{1,[]},{2,[one]},{3,[]}}},
        [{test_after_spawns,test_after_spawns,0,
                            [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
@@ -1009,7 +967,7 @@ Event trace:
     in test_after_spawns.erl line 14
   17: P.3: exits normally
 ################################################################################
-Interleaving #22
+Interleaving #21
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -1057,7 +1015,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #23
+Interleaving #22
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -1107,7 +1065,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one]},{3,[one,two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #24
+Interleaving #23
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -1157,7 +1115,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one]},{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #25
+Interleaving #24
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -1205,7 +1163,7 @@ Event trace:
     in test_after_spawns.erl line 13
   18: P.2: exits normally
 ################################################################################
-Interleaving #26
+Interleaving #25
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -1249,7 +1207,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #27
+Interleaving #26
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -1293,7 +1251,7 @@ Event trace:
   15: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   16: P.3: exits normally
 ################################################################################
-Interleaving #28
+Interleaving #27
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -1341,7 +1299,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #29
+Interleaving #28
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -1391,7 +1349,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #30
+Interleaving #29
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -1437,7 +1395,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #31
+Interleaving #30
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -1487,7 +1445,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,two,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #32
+Interleaving #31
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -1537,7 +1495,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #33
+Interleaving #32
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -1585,7 +1543,7 @@ Event trace:
     in test_after_spawns.erl line 13
   18: P.2: exits normally
 ################################################################################
-Interleaving #34
+Interleaving #33
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -1635,7 +1593,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,one]},{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #35
+Interleaving #34
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -1681,7 +1639,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,one]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #36
+Interleaving #35
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -1729,7 +1687,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #37
+Interleaving #36
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -1779,7 +1737,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,two]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #38
+Interleaving #37
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -1825,7 +1783,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,two]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #39
+Interleaving #38
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -1875,7 +1833,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,one,two]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #40
+Interleaving #39
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -1921,7 +1879,7 @@ Event trace:
     in test_after_spawns.erl line 14
   17: P.3: exits normally
 ################################################################################
-Interleaving #41
+Interleaving #40
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -1969,7 +1927,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #42
+Interleaving #41
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -2019,7 +1977,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two]},{3,[one,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #43
+Interleaving #42
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -2069,7 +2027,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two]},{3,[one,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #44
+Interleaving #43
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -2117,7 +2075,7 @@ Event trace:
     in test_after_spawns.erl line 12
   18: P.1: exits normally
 ################################################################################
-Interleaving #45
+Interleaving #44
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -2161,7 +2119,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #46
+Interleaving #45
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -2205,7 +2163,7 @@ Event trace:
   15: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   16: P.3: exits normally
 ################################################################################
-Interleaving #47
+Interleaving #46
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -2255,7 +2213,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,one,two]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #48
+Interleaving #47
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -2303,7 +2261,7 @@ Event trace:
     in test_after_spawns.erl line 12
   18: P.1: exits normally
 ################################################################################
-Interleaving #49
+Interleaving #48
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -2353,7 +2311,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,two]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #50
+Interleaving #49
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -2399,7 +2357,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,two]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #51
+Interleaving #50
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -2447,7 +2405,7 @@ Event trace:
   17: P.2: exits normally
   18: P.3: exits normally
 ################################################################################
-Interleaving #52
+Interleaving #51
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -2497,7 +2455,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,one]},{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #53
+Interleaving #52
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -2543,7 +2501,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,one]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #54
+Interleaving #53
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -2593,201 +2551,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #55
---------------------------------------------------------------------------------
-Errors found:
-* At step 14 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[]},{2,[two,one]},{3,[]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   6: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   7: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   8: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   9: P: receives message (one)
-    in test_after_spawns.erl line 30
-  10: P: receives message (two)
-    in test_after_spawns.erl line 30
-  11: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  12: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  13: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  14: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-  15: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  16: P.1: exits normally
-  17: P.2: exits normally
-  18: P.3: exits normally
-################################################################################
-Interleaving #56
---------------------------------------------------------------------------------
-Errors found:
-* At step 19 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[]},{2,[two,one]},{3,[one]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   6: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   7: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   8: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   9: P: receives message (one)
-    in test_after_spawns.erl line 30
-  10: P: receives message (two)
-    in test_after_spawns.erl line 30
-  11: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  12: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  13: P.2: exits normally
-  14: P.3: exits normally
-  15: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  16: P.1: exits normally
-  17: P: receives message (one)
-    in test_after_spawns.erl line 30
-  18: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #57
---------------------------------------------------------------------------------
-Errors found:
-* At step 17 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[]},{2,[two,one]},one}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   6: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   7: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   8: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   9: P: receives message (one)
-    in test_after_spawns.erl line 30
-  10: P: receives message (two)
-    in test_after_spawns.erl line 30
-  11: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  12: P.2: exits normally
-  13: P.3: exits normally
-  14: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  15: P.1: exits normally
-  16: P: receives message (one)
-    in test_after_spawns.erl line 21
-  17: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #58
---------------------------------------------------------------------------------
-Errors found:
-* At step 19 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[]},{2,[one,two,one]},{3,[]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   6: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   7: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   8: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   9: P: receives message (one)
-    in test_after_spawns.erl line 30
-  10: P: receives message (two)
-    in test_after_spawns.erl line 30
-  11: P.2: exits normally
-  12: P.3: exits normally
-  13: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  14: P.1: exits normally
-  15: P: receives message (one)
-    in test_after_spawns.erl line 30
-  16: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  17: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  18: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,two,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #59
+Interleaving #54
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -2833,7 +2597,7 @@ Event trace:
     in test_after_spawns.erl line 13
   17: P.2: exits normally
 ################################################################################
-Interleaving #60
+Interleaving #55
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -2881,7 +2645,7 @@ Event trace:
     in test_after_spawns.erl line 13
   18: P.2: exits normally
 ################################################################################
-Interleaving #61
+Interleaving #56
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -2931,7 +2695,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one]},{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #62
+Interleaving #57
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -2981,7 +2745,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one]},{3,[one,two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.2: exits normally
 ################################################################################
-Interleaving #63
+Interleaving #58
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -3029,7 +2793,7 @@ Event trace:
     in test_after_spawns.erl line 12
   18: P.1: exits normally
 ################################################################################
-Interleaving #64
+Interleaving #59
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -3073,7 +2837,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #65
+Interleaving #60
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -3117,7 +2881,201 @@ Event trace:
   15: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   16: P.2: exits normally
 ################################################################################
-Interleaving #66
+Interleaving #61
+--------------------------------------------------------------------------------
+Errors found:
+* At step 18 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[]},{2,[one,two,one]},{3,[]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+   6: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   7: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   8: P: receives message (one)
+    in test_after_spawns.erl line 30
+   9: P.3: exits normally
+  10: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+  11: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  12: P.1: exits normally
+  13: P: receives message (two)
+    in test_after_spawns.erl line 30
+  14: P: receives message (one)
+    in test_after_spawns.erl line 30
+  15: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  16: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  17: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  18: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[one,two,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+  19: P.2: exits normally
+################################################################################
+Interleaving #62
+--------------------------------------------------------------------------------
+Errors found:
+* At step 16 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[]},{2,[two,one]},{3,[]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+   6: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   7: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   8: P: receives message (one)
+    in test_after_spawns.erl line 30
+   9: P.3: exits normally
+  10: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+  11: P: receives message (two)
+    in test_after_spawns.erl line 30
+  12: P.2: exits normally
+  13: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  14: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  15: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  16: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+  17: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  18: P.1: exits normally
+################################################################################
+Interleaving #63
+--------------------------------------------------------------------------------
+Errors found:
+* At step 19 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[]},{2,[two,one]},{3,[one]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+   6: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   7: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   8: P: receives message (one)
+    in test_after_spawns.erl line 30
+   9: P.3: exits normally
+  10: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+  11: P: receives message (two)
+    in test_after_spawns.erl line 30
+  12: P.2: exits normally
+  13: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  14: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  15: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  16: P.1: exits normally
+  17: P: receives message (one)
+    in test_after_spawns.erl line 30
+  18: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  19: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+################################################################################
+Interleaving #64
+--------------------------------------------------------------------------------
+Errors found:
+* At step 17 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[]},{2,[two,one]},one}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+   6: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   7: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   8: P: receives message (one)
+    in test_after_spawns.erl line 30
+   9: P.3: exits normally
+  10: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+  11: P: receives message (two)
+    in test_after_spawns.erl line 30
+  12: P.2: exits normally
+  13: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  14: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  15: P.1: exits normally
+  16: P: receives message (one)
+    in test_after_spawns.erl line 21
+  17: P: exits abnormally ({{nocatch,{ok,{1,[]},{2,[two,one]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+################################################################################
+Interleaving #65
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -3159,7 +3117,7 @@ Event trace:
     in test_after_spawns.erl line 14
   15: P.3: exits normally
 ################################################################################
-Interleaving #67
+Interleaving #66
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -3203,7 +3161,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #68
+Interleaving #67
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -3249,7 +3207,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[]},one,{3,[one,two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #69
+Interleaving #68
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -3295,7 +3253,7 @@ Event trace:
   16: P: exits abnormally ({{nocatch,{ok,{1,[]},one,{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   17: P.3: exits normally
 ################################################################################
-Interleaving #70
+Interleaving #69
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -3339,7 +3297,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #71
+Interleaving #70
 --------------------------------------------------------------------------------
 Errors found:
 * At step 12 process P exited abnormally
@@ -3379,7 +3337,7 @@ Event trace:
     in test_after_spawns.erl line 14
   14: P.3: exits normally
 ################################################################################
-Interleaving #72
+Interleaving #71
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -3419,7 +3377,7 @@ Event trace:
   13: P: exits abnormally ({{nocatch,{ok,{1,[]},one,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   14: P.3: exits normally
 ################################################################################
-Interleaving #73
+Interleaving #72
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -3459,7 +3417,7 @@ Event trace:
     in test_after_spawns.erl line 14
   14: P.3: exits normally
 ################################################################################
-Interleaving #74
+Interleaving #73
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -3501,7 +3459,7 @@ Event trace:
     in test_after_spawns.erl line 14
   15: P.3: exits normally
 ################################################################################
-Interleaving #75
+Interleaving #74
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -3545,7 +3503,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #76
+Interleaving #75
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -3591,7 +3549,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[]},two,{3,[one,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #77
+Interleaving #76
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -3637,7 +3595,7 @@ Event trace:
   16: P: exits abnormally ({{nocatch,{ok,{1,[]},two,{3,[one,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   17: P.3: exits normally
 ################################################################################
-Interleaving #78
+Interleaving #77
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -3681,7 +3639,7 @@ Event trace:
     in test_after_spawns.erl line 12
   16: P.1: exits normally
 ################################################################################
-Interleaving #79
+Interleaving #78
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -3721,7 +3679,7 @@ Event trace:
   13: P: exits abnormally ({{nocatch,{ok,{1,[]},two,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   14: P.3: exits normally
 ################################################################################
-Interleaving #80
+Interleaving #79
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -3761,47 +3719,7 @@ Event trace:
   13: P.2: exits normally
   14: P.3: exits normally
 ################################################################################
-Interleaving #81
---------------------------------------------------------------------------------
-Errors found:
-* At step 10 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[]},one,two}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-   6: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   7: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   8: P: receives message (one)
-    in test_after_spawns.erl line 21
-   9: P: receives message (two)
-    in test_after_spawns.erl line 21
-  10: P: exits abnormally ({{nocatch,{ok,{1,[]},one,two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-  11: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  12: P.1: exits normally
-  13: P.2: exits normally
-  14: P.3: exits normally
-################################################################################
-Interleaving #82
+Interleaving #80
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -3843,7 +3761,7 @@ Event trace:
     in test_after_spawns.erl line 13
   15: P.2: exits normally
 ################################################################################
-Interleaving #83
+Interleaving #81
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -3887,7 +3805,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #84
+Interleaving #82
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -3933,7 +3851,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[]},one,{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #85
+Interleaving #83
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -3979,7 +3897,7 @@ Event trace:
   16: P: exits abnormally ({{nocatch,{ok,{1,[]},one,{3,[one,two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   17: P.2: exits normally
 ################################################################################
-Interleaving #86
+Interleaving #84
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -4023,7 +3941,47 @@ Event trace:
     in test_after_spawns.erl line 12
   16: P.1: exits normally
 ################################################################################
-Interleaving #87
+Interleaving #85
+--------------------------------------------------------------------------------
+Errors found:
+* At step 13 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[]},one,two}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+   6: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   7: P: receives message (one)
+    in test_after_spawns.erl line 21
+   8: P.3: exits normally
+   9: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+  10: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  11: P.1: exits normally
+  12: P: receives message (two)
+    in test_after_spawns.erl line 21
+  13: P: exits abnormally ({{nocatch,{ok,{1,[]},one,two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+  14: P.2: exits normally
+################################################################################
+Interleaving #86
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -4069,7 +4027,7 @@ Event trace:
     in test_after_spawns.erl line 14
   17: P.3: exits normally
 ################################################################################
-Interleaving #88
+Interleaving #87
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -4117,7 +4075,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #89
+Interleaving #88
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -4167,7 +4125,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[]},{3,[one,two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #90
+Interleaving #89
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -4217,7 +4175,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[]},{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #91
+Interleaving #90
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -4265,7 +4223,7 @@ Event trace:
     in test_after_spawns.erl line 13
   18: P.2: exits normally
 ################################################################################
-Interleaving #92
+Interleaving #91
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -4309,7 +4267,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #93
+Interleaving #92
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -4353,7 +4311,7 @@ Event trace:
   15: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   16: P.3: exits normally
 ################################################################################
-Interleaving #94
+Interleaving #93
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -4401,7 +4359,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #95
+Interleaving #94
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -4451,7 +4409,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[two]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #96
+Interleaving #95
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -4497,7 +4455,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[two]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #97
+Interleaving #96
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -4547,7 +4505,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[one,two]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #98
+Interleaving #97
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -4597,7 +4555,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[two,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #99
+Interleaving #98
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -4645,7 +4603,7 @@ Event trace:
     in test_after_spawns.erl line 13
   18: P.2: exits normally
 ################################################################################
-Interleaving #100
+Interleaving #99
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -4695,7 +4653,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[one]},{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #101
+Interleaving #100
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -4741,7 +4699,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[one]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #102
+Interleaving #101
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -4785,7 +4743,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #103
+Interleaving #102
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -4831,7 +4789,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[one]},two,{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #104
+Interleaving #103
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -4873,7 +4831,7 @@ Event trace:
     in test_after_spawns.erl line 21
   15: P: exits abnormally ({{nocatch,{ok,{1,[one]},two,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #105
+Interleaving #104
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -4915,7 +4873,7 @@ Event trace:
   14: P: exits abnormally ({{nocatch,{ok,{1,[one]},one,two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   15: P.3: exits normally
 ################################################################################
-Interleaving #106
+Interleaving #105
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -4959,7 +4917,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #107
+Interleaving #106
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -5005,7 +4963,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[one]},one,{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #108
+Interleaving #107
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -5053,7 +5011,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #109
+Interleaving #108
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -5103,7 +5061,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #110
+Interleaving #109
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -5149,7 +5107,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #111
+Interleaving #110
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -5199,7 +5157,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #112
+Interleaving #111
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -5245,7 +5203,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},one,{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #113
+Interleaving #112
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -5295,7 +5253,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,two,one]},{2,[]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #114
+Interleaving #113
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -5345,7 +5303,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[two,one,one]},{2,[]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #115
+Interleaving #114
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -5393,7 +5351,7 @@ Event trace:
     in test_after_spawns.erl line 13
   18: P.2: exits normally
 ################################################################################
-Interleaving #116
+Interleaving #115
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -5443,7 +5401,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,one]},{2,[]},{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #117
+Interleaving #116
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -5489,7 +5447,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[one,one]},{2,[]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #118
+Interleaving #117
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -5539,7 +5497,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,one]},{2,[two]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #119
+Interleaving #118
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -5585,7 +5543,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[one,one]},two,{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #120
+Interleaving #119
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -5633,7 +5591,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #121
+Interleaving #120
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -5683,7 +5641,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,two]},{2,[]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #122
+Interleaving #121
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -5729,7 +5687,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[one,two]},{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #123
+Interleaving #122
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -5779,7 +5737,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,two]},{2,[one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #124
+Interleaving #123
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -5825,7 +5783,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[one,two]},one,{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #125
+Interleaving #124
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -5875,7 +5833,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,one,two]},{2,[]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #126
+Interleaving #125
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -5921,7 +5879,7 @@ Event trace:
     in test_after_spawns.erl line 14
   17: P.3: exits normally
 ################################################################################
-Interleaving #127
+Interleaving #126
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -5969,7 +5927,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #128
+Interleaving #127
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -6019,7 +5977,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[two]},{2,[]},{3,[one,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #129
+Interleaving #128
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -6069,7 +6027,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[two]},{2,[]},{3,[one,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #130
+Interleaving #129
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -6117,7 +6075,7 @@ Event trace:
     in test_after_spawns.erl line 12
   18: P.1: exits normally
 ################################################################################
-Interleaving #131
+Interleaving #130
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -6161,7 +6119,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #132
+Interleaving #131
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -6205,7 +6163,7 @@ Event trace:
   15: P: exits abnormally ({{nocatch,{ok,{1,[two]},{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   16: P.3: exits normally
 ################################################################################
-Interleaving #133
+Interleaving #132
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -6253,7 +6211,7 @@ Event trace:
     in test_after_spawns.erl line 14
   18: P.3: exits normally
 ################################################################################
-Interleaving #134
+Interleaving #133
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -6303,7 +6261,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[two]},{2,[one]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #135
+Interleaving #134
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -6349,7 +6307,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[two]},{2,[one]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #136
+Interleaving #135
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -6399,7 +6357,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[two]},{2,[one,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #137
+Interleaving #136
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -6449,7 +6407,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[two]},{2,[one,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #138
+Interleaving #137
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -6497,7 +6455,7 @@ Event trace:
     in test_after_spawns.erl line 12
   18: P.1: exits normally
 ################################################################################
-Interleaving #139
+Interleaving #138
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -6547,7 +6505,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[two]},{2,[one]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #140
+Interleaving #139
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -6593,7 +6551,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[two]},{2,[one]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #141
+Interleaving #140
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -6637,7 +6595,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #142
+Interleaving #141
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -6683,7 +6641,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[two]},one,{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #143
+Interleaving #142
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -6725,7 +6683,7 @@ Event trace:
     in test_after_spawns.erl line 21
   15: P: exits abnormally ({{nocatch,{ok,{1,[two]},one,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #144
+Interleaving #143
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -6767,7 +6725,7 @@ Event trace:
   14: P: exits abnormally ({{nocatch,{ok,{1,[two]},one,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   15: P.3: exits normally
 ################################################################################
-Interleaving #145
+Interleaving #144
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -6811,7 +6769,7 @@ Event trace:
     in test_after_spawns.erl line 12
   16: P.1: exits normally
 ################################################################################
-Interleaving #146
+Interleaving #145
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -6857,7 +6815,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[two]},one,{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #147
+Interleaving #146
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -6907,7 +6865,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[one,one,two]},{2,[]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.3: exits normally
 ################################################################################
-Interleaving #148
+Interleaving #147
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -6955,7 +6913,7 @@ Event trace:
     in test_after_spawns.erl line 12
   18: P.1: exits normally
 ################################################################################
-Interleaving #149
+Interleaving #148
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -7005,7 +6963,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,two]},{2,[]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #150
+Interleaving #149
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -7051,7 +7009,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[one,two]},{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #151
+Interleaving #150
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -7101,7 +7059,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,two]},{2,[one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #152
+Interleaving #151
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -7147,7 +7105,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[one,two]},one,{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #153
+Interleaving #152
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -7195,7 +7153,7 @@ Event trace:
   17: P.2: exits normally
   18: P.3: exits normally
 ################################################################################
-Interleaving #154
+Interleaving #153
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -7245,7 +7203,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,one]},{2,[]},{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #155
+Interleaving #154
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -7291,7 +7249,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[one,one]},{2,[]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #156
+Interleaving #155
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -7341,7 +7299,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one,one]},{2,[two]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #157
+Interleaving #156
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -7387,7 +7345,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[one,one]},two,{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #158
+Interleaving #157
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -7437,297 +7395,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[two,one,one]},{2,[]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #159
---------------------------------------------------------------------------------
-Errors found:
-* At step 14 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[two,one]},{2,[]},{3,[]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   6: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   7: P: receives message (one)
-    in test_after_spawns.erl line 30
-   8: P: receives message (two)
-    in test_after_spawns.erl line 30
-   9: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  10: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  11: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  12: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  13: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  14: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-  15: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  16: P.1: exits normally
-  17: P.2: exits normally
-  18: P.3: exits normally
-################################################################################
-Interleaving #160
---------------------------------------------------------------------------------
-Errors found:
-* At step 19 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[two,one]},{2,[]},{3,[one]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   6: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   7: P: receives message (one)
-    in test_after_spawns.erl line 30
-   8: P: receives message (two)
-    in test_after_spawns.erl line 30
-   9: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  10: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  11: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  12: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  13: P.2: exits normally
-  14: P.3: exits normally
-  15: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  16: P.1: exits normally
-  17: P: receives message (one)
-    in test_after_spawns.erl line 30
-  18: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  19: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #161
---------------------------------------------------------------------------------
-Errors found:
-* At step 17 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[two,one]},{2,[]},one}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   6: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   7: P: receives message (one)
-    in test_after_spawns.erl line 30
-   8: P: receives message (two)
-    in test_after_spawns.erl line 30
-   9: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  10: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  11: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  12: P.2: exits normally
-  13: P.3: exits normally
-  14: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  15: P.1: exits normally
-  16: P: receives message (one)
-    in test_after_spawns.erl line 21
-  17: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #162
---------------------------------------------------------------------------------
-Errors found:
-* At step 19 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[two,one]},{2,[one]},{3,[]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   6: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   7: P: receives message (one)
-    in test_after_spawns.erl line 30
-   8: P: receives message (two)
-    in test_after_spawns.erl line 30
-   9: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  10: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  11: P.2: exits normally
-  12: P.3: exits normally
-  13: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  14: P.1: exits normally
-  15: P: receives message (one)
-    in test_after_spawns.erl line 30
-  16: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  17: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  18: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  19: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #163
---------------------------------------------------------------------------------
-Errors found:
-* At step 17 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[two,one]},one,{3,[]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   6: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   7: P: receives message (one)
-    in test_after_spawns.erl line 30
-   8: P: receives message (two)
-    in test_after_spawns.erl line 30
-   9: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  10: P.2: exits normally
-  11: P.3: exits normally
-  12: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  13: P.1: exits normally
-  14: P: receives message (one)
-    in test_after_spawns.erl line 21
-  15: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  16: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  17: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},one,{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #164
---------------------------------------------------------------------------------
-Errors found:
-* At step 19 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,{1,[one,two,one]},{2,[]},{3,[]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   5: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   6: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   7: P: receives message (one)
-    in test_after_spawns.erl line 30
-   8: P: receives message (two)
-    in test_after_spawns.erl line 30
-   9: P.2: exits normally
-  10: P.3: exits normally
-  11: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  12: P.1: exits normally
-  13: P: receives message (one)
-    in test_after_spawns.erl line 30
-  14: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  15: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  16: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  17: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-  18: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  19: P: exits abnormally ({{nocatch,{ok,{1,[one,two,one]},{2,[]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #165
+Interleaving #158
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -7773,7 +7441,7 @@ Event trace:
     in test_after_spawns.erl line 13
   17: P.2: exits normally
 ################################################################################
-Interleaving #166
+Interleaving #159
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -7821,7 +7489,7 @@ Event trace:
     in test_after_spawns.erl line 13
   18: P.2: exits normally
 ################################################################################
-Interleaving #167
+Interleaving #160
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -7871,7 +7539,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[]},{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #168
+Interleaving #161
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -7921,7 +7589,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[]},{3,[one,two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.2: exits normally
 ################################################################################
-Interleaving #169
+Interleaving #162
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -7969,7 +7637,7 @@ Event trace:
     in test_after_spawns.erl line 12
   18: P.1: exits normally
 ################################################################################
-Interleaving #170
+Interleaving #163
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -8013,7 +7681,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #171
+Interleaving #164
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -8057,7 +7725,7 @@ Event trace:
   15: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   16: P.2: exits normally
 ################################################################################
-Interleaving #172
+Interleaving #165
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -8105,7 +7773,7 @@ Event trace:
     in test_after_spawns.erl line 13
   18: P.2: exits normally
 ################################################################################
-Interleaving #173
+Interleaving #166
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -8155,7 +7823,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[one]},{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #174
+Interleaving #167
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -8201,7 +7869,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[one]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #175
+Interleaving #168
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -8251,7 +7919,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[two,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #176
+Interleaving #169
 --------------------------------------------------------------------------------
 Errors found:
 * At step 18 process P exited abnormally
@@ -8301,7 +7969,7 @@ Event trace:
   18: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[one,two]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   19: P.2: exits normally
 ################################################################################
-Interleaving #177
+Interleaving #170
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -8349,7 +8017,7 @@ Event trace:
     in test_after_spawns.erl line 12
   18: P.1: exits normally
 ################################################################################
-Interleaving #178
+Interleaving #171
 --------------------------------------------------------------------------------
 Errors found:
 * At step 19 process P exited abnormally
@@ -8399,7 +8067,7 @@ Event trace:
     in test_after_spawns.erl line 30
   19: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[two]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #179
+Interleaving #172
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -8445,7 +8113,7 @@ Event trace:
     in test_after_spawns.erl line 21
   17: P: exits abnormally ({{nocatch,{ok,{1,[one]},{2,[two]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #180
+Interleaving #173
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -8489,7 +8157,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #181
+Interleaving #174
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -8535,7 +8203,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[one]},one,{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #182
+Interleaving #175
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -8577,7 +8245,7 @@ Event trace:
     in test_after_spawns.erl line 21
   15: P: exits abnormally ({{nocatch,{ok,{1,[one]},one,two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #183
+Interleaving #176
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -8619,7 +8287,7 @@ Event trace:
   14: P: exits abnormally ({{nocatch,{ok,{1,[one]},two,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   15: P.2: exits normally
 ################################################################################
-Interleaving #184
+Interleaving #177
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -8663,7 +8331,7 @@ Event trace:
     in test_after_spawns.erl line 12
   16: P.1: exits normally
 ################################################################################
-Interleaving #185
+Interleaving #178
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -8709,7 +8377,297 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,{1,[one]},two,{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #186
+Interleaving #179
+--------------------------------------------------------------------------------
+Errors found:
+* At step 18 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[one,two,one]},{2,[]},{3,[]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   6: P: receives message (one)
+    in test_after_spawns.erl line 30
+   7: P.3: exits normally
+   8: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+   9: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  10: P.1: exits normally
+  11: P: receives message (two)
+    in test_after_spawns.erl line 30
+  12: P: receives message (one)
+    in test_after_spawns.erl line 30
+  13: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  14: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  15: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  16: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  17: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  18: P: exits abnormally ({{nocatch,{ok,{1,[one,two,one]},{2,[]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+  19: P.2: exits normally
+################################################################################
+Interleaving #180
+--------------------------------------------------------------------------------
+Errors found:
+* At step 16 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[two,one]},{2,[]},{3,[]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   6: P: receives message (one)
+    in test_after_spawns.erl line 30
+   7: P.3: exits normally
+   8: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+   9: P: receives message (two)
+    in test_after_spawns.erl line 30
+  10: P.2: exits normally
+  11: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  12: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  13: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  14: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  15: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  16: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+  17: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  18: P.1: exits normally
+################################################################################
+Interleaving #181
+--------------------------------------------------------------------------------
+Errors found:
+* At step 19 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[two,one]},{2,[]},{3,[one]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   6: P: receives message (one)
+    in test_after_spawns.erl line 30
+   7: P.3: exits normally
+   8: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+   9: P: receives message (two)
+    in test_after_spawns.erl line 30
+  10: P.2: exits normally
+  11: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  12: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  13: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  14: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  15: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  16: P.1: exits normally
+  17: P: receives message (one)
+    in test_after_spawns.erl line 30
+  18: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  19: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+################################################################################
+Interleaving #182
+--------------------------------------------------------------------------------
+Errors found:
+* At step 17 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[two,one]},{2,[]},one}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   6: P: receives message (one)
+    in test_after_spawns.erl line 30
+   7: P.3: exits normally
+   8: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+   9: P: receives message (two)
+    in test_after_spawns.erl line 30
+  10: P.2: exits normally
+  11: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  12: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  13: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  14: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  15: P.1: exits normally
+  16: P: receives message (one)
+    in test_after_spawns.erl line 21
+  17: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+################################################################################
+Interleaving #183
+--------------------------------------------------------------------------------
+Errors found:
+* At step 19 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[two,one]},{2,[one]},{3,[]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   6: P: receives message (one)
+    in test_after_spawns.erl line 30
+   7: P.3: exits normally
+   8: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+   9: P: receives message (two)
+    in test_after_spawns.erl line 30
+  10: P.2: exits normally
+  11: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  12: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  13: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  14: P.1: exits normally
+  15: P: receives message (one)
+    in test_after_spawns.erl line 30
+  16: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  17: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  18: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  19: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},{2,[one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+################################################################################
+Interleaving #184
+--------------------------------------------------------------------------------
+Errors found:
+* At step 17 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,{1,[two,one]},one,{3,[]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+   5: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   6: P: receives message (one)
+    in test_after_spawns.erl line 30
+   7: P.3: exits normally
+   8: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+   9: P: receives message (two)
+    in test_after_spawns.erl line 30
+  10: P.2: exits normally
+  11: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  12: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  13: P.1: exits normally
+  14: P: receives message (one)
+    in test_after_spawns.erl line 21
+  15: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  16: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  17: P: exits abnormally ({{nocatch,{ok,{1,[two,one]},one,{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+################################################################################
+Interleaving #185
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -8751,7 +8709,7 @@ Event trace:
     in test_after_spawns.erl line 14
   15: P.3: exits normally
 ################################################################################
-Interleaving #187
+Interleaving #186
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -8795,7 +8753,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #188
+Interleaving #187
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -8841,7 +8799,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,one,{2,[]},{3,[one,two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #189
+Interleaving #188
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -8887,7 +8845,7 @@ Event trace:
   16: P: exits abnormally ({{nocatch,{ok,one,{2,[]},{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   17: P.3: exits normally
 ################################################################################
-Interleaving #190
+Interleaving #189
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -8931,7 +8889,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #191
+Interleaving #190
 --------------------------------------------------------------------------------
 Errors found:
 * At step 12 process P exited abnormally
@@ -8971,7 +8929,7 @@ Event trace:
     in test_after_spawns.erl line 14
   14: P.3: exits normally
 ################################################################################
-Interleaving #192
+Interleaving #191
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -9011,7 +8969,7 @@ Event trace:
   13: P: exits abnormally ({{nocatch,{ok,one,{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   14: P.3: exits normally
 ################################################################################
-Interleaving #193
+Interleaving #192
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -9055,7 +9013,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #194
+Interleaving #193
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -9101,7 +9059,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,one,{2,[two]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #195
+Interleaving #194
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -9143,7 +9101,7 @@ Event trace:
     in test_after_spawns.erl line 21
   15: P: exits abnormally ({{nocatch,{ok,one,{2,[two]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #196
+Interleaving #195
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -9189,7 +9147,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,one,{2,[one,two]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #197
+Interleaving #196
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -9235,7 +9193,7 @@ Event trace:
   16: P: exits abnormally ({{nocatch,{ok,one,{2,[two,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   17: P.3: exits normally
 ################################################################################
-Interleaving #198
+Interleaving #197
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -9279,7 +9237,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #199
+Interleaving #198
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -9325,7 +9283,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,one,{2,[one]},{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #200
+Interleaving #199
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -9367,7 +9325,7 @@ Event trace:
     in test_after_spawns.erl line 21
   15: P: exits abnormally ({{nocatch,{ok,one,{2,[one]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #201
+Interleaving #200
 --------------------------------------------------------------------------------
 Errors found:
 * At step 12 process P exited abnormally
@@ -9407,7 +9365,7 @@ Event trace:
     in test_after_spawns.erl line 14
   14: P.3: exits normally
 ################################################################################
-Interleaving #202
+Interleaving #201
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -9449,7 +9407,7 @@ Event trace:
     in test_after_spawns.erl line 30
   15: P: exits abnormally ({{nocatch,{ok,one,two,{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #203
+Interleaving #202
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -9487,7 +9445,7 @@ Event trace:
     in test_after_spawns.erl line 21
   13: P: exits abnormally ({{nocatch,{ok,one,two,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #204
+Interleaving #203
 --------------------------------------------------------------------------------
 Errors found:
 * At step 12 process P exited abnormally
@@ -9525,7 +9483,7 @@ Event trace:
   12: P: exits abnormally ({{nocatch,{ok,one,one,two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   13: P.3: exits normally
 ################################################################################
-Interleaving #205
+Interleaving #204
 --------------------------------------------------------------------------------
 Errors found:
 * At step 12 process P exited abnormally
@@ -9565,7 +9523,7 @@ Event trace:
     in test_after_spawns.erl line 13
   14: P.2: exits normally
 ################################################################################
-Interleaving #206
+Interleaving #205
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -9607,7 +9565,7 @@ Event trace:
     in test_after_spawns.erl line 30
   15: P: exits abnormally ({{nocatch,{ok,one,one,{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #207
+Interleaving #206
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -9647,7 +9605,7 @@ Event trace:
     in test_after_spawns.erl line 14
   14: P.3: exits normally
 ################################################################################
-Interleaving #208
+Interleaving #207
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -9689,7 +9647,7 @@ Event trace:
     in test_after_spawns.erl line 30
   15: P: exits abnormally ({{nocatch,{ok,two,one,{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #209
+Interleaving #208
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -9727,7 +9685,7 @@ Event trace:
     in test_after_spawns.erl line 21
   13: P: exits abnormally ({{nocatch,{ok,two,one,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #210
+Interleaving #209
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -9769,7 +9727,7 @@ Event trace:
     in test_after_spawns.erl line 14
   15: P.3: exits normally
 ################################################################################
-Interleaving #211
+Interleaving #210
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -9813,7 +9771,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #212
+Interleaving #211
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -9859,7 +9817,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,two,{2,[]},{3,[one,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #213
+Interleaving #212
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -9905,7 +9863,7 @@ Event trace:
   16: P: exits abnormally ({{nocatch,{ok,two,{2,[]},{3,[one,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   17: P.3: exits normally
 ################################################################################
-Interleaving #214
+Interleaving #213
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -9949,7 +9907,7 @@ Event trace:
     in test_after_spawns.erl line 12
   16: P.1: exits normally
 ################################################################################
-Interleaving #215
+Interleaving #214
 --------------------------------------------------------------------------------
 Errors found:
 * At step 12 process P exited abnormally
@@ -9989,7 +9947,7 @@ Event trace:
     in test_after_spawns.erl line 14
   14: P.3: exits normally
 ################################################################################
-Interleaving #216
+Interleaving #215
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -10029,7 +9987,7 @@ Event trace:
   13: P: exits abnormally ({{nocatch,{ok,two,{2,[]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   14: P.3: exits normally
 ################################################################################
-Interleaving #217
+Interleaving #216
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -10073,7 +10031,7 @@ Event trace:
     in test_after_spawns.erl line 14
   16: P.3: exits normally
 ################################################################################
-Interleaving #218
+Interleaving #217
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -10119,7 +10077,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,two,{2,[one]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #219
+Interleaving #218
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -10161,7 +10119,7 @@ Event trace:
     in test_after_spawns.erl line 21
   15: P: exits abnormally ({{nocatch,{ok,two,{2,[one]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #220
+Interleaving #219
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -10207,7 +10165,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,two,{2,[one,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #221
+Interleaving #220
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -10253,7 +10211,7 @@ Event trace:
   16: P: exits abnormally ({{nocatch,{ok,two,{2,[one,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   17: P.3: exits normally
 ################################################################################
-Interleaving #222
+Interleaving #221
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -10297,7 +10255,7 @@ Event trace:
     in test_after_spawns.erl line 12
   16: P.1: exits normally
 ################################################################################
-Interleaving #223
+Interleaving #222
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -10343,7 +10301,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,two,{2,[one]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #224
+Interleaving #223
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -10385,7 +10343,7 @@ Event trace:
     in test_after_spawns.erl line 21
   15: P: exits abnormally ({{nocatch,{ok,two,{2,[one]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #225
+Interleaving #224
 --------------------------------------------------------------------------------
 Errors found:
 * At step 12 process P exited abnormally
@@ -10423,7 +10381,7 @@ Event trace:
   12: P: exits abnormally ({{nocatch,{ok,two,one,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   13: P.3: exits normally
 ################################################################################
-Interleaving #226
+Interleaving #225
 --------------------------------------------------------------------------------
 Errors found:
 * At step 12 process P exited abnormally
@@ -10463,7 +10421,7 @@ Event trace:
     in test_after_spawns.erl line 12
   14: P.1: exits normally
 ################################################################################
-Interleaving #227
+Interleaving #226
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -10505,7 +10463,7 @@ Event trace:
     in test_after_spawns.erl line 30
   15: P: exits abnormally ({{nocatch,{ok,two,one,{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #228
+Interleaving #227
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -10545,7 +10503,7 @@ Event trace:
   13: P.2: exits normally
   14: P.3: exits normally
 ################################################################################
-Interleaving #229
+Interleaving #228
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -10587,7 +10545,7 @@ Event trace:
     in test_after_spawns.erl line 30
   15: P: exits abnormally ({{nocatch,{ok,one,one,{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #230
+Interleaving #229
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -10625,127 +10583,7 @@ Event trace:
     in test_after_spawns.erl line 21
   13: P: exits abnormally ({{nocatch,{ok,one,one,two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #231
---------------------------------------------------------------------------------
-Errors found:
-* At step 10 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,one,two,{3,[]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   5: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   6: P: receives message (one)
-    in test_after_spawns.erl line 21
-   7: P: receives message (two)
-    in test_after_spawns.erl line 21
-   8: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   9: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  10: P: exits abnormally ({{nocatch,{ok,one,two,{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-  11: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  12: P.1: exits normally
-  13: P.2: exits normally
-  14: P.3: exits normally
-################################################################################
-Interleaving #232
---------------------------------------------------------------------------------
-Errors found:
-* At step 15 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,one,two,{3,[one]}}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   5: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   6: P: receives message (one)
-    in test_after_spawns.erl line 21
-   7: P: receives message (two)
-    in test_after_spawns.erl line 21
-   8: P: receive timeout expired after 10 ms
-    in test_after_spawns.erl line 21
-   9: P.2: exits normally
-  10: P.3: exits normally
-  11: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  12: P.1: exits normally
-  13: P: receives message (one)
-    in test_after_spawns.erl line 30
-  14: P: receive timeout expired after 0 ms
-    in test_after_spawns.erl line 30
-  15: P: exits abnormally ({{nocatch,{ok,one,two,{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #233
---------------------------------------------------------------------------------
-Errors found:
-* At step 13 process P exited abnormally
-    Reason:
-      {{nocatch,{ok,one,two,one}},
-       [{test_after_spawns,test_after_spawns,0,
-                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                            {line,18}]}]}
-    Stacktrace:
-      [{test_after_spawns,test_after_spawns,0,
-                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
-                           {line,18}]}]
---------------------------------------------------------------------------------
-Event trace:
-   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
-    in erlang.erl line 2673
-   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
-    in erlang.erl line 2673
-   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
-    in erlang.erl line 2673
-   4: P.3: one = P ! one
-    in test_after_spawns.erl line 14
-   5: P.2: two = P ! two
-    in test_after_spawns.erl line 13
-   6: P: receives message (one)
-    in test_after_spawns.erl line 21
-   7: P: receives message (two)
-    in test_after_spawns.erl line 21
-   8: P.2: exits normally
-   9: P.3: exits normally
-  10: P.1: one = P ! one
-    in test_after_spawns.erl line 12
-  11: P.1: exits normally
-  12: P: receives message (one)
-    in test_after_spawns.erl line 21
-  13: P: exits abnormally ({{nocatch,{ok,one,two,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
-################################################################################
-Interleaving #234
+Interleaving #230
 --------------------------------------------------------------------------------
 Errors found:
 * At step 11 process P exited abnormally
@@ -10787,7 +10625,7 @@ Event trace:
     in test_after_spawns.erl line 13
   15: P.2: exits normally
 ################################################################################
-Interleaving #235
+Interleaving #231
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -10831,7 +10669,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #236
+Interleaving #232
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -10877,7 +10715,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,one,{2,[]},{3,[two,one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #237
+Interleaving #233
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -10923,7 +10761,7 @@ Event trace:
   16: P: exits abnormally ({{nocatch,{ok,one,{2,[]},{3,[one,two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   17: P.2: exits normally
 ################################################################################
-Interleaving #238
+Interleaving #234
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -10967,7 +10805,7 @@ Event trace:
     in test_after_spawns.erl line 12
   16: P.1: exits normally
 ################################################################################
-Interleaving #239
+Interleaving #235
 --------------------------------------------------------------------------------
 Errors found:
 * At step 12 process P exited abnormally
@@ -11007,7 +10845,7 @@ Event trace:
     in test_after_spawns.erl line 13
   14: P.2: exits normally
 ################################################################################
-Interleaving #240
+Interleaving #236
 --------------------------------------------------------------------------------
 Errors found:
 * At step 13 process P exited abnormally
@@ -11047,7 +10885,7 @@ Event trace:
   13: P: exits abnormally ({{nocatch,{ok,one,{2,[]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   14: P.2: exits normally
 ################################################################################
-Interleaving #241
+Interleaving #237
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -11091,7 +10929,7 @@ Event trace:
     in test_after_spawns.erl line 13
   16: P.2: exits normally
 ################################################################################
-Interleaving #242
+Interleaving #238
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -11137,7 +10975,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,one,{2,[one]},{3,[two]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #243
+Interleaving #239
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -11179,7 +11017,7 @@ Event trace:
     in test_after_spawns.erl line 21
   15: P: exits abnormally ({{nocatch,{ok,one,{2,[one]},two}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #244
+Interleaving #240
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -11225,7 +11063,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,one,{2,[two,one]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #245
+Interleaving #241
 --------------------------------------------------------------------------------
 Errors found:
 * At step 16 process P exited abnormally
@@ -11271,7 +11109,7 @@ Event trace:
   16: P: exits abnormally ({{nocatch,{ok,one,{2,[one,two]},{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
   17: P.2: exits normally
 ################################################################################
-Interleaving #246
+Interleaving #242
 --------------------------------------------------------------------------------
 Errors found:
 * At step 14 process P exited abnormally
@@ -11315,7 +11153,7 @@ Event trace:
     in test_after_spawns.erl line 12
   16: P.1: exits normally
 ################################################################################
-Interleaving #247
+Interleaving #243
 --------------------------------------------------------------------------------
 Errors found:
 * At step 17 process P exited abnormally
@@ -11361,7 +11199,7 @@ Event trace:
     in test_after_spawns.erl line 30
   17: P: exits abnormally ({{nocatch,{ok,one,{2,[two]},{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
-Interleaving #248
+Interleaving #244
 --------------------------------------------------------------------------------
 Errors found:
 * At step 15 process P exited abnormally
@@ -11403,6 +11241,126 @@ Event trace:
     in test_after_spawns.erl line 21
   15: P: exits abnormally ({{nocatch,{ok,one,{2,[two]},one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
 ################################################################################
+Interleaving #245
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,one,two,one}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   5: P: receives message (one)
+    in test_after_spawns.erl line 21
+   6: P.3: exits normally
+   7: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+   8: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+   9: P.1: exits normally
+  10: P: receives message (two)
+    in test_after_spawns.erl line 21
+  11: P: receives message (one)
+    in test_after_spawns.erl line 21
+  12: P: exits abnormally ({{nocatch,{ok,one,two,one}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+  13: P.2: exits normally
+################################################################################
+Interleaving #246
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,one,two,{3,[]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   5: P: receives message (one)
+    in test_after_spawns.erl line 21
+   6: P.3: exits normally
+   7: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+   8: P: receives message (two)
+    in test_after_spawns.erl line 21
+   9: P.2: exits normally
+  10: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  11: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  12: P: exits abnormally ({{nocatch,{ok,one,two,{3,[]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+  13: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  14: P.1: exits normally
+################################################################################
+Interleaving #247
+--------------------------------------------------------------------------------
+Errors found:
+* At step 15 process P exited abnormally
+    Reason:
+      {{nocatch,{ok,one,two,{3,[one]}}},
+       [{test_after_spawns,test_after_spawns,0,
+                           [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                            {line,18}]}]}
+    Stacktrace:
+      [{test_after_spawns,test_after_spawns,0,
+                          [{file,"/home/stavros/git/Concuerror/tests/suites/dpor_tests/src/test_after_spawns.erl"},
+                           {line,18}]}]
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-0-'.0>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-1-'.0>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<test_after_spawns.'-test_after_spawns/0-fun-2-'.0>,[]])
+    in erlang.erl line 2673
+   4: P.3: one = P ! one
+    in test_after_spawns.erl line 14
+   5: P: receives message (one)
+    in test_after_spawns.erl line 21
+   6: P.3: exits normally
+   7: P.2: two = P ! two
+    in test_after_spawns.erl line 13
+   8: P: receives message (two)
+    in test_after_spawns.erl line 21
+   9: P.2: exits normally
+  10: P: receive timeout expired after 10 ms
+    in test_after_spawns.erl line 21
+  11: P.1: one = P ! one
+    in test_after_spawns.erl line 12
+  12: P.1: exits normally
+  13: P: receives message (one)
+    in test_after_spawns.erl line 30
+  14: P: receive timeout expired after 0 ms
+    in test_after_spawns.erl line 30
+  15: P: exits abnormally ({{nocatch,{ok,one,two,{3,[one]}}},[{test_after_spawns,test_after_spawns,0,[{file,[47,104,111,109,101,47,115,116,97|...]},{line,18}]}]})
+################################################################################
 Exploration completed!
 ################################################################################
 Tips:
@@ -11413,13 +11371,12 @@ Tips:
 ################################################################################
 Info:
 --------------------------------------------------------------------------------
-* Instrumented & loaded module test_after_spawns
 * Automatically instrumented module io_lib
-* Automatically instrumented module gen_server
+* Instrumented & loaded module test_after_spawns
 * Automatically instrumented module erlang
 * You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
 * Continuing after error (-k)
 
 ################################################################################
-Done at 10 Oct 2017 14:47:57 (Exit status: error)
-  Summary: 248 errors, 248/248 interleavings explored
+Done at 13 Oct 2017 15:15:43 (Exit status: error)
+  Summary: 247 errors, 247/247 interleavings explored
