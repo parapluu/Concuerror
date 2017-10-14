@@ -1548,7 +1548,7 @@ process_loop(Info) ->
     unhijack ->
       unhijack;
     quit ->
-      ok
+      exit(normal)
   end.
 
 get_their_info(Pid) ->
@@ -1814,7 +1814,7 @@ hijack_or_wrap_system(Name, Info) ->
 
 system_wrapper_loop(Name, Wrapped, Info) ->
   receive
-    quit -> ok;
+    quit -> exit(normal);
     Message ->
       case Message of
         {message,
