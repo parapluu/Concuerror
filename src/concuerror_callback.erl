@@ -70,6 +70,7 @@
 
 -record(concuerror_info, {
           after_timeout               :: 'infinite' | integer(),
+          delayed_notification = none :: 'none' | {'true', term()},
           demonitors = []             :: [reference()],
           ets_tables                  :: ets_tables(),
           exit_by_signal = false      :: boolean(),
@@ -158,7 +159,7 @@ hijack_backend(#concuerror_info{processes = Processes} = Info) ->
 -type instrumented_return() :: 'doit' |
                                {'didit', term()} |
                                {'error', term()} |
-                               'skip_timeout' |
+                               {'skip_timeout', 'false' | {'true', term()}} |
                                'unhijack'.
 
 -spec instrumented(Tag      :: instrumented_tag(),
@@ -1258,13 +1259,16 @@ handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
     end,
   Notification =
     NextEvent#event{event_info = ReceiveEvent, special = Special},
-  case CreateMessage of
-    {ok, D} ->
-      ?debug_flag(?receive_, {deliver, D}),
-      self() ! D;
-    false -> ok
-  end,
-  {skip_timeout, notify(Notification, UpdatedInfo)}.
+  AddMessage =
+    case CreateMessage of
+      {ok, D} ->
+        ?debug_flag(?receive_, {deliver, D}),
+        {true, D};
+      false ->
+        false
+    end,
+  {{skip_timeout, AddMessage}, delay_notify(Notification, UpdatedInfo)}.
+
 
 has_matching_or_after(_, _, _, unhijack, _) ->
   unhijack;
@@ -1348,6 +1352,9 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
   Scheduler ! Notification,
   Info.
 
+delay_notify(Notification, Info) ->
+  Info#concuerror_info{delayed_notification = {true, Notification}}.
+
 -spec process_top_loop(concuerror_info()) -> no_return().
 
 process_top_loop(Info) ->
@@ -1413,6 +1420,11 @@ wait_process(Pid, Timeout) ->
       ?crash({process_did_not_respond, Timeout, Pid})
   end.
 
+
+process_loop(#concuerror_info{delayed_notification = {true, Notification},
+                              scheduler = Scheduler} = Info) ->
+  Scheduler ! Notification,
+  process_loop(Info#concuerror_info{delayed_notification = none});
 process_loop(#concuerror_info{notify_when_ready = {Pid, true}} = Info) ->
   ?debug_flag(?loop, notifying_parent),
   Pid ! ready,

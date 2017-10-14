@@ -62,7 +62,12 @@ inspect(Tag, Args, Location) ->
           Timeout
       end;
     retry -> inspect(Tag, Args, Location);
-    skip_timeout -> 0;
+    {skip_timeout, CreateMessage} ->
+      case CreateMessage of
+        false -> ok;
+        {true, D} -> self() ! D
+      end,
+      0;
     {didit, Res} -> Res;
     unhijack ->
       erase(concuerror_info),
