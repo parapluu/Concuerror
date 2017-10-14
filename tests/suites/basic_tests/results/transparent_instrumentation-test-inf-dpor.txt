@@ -1,0 +1,44 @@
+Concuerror v0.17 ('27c7ad9') started at 14 Oct 2017 20:54:13
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{transparent_instrumentation,test,[]}},
+   {exclude_module,[]},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/transparent_instrumentation.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,false}]
+################################################################################
+Exploration completed!
+  No errors found!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check '--help attributes' for info on how to pass options via module attributes.
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Automatically instrumented module io_lib
+* Instrumented & loaded module transparent_instrumentation
+* Automatically instrumented module concuerror_callback
+
+################################################################################
+Done at 14 Oct 2017 20:54:14 (Exit status: ok)
+  Summary: 0 errors, 1/1 interleavings explored

@@ -3,7 +3,7 @@
 -module(concuerror_callback).
 
 %% Interface to concuerror_inspect:
--export([instrumented_top/4, hijack_backend/1]).
+-export([instrumented/4, hijack_backend/1]).
 
 %% Interface to scheduler:
 -export([spawn_first_process/1, start_first_process/3,
@@ -70,8 +70,8 @@
 
 -record(concuerror_info, {
           after_timeout               :: 'infinite' | integer(),
+          delayed_notification = none :: 'none' | {'true', term()},
           demonitors = []             :: [reference()],
-          escaped_pdict = []          :: term(),
           ets_tables                  :: ets_tables(),
           exit_by_signal = false      :: boolean(),
           exit_reason = normal        :: term(),
@@ -140,48 +140,33 @@ start_first_process(Pid, {Module, Name, Args}, Timeout) ->
 -spec setup_logger(processes()) -> ok.
 
 setup_logger(Processes) ->
-  put(concuerror_info, {logger, Processes}),
-  ok.
+  concuerror_inspect:start_inspection({logger, Processes}).
 
 -spec hijack_backend(concuerror_info()) -> ok.
 
 hijack_backend(#concuerror_info{processes = Processes} = Info) ->
-  Escaped = erase(),
   true = group_leader() =:= whereis(user),
   {GroupLeader, _} = run_built_in(erlang,whereis,1,[user], Info),
   {registered_name, Name} = process_info(self(), registered_name),
   true = ets:insert(Processes, ?new_system_process(self(), Name, hijacked)),
   {true, Info} =
     run_built_in(erlang, group_leader, 2, [GroupLeader, self()], Info),
-  NewInfo = Info#concuerror_info{escaped_pdict = Escaped},
-  put(concuerror_info, NewInfo),
+  concuerror_inspect:start_inspection(Info),
   ok.
 
 %%------------------------------------------------------------------------------
 
--spec instrumented_top(Tag      :: instrumented_tag(),
-                       Args     :: [term()],
-                       Location :: term(),
-                       Info     :: concuerror_info()) ->
-                          'doit' |
-                          {'didit', term()} |
-                          {'error', term()} |
-                          'skip_timeout' |
-                          'unhijack'.
+-type instrumented_return() :: 'doit' |
+                               {'didit', term()} |
+                               {'error', term()} |
+                               {'skip_timeout', 'false' | {'true', term()}} |
+                               'unhijack'.
 
-instrumented_top(Tag, Args, Location, #concuerror_info{} = Info) ->
-  #concuerror_info{escaped_pdict = Escaped} = Info,
-  lists:foreach(fun({K,V}) -> put(K,V) end, Escaped),
-  {Result, #concuerror_info{} = NewInfo} =
-    instrumented(Tag, Args, Location, Info),
-  NewEscaped = erase(),
-  FinalInfo = NewInfo#concuerror_info{escaped_pdict = NewEscaped},
-  put(concuerror_info, FinalInfo),
-  Result;
-instrumented_top(Tag, Args, Location, {logger, _} = Info) ->
-  {Result, _} = instrumented(Tag, Args, Location, Info),
-  put(concuerror_info, Info),
-  Result.
+-spec instrumented(Tag      :: instrumented_tag(),
+                   Args     :: [term()],
+                   Location :: term(),
+                   Info     :: concuerror_info()) ->
+                      {instrumented_return(), concuerror_info()}.
 
 instrumented(call, [Module, Name, Args], Location, Info) ->
   Arity = length(Args),
@@ -199,15 +184,15 @@ instrumented(apply, [Fun, Args], Location, Info) ->
     false ->
       {doit, Info}
   end;
-instrumented('receive', [PatternFun, Timeout], Location, Info) ->
+instrumented('receive', [PatternFun, RealTimeout], Location, Info) ->
   case Info of
     #concuerror_info{after_timeout = AfterTimeout} ->
-      RealTimeout =
-        case Timeout =:= infinity orelse Timeout > AfterTimeout of
-          false -> Timeout;
+      Timeout =
+        case RealTimeout =:= infinity orelse RealTimeout >= AfterTimeout of
+          false -> RealTimeout;
           true -> infinity
         end,
-      handle_receive(PatternFun, RealTimeout, Location, Info);
+      handle_receive(PatternFun, Timeout, Location, Info);
     _Logger ->
       {doit, Info}
   end.
@@ -278,11 +263,13 @@ built_in(erlang, Display, 1, [Term], _Location, Info)
   concuerror_logger:print(Info#concuerror_info.logger, standard_io, Chars),
   {{didit, true}, Info};
 %% Process dictionary has been restored here. No need to report such ops.
-built_in(erlang, PDict, _Arity, Args, _Location, Info)
-  when PDict =:= get; PDict =:= get_keys ->
-  ?debug_flag(?builtin, {'built-in', erlang, PDict, _Arity, Args, _Location}),
-  Res = erlang:apply(erlang,PDict,Args),
-  {{didit, Res}, Info};
+built_in(erlang, Name, _Arity, Args, _Location, Info)
+  when Name =:= get; Name =:= get_keys; Name =:= put; Name =:= erase ->
+  try
+    {{didit, erlang:apply(erlang, Name, Args)}, Info}
+  catch
+    error:Reason -> {{error, Reason}, Info}
+  end;
 %% XXX: Temporary
 built_in(erlang, get_stacktrace, 0, [], _Location, Info) ->
   #concuerror_info{logger = Logger} = Info,
@@ -543,16 +530,15 @@ run_built_in(erlang, process_info, 2, [Pid, Item], Info) when is_atom(Item) ->
   case Alive of
     false -> {undefined, Info};
     true ->
-      TheirInfo =
+      {TheirInfo, TheirDict} =
         case Pid =:= self() of
-          true -> Info;
+          true -> {Info, get()};
           false -> get_their_info(Pid)
         end,
       Res =
         case Item of
           dictionary ->
-            #concuerror_info{escaped_pdict = Escaped} = TheirInfo,
-            Escaped;
+            TheirDict;
           group_leader ->
             get_leader(Info, Pid);
           links ->
@@ -701,7 +687,7 @@ run_built_in(erlang, SendAfter, 3, [Timeout, Dest, Msg], Info)
   ets:insert(Timers, {Ref, Pid, Dest}),
   TimerFun =
     fun() ->
-        catch concuerror_inspect:instrumented(call, [erlang, send, [Dest, ActualMessage]], foo)
+        catch concuerror_inspect:inspect(call, [erlang, send, [Dest, ActualMessage]], foo)
     end,
   Pid ! {start, erlang, apply, [TimerFun, []]},
   wait_process(Pid, Wait),
@@ -1001,9 +987,6 @@ run_built_in(ets, give_away, 3, [Name, Pid, GiftData], Info) ->
 
 run_built_in(Module, Name, Arity, Args, Info)
   when
-    {Module, Name, Arity} =:= {erlang, erase, 0};
-    {Module, Name, Arity} =:= {erlang, erase, 1};
-    {Module, Name, Arity} =:= {erlang, put, 2};
     {Module, Name, Arity} =:= {os, getenv, 1}
     ->
   #concuerror_info{event = Event} = Info,
@@ -1206,6 +1189,7 @@ wait_actor_reply(Event, Timeout) ->
 -spec reset_processes(processes()) -> ok.
 
 reset_processes(Processes) ->
+  Procs = ets:tab2list(Processes),
   Fold =
     fun(?process_pat_pid_kind(P, Kind), _) ->
         case Kind =:= regular of
@@ -1216,7 +1200,7 @@ reset_processes(Processes) ->
         end,
         ok
     end,
-  ok = ets:foldl(Fold, ok, Processes).
+  ok = lists:foldl(Fold, ok, Procs).
 
 %%------------------------------------------------------------------------------
 
@@ -1275,13 +1259,16 @@ handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
     end,
   Notification =
     NextEvent#event{event_info = ReceiveEvent, special = Special},
-  case CreateMessage of
-    {ok, D} ->
-      ?debug_flag(?receive_, {deliver, D}),
-      self() ! D;
-    false -> ok
-  end,
-  {skip_timeout, notify(Notification, UpdatedInfo)}.
+  AddMessage =
+    case CreateMessage of
+      {ok, D} ->
+        ?debug_flag(?receive_, {deliver, D}),
+        {true, D};
+      false ->
+        false
+    end,
+  {{skip_timeout, AddMessage}, delay_notify(Notification, UpdatedInfo)}.
+
 
 has_matching_or_after(_, _, _, unhijack, _) ->
   unhijack;
@@ -1365,6 +1352,9 @@ notify(Notification, #concuerror_info{scheduler = Scheduler} = Info) ->
   Scheduler ! Notification,
   Info.
 
+delay_notify(Notification, Info) ->
+  Info#concuerror_info{delayed_notification = {true, Notification}}.
+
 -spec process_top_loop(concuerror_info()) -> no_return().
 
 process_top_loop(Info) ->
@@ -1377,16 +1367,15 @@ process_top_loop(Info) ->
       process_top_loop(notify(reset_system_done, Info));
     {start, Module, Name, Args} ->
       ?debug_flag(?loop, {start, Module, Name, Args}),
-      put(concuerror_info, set_status(Info, running)),
+      concuerror_inspect:start_inspection(set_status(Info, running)),
       try
-        concuerror_inspect:instrumented(call, [Module,Name,Args], start),
+        concuerror_inspect:inspect(call, [Module, Name, Args], start),
         exit(normal)
       catch
         exit:{?MODULE, _} = Reason -> exit(Reason);
         Class:Reason ->
-          case erase(concuerror_info) of
-            #concuerror_info{escaped_pdict = Escaped} = EndInfo ->
-              lists:foreach(fun({K,V}) -> put(K,V) end, Escaped),
+          case concuerror_inspect:stop_inspection() of
+            {true, EndInfo} ->
               Stacktrace = fix_stacktrace(EndInfo),
               ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
               NewReason =
@@ -1409,7 +1398,8 @@ request_system_reset(Pid) ->
 
 reset_system(Info) ->
   #concuerror_info{system_ets_entries = SystemEtsEntries} = Info,
-  ets:foldl(fun delete_system_entries/2, true, SystemEtsEntries),
+  Entries = ets:tab2list(SystemEtsEntries),
+  lists:foldl(fun delete_system_entries/2, true, Entries),
   ets:delete_all_objects(SystemEtsEntries).
 
 delete_system_entries({T, Objs}, true) when is_list(Objs) ->
@@ -1430,6 +1420,11 @@ wait_process(Pid, Timeout) ->
       ?crash({process_did_not_respond, Timeout, Pid})
   end.
 
+
+process_loop(#concuerror_info{delayed_notification = {true, Notification},
+                              scheduler = Scheduler} = Info) ->
+  Scheduler ! Notification,
+  process_loop(Info#concuerror_info{delayed_notification = none});
 process_loop(#concuerror_info{notify_when_ready = {Pid, true}} = Info) ->
   ?debug_flag(?loop, notifying_parent),
   Pid ! ready,
@@ -1543,12 +1538,12 @@ process_loop(Info) ->
       Reply = Status =:= running orelse Status =:= exiting,
       process_loop(notify({enabled, Reply}, Info));
     {get_info, To} ->
-      To ! {info, Info},
+      To ! {info, {Info, get()}},
       process_loop(Info);
     unhijack ->
       unhijack;
     quit ->
-      ok
+      exit(normal)
   end.
 
 get_their_info(Pid) ->
@@ -1771,7 +1766,9 @@ cleanup_processes(ProcessesTable) ->
     fun(?process_pat_pid_kind(P,Kind)) ->
         case Kind =:= hijacked of
           true -> P ! unhijack;
-          false -> P ! quit
+          false ->
+            unlink(P),
+            P ! quit
         end
     end,
   lists:foreach(Foreach, Processes).
@@ -1814,7 +1811,7 @@ hijack_or_wrap_system(Name, Info) ->
 
 system_wrapper_loop(Name, Wrapped, Info) ->
   receive
-    quit -> ok;
+    quit -> exit(normal);
     Message ->
       case Message of
         {message,
