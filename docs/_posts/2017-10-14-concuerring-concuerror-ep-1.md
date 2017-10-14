@@ -10,7 +10,7 @@ code and see it succeeding and failing 'randomly'. Concurrent
 programming is hard and errors in concurrent programs are difficult to
 trigger and debug. Changing the program makes the bug go away. Tools
 that can detect such errors are complex, usually have limited
-abilities and are difficult to use.
+abilities and are difficult to use. Hope must be abandoned.
 
 Concuerror, a stateless model checking tool capable of detecting
 concurrency errors in Erlang programs, recently started showing
@@ -28,11 +28,11 @@ own timeout message ('a process did not respond...'). These crashes
 would notably show up on different points within Concuerror's
 exploration of program schedulings.
 
-These are both symptoms of heisenbugs.
+These are all symptoms of heisenbugs.
 
 A fairly common challenge for a program whose input is some other
 program (e.g. compilers, code analyzers, etc) is to run such program
-with themselves as inputs. Especially for analysis tools, such as
+with itself as input. Especially for analysis tools, such as
 Concuerror, the goal is to assert that the program does not suffer
 from the errors it can detect.
 
@@ -53,8 +53,9 @@ problems...
 
 One of Concuerror's most useful features is its ability to find source
 code, instrument it, recompile and reload it on an Erlang VM
-[in a totally automatic and seamless way](/#-is-it-really-that-simple). Handling
-files is however very hard in stateless model checking. In Erlang,
+[in a totally automatic and seamless way](/#-is-it-really-that-simple).
+Doing this as part of a test, however, would require handling files
+and this is a very hard task in stateless model checking. In Erlang,
 this could entail unloads, resets and other similar horrors.
 
 Fortunately, Concuerror lets programs communicate with existing
@@ -65,7 +66,7 @@ test input before the run of 'Concuerror under test' on that input,
 any code that needed instrumentation would be readily instrumented
 when inspected by the inner Concuerror.
 
-It is unclear how this step can be generalized. Using files or ports
+It is unclear how this trick can be generalized. Using files or ports
 is still hard in code under stateless model checking.
 
 ## Unsupported operations
@@ -77,7 +78,7 @@ include operations that are
 and others that are simply not yet implemented
 (e.g. `ets:update_element`). Such operations were either simplified in
 the tool or minimal support for them was added. The last approach was
-easy as Concuerror tries to simulate as little parts of Erlang as
+easy, as Concuerror tries to simulate as little parts of Erlang as
 possible.
 
 ## Full sequentialization
@@ -102,22 +103,22 @@ dazzled.
 A number of simplifications were done using this info. At the end,
 processes can be
 [gently signaled to exit](https://github.com/parapluu/Concuerror/commit/cd55afb)
-(Concuerror used to kill them, something which is discouraged in tests
-as such kill signals race with almost every other operation). Some
-synchronization was
+(Concuerror used to kill them, something which is discouraged in
+systematic testing, as such kill signals race with almost every other
+operation). Some synchronization was
 [added](https://github.com/parapluu/Concuerror/commit/c20def7) in
 places where it would retain simplicity in the code.
 
 ## Improving the user experience
 
-Eating one's own dogfood reveals small frustrating details that can
+Eating one's own dog food reveals small frustrating details that can
 ruin user experience. Badly formed options that are ignored. Unclear
 messages to the user. Sanding those hard edges is trivial once they
 are detected. Using the tool for real is the only way to do so.
 
 ## Simplifying the code
 
-In the end solving a tricky knot involving the marking of 'processes
+In the end, solving a tricky knot involving the marking of 'processes
 under Concuerror' and the handling of `receive` statements split the
 commit history of the 'dog food' branch into two parts:
 
@@ -184,7 +185,7 @@ The bug was fixed.
 
 ## ... and a philosophical question
 
-In the version before the fix, Concuerror could not cleanly find this
+In the version before the fix, Concuerror could **not** cleanly find this
 bug, but was also prevented from running correctly: there was too much
 instrumentation on the "actual delivery" of a message. After a partial
 fix the bug could still not really be found: the `receive` statement
