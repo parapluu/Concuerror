@@ -16,6 +16,8 @@
 %% Interface for resetting:
 -export([process_top_loop/1]).
 
+-export([wrapper/4]).
+
 -export([explain_error/1]).
 
 %%------------------------------------------------------------------------------
@@ -274,6 +276,8 @@ built_in(erlang, Name, _Arity, Args, _Location, Info)
     error:Reason -> {{error, Reason}, Info}
   end;
 %% XXX: Temporary
+built_in(erlang, hibernate, 3, Args, _Location, Info) ->
+  erlang:hibernate(?MODULE, wrapper, [Info] ++ Args);
 built_in(erlang, get_stacktrace, 0, [], _Location, Info) ->
   #concuerror_info{logger = Logger} = Info,
   Msg =
@@ -1380,25 +1384,30 @@ process_top_loop(Info) ->
       process_top_loop(notify(reset_system_done, Info));
     {start, Module, Name, Args} ->
       ?debug_flag(?loop, {start, Module, Name, Args}),
-      concuerror_inspect:start_inspection(set_status(Info, running)),
-      try
-        concuerror_inspect:inspect(call, [Module, Name, Args], start),
-        exit(normal)
-      catch
-        Class:Reason ->
-          case concuerror_inspect:stop_inspection() of
-            {true, EndInfo} ->
-              Stacktrace = fix_stacktrace(EndInfo),
-              ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
-              NewReason =
-                case Class of
-                  throw -> {{nocatch, Reason}, Stacktrace};
-                  error -> {Reason, Stacktrace};
-                  exit  -> Reason
-                end,
-              exiting(NewReason, Stacktrace, EndInfo);
-            false -> exit(Reason)
-          end
+      wrapper(Info, Module, Name, Args)
+  end.
+
+-spec wrapper(concuerror_info(), module(), atom(), [term()]) -> no_return().
+
+wrapper(Info, Module, Name, Args) ->
+  concuerror_inspect:start_inspection(set_status(Info, running)),
+  try
+    concuerror_inspect:inspect(call, [Module, Name, Args], start),
+    exit(normal)
+  catch
+    Class:Reason ->
+      case concuerror_inspect:stop_inspection() of
+        {true, EndInfo} ->
+          Stacktrace = fix_stacktrace(EndInfo),
+          ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
+          NewReason =
+            case Class of
+              throw -> {{nocatch, Reason}, Stacktrace};
+              error -> {Reason, Stacktrace};
+              exit  -> Reason
+            end,
+          exiting(NewReason, Stacktrace, EndInfo);
+        false -> erlang:raise(Class, Reason, erlang:get_stacktrace())
       end
   end.
 
