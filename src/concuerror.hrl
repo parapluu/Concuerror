@@ -296,6 +296,7 @@
                  {float_to_list, 1},
                  {function_exported, 3},
                  {get_module_info, 1},
+                 {get_module_info, 2},
                  {integer_to_list,1},
                  {iolist_size, 1},
                  {iolist_to_binary, 1},
