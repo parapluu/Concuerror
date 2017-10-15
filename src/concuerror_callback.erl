@@ -856,7 +856,9 @@ run_built_in(erlang, whereis, 1, [Name], Info) ->
     [] ->
       case whereis(Name) =:= undefined of
         true -> {undefined, Info};
-        false -> throw({system_process_not_wrapped, Name})
+        false ->
+          Stacktrace = fix_stacktrace(Info),
+          ?crash({registered_process_not_wrapped, Name, Stacktrace})
       end;
     [[Pid]] -> {Pid, Info}
   end;
@@ -2128,6 +2130,12 @@ explain_error({process_did_not_respond_system, Actor}) ->
     " there are no infinite loops in your test. (Process: ~p)",
     [Actor]
    );
+explain_error({registered_process_not_wrapped, Name, Location}) ->
+  io_lib:format(
+    "The test tries to communicate with a process registered as '~w' that is"
+    " not under Concuerror's control. If your test cannot avoid this"
+    " communication please open an issue to consider adding support.~n"
+    "  Location:~p~n", [Name, Location]);
 explain_error({system_wrapper_error, Name, Type, Reason, Stacktrace}) ->
   io_lib:format(
     "Concuerror's wrapper for system process ~p crashed (~p):~n"

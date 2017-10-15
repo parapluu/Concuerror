@@ -35,8 +35,10 @@ error_s({Type, Info}, Depth) ->
       io_lib:format("* Reached the depth bound of ~p events~n",[Info])
   end.
 
--spec pretty(io:device(), event(), pos_integer()) -> ok.
+-spec pretty('disable' | io:device(), event(), pos_integer()) -> ok.
 
+pretty(disable, _, _) ->
+  ok;
 pretty(Output, I, Depth) ->
   Fun = fun(P, A) -> io:format(Output, P ++ "~n", A) end,
   _ = pretty_aux(I, {Fun, []}, Depth),

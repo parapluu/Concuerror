@@ -52,10 +52,10 @@ timediff(After, Before) ->
           bound_reached = false        :: boolean(),
           emit_logger_tips = initial   :: 'initial' | 'false',
           errors = 0                   :: non_neg_integer(),
-          graph_data                   :: graph_data() | 'undefined',
+          graph_data                   :: graph_data() | 'disable',
           interleaving_bound           :: concuerror_options:bound(),
           log_msgs = []                :: [string()],
-          output                       :: file:io_device(),
+          output                       :: file:io_device() | 'disable',
           output_name                  :: string(),
           print_depth                  :: pos_integer(),
           rate_timestamp = timestamp() :: timestamp(),
@@ -89,11 +89,11 @@ start(Options) ->
 
 initialize(Options) ->
   Timestamp = format_utc_timestamp(),
-  [{Output, OutputName}, SymbolicNames, Processes, Verbosity] =
-    get_properties([output, symbolic_names, processes, verbosity], Options),
-  ?autoload_and_log(io_lib, self()),
-  ok = setup_symbolic_names(SymbolicNames, Processes),
-  Graph = ?opt(graph, Options),
+  [{Output, OutputName}, Graph, SymbolicNames, Processes, Verbosity] =
+    get_properties(
+      [output, graph, symbolic_names, processes, verbosity],
+      Options),
+  GraphData = graph_preamble(Graph),
   Header =
     io_lib:format(
       "~s started at ~s~n",
@@ -103,8 +103,13 @@ initialize(Options) ->
       true -> none;
       false ->
         to_stderr("~s", [Header]),
-        to_stderr("~nWriting results in ~s~n", [OutputName]),
-        if Graph =:= undefined -> ok;
+        if Output =:= disable ->
+            Msg = "No output report will be generated~n",
+            ?log(self(), ?lwarning, Msg, []);
+           true ->
+            to_stderr("~nWriting results in ~s~n", [OutputName])
+        end,
+        if GraphData =:= disable -> ok;
            true ->
             {_, GraphName} = Graph,
             to_stderr("Writing graph in ~s~n", [GraphName])
@@ -117,13 +122,14 @@ initialize(Options) ->
     delete_props(
       [graph, output, processes, timers, verbosity],
       Options),
-  io:format(Output, "~s", [Header]),
-  io:format(
+  to_file(Output, "~s", [Header]),
+  to_file(
     Output,
     " Options:~n"
     "  ~p~n",
     [lists:sort(PrintableOptions)]),
-  GraphData = graph_preamble(Graph),
+  ?autoload_and_log(io_lib, self()),
+  ok = setup_symbolic_names(SymbolicNames, Processes),
   #logger_state{
      graph_data = GraphData,
      interleaving_bound = ?opt(interleaving_bound, Options),
@@ -319,7 +325,7 @@ loop(Message, State) ->
         false -> ok
       end,
       separator(Output, $#),
-      io:format(Output, "Exploration completed!~n",[]),
+      to_file(Output, "Exploration completed!~n",[]),
       ExitStatus =
         case SchedulerStatus =:= normal of
           true ->
@@ -333,7 +339,7 @@ loop(Message, State) ->
                 end,
                 error;
               false ->
-                io:format(Output, "  No errors found!~n",[]),
+                to_file(Output, "  No errors found!~n",[]),
                 ok
             end;
           false -> fail
@@ -343,11 +349,10 @@ loop(Message, State) ->
       FinishTimestamp = format_utc_timestamp(),
       Format = "Done at ~s (Exit status: ~p)~n  Summary: ",
       Args = [FinishTimestamp, ExitStatus],
-      io:format(Output, Format, Args),
+      to_file(Output, Format, Args),
       IntMsg = interleavings_message(State),
-      io:format(Output, "~s", [IntMsg]),
-      ok = file:close(Output),
-      ok = graph_close(State),
+      to_file(Output, "~s", [IntMsg]),
+      ok = close_files(State),
       case Verbosity =:= ?lquiet of
         true -> ok;
         false ->
@@ -379,22 +384,22 @@ loop(Message, State) ->
               true -> ok;
               false ->
                 separator(Output, $#),
-                io:format(Output, "Interleaving #~p~n", [TracesExplored + 1]),
+                to_file(Output, "Interleaving #~p~n", [TracesExplored + 1]),
                 print_streams(RaceInfo, Output)
             end,
             {Errors, TracesSSB, "Ok", "limegreen"};
           {Warnings, TraceInfo} ->
             separator(Output, $#),
-            io:format(Output, "Interleaving #~p~n", [TracesExplored + 1]),
+            to_file(Output, "Interleaving #~p~n", [TracesExplored + 1]),
             separator(Output, $-),
-            io:format(Output, "Errors found:~n", []),
+            to_file(Output, "Errors found:~n", []),
             print_depth_tip(),
             WarnStr =
               [concuerror_io_lib:error_s(W, PrintDepth) || W <-Warnings],
-            io:format(Output, "~s", [WarnStr]),
+            to_file(Output, "~s", [WarnStr]),
             separator(Output, $-),
             print_streams([S || S = {T, _} <- Streams, T =/= race], Output),
-            io:format(Output, "Event trace:~n", []),
+            to_file(Output, "Event trace:~n", []),
             concuerror_io_lib:pretty(Output, TraceInfo, PrintDepth),
             print_streams([S || S = {T, _} <- Streams, T =:= race], Output),
             ErrorString =
@@ -450,7 +455,7 @@ printout(_, Format, Data) ->
 print_log_msgs(Output, LogMsgs) ->
   ForeachInner =
     fun({Format, Data}) ->
-        io:format(Output, "* " ++ Format, Data)
+        to_file(Output, "* " ++ Format, Data)
     end,
   Foreach =
     fun({Type, Messages}) ->
@@ -460,10 +465,10 @@ print_log_msgs(Output, LogMsgs) ->
             ?linfo    -> "";
             _         -> "s"
           end,
-        io:format(Output, "~s~s:~n", [Header, Suffix]),
+        to_file(Output, "~s~s:~n", [Header, Suffix]),
         separator(Output, $-),
         lists:foreach(ForeachInner, Messages),
-        io:format(Output, "~n", []),
+        to_file(Output, "~n", []),
         separator(Output, $#)
     end,
   lists:foreach(Foreach, LogMsgs).
@@ -490,6 +495,11 @@ clear_progress() ->
 
 to_stderr(Format, Data) ->
   io:format(standard_error, Format, Data).
+
+to_file(disable, _, _) ->
+  ok;
+to_file(Output, Format, Data) ->
+  io:format(Output, Format, Data).
 
 ticker(Logger) ->
   Logger ! tick,
@@ -538,7 +548,7 @@ separator_string(Char) ->
   lists:duplicate(80, Char).
 
 separator(Output, Char) ->
-  io:format(Output, "~s~n", [separator_string(Char)]).
+  to_file(Output, "~s~n", [separator_string(Char)]).
 
 print_streams(Streams, Output) ->
   Fold =
@@ -549,11 +559,11 @@ print_streams(Streams, Output) ->
   orddict:fold(Fold, ok, Streams).
 
 print_stream(Tag, Buffer, Output) ->
-  io:format(Output, tag_to_filename(Tag) ++ ":~n", []),
-  io:format(Output, "~s~n", [Buffer]),
+  to_file(Output, tag_to_filename(Tag) ++ ":~n", []),
+  to_file(Output, "~s~n", [Buffer]),
   case Tag =/= race of
     true ->
-      io:format(Output, "~n", []),
+      to_file(Output, "~n", []),
       separator(Output, $-);
     false -> ok
   end.
@@ -608,9 +618,9 @@ graph_race(Logger, EarlyRef, Ref) ->
   Logger ! {graph, {race, EarlyRef, Ref}},
   ok.
 
-graph_preamble(undefined) -> undefined;
+graph_preamble({disable, ""}) -> disable;
 graph_preamble({GraphFile, _}) ->
-  io:format(
+  to_file(
     GraphFile,
     "digraph {~n"
     "  graph [ranksep=0.3]~n"
@@ -619,7 +629,7 @@ graph_preamble({GraphFile, _}) ->
     "  subgraph {~n", []),
   {GraphFile, init, none}.
 
-graph_command(_Command, #logger_state{graph_data = undefined} = State) -> State;
+graph_command(_Command, #logger_state{graph_data = disable} = State) -> State;
 graph_command(Command, State) ->
   #logger_state{
      graph_data = {GraphFile, Parent, Sibling} = Graph,
@@ -645,15 +655,15 @@ graph_command(Command, State) ->
             true -> "    ";
             false -> io_lib:format("!~2w",[BoundConsumed])
           end,
-        io:format(
+        to_file(
           GraphFile,
           "    \"~p\" [label=\"~s ~s\\l\"~s];~n",
           [Ref, EnabledLabel, Label, ErrorS]),
         case Sibling =:= none of
           true ->
-            io:format(GraphFile,"~s[weight=1000];~n",[ref_edge(Parent, Ref)]);
+            to_file(GraphFile,"~s[weight=1000];~n",[ref_edge(Parent, Ref)]);
           false ->
-            io:format(
+            to_file(
               GraphFile,
               "~s[style=invis,weight=1];~n"
               "~s[constraint=false];~n",
@@ -661,13 +671,13 @@ graph_command(Command, State) ->
         end,
         {GraphFile, Ref, none};
       {race, EarlyRef, Ref} ->
-        io:format(
+        to_file(
           GraphFile,
           "~s[constraint=false, color=red, dir=back, penwidth=3, style=dashed];~n",
           [dref_edge(EarlyRef, Ref)]),
         Graph;
       {set_node, NewParent, NewSibling} ->
-        io:format(
+        to_file(
           GraphFile,
           "  }~n"
           "  subgraph{~n",
@@ -675,7 +685,7 @@ graph_command(Command, State) ->
         {GraphFile, NewParent, NewSibling};
       {status, Count, String, Color} ->
         Ref = make_ref(),
-        io:format(
+        to_file(
           GraphFile,
           "    \"~p\" [label=\"~p: ~s\",style=filled,fillcolor=~s];~n"
           "~s[weight=1000];~n",
@@ -690,13 +700,22 @@ ref_edge(RefA, RefB) ->
 dref_edge(RefA, RefB) ->
   io_lib:format("    \"~p\":e -> \"~p\":e",[RefA,RefB]).
 
-graph_close(#logger_state{graph_data = undefined}) -> ok;
+close_files(State) ->
+  graph_close(State),
+  file_close(State#logger_state.output).
+
+graph_close(#logger_state{graph_data = disable}) -> ok;
 graph_close(#logger_state{graph_data = {GraphFile, _, _}}) ->
-  io:format(
+  to_file(
     GraphFile,
     "  }~n"
     "}~n", []),
-  file:close(GraphFile).
+  file_close(GraphFile).
+
+file_close(disable) ->
+  ok;
+file_close(File) ->
+  ok = file:close(File).
 
 %%------------------------------------------------------------------------------
 

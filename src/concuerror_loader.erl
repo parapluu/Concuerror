@@ -88,7 +88,7 @@ get_instrumented_table() ->
 
 initialize(Excluded) ->
   Instrumented = get_instrumented_table(),
-  case ets:info(Instrumented) =:= undefined of
+  case ets:info(Instrumented, name) =:= undefined of
     true ->
       setup_sticky_directories(),
       Instrumented = ets:new(Instrumented, [named_table, public]),

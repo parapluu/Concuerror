@@ -20,4 +20,21 @@ testing "Help for attributes"
 concuerror_console -h attributes
 consolehas "the following attributes in the module"
 
+testing "Disable output"
+rm -rf $Out
+concuerror_console -f foo.erl --no_output
+consolehas "No output report will be generated"
+testing "... and file doesn't exist."
+if [ ! -f "$Out" ]; then
+    good
+else
+    exit 1
+fi
+
+testing "Total silence"
+rm -rf $Out
+concuerror_console -f foo.erl --no_output -q
+! consolehas "*"
+! outputhas "*"
+
 . footer

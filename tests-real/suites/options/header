@@ -35,8 +35,8 @@ function mygrepconsole {
     grep -q "$1" $Console
 }
 
-function has {
-    testing "Output has $1"
+function outputhas {
+    testing "... and output has $1"
     mygrep "$1"
     good
 }
