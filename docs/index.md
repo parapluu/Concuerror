@@ -1,11 +1,32 @@
 ---
 layout: page
-updated: 2017-10-03
+updated: 2017-10-16
 ---
 
 <div class="download-link">
 <a href="./download"><img src="./images/button.png" alt="Get Concuerror!"></a>
 </div>
+
+## Latest News
+
+<ul class="post-list">
+    {% for post in site.posts limit:3 %}
+    <li>
+    <article>
+    <a href="{{ post.url }}">
+        {{ post.title }}
+        <span class="entry-date">
+            <time datetime="{{ post.date | date_to_xmlschema }}">
+                {{ post.date | date: "%B %d, %Y" }}
+            </time>
+        </span>
+    </a>
+    </article>
+    </li>
+    {% endfor %}
+</ul>
+
+[Read more news...](/news)
 
 ## What is Concuerror?
 
@@ -84,30 +105,12 @@ You can find more details [here](/faq/#how-does-concuerror-work-extended).
 
 ## How do I report a bug?
 
-The preferred way is in the repository's [Issues
+The preferred way is to use the repository's [Issues
 page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/contact).
 
 ## Further Reads
 
-* [FAQ](./faq)
-* [Tutorials](./tutorials)
-* [Publications](./publications)
-
-## Latest News
-
-<ul class="post-list">
-    {% for post in site.posts limit:10 %}
-    <li>
-    <article>
-    <a href="{{ post.url }}">
-        {{ post.title }}
-        <span class="entry-date">
-            <time datetime="{{ post.date | date_to_xmlschema }}">
-                {{ post.date | date: "%B %d, %Y" }}
-            </time>
-        </span>
-    </a>
-    </article>
-    </li>
-    {% endfor %}
-</ul>
+* [News](/news)
+* [FAQ](/faq)
+* [Tutorials](/tutorials)
+* [Publications](/publications)

@@ -3,7 +3,7 @@ layout: page
 permalink: /faq/index.html
 title: "Concuerror's FAQ"
 description: "Concuerror's Frequently Asked Questions"
-updated: 2017-10-03
+updated: 2017-10-16
 ---
 
 # Frequently Asked Questions
@@ -14,7 +14,7 @@ updated: 2017-10-03
 
 ## How do I report a bug?
 
-The preferred way is in the repository's [Issues
+The preferred way is to use the repository's [Issues
 page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/contact).
 
 ## Will the exploration ever finish?
@@ -38,6 +38,16 @@ suggesting ways to improve the effectiveness of testing.
 A large number of options are available to fine tune the tool.
 You can find out more about them by using `concuerror -h`.
 
+## Can Concuerror do 'random testing'?
+
+A 'random testing' mode has not yet been implemented in Concuerror (add
+your voice to the related
+[Issue page](https://github.com/parapluu/Concuerror/issues/16)).
+
+If your goal is not verification, Concuerror has its own way to sample
+the state space in a less systematic way: schedule bounding. You can
+read more about it by asking for `--help bound`.
+
 ## How does Concuerror work? (extended)
 
 Concuerror runs the program under test in a controlled way so that only one
@@ -59,6 +69,9 @@ process runs at a time.
    actually replays all events up to that point and continues as described in
    the plan. At some point in this new interleaving new behaviours may emerge.
 5. It repeats this approach from step 2, until no other such plans remain.
+
+This is a technique known as _stateless model checking with dynamic
+partial order reduction_ ([read more](/publications)).
 
 ## How does Concuerror control the scheduling of processes?
 
