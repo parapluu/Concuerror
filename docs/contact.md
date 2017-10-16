@@ -2,7 +2,7 @@
 layout: page
 permalink: /contact/index.html
 title: Contact
-description: "People that have contributed to Concuerror"
+description: "People that are currently involved with the development of Concuerror."
 ---
 
 # Contact address

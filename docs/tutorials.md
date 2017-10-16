@@ -2,12 +2,12 @@
 layout: page
 permalink: /tutorials/index.html
 title: Tutorials
-description: "An archive of tutorials sorted by date."
+description: "Links to tutorials on how to use Concuerror, sorted by date."
 ---
 
 # Tutorials
 
-This is a list of tutorials to help you get started with Concuerror:
+This is a list of all posts related to tutorials on how to use Concuerror.
 
 <ul class="post-list">
     {% for post in site.categories.tutorials %}

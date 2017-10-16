@@ -2,10 +2,12 @@
 layout: page
 permalink: /news/index.html
 title: News
-description: "An archive of all posts sorted by date."
+description: "Links to all posts on this website, sorted by date."
 ---
 
 # News
+
+This is a list of all posts on this website:
 
 <ul class="post-list">
     {% for post in site.posts %}

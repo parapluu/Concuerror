@@ -2,7 +2,7 @@
 layout: page
 permalink: /publications/index.html
 title: Publications
-description: "Publications regarding Concuerror."
+description: "Scientific publications regarding and involving Concuerror."
 updated: 2017-10-03
 ---
 
