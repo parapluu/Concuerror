@@ -494,12 +494,13 @@ clear_progress() ->
   to_stderr("~c[1A~c[2K\r", [27, 27]).
 
 to_stderr(Format, Data) ->
-  io:format(standard_error, Format, Data).
+  to_file(standard_error, Format, Data).
 
 to_file(disable, _, _) ->
   ok;
 to_file(Output, Format, Data) ->
-  io:format(Output, Format, Data).
+  Msg = io_lib:format(Format, Data),
+  io:format(Output, "~s", [Msg]).
 
 ticker(Logger) ->
   Logger ! tick,

@@ -40,7 +40,11 @@ error_s({Type, Info}, Depth) ->
 pretty(disable, _, _) ->
   ok;
 pretty(Output, I, Depth) ->
-  Fun = fun(P, A) -> io:format(Output, P ++ "~n", A) end,
+  Fun =
+    fun(P, A) ->
+        Msg = io_lib:format(P ++ "~n", A),
+        io:format(Output, "~s", [Msg])
+    end,
   _ = pretty_aux(I, {Fun, []}, Depth),
   ok.
 
