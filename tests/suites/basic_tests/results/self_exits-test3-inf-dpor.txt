@@ -1,0 +1,67 @@
+Concuerror v0.18 (e53c31a) started at 17 Oct 2017 17:35:51
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{self_exits,test3,[]}},
+   {exclude_module,[]},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/self_exits.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,false}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 3 process P.1 exited abnormally
+    Reason:
+      abnormal
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: {P.1,#Ref<0.3719275777.1897398273.56378>} = erlang:spawn_opt({erlang,apply,[#Fun<self_exits.'-test3/0-fun-0-'.0>,[]],[monitor]})
+    in erlang.erl line 2717
+   2: P.1: true = erlang:exit(P.1, abnormal)
+    in self_exits.erl line 32
+   3: P.1: exits abnormally (abnormal)
+   4: P.1: {'DOWN',#Ref<0.3719275777.1897398273.56378>,process,P.1,abnormal} = erlang:send(P, {'DOWN',#Ref<0.3719275777.1897398273.56378>,process,P.1,abnormal})
+    (while exiting)
+   5: P: receives message ({'DOWN',#Ref<0.3719275777.1897398273.56378>,process,P.1,abnormal})
+    in self_exits.erl line 35
+   6: P: exits normally
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* Check '--help attributes' for info on how to pass options via module attributes.
+* An abnormal exit signal was sent to a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Automatically instrumented module io_lib
+* Instrumented & loaded module self_exits
+* Automatically instrumented module erlang
+* Continuing after error (-k)
+
+################################################################################
+Done at 17 Oct 2017 17:35:51 (Exit status: error)
+  Summary: 1 errors, 1/1 interleavings explored

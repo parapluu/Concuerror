@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/parapluu/Concuerror/tree/master)
 
 ### Added
--  Started maintaining a Changelog
+- Started maintaining a Changelog
+
+### Fixed
+- Handling of exit_signals sent to self() (#5)
 
 ## [0.17](https://github.com/parapluu/Concuerror/releases/tag/0.17) - 2017-10-17
 

@@ -393,7 +393,16 @@ run_built_in(erlang, exit, 2, [Pid, Reason],
       Content =
         case Event#event.location =/= exit andalso Reason =:= kill of
           true -> kill;
-          false -> {'EXIT', self(), Reason}
+          false ->
+            #concuerror_info{flags = #process_flags{trap_exit = Trapping}} = Info,
+            case Pid =/= self() orelse Reason =/= normal orelse Trapping of
+              true -> ok;
+              false ->
+                Message = msg(exit_normal_self_abnormal),
+                Logger = Info#concuerror_info.logger,
+                ?unique(Logger, ?lwarning, Message, [Pid])
+            end,
+            make_exit_signal(Reason)
         end,
       MsgInfo = make_message(Info, exit_signal, Content, Pid),
       {true, MsgInfo}
@@ -453,7 +462,8 @@ run_built_in(erlang, link, 1, [Pid], Info) ->
                 MsgInfo;
               %% New event...
               undefined ->
-                make_message(Info, message, {'EXIT', Pid, noproc}, self())
+                Signal = make_exit_signal(Pid, noproc),
+                make_message(Info, message, Signal, self())
             end,
           {true, NewInfo}
       end
@@ -1468,9 +1478,9 @@ process_loop(Info) ->
                   self() ! {message, Message, Notify},
                   process_loop(Info);
                 false ->
-                  {'EXIT', _From, Reason} = Data,
+                  {'EXIT', From, Reason} = Data,
                   send_message_ack(Notify, Trapping, Reason =/= normal, false),
-                  case Reason =:= normal of
+                  case Reason =:= normal andalso From =/= self() of
                     true ->
                       ?debug_flag(?loop, ignore_normal_signal),
                       process_loop(Info);
@@ -1969,6 +1979,12 @@ get_ref(#concuerror_info{ref_queue = {Active, Stored}} = Info) ->
       {Ref, Info#concuerror_info{ref_queue = {NewActive, NewStored}}}
   end.
 
+make_exit_signal(Reason) ->
+  make_exit_signal(self(), Reason).
+
+make_exit_signal(From, Reason) ->
+  {'EXIT', From, Reason}.
+
 make_message(Info, Type, Data, Recipient) ->
   #concuerror_info{event = #event{label = Label} = Event} = Info,
   {Id, MsgInfo} = get_message_cnt(Info),
@@ -2066,6 +2082,11 @@ io_request(_, IOState) ->
 
 %%------------------------------------------------------------------------------
 
+msg(exit_normal_self_abnormal) ->
+  "A process that is not trapping exits (~w) sent a 'normal' exit"
+    " signal to itself. This shouldn't make it exit, but in the current"
+    " OTP it does, unless it's trapping exit signals. Concuerror respects the"
+    " implementation.~n";
 msg(register_eunit_server) ->
   "Your test seems to try to set up an EUnit server. This is a bad"
     " idea, for at least two reasons:"
