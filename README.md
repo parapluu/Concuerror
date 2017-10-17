@@ -7,6 +7,10 @@ Concuerror is a stateless model checking tool for Erlang programs. It can be use
 
 To find out more [visit the website!](http://parapluu.github.io/Concuerror)
 
+## Is there a changelog?
+
+[Yes!](./CHANGELOG.md)
+
 ## How do I contribute to Concuerror?
 
 * Run the testsuite : `make tests`
