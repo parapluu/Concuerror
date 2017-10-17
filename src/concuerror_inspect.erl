@@ -52,6 +52,7 @@ inspect(Tag, Args, Location) ->
         R
     end,
   case Ret of
+    {didit, Res} -> Res;
     doit ->
       case {Tag, Args} of
         {apply, [Fun, ApplyArgs]} ->
@@ -61,6 +62,7 @@ inspect(Tag, Args, Location) ->
         {'receive', [_, Timeout]} ->
           Timeout
       end;
+    {error, Reason} -> error(Reason);
     retry -> inspect(Tag, Args, Location);
     {skip_timeout, CreateMessage} ->
       case CreateMessage of
@@ -68,11 +70,9 @@ inspect(Tag, Args, Location) ->
         {true, D} -> self() ! D
       end,
       0;
-    {didit, Res} -> Res;
     unhijack ->
       erase(concuerror_info),
-      inspect(Tag, Args, Location);
-    {error, Reason} -> error(Reason)
+      inspect(Tag, Args, Location)
   end.
 
 -spec hijack(atom(), term()) -> ok.
