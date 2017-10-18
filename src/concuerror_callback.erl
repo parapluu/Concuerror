@@ -226,7 +226,7 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
   when is_atom(Module) ->
   case
     erlang:is_builtin(Module, Name, Arity) andalso
-    not lists:member({Module, Name, Arity}, ?RACE_FREE_BIFS)
+    concuerror_instrumenter:is_unsafe({Module, Name, Arity})
   of
     true ->
       built_in(Module, Name, Arity, Args, Location, Info);
