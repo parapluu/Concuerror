@@ -8,7 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased](https://github.com/parapluu/Concuerror/tree/master)
 
 ### Added
-- Started maintaining a Changelog
+- Support for erlang:hibernate/3
+- Support for more safe built-in operations
+- A Changelog
 
 ### Fixed
 - Handling of exit_signals sent to self() (#5)
