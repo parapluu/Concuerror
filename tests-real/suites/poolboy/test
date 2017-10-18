@@ -1,7 +1,8 @@
 #!/bin/bash
 
 Out=concuerror_report.txt
-
+CONCUERROR=${CONCUERROR:-concuerror}
+CONCUERROR="$CONCUERROR --timeout -1"
 
 function abort {
     echo -e "\e[1;31m FAILED\e[0m"

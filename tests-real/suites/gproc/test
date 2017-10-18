@@ -1,5 +1,8 @@
 #!/bin/bash
 
+CONCUERROR=${CONCUERROR:-concuerror}
+CONCUERROR="$CONCUERROR --timeout -1"
+
 fail=0
 cd gproc
 for i in t_simple_reg t_simple_reg_or_locate t_reg_or_locate2 test1 test2 test3 test4; do
