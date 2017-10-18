@@ -141,7 +141,7 @@ def runScenario(suite, name, modn, funn, preb, flags, files):
             os.remove(rslt)
         except:
             pass
-        print "%s  \033[01;32mok\033[00m" % (logline)
+        print "%s  \033[01;32m    ok\033[00m" % (logline)
               
     else:
         total_failed.value += 1

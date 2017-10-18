@@ -7,7 +7,7 @@
 -module(concuerror_inspect).
 
 %% Interface to instrumented code:
--export([start_inspection/1, stop_inspection/0, inspect/3, hijack/2]).
+-export([start_inspection/1, stop_inspection/0, inspect/3, hijack/2, explain_error/1]).
 
 -include("concuerror.hrl").
 
@@ -65,6 +65,7 @@ inspect(Tag, Args, Location) ->
     {error, Reason} -> error(Reason);
     retry -> inspect(Tag, Args, Location);
     {skip_timeout, CreateMessage} ->
+      assert_no_messages(),
       case CreateMessage of
         false -> ok;
         {true, D} -> self() ! D
@@ -75,8 +76,22 @@ inspect(Tag, Args, Location) ->
       inspect(Tag, Args, Location)
   end.
 
+assert_no_messages() ->
+  receive
+    Msg -> exit(self(), {?MODULE, {pending_message, self(), Msg}})
+  after
+    0 -> ok
+  end.
+
 -spec hijack(atom(), term()) -> ok.
 
 hijack(Name, Info) ->
   Name ! {hijack, Info},
   ok.
+
+-spec explain_error(term()) -> string().
+
+explain_error({pending_message, Proc, Msg}) ->
+  io_lib:format(
+    "A process (~w) had a message (~w) in it's mailbox when it"
+    " shouldn't." ++ ?notify_us_msg, [Proc, Msg]).

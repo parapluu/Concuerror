@@ -237,7 +237,7 @@ log_trace(#scheduler_state{exploring = N, logger = Logger} = State) ->
               false ->
                 ?unique(Logger, ?lwarning, msg(sleep_set_block), []);
               true ->
-                ?crash({optimal_sleep_set_block, Origin, Sleep})
+                exit({optimal_sleep_set_block, Origin, Sleep})
             end,
             sleep_set_block;
           undefined ->
@@ -360,7 +360,7 @@ get_next_event(Event, MaybeNeedsReplayState) ->
                     _ -> NewEvent
                   end,
                 Reason = {replay_mismatch, I, Event, New, PrintDepth},
-                ?crash(Reason)
+                exit(Reason)
             end;
           false ->
             %% Last event = Previously racing event = Result may differ.
@@ -372,7 +372,7 @@ get_next_event(Event, MaybeNeedsReplayState) ->
           update_state(UpdatedEvent, State);
         retry ->
           BReason = {blocked_mismatch, I, Event, PrintDepth},
-          ?crash(BReason)
+          exit(BReason)
       end
   end.
 
@@ -1398,7 +1398,7 @@ replay_prefix_aux([#trace_state{done = [Event|_], index = I}|Rest], State) ->
   catch
     _:_ ->
       #scheduler_state{print_depth = PrintDepth} = State,
-      ?crash({replay_mismatch, I, Event, NewEvent, PrintDepth})
+      exit({replay_mismatch, I, Event, NewEvent, PrintDepth})
   end,
   NewLastScheduled =
     case is_pid(Actor) of
@@ -1518,8 +1518,8 @@ explain_error({replay_mismatch, I, Event, NewEvent, Depth}) ->
 %%==============================================================================
 
 msg(after_timeout_tip) ->
-  "You can use e.g. '--after_timeout 2000' to treat after timeouts that exceed"
-    " some threshold (here 2000ms) as 'infinity'.~n";
+  "You can use e.g. '--after_timeout 5000' to treat after timeouts that exceed"
+    " some threshold (here 4999ms) as 'infinity'.~n";
 msg(assertions_only_filter) ->
   "Only assertion failures are considered crashes ('--assertions_only').~n";
 msg(assertions_only_use) ->
@@ -1556,7 +1556,7 @@ msg(stop_first_error) ->
 msg(timeout) ->
   "A process crashed with reason '{timeout, ...}'. This may happen when a"
     " call to a gen_server (or similar) does not receive a reply within some"
-    " standard timeout. "
+    " timeout (5000ms by default). "
     ++ msg(after_timeout_tip);
 msg(treat_as_normal) ->
   "Some abnormal exit reasons were treated as normal ('--treat_as_normal').~n".

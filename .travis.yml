@@ -17,7 +17,7 @@ matrix:
   - stage: test
     env: TEST=cover
   - otp_release: R16B03-1
-    env: TES=tests-real
+    env: TEST=tests-real
   exclude:
   - otp_release: 20.1
 

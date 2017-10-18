@@ -32,7 +32,7 @@ start(Options, LogMsgs) ->
     case Reason =:= normal of
       true -> normal;
       false ->
-        ?error(Logger, "~s~n~n", [explain(Reason)]),
+        ?error(Logger, "~s~n", [explain(Reason)]),
         failed
     end,
   ?trace(Logger, "Reached the end!~n",[]),

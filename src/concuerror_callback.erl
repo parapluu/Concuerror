@@ -16,6 +16,8 @@
 %% Interface for resetting:
 -export([process_top_loop/1]).
 
+-export([wrapper/4]).
+
 -export([explain_error/1]).
 
 %%------------------------------------------------------------------------------
@@ -50,6 +52,9 @@
 %%------------------------------------------------------------------------------
 
 -include("concuerror.hrl").
+
+-define(crash_instr(Reason), exit(self(), {?MODULE, Reason})).
+-define(crash(Reason), exit({?MODULE, Reason})).
 
 -ifdef(BEFORE_OTP_17).
 -type ref_queue() :: queue().
@@ -226,7 +231,7 @@ instrumented_aux(Module, Name, Arity, Args, Location, Info)
   when is_atom(Module) ->
   case
     erlang:is_builtin(Module, Name, Arity) andalso
-    not lists:member({Module, Name, Arity}, ?RACE_FREE_BIFS)
+    concuerror_instrumenter:is_unsafe({Module, Name, Arity})
   of
     true ->
       built_in(Module, Name, Arity, Args, Location, Info);
@@ -271,6 +276,8 @@ built_in(erlang, Name, _Arity, Args, _Location, Info)
     error:Reason -> {{error, Reason}, Info}
   end;
 %% XXX: Temporary
+built_in(erlang, hibernate, 3, Args, _Location, Info) ->
+  erlang:hibernate(?MODULE, wrapper, [Info] ++ Args);
 built_in(erlang, get_stacktrace, 0, [], _Location, Info) ->
   #concuerror_info{logger = Logger} = Info,
   Msg =
@@ -434,7 +441,7 @@ run_built_in(erlang, is_process_alive, 1, [Pid], Info) ->
   #concuerror_info{processes = Processes} = Info,
   Return =
     case ets:lookup(Processes, Pid) of
-      [] -> ?crash({checking_system_process, Pid});
+      [] -> ?crash_instr({checking_system_process, Pid});
       [?process_pat_pid_status(Pid, Status)] -> is_active(Status)
     end,
   {Return, Info};
@@ -491,7 +498,7 @@ run_built_in(erlang, monitor, 2, [Type, InTarget], Info) ->
       A when is_atom(A) -> {InTarget, {InTarget, node()}};
       {Name, Node} = Local when is_atom(Name), Node =:= node() ->
         {Name, Local};
-      {Name, Node} when is_atom(Name) -> ?crash({not_local_node, Node});
+      {Name, Node} when is_atom(Name) -> ?crash_instr({not_local_node, Node});
       _ -> error(badarg)
     end,
   {Ref, NewInfo} = get_ref(Info),
@@ -868,7 +875,7 @@ run_built_in(erlang, whereis, 1, [Name], Info) ->
         true -> {undefined, Info};
         false ->
           Stacktrace = fix_stacktrace(Info),
-          ?crash({registered_process_not_wrapped, Name, Stacktrace})
+          ?crash_instr({registered_process_not_wrapped, Name, Stacktrace})
       end;
     [[Pid]] -> {Pid, Info}
   end;
@@ -1012,10 +1019,10 @@ run_built_in(Module, Name, Arity, Args, Info)
         false ->
           case M =:= Module andalso F =:= Name andalso Args =:= OArgs of
             true ->
-              ?crash({inconsistent_builtin,
+              ?crash_instr({inconsistent_builtin,
                       [Module, Name, Arity, Args, OldResult, NewResult, Location]});
             false ->
-              ?crash({unexpected_builtin_change,
+              ?crash_instr({unexpected_builtin_change,
                       [Module, Name, Arity, Args, M, F, OArgs, Location]})
           end
       end;
@@ -1048,11 +1055,9 @@ run_built_in(os = Module, Name, Arity, Args, Info)
   maybe_reuse_old(Module, Name, Arity, Args, Info);
 
 run_built_in(Module, Name, Arity, _Args,
-             #concuerror_info{
-                event = #event{location = Location},
-                scheduler = Scheduler}) ->
+             #concuerror_info{event = #event{location = Location}}) ->
   Clean = clean_stacktrace(),
-  ?crash({unknown_built_in, {Module, Name, Arity, Location, Clean}}, Scheduler).
+  ?crash_instr({unknown_built_in, {Module, Name, Arity, Location, Clean}}).
 
 clean_stacktrace() ->
   Trace = try throw(foo) catch throw:_ -> erlang:get_stacktrace() end,
@@ -1281,7 +1286,6 @@ handle_receive(MessageOrAfter, PatternFun, Timeout, Location, Info) ->
     end,
   {{skip_timeout, AddMessage}, delay_notify(Notification, UpdatedInfo)}.
 
-
 has_matching_or_after(_, _, _, unhijack, _) ->
   unhijack;
 has_matching_or_after(PatternFun, Timeout, Location, InfoIn, Mode) ->
@@ -1379,26 +1383,30 @@ process_top_loop(Info) ->
       process_top_loop(notify(reset_system_done, Info));
     {start, Module, Name, Args} ->
       ?debug_flag(?loop, {start, Module, Name, Args}),
-      concuerror_inspect:start_inspection(set_status(Info, running)),
-      try
-        concuerror_inspect:inspect(call, [Module, Name, Args], start),
-        exit(normal)
-      catch
-        exit:{?MODULE, _} = Reason -> exit(Reason);
-        Class:Reason ->
-          case concuerror_inspect:stop_inspection() of
-            {true, EndInfo} ->
-              Stacktrace = fix_stacktrace(EndInfo),
-              ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
-              NewReason =
-                case Class of
-                  throw -> {{nocatch, Reason}, Stacktrace};
-                  error -> {Reason, Stacktrace};
-                  exit  -> Reason
-                end,
-              exiting(NewReason, Stacktrace, EndInfo);
-            _ -> exit({process_crashed, Class, Reason, erlang:get_stacktrace()})
-          end
+      wrapper(Info, Module, Name, Args)
+  end.
+
+-spec wrapper(concuerror_info(), module(), atom(), [term()]) -> no_return().
+
+wrapper(Info, Module, Name, Args) ->
+  concuerror_inspect:start_inspection(set_status(Info, running)),
+  try
+    concuerror_inspect:inspect(call, [Module, Name, Args], start),
+    exit(normal)
+  catch
+    Class:Reason ->
+      case concuerror_inspect:stop_inspection() of
+        {true, EndInfo} ->
+          Stacktrace = fix_stacktrace(EndInfo),
+          ?debug_flag(?exit, {exit, Class, Reason, Stacktrace}),
+          NewReason =
+            case Class of
+              throw -> {{nocatch, Reason}, Stacktrace};
+              error -> {Reason, Stacktrace};
+              exit  -> Reason
+            end,
+          exiting(NewReason, Stacktrace, EndInfo);
+        false -> erlang:raise(Class, Reason, erlang:get_stacktrace())
       end
   end.
 
@@ -1883,18 +1891,16 @@ system_wrapper_loop(Name, Wrapped, Info) ->
                   ?unique(Logger, ?ltip, Msg, []),
                   {From, Reply};
                 Else ->
-                  ?crash({unknown_protocol_for_system, Else})
+                  throw({unknown_protocol_for_system, Else})
               end,
             Report ! {system_reply, F, Id, R, Name},
             ok
           catch
-            exit:{?MODULE, _} = Reason -> exit(Reason);
-            throw:no_reply ->
-              send_message_ack(Report, false, false, false),
-              ok;
-            Type:Reason ->
+            no_reply -> send_message_ack(Report, false, false, false);
+            {unknown_protocol_for_system, _} = Reason -> ?crash(Reason);
+            Class:Reason ->
               Stacktrace = erlang:get_stacktrace(),
-              ?crash({system_wrapper_error, Name, Type, Reason, Stacktrace})
+              ?crash({system_wrapper_error, Name, Class, Reason, Stacktrace})
           end;
         {get_info, _} ->
           ?crash({wrapper_asked_for_status, Name})
@@ -2111,7 +2117,7 @@ explain_error({checking_system_process, Pid}) ->
   io_lib:format(
     "A process tried to link/monitor/inspect process ~p which was not"
     " started by Concuerror and has no suitable wrapper to work with"
-    " Concuerror.~n"
+    " Concuerror."
     ?notify_us_msg,
     [Pid]);
 explain_error({inconsistent_builtin,
@@ -2123,12 +2129,12 @@ explain_error({inconsistent_builtin,
     "  Later result: ~p~n"
     "Concuerror cannot explore behaviours that depend on~n"
     "data that may differ on separate runs of the program.~n"
-    "Location: ~p~n~n",
+    "Location: ~p~n",
     [Module, Name, Arity, Args, OldResult, NewResult, Location]);
 explain_error({no_response_for_message, Timeout, Recipient}) ->
   io_lib:format(
     "A process took more than ~pms to send an acknowledgement for a message"
-    " that was sent to it. (Process: ~p)~n"
+    " that was sent to it. (Process: ~p)"
     ?notify_us_msg,
     [Timeout, Recipient]);
 explain_error({not_local_node, Node}) ->
@@ -2138,15 +2144,15 @@ explain_error({not_local_node, Node}) ->
     [Node]);
 explain_error({process_did_not_respond, Timeout, Actor}) ->
   io_lib:format( 
-    "A process took more than ~pms to report a built-in event. You can try to"
-    " increase the '--timeout' limit and/or ensure that there are no infinite"
-    " loops in your test. (Process: ~p)",
-    [Timeout, Actor]
+    "A process (~p) took more than ~pms to report a built-in event. You can try"
+    " to increase the '--timeout' limit and/or ensure that there are no"
+    " infinite loops in your test.",
+    [Actor, Timeout]
    );
 explain_error({process_did_not_respond_system, Actor}) ->
   io_lib:format(
-    "A process did not respond to a control signal. Ensure that"
-    " there are no infinite loops in your test. (Process: ~p)",
+    "A process (~p) did not respond to a control signal. Ensure that there are"
+    " no infinite loops in your test.",
     [Actor]
    );
 explain_error({registered_process_not_wrapped, Name, Location}) ->
@@ -2171,7 +2177,7 @@ explain_error({unexpected_builtin_change,
     "to ~p:~p/~p with args:~n  ~p~n"
     "Concuerror cannot explore behaviours that depend on~n"
     "data that may differ on separate runs of the program.~n"
-    "Location: ~p~n~n",
+    "Location: ~p~n",
     [Module, Name, Arity, Args, M, F, length(OArgs), OArgs, Location]);
 explain_error({unknown_protocol_for_system, System}) ->
   io_lib:format(
@@ -2186,12 +2192,12 @@ explain_error({unknown_built_in, {Module, Name, Arity, Location, Stack}}) ->
     end,
   io_lib:format(
     "Concuerror does not support calls to built-in ~p:~p/~p~s.~n  If you cannot"
-    " avoid its use, please contact the developers.~n  Stacktrace:~n    ~p",
+    " avoid its use, please contact the developers.~n  Stacktrace:~n    ~p~n",
     [Module, Name, Arity, LocationString, Stack]);
 explain_error({unsupported_request, Name, Type}) ->
   io_lib:format(
     "A process send a request of type '~p' to ~p. Concuerror does not yet support"
-    " this type of request to this process.~n"
+    " this type of request to this process."
     ?notify_us_msg,
     [Type, Name]);
 explain_error({wrapper_asked_for_status, Name}) ->
