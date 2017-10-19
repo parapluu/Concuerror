@@ -957,7 +957,7 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
      unsound_bpor = UnsoundBPOR
     } = State,
   #trace_state{
-     done = [#event{actor = EarlyActor}|Done] = AllDone,
+     done = [#event{actor = EarlyActor} = EarlyEvent|Done] = AllDone,
      index = EarlyIndex,
      previous_actor = PreviousActor,
      scheduling_bound = BaseBound,
@@ -972,19 +972,20 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
        false -> {EarlyActor, EarlyIndex}
      end},
   Sleeping = BaseSleeping ++ Done,
+  RevEvent = update_context(Event, EarlyEvent),
   {MaybeNewWakeup, ConservativeInfo} =
     case Bound < 0 of
       true ->
         {over_bound,
          case SchedulingBoundType =:= bpor of
            true ->
-             NotDep = not_dep(NewOldTrace, Later, DPORInfo, Event),
+             NotDep = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
              get_initials(NotDep);
            false ->
              false
          end};
       false ->
-        NotDep = not_dep(NewOldTrace, Later, DPORInfo, Event),
+        NotDep = not_dep(NewOldTrace, Later, DPORInfo, RevEvent),
         {Plan, _} = NW =
           case DPOR =:= optimal of
             true ->
@@ -1022,12 +1023,9 @@ update_trace(Event, Clock, TraceState, Later, NewOldTrace, State) ->
       {[NS|NewOldTrace], ConservativeInfo}
   end.
 
-not_dep(Trace, Later, DPORInfo, Event) ->
+not_dep(Trace, Later, DPORInfo, RevEvent) ->
   NotDep = not_dep1(Trace, Later, DPORInfo, []),
-  %% The racing event's effect may differ, so new label.
-  lists:reverse(
-    [update_context(Event)|
-     NotDep]).
+  lists:reverse([RevEvent|NotDep]).
 
 not_dep1([], [], _DPORInfo, NotDep) ->
   NotDep;
@@ -1064,17 +1062,29 @@ not_dep1([TraceState|Rest], Later, {DPOR, Info} = DPORInfo, NotDep) ->
     end,
   not_dep1(Rest, Later, DPORInfo, NewNotDep).
 
-update_context(Event) ->
+update_context(Event, EarlyEvent) ->
   NewEventInfo =
     case Event#event.event_info of
+      %% A receive statement...
       #receive_event{message = Msg} = Info when Msg =/= 'after' ->
-        Info#receive_event{message = 'after'};
+        %% ... in race with a message.
+        case is_process_info_related(EarlyEvent) of
+          true -> Info;
+          false -> Info#receive_event{message = 'after'}
+        end;
       Info -> Info
     end,
+  %% The racing event's effect should differ, so new label.
   Event#event{
     event_info = NewEventInfo,
     label = undefined
    }.
+
+is_process_info_related(Event) ->
+  case Event#event.event_info of
+    #builtin_event{mfargs = {erlang, process_info, _}} -> true;
+    _ -> false
+  end.
 
 show_plan(_Type, _Logger, _Index, _NotDep) ->
   ?debug(
