@@ -170,11 +170,10 @@ dependent(#message_event{
              type = Type
             }) ->
   KindFun =
-    fun(exit_signal,    _,                kill) -> kill_exit;
-       (exit_signal, true,                   _) -> message;
-       (    message,    _,                   _) -> message;
-       (exit_signal,    _, {'EXIT', _, normal}) -> normal_exit;
-       (exit_signal,    _,                   _) -> abnormal_exit
+    fun(exit_signal,    _, kill) -> exit_signal;
+       (exit_signal, true,    _) -> message;
+       (    message,    _,    _) -> message;
+       (exit_signal,    _,    _) -> exit_signal
     end,
   case {KindFun(EarlyType, Trapping, EarlyData),
         KindFun(Type, Trapping, Data)} of
@@ -194,11 +193,6 @@ dependent(#message_event{
              true -> false
           end
       end;
-    {message, normal_exit} -> false;
-    {message, _} -> true;
-    {normal_exit, kill_exit} -> true;
-    {normal_exit, _} -> Trapping;
-    {_, normal_exit} -> Trapping;
     {_, _} -> Killing1 orelse Killing2 %% This is an ugly hack, see blame.
   end;
 

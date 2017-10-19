@@ -1,0 +1,243 @@
+Concuerror v0.18 ('78f5262') started at 19 Oct 2017 14:24:50
+ Options:
+  [{after_timeout,infinity},
+   {assertions_only,false},
+   {assume_racing,false},
+   {depth_bound,500},
+   {disable_sleep_sets,false},
+   {dpor,optimal},
+   {entry_point,{receive_exit,test3,[]}},
+   {exclude_module,[]},
+   {files,["/home/stavros/git/Concuerror/tests/suites/basic_tests/src/receive_exit.erl"]},
+   {ignore_error,[]},
+   {instant_delivery,true},
+   {interleaving_bound,infinity},
+   {keep_going,true},
+   {non_racing_system,[]},
+   {print_depth,20},
+   {quiet,true},
+   {scheduling,round_robin},
+   {scheduling_bound_type,none},
+   {show_races,false},
+   {strict_scheduling,false},
+   {symbolic_names,true},
+   {timeout,infinity},
+   {treat_as_normal,[]},
+   {use_receive_patterns,true}]
+################################################################################
+Interleaving #1
+--------------------------------------------------------------------------------
+Errors found:
+* At step 6 process P.1 exited abnormally
+    Reason:
+      die
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.10.78973977>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.11.78973977>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.12.78973977>,[]])
+    in erlang.erl line 2673
+   4: P: true = erlang:exit(P.1, die)
+    in receive_exit.erl line 61
+   5: P: exits normally
+   6: P.1: exits abnormally (die)
+   7: P.2: bar = P.1 ! bar
+    in receive_exit.erl line 59
+   8: P.2: exits normally
+   9: P.3: foo = P.1 ! foo
+    in receive_exit.erl line 60
+  10: P.3: exits normally
+################################################################################
+Interleaving #2
+--------------------------------------------------------------------------------
+Errors found:
+* At step 10 process P.1 exited abnormally
+    Reason:
+      die
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.10.78973977>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.11.78973977>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.12.78973977>,[]])
+    in erlang.erl line 2673
+   4: P.2: bar = P.1 ! bar
+    in receive_exit.erl line 59
+   5: P.2: exits normally
+   6: P.3: foo = P.1 ! foo
+    in receive_exit.erl line 60
+   7: P.3: exits normally
+   8: P: true = erlang:exit(P.1, die)
+    in receive_exit.erl line 61
+   9: P: exits normally
+  10: P.1: exits abnormally (die)
+################################################################################
+Interleaving #3
+--------------------------------------------------------------------------------
+Errors found:
+* At step 12 process P.1 exited abnormally
+    Reason:
+      die
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.10.78973977>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.11.78973977>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.12.78973977>,[]])
+    in erlang.erl line 2673
+   4: P.2: bar = P.1 ! bar
+    in receive_exit.erl line 59
+   5: P.2: exits normally
+   6: P.3: foo = P.1 ! foo
+    in receive_exit.erl line 60
+   7: P.3: exits normally
+   8: P.1: receives message (foo)
+    in receive_exit.erl line 54
+   9: P.1: receives message (bar)
+    in receive_exit.erl line 55
+  10: P: true = erlang:exit(P.1, die)
+    in receive_exit.erl line 61
+  11: P: exits normally
+  12: P.1: exits abnormally (die)
+################################################################################
+Interleaving #4
+--------------------------------------------------------------------------------
+Errors found:
+* At step 11 process P.1 exited abnormally
+    Reason:
+      die
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.10.78973977>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.11.78973977>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.12.78973977>,[]])
+    in erlang.erl line 2673
+   4: P.2: bar = P.1 ! bar
+    in receive_exit.erl line 59
+   5: P.2: exits normally
+   6: P.3: foo = P.1 ! foo
+    in receive_exit.erl line 60
+   7: P.3: exits normally
+   8: P.1: receives message (foo)
+    in receive_exit.erl line 54
+   9: P: true = erlang:exit(P.1, die)
+    in receive_exit.erl line 61
+  10: P: exits normally
+  11: P.1: exits abnormally (die)
+################################################################################
+Interleaving #5
+--------------------------------------------------------------------------------
+Errors found:
+* At step 8 process P.1 exited abnormally
+    Reason:
+      die
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.10.78973977>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.11.78973977>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.12.78973977>,[]])
+    in erlang.erl line 2673
+   4: P.2: bar = P.1 ! bar
+    in receive_exit.erl line 59
+   5: P.2: exits normally
+   6: P: true = erlang:exit(P.1, die)
+    in receive_exit.erl line 61
+   7: P: exits normally
+   8: P.1: exits abnormally (die)
+   9: P.3: foo = P.1 ! foo
+    in receive_exit.erl line 60
+  10: P.3: exits normally
+################################################################################
+Interleaving #6
+--------------------------------------------------------------------------------
+Errors found:
+* At step 8 process P.1 exited abnormally
+    Reason:
+      die
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.10.78973977>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.11.78973977>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.12.78973977>,[]])
+    in erlang.erl line 2673
+   4: P.3: foo = P.1 ! foo
+    in receive_exit.erl line 60
+   5: P.3: exits normally
+   6: P: true = erlang:exit(P.1, die)
+    in receive_exit.erl line 61
+   7: P: exits normally
+   8: P.1: exits abnormally (die)
+   9: P.2: bar = P.1 ! bar
+    in receive_exit.erl line 59
+  10: P.2: exits normally
+################################################################################
+Interleaving #7
+--------------------------------------------------------------------------------
+Errors found:
+* At step 9 process P.1 exited abnormally
+    Reason:
+      die
+    Stacktrace:
+      []
+--------------------------------------------------------------------------------
+Event trace:
+   1: P: P.1 = erlang:spawn(erlang, apply, [#Fun<receive_exit.10.78973977>,[]])
+    in erlang.erl line 2673
+   2: P: P.2 = erlang:spawn(erlang, apply, [#Fun<receive_exit.11.78973977>,[]])
+    in erlang.erl line 2673
+   3: P: P.3 = erlang:spawn(erlang, apply, [#Fun<receive_exit.12.78973977>,[]])
+    in erlang.erl line 2673
+   4: P.3: foo = P.1 ! foo
+    in receive_exit.erl line 60
+   5: P.3: exits normally
+   6: P.1: receives message (foo)
+    in receive_exit.erl line 54
+   7: P: true = erlang:exit(P.1, die)
+    in receive_exit.erl line 61
+   8: P: exits normally
+   9: P.1: exits abnormally (die)
+  10: P.2: bar = P.1 ! bar
+    in receive_exit.erl line 59
+  11: P.2: exits normally
+################################################################################
+Exploration completed!
+################################################################################
+Tips:
+--------------------------------------------------------------------------------
+* An abnormal exit signal was sent to a process. This is probably the worst thing that can happen race-wise, as any other side-effecting operation races with the arrival of the signal. If the test produces too many interleavings consider refactoring your code.
+* Increase '--print_depth' if output/graph contains "...".
+
+################################################################################
+Info:
+--------------------------------------------------------------------------------
+* Automatically instrumented module io_lib
+* Instrumented & loaded module receive_exit
+* Automatically instrumented module erlang
+* You can see pairs of racing instructions (in the report and '--graph') with '--show_races true'
+* Continuing after error (-k)
+
+################################################################################
+Done at 19 Oct 2017 14:24:50 (Exit status: error)
+  Summary: 7 errors, 7/7 interleavings explored
