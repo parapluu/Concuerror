@@ -11,7 +11,8 @@ for i in t_simple_reg t_simple_reg_or_locate t_reg_or_locate2 test1 test2 test3 
     REF=$(readlink -m ../ref/$RES)
     RUN=$(readlink -m ../run/$RES)
     $CONCUERROR --assume_racing=false -q --timeout -1 -k --pa ebin -f ../test.erl -m test -t $i -o $RUN || true
-    (bash $DIFFER $REF $RUN && echo -e "\e[1;32mok\e[0m") || (echo -e "\e[1;31mFAILED\e[0m" && fail=1)
+    (bash $DIFFER $REF $RUN && echo -e "\e[1;32mok\e[0m" && rm $RUN) \
+        || (echo -e "\e[1;31mFAILED\e[0m" && fail=1)
 done
 if [ $fail == 1 ]; then
    false
