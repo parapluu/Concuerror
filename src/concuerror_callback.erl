@@ -54,7 +54,6 @@
 -include("concuerror.hrl").
 
 -define(crash_instr(Reason), exit(self(), {?MODULE, Reason})).
--define(crash(Reason), exit({?MODULE, Reason})).
 
 -ifdef(BEFORE_OTP_17).
 -type ref_queue() :: queue().
