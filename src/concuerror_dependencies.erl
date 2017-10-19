@@ -344,8 +344,9 @@ dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, dictionary]}},
         end;
     _ -> false
   end;
-dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, messages]}},
-                       Other) ->
+dependent_process_info(#builtin_event{mfargs = {_,_,[Pid, Msg]}},
+                       Other)
+  when Msg =:= messages; Msg =:= message_queue_len ->
   case Other of
     #message_event{ignored = false, recipient = Recipient} ->
       Recipient =:= Pid;
