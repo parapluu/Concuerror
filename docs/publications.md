@@ -48,11 +48,10 @@ Maria Christakis, Alkis Gotovos, and Konstantinos Sagonas.<br />
 ICST 2013, Proceedings of the International Conference on Software Testing, Verification and Validation (ICST), 2013.
 </div>
 
-<div style="margin-left:25px" markdown="1">
-<a href="/assets/pdf/erlang1110-gotovos.pdf">**Test-Driven Development of Concurrent Programs using Concuerror**</a>  
-Alkis Gotovos, Maria Christakis, and Konstantinos Sagonas.<br />
-Erlang 2011, Proceedings of the 10th ACM SIGPLAN workshop on Erlang, 2011.
-</div>
+<!-- ACM DL Article: Test-driven development of concurrent programs using concuerror -->
+<div class="acmdlitem" id="item2034664"><img src="http://dl.acm.org/images/oa.gif" width="25" height="25" border="0" alt="ACM DL Author-ize service" style="vertical-align:middle"/><a href="http://dl.acm.org/authorize?N49975" title="Test-driven development of concurrent programs using Concuerror" markdown="1">**Test-driven development of concurrent programs using Concuerror**</a><div style="margin-left:25px"><a href="http://dl.acm.org/author_page.cfm?id=81488671778" >Alkis Gotovos</a>, <a href="http://dl.acm.org/author_page.cfm?id=81481650826" >Maria Christakis</a>, and <a href="http://dl.acm.org/author_page.cfm?id=81100605481" >Konstantinos Sagonas</a>.<br />Erlang '11, Proceedings of the 10th ACM SIGPLAN workshop on Erlang, 2011.</div></div>
+<!-- ACM DL Bibliometrics: Test-driven development of concurrent programs using concuerror-->
+<div class="acmdlstat" id ="stats2034664"><iframe src="http://dl.acm.org/authorizestats?N49975" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
 
 ## Theses
 
