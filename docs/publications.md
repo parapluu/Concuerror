@@ -41,11 +41,14 @@ The official publication is available at link.springer.com via <a href="https://
 <div class="acmdlstat footnotes" id ="stats2535845"><iframe src="https://dl.acm.org/authorizestats?N87798" width="100%" height="30" scrolling="no" frameborder="0">frames are not supported</iframe></div>
 
 <div style="margin-left:25px" markdown="1">
-<a href="http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6569727">
+<a href="/assets/pdf/ICST2013.pdf">
 **Systematic Testing for Detecting Concurrency Errors in Erlang Programs**
 </a>  
 Maria Christakis, Alkis Gotovos, and Konstantinos Sagonas.<br />
-ICST 2013, Proceedings of the International Conference on Software Testing, Verification and Validation (ICST), 2013.
+ICST 2013, Proceedings of the International Conference on Software Testing, Verification and Validation (ICST), 2013.<br />
+<span class="footnotes">
+The official publication is available at ieeexplore.ieee.org via <a href="https://doi.org/10.1109/ICST.2013.50">its DOI link</a>.
+</span>
 </div>
 
 <!-- ACM DL Article: Test-driven development of concurrent programs using concuerror -->
