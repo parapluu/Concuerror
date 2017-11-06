@@ -34,27 +34,7 @@ Concuerror is a stateless model checking tool for Erlang programs. It can be use
 
 ## How do I get Concuerror?
 
-Concuerror's latest stable version is available on [Github](https://github.com/parapluu/Concuerror):
-
-{% highlight bash %}
-$ git clone https://github.com/parapluu/Concuerror.git
-$ cd Concuerror
-$ make -j
-{% endhighlight %}
-
-### Supported OTP Releases
-
-Concuerror's developers are always working with the latest otp/master branch
-available on Github. Concuerror is also expected to work on all OTP releases
-starting from and including **R17**[\*](#older). We use
-[Travis](https://travis-ci.org/parapluu/Concuerror) to test:
-
-* The *two last* minor versions of the 'current' major Erlang/OTP release
-* The *last* minor version of older major releases
-
-<div id="older" markdown="1">
-(**\*** R16 is also tested for minimal functionality.)
-</div>
+Read the [Download](/download) page.
 
 ## How do I use Concuerror?
 

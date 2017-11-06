@@ -15,4 +15,18 @@ $ cd Concuerror
 $ make -j
 {% endhighlight %}
 
+### Supported OTP Releases
+
+Concuerror's developers are always working with the latest otp/master branch
+available on Github. Concuerror is also expected to work on all OTP releases
+starting from and including **R17**[\*](#older). We use
+[Travis](https://travis-ci.org/parapluu/Concuerror) to test:
+
+* The *two last* minor versions of the 'current' major Erlang/OTP release
+* The *last* minor version of older major releases
+
+<div id="older" markdown="1">
+(**\*** R16 is also tested for minimal functionality.)
+</div>
+
 You can also find an older version of Concuerror [here](https://github.com/mariachris/Concuerror.git).
