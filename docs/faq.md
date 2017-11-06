@@ -136,3 +136,7 @@ This may result in unexpected effects, as for example measuring elapsed time by
 calling `erlang:time/0` twice may use a recorded result for the first call and
 an updated result for the second call (if it after the branching-out point),
 with the difference between the two increasing in every interleaving.
+
+### How does Concuerror handle NIFs?
+
+Concuerror cannot intercept, instrument or perform race analysis in modules using NIFs and is very likely to crash if such modules are used. Better support may be included in the future.
