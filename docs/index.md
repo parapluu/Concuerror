@@ -83,14 +83,12 @@ Based on this analysis, it explores more schedulings, reversing the order of exe
 
 You can find more details [here](/faq/#how-does-concuerror-work-extended).
 
-## How do I report a bug?
-
-The preferred way is to use the repository's [Issues
-page](https://github.com/parapluu/Concuerror/issues/new), but you can also [mail us](/contact).
-
 ## Further Reads
 
 * [News](/news)
+* [Download](/download)
 * [FAQ](/faq)
+* [Mailing List](/mailing-list)
 * [Tutorials](/tutorials)
 * [Publications](/publications)
+* [Contact](/contact)

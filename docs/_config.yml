@@ -30,12 +30,14 @@ bing_verify:
 links:
   - title: Home
     url: /
-  - title: Download
-    url: /download
   - title: News
     url: /news
+  - title: Download
+    url: /download
   - title: FAQ
     url: /faq
+  - title: Mailing List
+    url: /mailing-list
   - title: Tutorials
     url: /tutorials
   - title: Publications    
