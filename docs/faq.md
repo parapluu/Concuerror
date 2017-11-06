@@ -36,7 +36,7 @@ using the `--show_races` option and possibly simplify the test.
 Concuerror may also print tips during its execution,
 suggesting ways to improve the effectiveness of testing.
 A large number of options are available to fine tune the tool.
-You can find out more about them by using `concuerror -h`.
+You can find out more about them by using `--help all`.
 
 ## Can Concuerror do 'random testing'?
 
@@ -45,8 +45,8 @@ your voice to the related
 [Issue page](https://github.com/parapluu/Concuerror/issues/16)).
 
 If your goal is not verification, Concuerror has its own way to sample
-the state space in a less systematic way: schedule bounding. You can
-read more about it by asking for `--help bound`.
+the interleavings in a less systematic way: schedule bounding. You can
+read more about it by `--help bound`.
 
 ## How does Concuerror work? (extended)
 
@@ -79,7 +79,7 @@ Concuerror automatically adds instrumentation code and reloads any module that
 is used by the test. The instrumentation forces any process involved in the test
 to stop and report any operation that affects shared state.
 
-## How much of Erlang does Concuerror support?
+## Does Concuerror support all of Erlang's operations/libraries?
 
 Concuerror supports the complete Erlang language and can instrument programs of
 any size. It can be the case that support for some built-in operations is not complete
@@ -89,7 +89,7 @@ There are however certain limitations regarding e.g.
 and [non-deterministic
 functions](#how-does-concuerror-handle-non-deterministic-functions).
 
-## How can I get rid of '...' in the report?
+## How can I get rid of '...' in output files?
 
 Use a higher `--print_depth`.
 
